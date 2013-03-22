@@ -40,7 +40,7 @@ public final class Base64Coder {
      * @return encoded String
      * @throws CoderException 
      */
-    public static String encode(byte[] barr) throws CoderException {
+    public static String encode(byte[] barr)  {
 		barr=Base64.encodeBase64(barr);
 		StringBuilder sb=new StringBuilder();
 	    for(int i=0;i<barr.length;i++) {

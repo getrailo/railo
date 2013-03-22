@@ -8,6 +8,7 @@ import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
@@ -56,7 +57,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public UndefinedImpl(PageContextImpl pc, short type) {
 		this.type=type;
 		this.pc=pc;
-		this.debug=pc.getConfig().debug();
+		this.debug=pc.getConfig().debug() && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS);
 	}
 	
 	

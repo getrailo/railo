@@ -10,6 +10,7 @@ import railo.runtime.PageSource;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugTrace;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -188,7 +189,7 @@ public final class Trace extends BodyTagImpl {
 		}
 		
 		DebugTrace trace = pageContext.getDebugger().addTrace(type,category,text,page,var,varValue);
-		DebugTrace[] traces = pageContext.getDebugger().getTraces();
+		DebugTrace[] traces = ((DebuggerPro)pageContext.getDebugger()).getTraces(pageContext);
 		
 		String total="(1st trace)";
 		if(traces.length>1) {

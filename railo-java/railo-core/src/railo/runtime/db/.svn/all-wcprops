@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db
+END
+LikeCompareJRE.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/97/trunk/railo-java/railo-core/src/railo/runtime/db/LikeCompareJRE.java
+END
+SQLImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/db/SQLImpl.java
+END
+LikeCompare.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/db/LikeCompare.java
+END
+ZQLFunction.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/db/ZQLFunction.java
+END
+HSQLUtil2.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/db/HSQLUtil2.java
+END
+DCStack.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db/DCStack.java
+END
+HSQLUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/db/HSQLUtil.java
+END
+DatasourceManagerImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/db/DatasourceManagerImpl.java
+END
+DataSourceUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db/DataSourceUtil.java
+END
+HSQLDBHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db/HSQLDBHandler.java
+END
+DataSourceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/db/DataSourceImpl.java
+END
+DatasourceConnectionImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/db/DatasourceConnectionImpl.java
+END
+OLDDCStack.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/db/OLDDCStack.java
+END
+SQLItemImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/db/SQLItemImpl.java
+END
+DatasourceConnectionPool.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db/DatasourceConnectionPool.java
+END
+Executer.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/db/Executer.java
+END
+LikeComparePerl.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/db/LikeComparePerl.java
+END
+SQLCaster.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db/SQLCaster.java
+END
+CFTypes.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/db/CFTypes.java
+END
+SQLPrettyfier.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/db/SQLPrettyfier.java
+END
+QoQ.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/db/QoQ.java
+END

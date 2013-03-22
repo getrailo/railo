@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/op
+END
+CreationImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/op/CreationImpl.java
+END
+CastImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/CastImpl.java
+END
+Constants.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/90/trunk/railo-java/railo-core/src/railo/runtime/op/Constants.java
+END
+DoubleToString.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/DoubleToString.java
+END
+Duplicator.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/Duplicator.java
+END
+DecisionImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/DecisionImpl.java
+END
+PatternCaster.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/PatternCaster.java
+END
+Caster.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/op/Caster.java
+END
+Decision.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/op/Decision.java
+END
+ExceptonImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/ExceptonImpl.java
+END
+OperationImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/op/OperationImpl.java
+END
+Operator.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/op/Operator.java
+END

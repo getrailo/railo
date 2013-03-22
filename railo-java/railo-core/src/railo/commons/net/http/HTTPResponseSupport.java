@@ -26,6 +26,10 @@ public abstract class HTTPResponseSupport implements HTTPResponse {
 		long length=0;
 		try{
 			is=getContentAsStream();
+
+            if ( is == null )
+                return 0;
+
 			byte[] buffer = new byte[1024];
 		    int len;
 		    while((len = is.read(buffer)) !=-1){

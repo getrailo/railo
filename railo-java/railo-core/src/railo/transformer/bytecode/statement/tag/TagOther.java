@@ -1,7 +1,5 @@
 package railo.transformer.bytecode.statement.tag;
 
-import org.objectweb.asm.Label;
-
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;

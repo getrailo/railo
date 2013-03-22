@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/video
+END
+VideoInputImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/video/VideoInputImpl.java
+END
+VideoProfileImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/video/VideoProfileImpl.java
+END
+VideoUtilImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/video/VideoUtilImpl.java
+END
+Range.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/video/Range.java
+END
+VideoOutputImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/video/VideoOutputImpl.java
+END
+ProfileCollection.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/video/ProfileCollection.java
+END
+VideoException.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/video/VideoException.java
+END
+VideoExecuterNotSupported.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/video/VideoExecuterNotSupported.java
+END

@@ -499,10 +499,7 @@ public final class RPCServer{
             }
         } else {
             if (isDebug) {
-                log.debug("Returned Content-Type:" +
-                          contentType);
-                // log.debug("Returned Content-Length:" +
-                //          responseMsg.getContentLength());
+                log.debug("Returned Content-Type:" + contentType);
             }
 
             try {

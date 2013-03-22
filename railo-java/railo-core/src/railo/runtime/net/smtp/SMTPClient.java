@@ -6,10 +6,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -30,6 +33,7 @@ import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.collections.HashTable;
+import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
@@ -111,7 +115,7 @@ public final class SMTPClient implements Serializable  {
 	private InternetAddress[] fts;
 	private String subject="";
 	private String xmailer="Railo Mail";
-	private Map headers=new HashTable();
+	private Map<String,String> headers=new HashTable();
 	private int port=-1;
 
 	private String username;
@@ -413,11 +417,12 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 	
+	
 	private MimeMessageAndSession createMimeMessage(railo.runtime.config.Config config,String hostName, int port, String username, String password,
 			boolean tls,boolean ssl) throws MessagingException {
 		
-	      Properties props = System.getProperties();
-
+	      Properties props = (Properties) System.getProperties().clone();
+	      
 	      props.put("mail.smtp.host", hostName);
 	      props.put("mail.smtp.timeout", Caster.toString(timeout));
 	      props.put("mail.smtp.connectiontimeout", Caster.toString(timeout));
@@ -452,7 +457,7 @@ public final class SMTPClient implements Serializable  {
 	    	  props.remove("mail.smtp.password");
 	    	  props.remove("password");
 	      }
-	      SessionAndTransport sat = SMTPConnectionPool.getSessionAndTransport(props,auth);
+	      SessionAndTransport sat = SMTPConnectionPool.getSessionAndTransport(props,hash(props),auth);
 	      
 	// Contacts
 		SMTPMessage msg = new SMTPMessage(sat.session);
@@ -556,12 +561,34 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 
-	private static void setHeaders(SMTPMessage msg, Map headers) throws MessagingException {
-		Iterator it = headers.keySet().iterator();
-	    String key;
+	private static String hash(Properties props) {
+		Enumeration<?> e = props.propertyNames();
+		java.util.List<String> names=new ArrayList<String>();
+		String str;
+		while(e.hasMoreElements()){
+			str=Caster.toString(e.nextElement(),null);
+			if(!StringUtil.isEmpty(str) && str.startsWith("mail.smtp."))
+				names.add(str);
+			
+		}
+		Collections.sort(names);
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = names.iterator();
+		while(it.hasNext()){
+			str=it.next();
+			sb.append(str).append(':').append(props.getProperty(str)).append(';');
+		}
+		str=sb.toString();
+		return MD5.getDigestAsString(str,str);
+		
+	}
+
+	private static void setHeaders(SMTPMessage msg, Map<String,String> headers) throws MessagingException {
+		Iterator<Entry<String, String>> it = headers.entrySet().iterator();
+		Entry<String, String> e;
 	    while(it.hasNext()) {
-	    	key = (String)it.next();
-	    	msg.setHeader(key, (String)headers.get(key));
+	    	e = it.next();
+	    	msg.setHeader(e.getKey(),e.getValue());
 	    }
 	}
 

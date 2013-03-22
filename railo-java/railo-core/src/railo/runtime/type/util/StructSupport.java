@@ -206,12 +206,6 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	public Iterator<String> keysAsStringIterator() {
     	return new KeyAsStringIterator(keyIterator());
     }
-	
-    @Override
-	public boolean equals(Object obj){
-		if(!(obj instanceof Collection)) return false;
-		return CollectionUtil.equals(this,(Collection)obj);
-	}
 
     @Override
 	public Object get(PageContext pc, Key key, Object defaultValue) {
@@ -253,5 +247,16 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     
     public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
-    } 
+    }
+	
+    @Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	} 
 }

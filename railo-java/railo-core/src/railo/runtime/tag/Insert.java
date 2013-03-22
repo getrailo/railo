@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
@@ -167,11 +168,14 @@ public final class Insert extends TagImpl {
 	    	
 	    	SQL sql=createSQL(meta);
 			if(sql!=null) {
-				railo.runtime.type.Query query = new QueryImpl(dc,sql,-1,-1,-1,"query");
+				railo.runtime.type.Query query = new QueryImpl(pageContext,dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
-					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
+					if(logdb) {
+						boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+					}
 				}
 			}
 			return EVAL_PAGE;

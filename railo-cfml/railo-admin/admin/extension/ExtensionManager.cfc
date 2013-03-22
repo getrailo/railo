@@ -206,12 +206,6 @@
 				<cfcontinue>
 			</cfif>
     
-			<!--- Ignore the info block in the config --->
-			<cfif stepItem.XMLName EQ "info">
-				<cfcontinue>
-			</cfif>
-	
-	
 			<cfif not StructKeyExists(stepAttrs,'label')><cfset stepAttrs.label=""></cfif>
     		<cfif not StructKeyExists(stepAttrs,'description')><cfset stepAttrs.description=""></cfif>
     		<cfset step=extForm.createStep(label:stepAttrs.label,description:stepAttrs.description)>

@@ -1,24 +1,20 @@
 ﻿<cfsetting showdebugoutput="no">
 <cfsilent>
 	
-	<!--- NOTE: IF YOU EDIT THIS FILE, BE SURE TO RENAME IT!!!
-	THIS FILE HAS AN EXPIRES HEADER OF 1.000 DAYS IN THE FUTURE!!
-	--->
+	<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
 	
-	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
-	<cfif not structKeyExists(application, "oHTTPCaching")>
-		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
-	</cfif>
+	<cfset mimetype = "text/js" />
+	<cfset etag = hash( getCurrentTemplatePath() & '-' & Server.Railo.Version ) />
+
+	<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
+	<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
+	<cfheader name='ETag' value='#etag#'>
 	
-	<!--- create a string to be used as an Etag - in the response header --->
-	<cfset filepath = getCurrentTemplatePath() />
-	<cfset lastModified = application.oHTTPCaching.getFileDateLastModified(filepath) />
-	<cfset etag = lastModified & '-' & hash(filepath) />
-	<cfset mimetype = "text/javascript" />
-	
-	<!--- check if the content was cached on the browser, and set the ETag header and expires header --->
-	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=1000)>
-		<cfexit method="exittemplate" />
+	<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
+
+		<!--- etag matches, return 304 !--->
+		<cfheader statuscode='304' statustext='Not Modified'>
+		<cfcontent reset='#true#' type='#mimetype#'><cfabort>
 	</cfif>
 	
 	<!--- file was not cached; send the data --->

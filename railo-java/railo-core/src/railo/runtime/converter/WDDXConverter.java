@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import javax.xml.parsers.FactoryConfigurationError;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,11 +29,14 @@ import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.coder.Base64Coder;
+import railo.runtime.coder.CoderException;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.text.xml.XMLUtil;
@@ -118,6 +122,14 @@ public final class WDDXConverter extends ConverterSupport {
 		catch (PageException e) {
 			throw new ConverterException(e);
 		}*/
+	}
+	
+	private String _serializeBinary(byte[] binary) {
+		return new StringBuilder("<binary length='")
+		.append(binary.length)
+		.append("'>")
+		.append(Base64Coder.encode(binary))
+		.append("</binary>").toString();
 	}
 
 	/**
@@ -365,6 +377,12 @@ public final class WDDXConverter extends ConverterSupport {
 			deep--;
 			return rtn;
 		}
+		// Date
+		if(Decision.isCastableToBinary(object, false)) {
+			rtn= _serializeBinary(Caster.toBinary(object,null));
+			deep--;
+			return rtn;
+		}
 
 		Object raw = LazyConverter.toRaw(object);
 		if(done.contains(raw)){
@@ -420,7 +438,7 @@ public final class WDDXConverter extends ConverterSupport {
 		deep--;
 		return rtn;
 	}
-	
+
 	@Override
 	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
 		writer.write(serialize(source));
@@ -575,6 +593,10 @@ public final class WDDXConverter extends ConverterSupport {
 				throw toConverterException(e);
 			} 
 		}
+		// Query
+		else if(nodeName.equals("binary")) {
+			return  _deserializeBinary(element);
+		}
 		else 
 			throw new ConverterException("can't deserialize Element of type ["+nodeName+"] to a Object representation");
 		
@@ -634,6 +656,21 @@ public final class WDDXConverter extends ConverterSupport {
 		}
 		
 	}
+	
+
+
+	private Object _deserializeBinary(Element el) throws ConverterException {
+		Node node = el.getFirstChild();
+		if(node instanceof CharacterData) {
+			String data=((CharacterData)node).getData();
+			try {
+				return Base64Coder.decode(data);
+			} catch (CoderException e) {
+				throw new ConverterException(e.getMessage());
+			}
+		}
+		throw new ConverterException("cannot convert serialized binary back to binary data");
+	}
 
 	/**
 	 * deserilize a single Field of a query WDDX Object
@@ -650,7 +687,7 @@ public final class WDDXConverter extends ConverterSupport {
 		for(int i=0;i<len;i++) {
 			Node node=list.item(i);
 			if(node instanceof Element) {
-				query.setAt(name,++count,_deserialize((Element) node));
+				query.setAt(KeyImpl.init(name),++count,_deserialize((Element) node));
 			}			
 		}
 		

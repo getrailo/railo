@@ -1,10 +1,11 @@
 package railo.runtime;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collections.LongKeyList;
 import railo.commons.lang.SizeOf;
@@ -25,7 +26,7 @@ import railo.runtime.type.util.ArrayUtil;
  */
 public final class PageSourcePool implements Dumpable,Sizeable {
 	
-	private Map<Object,PageSource> pageSources=Collections.synchronizedMap(new HashMap<Object, PageSource>());
+	private Map<Object,PageSource> pageSources=Collections.synchronizedMap(new ReferenceMap(ReferenceMap.SOFT, ReferenceMap.SOFT));
 	//timeout timeout for files
 	private long timeout;
 	//max size of the pool cache
@@ -168,9 +169,12 @@ public final class PageSourcePool implements Dumpable,Sizeable {
 			}
 		}
 	}
-	
+
 	public void clear() {
 		pageSources.clear();
+	}
+	public int getMaxSize() {
+		return maxSize;
 	}
 
 	@Override

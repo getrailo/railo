@@ -676,7 +676,7 @@ public final class SystemUtil {
 		return (int)(1000L-(1000L*used/max));
 	}
 	
-	public static Query getMemoryUsage(int type) throws DatabaseException {
+	public static Query getMemoryUsageAsQuery(int type) throws DatabaseException {
 		
 		
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
@@ -712,7 +712,34 @@ public final class SystemUtil {
 		return qry;
 	}
 	
-	public static Struct getMemoryUsageCompaact(int type) {
+	public static Struct getMemoryUsageAsStruct(int type) {
+		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		
+		MemoryPoolMXBean bean;
+		MemoryUsage usage;
+		MemoryType _type;
+		long used=0,max=0,init=0;
+		while(it.hasNext()){
+			bean = it.next();
+			usage = bean.getUsage();
+			_type = bean.getType();
+			if((type==MEMORY_TYPE_HEAP && _type==MemoryType.HEAP) || (type==MEMORY_TYPE_NON_HEAP && _type==MemoryType.NON_HEAP)){
+				used+=usage.getUsed();
+				max+=usage.getMax();
+				init+=usage.getInit();
+			}
+		}
+		Struct sct=new StructImpl();
+		sct.setEL(KeyConstants._used, Caster.toDouble(used));
+		sct.setEL(KeyConstants._max, Caster.toDouble(max));
+		sct.setEL(KeyConstants._init, Caster.toDouble(init));
+		sct.setEL(KeyImpl.init("available"), Caster.toDouble(max-used));
+		return sct;
+	}
+	
+
+	public static Struct getMemoryUsageCompact(int type) {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		
@@ -729,7 +756,6 @@ public final class SystemUtil {
 				
 			double d=((int)(100D/usage.getMax()*usage.getUsed()))/100D;
 			sct.setEL(KeyImpl.init(bean.getName()), Caster.toDouble(d));
-			
 		}
 		return sct;
 	}
@@ -837,6 +863,4 @@ public final class SystemUtil {
     	}
     	return isCLI.booleanValue();
 	}
-	
-	
 }

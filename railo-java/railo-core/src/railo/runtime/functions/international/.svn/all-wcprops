@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/international
+END
+GetLocale.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/GetLocale.java
+END
+LSCurrencyFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSCurrencyFormat.java
+END
+LSDateFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSDateFormat.java
+END
+LSTimeFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSTimeFormat.java
+END
+LSParseEuroCurrency.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/repos/railo/!svn/ver/76/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSParseEuroCurrency.java
+END
+GetEncoding.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/GetEncoding.java
+END
+LSNumberFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSNumberFormat.java
+END
+LSParseDateTime.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/98/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSParseDateTime.java
+END
+LSIsCurrency.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSIsCurrency.java
+END
+LSDayOfWeek.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSDayOfWeek.java
+END
+LSIsDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/98/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSIsDate.java
+END
+GetTimeZoneInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/GetTimeZoneInfo.java
+END
+LSParseCurrency.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/76/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSParseCurrency.java
+END
+SetLocale.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/SetLocale.java
+END
+LSIsNumeric.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSIsNumeric.java
+END
+LSEuroCurrencyFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSEuroCurrencyFormat.java
+END
+LSWeek.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSWeek.java
+END
+SetEncoding.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/international/SetEncoding.java
+END
+LSParseNumber.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/international/LSParseNumber.java
+END

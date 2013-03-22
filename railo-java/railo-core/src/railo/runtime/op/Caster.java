@@ -17,9 +17,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +37,6 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
-import railo.commons.i18n.FormatUtil;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -67,6 +64,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.functions.file.FileStreamWrapper;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
+import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
@@ -2528,11 +2526,11 @@ public final class Caster {
     }
 
 
-    public static String toB64(String str,String charset) throws CoderException, UnsupportedEncodingException {
+    public static String toB64(String str,String charset) throws UnsupportedEncodingException {
         return toB64(str.getBytes(charset));
     }
     
-    public static String toB64(byte[] b) throws CoderException {
+    public static String toB64(byte[] b)  {
         return Base64Coder.encode(b);
     }
 
@@ -2662,107 +2660,6 @@ public final class Caster {
     public static DateTime toDatetime(Object o, TimeZone tz) throws PageException {
         return DateCaster.toDateAdvanced(o,tz);
     }
-    
-    /**
-     * parse a string to a Datetime Object
-     * @param locale 
-     * @param str String representation of a locale Date
-     * @param tz
-     * @return DateTime Object
-     * @throws PageException 
-     */
-    public static DateTime toDateTime(Locale locale,String str, TimeZone tz,boolean useCommomDateParserAsWell) throws PageException {
-        
-    	DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
-        if(dt==null){
-        	throw new ExpressionException("can't cast ["+str+"] to date value");
-        }
-        return dt;
-    }
-    /**
-     * parse a string to a Datetime Object, returns null if can't convert
-     * @param locale 
-     * @param str String representation of a locale Date
-     * @param tz
-     * @param defaultValue 
-     * @return datetime object
-     */
-    public synchronized static DateTime toDateTime(Locale locale,String str, TimeZone tz, DateTime defaultValue,boolean useCommomDateParserAsWell) {
-    	str=str.trim();
-    	tz=ThreadLocalPageContext.getTimeZone(tz);
-    	DateFormat[] df;
-
-    	// get Calendar
-        Calendar c=JREDateTimeUtil.getCalendar(locale);
-        //synchronized(c){
-        	
-	        // datetime
-        	ParsePosition pp=new ParsePosition(0);
-	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
-	        Date d;
-	    	for(int i=0;i<df.length;i++) {
-	    		pp.setErrorIndex(-1);
-				pp.setIndex(0);
-				//try {
-            	df[i].setTimeZone(tz);
-            	d = df[i].parse(str,pp);
-            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
-				
-            	synchronized(c) {
-	            	optimzeDate(c,tz,d);
-	            	return new DateTimeImpl(c.getTime());
-            	}
-	            //}catch (ParseException e) {}
-	        }
-	        // date
-	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
-	    	for(int i=0;i<df.length;i++) {
-	    		pp.setErrorIndex(-1);
-				pp.setIndex(0);
-				//try {
-            	df[i].setTimeZone(tz);
-				d=df[i].parse(str,pp);
-            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
-            	
-				synchronized(c) {
-	            	optimzeDate(c,tz,d);
-	            	return new DateTimeImpl(c.getTime());
-            	}
-				//}catch (ParseException e) {}
-	        }
-	    	
-	        // time
-	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
-	        for(int i=0;i<df.length;i++) {
-	        	pp.setErrorIndex(-1);
-				pp.setIndex(0);
-				//try {
-            	df[i].setTimeZone(tz);
-            	d=df[i].parse(str,pp);
-            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
-            	synchronized(c) {
-	            	c.setTimeZone(tz);
-	            	c.setTime(d);
-	            	c.set(Calendar.YEAR,1899);
-	                c.set(Calendar.MONTH,11);
-	                c.set(Calendar.DAY_OF_MONTH,30);
-	            	c.setTimeZone(tz);
-            	}
-                return new DateTimeImpl(c.getTime());
-	            //}catch (ParseException e) {}
-	        }
-        //}
-        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false, tz, defaultValue);
-        return defaultValue;
-    }
-    
-    private static void optimzeDate(Calendar c, TimeZone tz, Date d) {
-    	c.setTimeZone(tz);
-    	c.setTime(d);
-        int year=c.get(Calendar.YEAR);
-        if(year<40) c.set(Calendar.YEAR,2000+year);
-        else if(year<100) c.set(Calendar.YEAR,1900+year);
-    }
 
     /**
      * cast a Object to a Query Object
@@ -2778,8 +2675,31 @@ public final class Caster {
         if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
         throw new CasterException(o,"query");
     }
+    
+    /**
+     * converts a object to a QueryColumn, if possible
+     * @param o
+     * @return
+     * @throws PageException
+     */
     public static QueryColumn toQueryColumn(Object o) throws PageException {
     	if(o instanceof QueryColumn) return (QueryColumn)o;
+    	throw new CasterException(o,"querycolumn");
+    }
+    
+    /**
+     * converts a object to a QueryColumn, if possible, also variable declarations are allowed.
+     * this method is used within the generated bytecode
+     * @param o
+     * @return
+     * @throws PageException
+     */
+    public static QueryColumn toQueryColumn(Object o, PageContext pc) throws PageException {
+    	if(o instanceof QueryColumn) return (QueryColumn)o;
+    	if(o instanceof String) {
+    		o=VariableInterpreter.getVariableELAsCollection(pc, (String)o,null);
+    		if(o instanceof QueryColumn) return (QueryColumn) o;
+    	}
     	throw new CasterException(o,"querycolumn");
     }
 

@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -97,7 +96,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private final RefBoolean controlerState=new RefBooleanImpl(true);
 	private boolean allowRequestTimeout=true;
 	private Monitor monitor;
-	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>(); 
+	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>();
+	private long uptime; 
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
@@ -113,7 +113,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         controler.start();
 
         touchMonitor(cs);  
-        
+        this.uptime=System.currentTimeMillis();
         //this.config=config; 
     }
 
@@ -649,6 +649,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	
 	public ServletConfig[] getServletConfigs(){
 		return servletConfigs.toArray(new ServletConfig[servletConfigs.size()]);
+	}
+
+	// FUTURE add to interface
+	public long uptime() {
+		return uptime;
 	}
 
 }

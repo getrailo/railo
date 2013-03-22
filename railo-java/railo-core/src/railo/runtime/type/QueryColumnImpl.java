@@ -1006,10 +1006,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	}
 
 
-	public boolean equals(Object obj){
-		if(!(obj instanceof Collection)) return false;
-		return CollectionUtil.equals(this,(Collection)obj);
-	}
 
 	@Override
 	public QueryColumnPro toDebugColumn() {
@@ -1020,4 +1016,15 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     }
+	
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

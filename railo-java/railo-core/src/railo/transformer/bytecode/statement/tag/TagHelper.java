@@ -13,7 +13,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.ClassException;
 import railo.runtime.exp.Abort;
 import railo.runtime.tag.MissingAttribute;
@@ -24,9 +23,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
-import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.util.ASMConstants;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
@@ -167,7 +164,7 @@ public final class TagHelper {
 			adapter.loadLocal(currLocal);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, RE_USE);
 		}
-	});
+	},null);
 	if(doReuse)outerTcfv.visitTryBegin(bc);
 		
 	// appendix
@@ -300,9 +297,9 @@ public final class TagHelper {
 					
 					public void writeOut(BytecodeContext bc) {
 						Label endIf = new Label();
-						if(tlt.handleException() && fcf!=null && fcf.getAfterFinalGOTOLabel()!=null){
+						/*if(tlt.handleException() && fcf!=null && fcf.getAfterFinalGOTOLabel()!=null){
 							ASMUtil.visitLabel(adapter, fcf.getFinalEntryLabel());
-						}
+						}*/
 						adapter.loadLocal(state);
 						adapter.push(javax.servlet.jsp.tagext.Tag.EVAL_BODY_INCLUDE);
 						adapter.visitJumpInsn(Opcodes.IF_ICMPEQ, endIf);
@@ -318,17 +315,17 @@ public final class TagHelper {
 							adapter.invokeVirtual(currType, DO_FINALLY);
 						}
 						// GOTO after execution body, used when a continue/break was called before
-						if(fcf!=null) {
+						/*if(fcf!=null) {
 							Label l = fcf.getAfterFinalGOTOLabel();
 							if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
-						}
+						}*/
 						
 					}
 				};
 				
 				
 				if(tlt.handleException()) {
-					TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(onFinally);
+					TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(onFinally,fcf);
 					tcfv.visitTryBegin(bc);
 						doTry(bc,adapter,tag,currLocal,currType);
 					int t=tcfv.visitTryEndCatchBeging(bc);
@@ -340,7 +337,7 @@ public final class TagHelper {
 					tcfv.visitCatchEnd(bc);
 				}
 				else {
-					TryFinallyVisitor tfv=new TryFinallyVisitor(onFinally);
+					TryFinallyVisitor tfv=new TryFinallyVisitor(onFinally,fcf);
 					tfv.visitTryBegin(bc);
 						doTry(bc,adapter,tag,currLocal,currType);
 					tfv.visitTryEnd(bc);

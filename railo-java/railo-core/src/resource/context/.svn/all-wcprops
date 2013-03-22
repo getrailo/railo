@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/resource/context
+END
+form.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/railo/!svn/ver/90/trunk/railo-java/railo-core/src/resource/context/form.cfm
+END
+component-dump.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/resource/context/component-dump.cfm
+END
+Admin.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/Admin.cfc
+END
+Application.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/Application.cfc
+END
+railo-applet.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/context/railo-applet.cfm
+END
+railo-applet.jar
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/context/railo-applet.jar
+END
+graph.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/resource/context/graph.cfm
+END
+admin.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/resource/context/admin.cfm
+END
+Application.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/Application.cfm
+END
+wddx.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/context/wddx.cfm
+END
+railo-context.ra
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/railo-context.ra
+END
+Component.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/context/Component.cfc
+END

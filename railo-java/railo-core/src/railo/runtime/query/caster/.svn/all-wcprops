@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/query/caster
+END
+Cast.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/Cast.java
+END
+OtherCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/OtherCast.java
+END
+OracleOpaqueCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/OracleOpaqueCast.java
+END
+DateCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/query/caster/DateCast.java
+END
+_OracleOpaqueCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/query/caster/_OracleOpaqueCast.java
+END
+BitCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/BitCast.java
+END
+BlobCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/BlobCast.java
+END
+TimeCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/query/caster/TimeCast.java
+END
+ClobCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/ClobCast.java
+END
+ArrayCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/caster/ArrayCast.java
+END
+TimestampCast.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/75/trunk/railo-java/railo-core/src/railo/runtime/query/caster/TimestampCast.java
+END

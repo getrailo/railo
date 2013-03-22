@@ -89,14 +89,14 @@ public class UDFUtil {
 			Entry<Key, Object> e;
 			while(it.hasNext()){
 				e = it.next();
-				if(!Decision.isSimpleValue(e.getValue())) throw new ApplicationException("only simple values are allowed as paremter for a function with cachedWithin");
+				if(!Decision.isSimpleValue(e.getValue())) throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
 				sb.append(e.getKey().getString()).append(':').append(e.getValue()).append(';');
 				
 			}
 		}
 		else if(args!=null){
 			for(int i=0;i<args.length;i++){
-				if(!Decision.isSimpleValue(args[i])) throw new ApplicationException("only simple values are allowed as paremter for a function with cachedWithin");
+				if(!Decision.isSimpleValue(args[i])) throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
 				sb.append(args[i]).append(';');
 				
 			}

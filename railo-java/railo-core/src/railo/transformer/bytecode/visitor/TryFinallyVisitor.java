@@ -6,6 +6,8 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.statement.FlowControlFinal;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
 public class TryFinallyVisitor implements Opcodes {
@@ -16,11 +18,13 @@ public class TryFinallyVisitor implements Opcodes {
 	private Label afterFinally;
 	private int lThrow;
 	private OnFinally onFinally;
+	private FlowControlFinal fcf;
 
 
 
-	public TryFinallyVisitor(OnFinally onFinally) {
+	public TryFinallyVisitor(OnFinally onFinally, FlowControlFinal fcf) {
 		this.onFinally=onFinally;
+		this.fcf=fcf;
 	}
 
 	public void visitTryBegin(BytecodeContext bc) {
@@ -42,16 +46,28 @@ public class TryFinallyVisitor implements Opcodes {
 		ga.visitLabel(afterTry);
 		lThrow = ga.newLocal(Types.THROWABLE);
 		ga.storeLocal(lThrow);
+		
 		onFinally.writeOut(bc);
-	
+		
 		ga.loadLocal(lThrow);
 		ga.visitInsn(ATHROW);
 		
-		bc.getAdapter().visitLabel(beforeFinally);
+		ga.visitLabel(beforeFinally);
 		
 		onFinally.writeOut(bc);
+		if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null) {
+			Label _end=new Label();
+			ga.visitJumpInsn(Opcodes.GOTO, _end); // ignore when coming not from break/continue
+				ASMUtil.visitLabel(ga,fcf.getFinalEntryLabel());
+				onFinally.writeOut(bc);
+				ga.visitJumpInsn(Opcodes.GOTO, fcf.getAfterFinalGOTOLabel());
+			ga.visitLabel(_end);
+		}
 		
-		bc.getAdapter().visitLabel(afterFinally);
+		
+		
+		ga.visitLabel(afterFinally);
+		
 		ga.visitTryCatchBlock(beforeTry, afterTry, afterTry, null);
 	}
 }

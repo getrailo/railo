@@ -161,6 +161,12 @@ public final class Info {
 	public static String getVersionName() {
 		return versionName;
 	}
+	public static int getMajorVersion() {
+		return major;
+	}
+	public static int getMinorVersion() {
+		return minor;
+	}
 	
 	public static String getVersionNameExplanation() {
 		return versionNameExplanation;

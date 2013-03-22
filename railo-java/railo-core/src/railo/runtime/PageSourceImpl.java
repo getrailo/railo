@@ -57,8 +57,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     //private boolean recompileAlways;
     //private boolean recompileAfterStartUp;
     
-    
-    
     private PageSourceImpl() {
     	mapping=null;
         realPath=null;
@@ -775,15 +773,16 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     
     @Override
     public Resource getResourceTranslated(PageContext pc) throws ExpressionException {
-    	Resource res = getPhyscalFile();
-		
-		// there is no physical resource
+    	Resource res = null;
+    	if(!isLoad(LOAD_ARCHIVE)) res=getPhyscalFile();
+    	
+    	// there is no physical resource
 		if(res==null){
         	String path=getDisplayPath();
         	if(path!=null){
         		if(path.startsWith("ra://"))
         			path="zip://"+path.substring(5);
-        		res=ResourceUtil.toResourceExisting(pc, path,false);
+        		res=ResourceUtil.toResourceNotExisting(pc, path,false);
         	}
         }
 		return res;

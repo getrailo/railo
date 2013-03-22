@@ -133,11 +133,11 @@ public final class CreationImpl implements Creation,Serializable {
      * @see railo.runtime.util.Creation#createQuery(railo.runtime.db.DatasourceConnection, railo.runtime.db.SQL, int, java.lang.String)
      */
     public Query createQuery(DatasourceConnection dc, SQL sql, int maxrow, String name) throws PageException {
-		return new QueryImpl(dc,sql,maxrow,-1,-1,name);
+		return new QueryImpl(ThreadLocalPageContext.get(),dc,sql,maxrow,-1,-1,name);
 	}
     
     public Query createQuery(DatasourceConnection dc, SQL sql, int maxrow, int fetchsize, int timeout, String name) throws PageException {
-		return new QueryImpl(dc,sql,maxrow,fetchsize,timeout,name);
+		return new QueryImpl(ThreadLocalPageContext.get(),dc,sql,maxrow,fetchsize,timeout,name);
 	}
     
     /**

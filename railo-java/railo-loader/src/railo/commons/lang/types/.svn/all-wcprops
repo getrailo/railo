@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/commons/lang/types
+END
+RefLong.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/commons/lang/types/RefLong.java
+END
+RefInteger.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/commons/lang/types/RefInteger.java
+END
+RefBoolean.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/commons/lang/types/RefBoolean.java
+END
+RefDouble.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/commons/lang/types/RefDouble.java
+END

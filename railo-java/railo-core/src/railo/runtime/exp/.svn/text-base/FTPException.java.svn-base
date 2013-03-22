@@ -1,0 +1,40 @@
+package railo.runtime.exp;
+
+import org.apache.commons.net.ftp.FTPClient;
+
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.op.Caster;
+import railo.runtime.type.Struct;
+
+public class FTPException extends ApplicationException {
+
+
+	private int code;
+	private String msg;
+
+	public FTPException(String action, FTPClient client) {
+		super("action ["+action+"] from tag ftp failed", client.getReplyString());
+		//setAdditional("ReplyCode",Caster.toDouble(client.getReplyCode()));
+		//setAdditional("ReplyMessage",client.getReplyString());
+		code = client.getReplyCode();
+		msg = client.getReplyString();
+	}
+	
+	/**
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
+	 */
+	public Struct getCatchBlock(PageContext pc) {
+		Struct cb = super.getCatchBlock(pc);
+		cb.setEL("Cause", msg);
+		cb.setEL("Code", Caster.toDouble(code));
+		return cb;
+	}
+	
+	/**
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock()
+	 */
+	public Struct getCatchBlock() {
+		return getCatchBlock(ThreadLocalPageContext.get());
+	}
+}

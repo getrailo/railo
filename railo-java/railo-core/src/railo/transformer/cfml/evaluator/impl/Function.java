@@ -116,21 +116,21 @@ public final class Function extends EvaluatorSupport {
 
 	public static void throwIfNotEmpty(Tag tag) throws EvaluatorException {
 		Body body = tag.getBody();
-		List statments = body.getStatements();
+		List<Statement> statments = body.getStatements();
 		Statement stat;
-		Iterator it = statments.iterator();
+		Iterator<Statement> it = statments.iterator();
 		TagLibTag tlt;
 		
 		while(it.hasNext()) {
-			stat=(Statement) it.next();
-			if(stat instanceof PrintOut) {
-				//body.remove(stat);
-			}
-			else if(stat instanceof Tag) {
+			stat=it.next();
+			if(stat instanceof Tag) {
 				tlt = ((Tag)stat).getTagLibTag();
 				if(!tlt.getTagClassName().equals("railo.runtime.tag.Argument"))
 					throw new EvaluatorException("tag "+tlt.getFullName()+" is not allowed inside a function declaration");
 			}
+			/*else if(stat instanceof PrintOut) {
+				//body.remove(stat);
+			}*/
 		}
 	}
 

@@ -17,7 +17,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -35,6 +34,7 @@ import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
@@ -103,6 +103,7 @@ import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLib;
@@ -130,6 +131,17 @@ public abstract class ConfigImpl implements Config {
 	public static final int CLIENT_BOOLEAN_FALSE = 1;
 	public static final int SERVER_BOOLEAN_TRUE = 2;
 	public static final int SERVER_BOOLEAN_FALSE = 3;
+
+	public static final int DEBUG_DATABASE = 1;
+	public static final int DEBUG_EXCEPTION = 2;
+	public static final int DEBUG_TRACING = 4;
+	public static final int DEBUG_TIMER = 8;
+	public static final int DEBUG_IMPLICIT_ACCESS = 16;
+	public static final int DEBUG_QUERY_USAGE = 32;
+	
+	
+	
+	
 	public static final ExtensionProvider[] RAILO_EXTENSION_PROVIDERS = new ExtensionProviderImpl[]{
 		new ExtensionProviderImpl("http://www.getrailo.com/ExtensionProvider.cfc",true),
 		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
@@ -141,7 +153,7 @@ public abstract class ConfigImpl implements Config {
 	
 
 	private PhysicalClassLoader rpcClassLoader;
-	private Map datasources=new HashTable();
+	private Map<String,DataSource> datasources=new HashMap<String,DataSource>();
 	private Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
 	
 	private CacheConnection defaultCacheObject=null;
@@ -164,6 +176,10 @@ public abstract class ConfigImpl implements Config {
     private boolean _mergeFormAndURL=false;
 
     private int _debug;
+    
+    private int debugOptions=0;
+	
+	
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -208,7 +224,7 @@ public abstract class ConfigImpl implements Config {
     private boolean psq=false;
     private boolean debugShowUsage;
 
-    private Map errorTemplates=new HashMap();
+    private Map<String,String> errorTemplates=new HashMap<String,String>();
 
     private String password;
 
@@ -1011,49 +1027,74 @@ public abstract class ConfigImpl implements Config {
      */
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
         Mapping mapping;
-        Resource root;
         String path;
         
         // app-cfc mappings
         if(mappings!=null){
             for(int i=0;i<mappings.length;i++) {
                 mapping = mappings[i];
-                root=mapping.getPhysical();
-                path=ResourceUtil.getPathToChild(res, root);
-                if(path!=null) {
-                	return mapping.getPageSource(path);
-                }
+                
+            // Physical
+               if(mapping.hasPhysical()) {
+               	path=ResourceUtil.getPathToChild(res, mapping.getPhysical());
+                   if(path!=null) {
+                   	return mapping.getPageSource(path);
+                   }
+               }
+           // Archive
+               if(mapping.hasArchive() && res.getResourceProvider() instanceof CompressResourceProvider) {
+            	   Resource archive = mapping.getArchive();
+            	   CompressResource cr = ((CompressResource) res);
+            	   if(archive.equals(cr.getCompressResource())) {
+            		   return mapping.getPageSource(cr.getCompressPath());
+            	   }
+               }
             }
         }
         
         // config mappings
         for(int i=0;i<this.mappings.length;i++) {
             mapping = this.mappings[i];
-            root=mapping.getPhysical();
-            path=ResourceUtil.getPathToChild(res, root);
-            //print.out(path+"==="+res+"="+root);
-            if(path!=null) {
-            	return mapping.getPageSource(path);
+            	
+         // Physical
+            if(mapping.hasPhysical()) {
+            	path=ResourceUtil.getPathToChild(res, mapping.getPhysical());
+                if(path!=null) {
+                	return mapping.getPageSource(path);
+                }
+            }
+        // Archive
+            if(mapping.hasArchive() && res.getResourceProvider() instanceof CompressResourceProvider) {
+        		Resource archive = mapping.getArchive();
+        		CompressResource cr = ((CompressResource) res);
+        		if(archive.equals(cr.getCompressResource())) {
+        			return mapping.getPageSource(cr.getCompressPath());
+        		}
             }
         }
         
-        // map resource to root mapping when same filesystem
+    // map resource to root mapping when same filesystem
         Mapping rootMapping = this.mappings[this.mappings.length-1];
-        root=rootMapping.getPhysical();
-        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
-        	String realpath="";
-        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
-        		root=root.getParentResource();
-        		realpath+="../";
-        	}
-        	String p2c=ResourceUtil.getPathToChild(res,root);
-        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
-        		p2c=p2c.substring(1);
-        	realpath+=p2c;
-        	
-        	return rootMapping.getPageSource(realpath);
+        Resource root;
+     // Physical
+        if(rootMapping.hasPhysical()) {
+	        root=rootMapping.getPhysical();
+	        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
+	        	String realpath="";
+	        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
+	        		root=root.getParentResource();
+	        		realpath+="../";
+	        	}
+	        	String p2c=ResourceUtil.getPathToChild(res,root);
+	        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
+	        		p2c=p2c.substring(1);
+	        	realpath+=p2c;
+	        	
+	        	return rootMapping.getPageSource(realpath);
+	        }
         }
-        
+     // Archive
+        // MUST check archive
         return defaultValue;
     }
     
@@ -1143,7 +1184,7 @@ public abstract class ConfigImpl implements Config {
     	if(fileTld==null) return;
     	this.tldFile=fileTld;
     	String key;
-        Map map=new HashMap();
+        Map<String,TagLib> map=new HashMap<String,TagLib>();
         // First fill existing to set
         for(int i=0;i<tlds.length;i++) {
         	key=getKey(tlds[i]);
@@ -1162,7 +1203,7 @@ public abstract class ConfigImpl implements Config {
                 	if(!map.containsKey(key))
                 		map.put(key,tl);
                 	else 
-                		overwrite((TagLib) map.get(key),tl);
+                		overwrite(map.get(key),tl);
                 }
                 catch(TagLibException tle) {
                     SystemOut.printDate(out,"can't load tld "+files[i]);
@@ -1176,15 +1217,15 @@ public abstract class ConfigImpl implements Config {
         	key=getKey(tl);
         	if(!map.containsKey(key))
         		map.put(key,tl);
-        	else overwrite((TagLib) map.get(key),tl);
+        	else overwrite(map.get(key),tl);
         }
 
         // now fill back to array
         tlds=new TagLib[map.size()];
         int index=0;
-        Iterator it = map.entrySet().iterator();
+        Iterator<TagLib> it = map.values().iterator();
         while(it.hasNext()) {
-        	tlds[index++]=(TagLib) ((Map.Entry)it.next()).getValue();
+        	tlds[index++]=it.next();
         }
     }
     
@@ -1323,31 +1364,61 @@ public abstract class ConfigImpl implements Config {
     
 
 	private void overwrite(TagLib existingTL, TagLib newTL) {
-		Iterator it = newTL.getTags().entrySet().iterator();
+		Iterator<TagLibTag> it = newTL.getTags().values().iterator();
 		while(it.hasNext()){
-			existingTL.setTag((TagLibTag) (((Map.Entry)it.next()).getValue()));
+			existingTL.setTag(it.next());
 		}
 	}
 
 	private String getKey(TagLib tl) {
 		return tl.getNameSpaceAndSeparator().toLowerCase();
 	}
+	
+	protected void setFldFile(Resource fileFld) throws FunctionLibException {
+		// merge all together (backward compatibility)
+        if(flds.length>1)for(int i=1;i<flds.length;i++) {
+        	overwrite(flds[0], flds[i]);
+        }
+        flds=new FunctionLib[]{flds[0]};
+        
+		
+		if(fileFld==null) return;
+        this.fldFile=fileFld;
 
-	/**
-     * set the optional directory of the function library deskriptors
-     * @param fileFld directory of the function libray deskriptors
-     * @throws FunctionLibException
-     */
-    protected void setFldFile(Resource fileFld) throws FunctionLibException {
+        
+        // overwrite with addional functions
+        FunctionLib fl;
+        if(fileFld.isDirectory()) {
+            Resource[] files=fileFld.listResources(new ExtensionResourceFilter("fld"));
+            for(int i=0;i<files.length;i++) {
+                try {
+                	fl = FunctionLibFactory.loadFromFile(files[i]);
+                	overwrite(flds[0],fl);
+                	
+                }
+                catch(FunctionLibException fle) {
+                    SystemOut.printDate(out,"can't load fld "+files[i]);
+                    fle.printStackTrace(getErrWriter());
+                }   
+            }
+        }
+        else {
+        	fl = FunctionLibFactory.loadFromFile(fileFld);
+        	overwrite(flds[0],fl);
+        }
+    }
+
+	/*
+    protected void setFldFileOld(Resource fileFld) throws FunctionLibException {
     	if(fileFld==null) return;
         this.fldFile=fileFld;
 
-        Map set=new HashMap();
+        Map<String,FunctionLib> map=new LinkedHashMap<String,FunctionLib>();
         String key;
         // First fill existing to set
         for(int i=0;i<flds.length;i++) {
         	key=getKey(flds[i]);
-        	set.put(key,flds[i]);
+        	map.put(key,flds[i]);
         }
         
         // now overwrite with new data
@@ -1358,11 +1429,12 @@ public abstract class ConfigImpl implements Config {
                 try {
                 	fl = FunctionLibFactory.loadFromFile(files[i]);
                 	key=getKey(fl);
-                	
-                	if(!set.containsKey(key))
-                		set.put(key,fl);
+                	// for the moment we only need one fld, so it is always overwrite, when you remove this make sure you get no conflicts with duplicates
+                	if(map.containsKey(key)) 
+                		overwrite(map.get(key),fl);
                 	else 
-                		overwrite((FunctionLib) set.get(key),fl);
+                		map.put(key,fl);
+                		
                 	
                 }
                 catch(FunctionLibException fle) {
@@ -1375,30 +1447,29 @@ public abstract class ConfigImpl implements Config {
         	fl = FunctionLibFactory.loadFromFile(fileFld);
         	key=getKey(fl);
 
-        	if(!set.containsKey(key))
-        		set.put(key,fl);
+        	// for the moment we only need one fld, so it is always overwrite, when you remove this make sure you get no conflicts with duplicates
+        	if(map.containsKey(key))
+        		overwrite(map.get(key),fl);
         	else 
-        		overwrite((FunctionLib) set.get(key),fl);
+        		map.put(key,fl);
         }
         
         // now fill back to array
-        flds=new FunctionLib[set.size()];
+        flds=new FunctionLib[map.size()];
         int index=0;
-        Iterator it = set.entrySet().iterator();
+        Iterator<FunctionLib> it = map.values().iterator();
         while(it.hasNext()) {
-        	flds[index++]=(FunctionLib) ((Map.Entry)it.next()).getValue();
-        	//print.ln(fld[index-1]);
+        	flds[index++]= it.next();
         }
-        
-    }
+    }*/
     
 
     
 
     private void overwrite(FunctionLib existingFL, FunctionLib newFL) {
-		Iterator it = newFL.getFunctions().entrySet().iterator();
+		Iterator<FunctionLibFunction> it = newFL.getFunctions().values().iterator();
 		while(it.hasNext()){
-			existingFL.setFunction((FunctionLibFunction) (((Map.Entry)it.next()).getValue()));
+			existingFL.setFunction(it.next());
 		}
 	}
 
@@ -1692,7 +1763,7 @@ public abstract class ConfigImpl implements Config {
     /**
      * @param datasources The datasources to set
      */
-    protected void setDataSources(Map datasources) {
+    protected void setDataSources(Map<String,DataSource> datasources) {
         this.datasources=datasources;
     }
     /**
@@ -1955,19 +2026,10 @@ public abstract class ConfigImpl implements Config {
     public String getDebugTemplate() {
     	throw new PageRuntimeException(new DeprecatedException("no longer supported, use instead getDebugEntry(ip, defaultValue)"));
     }
-    public boolean getDebugShowQueryUsage() {
-        return debugShowUsage;
-    }
-    /**
-     * @param debugTemplate The debugTemplate to set.
-     */
-    protected void setDebugShowQueryUsage(boolean debugShowUsage) {
-        this.debugShowUsage = debugShowUsage;
-    }
 
 	@Override
 	public String getErrorTemplate(int statusCode) {
-		return (String) errorTemplates.get(Caster.toString(statusCode));
+		return errorTemplates.get(Caster.toString(statusCode));
 	}
 
 	/**
@@ -2155,25 +2217,25 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getDataSources()
 	 */
 	public DataSource[] getDataSources() {
-		Map map = getDataSourcesAsMap();
-		Iterator it = map.keySet().iterator();
+		Map<String, DataSource> map = getDataSourcesAsMap();
+		Iterator<DataSource> it = map.values().iterator();
 		DataSource[] ds = new DataSource[map.size()];
 		int count=0;
 		
 		while(it.hasNext()) {
-			ds[count++]=(DataSource) map.get(it.next());
+			ds[count++]=it.next();
 		}
 		return ds;
 	}
 	
-	public Map getDataSourcesAsMap() {
-        Map map=new HashTable();
-        Iterator it = datasources.keySet().iterator();
-        
+	public Map<String,DataSource> getDataSourcesAsMap() {
+        Map<String,DataSource> map=new HashMap<String, DataSource>();
+        Iterator<Entry<String, DataSource>> it = datasources.entrySet().iterator();
+        Entry<String, DataSource> entry;
         while(it.hasNext()) {
-            Object key=it.next();
-            if(!key.equals("_queryofquerydb"))
-                map.put(key,datasources.get(key));
+            entry = it.next();
+            if(!entry.getKey().equals("_queryofquerydb"))
+                map.put(entry.getKey(),entry.getValue());
         }        
         return map;
     }
@@ -2539,7 +2601,11 @@ public abstract class ConfigImpl implements Config {
 	public DataSource getDataSource(String datasource) throws DatabaseException {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
+		
+		
+		// create error detail
 		DatabaseException de = new DatabaseException("datasource ["+datasource+"] doesn't exist",null,null,null);
+		de.setDetail(ExceptionUtil.createSoundexDetail(datasource,datasources.keySet().iterator(),"datasource names"));
 		de.setAdditional(KeyConstants._Datasource,datasource);
 		throw de;
 	}
@@ -3048,12 +3114,12 @@ public abstract class ConfigImpl implements Config {
 
 	protected void setCaches(Map<String,CacheConnection> caches) {
 		this.caches=caches;
-		Iterator it = caches.entrySet().iterator();
-		Map.Entry entry;
+		Iterator<Entry<String, CacheConnection>> it = caches.entrySet().iterator();
+		Entry<String, CacheConnection> entry;
 		CacheConnection cc;
 		while(it.hasNext()){
-			entry = (Entry) it.next();
-			cc=((CacheConnection)entry.getValue());
+			entry = it.next();
+			cc=entry.getValue();
 			if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameTemplate)){
 				defaultCacheTemplate=cc;
 			}
@@ -3214,7 +3280,7 @@ public abstract class ConfigImpl implements Config {
 	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
-	private Map udfCache=new ReferenceMap();
+	private Map<String,UDF> udfCache=new ReferenceMap();
 	
 	
 	
@@ -3274,7 +3340,7 @@ public abstract class ConfigImpl implements Config {
 		udfCache.clear();
 	}
 	public UDF getFromFunctionCache(String key) {
-		return (UDF) udfCache.get(key);
+		return udfCache.get(key);
 	}
 	public void putToFunctionCache(String key,UDF udf) {
 		udfCache.put(key, udf);
@@ -3452,6 +3518,40 @@ public abstract class ConfigImpl implements Config {
 	@Override
 	public RestSettings getRestSetting(){
 		return restSetting; 
+	}
+
+	public int getDebugOptions() {
+		return debugOptions;
+	}
+	public boolean hasDebugOptions(int debugOption) {
+		return (debugOptions&debugOption)>0  ;
+	}
+	
+	protected void setDebugOptions(int debugOptions) {
+		this.debugOptions = debugOptions;
+	}
+
+	public static Mapping[] getAllMappings(PageContext pc) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,pc.getConfig().getMappings());
+		getAllMappings(list,pc.getConfig().getCustomTagMappings());
+		getAllMappings(list,pc.getConfig().getComponentMappings());
+		getAllMappings(list,pc.getApplicationContext().getMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+	
+	public static Mapping[] getAllMappings(ConfigWeb cw) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,cw.getMappings());
+		getAllMappings(list,cw.getCustomTagMappings());
+		getAllMappings(list,cw.getComponentMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+
+	private static void getAllMappings(List<Mapping> list, Mapping[] mappings) {
+		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
+			list.add(mappings[i]);
+		}
 	}
 	
 }

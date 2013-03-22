@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/loader/servlet
+END
+AMFServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/loader/servlet/AMFServlet.java
+END
+FileServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/loader/servlet/FileServlet.java
+END
+CFMLServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/loader/servlet/CFMLServlet.java
+END

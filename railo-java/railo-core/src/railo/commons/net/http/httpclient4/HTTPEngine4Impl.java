@@ -12,6 +12,7 @@ import org.apache.http.HttpMessage;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -20,9 +21,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.BasicHttpParams;
@@ -190,14 +194,14 @@ public class HTTPEngine4Impl {
     	// TODO HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		BasicHttpParams params = new BasicHttpParams();
     	DefaultHttpClient client = createClient(params,maxRedirect);
-    	
+    	HttpHost hh=new HttpHost(url.getHost(),url.getPort());
     	setHeader(request,headers);
         setContentType(request,charset);
         setUserAgent(request,useragent);
         setTimeout(params,timeout);
-        setCredentials(client, username, password);  
+        HttpContext context=setCredentials(client,hh, username, password,false);  
         setProxy(client,request,proxy);
-        HttpContext context = new BasicHttpContext();
+        if(context==null)context = new BasicHttpContext();
 		
         return new HTTPResponse4Impl(url,context,request,client.execute(request,context));
     }
@@ -235,7 +239,7 @@ public class HTTPEngine4Impl {
         }
 	}
 
-	public static void setCredentials(DefaultHttpClient client, String username,String password) {
+	public static BasicHttpContext setCredentials(DefaultHttpClient client, HttpHost httpHost, String username,String password, boolean preAuth) {
         // set Username and Password
         if(!StringUtil.isEmpty(username,true)) {
             if(password==null)password="";
@@ -243,9 +247,20 @@ public class HTTPEngine4Impl {
             cp.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
                 new UsernamePasswordCredentials(username,password));
-            //httpMethod.setDoAuthentication( true );
+            
+            
+            
+            BasicHttpContext httpContext = new BasicHttpContext();
+            if(preAuth) {
+	            AuthCache authCache = new BasicAuthCache();
+	            authCache.put(httpHost, new BasicScheme());
+	            httpContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+            }
+            return httpContext;
         }
+        return null;
 	}
+	
 	public static void setNTCredentials(DefaultHttpClient client, String username,String password, String workStation, String domain) {
         // set Username and Password
         if(!StringUtil.isEmpty(username,true)) {

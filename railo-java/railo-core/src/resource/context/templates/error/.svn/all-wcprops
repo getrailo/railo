@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/resource/context/templates/error
+END
+error.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/templates/error/error.cfm
+END
+error-public.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/resource/context/templates/error/error-public.cfm
+END
+error-neo.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/resource/context/templates/error/error-neo.cfm
+END

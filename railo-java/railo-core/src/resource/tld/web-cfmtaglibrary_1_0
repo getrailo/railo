@@ -562,7 +562,7 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 		<name>argument</name>
 		<tag-class>railo.runtime.tag.Argument</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Argument</tte-class>
-
+		<att-default-value></att-default-value>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Allows subtag data to be saved with the base tag. Applies only to custom tags.</description>
@@ -1626,6 +1626,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.Component</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Component</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagComponent</ttt-class>
+		<att-default-value></att-default-value>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
@@ -2207,6 +2208,13 @@ Example:
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Whether Railo performs the action on subdirectories</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>nameconflict</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Used with action = "copy". Ignored by all other actions. Optional values are: [Overwrite]|Error.</description>
 		</attribute>
 	</tag>
 	<!-- Div -->
@@ -4155,6 +4163,7 @@ If omitted, the file's attributes are maintained.</description>
 		<tag-class>railo.runtime.tag.Function</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Function</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagFunction</ttt-class>
+		<att-default-value></att-default-value>
 		<!-- <tdbt-class>railo.transformer.cfml.script.CFMLScriptTransformer</tdbt-class> -->
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
@@ -5599,6 +5608,21 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<description>When required by a server, a valid username.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>password</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>When required by a server, a valid password.</description>
+		</attribute>
+		<!-- <attribute>
+			<type>boolean</type>
+			<name>preauth</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true (default), Railo sends the basic authentication (username password) always (Preemptive Basic Authentication), 
+			if set to false the authentication is only send when the server ask for it (status code 401).</description>
+		</attribute> -->
+		<attribute>
 			<type>boolean</type>
 			<name>multipart</name>
 			<required>false</required>
@@ -5621,13 +5645,6 @@ no: the function is processed as if it were within a cfsilent tag </description>
 - false: If CFML does not recognize the response body type as text, convert it to a CFML object.
 - auto: If CFML does not recognize the response body type as text, convert it to CFML Binary type data.
 - true: always convert the response body content into CFML Binary type data, even if CFML recognizes the response body type as text.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>password</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>When required by a server, a valid password.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -9555,6 +9572,7 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<name>property</name>
 		<tag-class>railo.runtime.tag.Property</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Property</tte-class>
+		<att-default-value></att-default-value>
 		<!-- ttt-class>railo.transformer.bytecode.statement.tag.TagProperty</ttt-class -->
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
@@ -9982,7 +10000,12 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<name>lazy</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>
+			if "lazy" is set to true (default "false") Railo does not initially load all the data from the datasource,
+			in that case the data are only loaded when requested, so this means the data are depending on the datasource connection.
+			if the datasource connection is gone and the data are not requested yet, railo throws a error if you try to access the data.
+			lazy is only working when the following attributes are not used: cachewithin,cacheafter,result
+			</description>
 		</attribute>
 	</tag>
 	<!-- QueryParam -->
@@ -13945,6 +13968,7 @@ dWord: creates a value of 0 (zero)</description>
 		<name>_</name>
 		<appendix>true</appendix>
 		<tag-class>railo.runtime.tag.CFTag</tag-class>
+		<att-default-value>boolean:true</att-default-value>
 		<handle-exception>true</handle-exception>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>

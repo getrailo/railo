@@ -24,8 +24,9 @@ You can define IPv4 or IPv6 IPs, a IPv4 can not be converted to a IPv6 and visa 
 <cfset stText.debug.list.serverTitle="Readonly Debug Templates">
 <cfset stText.debug.list.webTitle="Debug Templates">
 <cfset stText.debug.list.serverTitleDesc="Readonly debug templates are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".">
-<cfset stText.debug.list.webTitleDesc="List of all existing debug templates.">
-<cfset stText.debug.titleCreate="Create a Template for a specific IP Range">
+<cfset stText.debug.list.webTitleDesc="list of existing debug templates defined.">
+<cfset stText.debug.list.createDesc="define a debug template, to show the debug information at the end of a request, defining a template is not necessary to log the debug information.">
+<cfset stText.debug.createTitle="Create a Template for a specific IP Range">
 
 <cfadmin 
 	action="getDebugEntry"

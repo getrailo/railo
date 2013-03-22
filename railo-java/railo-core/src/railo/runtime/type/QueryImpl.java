@@ -65,7 +65,6 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
-import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
@@ -103,6 +102,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
+	public static final Collection.Key GENERATEDKEYS = KeyImpl.intern("GENERATEDKEYS");
+	public static final Collection.Key ID = KeyImpl.intern("ID");
 	
 	
 	
@@ -178,16 +179,16 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @param maxrow maxrow for the resultset
 	 * @throws PageException
 	 */	
-    public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,null,false,true);
+    public QueryImpl(PageContext pc, DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name) throws PageException {
+    	this(pc,dc, sql, maxrow, fetchsize, timeout, name,null,false,true);
     }
     
 
-    public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,template,false,true);
+    public QueryImpl(PageContext pc, DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
+    	this(pc,dc, sql, maxrow, fetchsize, timeout, name,template,false,true);
     }
     
-	public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData, boolean allowToCachePreperadeStatement) throws PageException {
+	public QueryImpl(PageContext pc, DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData, boolean allowToCachePreperadeStatement) throws PageException {
 		this.name=name;
 		this.template=template;
         this.sql=sql;
@@ -204,7 +205,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	DatasourceConnectionImpl dci=(DatasourceConnectionImpl) dc;
         	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
-		
+
+        
 		//Stopwatch stopwatch=new Stopwatch();
         long start=System.nanoTime();
 		//stopwatch.start();
@@ -217,7 +219,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		        setAttributes(stat,maxrow,fetchsize,timeout);
 		     // some driver do not support second argument
 		        //hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
-		        hasResult=QueryUtil.execute(stat,createGeneratedKeys,sql);
+		        hasResult=QueryUtil.execute(pc,stat,createGeneratedKeys,sql);
 	        }
 	        else {
 	        	// some driver do not support second argument
@@ -226,11 +228,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
-		        hasResult=preStat.execute();    
+		        hasResult=QueryUtil.execute(pc,preStat);    
 	        }
 			int uc;
 			ResultSet res;
-			
 			do {
 				if(hasResult) {
 					res=stat.getResultSet();
@@ -285,14 +286,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			setGeneratedKeys(dc, rs);
 			return true;
 		}
-		catch(Throwable t) {
+		catch(Throwable t) {t.printStackTrace();
 			return false;
 		}
 	}
 	
 	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
 		generatedKeys=new QueryImpl(rs,"");
-		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
+		
+		// ACF compatibility action 
+		if(generatedKeys.getColumnCount()==1 && DataSourceUtil.isMSSQL(dc)) {
+			generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(GENERATEDKEYS,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(ID,KeyConstants._IDENTITYCOL);
+		}
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -1332,9 +1339,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	/**
 	 * @see railo.runtime.type.Query#getTypesAsMap()
 	 */
-	public synchronized Map getTypesAsMap() {
+	public synchronized Map<Collection.Key,String> getTypesAsMap() {
 		
-		Map map=new HashMap();
+		Map<Collection.Key,String> map=new HashMap<Collection.Key,String>();
 		for(int i=0;i<columns.length;i++) {
 			map.put(columnNames[i],columns[i].getTypeAsString());
 		}
@@ -1668,6 +1675,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 	public String[] getColumnNamesAsString() {
 		return CollectionUtil.keysAsString(this);
+	}
+	
+	public int getColumnCount() {
+		return columncount;
 	}
 
     /**
@@ -3207,12 +3218,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 		return size;
 	}
-	
-
-	public boolean equals(Object obj){
-		if(!(obj instanceof Collection)) return false;
-		return CollectionUtil.equals(this,(Collection)obj);
-	}
 
 	public int getHoldability() throws SQLException {
 		throw notSupported();
@@ -3428,9 +3433,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
 	}
-	private RuntimeException notSupportedEL() {
-		return new RuntimeException(new SQLException("this feature is not supported"));
-	}
 
 	public synchronized void enableShowQueryUsage() {
 		if(columns!=null)for(int i=0;i<columns.length;i++){
@@ -3476,5 +3478,16 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	@Override
 	public java.util.Iterator getIterator() {
 		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
-    } 
+    }
+	
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

@@ -12,6 +12,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -46,23 +47,21 @@ public final class LSTimeFormat implements Function {
 	private static String _call(PageContext pc, Object o, String mask,Locale locale,TimeZone tz) throws PageException {
         if(o instanceof String && StringUtil.isEmpty((String)o,true)) return "";
         return new railo.runtime.format.TimeFormat(locale).format(toTimeLS(locale, tz, o),mask,tz);
-        //return new railo.runtime.format.TimeFormat(locale).format(DateCaster.toDateAdvanced(o,pc.getTimeZone()),mask);
 	}
 	
 	
 	private static DateTime toTimeLS(Locale locale, TimeZone timeZone, Object object) throws PageException {
-		if(object instanceof String) {
-			String str=(String) object;
+		if(object instanceof DateTime) return (DateTime) object;
+		if(object instanceof CharSequence) {
+			String str=Caster.toString(object);
 			
 			DateFormat[] formats=FormatUtil.getTimeFormats(locale,timeZone,true);
 			for(int i=0;i<formats.length;i++) {
 				try {
 					return new DateTimeImpl(formats[i].parse(str).getTime(),false);
 				} 
-				catch (ParseException e) {
-					//
-	}
-}
+				catch (ParseException e) {}
+			}
 			
 		}
 		return DateCaster.toDateAdvanced(object,timeZone);

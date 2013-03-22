@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/tag/railo/core/ajax
+END
+AjaxBase.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/tag/railo/core/ajax/AjaxBase.cfc
+END
+AjaxBinder.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/tag/railo/core/ajax/AjaxBinder.cfc
+END
+AjaxProxyHelper.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/tag/railo/core/ajax/AjaxProxyHelper.cfc
+END
+JSLoader.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/tag/railo/core/ajax/JSLoader.cfc
+END

@@ -65,6 +65,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
+import railo.runtime.db.debug.DebugQuery;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
@@ -244,7 +245,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private ErrorPagePool errorPagePool=new ErrorPagePool();
 	private TagHandlerPool tagHandlerPool;
 	private FTPPool ftpPool=new FTPPoolImpl();
-	private QueryCache queryCache;
+	private final QueryCache queryCache;
 
 	private Component activeComponent;
 	private UDF activeUDF;
@@ -1455,7 +1456,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				setVariable(name,str);
 			}
 			else {
-				if(!Decision.isCastableTo(type,value,true,maxLength)) {
+				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
 					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
 						StringBuilder msg=new StringBuilder(CasterException.createMessage(value, type));
 						msg.append(" with a maximal length of "+maxLength+" characters");
@@ -2697,7 +2698,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	else {
     		exception = Caster.toPageException(t);
     		undefinedScope().setEL(KeyConstants._cfcatch,exception.getCatchBlock(config));
-    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
+    		if(!gatewayContext && config.debug() && config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) debugger.addException(config,exception);
     	}
     	return exception;
     }
@@ -2709,7 +2710,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else {
     		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
-    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
+    		if(!gatewayContext && config.debug() && config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) debugger.addException(config,exception);
     	}
     }
     
@@ -2724,7 +2725,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	else {
 	    		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
-	    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
+	    		if(!gatewayContext && config.debug() && config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) debugger.addException(config,exception);
 	    	}
     	}
     }
@@ -3148,6 +3149,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	private Set<String> pagesUsed=new HashSet<String>();
+
+	private DebugQuery activeQuery;
 	
 	
 
@@ -3261,5 +3264,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	// this is just a wrapper method for ACF
 	public Scope SymTab_findBuiltinScope(String name) throws PageException {
 		return scope(name, null);
+	}
+
+
+
+	public void setActiveQuery(DebugQuery dq) {
+		activeQuery=dq;
+	}
+	public DebugQuery getActiveQuery() {
+		return activeQuery;
+	}
+
+	public void releaseActiveQuery() {
+		activeQuery=null;
 	}
 }

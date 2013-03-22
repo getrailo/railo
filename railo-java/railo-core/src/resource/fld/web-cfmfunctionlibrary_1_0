@@ -1327,6 +1327,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1336,6 +1337,26 @@ sort direction:
 		</return>
 	</function>
 	
+	
+	<!-- CacheRemoveAll -->
+	<function>
+		<name>CacheRemoveAll</name>
+		<class>railo.runtime.functions.cache.CacheRemoveAll</class>
+		<status>deprecated</status>
+		<description>this function is deprecated, use instead cacheClear. Removes all elements from the cache</description>
+		<argument>
+			<name>cacheName</name>
+			<alias>cache,region</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+	
 		
 	<!-- CacheCount -->
 	<function>
@@ -1344,6 +1365,7 @@ sort direction:
 		<description>Returns the amount (integer) of keys stored in the cache.</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1360,6 +1382,7 @@ sort direction:
 		<description>Deletes a single element from the cache.</description>
 		<argument>
 			<name>id</name>
+			<alias>name,key</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>the id of the element to delete, can also contain a "," (not used as separator)</description>
@@ -1372,6 +1395,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1388,18 +1412,21 @@ sort direction:
 		<description>Gets an object that is stored in the cache.</description>
 		<argument>
 			<name>id</name>
+			<alias>name,key</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>name of the element to return</description>
 		</argument>
 		<argument>
 			<name>throwWhenNotExist</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>no</required>
 			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1438,6 +1465,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1460,6 +1488,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1476,12 +1505,14 @@ sort direction:
 		<description>returns a structure with some Metadata regarding the cache elements (keys returned depends on the Cache type used).</description>
 		<argument>
 			<name>id</name>
+			<alias>name,key</alias>
 			<type>string</type>
 			<required>yes</required>
 			<description>name of the element you need metadat for</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1516,15 +1547,42 @@ sort direction:
 	<function>
 		<name>CacheKeyExists</name>
 		<class>railo.runtime.functions.cache.CacheKeyExists</class>
-		<description>Returns true/false whether the cache contains an element with the certain keyname.</description>
+		<status>deprecated</status>
+		<description>this function is deprecated, use instead CacheIdExists. Returns true/false whether the cache contains an element with the certain keyname.</description>
 		<argument>
 			<name>key</name>
+			<alias>name,id</alias>
 			<type>string</type>
 			<required>yes</required>
 			<description>key to check</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- CacheIdExists -->
+	<function>
+		<name>CacheIdExists</name>
+		<class>railo.runtime.functions.cache.CacheKeyExists</class>
+		<description>Returns true/false whether the cache contains an element with the certain id.</description>
+		<argument>
+			<name>id</name>
+			<alias>name,key</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>key to check</description>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1543,6 +1601,7 @@ sort direction:
 you can use tag cfadmin instead. we will add support for this function in a future release, but then you can enable,disable this  function in admin for every single cache instance.</description>
 		<argument>
 			<name>propsSruct</name>
+			<alias>properties,props</alias>
 			<type>struct</type>
 			<required>yes</required>
 			<description>A structure specifying the cache properties plus identifying information</description>
@@ -1559,6 +1618,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		<description>Stores an object in the cache, with a life time and a idle time.</description>
 		<argument>
 			<name>id</name>
+			<alias>key,name</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The id for the cache object.</description>
@@ -1583,6 +1643,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1599,6 +1660,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		<description>removes elements from cache defined with argument ids.</description>
 		<argument>
 			<name>ids</name>
+			<alias>names,keys</alias>
 			<type>object</type>
 			<required>Yes</required>
 			<description>This can be a string list of multiple elements or a array containing the keys</description>
@@ -1611,6 +1673,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1753,6 +1816,24 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		<description>list elements in the component path cache</description>
 		<return>
 			<type>struct</type>
+		</return>
+	</function>
+	<!-- ComponentListPackage -->
+	<function>
+		<name>ComponentListPackage</name>
+		<class>railo.runtime.functions.component.ComponentListPackage</class>
+		<status>hidden</status>
+		<description>this implementation is experimentell. list all components in a certain package, throws a application exception if package does not exist.</description>
+		<argument>
+			<name>package</name>
+			<alias>packageName,name</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the package to list</description>
+	    </argument>
+		
+		<return>
+			<type>array</type>
 		</return>
 	</function>
 	
@@ -3027,7 +3108,7 @@ The following things are considered to be empty:
 		<argument>
 			<name>variable</name>
 			<alias>variableName,object</alias>
-			<type>variable_string</type>
+			<type>variablestring</type>
 			<required>Yes</required>
 			<description></description>
     	</argument>
@@ -3616,7 +3697,8 @@ dec: descending (z to a) sort order.
 		<class>railo.runtime.functions.struct.Duplicate</class>
 		<description>Returns a new duplicated version of the given object, removing all references to the old one</description>
 		<argument>
-			<name>variable_name</name>
+			<name>object</name>
+			<alias>variable_name,obj</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description>Name of a variable to duplicate</description>
@@ -5582,6 +5664,15 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
+	<!-- GetUsageData
+	<function>
+		<name>GetUsageData</name>
+		<class>railo.runtime.functions.system.GetUsageData</class>
+		<description></description>
+		<return>
+			<type>struct</type>
+		</return>
+	</function> -->
 	<!-- GetWriteableImageFormats -->
 	<function>
 		<name>GetWriteableImageFormats</name>
@@ -6266,7 +6357,7 @@ Default list delimiter: comma character.</description>
 		</argument>
 		<argument>
 			<name>numIterations</name>
-			<type>int</type>
+			<type>number</type>
 			<required>No</required>
 			<description>number of iterations; default is 1.</description>
 		</argument>
@@ -10459,7 +10550,7 @@ The value determines whether the image is blurred or sharpened:
 			- email: a string containig a valid email address.
 			- eurodate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A date in the form d/m/y, d-m-y, or d.m.y. The m and d format can be 1 or 2 digits; y can be 2 or 4 digits. 
 			- float or numeric: a numeric value; equivalent to the IsNumeric function.
-			- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where Ô XÕ is a hexadecimal number.
+			- guid: a Globally Unique Identifier in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX where X is a hexadecimal number.
 			- integer: an integer.
 			- query: a query object; equivalent to the IsQuery function.
 			- range: a numeric range, specified by the min and max attributes.
@@ -10469,7 +10560,7 @@ The value determines whether the image is blurred or sharpened:
 			- struct: a structure; equivalent to the IsStruct function.
 			- telephone: a standard US telephone number.
 			- URL: an http, https, ftp, file, mailto, or news URL,
-			- UUID: a ColdFusion Universally Unique Identifier, formatted Ô XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXÕ, where Ô XÕ is a hexadecimal number. See CreateUUID.
+			- UUID: a Universally Unique Identifier in the format XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXX, where X is a hexadecimal number. See CreateUUID.
 			- USdate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years.
 			- variableName: a string formatted according to ColdFusion variable naming conventions.
 			- zipcode: U.S., 5- or 9-digit format ZIP codes.</description>
@@ -12560,6 +12651,7 @@ If name is not specified, all quiries from default cache will be removed.
 ormEvictQueries([cacheName])</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>String</type>
 			<required>no</required>
 		<description></description>
@@ -12646,7 +12738,7 @@ ormEvictQueries([cacheName])</description>
 		<description>Determines if the parameter exists</description>
 		<argument>
 			<name>parameter</name>
-			<type>variable_string</type>
+			<type>variablestring</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
@@ -15008,6 +15100,7 @@ _- asc (default): ascending (a to z) sort order
 		<description>clears all caches or the specified cache</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 		<description>Name of the cache to clear, if not defined all caches will be cleared:
@@ -15576,14 +15669,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>writeOutput</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description>Appends text to the page-output stream.
-        This function writes to the page-output stream regardless of
+		<description>Writes the given string to the main response buffer regardless of
         conditions established by the cfsetting tag.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>A string or a variable that contains one</description>
+		<description>A string to write to the buffer.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -15593,12 +15685,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>echo</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description>Writes the given string out to the main response buffer. see also function writeOutput.</description>
+		<description>Writes the given string to the main response buffer regardless of
+        conditions established by the cfsetting tag. see also function writeOutput.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string to write to the buffer.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -15615,7 +15708,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>node</name>
 			<alias>xmlObj,xmlDoc,xml</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>XML element within which to search.</description>
     </argument>
@@ -15643,7 +15736,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>xmlObj</name>
 			<alias>node,element,xml,xmlDoc</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>Name of the XML document object in which you are creating the element</description>
     	</argument>
@@ -15689,7 +15782,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>xml</name>
 			<alias>xmlDoc,xmlObj</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>An XML DOM object node</description>
     </argument>
@@ -15709,7 +15802,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Determines how Railo processes the case of XML document object component identifiers:</description>
     </argument>
 		<return>
-			<type>node</type>
+			<type>xml</type>
 		</return>
 	</function>
 	<!-- xmlParse -->
@@ -15742,7 +15835,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 - The URL of a DTD or Schema file; valid protocol identifiers include http, https, ftp, and file</description>
     </argument>
 		<return>
-			<type>node</type>
+			<type>xml</type>
 		</return>
 	</function>
 	<!-- htmlParse -->
@@ -15764,7 +15857,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description></description>
     </argument>
 		<return>
-			<type>node</type>
+			<type>xml</type>
 		</return>
 	</function>
 	<!-- xmlSearch -->
@@ -15775,7 +15868,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>xml</name>
 			<alias>xmlObj,xmlDoc,node</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>XML document object</description>
     </argument>

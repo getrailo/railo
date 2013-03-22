@@ -3,6 +3,7 @@ package railo.runtime.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import railo.commons.db.DBUtil;
@@ -161,6 +162,15 @@ public class DatasourceConnectionPool {
 			dcs.put(id, stack=new DCStack());
 		}
 		return stack;
+	}
+	
+	public int openConnections() {
+		Iterator<DCStack> it = dcs.values().iterator();
+		int count=0;
+		while(it.hasNext()){
+			count+=it.next().openConnections();
+		}
+		return count;
 	}
 
 	private void _inc(DataSource datasource) {

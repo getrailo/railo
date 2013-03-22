@@ -26,7 +26,7 @@ public final class ParseBodyVisitor {
 				bc.getAdapter().loadArg(0);
 				bc.getAdapter().invokeVirtual(Types.PAGE_CONTEXT,OUTPUT_END);
 			}
-		});
+		},null);
 
 		//ExpressionUtil.visitLine(bc, line);
 		adapter.loadArg(0);

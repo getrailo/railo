@@ -314,6 +314,7 @@ public class KeyConstants {
 	public static final Key _data_ID=KeyImpl._const("data_ID");
 	public static final Key _data_id=KeyImpl._const("data_id");
 	public static final Key _datasource=KeyImpl._const("datasource");
+	public static final Key _datasources=KeyImpl._const("datasources");
 	public static final Key _date=KeyImpl._const("date");
 	public static final Key _dc_date=KeyImpl._const("dc_date");
 	public static final Key _dc_subject=KeyImpl._const("dc_subject");
@@ -650,6 +651,8 @@ public class KeyConstants {
 	public static final Key _config=KeyImpl._const("config");
 
 	public static final Key _executionTime = KeyImpl._const("executionTime");
+	public static final Key _executionTimeNano = KeyImpl._const("executionTimeNano");
+	
 	public static final Key _RECORDCOUNT = KeyImpl._const("RECORDCOUNT");
 	public static final Key _cached = KeyImpl._const("cached");
 	public static final Key _COLUMNLIST = KeyImpl._const("COLUMNLIST");
@@ -725,6 +728,7 @@ public class KeyConstants {
 	public static final Key _cluster = KeyImpl._const("cluster");
 	public static final Key _form = KeyImpl._const("form");
 	public static final Key _request = KeyImpl._const("request");
+	public static final Key _requests = KeyImpl._const("requests");
 	public static final Key _session = KeyImpl._const("session");
 	public static final Key _cferror = KeyImpl._const("cferror");
 	public static final Key _error = KeyImpl._const("error");

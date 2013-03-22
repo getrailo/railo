@@ -127,8 +127,8 @@ Error Output --->
 		<cfset names=StructKeyArray(info.servlets)>
 		<cfif !ArrayContainsNoCase(names,"Rest")>
 			<div class="warning nofocus">
-				There is no REST Servlet defined in your enviroment.
-				Follow this <a href="" target="_blank">description</a> to enable REST.
+				The REST Servlet is not configured in your enviroment.
+				Follow these <a href="https://github.com/getrailo/railo/wiki/Configuration:web.xml##wiki-REST" target="_blank">instructions</a> to enable REST.
 			</div>
 		</cfif>	
 	</cfif>
@@ -343,7 +343,7 @@ Error Output --->
 					
 					<!--- Blog --->
 					<h3>
-						<a href="http://www.railo-technologies.com/blog/" target="_blank">#stText.Overview.blog#</a>
+						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
 					<div class="comment">#stText.Overview.bookDesc#</div>
 					
@@ -405,43 +405,3 @@ Error Output --->
 		</cfform>
 	</cfif>
 </cfoutput>
-	
-	<!---
-	<cfif request.admintype EQ "server">
-		<h2>#stText.Overview.LanguageSupport#</h2>
-		<cfinclude template="overview.uploadNewLangFile.cfm">
-		<table class="tbl">
-			<tr>
-				<th scope="row">#stText.Overview.ShortLabel#</th>
-				<th scope="row">#stText.Overview.LanguageName#</th>
-			</tr>
-			<cfset stLangs = readLanguages()>
-			<cfset aLangs = structKeyArray(stLangs)>
-			<cfset arraySort(aLangs, "text")>
-			<cfloop array="#aLangs#" index="sKey">
-				<tr>
-					<td width="150">#sKey#</td>
-					<td width="400">#stLangs[sKey]#</td>
-				</tr>
-			</cfloop>
-			<tr>
-				<th scope="row">#stText.Overview.AddNewLanguage#</th>
-				<form action="#cgi.script_name#?#cgi.query_string#" method="post" enctype="multipart/form-data">
-				<td><input type="File" name="newLangFile"><br>
-				<input type="submit" value="#stText.Overview.Submit#"></td>
-				</form>
-			</tr>
-		</table>
-	</cfif>
-
-	<cffunction name="readLanguages" output="No" returntype="struct">
-		<cfdirectory name="local.getLangs" directory="resources/language/" action="list" mode="listnames" filter="*.xml">
-		<cfset var stRet = {}>
-		<cfloop query="getLangs">
-			<cffile action="read" file="resources/language/#getLangs.name#" variable="local.sContent">
-			<cfset local.sXML = XMLParse(sContent)>
-			<cfset stRet[sXML.language.XMLAttributes.Key] = sXML.language.XMLAttributes.label>
-		</cfloop>
-		<cfreturn stRet>
-	</cffunction>
-	--->

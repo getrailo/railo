@@ -42,7 +42,6 @@ import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.While;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
-import railo.transformer.bytecode.statement.tag.TagBase;
 import railo.transformer.bytecode.statement.tag.TagOther;
 import railo.transformer.bytecode.statement.tag.TagParam;
 import railo.transformer.bytecode.statement.udf.Closure;
@@ -63,11 +62,11 @@ import railo.transformer.util.CFMLString;
 /**	
  * Innerhalb des Tag script kann in CFML eine eigene Scriptsprache verwendet werden, 
  * welche sich an Javascript orientiert. 
- * Da der data.cfml Transformer keine Spezialfälle zulässt, 
+ * Da der data.cfml Transformer keine Spezialfaelle zulaesst, 
  * also Tags einfach anhand der eingegeben TLD einliest und transformiert, 
  * aus diesem Grund wird der Inhalt des Tag script einfach als Zeichenkette eingelesen.
- * Erst durch den Evaluator (siehe 3.3), der für das Tag script definiert ist, 
- * wird der Inhalt des Tag script übersetzt.
+ * Erst durch den Evaluator (siehe 3.3), der fuer das Tag script definiert ist, 
+ * wird der Inhalt des Tag script uebersetzt.
  * 
  */
 public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransformer {
@@ -131,7 +130,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 
 	
 	/** 
-	 * Liest sämtliche Statements des CFScriptString ein. 
+	 * Liest saemtliche Statements des CFScriptString ein. 
 	 * <br />
 	 * EBNF:<br />
 	 * <code>{statement spaces};</code>
@@ -146,7 +145,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 	
 	/**
-	 * Liest sämtliche Statements des CFScriptString ein. 
+	 * Liest saemtliche Statements des CFScriptString ein. 
 	 * <br />
 	 * EBNF:<br />
 	 * <code>{statement spaces};</code>
@@ -942,7 +941,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			
 			
 		}
-		else checkSemiColonLineFeed(data,true);
+		else checkSemiColonLineFeed(data,true,true);
 		
 		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
@@ -1018,10 +1017,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		
-		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
+		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
 		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true);
 		
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 
 		property.setTagLibTag(tlt);
 		property.setScriptBase(true);
@@ -1139,9 +1138,9 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		
-		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
+		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
 		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true);
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 
 		param.setTagLibTag(tlt);
 		param.setScriptBase(true);
@@ -1275,10 +1274,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	    Return rtn;
 	    
 	    comments(data);
-	    if(checkSemiColonLineFeed(data, false)) rtn=new Return(line,data.cfml.getPosition());
+	    if(checkSemiColonLineFeed(data, false,false)) rtn=new Return(line,data.cfml.getPosition());
 	    else {
 	    	Expression expr = expression(data);
-	    	checkSemiColonLineFeed(data, true);
+	    	checkSemiColonLineFeed(data, true,true);
 	    	rtn=new Return(expr,line,data.cfml.getPosition());
 	    }
 		comments(data);
@@ -1365,7 +1364,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			return null;
 		}
 		
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.fld, data.cfml);
 		
 		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
@@ -1469,17 +1468,17 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 */
 	private Statement expressionStatement(Data data, Body parent) throws TemplateException {
 		Expression expr=expression(data);
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 		if(expr instanceof ClosureAsExpression)
 			return ((ClosureAsExpression)expr).getClosure();
 			
 		return new ExpressionAsStatement(expr);
 	}
 	
-	private final boolean checkSemiColonLineFeed(Data data,boolean throwError) throws TemplateException {
+	private final boolean checkSemiColonLineFeed(Data data,boolean throwError, boolean checkNLBefore) throws TemplateException {
 		comments(data);
 		if(!data.cfml.forwardIfCurrent(';')){
-			if(!data.cfml.hasNLBefore() && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
+			if((!checkNLBefore || !data.cfml.hasNLBefore()) && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
 				if(!throwError) return false;
 				throw new TemplateException(data.cfml,"Missing [;] or [line feed] after expression");
 			}
@@ -1490,7 +1489,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	
 	/**
 	 * Ruft die Methode expression der zu vererbenten Klasse auf 
-	 * und prüft ob der Rückgabewert einen boolschen Wert repräsentiert und castet den Wert allenfalls.
+	 * und prueft ob der Rueckgabewert einen boolschen Wert repraesentiert und castet den Wert allenfalls.
 	 * <br />
 	 * EBNF:<br />
 	 * <code>TemplateException::expression;</code>
@@ -1601,7 +1600,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 	
 	/**
-	 * Prüft ob sich der Zeiger am Ende eines Script Blockes befindet
+	 * Prueft ob sich der Zeiger am Ende eines Script Blockes befindet
 	 * @return Ende ScriptBlock?
 	 * @throws TemplateException
 	 */

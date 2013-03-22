@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/dump
+END
+SimpleDumpData.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/dump/SimpleDumpData.java
+END
+DumpWriterEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/dump/DumpWriterEntry.java
+END
+DumpUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/dump/DumpUtil.java
+END
+SimpleHTMLDumpWriter.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/dump/SimpleHTMLDumpWriter.java
+END
+TextDumpWriter.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/dump/TextDumpWriter.java
+END
+ClassicHTMLDumpWriter.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/dump/ClassicHTMLDumpWriter.java
+END
+DumpTablePro.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/dump/DumpTablePro.java
+END
+HTMLDumpWriter.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/dump/HTMLDumpWriter.java
+END

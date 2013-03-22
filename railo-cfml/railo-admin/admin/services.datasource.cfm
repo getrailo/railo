@@ -1,30 +1,14 @@
 <cfset error.message="">
 <cfset error.detail="">
-<cfif structKeyExists(session,"passwordserver")>
-	<cfdirectory 
-		directory="#expandPath('dbdriver')#" 
-		action="list" name="dbdriver" filter="*.cfc" serverpassword="#session.passwordserver#"><!---  --->
-<cfelse>
-	<cftry>
-		<cfdirectory 
-			directory="#expandPath('dbdriver')#" 
-			action="list" name="dbdriver" filter="*.cfc">
-		<cfcatch type="security">
-			<cfadmin 
-				action="getDatasourceDriverList"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				returnVariable="dbdriver">			
-		</cfcatch>		
-	</cftry>
-</cfif>
+<cfset driverNames=ComponentListPackage("dbdriver")>
+
+
 <cfset variables.drivers=struct()>
-<cfoutput query="dbdriver">
-	<cfset n=listFirst(dbdriver.name,".")>
+<cfloop array="#driverNames#" item="n">
 	<cfif n NEQ "Driver" and n NEQ "IDriver">
 		<cfset variables.drivers[n]=createObject("component","dbdriver."&n)>
 	</cfif>
-</cfoutput>
+</cfloop>
 
 <cffunction name="getTypeName">
 	<cfargument name="className" required="true">

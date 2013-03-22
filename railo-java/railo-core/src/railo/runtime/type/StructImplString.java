@@ -191,7 +191,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.type.Iteratorable#iterator()
 	 */
 	public Iterator valueIterator() {
-		return values().iterator();
+		return map.values().iterator();
 	}
 
     /**

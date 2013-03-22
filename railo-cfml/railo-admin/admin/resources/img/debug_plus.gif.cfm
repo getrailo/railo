@@ -1,23 +1,27 @@
-<cfset c='R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw=='><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><!---
-	
-	---><cfsilent>
-	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
-	<cfif not structKeyExists(application, "oHTTPCaching")>
-		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
-	</cfif>
-	
-	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "F648F334C3E47BF65C496CD69C69B556" />
-	<cfset mimetype = "image/gif" />
-	
-	<!--- check if the content was cached on the browser, and set the ETag header. --->
-	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=100)>
-		<cfexit method="exittemplate" />
-	</cfif>
-</cfsilent>
+<cfsavecontent variable='content'>R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==</cfsavecontent>
 
-<!--- file was not cached; send the data --->
-<cfcontent reset="yes" type="#mimetype#"
-	variable="#toBinary(c)#" />
-<cfelse>data:image/image/gif;base64,<cfoutput>#c#</cfoutput></cfif>
-	
+	<cfsetting showdebugoutput='#false#'>
+	<cfif getBaseTemplatePath() == getCurrentTemplatePath()>	
+
+		<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
+				
+		<cfset etag 	= '''5BC5CF1F8714F5A82C9C62423788D2BD'''>
+		<cfset mimetype = 'image/gif'>		
+
+		<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
+		<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
+		<cfheader name='ETag' value='#etag#'>
+
+		<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
+
+			<!--- etag matches, return 304 !--->
+			<cfheader statuscode='304' statustext='Not Modified'>
+			<cfcontent reset='#true#' type='#mimetype#'><cfabort>
+		</cfif>
+
+		<!--- file was not cached; send the content !--->
+		<cfcontent reset='#true#' type='#mimetype#' variable='#toBinary( content )#'><cfabort>
+	<cfelse>
+
+		<cfcontent reset='#true#'><cfoutput>content:image/image/gif;base64,#content#</cfoutput><cfabort>
+	</cfif>

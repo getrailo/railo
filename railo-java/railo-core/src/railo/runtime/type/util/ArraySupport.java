@@ -344,11 +344,6 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	public Iterator<Object> valueIterator() {
 		return iterator();
 	}
-	
-	public boolean equals(Object obj){
-		if(!(obj instanceof Collection)) return false;
-		return CollectionUtil.equals(this,(Collection)obj);
-	}
 
 	@Override
 	public Object get(PageContext pc, Key key, Object defaultValue) {
@@ -390,5 +385,16 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		if(getDimension()>1)
 			throw new ExpressionException("only 1 dimensional arrays can be sorted");
 		sort(ArrayUtil.toComparator(null, sortType, sortOrder,false));
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
 	}
 }

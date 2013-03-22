@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/resource/library/function
+END
+dump.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/function/dump.cfm
+END
+writeDump.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/101/trunk/railo-java/railo-core/src/resource/library/function/writeDump.cfm
+END

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-loader/src/railo/runtime/config
+END
+AdminSync.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/config/AdminSync.java
+END
+ConfigListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/config/ConfigListener.java
+END
+ConfigServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/config/ConfigServer.java
+END
+ConfigWeb.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/config/ConfigWeb.java
+END
+Config.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-loader/src/railo/runtime/config/Config.java
+END
+RemoteClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/config/RemoteClient.java
+END
