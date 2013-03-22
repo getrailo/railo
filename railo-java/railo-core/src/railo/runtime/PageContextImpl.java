@@ -41,7 +41,9 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -89,6 +91,8 @@ import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
+import railo.runtime.listener.JavaSettings;
+import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.listener.ModernAppListenerException;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
@@ -985,8 +989,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#getRootTemplateDirectory()
      */
     public Resource getRootTemplateDirectory() {
-		return config.getResource(servlet.getServletContext().getRealPath("/"));
-		//new File(servlet.getServletContext().getRealPath("/"));
+		return config.getResource(ReqRspUtil.getRootPath(servlet.getServletContext()));
 	}
 
     /**
@@ -2032,7 +2035,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	// charset
     	try{
-    	String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType())[1];
+    		String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType(),new String[]{"",""})[1];
     	if(StringUtil.isEmpty(charset))charset=ThreadLocalPageContext.getConfig().getWebCharset();
 	    	java.net.URL reqURL = new java.net.URL(req.getRequestURL().toString());
 	    	String path=ReqRspUtil.decode(reqURL.getPath(),charset,true);
@@ -3195,6 +3198,32 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
 		
 	}
+
+	public ClassLoader getClassLoader() throws IOException {
+		return getResourceClassLoader();
+	}
+	
+	public ClassLoader getClassLoader(Resource[] reses) throws IOException{
+		return getResourceClassLoader().getCustomResourceClassLoader(reses);
+	}
+	
+	private ResourceClassLoader getResourceClassLoader() throws IOException {
+		JavaSettingsImpl js = (JavaSettingsImpl) applicationContext.getJavaSettings();
+		if(js!=null) {
+			return config.getResourceClassLoader().getCustomResourceClassLoader(js.getResourcesTranslated());
+		}
+		return config.getResourceClassLoader();
+	}
+
+	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
+		JavaSettingsImpl js = (JavaSettingsImpl) applicationContext.getJavaSettings();
+		if(js!=null) {
+			return ((PhysicalClassLoader)config.getRPCClassLoader(reload)).getCustomClassLoader(js.getResourcesTranslated(),reload);
+		}
+		return config.getRPCClassLoader(reload);
+	}
+	
+	
 
 	public void resetSession() {
 		this.session=null;

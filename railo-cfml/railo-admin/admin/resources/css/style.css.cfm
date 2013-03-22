@@ -817,9 +817,7 @@ body.server #remotekey {
 	background: url(../img/info.png.cfm) no-repeat;
 	vertical-align:text-bottom;
 }
-.important {
-	background-color:red !important;
-}
+
 .helptextimage .inner {
 	display:none;
 }

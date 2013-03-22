@@ -9,6 +9,8 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,8 @@ import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
@@ -446,4 +450,11 @@ public final class ReqRspUtil {
         }
         return obj;
     }
+
+	public static String getRootPath(ServletContext sc) {
+		if(sc==null) throw new RuntimeException("cannot determine webcontext root, because the ServletContext is null");
+		String root = sc.getRealPath("/");
+		if(root==null) throw new RuntimeException("cannot determinae webcontext root, the ServletContext from class ["+sc.getClass().getName()+"] is returning null for the method call sc.getRealPath(\"/\"), possibly due to configuration problem.");
+		return root;
+	}
 }

@@ -31,6 +31,7 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -468,9 +469,9 @@ public final class SystemUtil {
 	            
 	            // Web Root
 	            if(path.startsWith("{web-root")) {
-	                if(path.startsWith("}",9)) 					path=frp.getResource(sc.getRealPath("/")).getRealResource(path.substring(10)).toString();
-	                else if(path.startsWith("-dir}",9)) 		path=frp.getResource(sc.getRealPath("/")).getRealResource(path.substring(14)).toString();
-	                else if(path.startsWith("-directory}",9)) 	path=frp.getResource(sc.getRealPath("/")).getRealResource(path.substring(20)).toString();
+	                if(path.startsWith("}",9)) 					path=frp.getResource(ReqRspUtil.getRootPath(sc)).getRealResource(path.substring(10)).toString();
+	                else if(path.startsWith("-dir}",9)) 		path=frp.getResource(ReqRspUtil.getRootPath(sc)).getRealResource(path.substring(14)).toString();
+	                else if(path.startsWith("-directory}",9)) 	path=frp.getResource(ReqRspUtil.getRootPath(sc)).getRealResource(path.substring(20)).toString();
 	
 	            }
 	            else path=SystemUtil.parsePlaceHolder(path);
@@ -487,7 +488,7 @@ public final class SystemUtil {
 	public static String hash(ServletContext sc) {
     	String id=null;
 		try {
-			id=MD5.getDigestAsString(sc.getRealPath("/"));
+			id=MD5.getDigestAsString(ReqRspUtil.getRootPath(sc));
 		} 
 		catch (IOException e) {}
 		return id;

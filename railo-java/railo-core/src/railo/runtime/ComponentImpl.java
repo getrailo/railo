@@ -1397,6 +1397,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(!StringUtil.isEmpty(displayname))sct.set(KeyConstants._displayname,displayname);
         
         sct.set(KeyConstants._persistent,comp.properties.persistent);
+        sct.set(KeyConstants._hashCode,comp.hashCode());
         sct.set(KeyConstants._accessors,comp.properties.accessors);
         sct.set(KeyConstants._synchronized,comp.properties._synchronized);
         if(comp.properties.output!=null)
@@ -1430,7 +1431,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"component");
             
-        Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
+        Class skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
@@ -1863,21 +1864,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     
-    /**
-     * @param isNew because we can return only one value we give a editable boolean in to 
-     * become tzhe info if the class is new or not
-     * @return
-     * @throws PageException
-     */
+    @Override
     public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
-    	return getJavaAccessClass(isNew, false,true,true,true);
+    	return getJavaAccessClass(ThreadLocalPageContext.get(),isNew, false,true,true,true);
+    }
+    
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew) throws PageException {
+    	return getJavaAccessClass(pc,isNew, false,true,true,true);
     }
 
-    public Class getJavaAccessClass(RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	ComponentProperties props =(takeTop)?top.properties:properties;
     	if(props.javaAccessClass==null) {
-    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(this,isNew,create,writeLog,supressWSbeforeArg);
+    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(pc,this,isNew,create,writeLog,supressWSbeforeArg);
 		}
     	return props.javaAccessClass;
     }

@@ -116,10 +116,10 @@ public class HTTPEngine4Impl {
      * @throws PageException 
      */
     public static HTTPResponse put(URL url, String username,String password, long timeout,  int maxRedirect,
-            String charset, String useragent,
+    		String mimetype,String charset, String useragent,
             ProxyData proxy, railo.commons.net.http.Header[] headers, Object body) throws IOException {
 		HttpPut put= new HttpPut(url.toExternalForm());
-		setBody(put,body);
+		setBody(put,body,mimetype,charset);
         return _invoke(url,put, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
 		 
 	}
@@ -258,8 +258,8 @@ public class HTTPEngine4Impl {
         }
 	}
 
-    public static void setBody(HttpEntityEnclosingRequest req, Object body) throws IOException {
-    	if(body!=null)req.setEntity(toHttpEntity(body));
+    public static void setBody(HttpEntityEnclosingRequest req, Object body, String mimetype,String charset) throws IOException {
+    	if(body!=null)req.setEntity(toHttpEntity(body,mimetype,charset));
 	}
 
 	public static void setProxy(DefaultHttpClient client, HttpUriRequest request, ProxyData proxy) {
@@ -286,8 +286,16 @@ public class HTTPEngine4Impl {
 		client.getCookieStore().addCookie(cookie);
 	}
 
-	private static HttpEntity toHttpEntity(Object value) throws IOException {
-    	if(value instanceof HttpEntity) return (HttpEntity) value;
+	/**
+	 * convert input to  HTTP Entity
+	 * @param value
+	 * @param mimetype not used for binary input
+	 * @param charset not used for binary input
+	 * @return
+	 * @throws IOException
+	 */
+	private static HttpEntity toHttpEntity(Object value, String mimetype, String charset) throws IOException {
+		if(value instanceof HttpEntity) return (HttpEntity) value;
     	try{
 	    	if(value instanceof InputStream) {
 	    		return new ByteArrayEntity(IOUtil.toBytes((InputStream)value));
@@ -296,13 +304,14 @@ public class HTTPEngine4Impl {
 				return new ByteArrayEntity(Caster.toBinary(value));
 			}
 			else {
-				return new StringEntity(Caster.toString(value));
+				return new StringEntity(Caster.toString(value),mimetype,charset);
 			}
     	}
     	catch(Exception e){
     		throw ExceptionUtil.toIOException(e);
     	}
     }
+	
 
 	public static Entity getEmptyEntity(String contentType) {
 		return new EmptyHttpEntity(contentType);

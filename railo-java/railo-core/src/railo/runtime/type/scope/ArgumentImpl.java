@@ -83,10 +83,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
-			return defaultValue;
-		}
-		return get(key, defaultValue);
+		return super.get(key,defaultValue);
 	}
 	
 
@@ -94,7 +91,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	 * @see railo.runtime.type.scope.ArgumentPro#containsFunctionArgumentKey(railo.runtime.type.Collection.Key)
 	 */
 	public boolean containsFunctionArgumentKey(Key key) {
-		return functionArgumentNames!=null && functionArgumentNames.contains(key);
+		return super.containsKey(key);//functionArgumentNames!=null && functionArgumentNames.contains(key);
 	}
 	
 	
@@ -106,6 +103,11 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	public Object get(Collection.Key key, Object defaultValue) {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
+		
+		//char c = key.charAt(0);
+    	//if(!Character.isDigit(c) && c!='+') return defaultValue; // it make sense to have this step between
+    	
+		
 		
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
@@ -122,12 +124,15 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
 
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
-		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
-				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
-				+"]");
+		//char c = key.charAt(0);
+    	//if(Character.isDigit(c) || c=='+') {
+    		o=get(Caster.toIntValue(key.getString(),-1),null);
+    		if(o!=null)return o;
+    	//}
+    	if(super.containsKey(key)) return null;// that is only for compatibility to neo
+    	throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+			railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+			+"]");
 		
 	}
 
@@ -136,7 +141,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
 	 */
 	public Object get(int intKey, Object defaultValue) {
-		Iterator it = valueIterator();//keyIterator();//getMap().keySet().iterator();
+		Iterator<Object> it = valueIterator(); //keyIterator();//getMap().keySet().iterator();
 		int count=0;
 		Object o;
 		while(it.hasNext()) {
@@ -424,6 +429,17 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
     /**
      * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
+     * /
+    public boolean containsKeyX(Collection.Key key) {
+    	if(super.containsKey(key)) return true;
+    	char c = key.charAt(0);
+    	if(!Character.isDigit(c) && c!='+') return false; // it make sense to have this step between
+    	
+    	return containsKey(Caster.toIntValue(key.getString(),-1));
+    }*/
+    
+	/**
+     * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
      */
     public boolean containsKey(Collection.Key key) {
     	return get(key,null)!=null && super.containsKey(key);
@@ -433,10 +449,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
      * @see railo.runtime.type.Array#containsKey(int)
      */
     public boolean containsKey(int key) {
-        return get(key,null)!=null;
+    	return key>0 && key<=size();
     }
-    
-
 
 	/**
 	 * @see railo.runtime.type.Array#toList()

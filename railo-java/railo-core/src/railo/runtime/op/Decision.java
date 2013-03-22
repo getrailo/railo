@@ -359,12 +359,15 @@ public final class Decision {
     }
 
 	public static boolean isDateSimple(Object value,boolean alsoNumbers) {
+		return isDateSimple(value, alsoNumbers, false);
+	}
+	public static boolean isDateSimple(Object value,boolean alsoNumbers, boolean alsoMonthString) {
 		
         //return DateCaster.toDateEL(value)!=null;
 		if(value instanceof DateTime) 		return true;
 		else if(value instanceof Date) 		return true;
 		// wrong timezone but this isent importend because date will not be importend
-		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers,TimeZone.getDefault(),null)!=null;
+		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers,alsoMonthString,TimeZone.getDefault(),null)!=null;
 		else if(value instanceof ObjectWrap) {
         	return isDateSimple(((ObjectWrap)value).getEmbededObject(null),alsoNumbers);
         }

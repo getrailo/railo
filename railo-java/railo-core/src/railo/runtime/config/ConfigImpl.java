@@ -29,7 +29,9 @@ import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.compress.Compress;
-import railo.commons.io.res.util.ResourceClassLoaderFactory;
+import railo.commons.io.res.type.compress.CompressResource;
+import railo.commons.io.res.type.compress.CompressResourceProvider;
+import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -73,6 +75,7 @@ import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
@@ -91,6 +94,7 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -348,7 +352,8 @@ public abstract class ConfigImpl implements Config {
 	private Map<String, ORMEngine> ormengines=new HashMap<String, ORMEngine>();
 	private Class<ORMEngine> ormEngineClass;
 	private ORMConfiguration ormConfig;
-	private ResourceClassLoaderFactory classLoaderFactory;
+	//private ResourceClassLoaderFactory classLoaderFactory;
+	private ResourceClassLoader resourceCL;
 	
 	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
 	private boolean componentLocalSearch=true;
@@ -620,18 +625,23 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getClassLoader()
      */
     public ClassLoader getClassLoader() {
-    	if(classLoaderFactory==null)
-    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
-    	return classLoaderFactory.getResourceClassLoader();   
+    	return getResourceClassLoader();   
+    }
+    public ResourceClassLoader getResourceClassLoader() {
+    	if(resourceCL==null) throw new RuntimeException("no RCL defined yet!");
+    	return resourceCL;   
     }
 
     /**
      * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
      */
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
-    	if(classLoaderFactory==null)
-    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
-    	return classLoaderFactory.getResourceClassLoader(reses);   
+    	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
+    	//PageContextImpl pci=(PageContextImpl) ThreadLocalPageContext.get();
+    	//if(pci==null) 
+    		throw new RuntimeException("this method is no longer suported");
+    	//return pci.getClassLoader(reses);
+    	////return getResourceClassLoader().getCustomResourceClassLoader(reses);   
     }
     
 	/* *
@@ -641,14 +651,18 @@ public abstract class ConfigImpl implements Config {
 		return classLoaderFactory;
 	} */
 
-	/**
+	/* *
 	 * @param classLoaderFactory the classLoaderFactory to set
-	 */
-	protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
+	/
+    protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
 		if(this.classLoaderFactory!=null){
 			classLoaderFactory.reset();
 		}
 		this.classLoaderFactory = classLoaderFactory;
+	} */
+    
+    protected void setResourceClassLoader(ResourceClassLoader resourceCL) {
+    	this.resourceCL=resourceCL;
 	}
 
     /**
@@ -1932,7 +1946,7 @@ public abstract class ConfigImpl implements Config {
     
     
     public String getSecurityKey() {
-    	return securityKey;//getServletContext().getRealPath("/");
+    	return securityKey;
     }
 
     /**
@@ -2400,10 +2414,8 @@ public abstract class ConfigImpl implements Config {
 	protected void setClientScopeDirSize(long clientScopeDirSize) {
 		this.clientScopeDirSize = clientScopeDirSize;
 	}
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getRPCClassLoader()
-	 */
+	
+	@Override
 	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
 		
 		if(rpcClassLoader!=null && !reload) return rpcClassLoader;
@@ -2411,10 +2423,10 @@ public abstract class ConfigImpl implements Config {
 		Resource dir = getDeployDirectory().getRealResource("RPC");
 		if(!dir.exists())dir.createDirectory(true);
 		//rpcClassLoader = new PhysicalClassLoader(dir,getFactory().getServlet().getClass().getClassLoader());
-		rpcClassLoader = new PhysicalClassLoader(dir,getClass().getClassLoader());
+		rpcClassLoader = new PhysicalClassLoader(dir,getClassLoader());
 		return rpcClassLoader;
 	}
-
+	
 	public void resetRPCClassLoader() {
 		rpcClassLoader=null;
 	}

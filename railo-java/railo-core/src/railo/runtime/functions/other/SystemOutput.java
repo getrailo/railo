@@ -25,7 +25,14 @@ public final class SystemOutput implements Function {
     public static boolean call(PageContext pc , Object obj, boolean addNewLine,boolean doErrorStream) throws PageException {
     	String string;
     	if(Decision.isSimpleValue(obj))string=Caster.toString(obj);
-    	else string=Serialize.call(pc, obj);
+    	else {
+    		try{
+    			string=Serialize.call(pc, obj);
+    		}
+    		catch(Throwable t){
+    			string=obj.toString();
+    		}
+    	}
     	
     	
     	PrintStream stream = System.out;

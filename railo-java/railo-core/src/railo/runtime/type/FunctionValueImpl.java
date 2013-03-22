@@ -149,14 +149,14 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	 * @see railo.runtime.op.Castable#castToDateTime()
 	 */
 	public DateTime castToDateTime() throws PageException {
-		return DateCaster.toDateSimple(value,null);
+		return DateCaster.toDateSimple(value,true,true,null);
 	}
     
     /**
      * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
      */
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateSimple(value,true,null,defaultValue);
+        return DateCaster.toDateSimple(value,true,true,null,defaultValue);
     }
 
 	/**

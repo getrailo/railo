@@ -15,6 +15,8 @@ import java.util.Set;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -116,9 +118,20 @@ public final class ClassUtil {
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
 		
 		if(cl==null){
-			Config config = ThreadLocalPageContext.getConfig();
-			if(config!=null)cl=config.getClassLoader();
+			PageContextImpl pci = (PageContextImpl) ThreadLocalPageContext.get();
+			if(pci!=null){
+				try {
+					cl=pci.getClassLoader();
+				}
+				catch (IOException e) {}
+			}
+			if(cl==null) {
+				Config config = ThreadLocalPageContext.getConfig();
+				if(config!=null)cl=config.getClassLoader();
+			}
 		}
+		
+		
 		
 		try {
 			if(cl==null)return Class.forName(className.trim());
