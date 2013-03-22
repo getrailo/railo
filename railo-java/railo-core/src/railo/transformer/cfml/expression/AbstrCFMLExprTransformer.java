@@ -286,24 +286,24 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Argument functionArgument(Data data) throws TemplateException {
-		return functionArgument(data,null);
+	private Argument functionArgument(Data data, boolean varKeyUpperCase) throws TemplateException {
+		return functionArgument(data,null,varKeyUpperCase);
 	}
 	
-	private Argument functionArgument(Data data,String type) throws TemplateException {
+	private Argument functionArgument(Data data,String type, boolean varKeyUpperCase) throws TemplateException {
 		Expression expr = assignOp(data);
 		try{
 			if (data.cfml.forwardIfCurrent(":")) {
 				comments(data);
-	            return new NamedArgument(expr,assignOp(data),type);
+	            return new NamedArgument(expr,assignOp(data),type,varKeyUpperCase);
 			}
 			else if(expr instanceof DynAssign){
 				DynAssign da=(DynAssign) expr;
-				return new NamedArgument(da.getName(),da.getValue(),type);
+				return new NamedArgument(da.getName(),da.getValue(),type,varKeyUpperCase);
 			}
 			else if(expr instanceof Assign && !(expr instanceof OpVariable)){
 				Assign a=(Assign) expr;
-				return new NamedArgument(a.getVariable(),a.getValue(),type);
+				return new NamedArgument(a.getVariable(),a.getValue(),type,varKeyUpperCase);
 			}
 		}
 		catch(BytecodeException be) {
@@ -1227,7 +1227,7 @@ public abstract class AbstrCFMLExprTransformer {
 			comments(data);
 			if (data.cfml.isCurrent(end))break;
 			
-			bif.addArgument(functionArgument(data));
+			bif.addArgument(functionArgument(data,data.settings.dotNotationUpper));
 			comments(data);
 		} 
 		while (data.cfml.forwardIfCurrent(','));
@@ -1606,7 +1606,7 @@ public abstract class AbstrCFMLExprTransformer {
         						new NamedArgument(
         								LitString.toExprString(arg.getName()),
         								LitString.toExprString(arg.getDefaultValue()),
-        								arg.getTypeAsString()
+        								arg.getTypeAsString(),false
         								));
         		}
 			}
@@ -1665,10 +1665,10 @@ public abstract class AbstrCFMLExprTransformer {
 			if (checkLibrary && !isDynamic) {
 				// current attribues from library
 				FunctionLibFunctionArg funcLibAtt =arrFuncLibAtt.get(count);
-				fm.addArgument(functionArgument(data,funcLibAtt.getTypeAsString()));	
+				fm.addArgument(functionArgument(data,funcLibAtt.getTypeAsString(),false));	
 			} 
 			else {
-				fm.addArgument(functionArgument(data));
+				fm.addArgument(functionArgument(data,false));
 			}
 
             comments(data);

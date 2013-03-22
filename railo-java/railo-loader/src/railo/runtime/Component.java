@@ -44,8 +44,10 @@ public interface Component extends Struct,Objects,CFObject {
      * this class is generated dynamic when used
      * @param isNew 
      * @throws PageException
+     * FUTURE deprecated
      */
     public Class getJavaAccessClass(RefBoolean isNew) throws PageException;
+    // FUTURE public Class getJavaAccessClass(PageContext pc,RefBoolean isNew) throws PageException;
 
     /**
      * @return Returns the display name.

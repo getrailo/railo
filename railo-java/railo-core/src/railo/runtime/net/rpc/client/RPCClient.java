@@ -45,6 +45,7 @@ import org.w3c.dom.Text;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -149,7 +150,7 @@ public final class RPCClient implements Objects, Iteratorable{
 
     public Object callWithNamedValues(PageContext pc, String methodName, Struct arguments) throws PageException {
         try {
-            return (_callMethod(pc.getConfig(),methodName,arguments,null));
+            return (_callMethod(pc,pc.getConfig(),methodName,arguments,null));
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
@@ -158,7 +159,7 @@ public final class RPCClient implements Objects, Iteratorable{
 	
 	public Object callWithNamedValues(Config config, String methodName, Struct arguments) throws PageException {
         try {
-            return (_callMethod(config,methodName,arguments,null));
+            return (_callMethod(null,config,methodName,arguments,null));
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
@@ -172,28 +173,28 @@ public final class RPCClient implements Objects, Iteratorable{
 
     public Object call(PageContext pc, String methodName,Object[] arguments) throws PageException {
         try {
-            return _callMethod(pc.getConfig(),methodName,null,arguments);
+            return _callMethod(pc,pc.getConfig(),methodName,null,arguments);
         } 
         catch (Throwable t) {
         	throw Caster.toPageException(t);
 		} 
     }
 
-    public Object call(Config config, String methodName,Object[] arguments) throws PageException {
+    /*public Object call(Config config, String methodName,Object[] arguments) throws PageException {
         try {
-            return (_callMethod(config,methodName,null,arguments));
+            return (_callMethod(ThreadLocalPageContext.get(config),methodName,null,arguments));
         } 
         catch (Exception e) {
         	throw Caster.toPageException(e);
 		} 
-    }
+    }*/
 
 	@Override
 	public Object call(PageContext pc, Collection.Key methodName, Object[] arguments) throws PageException {
 		return call(pc, methodName.getString(), arguments);
 	}
 
-    private Object _callMethod(Config config,String methodName, Struct namedArguments,Object[] arguments) throws PageException, ServiceException, RemoteException {
+    private Object _callMethod(PageContext pc,Config secondChanceConfig,String methodName, Struct namedArguments,Object[] arguments) throws PageException, ServiceException, RemoteException {
         
 		javax.wsdl.Service service = getWSDLService();
 		
@@ -249,7 +250,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		Vector<Parameter> outTypes = new Vector<Parameter>();
 		for(int j = 0; j < parameters.list.size(); j++) {
 			p = (Parameter)parameters.list.get(j);
-			map(config,call,tm,p.getType());
+			map(pc,secondChanceConfig,call,tm,p.getType());
 			switch(p.getMode()) {
             case Parameter.IN:
                 inNames.add(p.getQName().getLocalPart());
@@ -272,7 +273,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		if (parameters.returnParam != null) {
         	QName rtnQName = parameters.returnParam.getQName();
         	TypeEntry rtnType = parameters.returnParam.getType();
-        	map(config,call,tm,rtnType);
+        	map(pc,secondChanceConfig,call,tm,rtnType);
             outNames.add(rtnQName.getLocalPart());
             outTypes.add(parameters.returnParam);
             
@@ -284,13 +285,16 @@ public final class RPCClient implements Objects, Iteratorable{
        
         // check arguments
         Object[] inputs = new Object[inNames.size()];
+        TimeZone tz;
+		if(pc==null)tz=ThreadLocalPageContext.getTimeZone(secondChanceConfig);
+		else tz=ThreadLocalPageContext.getTimeZone(pc);
         if(arguments!=null) {
     		if(inNames.size() != arguments.length)
     			throw new RPCException("Invalid arguments count for operation " + methodName+" ("+arguments.length+" instead of "+inNames.size()+")");
     		
             for(int pos = 0; pos < inNames.size(); pos++) {
     			p = inTypes.get(pos);
-                inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arguments[pos]);
+    			inputs[pos]=getArgumentData(tm,tz, p, arguments[pos]);
     		}
         }
         else {
@@ -308,7 +312,7 @@ public final class RPCClient implements Objects, Iteratorable{
                     throw new RPCException("Invalid arguments for operation " + methodName,
                             getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),CollectionUtil.keysAsString(namedArguments)));
                 }
-                inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arg);
+                inputs[pos]=getArgumentData(tm,tz, p, arg);
             }
         }
         
@@ -357,7 +361,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		return sct;
 	}
     
-	private void map(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+	private void map(PageContext pc, Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		Vector els = type.getContainedElements();
 		
 		if(els==null) mapSimple(tm, type);
@@ -369,36 +373,37 @@ public final class RPCClient implements Objects, Iteratorable{
         	
         	ClassLoader cl=null;
 			try {
-				cl = config.getRPCClassLoader(false);
+				if(pc==null)cl = secondChanceConfig.getRPCClassLoader(false);
+				else cl = ((PageContextImpl)pc).getRPCClassLoader(false);
 			} catch (IOException e) {}
 			
-        	Class cls = mapComplex(config,call,tm, type);   
+        	Class cls = mapComplex(pc,secondChanceConfig,call,tm, type);   
         	// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
     		if(cls!=null && cl!=cls.getClassLoader()){
-    			mapComplex(config,call,tm, type); 
+    			mapComplex(pc,secondChanceConfig,call,tm, type); 
         	}
     		
         }
 	}
 	
-	private Class mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+	private Class mapComplex(PageContext pc,Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		Vector children = type.getContainedElements();
 		TypeEntry ref=type.getRefType();
-		if(ref==null) return _mapComplex(config, call, tm, type);
+		if(ref==null) return _mapComplex(pc,secondChanceConfig, call, tm, type);
 		children = ref.getContainedElements();
 		
 		if(children==null) {
 			mapSimple(tm, ref);
 			return null;
 		}
-		Class clazz = mapComplex(config, call, tm, ref);
+		Class clazz = mapComplex(pc,secondChanceConfig, call, tm, ref);
 		if(clazz==null) return null;
 		Class arr = ClassUtil.toArrayClass(clazz);
 		TypeMappingUtil.registerBeanTypeMapping(tm, arr, type.getQName());
 		return arr;
 	}
 
-	private Class _mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+	private Class _mapComplex(PageContext pc,Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		Vector children = type.getContainedElements();
 		ArrayList<ASMPropertyImpl> properties=new ArrayList<ASMPropertyImpl>();
 		if(children!=null) {
@@ -413,7 +418,7 @@ public final class RPCClient implements Objects, Iteratorable{
 	        	t=el.getType();
 	        	Vector els = t.getContainedElements();
 	            if(els!=null) {
-	            	clazz=mapComplex(config, call, tm, t);
+	            	clazz=mapComplex(pc,secondChanceConfig, call, tm, t);
 	            }
 	        	name=railo.runtime.type.util.ListUtil.last(el.getQName().getLocalPart(), '>');
 	        	
@@ -425,7 +430,9 @@ public final class RPCClient implements Objects, Iteratorable{
 		}
 		ASMProperty[] props = properties.toArray(new ASMProperty[properties.size()]);
 		String clientClassName=getClientClassName(type);
-		Pojo pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,props);
+		Pojo pojo;
+		if(pc==null)pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(secondChanceConfig,clientClassName,props);
+		else pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(pc,clientClassName,props);
 		
 		TypeMappingUtil.registerBeanTypeMapping(tm,
     			pojo.getClass(), 

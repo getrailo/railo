@@ -107,10 +107,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	
 	@Override
 	public Object get(Key key, Object defaultValue) {
-		if(key.equalsIgnoreCase(KeyConstants._super)) {
+		if(key.equalsIgnoreCase(KeyConstants._SUPER)) {
 			return SuperComponent.superInstance((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component)._base());
 		}
-		if(key.equalsIgnoreCase(KeyConstants._this)) return component;
+		if(key.equalsIgnoreCase(KeyConstants._THIS)) return component.top;
 		
 		if(NullSupportHelper.full())return shadow.g(key,defaultValue); 
 		

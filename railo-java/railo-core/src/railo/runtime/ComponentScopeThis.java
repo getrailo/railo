@@ -90,16 +90,16 @@ public final class ComponentScopeThis extends StructSupport implements Component
 
 	@Override
 	public Object get(Key key) throws PageException {
-        if(key.equalsIgnoreCase(KeyConstants._this)){
-            return component;
+        if(key.equalsIgnoreCase(KeyConstants._THIS)){
+            return component.top;
         }
         return component.get(access,key);
 	}
 
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-        if(key.equalsIgnoreCase(KeyConstants._this)){
-            return component;
+        if(key.equalsIgnoreCase(KeyConstants._THIS)){
+            return component.top;
         }
         return component.get(access,key,defaultValue);
 	}

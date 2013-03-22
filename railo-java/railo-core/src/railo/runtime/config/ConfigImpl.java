@@ -76,6 +76,7 @@ import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
@@ -94,6 +95,7 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -630,7 +632,12 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
-    	return getResourceClassLoader().getCustomResourceClassLoader(reses);   
+    	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
+    	//PageContextImpl pci=(PageContextImpl) ThreadLocalPageContext.get();
+    	//if(pci==null) 
+    		throw new RuntimeException("this method is no longer suported");
+    	//return pci.getClassLoader(reses);
+    	////return getResourceClassLoader().getCustomResourceClassLoader(reses);   
     }
     
 	/* *
@@ -2390,6 +2397,7 @@ public abstract class ConfigImpl implements Config {
 	protected void setClientScopeDirSize(long clientScopeDirSize) {
 		this.clientScopeDirSize = clientScopeDirSize;
 	}
+
 	@Override
 	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
 		
@@ -2398,10 +2406,10 @@ public abstract class ConfigImpl implements Config {
 		Resource dir = getDeployDirectory().getRealResource("RPC");
 		if(!dir.exists())dir.createDirectory(true);
 		//rpcClassLoader = new PhysicalClassLoader(dir,getFactory().getServlet().getClass().getClassLoader());
-		rpcClassLoader = new PhysicalClassLoader(dir,getClass().getClassLoader());
+		rpcClassLoader = new PhysicalClassLoader(dir,getClassLoader());
 		return rpcClassLoader;
 	}
-
+	
 	public void resetRPCClassLoader() {
 		rpcClassLoader=null;
 	}

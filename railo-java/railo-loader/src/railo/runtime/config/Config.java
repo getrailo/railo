@@ -598,6 +598,7 @@ public interface Config {
 	 */
 	public ClassLoader getClassLoader();
 	
+	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
 	public ClassLoader getClassLoader(Resource[] reses) throws IOException;
 	
 	public Resource getExtensionDirectory();
