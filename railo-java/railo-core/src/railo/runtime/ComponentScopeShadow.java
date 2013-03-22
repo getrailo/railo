@@ -127,10 +127,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		if(key.equalsIgnoreCase(KeyConstants._super)) {
+		if(key.equalsIgnoreCase(KeyConstants._SUPER)) {
 			return SuperComponent.superInstance((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component)._base());
 		}
-		if(key.equalsIgnoreCase(KeyConstants._this)) return component;
+		if(key.equalsIgnoreCase(KeyConstants._THIS)) return component.top;
 		
 		Object o=shadow.get(key);
 		if(o!=null) return o;
