@@ -13,7 +13,8 @@ import railo.runtime.type.util.ListUtil;
 
 public class IPUtil {
 
-    private static boolean doCacheLocalIPs;     // TODO: we can remove this and just check if ( cachedLocalIPs == null ) instead
+    private static boolean isCacheEnabled = false;
+    private static boolean isCacheValid = false;
     private static List<String> cachedLocalIPs = null;
 
     static {
@@ -22,10 +23,13 @@ public class IPUtil {
 
         List<String> localIPs = getLocalIPs( true );
 
-        doCacheLocalIPs = System.currentTimeMillis() > tc;
+        isCacheEnabled = System.currentTimeMillis() > tc;
 
-        if ( doCacheLocalIPs )
+        if ( isCacheEnabled ) {
+            
             cachedLocalIPs = localIPs;
+            isCacheValid = true;
+        }
     }
 
 
@@ -73,7 +77,7 @@ public class IPUtil {
 
     public static List<String> getLocalIPs( boolean refresh ) {
 
-        if ( doCacheLocalIPs && !refresh ) {
+        if ( isCacheEnabled && isCacheValid && !refresh ) {
 
             return new ArrayList<String>( cachedLocalIPs );
         }
@@ -109,22 +113,33 @@ public class IPUtil {
                 }
             }
         }
-        catch ( SocketException e ) { }     // TODO: do we want to add defaults like 127.0.0.1 and 0:0:0:0:0:0:0:1 ?
+        catch ( SocketException e ) {
 
-        if ( doCacheLocalIPs )
+            result.add( "127.0.0.1" );
+            result.add( "0:0:0:0:0:0:0:1" );
+        }
+
+        if ( isCacheEnabled ) {
+
             cachedLocalIPs = result;
+            isCacheValid = true;
+        }
 
         return result;
     }
-    
-    /*
-    public static void main(String[] args) {
-    	long start=System.currentTimeMillis();
 
-        for ( int i=0; i<100; i++ )
-            getLocalIPs( false );
 
-		print.o(System.currentTimeMillis() - start);
-	}//*/
+    /** this method can be called from Controller periodically, or from Admin if user clicks to invalidate the cache */
+    public void invalidateCache() {
+
+        isCacheValid = false;
+    }
+
+
+    /** returns true if cache is used */
+    public boolean isCacheEnabled() {
+
+        return isCacheEnabled;
+    }
 
 }
