@@ -698,6 +698,7 @@ public class KeyConstants {
 	public static final Key _remote_addr = KeyImpl._const("remote_addr");
 	public static final Key _remote_host = KeyImpl._const("remote_host");
 	public static final Key _request_method = KeyImpl._const("request_method");
+	public static final Key _request_url = KeyImpl._const("request_url");
 	public static final Key _REDIRECT_URL = KeyImpl._const("REDIRECT_URL");
 	public static final Key _request_uri = KeyImpl._const("request_uri");
 	public static final Key _REDIRECT_QUERY_STRING = KeyImpl._const("REDIRECT_QUERY_STRING");

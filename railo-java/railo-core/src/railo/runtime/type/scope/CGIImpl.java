@@ -47,7 +47,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		KeyConstants._http_host, KeyConstants._http_user_agent, KeyConstants._http_referer, KeyConstants._https, KeyConstants._https_keysize, 
 		KeyConstants._https_secretkeysize, KeyConstants._https_server_issuer, KeyConstants._https_server_subject, KeyConstants._path_info,
 		KeyConstants._path_translated, KeyConstants._query_string, KeyConstants._remote_addr, KeyConstants._remote_host, KeyConstants._remote_user, 
-		KeyConstants._request_method, KeyConstants._script_name, KeyConstants._server_name, KeyConstants._server_port, KeyConstants._server_port_secure, 
+		KeyConstants._request_method, KeyConstants._script_name, KeyConstants._server_name, KeyConstants._server_port, KeyConstants._server_port_secure,
 		KeyConstants._server_protocol, KeyConstants._server_software, KeyConstants._web_server_api, KeyConstants._context_path, KeyConstants._local_addr, 
 		KeyConstants._local_host
 	};
@@ -164,6 +164,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
                 if(key.equals(KeyConstants._remote_addr))		return toString(req.getRemoteAddr());
                 if(key.equals(KeyConstants._remote_host))		return toString(req.getRemoteHost());
                 if(key.equals(KeyConstants._request_method))		return req.getMethod();
+                if(key.equals(KeyConstants._request_url))		return getRequestURL( req );
                 if(key.equals(KeyConstants._request_uri))		return toString(req.getAttribute("javax.servlet.include.request_uri"));
                 if(key.getUpperString().startsWith("REDIRECT_")){
                 	// from attributes (key sensitive)
@@ -340,6 +341,31 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		sb.append(req.getServletPath());
 		return sb.toString();
 	}
+
+    public static String getRequestURL(HttpServletRequest req) {
+
+        StringBuilder sb = new StringBuilder( req.getRequestURL().toString() );
+
+        int maxpos = sb.indexOf( "/", 8 );
+
+        if ( maxpos > -1 ) {
+
+            if ( req.isSecure() ) {
+
+                if ( sb.substring( maxpos - 4, maxpos ).equals( ":443" ) )
+                    sb.delete( maxpos - 4, maxpos );
+            } else {
+
+                if ( sb.substring( maxpos - 3, maxpos ).equals( ":80" ) )
+                    sb.delete( maxpos - 3, maxpos );
+            }
+
+            if ( !StringUtil.isEmpty( req.getQueryString() ) )
+                sb.append( '?' ).append( req.getQueryString() );
+        }
+
+        return sb.toString();
+    }
 	
 	public static String getDomain(HttpServletRequest req) { // DIFF 23
 		StringBuffer sb=new StringBuffer();
