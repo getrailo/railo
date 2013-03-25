@@ -180,7 +180,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContains</name>
 		<class>railo.runtime.functions.arrays.ArrayContains</class>
 		<member-name>contains</member-name>
-		<description>Returns true if specified object is present is given array</description>
+		<description>Returns the position of the first element in the array whose string value contains the substring passed (case sensitive), or 0 if such element is not found.</description>
 		<argument>
 			<name>haystack</name>
 			<alias>array,arr</alias>
@@ -204,7 +204,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContainsNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayContainsNoCase</class>
 		<member-name>containsNoCase</member-name>
-		<description>Search an array to find a case insensitive item</description>
+		<description>Returns the position of the first element in the array whose string value contains the substring passed (not case sensitive), or 0 if such element is not found.</description>
 		<argument>
 			<name>haystack</name>
 			<alias>array,arr</alias>
