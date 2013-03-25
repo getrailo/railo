@@ -186,14 +186,14 @@ All elements in the array must contain values that can be automatically converte
 			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
-			<description>The array that we are looking for the item</description>
+			<description>The array in which to search for the substring</description>
 		</argument>
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
 			<type>object</type>
 			<required>Yes</required>
-			<description>The item that we are looking for in the array</description>
+			<description>The substring to search for (case sensitive)</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -210,14 +210,14 @@ All elements in the array must contain values that can be automatically converte
 			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
-			<description>The array that we are looking for the item</description>
+			<description>The array in which to search for the substring</description>
 		</argument>
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
 			<type>object</type>
 			<required>Yes</required>
-			<description>The item that we are looking for in the array</description>
+			<description>The substring to search for (not case sensitive)</description>
 		</argument>
 		<return>
 			<type>number</type>
