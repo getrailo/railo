@@ -354,7 +354,9 @@ public final class Image extends TagImpl {
 		required("height", height);
 		required("width", width);
 		required("text", text);
-		
+
+        boolean doRenderHtmlTag = ( destination == null );
+
 		String path=null;
 		
 		// create destination
@@ -366,7 +368,8 @@ public final class Image extends TagImpl {
 				difficulty));
 		
 		// link destination
-		if(StringUtil.isEmpty(name))writeLink(path);
+		if ( doRenderHtmlTag )
+			writeLink( path );
 		
 		// write out
 		write();
