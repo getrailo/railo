@@ -5,7 +5,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
@@ -13,7 +13,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.UDF;
 
-public final class ArrayFind implements Function {
+public final class ArrayFind extends BIF {
 
 	private static final long serialVersionUID = -3282048672805234115L;
 
@@ -24,6 +24,11 @@ public final class ArrayFind implements Function {
 		
 		return find(array,value,true);
     }
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,Caster.toArray(args[0]),args[1]);
+	}
 
     public static int find(PageContext pc ,Array array, UDF udf) throws PageException {
         int len=array.size();

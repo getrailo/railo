@@ -5,7 +5,8 @@ package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.FunctionValue;
@@ -13,7 +14,7 @@ import railo.runtime.type.FunctionValue;
 /**
  * implementation of the Function array
  */
-public class Array_ implements Function {
+public class Array_ extends BIF {
 	
 	private static final long serialVersionUID = 4974431571073577001L;
 
@@ -28,5 +29,10 @@ public class Array_ implements Function {
 			if(objArr[i] instanceof FunctionValue)objArr[i]=((FunctionValue)objArr[i]).getValue();
 		}
 		return new ArrayImpl(objArr);
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,(Object[])args[0]);
 	}
 }

@@ -6,11 +6,15 @@ package railo.runtime.functions.arrays;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 
-public final class ArraySet implements Function {
+public final class ArraySet extends BIF {
+
+	private static final long serialVersionUID = -7804363479876538167L;
+
 	public static boolean call(PageContext pc , Array array, double from, double to, Object value) throws PageException {
 		int f=(int) from;
 		int t=(int) to;
@@ -25,5 +29,10 @@ public final class ArraySet implements Function {
 		}
 
 		return true;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,Caster.toArray(args[0]),Caster.toDoubleValue(args[1]),Caster.toDoubleValue(args[2]),args[3]);
 	}
 }
