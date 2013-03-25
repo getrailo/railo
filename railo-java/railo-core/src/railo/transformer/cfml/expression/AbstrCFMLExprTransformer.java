@@ -1634,7 +1634,7 @@ public abstract class AbstrCFMLExprTransformer {
 			if (count==0 && data.cfml.isCurrent(')'))
 				break;
 
-			// too many Attributes
+			// to many Attributes
 			boolean isDynamic=false;
 			int max=-1;
 			if(checkLibrary) {
@@ -1645,7 +1645,7 @@ public abstract class AbstrCFMLExprTransformer {
 					if(max!=-1 && max <= count)
 						throw new TemplateException(
 							data.cfml,
-							"too many Attributes in function [" + ASMUtil.display(name) + "]");
+							"to many Attributes in function [" + ASMUtil.display(name) + "]");
 				}
 			// Fix
 				else {
@@ -1653,7 +1653,7 @@ public abstract class AbstrCFMLExprTransformer {
 						
 						TemplateException te = new TemplateException(
 							data.cfml,
-							"too many Attributes in function call [" + ASMUtil.display(name) + "]");
+							"to many Attributes in function call [" + ASMUtil.display(name) + "]");
 						UDFUtil.addFunctionDoc(te, flf);
 						throw te;
 					}
