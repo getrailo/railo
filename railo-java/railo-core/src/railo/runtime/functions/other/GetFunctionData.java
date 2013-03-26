@@ -56,7 +56,7 @@ public final class GetFunctionData implements Function {
 		// CFML Based Function
 		Class clazz=null;
 		try{
-			clazz=function.getCazz();
+			clazz=function.getClazz();
 		}
 		catch(Throwable t){}
 		if(clazz==railo.runtime.functions.system.CFFunction.class){

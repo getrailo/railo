@@ -713,7 +713,7 @@ int pos=data.cfml.getPos();
 			
 			if(!data.isCFC && !data.isInterface){
 				FunctionLibFunction flf = getFLF(data,id);
-				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
+				if(flf!=null && flf.getClazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
 			}
 			return closurePart(data, id,access,rtnType,line,false);
 	}
