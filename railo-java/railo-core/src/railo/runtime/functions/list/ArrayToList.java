@@ -5,11 +5,14 @@ package railo.runtime.functions.list;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 
-public final class ArrayToList implements Function {
+public final class ArrayToList extends BIF {
+
+	private static final long serialVersionUID = -4909685848106371747L;
+
 	public static String call(PageContext pc , Array array) throws PageException {
 		return call(pc,array,',');
 	}
@@ -41,5 +44,11 @@ public final class ArrayToList implements Function {
 			sb.append(o==null?"":Caster.toString(o));
 		}
 		return sb.toString();
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1) return call(pc,Caster.toArray(args[0]));
+		return call(pc,Caster.toArray(args[0]),Caster.toString(args[1]));
 	}
 }

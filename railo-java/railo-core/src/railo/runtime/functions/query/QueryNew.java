@@ -1,9 +1,6 @@
 package railo.runtime.functions.query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
@@ -11,7 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -26,7 +23,10 @@ import railo.runtime.type.util.QueryUtil;
 /**
  * Implements the CFML Function querynew
  */
-public final class QueryNew implements Function {
+public final class QueryNew extends BIF {
+
+	private static final long serialVersionUID = -4313766961671090938L;
+	
 	public static railo.runtime.type.Query call(PageContext pc , String columnList) throws DatabaseException {
 	    return new QueryImpl(ListUtil.listToArrayTrim(columnList,","),0,"query");
 	}
@@ -45,6 +45,13 @@ public final class QueryNew implements Function {
 		
 		if(data==null) return qry;
 		return populate(pc, qry, data);	
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1)return call(pc,Caster.toString(args[0]));
+		if(args.length==2)return call(pc,Caster.toString(args[0]),Caster.toString(args[1]));
+		return call(pc,Caster.toString(args[0]),Caster.toString(args[1]),args[2]);
 	}
 	
 	public static Query populate(PageContext pc, Query qry,Object data) throws PageException {

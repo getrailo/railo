@@ -5,12 +5,15 @@ package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Query;
 
-public final class QueryAddRow implements Function {
+public final class QueryAddRow extends BIF {
+
+	private static final long serialVersionUID = 1252130736067181453L;
+
 	public static double call(PageContext pc , Query query) {
 		query.addRow(1);
 		return query.getRecordcount();
@@ -23,18 +26,12 @@ public final class QueryAddRow implements Function {
 		else {
 			QueryNew.populate(pc, query, numberOrData);
 		}
-		/*else if(Decision.isStruct(numberOrData)) {
-			query.addRow();
-			QueryNew.populateRow(query, Caster.toStruct(numberOrData));
-		}
-		else if(Decision.isArray(numberOrData)) {
-			query.addRow();
-			QueryNew.populateRow(query, Caster.toArray(numberOrData));
-		}
-		else
-			throw new FunctionException(pc, "QueryAddRow", 2, "data", "you must define a array, a struct or a number");
-		*/
-		
 		return query.getRecordcount();
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1)return call(pc,Caster.toQuery(args[0]));
+		return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]));
 	}
 }

@@ -8,14 +8,15 @@ import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 
 /**
  * Implements the CFML Function dateformat
  */
-public final class DateTimeFormat implements Function {
+public final class DateTimeFormat extends BIF {
 
 	private static final long serialVersionUID = 134840879454373440L;
 	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:mm:ss";
@@ -57,5 +58,12 @@ public final class DateTimeFormat implements Function {
 		SimpleDateFormat format = new SimpleDateFormat(mask, locale);
 		format.setTimeZone(tz);
         return format.format(datetime);
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1)return call(pc,args[0]);
+		if(args.length==2)return call(pc,args[0],Caster.toString(args[1]));
+		return call(pc,args[0],Caster.toString(args[1]),Caster.toString(args[2]));
 	}
 }

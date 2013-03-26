@@ -9,11 +9,15 @@ import railo.commons.date.DateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 
-public final class DaysInYear implements Function {
-	
+public final class DaysInYear extends BIF {
+
+	private static final long serialVersionUID = -2900647153777735688L;
+
 	public static double call(PageContext pc , DateTime date) {
 		return _call(pc, date, pc.getTimeZone());
 	}
@@ -25,5 +29,11 @@ public final class DaysInYear implements Function {
 	private static double _call(PageContext pc , DateTime date,TimeZone tz) {
 		DateTimeUtil util = DateTimeUtil.getInstance();
 		return util.isLeapYear(util.getYear(tz, date))?366:365;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1)return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()));
+		return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()),Caster.toString(args[1]));
 	}
 }
