@@ -15,13 +15,16 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
  * Directory ClassLoader
  */
-public final class PhysicalClassLoader extends ClassLoader implements Sizeable  {
+public final class PhysicalClassLoader extends ExtendableClassLoader implements Sizeable  {
     
     private Resource directory;
     private ClassLoader parent;
@@ -29,8 +32,21 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 	private int count;
 	private Map<String,PhysicalClassLoader> customCLs; 
 	
+	/**
+     * Constructor of the class
+     * @param directory
+     * @throws IOException
+     */
+    public PhysicalClassLoader(Resource directory) throws IOException {
+        this(directory,getParentCL());
+    }
+    private static ClassLoader getParentCL() {
+		Config config = ThreadLocalPageContext.getConfig();
+		if(config!=null) return config.getClassLoader();
+    	return new ClassLoaderHelper().getClass().getClassLoader();
+	}
 
-    /**
+	/**
      * Constructor of the class
      * @param directory
      * @param parent
