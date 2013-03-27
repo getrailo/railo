@@ -451,6 +451,37 @@ public final class ReqRspUtil {
         return obj;
     }
 
+
+    /**
+     * returns the full request URL
+     *
+     * @param req - the HttpServletRequest
+     * @param includeQueryString - if true, the QueryString will be appended if one exists
+     * */
+    public static String getRequestURL( HttpServletRequest req, boolean includeQueryString ) {
+
+        StringBuffer sb = req.getRequestURL();
+        int maxpos = sb.indexOf( "/", 8 );
+
+        if ( maxpos > -1 ) {
+
+            if ( req.isSecure() ) {
+                if ( sb.substring( maxpos - 4, maxpos ).equals( ":443" ) )
+                    sb.delete( maxpos - 4, maxpos );
+            }
+            else {
+                if ( sb.substring( maxpos - 3, maxpos ).equals( ":80" ) )
+                    sb.delete( maxpos - 3, maxpos );
+            }
+
+            if ( includeQueryString && !StringUtil.isEmpty( req.getQueryString() ) )
+                sb.append( '?' ).append( req.getQueryString() );
+        }
+
+        return sb.toString();
+    }
+
+
 	public static String getRootPath(ServletContext sc) {
 		if(sc==null) throw new RuntimeException("cannot determine webcontext root, because the ServletContext is null");
 		String root = sc.getRealPath("/");
