@@ -19,17 +19,15 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.it.ValueIterator;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -38,30 +36,19 @@ import railo.runtime.type.util.StructSupport;
 public final class XMLAttributes extends StructSupport implements Struct,NamedNodeMap {
 	
 
-	private NamedNodeMap nodeMap;
-	private Document owner;
-	private boolean caseSensitive;
+	private final NamedNodeMap nodeMap;
+	private final Document owner;
+	private final Node parent;
+	private final boolean caseSensitive;
 
-	/**
-	 * constructor of the class
-	 * @param owner
-	 * @param nodeMap
-	 */
-	public XMLAttributes(Document owner,NamedNodeMap nodeMap,boolean caseSensitive) {
-		this.owner=owner;
-		this.nodeMap=nodeMap;
-		this.caseSensitive=caseSensitive;
-	}
 	/**
 	 * constructor of the class (readonly)
 	 * @param nodeMap
 	 */
-	public XMLAttributes(NamedNodeMap nodeMap,boolean caseSensitive) {
-		this.nodeMap=nodeMap;
-		try {
-			owner=this.nodeMap.item(0).getOwnerDocument();
-		}
-		catch(Exception e) {}
+	public XMLAttributes(Node parent, boolean caseSensitive) {
+		this.owner=parent.getOwnerDocument();
+		this.parent=parent;
+		this.nodeMap=parent.getAttributes();
 		this.caseSensitive=caseSensitive;
 	}
 
@@ -158,7 +145,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 			if(key.equalsIgnoreCase(keys[i]))
 				return nodeMap.getNamedItem(keys[i].getString()).getNodeValue();
 		}
-		throw new ExpressionException("No Attribute "+key.getString()+" defined for tag","attributes are ["+List.arrayToList(keys,", ")+"]");
+		throw new ExpressionException("No Attribute "+key.getString()+" defined for tag","attributes are ["+ListUtil.arrayToList(keys,", ")+"]");
 	}
 
 	@Override
@@ -284,20 +271,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 
 	@Override
 	public Collection duplicate(boolean deepCopy) {
-		XMLAttributes sct=new XMLAttributes(owner,nodeMap,caseSensitive);
-		ThreadLocalDuplication.set(this, sct);
-		try{
-			Collection.Key[] keys=keys();
-			Collection.Key k;
-			for(int i=0;i<keys.length;i++) {
-				k=keys[i];
-				sct.setEL(k,Duplicator.duplicate(get(k,null),deepCopy));
-			}
-		}
-		finally {
-			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
-		}
-		return sct;
+		return new XMLAttributes(parent.cloneNode(deepCopy),caseSensitive);
 	}
 	
 	

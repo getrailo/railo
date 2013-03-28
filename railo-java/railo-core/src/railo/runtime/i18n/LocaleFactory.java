@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -224,7 +224,7 @@ public final class LocaleFactory {
 	    // TODO chnge from ArryObject to string
 		String[] arr = locales.keySet().toArray(new String[locales.size()]);
 		Arrays.sort(arr);
-		return List.arrayToList(arr,",");
+		return ListUtil.arrayToList(arr,",");
 		
 	}
 

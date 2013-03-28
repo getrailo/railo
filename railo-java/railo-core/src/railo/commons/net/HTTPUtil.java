@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.ContentType;
 import railo.commons.lang.mimetype.MimeType;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
@@ -33,7 +34,7 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -178,7 +179,7 @@ public final class HTTPUtil {
         	
         	StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toListTrim(path, '/');
+        	StringList list = ListUtil.toListTrim(path, '/');
         	String str;
         	
         	while(list.hasNext()){
@@ -237,7 +238,7 @@ public final class HTTPUtil {
     	if(!StringUtil.isEmpty(query)) {
     		StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toList(query, '&');
+        	StringList list = ListUtil.toList(query, '&');
         	String str;
         	int index;
         	char del=startDelimiter;
@@ -292,7 +293,7 @@ public final class HTTPUtil {
         	
         	StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toListTrim(path, '/');
+        	StringList list = ListUtil.toListTrim(path, '/');
         	String str;
         	
         	while(list.hasNext()){
@@ -629,7 +630,7 @@ public final class HTTPUtil {
         // query
         if(!StringUtil.isEmpty(query)){
         	
-        	StringList list = List.toList(query, '&');
+        	StringList list = ListUtil.toList(query, '&');
         	String str;
         	int index;
         	char del='?';
@@ -694,7 +695,7 @@ public final class HTTPUtil {
 	public static Map<String, String> parseParameterList(String _str, boolean decode,String charset) {
 		//return railo.commons.net.HTTPUtil.toURI(strUrl,port);
 		Map<String,String> data=new HashMap<String, String>();
-		StringList list = List.toList(_str, '&');
+		StringList list = ListUtil.toList(_str, '&');
     	String str;
     	int index;
     	while(list.hasNext()){
@@ -717,9 +718,26 @@ public final class HTTPUtil {
 		return str;
 	}
 	
+
+	public static ContentType toContentType(String str, ContentType defaultValue) {
+		if( StringUtil.isEmpty(str,true)) return defaultValue;
+		String[] types=str.split(";");
+		ContentType ct=null;
+		if(types.length>0){
+    		ct=new ContentType(types[0]);
+    		if(types.length>1) {
+	            String tmp=types[types.length-1].trim();
+	            int index=tmp.indexOf("charset=");
+	            if(index!=-1) {
+	            	ct.setCharset(StringUtil.removeQuotes(tmp.substring(index+8),true));
+	            }
+	        }
+    	}
+    	return ct;
+	}
 	
-	
-	public static String[] splitMimeTypeAndCharset(String mimetype) {
+	public static String[] splitMimeTypeAndCharset(String mimetype, String[] defaultValue) {
+		if( StringUtil.isEmpty(mimetype,true)) return defaultValue;
 		String[] types=mimetype.split(";");
 		String[] rtn=new String[2];
     	
@@ -738,7 +756,7 @@ public final class HTTPUtil {
 	
 
 	public static String[] splitTypeAndSubType(String mimetype) {
-		String[] types=List.listToStringArray(mimetype, '/');
+		String[] types=ListUtil.listToStringArray(mimetype, '/');
 		String[] rtn=new String[2];
     	
     	if(types.length>0){

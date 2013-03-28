@@ -25,8 +25,8 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public final class ResourceUtil {
 
@@ -450,7 +450,7 @@ public final class ResourceUtil {
         
         String[] arr;
 		try {
-			arr = List.toStringArray(List.listToArrayRemoveEmpty(attributes.toLowerCase(),','));
+			arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(attributes.toLowerCase(),','));
 		} 
 		catch (PageException e) {
 			arr=new String[0];
@@ -600,6 +600,7 @@ public final class ResourceUtil {
 	}
 	
 	public static String prettifyPath(String path) {
+		if(path==null) return null;
 		path=path.replace('\\','/');
 		return StringUtil.replace(path, "//", "/", false);
 		// TODO /aaa/../bbb/
@@ -684,7 +685,7 @@ public final class ResourceUtil {
     	try {
             return res.getCanonicalResource();
         } catch (IOException e) {
-            return res;
+            return res.getAbsoluteResource();
         }
     }
     
@@ -1338,6 +1339,22 @@ public final class ResourceUtil {
 			names[i]=resources[i].getName();
 		}
 		return names;
+	}
+    
+    public static Resource[] merge(Resource[] srcs, Resource[] trgs) {
+    	java.util.List<Resource> list=new ArrayList<Resource>();
+
+    	if(srcs!=null){
+    		for(int i=0;i<srcs.length;i++){
+    			list.add(srcs[i]);
+    		}
+    	}
+    	if(trgs!=null){
+    		for(int i=0;i<trgs.length;i++){
+    			if(!list.contains(trgs[i]))list.add(trgs[i]);
+    		}
+    	}
+    	return list.toArray(new Resource[list.size()]);
 	}
 
 }

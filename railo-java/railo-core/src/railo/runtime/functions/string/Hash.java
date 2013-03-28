@@ -17,10 +17,10 @@ public final class Hash implements Function {
 	
 	// function for old code in ra files calling this function
 	public static String call(PageContext pc, String input) throws PageException {
-		return call( pc, input, null, null, 1 );
+		return invoke( pc.getConfig(), input, null, null, 1 );
 	}
     public synchronized static String call(PageContext pc , String input, String algorithm) throws PageException {
-		return call( pc, input, algorithm, null, 1 );
+		return invoke( pc.getConfig(), input, algorithm, null, 1 );
 	}
     public synchronized static String call(PageContext pc , String input, String algorithm, String encoding) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
@@ -29,19 +29,19 @@ public final class Hash implements Function {
 	
 	
 	public static String call(PageContext pc, Object input) throws PageException {
-		return call( pc, input, null, null, 1 );
+		return invoke( pc.getConfig(), input, null, null, 1 );
 	}
 	
     public synchronized static String call(PageContext pc , Object input, String algorithm) throws PageException {
-		return call( pc, input, algorithm, null, 1 );
+		return invoke( pc.getConfig(), input, algorithm, null, 1 );
 	}
 
     public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
 	}
     
-    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, int numIterations) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, encoding, numIterations );
+    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, double numIterations) throws PageException {
+		return invoke( pc.getConfig(), input, algorithm, encoding, (int)numIterations );
 	}
 
     /*/	this method signature was called from ConfigWebAdmin.createUUID(), comment this comment to enable

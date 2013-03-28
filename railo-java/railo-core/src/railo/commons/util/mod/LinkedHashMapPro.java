@@ -1,6 +1,8 @@
 package railo.commons.util.mod;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -59,6 +61,16 @@ public class LinkedHashMapPro<K,V>
     public LinkedHashMapPro() {
         super();
         accessOrder = false;
+    }
+    
+    // TODO better implementation
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        out.writeObject(new LinkedHashMap(this));
+    }
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, ClassNotFoundException {
+        this.putAll((Map)in.readObject());
     }
 
     /**

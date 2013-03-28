@@ -273,7 +273,7 @@ public final class AxisCaster {
     	//Map rtn=new HashTable();
     	Object obj=null;
 		try {
-			obj = ClassUtil.loadInstance(ComponentUtil.getServerComponentPropertiesClass(comp));
+			obj = ClassUtil.loadInstance(ComponentUtil.getServerComponentPropertiesClass(pc,comp));
 		} catch (ClassException e) {
 			throw Caster.toPageException(e);
 		}

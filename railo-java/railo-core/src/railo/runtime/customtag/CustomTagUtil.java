@@ -12,8 +12,8 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public class CustomTagUtil {
 	
@@ -164,7 +164,7 @@ public class CustomTagUtil {
 		String[] extensions=config.getCustomTagExtensions();
         if(extensions.length==0) return name;
         
-		return name+".["+List.arrayToList(extensions, "|")+"]";
+		return name+".["+ListUtil.arrayToList(extensions, "|")+"]";
 	}
 	 
 	 public static String getDetail(Config config) {

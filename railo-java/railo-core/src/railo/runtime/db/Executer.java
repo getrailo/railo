@@ -22,10 +22,10 @@ import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.QueryUtil;
 
 /**
@@ -754,7 +754,7 @@ public final class Executer {
 				    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 				    return sql.getItems()[pos].getValueForCF();
 				}
-		        return qr.getAt(List.last(constant.getValue(),".",true),row);
+		        return qr.getAt(ListUtil.last(constant.getValue(),".",true),row);
 			}
 			case ZConstant.NULL:			return null;
 			case ZConstant.NUMBER:			return Caster.toDouble(constant.getValue());

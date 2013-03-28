@@ -10,7 +10,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Implements the CFML Function compress
@@ -35,7 +35,7 @@ public final class Extract implements Function {
                 " valid formats are [bzip,gzip,tar,tbz (tar bzip),tgz (tar gzip) and zip]");
         
         
-        String[] arrSources=List.toStringArrayEL(List.listToArrayRemoveEmpty(strSource,","));
+        String[] arrSources=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(strSource,","));
         
         Resource[] sources=new Resource[arrSources.length];
         for(int i=0;i<sources.length;i++) {

@@ -352,8 +352,8 @@ public class ComponentLoader {
 		return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
 	}
 	
-	public static Page loadPage(PageContext pc,PageSource ps) throws PageException  {
-        if(pc.getConfig().debug()) {
+	public static Page loadPage(PageContext pc,PageSource ps, boolean forceReload) throws PageException  {
+		if(pc.getConfig().debug()) {
             DebugEntryTemplate debugEntry=pc.getDebugger().getEntry(pc,ps);
             pc.addPageSource(ps,true);
             
@@ -363,7 +363,7 @@ public class ComponentLoader {
             try {
             	debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
             	exeTime=System.currentTimeMillis();
-                return ((PageSourceImpl)ps).loadPage(pc);
+                return ((PageSourceImpl)ps).loadPage(pc,forceReload);
             }
             finally {
                 int diff= ((int)(System.currentTimeMillis()-exeTime)-(pc.getExecutionTime()-currTime));
@@ -375,7 +375,7 @@ public class ComponentLoader {
     // no debug
         pc.addPageSource(ps,true);
         try {   
-        	return ((PageSourceImpl)ps).loadPage(pc);
+        	return ((PageSourceImpl)ps).loadPage(pc,forceReload);
         }
         finally {
             pc.removeLastPageSource(true);

@@ -11,9 +11,9 @@ import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.type.Collection;
-import railo.runtime.type.List;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public final class ExceptionUtil {
 	
@@ -62,7 +62,7 @@ public final class ExceptionUtil {
 	public static String similarKeyMessage(Collection.Key[] _keys,String keySearched, String keyLabel, String keyLabels) {
 		
 		Arrays.sort(_keys);
-		String list=List.arrayToList(_keys, ",");
+		String list=ListUtil.arrayToList(_keys, ",");
 		String keySearchedSoundex=StringUtil.soundex(keySearched);
 		
 		for(int i=0;i<_keys.length;i++){

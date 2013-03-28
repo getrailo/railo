@@ -29,6 +29,7 @@ import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -1104,4 +1105,7 @@ public class HashMapPro<K,V>
     // These methods are used when serializing HashSets
     int   capacity()     { return table.length; }
     float loadFactor()   { return loadFactor;   }
+    
+    
+
 }

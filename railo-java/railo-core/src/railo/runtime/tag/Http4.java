@@ -44,6 +44,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.ContentType;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLEncoder;
 import railo.commons.net.http.HTTPEngine;
@@ -71,11 +72,11 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -408,7 +409,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	 * @throws PageException
 	**/
 	public void setColumns(String columns) throws PageException	{
-		this.columns=List.toStringArray(List.listToArrayRemoveEmpty(columns,","));
+		this.columns=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(columns,","));
 	}
 
 	/** set the value port
@@ -685,6 +686,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     		for(int i=0;i<len;i++) {
     			HttpParamBean param=this.params.get(i);
     			String type=param.getType();
+    			
     		// URL
     			if(type.equals("url")) {
     				//listQS.add(new BasicNameValuePair(translateEncoding(param.getName(), http.charset),translateEncoding(param.getValueAsString(), http.charset)));
@@ -739,12 +741,22 @@ public final class Http4 extends BodyTagImpl implements Http {
     			else if(type.equals("file")) {
     				hasForm=true;
     				if(this.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
+    				String strCT = getContentType(param);
+    				ContentType ct = HTTPUtil.toContentType(strCT,null);
+        			
+    				String mt="text/xml";
+    				if(ct!=null && !StringUtil.isEmpty(ct.getMimeType(),true)) mt=ct.getMimeType();
+    				
+    				String cs=charset;
+    				if(ct!=null && !StringUtil.isEmpty(ct.getCharset(),true)) cs=ct.getCharset();
+    				
+    				
     				if(doMultiPart) {
     					try {
     						Resource res = param.getFile();
     						parts.add(new FormBodyPart(
     								param.getName(), 
-    								new ResourceBody(res, getContentType(param), res.getName(), charset)
+    								new ResourceBody(res, mt, res.getName(), cs)
     						));
     						//parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),_charset));
     					} 
@@ -755,17 +767,34 @@ public final class Http4 extends BodyTagImpl implements Http {
     			}
     		// XML
     			else if(type.equals("xml")) {
+    				ContentType ct = HTTPUtil.toContentType(param.getMimeType(),null);
+        			
+    				String mt="text/xml";
+    				if(ct!=null && !StringUtil.isEmpty(ct.getMimeType(),true)) mt=ct.getMimeType();
+    				
+    				String cs=charset;
+    				if(ct!=null && !StringUtil.isEmpty(ct.getCharset(),true)) cs=ct.getCharset();
+    				
     				hasBody=true;
     				hasContentType=true;
-    				req.addHeader("Content-type", "text/xml; charset="+charset);
+    				req.addHeader("Content-type", mt+"; charset="+cs);
     			    if(eem==null)throw new ApplicationException("type xml is only supported for type post and put");
-    			    HTTPEngine4Impl.setBody(eem, param.getValueAsString());
+    			    HTTPEngine4Impl.setBody(eem, param.getValueAsString(),mt,cs);
     			}
     		// Body
     			else if(type.equals("body")) {
+    				ContentType ct = HTTPUtil.toContentType(param.getMimeType(),null);
+        			
+    				String mt=null;
+    				if(ct!=null && !StringUtil.isEmpty(ct.getMimeType(),true)) mt=ct.getMimeType();
+    				
+    				String cs=charset;
+    				if(ct!=null && !StringUtil.isEmpty(ct.getCharset(),true)) cs=ct.getCharset();
+    				
+    				
     				hasBody=true;
     				if(eem==null)throw new ApplicationException("type body is only supported for type post and put");
-    				HTTPEngine4Impl.setBody(eem, param.getValue());
+    				HTTPEngine4Impl.setBody(eem, param.getValue(),mt,cs);
     				
     			}
                 else {
@@ -987,9 +1016,9 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        
 	    // mimetype charset
 	        //boolean responseProvideCharset=false;
-	        if(!StringUtil.isEmpty(mimetype)){
+	        if(!StringUtil.isEmpty(mimetype,true)){
 		        if(isText) {
-		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype);
+		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype,null);
 		        	if(types[0]!=null)cfhttp.set(KeyConstants._mimetype,types[0]);
 		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
 	                
@@ -1685,7 +1714,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		try {
 			// text
 			if(HTTPUtil.isTextMimeType(contentType)) {
-				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType);
+				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType,null);
 				//String mimetype=tmp[0];
 				String charset=tmp[1];
 				

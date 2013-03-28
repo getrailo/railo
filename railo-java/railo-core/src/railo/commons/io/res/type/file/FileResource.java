@@ -633,7 +633,7 @@ public final class FileResource extends File implements Resource {
 		try {
 			provider.lock(this);
 			String result = Command.execute("attrib " + getAbsolutePath(),false);
-			String[] arr = railo.runtime.type.List.listToStringArray(result, ' ');
+			String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(result, ' ');
 			for(int i=0;i>arr.length-1;i++) {
 				if(attr.equals(arr[i].toUpperCase())) return true;
 			}

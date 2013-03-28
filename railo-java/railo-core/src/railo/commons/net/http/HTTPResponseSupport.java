@@ -3,6 +3,7 @@ package railo.commons.net.http;
 import java.io.IOException;
 import java.io.InputStream;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
@@ -25,6 +26,10 @@ public abstract class HTTPResponseSupport implements HTTPResponse {
 		long length=0;
 		try{
 			is=getContentAsStream();
+
+            if ( is == null )
+                return 0;
+
 			byte[] buffer = new byte[1024];
 		    int len;
 		    while((len = is.read(buffer)) !=-1){
@@ -42,7 +47,9 @@ public abstract class HTTPResponseSupport implements HTTPResponse {
 		Header header = getLastHeaderIgnoreCase("Content-Type");
 		if(header==null) return null;
 		
-		String[] mimeCharset = HTTPUtil.splitMimeTypeAndCharset(header.getValue());
+		String[] mimeCharset = HTTPUtil.splitMimeTypeAndCharset(header.getValue(), null);
+		if(mimeCharset==null) return null;
+		
 		String[] typeSub = HTTPUtil.splitTypeAndSubType(mimeCharset[0]);
 		return new ContentTypeImpl(typeSub[0],typeSub[1],mimeCharset[1]);
 	}

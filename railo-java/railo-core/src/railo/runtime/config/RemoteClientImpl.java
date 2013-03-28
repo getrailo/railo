@@ -7,10 +7,10 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.remote.RemoteClientTask;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public class RemoteClientImpl implements RemoteClient {
 
@@ -104,7 +104,7 @@ public class RemoteClientImpl implements RemoteClient {
 	}
 
 	public boolean hasUsage(String usage) {
-		return List.listFindNoCaseIgnoreEmpty(this.usage,usage,',')!=-1 ;
+		return ListUtil.listFindNoCaseIgnoreEmpty(this.usage,usage,',')!=-1 ;
 	}
 
 	public String getId(Config config) {

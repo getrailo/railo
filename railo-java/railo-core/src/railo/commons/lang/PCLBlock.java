@@ -8,6 +8,7 @@ import java.net.URL;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceClassLoader;
 import railo.runtime.type.Sizeable;
 
 /**
@@ -144,7 +145,7 @@ public final class PCLBlock extends ClassLoader implements Sizeable  {
             IOUtil.copy(res,baos,false);
         } 
         catch (IOException e) {
-            throw new ClassNotFoundException("class "+name+" is invalid or doesn't exist");
+        	throw new ClassNotFoundException("class "+name+" is invalid or doesn't exist");
         }
         
         byte[] barr=baos.toByteArray();

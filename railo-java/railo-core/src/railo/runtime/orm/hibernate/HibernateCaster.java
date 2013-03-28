@@ -113,7 +113,7 @@ public class HibernateCaster {
 		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
 		name = cfc.getPageSource().getDisplayPath();
-	    name=railo.runtime.type.List.last(name, "\\/",true);
+	    name=railo.runtime.type.util.ListUtil.last(name, "\\/",true);
 	    int index=name.lastIndexOf('.');
 	    name= name.substring(0,index);
 		return name;

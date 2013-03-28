@@ -22,9 +22,9 @@ import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a cfml file on the runtime system
@@ -125,6 +125,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return loadPage(ThreadLocalPageContext.get(), defaultValue);
 	}
 	
+
+	public Page loadPage(PageContext pc, boolean forceReload) throws PageException {
+		if(forceReload) page=null;
+		return loadPage(pc);
+	}
+	
 	public Page loadPage(PageContext pc) throws PageException {
 		Page page=this.page;
 		if(mapping.isPhysicalFirst()) {
@@ -183,17 +189,10 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	
     	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
-    	//if(pc.isPageAlreadyUsed(page)) return page;
-    	
-    	if((mapping.isTrusted() || 
-    			pci.isTrusted(page)) 
-        		&& isLoad(LOAD_PHYSICAL)) return page;
-				//&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
-        
+    	if((mapping.isTrusted() || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
         long srcLastModified = srcFile.lastModified();
-        
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
@@ -403,7 +402,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 				strRoot+='/';
 			}
 			int rootLen=strRoot.length();
-			String[] arr=List.toStringArray(List.listToArray(path,'/'),"");//path.split("/");
+			String[] arr=ListUtil.toStringArray(ListUtil.listToArray(path,'/'),"");//path.split("/");
 			int tmpLen;
 			for(int i=count;i>0;i--) {
 				if(arr.length>i) {
@@ -524,7 +523,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		StringBuffer packageName=new StringBuffer();
 		StringBuffer javaName=new StringBuffer();
 		
-		String[] arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(str,'/'));
+		String[] arr=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(str,'/'));
 		
 		String varName;
 		for(int i=0;i<arr.length;i++) {
@@ -577,7 +576,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		
 		// virtual part
 		if(!mapping.ignoreVirtual()) {
-			arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(mapping.getVirtual(),"\\/"));
+			arr=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(mapping.getVirtual(),"\\/"));
 			for(int i=0;i<arr.length;i++) {
 				if(compName.length()>0) compName.append('.');
 				compName.append(arr[i]);
@@ -585,7 +584,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		}
 		
 		// physical part
-		arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(str,'/'));	
+		arr=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(str,'/'));	
 		for(int i=0;i<arr.length;i++) {
 		    if(compName.length()>0) compName.append('.');
 			if(i==(arr.length-1)) {

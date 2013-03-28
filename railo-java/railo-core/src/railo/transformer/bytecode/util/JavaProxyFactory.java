@@ -25,9 +25,12 @@ import railo.commons.lang.KeyGenerator;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaProxy;
+import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
@@ -157,8 +160,8 @@ public class JavaProxyFactory {
 		return createProxy(cfc, null, ClassUtil.loadClass(config.getClassLoader(), className));
 	}*/
 
-	public static Object createProxy(ConfigWeb config, Component cfc, Class extendz,Class... interfaces) throws PageException, IOException {
-		
+	public static Object createProxy(PageContext pc, Component cfc, Class extendz,Class... interfaces) throws PageException, IOException {
+		PageContextImpl pci=(PageContextImpl) pc;
 		if(extendz==null) extendz=Object.class;
 		if(interfaces==null) interfaces=new Class[0];
 		else {
@@ -179,12 +182,12 @@ public class JavaProxyFactory {
 		
 		
 		String className=createClassName(extendz,interfaces);
-    	Mapping mapping = cfc.getPageSource().getMapping();
+    	//Mapping mapping = cfc.getPageSource().getMapping();
 		
     	// get ClassLoader
     	PhysicalClassLoader cl=null;
 		try {
-			cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(false);
+			cl = (PhysicalClassLoader) pci.getRPCClassLoader(false);// mapping.getConfig().getRPCClassLoader(false)
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
@@ -257,9 +260,9 @@ public class JavaProxyFactory {
         	ResourceUtil.touch(classFile);
 	        IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 	        
-	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
+	        cl = (PhysicalClassLoader) pci.getRPCClassLoader(true);
 	        Class<?> clazz = cl.loadClass(className, barr);
-	        return newInstance(clazz, config,cfc);
+	        return newInstance(clazz, pc.getConfig(),cfc);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);
@@ -436,7 +439,7 @@ public class JavaProxyFactory {
 			}
 			Arrays.sort(arr);
 			
-			sb.append(railo.runtime.type.List.arrayToList(arr, ";"));
+			sb.append(railo.runtime.type.util.ListUtil.arrayToList(arr, ";"));
 		}
 		
 		String key = KeyGenerator.createVariable(sb.toString());

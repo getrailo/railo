@@ -7,7 +7,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListInsertAt implements Function {
 	
@@ -25,6 +25,6 @@ public final class ListInsertAt implements Function {
 		if(strDelimiter.length()==0)
         throw new FunctionException(pc,"listInsertAt",4,"delimiter","invalid delimiter value, can't be a empty string"); 
         
-        return List.listInsertAt(list,(int)posNumber,value,strDelimiter,!includeEmptyFields);
+        return ListUtil.listInsertAt(list,(int)posNumber,value,strDelimiter,!includeEmptyFields);
 	}
 }

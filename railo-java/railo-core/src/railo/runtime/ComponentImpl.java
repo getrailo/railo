@@ -60,7 +60,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -82,6 +81,7 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
@@ -992,7 +992,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	protected String getCallPath() {
 		if(StringUtil.isEmpty(top.properties.callPath)) return getName();
 		try {
-            return "("+List.arrayToList(List.listToArrayTrim(top.properties.callPath.replace('/','.').replace('\\','.'),"."),".")+")";
+            return "("+ListUtil.arrayToList(ListUtil.listToArrayTrim(top.properties.callPath.replace('/','.').replace('\\','.'),"."),".")+")";
         } catch (PageException e) {
             return top.properties.callPath;
         }
@@ -1029,11 +1029,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     @Override
     public String getName() {
 	    if(top.properties.callPath==null) return "";
-	    return List.last(top.properties.callPath,"./",true);
+	    return ListUtil.last(top.properties.callPath,"./",true);
 	}
     public String _getName() { // MUST nicht so toll
 	    if(properties.callPath==null) return "";
-	    return List.last(properties.callPath,"./",true);
+	    return ListUtil.last(properties.callPath,"./",true);
 	}
     public PageSource _getPageSource() {
     	return pageSource;
@@ -1352,6 +1352,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(!StringUtil.isEmpty(displayname))sct.set(KeyConstants._displayname,displayname);
         
         sct.set(KeyConstants._persistent,comp.properties.persistent);
+        sct.set(KeyConstants._hashCode,comp.hashCode());
         sct.set(KeyConstants._accessors,comp.properties.accessors);
         sct.set(KeyConstants._synchronized,comp.properties._synchronized);
         if(comp.properties.output!=null)
@@ -1365,7 +1366,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         // implements
         InterfaceCollection ic = comp.interfaceCollection;
         if(ic!=null){
-        	Set<String> set = List.listToSet(comp.properties.implement, ",",true);
+        	Set<String> set = ListUtil.listToSet(comp.properties.implement, ",",true);
             InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
             if(!ArrayUtil.isEmpty(interfaces)){
 	            Struct imp=new StructImpl();
@@ -1385,7 +1386,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"component");
             
-        Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
+        Class skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
@@ -1773,21 +1774,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     
-    /**
-     * @param isNew because we can return only one value we give a editable boolean in to 
-     * become tzhe info if the class is new or not
-     * @return
-     * @throws PageException
-     */
+    @Override
     public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
-    	return getJavaAccessClass(isNew, false,true,true,true);
+    	return getJavaAccessClass(ThreadLocalPageContext.get(),isNew, false,true,true,true);
+    }
+    
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew) throws PageException {
+    	return getJavaAccessClass(pc,isNew, false,true,true,true);
     }
 
-    public Class getJavaAccessClass(RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	ComponentProperties props =(takeTop)?top.properties:properties;
     	if(props.javaAccessClass==null) {
-    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(this,isNew,create,writeLog,supressWSbeforeArg);
+    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(pc,this,isNew,create,writeLog,supressWSbeforeArg);
 		}
     	return props.javaAccessClass;
     }

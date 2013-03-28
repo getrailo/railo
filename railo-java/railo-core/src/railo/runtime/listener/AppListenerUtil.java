@@ -36,12 +36,12 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public final class AppListenerUtil {
 	public static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
@@ -83,7 +83,7 @@ public final class AppListenerUtil {
 	    if(ps.exists()) { 
 			return ps;
 		}
-	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
+	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 	    //Config config = pc.getConfig();
 		for(int i=arr.size()-1;i>0;i--) {
 		    StringBuffer sb=new StringBuffer("/");
@@ -140,7 +140,7 @@ public final class AppListenerUtil {
 	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 	    
-	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
+	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 		//Config config = pc.getConfig();
 		String path;
 		for(int i=arr.size()-1;i>0;i--) {
@@ -243,7 +243,7 @@ public final class AppListenerUtil {
 					Caster.toBooleanValue(data.get(BLOB,null),false), 
 					Caster.toBooleanValue(data.get(CLOB,null),false), 
 					DataSource.ALLOW_ALL, 
-					Caster.toStruct(data.get(KeyConstants._custom,null),false), 
+					Caster.toStruct(data.get(KeyConstants._custom,null),null,false), 
 					Caster.toBooleanValue(data.get(READ_ONLY,null),false), 
 					true, 
 					Caster.toBooleanValue(data.get(STORAGE,null),false), 
@@ -253,15 +253,15 @@ public final class AppListenerUtil {
 		
 	}
 
-	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue) {
+	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue, Resource source) { 
 		try {
-			return toMappings(cw, o);
+			return toMappings(cw, o,source);
 		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
 
-	public static Mapping[] toMappings(ConfigWeb cw,Object o) throws PageException {
+	public static Mapping[] toMappings(ConfigWeb cw,Object o, Resource source) throws PageException {
 		Struct sct = Caster.toStruct(o);
 		Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
@@ -271,13 +271,19 @@ public final class AppListenerUtil {
 		while(it.hasNext()) {
 			e = it.next();
 			virtual=translateMappingVirtual(e.getKey().getString());
-			physical=Caster.toString(e.getValue());
+			physical=translateMappingPhysical(Caster.toString(e.getValue()),source);
 			mappings.add(config.getApplicationMapping(virtual,physical));
 			
 		}
 		return mappings.toArray(new Mapping[mappings.size()]);
 	}
 	
+
+	private static String translateMappingPhysical(String path, Resource source) {
+		source=source.getParentResource().getRealResource(path);
+		if(source.exists()) return source.getAbsolutePath();
+		return path;
+	}
 
 	private static String translateMappingVirtual(String virtual) {
 		virtual=virtual.replace('\\', '/');
@@ -297,7 +303,7 @@ public final class AppListenerUtil {
 	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o) throws PageException {
 		Array array;
 		if(o instanceof String){
-			array=List.listToArrayRemoveEmpty(Caster.toString(o),',');
+			array=ListUtil.listToArrayRemoveEmpty(Caster.toString(o),',');
 		}
 		else if(o instanceof Struct){
 			array=new ArrayImpl();
@@ -402,7 +408,7 @@ public final class AppListenerUtil {
 
 	public static void setORMConfiguration(PageContext pc, ApplicationContext ac,Struct sct) throws PageException {
 		if(sct==null)sct=new StructImpl();
-		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
+		Resource res=pc.getCurrentTemplatePageSource().getResourceTranslated(pc).getParentResource();
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
 		ac.setORMConfiguration(ORMConfigurationImpl.load(config,ac,sct,res,config.getORMConfig()));
 		
@@ -430,7 +436,7 @@ public final class AppListenerUtil {
 		
 		
 		try {
-			return List.arrayToList(arr, ",");
+			return ListUtil.arrayToList(arr, ",");
 		} catch (PageException e) {
 			return "none";
 		} 
@@ -453,7 +459,7 @@ public final class AppListenerUtil {
 		if("true".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
 		if("yes".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
 		
-		String[] arr = List.listToStringArray(strScriptProtect, ',');
+		String[] arr = ListUtil.listToStringArray(strScriptProtect, ',');
 		String item;
 		int scriptProtect=0;
 		for(int i=0;i<arr.length;i++) {

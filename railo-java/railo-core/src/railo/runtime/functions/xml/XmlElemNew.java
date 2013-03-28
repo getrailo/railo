@@ -14,7 +14,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStructFactory;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class XmlElemNew implements Function {
 	
@@ -40,7 +40,7 @@ public final class XmlElemNew implements Function {
 		// without namespace
 		if(StringUtil.isEmpty(namespace)){
 			if(childname.indexOf(':')!=-1) {
-				String[] parts = List.listToStringArray(childname, ':');
+				String[] parts = ListUtil.listToStringArray(childname, ':');
 				childname = parts[1];
 				String prefix = parts[0];
 				namespace = getNamespaceForPrefix(doc.getDocumentElement(),prefix);

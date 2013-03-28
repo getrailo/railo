@@ -5,12 +5,13 @@ import java.io.IOException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.util.JavaProxyFactory;
 
 public class CreateDynamicProxy implements Function {
@@ -37,23 +38,23 @@ public class CreateDynamicProxy implements Function {
 		// interfaces
 		String[] strInterfaces;
 		if(Decision.isArray(oInterfaces)) {
-			strInterfaces=List.toStringArray(Caster.toArray(oInterfaces));
+			strInterfaces=ListUtil.toStringArray(Caster.toArray(oInterfaces));
 		}
 		else {
 			String list = Caster.toString(oInterfaces);
-			strInterfaces=List.listToStringArray(list, ',');
+			strInterfaces=ListUtil.listToStringArray(list, ',');
 		}
-		strInterfaces=List.trimItems(strInterfaces);
+		strInterfaces=ListUtil.trimItems(strInterfaces);
 		
 		
-		ClassLoader cl = pc.getConfig().getClassLoader();
+		ClassLoader cl = ((PageContextImpl)pc).getClassLoader();
 		Class[] interfaces=new Class[strInterfaces.length];
 		for(int i=0;i<strInterfaces.length;i++){
 			interfaces[i]=ClassUtil.loadClass(cl, strInterfaces[i]);
 			if(!interfaces[i].isInterface()) throw new FunctionException(pc, "CreateDynamicProxy", 2, "interfaces", "definition ["+strInterfaces[i]+"] is a class and not a interface");
 		}
 		
-		return JavaProxyFactory.createProxy(pc.getConfig(),cfc, null,interfaces);
+		return JavaProxyFactory.createProxy(pc,cfc, null,interfaces);
 	}
 	    
 }

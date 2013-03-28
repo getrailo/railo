@@ -19,6 +19,7 @@ import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.ExprString;
@@ -266,18 +267,20 @@ public class Variable extends ExpressionBase implements Invoker {
 	
 public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
 		
-		if(name instanceof LitString) {
-			LitString lit = (LitString)name;
+		if(name instanceof Literal) {
+			Literal l=(Literal) name;
+			
+			LitString ls = name instanceof LitString?(LitString)l:LitString.toLitString(l.getString());
 			if(doUpperCase){
-				lit=lit.duplicate();
-				lit.upperCase();
+				ls=ls.duplicate();
+				ls.upperCase();
 			}
-			String key=KeyConstants.getFieldName(lit.getString());
+			String key=KeyConstants.getFieldName(ls.getString());
 			if(key!=null){
 				bc.getAdapter().getStatic(KEY_CONSTANTS, key, Types.COLLECTION_KEY);
 				return true;
 			}
-			int index=bc.registerKey(lit);
+			int index=bc.registerKey(ls);
 			bc.getAdapter().visitVarInsn(Opcodes.ALOAD, 0);
 			bc.getAdapter().visitFieldInsn(Opcodes.GETFIELD,  bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
 			bc.getAdapter().push(index);
@@ -522,7 +525,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		if(!StringUtil.isEmpty(alias)) {
 			//String[] arrAlias = railo.runtime.type.List.toStringArray(railo.runtime.type.List.trimItems(railo.runtime.type.List.listToArrayRemoveEmpty(alias, ',')));
 			for(int i=0;i<nargs.length;i++){
-				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
+				if(names[i]!=null && railo.runtime.type.util.ListUtil.listFindNoCase(alias, names[i])!=-1){
 					nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
 					return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 				}

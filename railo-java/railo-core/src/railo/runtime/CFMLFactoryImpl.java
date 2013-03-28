@@ -34,7 +34,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -43,6 +42,7 @@ import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * implements a JSP Factory, this class produce JSP Compatible PageContext Object
@@ -210,7 +210,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 			LockManager manager = pc.getConfig().getLockManager();
 	        String[] locks = manager.getOpenLockNames();
 	        if(!ArrayUtil.isEmpty(locks)) 
-	        	strLocks=" open locks at this time ("+List.arrayToList(locks, ", ")+").";
+	        	strLocks=" open locks at this time ("+ListUtil.arrayToList(locks, ", ")+").";
 	        //LockManagerImpl.unlockAll(pc.getId());
 		}
 		catch(Throwable t){}

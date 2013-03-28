@@ -21,7 +21,7 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class Dump implements Function {
 	
@@ -103,8 +103,8 @@ public final class Dump implements Function {
 			// format
 			DumpWriter writer=pc.getConfig().getDumpWriter(format,defType);
 			
-			Set setShow=(show!=null)?List.listToSet(show.toLowerCase(),",",true):null;
-			Set setHide=(hide!=null)?List.listToSet(hide.toLowerCase(),",",true):null;
+			Set setShow=(show!=null)?ListUtil.listToSet(show.toLowerCase(),",",true):null;
+			Set setHide=(hide!=null)?ListUtil.listToSet(hide.toLowerCase(),",",true):null;
 			
 			DumpProperties properties=new DumpProperties((int)maxLevel,setShow,setHide,(int)keys,metainfo,showUDFs);
 			DumpData dd = DumpUtil.toDumpData(object, pc,(int)maxLevel,properties);

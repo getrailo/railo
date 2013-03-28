@@ -10,7 +10,7 @@ import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * To create cfimport custom tags
@@ -26,7 +26,7 @@ public final class CFImportTag extends CFTag {
         
 		
 		String strRealPathes=attributesScope.remove("__custom_tag_path").toString();
-		String[] realPathes=List.listToStringArray(strRealPathes, File.pathSeparatorChar);
+		String[] realPathes=ListUtil.listToStringArray(strRealPathes, File.pathSeparatorChar);
 	    for(int i=0;i<realPathes.length;i++){
 	    	if(!StringUtil.endsWith(realPathes[i],'/'))realPathes[i]=realPathes[i]+"/";
 	    }

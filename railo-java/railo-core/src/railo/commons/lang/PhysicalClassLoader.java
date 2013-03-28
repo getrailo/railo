@@ -4,11 +4,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
+import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceClassLoader;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * Directory ClassLoader
@@ -16,9 +24,11 @@ import railo.runtime.type.Sizeable;
 public final class PhysicalClassLoader extends ClassLoader implements Sizeable  {
     
     private Resource directory;
-    private ClassLoader pcl;
+    private ClassLoader parent;
 	private int size=0;
 	private int count;
+	private Map<String,PhysicalClassLoader> customCLs; 
+	
 
     /**
      * Constructor of the class
@@ -28,7 +38,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      */
     public PhysicalClassLoader(Resource directory, ClassLoader parent) throws IOException {
         super(parent);
-        this.pcl=parent;
+        this.parent=parent;
         if(!directory.isDirectory())
             throw new IOException("resource "+directory+" is not a directory");
         if(!directory.canRead())
@@ -84,7 +94,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         //print.o("load:"+name+" -> "+c);
         if (c == null) {
             try {
-            	c =pcl.loadClass(name);
+            	c =parent.loadClass(name);
             } 
             catch (Throwable t) {
             	c = findClass(name);
@@ -132,17 +142,12 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-    	//if(!name.endsWith("$cf")) return super.findClass(name); this break Webervices
-    	//File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
     	Resource res=directory.getRealResource(name.replace('.','/').concat(".class"));
-        //File f = new File(directory,name.replace('.',File.separatorChar).concat(".class"));
-        //if(f==null) throw new ClassNotFoundException("class "+name+" not found");
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             IOUtil.copy(res,baos,false);
         } 
-        catch (IOException e) {
+        catch (IOException e) {//e.printStackTrace();
             throw new ClassNotFoundException("class "+name+" is invalid or doesn't exist");
         }
         
@@ -156,7 +161,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     }
     
 
-    public Class<?> loadClass(String name, byte[] barr) throws ClassNotFoundException   {
+    public Class<?> loadClass(String name, byte[] barr) {
     	int start=0;
     	if(ClassUtil.hasCF33Prefix(barr)) start=10;
     	size+=barr.length-start;
@@ -166,11 +171,9 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 		} 
         catch (Throwable t) {
 			SystemUtil.sleep(1);
-			try {
-	    		return defineClass(name,barr,start,barr.length-start);
-			} catch (Throwable t2) {SystemUtil.sleep(1);}
+			return defineClass(name,barr,start,barr.length-start);
 		}
-    	return loadClass(name,false);
+    	//return loadClass(name,false);
     }
     
     @Override
@@ -241,6 +244,32 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 	
 	public int count() {
 		return count;
+	}
+	
+	// FUTURE add to interface
+	public PhysicalClassLoader getCustomClassLoader(Resource[] resources, boolean reload) throws IOException{
+		if(ArrayUtil.isEmpty(resources)) return this;
+		String key = hash(resources);
+		
+		if(reload && customCLs!=null) customCLs.remove(key);
+		
+		
+		PhysicalClassLoader pcl=customCLs==null?null:customCLs.get(key);
+		if(pcl!=null) return pcl; 
+		pcl=new PhysicalClassLoader(this.getDirectory(),new ResourceClassLoader(resources,getParent()));
+		if(customCLs==null)customCLs=new ReferenceMap();
+		customCLs.put(key, pcl);
+		return pcl;
+	}
+	
+	private String hash(Resource[] resources) {
+		Arrays.sort(resources);
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<resources.length;i++){
+			sb.append(ResourceUtil.getCanonicalPathEL(resources[i]));
+			sb.append(';');
+		}
+		return MD5.getDigestAsString(sb.toString(),null);
 	}
 
 }

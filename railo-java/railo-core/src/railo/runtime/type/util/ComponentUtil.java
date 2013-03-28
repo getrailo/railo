@@ -28,6 +28,7 @@ import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.component.Property;
@@ -46,7 +47,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -79,11 +79,7 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
-		return _getComponentJavaAccess(component, isNew,create,writeLog,supressWSbeforeArg);
-	}
-	    
-    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
+	public static Class getComponentJavaAccess(PageContext pc,ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
     	String className=getClassname(component).concat("_wrap");
@@ -92,7 +88,7 @@ public final class ComponentUtil {
     	Mapping mapping = component.getPageSource().getMapping();
 		PhysicalClassLoader cl=null;
 		try {
-			cl = (PhysicalClassLoader) (mapping.getConfig()).getRPCClassLoader(false);
+			cl = (PhysicalClassLoader) ((PageContextImpl)pc).getRPCClassLoader(false);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
@@ -156,7 +152,7 @@ public final class ComponentUtil {
         	ResourceUtil.touch(classFile);
 	        IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 	        
-	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
+	        cl = (PhysicalClassLoader) ((PageContextImpl)pc).getRPCClassLoader(true);
 	        
 	        return registerTypeMapping(cl.loadClass(className, barr));
         }
@@ -300,8 +296,8 @@ public final class ComponentUtil {
     		path=path.substring(root.length());
 
     	path=path.replace('\\', '/').toLowerCase();
-    	path=List.trim(path, "/");
-    	String[] arr = List.listToStringArray(path, '/');
+    	path=ListUtil.trim(path, "/");
+    	String[] arr = ListUtil.listToStringArray(path, '/');
     	
     	StringBuffer rtn=new StringBuffer();
     	for(int i=0;i<arr.length;i++) {
@@ -316,10 +312,32 @@ public final class ComponentUtil {
     	return rtn.toString();
 	}
 
-
+	/*
+	 * includes the application context javasettings 
+	 * @param pc
+	 * @param className
+	 * @param properties
+	 * @return
+	 * @throws PageException
+	 */
+	public static Object getClientComponentPropertiesObject(PageContext pc, String className, ASMProperty[] properties) throws PageException {
+		try {
+			return _getClientComponentPropertiesObject(pc,pc.getConfig(), className, properties);
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+	}
+	/*
+	 * does not include the application context javasettings 
+	 * @param pc
+	 * @param className
+	 * @param properties
+	 * @return
+	 * @throws PageException
+	 */
 	public static Object getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException {
 		try {
-			return _getClientComponentPropertiesObject(config, className, properties);
+			return _getClientComponentPropertiesObject(null,config, className, properties);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
@@ -327,11 +345,12 @@ public final class ComponentUtil {
 	
 
     
-    private static Object _getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
+    private static Object _getClientComponentPropertiesObject(PageContext pc, Config secondChanceConfig, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
     	String real=className.replace('.','/');
     	
-		//Config config = pc.getConfig();
-		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
+		PhysicalClassLoader cl;
+    	if(pc==null)cl = (PhysicalClassLoader)secondChanceConfig.getRPCClassLoader(false);
+    	else cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(false);
 		
 		Resource rootDir = cl.getDirectory();
 		Resource classFile = rootDir.getRealResource(real.concat(".class"));
@@ -355,7 +374,8 @@ public final class ComponentUtil {
 		ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	
-    	cl = (PhysicalClassLoader)config.getRPCClassLoader(exist);
+    	if(pc==null)cl = (PhysicalClassLoader)secondChanceConfig.getRPCClassLoader(exist);
+    	else cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(exist);
     	
 		return ClassUtil.loadInstance(cl.loadClass(className));
 
@@ -363,22 +383,21 @@ public final class ComponentUtil {
 
 	
     
-	public static Class getServerComponentPropertiesClass(Component component) throws PageException {
+	public static Class getServerComponentPropertiesClass(PageContext pc,Component component) throws PageException {
 		try {
-	    	return _getServerComponentPropertiesClass(component);
+	    	return _getServerComponentPropertiesClass(pc,component);
 		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
     }
     
-    public static Class _getServerComponentPropertiesClass(Component component) throws PageException, IOException, ClassNotFoundException {
+    private static Class _getServerComponentPropertiesClass(PageContext pc,Component component) throws PageException, IOException, ClassNotFoundException {
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
 
     	Mapping mapping = component.getPageSource().getMapping();
-		Config config = mapping.getConfig();
-		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
+		PhysicalClassLoader cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(false);
 		
 		Resource classFile = cl.getDirectory().getRealResource(real.concat(".class"));
 		
@@ -400,7 +419,7 @@ public final class ComponentUtil {
 				ComponentUtil.getProperties(component, false, true, false, false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-    	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
+    	cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(true);
 		return cl.loadClass(className); //ClassUtil.loadInstance(cl.loadClass(className));
     }
 
@@ -569,7 +588,7 @@ public final class ComponentUtil {
 			
 			return new ExpressionException(
 					"component ["+c.getCallName()+"] has no "+strAccess+" function with name ["+key+"]",
-					"accessible functions are ["+List.arrayToList(other,",")+"]");
+					"accessible functions are ["+ListUtil.arrayToList(other,",")+"]");
 		}
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}

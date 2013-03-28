@@ -15,12 +15,14 @@ import java.util.Set;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 public final class ClassUtil {
@@ -117,9 +119,20 @@ public final class ClassUtil {
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
 		
 		if(cl==null){
-			Config config = ThreadLocalPageContext.getConfig();
-			if(config!=null)cl=config.getClassLoader();
+			PageContextImpl pci = (PageContextImpl) ThreadLocalPageContext.get();
+			if(pci!=null){
+				try {
+					cl=pci.getClassLoader();
+				}
+				catch (IOException e) {}
+			}
+			if(cl==null) {
+				Config config = ThreadLocalPageContext.getConfig();
+				if(config!=null)cl=config.getClassLoader();
+			}
 		}
+		
+		
 		
 		try {
 			if(cl==null)return Class.forName(className.trim());
@@ -314,7 +327,7 @@ public final class ClassUtil {
 	// pathes from system properties
 		String strPathes=System.getProperty("java.class.path");
 		if(strPathes!=null) {
-			Array arr=List.listToArrayRemoveEmpty(strPathes,pathSeperator);
+			Array arr=ListUtil.listToArrayRemoveEmpty(strPathes,pathSeperator);
 			int len=arr.size();
 			for(int i=1;i<=len;i++) {
 				File file=FileUtil.toFile(Caster.toString(arr.get(i,""),"").trim());

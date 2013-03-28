@@ -551,7 +551,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getMappings() {
 		if(!initMappings) {
 			Object o = get(component,KeyConstants._mappings,null);
-			if(o!=null)mappings=AppListenerUtil.toMappings(config,o,mappings);
+			if(o!=null)mappings=AppListenerUtil.toMappings(config,o,mappings,getSource());
 			initMappings=true; 
 		}
 		return mappings;
@@ -854,7 +854,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public Resource getSource() {
-		return component.getPageSource().getPhyscalFile();
+		return component.getPageSource().getResource();
 	}
 
 
@@ -943,7 +943,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 						}
 					}
 					else {
-						arr=railo.runtime.type.List.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
+						arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
 					}
 					Iterator<Object> it = arr.valueIterator();
 					String ext;

@@ -12,7 +12,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -59,7 +59,7 @@ public final class CacheRemove implements Function {
 		if(Decision.isArray(oIds)){
 			return Caster.toArray(oIds);
 		}
-		return List.listToArray(Caster.toString(oIds), ',');
+		return ListUtil.listToArray(Caster.toString(oIds), ',');
 	}
 	
 }

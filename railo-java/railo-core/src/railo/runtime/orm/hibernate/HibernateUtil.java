@@ -20,10 +20,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 
 public class HibernateUtil {
@@ -39,7 +39,7 @@ public class HibernateUtil {
 	private static final Set<String> keywords=new HashSet<String>();
 	private static final Key FIELDTYPE = KeyConstants._fieldtype;
 	static {
-		Array arr = List.listToArray(KEYWORDS, ',');
+		Array arr = ListUtil.listToArray(KEYWORDS, ',');
 		Iterator<Object> it = arr.valueIterator();
 		while(it.hasNext()){
 			keywords.add(Caster.toString(it.next(),null));
@@ -90,7 +90,7 @@ public class HibernateUtil {
 		String res = validateColumnName(metaData, name,null);
 		if(res!=null) return res;
 		throw new ORMException("invalid name, there is no property with name ["+name+"] in the entity ["+metaData.getEntityName()+"]",
-				"valid properties names are ["+railo.runtime.type.List.arrayToList(metaData.getPropertyNames(), ", ")+"]");
+				"valid properties names are ["+railo.runtime.type.util.ListUtil.arrayToList(metaData.getPropertyNames(), ", ")+"]");
 		
 	}
 	

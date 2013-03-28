@@ -8,7 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.security.Credential;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class IsUserInAnyRole implements Function {
 	public static boolean call(PageContext pc) throws PageException {
@@ -21,7 +21,7 @@ public final class IsUserInAnyRole implements Function {
 		    return ru.getRoles().length>0;
 		}
 		
-		String[] roles = List.trimItems(List.listToStringArray(strRoles, ','));
+		String[] roles = ListUtil.trimItems(ListUtil.listToStringArray(strRoles, ','));
 		for(int i=0;i<roles.length;i++) {
 			if(IsUserInRole.call(pc, roles[i])) return true;
 		}

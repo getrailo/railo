@@ -26,7 +26,7 @@ public class FileWrite {
 				}
 				else {
 					close=true;
-					Resource res = Caster.toResource(obj,false);
+					Resource res = Caster.toResource(pc,obj,false);
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
 					fsw=new FileStreamWrapperWrite(res,charset,false,false);
 				}

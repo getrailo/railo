@@ -6,7 +6,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.SourceFile;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a cfml file on the runtime system
@@ -233,7 +233,7 @@ public final class SourceFileImpl implements SourceFile {
 		while(str.lastIndexOf('/')==str.length()-1)str=str.substring(0,str.length()-1);
 		
 		//String[] arr=str.split("/");
-		Array arr = List.listToArray(str, '/');
+		Array arr = ListUtil.listToArray(str, '/');
 		int len=arr.size();
 		String value;
 		for(int i=1;i<=len;i++) {

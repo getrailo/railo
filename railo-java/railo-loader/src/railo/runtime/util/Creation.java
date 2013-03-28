@@ -127,8 +127,10 @@ public interface Creation {
      * @return struct
      */
     public abstract Struct createStruct();
-    
+
     public abstract Struct createStruct(int type);
+    
+    // FUTURE public abstract Struct createStruct(String type);
 
     /**
      * creates a query object with given data

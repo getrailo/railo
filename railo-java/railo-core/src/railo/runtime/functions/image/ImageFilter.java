@@ -23,9 +23,9 @@ import railo.runtime.img.filter.*;
 import railo.runtime.img.math.BinaryFunction;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ListUtil;
 
 public class ImageFilter {
 	private static final Struct EMPTY_STRUCT = new StructImpl();
@@ -184,7 +184,7 @@ public class ImageFilter {
 		if(clazz==null) {
 			String[] keys = filters.keySet().toArray(new String[filters.size()]);
 			Arrays.sort(keys);
-			String list=List.arrayToList(keys, ", ");
+			String list=ListUtil.arrayToList(keys, ", ");
 			
 			String soundex = StringUtil.soundex(filterName);
 			java.util.List<String> similar=new ArrayList<String>();
@@ -193,7 +193,7 @@ public class ImageFilter {
 					similar.add(keys[i]);
 			}
 			if(similar.size()>0) {
-				list=List.arrayToList(similar.toArray(new String[similar.size()]), ", ");
+				list=ListUtil.arrayToList(similar.toArray(new String[similar.size()]), ", ");
 				throw new FunctionException(pc, "ImageFilter", 2, "filtername", "invalid filter name ["+filterName+"], did you mean ["+list+"]");
 			}
 			throw new FunctionException(pc, "ImageFilter", 2, "filtername", "invalid filter name ["+filterName+"], valid filter names are ["+list+"]");

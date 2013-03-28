@@ -19,9 +19,9 @@ import railo.runtime.search.SearchException;
 import railo.runtime.search.SearchIndex;
 import railo.runtime.search.lucene2.LuceneSearchCollection;
 import railo.runtime.tag.util.DeprecatedUtil;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Populates collections with indexed data.
@@ -236,7 +236,7 @@ public final class Index extends TagImpl {
 	**/
 	public void setExtensions(String extensions) throws PageException	{
 		if(extensions==null) return;
-		this.extensions=List.toStringArrayTrim(List.listToArray(extensions,','));
+		this.extensions=ListUtil.toStringArrayTrim(ListUtil.listToArray(extensions,','));
 	}
 
 	/** set the value key
@@ -318,7 +318,7 @@ public final class Index extends TagImpl {
 	 */
 	public void setCategory(String listCategories)  {
 		if(listCategories==null) return;
-		this.category = List.trimItems(List.listToStringArray(listCategories, ','));
+		this.category = ListUtil.trimItems(ListUtil.listToStringArray(listCategories, ','));
 	}
 
 

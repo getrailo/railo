@@ -26,9 +26,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.ListUtil;
 
 import com.sun.jndi.ldap.ctl.SortControl;
 import com.sun.jndi.ldap.ctl.SortKey;
@@ -289,7 +289,7 @@ public final class LDAPClient {
             SortKey keys[] = new SortKey[sort.length];
             for(int i=0;i<sort.length;i++) {
                 String item=sort[i].equalsIgnoreCase("dn")?"name":sort[i];
-                if(item.indexOf(' ')!=-1)item=List.first(item," ",true);
+                if(item.indexOf(' ')!=-1)item=ListUtil.first(item," ",true);
                 keys[i] = new SortKey(item,isSortAsc ,sortType==LDAPClient.SORT_TYPE_CASE?null/*"CASE"*/:null);
                 //keys[i] = new SortKey(item);
             }
@@ -367,7 +367,7 @@ public final class LDAPClient {
     }
 
     private static String[] toStringAttributes(String strAttributes,String delimiter) throws PageException {
-		return List.toStringArrayTrim(List.listToArrayRemoveEmpty(strAttributes,delimiter));		
+		return ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty(strAttributes,delimiter));		
 	}
 	
 	private static Attributes toAttributes(String strAttributes,String delimiter, String separator) throws PageException {
@@ -384,7 +384,7 @@ public final class LDAPClient {
             
             // Value
             String strValue = (eqIndex!=-1)?strAttr.substring( eqIndex+ 1):strAttr;
-            String[] arrValue=List.toStringArray(List.listToArrayRemoveEmpty(strValue,separator));
+            String[] arrValue=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(strValue,separator));
             
             // Fill
             for(int y=0; y<arrValue.length; y++) {
@@ -405,7 +405,7 @@ public final class LDAPClient {
     private String[] getAttributesValues(String attribute, String separator) throws PageException {
         String strValue = attribute.substring(attribute.indexOf("=") + 1);
         if(strValue.length() == 0) return null;
-        return List.toStringArray(List.listToArrayRemoveEmpty(strValue,separator.equals(", ") ? "," : separator));
+        return ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(strValue,separator.equals(", ") ? "," : separator));
     }
 		
 }

@@ -34,9 +34,9 @@ import railo.runtime.text.pdf.PDFDocument;
 import railo.runtime.text.pdf.PDFUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
@@ -912,7 +912,7 @@ public class PDF extends BodyTagImpl  {
 				}
 			}
 			else if(source instanceof String) {
-				String[] sources = List.toStringArrayTrim(List.listToArrayRemoveEmpty((String)source, ','));
+				String[] sources = ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty((String)source, ','));
 				for(int i=0;i<sources.length;i++) {
 					docs.add(doc=toPDFDocument(sources[i],password,null));
 					doc.setPages(pages);

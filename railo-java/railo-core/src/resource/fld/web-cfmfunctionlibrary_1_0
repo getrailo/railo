@@ -3558,91 +3558,6 @@ dec: descending (z to a) sort order.
 			<type>void</type>
 		</return>
 	</function>
-	<!-- dump -->
-	<function>
-		<name>dump</name>
-		<class>railo.runtime.functions.other.Dump</class>
-		<description>Use the dump function to display objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.</description>
-		<argument>
-			<name>value</name>
-			<type>any</type>
-			<required>Yes</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>label</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>expand</name>
-			<type>boolean</type>
-			<required>No</required>
-			<default>true</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>top</name>
-			<type>number</type>
-			<required>No</required>
-			<default>9999</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>show</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>hide</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>output</name>
-			<type>string</type>
-			<required>No</required>
-		<description>Where to send the results of the dump. The following values are valid:
-- browser: outputs in browser window
-- console: outputs on (System.out stream; see also setting in railo-server.xml {system-out})
-- filename: outputs in a file
-		</description>
-    </argument>
-		<argument>
-			<name>format</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>keys</name>
-			<type>number</type>
-			<required>No</required>
-			<default>9999</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>metainfo</name>
-			<type>boolean</type>
-			<required>No</required>
-			<default>true</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>showUDFs</name>
-			<type>boolean</type>
-			<required>No</required>
-			<default>true</default>
-		<description></description>
-    </argument>
-		<return>
-			<type>void</type>
-		</return>
-	</function>
-	
 	
 	<!-- dumpStruct -->
 	<function>
@@ -6363,7 +6278,7 @@ Default list delimiter: comma character.</description>
 		</argument>
 		<argument>
 			<name>numIterations</name>
-			<type>int</type>
+			<type>number</type>
 			<required>No</required>
 			<description>number of iterations; default is 1.</description>
 		</argument>
@@ -10580,7 +10495,7 @@ The following things are considered to be empty:
 			- email: a string containig a valid email address.
 			- eurodate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A date in the form d/m/y, d-m-y, or d.m.y. The m and d format can be 1 or 2 digits; y can be 2 or 4 digits. 
 			- float or numeric: a numeric value; equivalent to the IsNumeric function.
-			- guid: a Universally Unique Identifier of the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX where X is a hexadecimal number.
+			- guid: a Globally Unique Identifier in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX where X is a hexadecimal number.
 			- integer: an integer.
 			- query: a query object; equivalent to the IsQuery function.
 			- range: a numeric range, specified by the min and max attributes.
@@ -10590,7 +10505,7 @@ The following things are considered to be empty:
 			- struct: a structure; equivalent to the IsStruct function.
 			- telephone: a standard US telephone number.
 			- URL: an http, https, ftp, file, mailto, or news URL,
-			- UUID: a ColdFusion Universally Unique Identifier, formatted XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXX, where X is a hexadecimal number. See CreateUUID.
+			- UUID: a Universally Unique Identifier in the format XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXX, where X is a hexadecimal number. See CreateUUID.
 			- USdate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years.
 			- variableName: a string formatted according to ColdFusion variable naming conventions.
 			- zipcode: U.S., 5- or 9-digit format ZIP codes.</description>
@@ -15762,14 +15677,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>writeOutput</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description>Appends text to the page-output stream.
-        This function writes to the page-output stream regardless of
+		<description>Writes the given string to the main response buffer regardless of
         conditions established by the cfsetting tag.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>A string or a variable that contains one</description>
+		<description>A string to write to the buffer.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -15779,12 +15693,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>echo</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description>Writes the given string out to the main response buffer. see also function writeOutput.</description>
+		<description>Writes the given string to the main response buffer regardless of
+        conditions established by the cfsetting tag. see also function writeOutput.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string to write to the buffer.</description>
     </argument>
 		<return>
 			<type>boolean</type>

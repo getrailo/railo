@@ -15,7 +15,7 @@ import railo.runtime.functions.image.ImageNew;
 import railo.runtime.functions.image.ImageWrite;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class Sprite extends TagImpl {
 	
@@ -77,8 +77,8 @@ public final class Sprite extends TagImpl {
 		
 		// handle all items
 		if(!StringUtil.isEmpty(_ids)) {
-			String[] ids=List.listToStringArray(_ids, ',');
-			String[] strSrcs=List.listToStringArray(_srcs, ',');
+			String[] ids=ListUtil.listToStringArray(_ids, ',');
+			String[] strSrcs=ListUtil.listToStringArray(_srcs, ',');
 			Resource[] srcs=new Resource[strSrcs.length];
 			Image[] images=new Image[strSrcs.length];
 			for(int i=0;i<srcs.length;i++){

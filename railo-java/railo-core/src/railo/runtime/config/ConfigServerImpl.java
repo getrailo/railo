@@ -34,6 +34,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
@@ -130,7 +131,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     	Iterator<String> it = initContextes.keySet().iterator();
         while(it.hasNext()) {
             ConfigWebImpl cw=((CFMLFactoryImpl)initContextes.get(it.next())).getConfigWebImpl();
-            if(cw.getServletContext().getRealPath("/").equals(realpath))
+            if(ReqRspUtil.getRootPath(cw.getServletContext()).equals(realpath))
                 return cw;
         }
         return null;

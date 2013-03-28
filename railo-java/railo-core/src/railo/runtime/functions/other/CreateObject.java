@@ -12,6 +12,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.com.COMObject;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ExpressionException;
@@ -26,8 +27,8 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public final class CreateObject implements Function {
 	public static Object call(PageContext pc , String cfcName) throws PageException {
@@ -102,16 +103,17 @@ public final class CreateObject implements Function {
 	 
     public static Object doJava(PageContext pc,String className, String pathes, String delimiter) throws PageException {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
-        	ConfigImpl ci = ((ConfigImpl)pc.getConfig());
+        	PageContextImpl pci = (PageContextImpl)pc;
+        	java.util.List<Resource> resources=new ArrayList<Resource>();
         	
         	// get java settings from application.cfc
-        	java.util.List<Resource> resources=getJavaSettings(pc);
+        	//java.util.List<Resource> resources=getJavaSettings(pc);
         	
         	// load resources
         	//Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
         		if(StringUtil.isEmpty(delimiter))delimiter=",";
-        		String[] arrPathes = List.trimItems(List.toStringArray(List.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
+        		String[] arrPathes = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
         		
         		for(int i=0;i<arrPathes.length;i++) {
         			resources.add(ResourceUtil.toResourceExisting(pc,arrPathes[i]));
@@ -120,7 +122,7 @@ public final class CreateObject implements Function {
         	
         	// load class
         	try	{
-        		ClassLoader cl = resources.size()==0?ci.getClassLoader():ci.getClassLoader(resources.toArray(new Resource[resources.size()]));
+        		ClassLoader cl = resources.size()==0?pci.getClassLoader():pci.getClassLoader(resources.toArray(new Resource[resources.size()]));
     			Class clazz = ClassUtil.loadClass(cl,className);
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 
@@ -131,18 +133,19 @@ public final class CreateObject implements Function {
         throw new SecurityException("can't create Java Object ["+className+"], direct java access is deinied by security manager");
 	} 
     
-    public static java.util.List<Resource> getJavaSettings(PageContext pc) {
+    /*public static java.util.List<Resource> getJavaSettings(PageContext pc) {
     	java.util.List<Resource> resources=new ArrayList<Resource>();
     	
     	// get Resources from application context
     	JavaSettings settings=pc.getApplicationContext().getJavaSettings();
     	Resource[] _resources = settings==null?null:settings.getResources();
     	if(_resources!=null)for(int i=0;i<_resources.length;i++){
-    		resources.add(_resources[i]);
+    		resources.add(ResourceUtil.getCanonicalResourceEL(_resources[i]));
     	}
     	
 		return resources;
-	}
+	}*/
+    
 	public static Object doCOM(PageContext pc,String className) {
 		return new COMObject(className);
 	} 

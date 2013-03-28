@@ -11,13 +11,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpaceWriter {
 
-	public static final char CHAR_EMPTY=0;
-	public static final char CHAR_NL='\n';
-	public static final char CHAR_SPACE=' ';
-	public static final char CHAR_TAB='\t';
-	public static final char CHAR_BS='\b'; // \x0B\
-	public static final char CHAR_FW='\f';
-	public static final char CHAR_RETURN='\r';
+	public static final char CHAR_NL = '\n';
+	public static final char CHAR_RETURN = '\r';
+	public static final char CHAR_SPACE = ' ';
 
 	private static final char CHAR_GT = '>';
 	private static final char CHAR_LT = '<';
@@ -164,7 +160,9 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 				return;
 			if ( sb.length() > 0 ) {
 				printBuffer();													// buffer should never contain WS so flush it
-				super.print( c == CHAR_NL ? CHAR_NL : ( doChangeWsToSpace ? CHAR_SPACE : c ) );
+                lastChar = c == CHAR_NL ? CHAR_NL : ( doChangeWsToSpace ? CHAR_SPACE : c );
+				super.print( lastChar );
+                return;
 			}
 		}
 

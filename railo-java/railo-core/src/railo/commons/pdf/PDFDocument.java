@@ -39,8 +39,8 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.List;
 import railo.runtime.type.scope.CGIImpl;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 public final class PDFDocument {
@@ -199,11 +199,11 @@ public final class PDFDocument {
 		else mimetype=MIMETYPE_OTHER;
 		
 		// charset
-		String[] arr = List.listToStringArray(strMimetype, ';');
+		String[] arr = ListUtil.listToStringArray(strMimetype, ';');
 		if(arr.length>=2) {
 			this.strMimetype=arr[0].trim();
 			for(int i=1;i<arr.length;i++) {
-				String[] item = List.listToStringArray(arr[i], '=');
+				String[] item = ListUtil.listToStringArray(arr[i], '=');
 				if(item.length==1) {
 					strCharset=item[0].trim();
 					break;

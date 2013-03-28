@@ -66,6 +66,14 @@ public class StructImpl extends StructSupport {
 		if(rtn!=null) return rtn;
 		return defaultValue;
 	}
+	
+
+	public Object g(Collection.Key key, Object defaultValue) {
+		return map.g(key, defaultValue);
+	}
+	public Object g(Collection.Key key) throws PageException {
+		return map.g(key);
+	}
 
 	@Override
 	public Object get(Collection.Key key) throws PageException {
@@ -179,7 +187,7 @@ public class StructImpl extends StructSupport {
 	
 	@Override
 	public Iterator<Object> valueIterator() {
-		return values().iterator();
+		return map.values().iterator();
 	}
 
     @Override

@@ -608,7 +608,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Resource[] locations = ormConf.getCfcLocations();
 		
 		throw new ORMException(
-				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(getEntityNames(), ", ")+"] ",
+				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.util.ListUtil.arrayToList(getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
 	}
@@ -690,7 +690,7 @@ public class HibernateORMEngine implements ORMEngine {
 			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 		}
 		
-		throw new ORMException(this,"entity ["+name+"] "+(StringUtil.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		throw new ORMException(this,"entity ["+name+"] "+(StringUtil.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.util.ListUtil.arrayToList(names, ", ")+"]");
 		
 	}
 	

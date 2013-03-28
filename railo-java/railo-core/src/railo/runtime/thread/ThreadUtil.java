@@ -37,7 +37,7 @@ public class ThreadUtil {
 	}
 
 	public static  PageContextImpl createPageContext(ConfigWeb config,OutputStream os,String serverName,String requestURI,String queryString,Cookie[] cookies,Pair[] headers,Pair[] parameters,Struct attributes)  {
-		CFMLFactory factory = ((ConfigImpl)config).getFactory();
+		CFMLFactory factory = config.getFactory();
         HttpServletRequest	req = new HttpServletRequestDummy(
 				config.getRootDirectory(),
 				serverName,

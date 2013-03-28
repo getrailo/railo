@@ -7,8 +7,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public class ORMException extends ApplicationException {
 
@@ -84,7 +84,7 @@ public class ORMException extends ApplicationException {
 			String dsn=null;
 			DataSource ds = engine.getDataSource();
 			if(ds!=null) dsn=ds.getName();
-			pei.setAdditional(KeyConstants._Entities, List.arrayToList(names, ", "));
+			pei.setAdditional(KeyConstants._Entities, ListUtil.arrayToList(names, ", "));
 			if(dsn!=null)pei.setAdditional(KeyConstants._Datasource, dsn);
 		}
 	}

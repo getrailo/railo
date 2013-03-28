@@ -54,6 +54,6 @@ public class ImageGetEXIFMetadata {
 	private static void fill(Struct data, Object key, List list) throws PageException {
 		data.put(
 				key,
-				railo.runtime.type.List.listToList(list, ","));
+				railo.runtime.type.util.ListUtil.listToList(list, ","));
 	}
 }

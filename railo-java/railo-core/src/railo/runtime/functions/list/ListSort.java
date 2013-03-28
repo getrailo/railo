@@ -7,7 +7,7 @@ package railo.runtime.functions.list;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListSort implements Function {
 	
@@ -23,7 +23,7 @@ public final class ListSort implements Function {
 		return call(pc,list,sortType,sortOrder,delimiter,false);
 	}
 	public static String call(PageContext pc , String list, String sortType, String sortOrder, String delimiter , boolean includeEmptyFields) throws PageException {
-		if(includeEmptyFields) return List.sort(list,sortType, sortOrder,delimiter);
-		return List.sortIgnoreEmpty(List.trim(list,delimiter),sortType, sortOrder,delimiter);
+		if(includeEmptyFields) return ListUtil.sort(list,sortType, sortOrder,delimiter);
+		return ListUtil.sortIgnoreEmpty(ListUtil.trim(list,delimiter),sortType, sortOrder,delimiter);
 	}
 }

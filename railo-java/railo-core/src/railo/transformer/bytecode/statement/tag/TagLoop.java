@@ -753,12 +753,12 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			getAttribute("list").getValue().writeOut(bc, Expression.MODE_REF);
 			if(containsAttribute("delimiters")) {
 				getAttribute("delimiters").getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.invokeStatic(Types.LIST, LIST_TO_ARRAY_REMOVE_EMPTY_SS);
+				adapter.invokeStatic(Types.LIST_UTIL, LIST_TO_ARRAY_REMOVE_EMPTY_SS);
 			}
 			else {
 				adapter.visitIntInsn(Opcodes.BIPUSH, 44);// ','
 				//adapter.push(',');
-				adapter.invokeStatic(Types.LIST, LIST_TO_ARRAY_REMOVE_EMPTY_SC);
+				adapter.invokeStatic(Types.LIST_UTIL, LIST_TO_ARRAY_REMOVE_EMPTY_SC);
 			}
 		}
 		adapter.storeLocal(array);

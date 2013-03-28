@@ -5,8 +5,8 @@ import javax.servlet.jsp.JspException;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 public final class Calendar extends TagImpl {
 
@@ -71,7 +71,7 @@ public final class Calendar extends TagImpl {
 	 * @param dayNames the dayNames to set
 	 */
 	public void setDaynames(String listDayNames) {
-		this.dayNames = List.listToStringArray(listDayNames,',');
+		this.dayNames = ListUtil.listToStringArray(listDayNames,',');
 	}
 
 	/**

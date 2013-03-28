@@ -117,7 +117,7 @@ public final class TagSwitch extends TagBaseNoFinal {
 				Attribute attr = tag.getAttribute("delimiters");
 				if(attr!=null)attr.getValue().writeOut(bc,Expression.MODE_REF);
 				else adapter.push(",");
-				adapter.invokeStatic(Types.LIST, LIST_FIND_NO_CASE);
+				adapter.invokeStatic(Types.LIST_UTIL, LIST_FIND_NO_CASE);
 			div.visitNEQ();
 				adapter.push(-1);
 			div.visitEnd(bc);

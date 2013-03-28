@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -15,6 +16,8 @@ import org.objectweb.asm.commons.Method;
 
 import railo.aprint;
 import railo.commons.digest.MD5;
+import railo.commons.io.IOUtil;
+import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
@@ -22,6 +25,7 @@ import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -273,7 +277,7 @@ public final class ASMUtil {
 	 * falls ein solches existiert, andernfalls wird null zurueckgegeben.
 	 * @param el Startelement, von wo aus gesucht werden soll.
 	 * @param fullName Name des gesuchten Tags.
-	 * @return  Übergeornetes Element oder null.
+	 * @return  ï¿½bergeornetes Element oder null.
 	 */
 	public static Tag getAncestorTag(Tag tag, String fullName) {
 		Statement parent=tag;
@@ -532,7 +536,7 @@ public final class ASMUtil {
     public static byte[] createPojo(String className, ASMProperty[] properties,Class parent,Class[] interfaces, String srcName) throws PageException {
     	className=className.replace('.', '/');
     	className=className.replace('\\', '/');
-    	className=railo.runtime.type.List.trim(className, "/");
+    	className=ListUtil.trim(className, "/");
     	String[] inter=null;
     	if(interfaces!=null){
     		inter=new String[interfaces.length];
@@ -1104,5 +1108,14 @@ public final class ASMUtil {
 	public static void visitLabel(GeneratorAdapter ga, Label label) {
 		if(label!=null) ga.visitLabel(label);
 	}
-	
+
+	public static String getClassName(Resource res) throws IOException{
+		byte[] src=IOUtil.toBytes(res);
+		ClassReader cr = new ClassReader(src);
+		return cr.getClassName();
+	}
+
+	public static String getClassName(byte[] barr){
+		return new ClassReader(barr).getClassName();
+	}
 }
