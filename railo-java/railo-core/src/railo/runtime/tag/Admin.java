@@ -20,8 +20,6 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
-import org.opencfml.eventgateway.Gateway;
-
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
 import railo.commons.io.CompressUtil;
@@ -89,6 +87,7 @@ import railo.runtime.functions.system.ContractPath;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
+import railo.runtime.gateway.GatewayUtil;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
@@ -3126,13 +3125,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			new QueryImpl(new String[]{"class","id","custom","cfcPath","listenerCfcPath","startupMode","state","readOnly"}, 0, "entries");
         Map.Entry entry;
         GatewayEntry ge;
-        Gateway g;
+        //Gateway g;
         int row=0;
         while(it.hasNext()){
 			row++;
 		    entry=(Entry) it.next();
 			ge=(GatewayEntry) entry.getValue();
-			g=ge.getGateway();
+			//g=ge.getGateway();
         	qry.addRow();
         	qry.setAtEL("class", row, ge.getClassName());
         	qry.setAtEL("id", row, ge.getId());
@@ -3141,7 +3140,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	qry.setAtEL("startupMode", row, GatewayEntryImpl.toStartup(ge.getStartupMode(),"automatic"));
         	qry.setAtEL("custom", row, ge.getCustom());
         	qry.setAtEL("readOnly", row, Caster.toBoolean(ge.isReadOnly()));
-        	qry.setAtEL("state",row,GatewayEngineImpl.toStringState(g.getState(), "failed"));
+        	qry.setAtEL("state",row,GatewayEngineImpl.toStringState(GatewayUtil.getState(ge), "failed"));
         	
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
@@ -3223,13 +3222,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Map entries = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
 		Iterator it = entries.keySet().iterator();
 		GatewayEntry ge;
-		Gateway g;
+		//Gateway g;
 		Struct sct;
 		while(it.hasNext()) {
             String key=(String)it.next();
             if(key.equalsIgnoreCase(id)) {
                 ge=(GatewayEntry) entries.get(key);
-                g=ge.getGateway();
+                //g=ge.getGateway();
                 sct=new StructImpl();
                 sct.setEL("id",ge.getId());
                 sct.setEL("class",ge.getClassName());
@@ -3238,7 +3237,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 sct.setEL("startupMode",GatewayEntryImpl.toStartup(ge.getStartupMode(),"automatic"));
                 sct.setEL("custom",ge.getCustom());
                 sct.setEL("readOnly",Caster.toBoolean(ge.isReadOnly()));
-                sct.setEL("state",GatewayEngineImpl.toStringState(g.getState(), "failed"));
+                sct.setEL("state",GatewayEngineImpl.toStringState(GatewayUtil.getState(ge), "failed"));
                 
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;

@@ -1,5 +1,6 @@
-package org.opencfml.eventgateway;
+package railo.runtime.gateway;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface Gateway {
@@ -17,7 +18,7 @@ public interface Gateway {
      * @param cfcPath the path to the listener component
      * @param config the configuration as map
      */
-    public void init(GatewayEngine engine,String id, String cfcPath,Map config) throws GatewayException;
+    public void init(GatewayEngine engine,String id, String cfcPath,Map config) throws IOException;
 
     /**
      * returns the id of the gateway
@@ -30,7 +31,7 @@ public interface Gateway {
      * @param data
      * @return answer from gateway
      */
-    public String sendMessage(Map data) throws GatewayException;
+    public String sendMessage(Map data) throws IOException;
     
     /**
      * return helper object
@@ -42,19 +43,19 @@ public interface Gateway {
      * starts the gateway
      * @throws GatewayException
      */
-    public void doStart() throws GatewayException;
+    public void doStart() throws IOException;
     
     /**
      * stop the gateway
      * @throws GatewayException
      */
-    public void doStop() throws GatewayException;
+    public void doStop() throws IOException;
     
     /**
      * restart the gateway
      * @throws GatewayException
      */
-    public void doRestart() throws GatewayException;
+    public void doRestart() throws IOException;
     
     /**
      * returns a string that is used by the event gateway administrator to display status

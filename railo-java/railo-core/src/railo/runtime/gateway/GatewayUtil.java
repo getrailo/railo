@@ -41,5 +41,9 @@ public class GatewayUtil {
 		}
 		return list;
 	}
+	
+	public static int getState(GatewayEntry ge){ // this method only exists to make sure the Gateway interface must not be used outsite the gateway package
+		return ge.getGateway().getState();
+	}
 
 }
