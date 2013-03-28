@@ -12,7 +12,6 @@
 		
 		
 		,field("Debug","debug","yes",true,"If [yes], the gateway generates verbose logging. The default is to only log problems.","radio","yes,no")
-		,field("Topic","topic","no",true,"If [yes], the gateway expects the destination name to refer to a topic. If [no], the gateway expects the destination name to refer to a queue.","radio","yes,no")
 		,field("Outbound Only","outboundOnly","no",true,"If [yes], the gateway does not subscribe to a destination.","radio","yes,no")
 		,field("Cachable","cachable","no",true,"If [yes], a single publisher connection is created and used for all outbound messages. This allows you to use vendor-specific settings that support long-lived connections, such as durable publishers. Those settings are provided via the contextProperties setting. If [no], a fresh publisher connection is created for each outbound message that is sent.","radio","yes,no")
 		
