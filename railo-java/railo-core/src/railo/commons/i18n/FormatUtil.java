@@ -121,24 +121,37 @@ public class FormatUtil {
 		for(int i=0;i<df.length;i++){
 			if(df[i] instanceof SimpleDateFormat) {
 				p=((SimpleDateFormat) df[i]).toPattern()+"";
-				// h:mm:ss a
-				index=p.indexOf("h:mm:ss a");
-				if(index!=-1) {
-					p=StringUtil.replace(p, "h:mm:ss a", "H:mm:ss", true);
-					sdf = new SimpleDateFormat(p,locale);
-					if(!list.contains(sdf))list.add(sdf);
-				}
-				// hh:mm:ss a
-				index=p.indexOf("hh:mm:ss a");
-				if(index!=-1) {
-					p=StringUtil.replace(p, "hh:mm:ss a", "HH:mm:ss", true);
-					sdf = new SimpleDateFormat(p,locale);
-					if(!list.contains(sdf))list.add(sdf);
-				}
+				
+				if(check(list,p,locale,"hh:mm:ss a","HH:mm:ss")) continue;
+				if(check(list,p,locale,"h:mm:ss a","H:mm:ss")) continue;
+				if(check(list,p,locale,"hh:mm a","HH:mm")) continue;
+				if(check(list,p,locale,"h:mm a","H:mm")) continue;
+				
+				if(check(list,p,locale,"hh:mm:ssa","HH:mm:ss")) continue;
+				if(check(list,p,locale,"h:mm:ssa","H:mm:ss")) continue;
+				if(check(list,p,locale,"hh:mma","HH:mm")) continue;
+				if(check(list,p,locale,"h:mma","H:mm")) continue;
+				
+				//if(check(list,p,locale,"HH:mm:ss","hh:mm:ss a")) continue;
+				//if(check(list,p,locale,"H:mm:ss","h:mm:ss a")) continue;
+				//if(check(list,p,locale,"HH:mm","hh:mm a")) continue;
+				//if(check(list,p,locale,"H:mm","h:mm a")) continue;
 			}
 		}
 	}
 	
+	private static boolean check(List<DateFormat> list, String p,Locale locale, String from, String to) {
+		int index = p.indexOf(from);
+		if(index!=-1) {
+			p=StringUtil.replace(p, from, to, true);
+			SimpleDateFormat sdf = new SimpleDateFormat(p,locale);
+			if(!list.contains(sdf))list.add(sdf);
+			return true;
+		}
+		return false;
+	}
+
+
 	private static void addCustom(List<DateFormat> list,Locale locale,short formatType) {
 		// get custom formats from file
 		Config config = ThreadLocalPageContext.getConfig();
