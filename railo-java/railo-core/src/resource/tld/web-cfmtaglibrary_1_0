@@ -571,6 +571,13 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<rtexprvalue>true</rtexprvalue>
 			<description>name of the cache used to store data from ram resource in this context</description>
 		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>onMissingTemplate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>closure/udf executed when the requested template does not exist</description>
+		</attribute>
 		
 	</tag>
 	<!-- Argument -->

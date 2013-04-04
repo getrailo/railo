@@ -16,6 +16,7 @@ import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 
@@ -74,6 +75,7 @@ public final class Application extends TagImpl {
 	private String cacheObject;
 	private String cacheResource;
 	private Struct datasources;
+	private UDF onmissingtemplate;
 	
      
     @Override
@@ -118,6 +120,7 @@ public final class Application extends TagImpl {
     	cacheTemplate=null;
     	cacheObject=null;
     	cacheResource=null;
+    	onmissingtemplate=null;
     }
     
     /** set the value setclientcookies
@@ -339,6 +342,9 @@ public final class Application extends TagImpl {
 		//getAppContext().setScriptProtect(strScriptrotect);
 	}
 
+	public void setOnmissingtemplate(Object oUDF) throws PageException {
+		this.onmissingtemplate=Caster.toFunction(oUDF);
+	}
 
 	@Override
 	public int doStartTag() throws PageException	{
@@ -393,6 +399,9 @@ public final class Application extends TagImpl {
 			}
 		}
 		
+		if(onmissingtemplate!=null && ac instanceof ClassicApplicationContext){
+			((ClassicApplicationContext)ac).setOnMissingTemplate(onmissingtemplate);
+		}
 		
 		
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
