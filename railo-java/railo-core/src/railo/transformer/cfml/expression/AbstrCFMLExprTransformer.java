@@ -333,6 +333,9 @@ public abstract class AbstrCFMLExprTransformer {
 			else {
 				if(expr instanceof Variable)
 					expr=new Assign((Variable)expr,assignOp(data));
+				else if(expr instanceof Null) {
+					expr=new Assign(((Null)expr).toVariable(),assignOp(data));
+				}
 				else
 					throw new TemplateException(data.cfml,"invalid assignment left-hand side ("+expr.getClass().getName()+")");
 			}
