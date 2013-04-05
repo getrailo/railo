@@ -468,7 +468,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.archive">Archiv</data>
 	<data key="components.componentmappings">Zusätzliche Resourcen</data>
 	<data key="components.dmatpackage">package</data>
-	<data key="components.basecomponentdescription">Jede Komponente die nicht explizit eine andere Komponente erbt (Attribut &apos;extends&apos;) erbt diese Komponente, d.h. das jede Komponente diese Komponente direkt oder indirekt erbt.</data>
+	<data key="components.basecomponentdescription">Jede Komponente die nicht explizit eine andere Komponente erbt (Attribut &apos;extends&apos;) erbt diese Komponente, d.h. das jede Komponente diese Komponente direkt oder indirekt erbt. Jede Änderung an dieser Komponente benötigt einen restart von Railo.</data>
 	<data key="login.passwordmissing">Bitte geben Sie ein Passwort ein</data>
 	<data key="login.retypenewpasswordmissing">Bitte geben Sie das neue Passwort erneut ein</data>
 	<data key="login.password">Passwort</data>
