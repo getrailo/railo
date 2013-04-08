@@ -1,5 +1,6 @@
 package railo.runtime.db.driver;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,6 +8,8 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 
 import railo.runtime.PageContext;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 
 public class StatementProxy implements StatementPro {
 
@@ -276,5 +279,29 @@ public class StatementProxy implements StatementPro {
 	@Override
 	public void setQueryTimeout(int seconds) throws SQLException {
 		stat.setQueryTimeout(seconds);
+	}
+
+	public void closeOnCompletion() throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			stat.getClass().getMethod("closeOnCompletion", new Class[0]).invoke(stat, new Object[0]);
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
+	}
+
+	public boolean isCloseOnCompletion() throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			return Caster.toBooleanValue(stat.getClass().getMethod("isCloseOnCompletion", new Class[0]).invoke(stat, new Object[0]));
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
 	}
 }
