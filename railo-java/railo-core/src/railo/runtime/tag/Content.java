@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -182,7 +183,7 @@ public final class Content extends BodyTagImpl {
                      is=new BufferedInputStream(new ByteArrayInputStream(content));  
                 }
                 else {
-                    ReqRspUtil.setContentLength(rsp,file.length());
+                    //ReqRspUtil.setContentLength(rsp,file.length());
                     pageContext.getConfig().getSecurityManager().checkFileLocation(file);
                     contentLength=totalLength=file.length();
                     is=IOUtil.toBufferedInputStream(file.getInputStream());
@@ -213,7 +214,8 @@ public final class Content extends BodyTagImpl {
             			IOUtil.copy(is, os,off,len);
             		}
             	}
-            	ReqRspUtil.setContentLength(rsp,contentLength);
+            	if(!(os instanceof GZIPOutputStream))
+            		ReqRspUtil.setContentLength(rsp,contentLength);
             } 
             catch(IOException ioe) {}
             finally {
