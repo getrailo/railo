@@ -10,6 +10,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
 
@@ -18,16 +19,6 @@ public final class NamedArgument extends Argument {
 
 
 	private static final Type TYPE_FUNCTION_VALUE=Type.getType(FunctionValueImpl.class);
-    // railo.runtime.type.FunctionValue newInstance (String,Object)
-   /* 
-    private final static Method  NEW_INSTANCE = new Method("newInstance",
-			Types.FUNCTION_VALUE,
-			new Type[]{Types.STRING,Types.OBJECT});
-	
-    private final static Method  NEW_INSTANCE_ARR = new Method("newInstance",
-			Types.FUNCTION_VALUE,
-			new Type[]{Types.STRING_ARRAY,Types.OBJECT});
-*/
     private static final int VALUE=0;
     private static final int ARRAY=1;
     private static final int KEY=0;
@@ -50,14 +41,11 @@ public final class NamedArgument extends Argument {
 
 	public NamedArgument(Expression name, Expression value, String type, boolean varKeyUpperCase) {
 		super(value,type);
-		this.name=name;
+		this.name=name instanceof Null?LitString.toExprString(varKeyUpperCase?"NULL":"null"):name;
 		this.varKeyUpperCase=varKeyUpperCase;
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.expression.var.Argument#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
-	 */
+	@Override
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 		
 		int form=VALUE;
@@ -96,12 +84,8 @@ public final class NamedArgument extends Argument {
 	}
 
 	
-	/**
-	 * @see railo.transformer.bytecode.expression.var.Argument#writeOutValue(railo.transformer.bytecode.BytecodeContext, int)
-	 */
-	public Type writeOutValue(BytecodeContext bc, int mode)
-			throws BytecodeException {
-		// TODO Auto-generated method stub
+	@Override
+	public Type writeOutValue(BytecodeContext bc, int mode) throws BytecodeException {
 		return super.writeOutValue(bc, mode);
 	}
 

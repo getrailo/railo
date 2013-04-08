@@ -34,6 +34,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.functions.system.GetDirectoryFromPath;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
@@ -44,11 +45,7 @@ import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 public final class PDFDocument {
-	
 
-	
-    
-	
 	// PageType
     public static final Dimension PAGETYPE_ISOB5 = new Dimension(501, 709);
     public static final Dimension PAGETYPE_ISOB4 = new Dimension(709, 1002);
@@ -186,7 +183,7 @@ public final class PDFDocument {
 	}
 	
 	/**
-	 * @param mimetype the mimetype to set
+	 * @param strMimetype the mimetype to set
 	 */
 	public void setMimetype(String strMimetype) {
 		strMimetype = strMimetype.toLowerCase().trim();
@@ -425,7 +422,7 @@ public final class PDFDocument {
 		// bug in pd4ml-> html badse definition create a call
 		if(!StringUtil.isEmpty(userAgent) && userAgent.startsWith("Java"))return null;
 		
-		return HTTPUtil.toURL(GetDirectoryFromPath.call(pc,CGIImpl.getCurrentURL(pc.getHttpServletRequest())));
+		return HTTPUtil.toURL(GetDirectoryFromPath.call(pc, ReqRspUtil.getRequestURL(pc.getHttpServletRequest(), false)));
 	}
 
 
@@ -639,8 +636,5 @@ public final class PDFDocument {
 	public void setHtmlBookmark(boolean htmlBookmark) {
 		this.htmlBookmark = htmlBookmark;
 	}
-	
-
-
 
 }

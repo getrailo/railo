@@ -4194,11 +4194,6 @@ public final class Caster {
 		return new JavaObject(pc.getVariableUtil(), obj);
 	}
 
-	public static UDF toUDF(Object o) throws CasterException {
-		if(o instanceof UDF) return (UDF) o;
-		 throw new CasterException(o,"UDF");
-    }
-
 	public static BigDecimal toBigDecimal(Object o) throws PageException {
 		if(o instanceof BigDecimal) return (BigDecimal) o;
 		if(o instanceof Number) return new BigDecimal(((Number)o).doubleValue());

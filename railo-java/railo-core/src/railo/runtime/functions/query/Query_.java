@@ -5,13 +5,17 @@ package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.DatabaseException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
 import railo.runtime.type.Array;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 
-public final class Query_ implements Function {
+public final class Query_ extends BIF {
+
+	private static final long serialVersionUID = -3496695992298284984L;
+
 	public static Query call(PageContext pc , Object[] arr) throws DatabaseException {
 		String[] names=new String[arr.length];
 		Array[] columns=new Array[arr.length];
@@ -21,7 +25,7 @@ public final class Query_ implements Function {
 			if(arr[i] instanceof FunctionValue) {
 				FunctionValue vf = (FunctionValue)arr[i];
 				if(vf.getValue() instanceof Array) {
-					names[count]=vf.getName();
+					names[count]=vf.getNameAsString();
 					columns[count]=(Array) vf.getValue();
 					count++;
 				}
@@ -31,5 +35,10 @@ public final class Query_ implements Function {
 		}
 		Query query=new QueryImpl(names,columns,"query");
 		return query;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,(Object[])args[0]);
 	}
 }

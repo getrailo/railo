@@ -5,7 +5,7 @@ package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -13,7 +13,7 @@ import railo.runtime.type.Array;
 /**
  * implementation of the Function arrayAppend
  */
-public final class ArrayAppend implements Function {
+public final class ArrayAppend extends BIF {
 	
 	private static final long serialVersionUID = 5989673419120862625L;
 
@@ -39,5 +39,11 @@ public final class ArrayAppend implements Function {
 		else
 			array.append(object);
 		return true;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2) return call(pc,Caster.toArray(args[0]),args[1]);
+		return call(pc,Caster.toArray(args[0]),args[1],Caster.toBooleanValue(args[2]));
 	}
 }

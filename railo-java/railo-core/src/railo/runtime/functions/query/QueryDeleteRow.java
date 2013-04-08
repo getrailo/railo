@@ -2,11 +2,15 @@ package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Query;
 
-public final class QueryDeleteRow {
+public final class QueryDeleteRow extends BIF {
 
-    public static boolean call(PageContext pc, Query query) throws PageException {
+	private static final long serialVersionUID = 7610413135885802876L;
+
+	public static boolean call(PageContext pc, Query query) throws PageException {
         return call(pc,query,query.getRowCount());
     }
     
@@ -15,4 +19,10 @@ public final class QueryDeleteRow {
     	query.removeRow((int)row);
         return true;
     }
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1)return call(pc,Caster.toQuery(args[0]));
+		return call(pc,Caster.toQuery(args[0]),Caster.toDoubleValue(args[1]));
+	}
 }

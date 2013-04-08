@@ -7,12 +7,16 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.util.ListUtil;
 
-public final class QuerySort implements Function {
+public final class QuerySort extends BIF {
+
+	private static final long serialVersionUID = -6566120440638749819L;
+
 	public static boolean call(PageContext pc , Query query, String columnName) throws PageException {
 		return call(pc,query,columnName,null);
 	}
@@ -50,5 +54,11 @@ public final class QuerySort implements Function {
 		
 		
 		return true;		
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]));
+		return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]),Caster.toString(args[2]));
 	}
 }

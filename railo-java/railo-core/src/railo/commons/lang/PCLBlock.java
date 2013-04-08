@@ -14,7 +14,7 @@ import railo.runtime.type.Sizeable;
 /**
  * Directory ClassLoader
  */
-public final class PCLBlock extends ClassLoader implements Sizeable  {
+public final class PCLBlock extends ExtendableClassLoader implements Sizeable  {
     
     private Resource directory;
     private ClassLoader pcl;

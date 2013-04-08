@@ -1,6 +1,8 @@
 package railo.runtime.functions.gateway;
 
-import org.opencfml.eventgateway.GatewayException;
+import java.io.IOException;
+
+import railo.runtime.gateway.GatewayException;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
@@ -18,7 +20,7 @@ public final class SendGatewayMessage implements Function {
 		//GatewayEngineImpl.checkRestriction();
 		try {
 			return ((ConfigWebImpl)pc.getConfig()).getGatewayEngine().sendMessage(gatewayID,data);
-		} catch (GatewayException e) {
+		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
 		

@@ -19,6 +19,7 @@ import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
@@ -72,6 +73,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private JavaSettingsImpl javaSettings;
 
 	private DataSource[] dataSources;
+
+	private UDF onMissingTemplate;
 
     
     /**
@@ -557,5 +560,13 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setDataSources(DataSource[] dataSources) {
 		if(!ArrayUtil.isEmpty(dataSources))this.dataSources=dataSources;
+	}
+
+	public void setOnMissingTemplate(UDF onMissingTemplate) {
+		this.onMissingTemplate=onMissingTemplate;
+	}
+
+	public UDF getOnMissingTemplate() { 
+		return onMissingTemplate;
 	}
 }

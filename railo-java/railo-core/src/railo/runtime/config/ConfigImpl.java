@@ -166,12 +166,14 @@ public abstract class ConfigImpl implements Config {
 	private PhysicalClassLoader rpcClassLoader;
 	private Map<String,DataSource> datasources=new HashMap<String,DataSource>();
 	private Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
-	
+
+	private CacheConnection defaultCacheFunction=null;
 	private CacheConnection defaultCacheObject=null;
 	private CacheConnection defaultCacheTemplate=null;
 	private CacheConnection defaultCacheQuery=null;
 	private CacheConnection defaultCacheResource=null;
-	
+
+	private String cacheDefaultConnectionNameFunction=null;
 	private String cacheDefaultConnectionNameObject=null;
 	private String cacheDefaultConnectionNameTemplate=null;
 	private String cacheDefaultConnectionNameQuery=null;
@@ -3010,6 +3012,9 @@ public abstract class ConfigImpl implements Config {
 			if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameTemplate)){
 				defaultCacheTemplate=cc;
 			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameFunction)){
+				defaultCacheFunction=cc;
+			}
 			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameQuery)){
 				defaultCacheQuery=cc;
 			}
@@ -3029,25 +3034,30 @@ public abstract class ConfigImpl implements Config {
 
 	@Override
 	public CacheConnection getCacheDefaultConnection(int type) {
+		if(type==CACHE_DEFAULT_FUNCTION)	return defaultCacheFunction;
 		if(type==CACHE_DEFAULT_OBJECT)		return defaultCacheObject;
 		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return defaultCacheQuery;
-		return defaultCacheResource;
+		if(type==CACHE_DEFAULT_RESOURCE)	return defaultCacheResource;
+		return null;
 	}
 
 	protected void setCacheDefaultConnectionName(int type,String cacheDefaultConnectionName) {
-		if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
+		if(type==CACHE_DEFAULT_FUNCTION)		cacheDefaultConnectionNameFunction=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_OBJECT)		cacheDefaultConnectionNameObject=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
-		else cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_RESOURCE)	cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
 	}
 	
 	@Override
 	public String getCacheDefaultConnectionName(int type) {
-		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
+		if(type==CACHE_DEFAULT_FUNCTION)	return cacheDefaultConnectionNameFunction;
 		if(type==CACHE_DEFAULT_OBJECT)		return cacheDefaultConnectionNameObject;
+		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
-		return cacheDefaultConnectionNameResource;
+		if(type==CACHE_DEFAULT_RESOURCE)	return cacheDefaultConnectionNameResource;
+		return null;
 	}
 
 	public String getCacheMD5() { 

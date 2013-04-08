@@ -1,7 +1,7 @@
 package railo.runtime.gateway;
 
-import org.opencfml.eventgateway.Gateway;
-import org.opencfml.eventgateway.GatewayEngine;
+import railo.runtime.gateway.GatewayPro;
+import railo.runtime.gateway.GatewayEnginePro;
 
 public class GatewayThread extends Thread {
 
@@ -9,11 +9,11 @@ public class GatewayThread extends Thread {
 		public static final int STOP=1;
 		public static final int RESTART=2;
 		
-		private GatewayEngine engine;
-		private Gateway gateway;
+		private GatewayEnginePro engine;
+		private GatewayPro gateway;
 		private int action;
 
-		public GatewayThread(GatewayEngine engine,Gateway gateway,int action){
+		public GatewayThread(GatewayEnginePro engine,GatewayPro gateway,int action){
 			this.engine=engine;
 			this.gateway=gateway;
 			this.action=action;
@@ -27,7 +27,7 @@ public class GatewayThread extends Thread {
 			else if(action==RESTART) gateway.doRestart();
 			}
 			catch(Throwable ge){
-				engine.log(gateway,GatewayEngine.LOGLEVEL_ERROR,ge.getMessage());
+				engine.log(gateway,GatewayEnginePro.LOGLEVEL_ERROR,ge.getMessage());
 			}
 		}
 	}

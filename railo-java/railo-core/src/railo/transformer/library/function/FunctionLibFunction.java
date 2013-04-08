@@ -9,7 +9,12 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.BIF;
+import railo.runtime.functions.BIFProxy;
+import railo.runtime.reflection.Reflector;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
 
@@ -51,6 +56,7 @@ public final class FunctionLibFunction {
 	private String memberName;
 	private short memberType=CFTypes.TYPE_UNKNOW;
 	private boolean memberChaining;
+	private BIF bif;
 
 	
 	/**
@@ -147,14 +153,9 @@ public final class FunctionLibFunction {
 	 * Gibt die Klasse zurueck, welche diese Funktion implementiert.
 	 * @return Klasse der Function.
 	 */
-	public Class getCazz() {
+	public Class getClazz() {
 		if(clazz==null) {
 			clazz=ClassUtil.loadClass(cls,(Class)null);
-			/*try {
-				clazz=Class.orName(cls);
-			} catch (ClassNotFoundException e) {
-				
-			}*/
 		}
 		return clazz;
 	}
@@ -331,5 +332,24 @@ public final class FunctionLibFunction {
 	}
 	public String getMemberTypeAsString() {
 		return CFTypes.toString(getMemberType(),"any");
+	}
+	public BIF getBIF() {
+		if(bif!=null) return bif;
+		
+		Class clazz=getClazz();
+        if(clazz==null)throw new PageRuntimeException(new ExpressionException("class "+clazz+" not found"));
+        
+		if(Reflector.isInstaneOf(clazz, BIF.class)) {
+			try {
+				bif=(BIF)clazz.newInstance();
+			}
+			catch (Throwable t) {
+				throw new RuntimeException(t);
+			}
+		}
+		else {
+			return new BIFProxy(clazz);
+		}
+		return bif;
 	}
 }
