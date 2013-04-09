@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.print;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
@@ -103,6 +105,7 @@ public final class GetTagData implements Function {
 		sct.set("bodyType",getBodyType(tag));
 		sct.set("attrMin",Caster.toDouble(0));
 		sct.set("attrMax",Caster.toDouble(0));
+		sct.set("attributeCollection",getSupportAttributeCollection(tag));
 		
 		// TODO add support for script for cfml tags
 		Struct scp=new StructImpl();
@@ -184,6 +187,7 @@ public final class GetTagData implements Function {
 		sct.set("attrMin",Caster.toDouble(tag.getMin()));
 		sct.set("attrMax",Caster.toDouble(tag.getMax()));
 		sct.set("hasNameAppendix",Caster.toBoolean(tag.hasAppendix()));
+		sct.set("attributeCollection",getSupportAttributeCollection(tag));
 		
 		// script
 		TagLibTagScript script = tag.getScript();
@@ -238,5 +242,10 @@ public final class GetTagData implements Function {
 		if(TagLibTag.ATTRIBUTE_TYPE_NONAME==type) return "noname";
 		
 		return "fixed";
+	}
+
+
+	private static Boolean getSupportAttributeCollection(TagLibTag tag) {	
+		return StringUtil.isEmpty(tag.getTttClassName())?Boolean.TRUE:Boolean.FALSE;
 	}
 }
