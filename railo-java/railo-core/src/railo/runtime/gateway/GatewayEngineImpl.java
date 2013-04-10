@@ -272,27 +272,10 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	}
 
 	public boolean invokeListener(GatewayPro gateway, String method, Map data) {// FUTUTE add generic type to interface
-		data=GatewayUtil.toCFML(data);
-		
-		GatewayEntry entry = getGatewayEntry(gateway);
-		String cfcPath = entry.getListenerCfcPath();
-		if(!Util.isEmpty(cfcPath,true)){
-			try {
-				if(!callOneWay(cfcPath,gateway.getId(), method, Caster.toStruct(data,null,false), false))
-					log(gateway,LOGLEVEL_ERROR, "function ["+method+"] does not exist in cfc ["+toRequestURI(cfcPath)+"]");
-				else
-					return true;
-			} 
-			catch (PageException e) {
-				e.printStackTrace();
-				log(gateway,LOGLEVEL_ERROR, e.getMessage());
-			}
-		}
-		else
-			log(gateway,LOGLEVEL_ERROR, "there is no listener cfc defined");
-		return false;
+		return invokeListener(gateway.getId(), method, data);
 	}
-	public boolean invokeListener(String gatewayId, String method, Map data) {// FUTUTE add generic type to interface
+
+	public boolean invokeListener(String gatewayId, String method, Map data) {// do not add this method to loade, it can be removed with Railo 5
 		data=GatewayUtil.toCFML(data);
 		
 		GatewayEntry entry;
