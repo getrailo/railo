@@ -5,11 +5,12 @@ package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 
 
-public final class ArrayDelete implements Function {
+public final class ArrayDelete extends BIF {
 
 	private static final long serialVersionUID = 1120923916196967210L;
 	
@@ -30,6 +31,12 @@ public final class ArrayDelete implements Function {
 		}
 		
 		return true;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toArray(args[0]),args[1]);
+		return call(pc,Caster.toArray(args[0]),args[1],Caster.toString(args[2]));
 	}
 	
 }

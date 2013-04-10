@@ -5,6 +5,7 @@ import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -193,8 +194,8 @@ public final class VariableInterpreter {
 		int scope=scopeString2Int(list.next());
 		Object coll =null; 
 		if(scope==Scope.SCOPE_UNDEFINED) {
-		    coll=pc.undefinedScope().get(KeyImpl.init(list.current()),null);
-		    if(coll==null) return defaultValue;
+		    coll=pc.undefinedScope().get(KeyImpl.init(list.current()),NullSupportHelper.NULL());
+		    if(coll==NullSupportHelper.NULL()) return defaultValue;
 		}
 		else {
 		    try {
@@ -207,8 +208,8 @@ public final class VariableInterpreter {
 		}
 		
 		while(list.hasNext()) {
-			coll=pc.getVariableUtil().get(pc,coll,KeyImpl.init(list.next()),null);
-			if(coll==null) return defaultValue;
+			coll=pc.getVariableUtil().get(pc,coll,KeyImpl.init(list.next()),NullSupportHelper.NULL());
+			if(coll==NullSupportHelper.NULL()) return defaultValue;
 		}
 		return coll;
     }

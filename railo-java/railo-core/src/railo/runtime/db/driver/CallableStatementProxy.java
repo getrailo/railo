@@ -2,6 +2,7 @@ package railo.runtime.db.driver;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -18,6 +19,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
+
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 
 public class CallableStatementProxy extends PreparedStatementProxy implements CallableStatement {
 
@@ -593,5 +597,29 @@ public class CallableStatementProxy extends PreparedStatementProxy implements Ca
 	@Override
 	public boolean wasNull() throws SQLException {
 		return stat.wasNull();
+	}
+
+	public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			return (T) stat.getClass().getMethod("getObject", new Class[]{int.class,Class.class}).invoke(stat, new Object[]{parameterIndex,type});
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
+	}
+
+	public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			return (T) stat.getClass().getMethod("getObject", new Class[]{String.class,Class.class}).invoke(stat, new Object[]{parameterName,type});
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
 	}
 }

@@ -9,6 +9,7 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -157,6 +158,7 @@ public class CFMLExpressionInterpreter {
     private FunctionLib fld;
 	protected boolean allowNullConstant=false;
 	private boolean preciseMath;
+	private boolean isJson;
 	
     private final static Map<String,Ref> data=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	
@@ -179,7 +181,9 @@ public class CFMLExpressionInterpreter {
         
         if(JSON_ARRAY==null)JSON_ARRAY=fld.getFunction("_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=fld.getFunction("_jsonStruct");
+        isJson=this instanceof JSONExpressionInterpreter;
         
+		
         cfml.removeSpace();
         Ref ref = assignOp();
         cfml.removeSpace();
@@ -1178,35 +1182,33 @@ public class CFMLExpressionInterpreter {
 
         //Element el;
         cfml.removeSpace();
-        char first=name.charAt(0);
+        //char first=name.charAt(0);
         
         // Boolean constant 
-        if(first=='T' && name.equals("TRUE"))   {
+        if(name.equalsIgnoreCase("TRUE"))   {
             cfml.removeSpace();
             return LBoolean.TRUE;
         }
-        else if(first=='F' && name.equals("FALSE")) {
+        else if(name.equalsIgnoreCase("FALSE")) {
             cfml.removeSpace();
             return LBoolean.FALSE;
         }   
-        else if(first=='Y' && name.equals("YES"))   {
+        else if(name.equalsIgnoreCase("YES"))   {
             cfml.removeSpace();
             return LBoolean.TRUE;
         }
-        else if(first=='N')    {
-        	if(name.equals("NO")){
-        		cfml.removeSpace();
-        		return LBoolean.FALSE;
-        	}
-        	else if(allowNullConstant && name.equals("NULL")){
-        		cfml.removeSpace();
-        		return new  LString(null);
-        	}
-        	else if(name.equals("NEW")){
-        		Ref res = newOp();
-        		if(res!=null) return res;
-        	}
-        }  
+        else if(name.equalsIgnoreCase("NO")){
+    		cfml.removeSpace();
+    		return LBoolean.FALSE;
+    	}
+    	else if(allowNullConstant && name.equalsIgnoreCase("NULL")){
+    		cfml.removeSpace();
+    		return new  LString(null);
+    	}
+    	else if(name.equalsIgnoreCase("NEW")){
+    		Ref res = newOp();
+    		if(res!=null) return res;
+    	}  
         
         
         
@@ -1386,13 +1388,9 @@ public class CFMLExpressionInterpreter {
             else if(!cfml.isCurrentDigit())return null;
         }
         
-        StringBuffer sb=new StringBuffer();
-        //if(CASE_TYPE_UPPER==caseType)
-        	sb.append(cfml.getCurrentUpper());
-        /*else if(CASE_TYPE_ORIGINAL==caseType)
-        	sb.append(cfml.getCurrent());
-        else 
-        	sb.append(cfml.getCurrentLower());*/
+        boolean doUpper = !isJson && ((ConfigWebImpl)pc.getConfig()).getDotNotationUpperCase();
+        StringBuilder sb=new StringBuilder();
+        sb.append(doUpper?cfml.getCurrentUpper():cfml.getCurrent());
         do {
             cfml.next();
             if(!(cfml.isCurrentLetter()
@@ -1401,14 +1399,7 @@ public class CFMLExpressionInterpreter {
                     break;
                 }
 
-            //if(CASE_TYPE_UPPER==caseType)
-            	sb.append(cfml.getCurrentUpper());
-            /*else if(CASE_TYPE_ORIGINAL==caseType)
-            	sb.append(cfml.getCurrent());
-            else 
-            	sb.append(cfml.getCurrentLower());*/
-            
-            
+            sb.append(doUpper?cfml.getCurrentUpper():cfml.getCurrent());
         }
         while (cfml.isValidIndex());
         return sb.toString();//cfml.substringLower(start,cfml.getPos()-start);

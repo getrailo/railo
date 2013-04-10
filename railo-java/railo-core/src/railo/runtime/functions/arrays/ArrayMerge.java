@@ -6,12 +6,16 @@ package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 
-public final class ArrayMerge implements Function {
+public final class ArrayMerge extends BIF {
+
+	private static final long serialVersionUID = -391473381762154998L;
+
 	public static Array call(PageContext pc , Array arr1, Array arr2) throws PageException {
 		return call(pc,arr1,arr2,false);
 	}
@@ -29,6 +33,14 @@ public final class ArrayMerge implements Function {
 			return arr;
 		
 	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toArray(args[0]),Caster.toArray(args[1]));
+		return call(pc,Caster.toArray(args[0]),Caster.toArray(args[1]), Caster.toBooleanValue(args[2]));
+	}
+	
+	
 
 	public static void set(Array target,Array source) throws PageException {
 		int[] srcKeys=source.intKeys();

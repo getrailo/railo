@@ -106,6 +106,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     	super.reset();
     	tagHandlerPool.reset();
     	contextLock=null;
+    	baseComponentPage=null;
     }
     
     /* *

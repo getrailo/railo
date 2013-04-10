@@ -1,6 +1,6 @@
 package railo.runtime.gateway;
 
-import org.opencfml.eventgateway.GatewayException;
+import railo.runtime.gateway.GatewayException;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;

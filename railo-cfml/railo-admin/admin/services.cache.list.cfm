@@ -14,11 +14,11 @@
                 action="updateCacheDefaultConnection"
                 type="#request.adminType#"
                 password="#session["password"&request.adminType]#"
-                object="#StructKeyExists(form,'object')?form.object:''#"
-                template="#StructKeyExists(form,'template')?form.template:''#"
-                query="#StructKeyExists(form,'query')?form.query:''#"
-                resource="#StructKeyExists(form,'resource')?form.resource:''#"
-                function="#StructKeyExists(form,'function')?form.function:''#"
+                object="#StructKeyExists(form,'default_object')?form.default_object:''#"
+                template="#StructKeyExists(form,'default_template')?form.default_template:''#"
+                query="#StructKeyExists(form,'default_query')?form.default_query:''#"
+                resource="#StructKeyExists(form,'default_resource')?form.default_resource:''#"
+                function="#StructKeyExists(form,'default_function')?form.default_function:''#"
                 remoteClients="#request.getRemoteClients()#">				
 		</cfcase>
 	<!--- delete --->
@@ -228,6 +228,17 @@ Redirtect to entry --->
 		</cfform>
 	</cfif>
 </cfoutput>
+<script>
+function defaultValue(field) {
+	var form=field.form;
+	for(var i=0;i<form.elements.length;i++){
+		var f=form.elements[i];
+		if(f.name.substring(0,8)=='default_' && field.name!=f.name && f.value==field.value) {
+			f.selectedIndex = 0;
+		}
+	}
+}
+</script>
 
 <!--- select default cache --->
 <cfif connections.recordcount and access EQ "yes">
@@ -241,7 +252,7 @@ Redirtect to entry --->
 						<tr>
 							<th scope="row">#stText.Settings.cache['defaulttype'& type]#</th>
 							<td>
-								<select name="#type#" class="small">
+								<select name="default_#type#" class="small" onchange="defaultValue(this);">
 									<option value="">------</option>
 									<cfloop query="connections">
 										<option value="#connections.name#" <cfif connections.default EQ type>selected="selected"</cfif>>#connections.name#</option>

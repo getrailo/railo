@@ -3,7 +3,10 @@ package railo.transformer.bytecode.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import railo.commons.lang.ClassUtil;
 
 /**
  * A {@code Method} provides information about, and access to, a single method
@@ -26,8 +29,7 @@ public abstract class ASMMethod  {
     private Class[]             exceptionTypes;
     private Class               returnType;
     private Class[]             parameterTypes;
-    private String              name;
-    private int                 modifiers;
+    //private int                 modifiers;
     private Class               clazz;
     
 
@@ -36,19 +38,9 @@ public abstract class ASMMethod  {
      * instantiation of these objects in Java code from the java.lang
      * package via sun.reflect.LangReflectAccess.
      */
-    public ASMMethod(Class declaringClass,
-           String name,
-           Class[] parameterTypes,
-           Class returnType,
-           Class[] checkedExceptions,
-           int modifiers)
-    {
+    public ASMMethod(Class declaringClass, Class[] parameterTypes) {
         this.clazz = declaringClass;
-        this.name = name;
         this.parameterTypes = parameterTypes;
-        this.returnType = returnType;
-        this.exceptionTypes = checkedExceptions;
-        this.modifiers = modifiers;
     }
     
 
@@ -64,9 +56,7 @@ public abstract class ASMMethod  {
      * Returns the name of the method represented by this {@code Method}
      * object, as a {@code String}.
      */
-    public String getName() {
-        return name;
-    }
+    public abstract String getName();
 
     /**
      * Returns the Java language modifiers for the method represented
@@ -75,9 +65,7 @@ public abstract class ASMMethod  {
      *
      * @see Modifier
      */
-    public int getModifiers() {
-        return modifiers;
-    }
+    public abstract int getModifiers();
 
     /**
      * Returns a {@code Class} object that represents the formal return type
@@ -85,9 +73,21 @@ public abstract class ASMMethod  {
      *
      * @return the return type for the method this object represents
      */
-    public Class<?> getReturnType() {
+
+    public  Class<?> getReturnType() {
+    	if(returnType==null) {
+    		returnType = ClassUtil.loadClass(getReturnTypeAsString(),null);
+    		if(returnType==null) initAddionalParams();
+    	}
+    	return returnType;
+    }
+    
+    protected Class<?> _getReturnType() {
+    	if(returnType==null) initAddionalParams();
         return returnType;
     }
+    
+    public abstract String getReturnTypeAsString();
 
     /**
      * Returns an array of {@code Class} objects that represent the formal
@@ -114,10 +114,29 @@ public abstract class ASMMethod  {
      * method this object represents
      */
     public Class<?>[] getExceptionTypes() {
+    	if(exceptionTypes==null) initAddionalParams();
         return exceptionTypes.clone();
     }
 
-    /**
+    private void initAddionalParams() {
+		try {
+			Method m = clazz.getMethod(getName(), getParameterTypes());
+			exceptionTypes=m.getExceptionTypes();
+			returnType=m.getReturnType();
+		}
+		catch (SecurityException e) {
+			// TODO remove block
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e) {
+			// TODO remove block
+			e.printStackTrace();
+		}
+		
+	}
+
+
+	/**
      * Compares this {@code Method} against the specified object.  Returns
      * true if the objects are the same.  Two {@code Methods} are the same if
      * they were declared by the same class and have the same name
@@ -130,11 +149,11 @@ public abstract class ASMMethod  {
     	ASMMethod other=(ASMMethod) obj;
     	
         return 
-        this.modifiers==other.modifiers &&
-        this.name.equals(other.name) &&
+        this.getModifiers()==other.getModifiers() &&
+        this.getName().equals(other.getName()) &&
         this.clazz.equals(other.clazz) &&
         this.returnType.equals(other.returnType) &&
-        eq(this.exceptionTypes,other.exceptionTypes) &&
+        eq(this.getExceptionTypes(),other.getExceptionTypes()) &&
         eq(this.parameterTypes,other.parameterTypes);
     }
 
@@ -207,5 +226,5 @@ public abstract class ASMMethod  {
      * @exception ExceptionInInitializerError if the initialization
      * provoked by this method fails.
      */
-    public abstract Object invoke(Object obj, Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+    public abstract Object invoke(Object obj, Object[] args) throws Throwable;//IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 }

@@ -1363,6 +1363,8 @@ public final class ConfigWebAdmin {
     		parent.removeAttribute("default-query");
         if(name.equalsIgnoreCase(parent.getAttribute("default-resource")))
     		parent.removeAttribute("default-resource");
+        if(name.equalsIgnoreCase(parent.getAttribute("default-function")))
+    		parent.removeAttribute("default-function");
         
         
         if(_default==ConfigImpl.CACHE_DEFAULT_OBJECT){

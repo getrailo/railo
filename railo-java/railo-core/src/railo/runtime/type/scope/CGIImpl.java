@@ -47,7 +47,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		KeyConstants._http_host, KeyConstants._http_user_agent, KeyConstants._http_referer, KeyConstants._https, KeyConstants._https_keysize, 
 		KeyConstants._https_secretkeysize, KeyConstants._https_server_issuer, KeyConstants._https_server_subject, KeyConstants._path_info,
 		KeyConstants._path_translated, KeyConstants._query_string, KeyConstants._remote_addr, KeyConstants._remote_host, KeyConstants._remote_user, 
-		KeyConstants._request_method, KeyConstants._script_name, KeyConstants._server_name, KeyConstants._server_port, KeyConstants._server_port_secure, 
+		KeyConstants._request_method, KeyConstants._request_url, KeyConstants._script_name, KeyConstants._server_name, KeyConstants._server_port, KeyConstants._server_port_secure,
 		KeyConstants._server_protocol, KeyConstants._server_software, KeyConstants._web_server_api, KeyConstants._context_path, KeyConstants._local_addr, 
 		KeyConstants._local_host
 	};
@@ -164,6 +164,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
                 if(key.equals(KeyConstants._remote_addr))		return toString(req.getRemoteAddr());
                 if(key.equals(KeyConstants._remote_host))		return toString(req.getRemoteHost());
                 if(key.equals(KeyConstants._request_method))		return req.getMethod();
+                if(key.equals(KeyConstants._request_url))		return ReqRspUtil.getRequestURL( req, true );
                 if(key.equals(KeyConstants._request_uri))		return toString(req.getAttribute("javax.servlet.include.request_uri"));
                 if(key.getUpperString().startsWith("REDIRECT_")){
                 	// from attributes (key sensitive)
@@ -330,16 +331,6 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		scriptProtected=scriptProtecting?ScriptProtected.YES:ScriptProtected.NO;
 	}
 
-	public static String getCurrentURL(HttpServletRequest req) { // DIFF 23
-		StringBuffer sb=new StringBuffer();
-		sb.append(req.isSecure()?"https://":"http://");
-		sb.append(req.getServerName());
-		sb.append(':');
-		sb.append(req.getServerPort());
-		if(!StringUtil.isEmpty(req.getContextPath()))sb.append(req.getContextPath());
-		sb.append(req.getServletPath());
-		return sb.toString();
-	}
 	
 	public static String getDomain(HttpServletRequest req) { // DIFF 23
 		StringBuffer sb=new StringBuffer();
@@ -350,7 +341,5 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		if(!StringUtil.isEmpty(req.getContextPath()))sb.append(req.getContextPath());
 		return sb.toString();
 	}
-	
-	
-	
+
 }

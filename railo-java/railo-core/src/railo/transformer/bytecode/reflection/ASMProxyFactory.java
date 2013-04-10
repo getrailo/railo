@@ -3,12 +3,15 @@ package railo.transformer.bytecode.reflection;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -20,31 +23,73 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExtendableClassLoader;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.functions.arrays.ArrayAppend;
+import railo.runtime.functions.arrays.ArrayNew;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Array;
 import railo.runtime.type.util.ArrayUtil;
+import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
+import railo.transformer.bytecode.visitor.OnFinally;
+import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 public class ASMProxyFactory {
 
 	public static final Type ASM_METHOD=Type.getType(ASMMethod.class);
 	public static final Type CLASS404=Type.getType(ClassNotFoundException.class);
+	public static final Type CLASS_UTIL=Type.getType(ClassUtil.class);
 	
 	
 	
+	//private static final org.objectweb.asm.commons.Method CONSTRUCTOR = 
+    //	new org.objectweb.asm.commons.Method("<init>",Types.VOID,new Type[]{Types.CLASS_LOADER,Types.CLASS});
 	private static final org.objectweb.asm.commons.Method CONSTRUCTOR = 
-    	new org.objectweb.asm.commons.Method("<init>",Types.VOID,new Type[]{Types.CLASS_LOADER,Types.CLASS});
+    	new org.objectweb.asm.commons.Method("<init>",Types.VOID,new Type[]{Types.CLASS,Types.CLASS_ARRAY});
 
 	private static final org.objectweb.asm.commons.Method LOAD_CLASS = new org.objectweb.asm.commons.Method(
 			"loadClass",
 			Types.CLASS,
 			new Type[]{Types.STRING});
+	
+
+	// public static Class loadClass(String className, Class defaultValue) {
+	private static final org.objectweb.asm.commons.Method LOAD_CLASS_EL = new org.objectweb.asm.commons.Method(
+			"loadClass",
+			Types.CLASS,
+			new Type[]{Types.STRING,Types.CLASS});
+	
+
+	// public String getName();
+	private static final org.objectweb.asm.commons.Method GET_NAME = new org.objectweb.asm.commons.Method(
+			"getName",
+			Types.STRING,
+			new Type[]{});
+	
+	// public int getModifiers();
+	private static final org.objectweb.asm.commons.Method GET_MODIFIERS = new org.objectweb.asm.commons.Method(
+			"getModifiers",
+			Types.INT_VALUE,
+			new Type[]{});
+
+	// public Class getReturnType();
+	private static final org.objectweb.asm.commons.Method GET_RETURN_TYPE_AS_STRING = new org.objectweb.asm.commons.Method(
+			"getReturnTypeAsString",
+			Types.STRING,
+			new Type[]{});
+
+	
+	
 	
 	private static final org.objectweb.asm.commons.Method INVOKE = new org.objectweb.asm.commons.Method(
 			"invoke",
@@ -75,73 +120,32 @@ public class ASMProxyFactory {
 	private static final org.objectweb.asm.commons.Method ASM_METHOD_CONSTRUCTOR = new org.objectweb.asm.commons.Method(
 			"<init>",
 			Types.VOID,
-			new Type[]{Types.CLASS,Types.STRING,Types.CLASS_ARRAY,Types.CLASS,Types.CLASS_ARRAY,Types.INT_VALUE}
-    		);
-	
-	private static final org.objectweb.asm.commons.Method ASM_METHOD_CONSTRUCTOR_TEST = new org.objectweb.asm.commons.Method(
-			"<init>",
-			Types.VOID,
-			new Type[]{}
+			new Type[]{Types.CLASS,Types.CLASS_ARRAY}
     		);
 	
 	
-	private static final Map<String,ASMMethod>methods=new HashMap<String, ASMMethod>();
-	
-	public ASMProxyFactory(Object obj,Resource classRoot) throws IOException{
-		
-		load((ConfigWeb)ThreadLocalPageContext.getConfig(),obj.getClass());
-		
-	}
-	
-	public static void main(String[] args) throws IOException {
+	private static final Map<String,ASMMethod>methods=new ReferenceMap();
+
+	public static void main(String[] args) throws Throwable {
 		ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
 		Resource root = frp.getResource("/Users/mic/Projects/Railo/webroot/WEB-INF/railo/cfclasses/wrappers/");
+		root.mkdir();
+		PhysicalClassLoader pcl = new PhysicalClassLoader(root);
+		//PhysicalClassLoader pcl = (PhysicalClassLoader)ThreadLocalPageContext.getConfig().getRPCClassLoader(false);
 
-		new ASMProxyFactory("x", root);
-		//new ASMProxyFactory(new Test(), root);
+		ASMProxyFactory.getClass(pcl, root, ArrayNew.class);
+		
+		
+		ASMMethod method = ASMProxyFactory.getMethod(pcl, root, ArrayNew.class, "call", new Class[]{PageContext.class});
+		//print.e(method.invoke(null, new Object[]{null}));
+		
+		
 		
 		
 	}
 	
-	public ASMClass load(ConfigWeb config,Class clazz) throws IOException{
+	public static ASMClass getClass(ExtendableClassLoader pcl,Resource classRoot,Class clazz) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException{
 		Type type = Type.getType(clazz); 
-		/*String className = clazz.getName()+"Proxy";
-		
-		Type type = Type.getType(clazz); 
-		String name = "L"+type.getInternalName()+";";
-		
-		Type typeExtends = Type.getType(Object.class); 
-		String[] strInterfaces=null;
-		
-		ClassWriter cw = ASMUtil.getClassWriter();
-	    cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, typeExtends.getInternalName(), strInterfaces);
-		
-	    // Constructor
-	    org.objectweb.asm.commons.Method constr = 
-	    	new org.objectweb.asm.commons.Method("<init>",Types.VOID,new Type[]{type});
-
-	    
-	    GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,constr,null,null,cw);
-        Label begin = new Label();
-        adapter.visitLabel(begin);
-		adapter.loadThis();
-        adapter.invokeConstructor(Types.OBJECT, SUPER_CONSTRUCTOR);
-        
-        adapter.visitVarInsn(Opcodes.ALOAD, 0);
-        adapter.visitVarInsn(Opcodes.ALOAD, 1);
-        adapter.visitFieldInsn(Opcodes.PUTFIELD, className, "obj", name);
-
-        adapter.visitInsn(Opcodes.RETURN);
-		Label end = new Label();
-		adapter.visitLabel(end);
-		adapter.visitLocalVariable("config",name, null, begin, end, 1);
-		
-        adapter.endMethod();
-        
-        */
-        
-        
-        
 
 	    // Fields
 	    Field[] fields = clazz.getFields();
@@ -155,53 +159,99 @@ public class ASMProxyFactory {
 	    Map<String,ASMMethod> amethods=new HashMap<String, ASMMethod>();
 	    for(int i=0;i<methods.length;i++){
 	    	if(Modifier.isPrivate(methods[i].getModifiers())) continue;
-	    	amethods.put(methods[i].getName(), getMethod(config,type,clazz,methods[i]));
+	    	amethods.put(methods[i].getName(), getMethod(pcl,classRoot,type,clazz,methods[i]));
 	    }
 	    
 	    return new ASMClass(clazz.getName(),amethods);
 	    
 	}
 	
-	private void createField(Type type, Field field) {
+	private static void createField(Type type, Field field) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	public static ASMMethod getMethod(ExtendableClassLoader pcl, Resource classRoot, Class clazz, String methodName, Class[] parameters) throws IOException, InstantiationException, IllegalAccessException, SecurityException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+		String className = createMethodName(clazz,methodName,parameters);
+		
+		// check if already in memory cache
+		ASMMethod asmm = methods.get(className);
+		if(asmm!=null){
+			//print.e("use loaded from memory");
+			return asmm;
+		}
+		
+		// try to load existing ASM Class
+		Class<?> asmClass;
+		try {
+			asmClass = pcl.loadClass(className);
+			//print.e("use existing class");
+		}
+		catch (ClassNotFoundException cnfe) {
+			Type type = Type.getType(clazz);
+			Method method = clazz.getMethod(methodName, parameters);
+			byte[] barr = _createMethod(type, clazz, method, classRoot, className);
+			asmClass=pcl.loadClass(className, barr);
+			//print.e("create class");
+		}
+		asmm = newInstance(asmClass,clazz,parameters);
+		//methods.put(className, asmm);
+		return asmm;
+	}
 
-	private ASMMethod getMethod(ConfigWeb config,Type type,Class clazz, Method method) throws IOException {
-		String className = "method."+clazz.getName()+"."+method.getName()+paramNames(method.getParameterTypes());
+	private static ASMMethod getMethod(ExtendableClassLoader pcl, Resource classRoot, Type type,Class clazz, Method method) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException {
+		String className = createMethodName(clazz,method.getName(),method.getParameterTypes());
 		
 		// check if already in memory cache
 		ASMMethod asmm = methods.get(className);
 		if(asmm!=null)return asmm;
 		
-		// check if class already exists
-		// TODO
-		
-		// create and load
-		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
-		Resource classRoot = cl.getDirectory();
-		
-		
-		
+		// try to load existing ASM Class
+		Class<?> asmClass;
 		try {
-			byte[] barr = _createMethod(config, type, clazz, method, classRoot, className);
-			return (ASMMethod) cl.loadClass(className, barr).newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		return null;
+			asmClass = pcl.loadClass(className);
+		}
+		catch (ClassNotFoundException cnfe) {
+			byte[] barr = _createMethod(type, clazz, method, classRoot, className);
+			asmClass=pcl.loadClass(className, barr);
+		}
+		
+		asmm = newInstance(asmClass,clazz,method.getParameterTypes());
+		methods.put(className, asmm);
+		return asmm;
+	}
+
+	private static ASMMethod newInstance(Class<?> asmClass, Class<?> decClass, Class[] params) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
+		Constructor<ASMMethod> constr = (Constructor<ASMMethod>) asmClass.getConstructor(
+				new Class[]{
+					Class.class,
+					Class[].class
+				}
+		);
+		return constr.newInstance(new Object[]{
+				decClass,
+				params
+			});
+		 
+		//return (ASMMethod) asmClass.newInstance();
 	}
 	
 	
-	private byte[] _createMethod(ConfigWeb config,Type type,Class clazz, Method method,Resource classRoot, String className) throws IOException {
+	private static String createMethodName(Class clazz,String methodName,Class[] paramTypes) {
+		StringBuilder sb = new StringBuilder("method.")
+		.append(clazz.getName())
+		.append(methodName);
 		
+		paramNames(sb,paramTypes);
+		
+		return sb.toString();
+	}
+
+	private static byte[] _createMethod(Type type,Class clazz, Method method,Resource classRoot, String className) throws IOException {
+		Class<?> rtn = method.getReturnType();
+	    Type rtnType = Type.getType(rtn);
+	    
 		className=className.replace('.',File.separatorChar);
-		Resource classFile=classRoot.getRealResource(className+".class");
 		ClassWriter cw = ASMUtil.getClassWriter();
 	    cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, ASM_METHOD.getInternalName(), null);
 		
@@ -214,13 +264,27 @@ public class ASMProxyFactory {
         adapter.visitLabel(begin);
 		adapter.loadThis();
         
+	    adapter.visitVarInsn(Opcodes.ALOAD, 1);
+		adapter.visitVarInsn(Opcodes.ALOAD, 2);
+        
+		adapter.invokeConstructor(ASM_METHOD, CONSTRUCTOR);
+		adapter.visitInsn(Opcodes.RETURN);
+		
+		Label end = new Label();
+		adapter.visitLabel(end);
+		
+		adapter.endMethod();
+		
+	/*
+	 
+	    GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR,null,null,cw);
 	    
-	    
+	    Label begin = new Label();
+        adapter.visitLabel(begin);
+		adapter.loadThis();
+        
 	    // clazz
         adapter.visitVarInsn(Opcodes.ALOAD, 2);
-        
-        // name
-        adapter.push(method.getName());
         
         // parameterTypes 
         Class<?>[] params = method.getParameterTypes();
@@ -235,26 +299,6 @@ public class ASMProxyFactory {
 	    }
 	    av.visitEnd();
 	    
-	    // returnType
-	    Class<?> rtn = method.getReturnType();
-	    Type rtnType = Type.getType(rtn);
-	    loadClass(adapter,method.getReturnType());
-	    
-		
-		// exceptionTypes 
-        Class<?>[] exceptions = method.getExceptionTypes();
-	    av=new ArrayVisitor();
-	    av.visitBegin(adapter, Types.CLASS, exceptions.length);
-	    for(int i=0;i<exceptions.length;i++){
-	    	av.visitBeginItem(adapter, i);
-	    		loadClass(adapter,exceptions[i]);
-	    	av.visitEndItem(adapter);
-	    }
-	    av.visitEnd();
-	    
-		// modifier
-		adapter.push(method.getModifiers());
-
 		adapter.invokeConstructor(ASM_METHOD, ASM_METHOD_CONSTRUCTOR);
 		adapter.visitInsn(Opcodes.RETURN);
 		
@@ -262,18 +306,55 @@ public class ASMProxyFactory {
 		adapter.visitLabel(end);
 		
 		adapter.endMethod();
-       	
+	 */
 		
+		
+		
+	// METHOD getName();
+		adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , GET_NAME, null, null, cw);
+		adapter.push(method.getName());
+		adapter.visitInsn(Opcodes.ARETURN);
+        adapter.endMethod();
+		
+    // METHOD getModifiers();
+		adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , GET_MODIFIERS, null, null, cw);
+		adapter.push(method.getModifiers());
+		adapter.visitInsn(Opcodes.IRETURN);
+        adapter.endMethod();
+        
+
+		
+    // METHOD getReturnType();
+        adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , GET_RETURN_TYPE_AS_STRING, null, null, cw);
+		
+		adapter.push(method.getReturnType().getName());
+		adapter.visitInsn(Opcodes.ARETURN);
+        
+		adapter.endMethod();
+        
+		
+        
+        
 	// METHOD INVOKE
+		boolean isStatic = Modifier.isStatic(method.getModifiers());
 		adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , INVOKE, null, null, cw);
         Label start=adapter.newLabel();
         adapter.visitLabel(start);
         
         // load Object
-        adapter.visitVarInsn(Opcodes.ALOAD, 1);
-        adapter.checkCast(type);
-        
+        if(!isStatic) {
+        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
+        	adapter.checkCast(type);
+		}
+        	
         // load params
+        Class<?>[] params = method.getParameterTypes();
+
+        Type[] paramTypes = new Type[params.length];
+	    for(int i=0;i<params.length;i++){
+	    	paramTypes[i]=Type.getType(params[i]);
+	    }
+
         for(int i=0;i<params.length;i++){
         	adapter.visitVarInsn(Opcodes.ALOAD, 2);
         	adapter.push(i);
@@ -298,7 +379,8 @@ public class ASMProxyFactory {
         
         // call method
     	final org.objectweb.asm.commons.Method m = new org.objectweb.asm.commons.Method(method.getName(),rtnType,paramTypes);
-    	adapter.invokeVirtual(type, m);
+    	if(isStatic)adapter.invokeStatic(type, m);
+    	else adapter.invokeVirtual(type, m);
          
     	
     	// return
@@ -319,29 +401,17 @@ public class ASMProxyFactory {
         
         adapter.endMethod();
 		
-        /*mv.visitVarInsn(ALOAD, 1);
-        mv.visitTypeInsn(CHECKCAST, "java/lang/String");
         
-        mv.visitVarInsn(ALOAD, 2);
-        mv.visitInsn(ICONST_0);
-        mv.visitInsn(AALOAD);
-        mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "substring", "(I)Ljava/lang/String;");
-        mv.visitInsn(ARETURN);
-        Label l1 = new Label();
-        mv.visitLabel(l1);
-        mv.visitLocalVariable("this", "Lrailo/transformer/bytecode/reflection/substring_int;", null, l0, l1, 0);
-        mv.visitLocalVariable("obj", "Ljava/lang/Object;", null, l0, l1, 1);
-        mv.visitLocalVariable("args", "[Ljava/lang/Object;", null, l0, l1, 2);
-        mv.visitMaxs(3, 3);
-        mv.visitEnd();
-		*/
-        return store(cw.toByteArray(),classFile);
+		
+        if(classRoot!=null) {
+        	Resource classFile=classRoot.getRealResource(className+".class");
+        	return store(cw.toByteArray(),classFile);
+        }
+        return cw.toByteArray();
 	}
 	
 
-	private Type toReferenceType(Class<?> clazz, Type defaultValue) {
+	private static Type toReferenceType(Class<?> clazz, Type defaultValue) {
 		if(int.class==clazz) return Types.INTEGER;
 		else if(long.class==clazz) return Types.LONG;
 		else if(char.class==clazz) return Types.CHARACTER;
@@ -353,7 +423,7 @@ public class ASMProxyFactory {
 		return defaultValue;
 	}
 
-	private void loadClass(GeneratorAdapter adapter, Class<?> clazz) {
+	private static void loadClass(GeneratorAdapter adapter, Class<?> clazz) {
 		if(void.class==clazz) adapter.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/Void", "TYPE", "Ljava/lang/Class;");
 		
 		// primitive types
@@ -375,20 +445,22 @@ public class ASMProxyFactory {
 		}
 	}
 
-	private String paramNames(Class<?>[] params) {
-		if(ArrayUtil.isEmpty(params)) return "";
+	private static void paramNames(StringBuilder sb, Class<?>[] params) {
+		if(ArrayUtil.isEmpty(params)) return;
 		
-		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<params.length;i++){
 			sb.append('$');
-			sb.append(StringUtil.replace(Caster.toClassName(params[i]).replace('.', '_'),"[]","_arr",false));
+			if(params[i].isArray())
+				sb.append(StringUtil.replace(Caster.toClassName(params[i]).replace('.', '_'),"[]","_arr",false));
+			else
+				sb.append(params[i].getName().replace('.', '_'));
 		}
-		return sb.toString();
 	}
 
-	private byte[] store(byte[] barr,Resource classFile) throws IOException {
+	private static byte[] store(byte[] barr,Resource classFile) throws IOException {
 		// create class file
         ResourceUtil.touch(classFile);
+        //print.e(classFile);
         IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
        return barr;
 	}

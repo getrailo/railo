@@ -11,13 +11,14 @@ import java.util.concurrent.Future;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Each;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.UDF;
 
 
-public final class ArrayEach implements Function {
+public final class ArrayEach extends BIF {
 	
 	private static final long serialVersionUID = -2271260656749514177L;
 
@@ -44,5 +45,12 @@ public final class ArrayEach implements Function {
 		if(parallel) Each.afterCall(pc,futures);
 		
 		return null;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toArray(args[0]),Caster.toFunction(args[1]));
+		if(args.length==3)return call(pc,Caster.toArray(args[0]),Caster.toFunction(args[1]),Caster.toBooleanValue(args[2]));
+		return call(pc,Caster.toArray(args[0]),Caster.toFunction(args[1]),Caster.toBooleanValue(args[2]),Caster.toDoubleValue(args[3]));
 	}
 }

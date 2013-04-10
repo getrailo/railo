@@ -9,6 +9,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.cast.Casting;
@@ -75,7 +76,7 @@ public final class BIFCall extends RefSupport implements Ref {
         		}
         		arguments=tmp.toArray();
         	}
-        	arguments=new Object[]{pc,arguments};
+        	arguments=new Object[]{arguments};
         }
         else {
         	if(isNamed(pc,refArgs)){
@@ -84,9 +85,8 @@ public final class BIFCall extends RefSupport implements Ref {
         		
         		ArrayList<FunctionLibFunctionArg> list = flf.getArg();
 				Iterator<FunctionLibFunctionArg> it = list.iterator();
-				arguments=new Object[list.size()+1];
-				arguments[0]=pc;
-                
+				arguments=new Object[list.size()];
+				
 				
 				FunctionLibFunctionArg flfa;
 				int index=0;
@@ -96,7 +96,7 @@ public final class BIFCall extends RefSupport implements Ref {
 					vt = getMatchingValueAndType(flfa,fvalues,names);
 					if(vt.index!=-1) 
 						names[vt.index]=null;
-					arguments[++index]=new Casting( vt.type, CFTypes.toShort(vt.type, false, CFTypes.TYPE_UNKNOW), vt.value).getValue(pc);	
+					arguments[index++]=new Casting( vt.type, CFTypes.toShort(vt.type, false, CFTypes.TYPE_UNKNOW), vt.value).getValue(pc);	
 				}
 				
 				for(int y=0;y<names.length;y++){
@@ -110,22 +110,25 @@ public final class BIFCall extends RefSupport implements Ref {
         	}
         	else {
         		arguments = RefUtil.getValue(pc,refArgs);
-                Object[] newAttr = new Object[arguments.length+1];
-                newAttr[0]=pc;
-                for(int i=0;i<arguments.length;i++) {
-                    newAttr[i+1]=arguments[i];
-                }
-                arguments=newAttr;
         	}
         }
-        Class clazz=flf.getCazz();
+        BIF bif=flf.getBIF();
+        
+        if(flf.getMemberChaining() && obj!=null) {
+        	bif.invoke(pc, arguments);
+        	return obj;
+        }
+        return Caster.castTo(pc,flf.getReturnTypeAsString(),bif.invoke(pc, arguments),false);
+        
+        
+        /*Class clazz=flf.getClazz();
         if(clazz==null)throw new ExpressionException("class "+clazz+" not found");
         
         if(flf.getMemberChaining() && obj!=null) {
         	Reflector.callStaticMethod(clazz,"call",arguments);
         	return obj;
         }
-        return Caster.castTo(pc,flf.getReturnTypeAsString(),Reflector.callStaticMethod(clazz,"call",arguments),false);
+        return Caster.castTo(pc,flf.getReturnTypeAsString(),Reflector.callStaticMethod(clazz,"call",arguments),false);*/
 	}
 	
 

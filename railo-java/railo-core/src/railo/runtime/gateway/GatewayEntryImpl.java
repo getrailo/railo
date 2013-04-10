@@ -1,11 +1,13 @@
 package railo.runtime.gateway;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.opencfml.eventgateway.Gateway;
-import org.opencfml.eventgateway.GatewayEngine;
-import org.opencfml.eventgateway.GatewayException;
+import railo.runtime.gateway.GatewayPro;
+import railo.runtime.gateway.GatewayEnginePro;
+import railo.runtime.gateway.GatewayException;
+import railo.runtime.gateway.proxy.GatewayProFactory;
 
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -25,12 +27,12 @@ public class GatewayEntryImpl implements GatewayEntry {
 	private boolean readOnly;
 	private String listenerCfcPath;
 	private int startupMode;
-	private Gateway gateway;
+	private GatewayPro gateway;
 	private String cfcPath;
 	private String className;
-	private GatewayEngine engine;
+	private GatewayEnginePro engine;
 
-	public GatewayEntryImpl(GatewayEngine engine,String id, String className, String cfcPath, String listenerCfcPath, String startupMode,Struct custom, boolean readOnly) {
+	public GatewayEntryImpl(GatewayEnginePro engine,String id, String className, String cfcPath, String listenerCfcPath, String startupMode,Struct custom, boolean readOnly) {
 		this.engine=engine;
 		this.id=id;
 		this.listenerCfcPath=listenerCfcPath;
@@ -54,7 +56,8 @@ public class GatewayEntryImpl implements GatewayEntry {
 		if(gateway==null){
 			if(!StringUtil.isEmpty(className)){
 				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
-				gateway=(Gateway) ClassUtil.loadInstance(clazz);
+				
+				gateway=GatewayProFactory.toGatewayPro(ClassUtil.loadInstance(clazz));
 			}
 			else if(!StringUtil.isEmpty(cfcPath)){
 				gateway=new CFCGateway(cfcPath);
@@ -73,14 +76,14 @@ public class GatewayEntryImpl implements GatewayEntry {
 					}*/
 				}
 			}
-			catch(GatewayException pe){
-				throw Caster.toPageException(pe);
+			catch(IOException ioe){
+				throw Caster.toPageException(ioe);
 			}
 		}
 	}
 	
 	@Override
-	public Gateway getGateway() {
+	public GatewayPro getGateway() {
 		return gateway;
 	}
 	
@@ -177,7 +180,4 @@ public class GatewayEntryImpl implements GatewayEntry {
 		if(left!=null && right!=null) return left.equals(right);
 		return false;
 	}
-
-
-
 }
