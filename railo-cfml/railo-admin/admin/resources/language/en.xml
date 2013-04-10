@@ -1171,7 +1171,8 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
 		<data key="services.update.lib">Update JAR's</data>
 	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
-	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
+	<data key="settings.gateway.ListenerCfcPath">Listener Component</data>
+	<data key="settings.gateway.ListenerCfcPathDesc">Path to the Component that is listening to the Gateways action</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>
 	<data key="settings.gateway.startupModeManual">Manual</data>
