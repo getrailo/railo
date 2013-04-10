@@ -108,7 +108,14 @@ Redirtect to entry --->
 				<cfif driver.getListenerCfcMode() NEQ "none">
 					<tr>
 						<th scope="row">#stText.Settings.gateway.ListenerCfcPath#</th>
-						<td><cfinput type="text" name="listenerCfcPath" value="#entry.listenerCfcPath#" required="#driver.getListenerCfcMode() EQ "required"#" class="large" message="Missing value for field listener CFC Path"></td>
+						<td><cfinput type="text" name="listenerCfcPath" value="#entry.listenerCfcPath#" required="#driver.getListenerCfcMode() EQ "required"#" class="large" message="Missing value for field listener CFC Path">
+						<div class="comment">
+							<cfif structKeyExists(driver,'getListenerCFCDescription')>
+								#driver.getListenerCFCDescription()#
+							<cfelse>
+								#stText.Settings.gateway.ListenerCfcPathDesc#
+							</cfif>
+						</div></td>
 					</tr>
 				</cfif>
 				<tr>
