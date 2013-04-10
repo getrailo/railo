@@ -33,7 +33,7 @@ public final class ReplaceNoCase implements Function {
 
 
 	public static String call( PageContext pc, String input, Object find, String repl, String scope ) throws ExpressionException {
-		
+		find = ReplaceUtils.convertToStringIfNumber(find);
 		if ( !( find instanceof String ) )
 			throw new ExpressionException("When passing three parameters or more, the second parameter must be a String.");
 		
@@ -45,7 +45,7 @@ public final class ReplaceNoCase implements Function {
 
 	
 	public static String call( PageContext pc, String input, Object find, String repl ) throws ExpressionException {
-		
+		find = ReplaceUtils.convertToStringIfNumber(find);
 		if ( !( find instanceof String ) )
 			throw new ExpressionException("When passing three parameters or more, the second parameter must be a String.");
 		
