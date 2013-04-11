@@ -31,7 +31,7 @@ public final class Coder {
 		if(type.equals("hex"))		return decode(ENCODING_HEX,value);
 		if(type.equals("uu"))		return decode(ENCODING_UU,value);
 		if(type.equals("base64"))	return decode(ENCODING_BASE64,value);
-		throw new CoderException("invalid encoding definition ["+type+"] valid encodingd are [hex, uu, base64]");
+		throw new CoderException("Invalid encoding definition ["+type+"]. Valid encodings are [hex, uu, base64].");
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public final class Coder {
 		if(type==ENCODING_UU)			return UUCoder.decode(value);
 		else if(type==ENCODING_HEX)		return HexCoder.decode(value);
 		else if(type==ENCODING_BASE64)	return Base64Coder.decode(value);
-		throw new CoderException("invalid encoding definition");
+		throw new CoderException("Invalid encoding definition");
 	}
 
 	/**
@@ -58,7 +58,7 @@ public final class Coder {
 		if(type.equals("hex"))		return encode(ENCODING_HEX,value);
 		if(type.equals("uu"))		return encode(ENCODING_UU,value);
 		if(type.equals("base64"))	return encode(ENCODING_BASE64,value);
-		throw new CoderException("invalid encoding definition ["+type+"] valid encodingd are [hex, uu, base64]");
+		throw new CoderException("Invalid encoding definition ["+type+"]. Valid encodings are [hex, uu, base64].");
 	}
 	
 	/**
@@ -71,6 +71,6 @@ public final class Coder {
 		if(type==ENCODING_UU)			return UUCoder.encode(value);
 		else if(type==ENCODING_HEX)		return HexCoder.encode(value);
 		else if(type==ENCODING_BASE64)	return Base64Coder.encode(value);
-		throw new CoderException("invalid encoding definition");
+		throw new CoderException("Invalid encoding definition");
 	}
 }
