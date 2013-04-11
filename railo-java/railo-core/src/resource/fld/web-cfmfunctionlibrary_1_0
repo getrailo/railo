@@ -13562,12 +13562,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<argument>
 			<name>substring1</name>
+			<alias>sub1,find</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description>Substring for which to search.  Optionally pass a Struct with key/value pairs to do a replace all</description>
 		</argument>
 		<argument>
 			<name>substring2</name>
+			<alias>sub2,repl</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>Substring with which to replace the found matches.  This arg is required if the substring1 arg is a string</description>
