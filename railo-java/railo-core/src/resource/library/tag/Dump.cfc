@@ -67,7 +67,13 @@ component {
 		var context = GetCurrentContext();
 		var contextLevel = structKeyExists(attrib,'contextLevel') ? attrib.contextLevel : 2;
 		contextLevel = min(contextLevel,arrayLen(context));
-		context = context[contextLevel].template & ":" & context[contextLevel].line;
+		if ( contextLevel gt 0 ) {
+			context = context[contextLevel].template & ":" &
+					context[contextLevel].line;
+		}
+		else {
+			context = '[unknown file]:[unknown line]';
+		}
 
 		// format
 		attrib['format'] = trim(attrib.format);

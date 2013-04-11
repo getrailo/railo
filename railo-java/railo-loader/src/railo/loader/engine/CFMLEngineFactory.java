@@ -374,7 +374,7 @@ public class CFMLEngineFactory {
     	
         URL hostUrl=getEngine().getUpdateLocation();
         if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
-        URL infoUrl=new URL(hostUrl,"/railo/remote/version/info.cfm?ext="+getCoreExtension()+"&version="+version);
+        URL infoUrl=new URL(hostUrl,"/railo/remote/version/info.cfm?ext="+getCoreExtension()+"&version="+version);// FUTURE replace with Info.cfc or better move the functionality to core if possible. something like engine.getUpdater a class provided by the core and defined (interface) by the loader.
         
         tlog("Check for update at "+hostUrl);
         
