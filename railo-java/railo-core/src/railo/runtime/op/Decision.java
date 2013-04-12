@@ -33,6 +33,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.mail.EmailNamePair;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.text.xml.XMLCaster;
@@ -212,7 +213,7 @@ public final class Decision {
 	}
 
 	/** tests if String value is UUID Value
-	 * @param str value to test
+	 * @param obj value to test
 	 * @return is value numeric
 	 * @deprecated use instead <code>isUUId(Object obj)</code>
 	 */
@@ -221,7 +222,7 @@ public final class Decision {
 	}
 	
 	 /** tests if String value is UUID Value
-	 * @param str value to test
+	 * @param obj value to test
 	 * @return is value numeric
 	 */
 	public static boolean isUUId(Object obj) { 
@@ -689,7 +690,7 @@ public final class Decision {
 	}
 
 	/**
-	 * @param string
+	 * @param obj
 	 * @return returns if string represent a variable name
 	 */
 	public static boolean isVariableName(Object obj) {
@@ -756,7 +757,7 @@ public final class Decision {
 	}
 	
 	/**
-	 * @param string
+	 * @param key
 	 * @return returns if string represent a variable name
 	 */
 	public static boolean isSimpleVariableName(Collection.Key key) {
@@ -836,14 +837,8 @@ public final class Decision {
 	 * @return
 	 */
 	public static boolean isEmail(Object value) {
-		String str = Caster.toString(value,null);
-		if(str==null)return false;
-		
-		if(emailPattern==null) {
-			String prefix="\\%\\+a-zA-Z_0-9-'~";
-			emailPattern=Pattern.compile("^["+prefix+"]+(\\.["+prefix+"]+)*@([a-zA-Z_0-9-]+\\.)+[a-zA-Z]{2,7}$");
-		}	
-		return emailPattern.matcher(str).matches();
+
+        return EmailNamePair.isValidEmail( value );
 	}	
 	
 	

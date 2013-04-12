@@ -43,9 +43,6 @@ public final class EmailNamePair {
 		patterns[6]=Pattern.compile("^<[\\s]*"+email+"[\\s]*>$");
 		patterns[7]=Pattern.compile("^"+email+"$");
 
-		
-		
-		
 		pairType[0]=EMAIL_NAME;
 		pairType[1]=EMAIL_NAME;
 		pairType[2]=NAME_EMAIL;
@@ -193,11 +190,7 @@ public final class EmailNamePair {
 		if(StringUtil.isEmpty(strEmail,true)) return null;
 		return new EmailNamePair(strEmail);
 	}
-	
 
-	
-	
-	
 
 	/**
 	 * @return return if in the email name pair also a name is defined
@@ -223,5 +216,38 @@ public final class EmailNamePair {
 		if(name.length()==0) return email;
 		return email+"("+name+")";
 	}
-	
+
+
+    /**
+     * returns true if the passed value is a in valid email address format
+     * @param value
+     * @return
+     */
+    public static boolean isValidEmail( Object value ) {
+
+        return ( parseEmail( value ) != null );
+    }
+
+
+    /**
+     * returns an InternetAddress object or null if the parsing fails.  to be be used in multiple places.
+     * @param value
+     * @return
+     */
+    public static InternetAddress parseEmail( Object value ) {
+
+        String str = Caster.toString( value, "" );
+
+        if ( str.indexOf( '@' ) > -1 ) {
+
+            try {
+
+                return new InternetAddress( str );
+            }
+            catch ( AddressException ex ) {}
+        }
+
+        return null;
+    }
+
 }
