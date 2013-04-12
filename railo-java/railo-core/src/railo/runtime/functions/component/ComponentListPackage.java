@@ -61,7 +61,7 @@ public class ComponentListPackage implements Function {
 		boolean searchLocal = config.getComponentLocalSearch();
 		boolean searchRoot=config.getComponentRootSearch();
 		
-		String path=StringUtil.replace(packageName, ".", File.pathSeparator, false);
+		String path=StringUtil.replace(packageName, ".", File.separator, false);
 	    	
 		// search local 
 		if(searchLocal) {
@@ -88,7 +88,7 @@ public class ComponentListPackage implements Function {
 				mapping=mappings[i];
 				if(StringUtil.startsWithIgnoreCase(virtual, mapping.getVirtual()))  {
 					_path=ListUtil.trim(virtual.substring(mapping.getVirtual().length()),"\\/").trim(); 
-					_path=StringUtil.replace(_path, "/", File.pathSeparator, false);
+					_path=StringUtil.replace(_path, "/", File.separator, false);
 					list = _listMapping(pc,mapping,_path);
 					if(!ArrayUtil.isEmpty(list)) return list;
 				}
@@ -143,11 +143,11 @@ public class ComponentListPackage implements Function {
 	}
 	
 	private static String[]  _listArchive(PageContext pc,String path, Mapping mapping) throws IOException {
-		String packageName=StringUtil.replace(path, File.pathSeparator, ".", false);
+		String packageName=StringUtil.replace(path, File.separator, ".", false);
 		Resource archive = mapping.getArchive();
 		if(archive!=null) {
 			// TODO nor working with pathes with none ascci characters, eith none ascci characters, the java class path is renamed, so make sure you rename the path as well
-			String strDir="zip://"+archive+"!"+File.pathSeparator+path;
+			String strDir="zip://"+archive+"!"+File.separator+path;
 			Resource dir = ResourceUtil.toResourceNotExisting(pc, strDir,true);
 			
 			if(dir.isDirectory()) {
