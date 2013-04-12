@@ -33,7 +33,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
-import railo.runtime.net.mail.EmailNamePair;
+import railo.runtime.net.mail.MailUtil;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.text.xml.XMLCaster;
@@ -838,7 +838,7 @@ public final class Decision {
 	 */
 	public static boolean isEmail(Object value) {
 
-        return EmailNamePair.isValidEmail( value );
+        return MailUtil.isValidEmail(value);
 	}	
 	
 	

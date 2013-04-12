@@ -1,7 +1,6 @@
 package railo.runtime.net.smtp;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -34,7 +33,6 @@ import javax.mail.internet.MimePart;
 import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
-import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
@@ -49,7 +47,6 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.net.mail.EmailNamePair;
 import railo.runtime.net.mail.MailException;
 import railo.runtime.net.mail.MailPart;
 import railo.runtime.net.mail.MailUtil;
@@ -227,7 +224,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	public void addTo(Object to) throws AddressException, UnsupportedEncodingException, PageException, MailException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(to);
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(to);
 		for(int i=0;i<tmp.length;i++) {
 			addTo(tmp[i]);
 		}
@@ -238,7 +235,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	public void setFrom(Object from) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] addrs = EmailNamePair.toInternetAddresses(from);
+		InternetAddress[] addrs = MailUtil.toInternetAddresses(from);
 		if(addrs.length==0) return;
 		setFrom(addrs[0]);
 	}
@@ -248,7 +245,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	public void addBCC(Object bcc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(bcc);
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(bcc);
 		for(int i=0;i<tmp.length;i++) {
 			addBCC(tmp[i]);
 		}
@@ -259,7 +256,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	public void addCC(Object cc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(cc);
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(cc);
 		for(int i=0;i<tmp.length;i++) {
 			addCC(tmp[i]);
 		}
@@ -270,7 +267,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	public void addReplyTo(Object rt) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(rt);
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(rt);
 		for(int i=0;i<tmp.length;i++) {
 			addReplyTo(tmp[i]);
 		}
@@ -288,7 +285,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	public void addFailTo(Object ft) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(ft);
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(ft);
 		for(int i=0;i<tmp.length;i++) {
 			addFailTo(tmp[i]);
 		}
@@ -618,7 +615,7 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 	/**
-	 * @param is
+	 * @param file
 	 * @throws MessagingException
 	 * @throws FileNotFoundException 
 	 */
