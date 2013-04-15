@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jars>
 	<jar version="2.7.6" path="antlr.jar" comment="used by hibernate"/>
-	<jar version="1.6" path="apache-jakarta-commons-codec.jar" comment=""/>
+	<jar version="1.6" path="apache-jakarta-commons-codec.jar" comment="used by 3 party (apache-commons-httpcore)"/>
 	<jar version="3.2.1" path="apache-jakarta-commons-collections.jar" comment=""/>
 	<jar version="1.3" path="apache-jakarta-commons-compress.jar" comment=""/>
 	<jar version="0.4" path="apache-jakarta-commons-discovery.jar" comment="used by 3 party"/>
@@ -10,9 +10,9 @@
 	<jar version="3.0.1" path="apache-jakarta-commons-httpclient.jar" comment=""/>
 	<jar version="2.1" path="apache-jakarta-commons-io.jar" comment=""/>
 	<jar version="2.6" path="apache-jakarta-commons-lang.jar" comment=""/>
-	<jar version="1.1.1" path="apache-jakarta-commons-logging-adapters.jar" comment=""/>
-	<jar version="1.1.1" path="apache-jakarta-commons-logging-api.jar" comment=""/>
-	<jar version="1.1.1" path="apache-jakarta-commons-logging.jar" comment=""/>
+	<jar version="1.1.1" path="apache-jakarta-commons-logging-adapters.jar" comment="used by 3 party (apache-commons-httpcore)"/>
+	<jar version="1.1.1" path="apache-jakarta-commons-logging-api.jar" comment="used by 3 party (apache-commons-httpcore)"/>
+	<jar version="1.1.1" path="apache-jakarta-commons-logging.jar" comment="used by 3 party (apache-commons-httpcore)"/>
 	<jar version="" path="apache-jakarta-commons-net-ftp.jar" comment="file is empty"/>
 	<jar version="3.1" path="apache-jakarta-commons-net.jar" comment=""/>
 	<jar version="2.0.8" path="apache-jakarta-oro.jar" comment="retired"/>
