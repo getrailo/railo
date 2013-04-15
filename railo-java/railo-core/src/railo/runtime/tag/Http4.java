@@ -51,6 +51,7 @@ import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.Header;
 import railo.commons.net.http.httpclient4.CachingGZIPInputStream;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
+import railo.commons.net.http.httpclient4.HTTPPatchFactory;
 import railo.commons.net.http.httpclient4.HTTPResponse4Impl;
 import railo.commons.net.http.httpclient4.ResourceBody;
 import railo.runtime.config.Config;
@@ -128,6 +129,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static final short METHOD_DELETE=4;
 	private static final short METHOD_OPTIONS=5;
 	private static final short METHOD_TRACE=6;
+	private static final short METHOD_PATCH=7;
 	
 	private static final String NO_MIMETYPE="Unable to determine MIME type of file.";
 	
@@ -526,6 +528,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	    else if(method.equals("put")) this.method=METHOD_PUT;
 	    else if(method.equals("trace")) this.method=METHOD_TRACE;
 	    else if(method.equals("options")) this.method=METHOD_OPTIONS;
+	    else if(method.equals("patch")) this.method=METHOD_PATCH;
 	    else throw new ApplicationException("invalid method type ["+(method.toUpperCase())+"], valid types are POST,GET,HEAD,DELETE,PUT,TRACE,OPTIONS");
 	}
 
@@ -666,6 +669,11 @@ public final class Http4 extends BodyTagImpl implements Http {
     		else if(this.method==METHOD_OPTIONS) {
     			isBinary=true;
     		    req=new HttpOptions(url);
+    		}
+    		else if(this.method==METHOD_PATCH) {
+    			isBinary=true;
+    			eem = HTTPPatchFactory.getHTTPPatch(url);
+    		    req=(HttpRequestBase) eem;
     		}
     		else {
     			isBinary=true;
