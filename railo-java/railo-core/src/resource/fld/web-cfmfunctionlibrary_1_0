@@ -6147,6 +6147,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getTickCount</name>
 		<class>railo.runtime.functions.other.GetTickCount</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.GetTickCount</tte-class>
 		<description>Returns the number of milliseconds since the start of the application server</description>
 		<argument>
 			<name>unit</name>
