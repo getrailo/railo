@@ -989,12 +989,12 @@ public final class StringUtil {
 		return sb.toString();
 	}
 
-	public static boolean isAscci(String str) {
-		char c;
+	public static boolean isAscii(String str) {
+
 		for(int i=str.length()-1;i>=0;i--){
-			c = str.charAt(i);
-			if(c < 128)  continue;
-			return false;
+
+			if( str.charAt(i) > 127 )
+    			return false;
 		}
 		return true;
 	}
