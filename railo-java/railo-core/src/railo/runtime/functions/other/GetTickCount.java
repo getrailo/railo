@@ -29,7 +29,7 @@ public final class GetTickCount implements Function {
                 return System.nanoTime();
             else if ( c == 'm' || c == 'M' ) {
             	if("micro".equalsIgnoreCase(unit)) return System.nanoTime()/1000;
-        		if("milli".equalsIgnoreCase(unit)) return System.currentTimeMillis();
+        		return System.currentTimeMillis();
             }
             else if ( c == 's' || c == 'S' )
                 return System.currentTimeMillis()/1000;
