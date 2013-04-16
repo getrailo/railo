@@ -9,6 +9,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.util.ListUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.net.IDN;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -152,12 +153,36 @@ public final class MailUtil {
 
             try {
 
-                return new InternetAddress( str );
+                InternetAddress addr = new InternetAddress( str );
+                fixIDN( addr );
+                return addr;
             }
             catch ( AddressException ex ) {}
         }
 
         return null;
+    }
+
+
+    /**
+     * converts IDN to ASCII if needed
+     * @param addr
+     */
+    public static void fixIDN( InternetAddress addr ) {
+
+        String address = addr.getAddress();
+        int pos = address.indexOf( '@' );
+
+        if ( pos > 0 && pos < address.length() - 1 ) {
+
+            String domain = address.substring( pos + 1 );
+
+            if ( !StringUtil.isAscii( domain ) ) {
+
+                domain = IDN.toASCII( domain );
+                addr.setAddress( address.substring( 0, pos ) + "@" + domain );
+            }
+        }
     }
 
 }
