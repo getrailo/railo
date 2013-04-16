@@ -30,10 +30,12 @@ public final class IsValid implements Function {
 	 * @throws ExpressionException
 	 */
 	public static boolean call(PageContext pc, String type, Object value) throws ExpressionException {
-		type=type.trim().toLowerCase();
-		if("range".equals(type))
+		type=type.trim();
+
+		if("range".equalsIgnoreCase(type))
 			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value");
-		if("regex".equals(type) || "regular_expression".equals(type))
+
+		if("regex".equalsIgnoreCase(type) || "regular_expression".equalsIgnoreCase(type))
 			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern");
 
 		return Decision.isValid(type, value);
@@ -44,13 +46,14 @@ public final class IsValid implements Function {
 	 * @param pc
 	 * @param type
 	 * @param value
-	 * @param pattern_or_min
+	 * @param objPattern
 	 * @return
 	 * @throws PageException 
 	 */
 	public static boolean call(PageContext pc, String type, Object value, Object objPattern) throws PageException {
-		type=type.trim().toLowerCase();
-		if(!"regex".equals(type) && !"regular_expression".equals(type))
+		type=type.trim();
+
+		if(!"regex".equalsIgnoreCase(type) && !"regular_expression".equalsIgnoreCase(type))
 			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
 		
 		return regex(Caster.toString(value,null),Caster.toString(objPattern));
