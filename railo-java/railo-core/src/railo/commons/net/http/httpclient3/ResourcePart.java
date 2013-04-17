@@ -54,7 +54,7 @@ public class ResourcePart extends FilePart {
     public static void sendDispositionHeader(String name,String filename, String headerCharset, OutputStream out)  throws IOException {
     	out.write(CONTENT_DISPOSITION_BYTES);
         out.write(QUOTE_BYTES);
-        if(StringUtil.isAscci(name))
+        if(StringUtil.isAscii(name))
         	out.write(EncodingUtil.getAsciiBytes(name));
         else
         	out.write(name.getBytes(headerCharset));
@@ -63,7 +63,7 @@ public class ResourcePart extends FilePart {
         if (filename != null) {
         	out.write(FILE_NAME_BYTES);
             out.write(QUOTE_BYTES);
-            if(StringUtil.isAscci(filename))
+            if(StringUtil.isAscii(filename))
             	out.write(EncodingUtil.getAsciiBytes(filename));
             else
             	out.write(filename.getBytes(headerCharset));
