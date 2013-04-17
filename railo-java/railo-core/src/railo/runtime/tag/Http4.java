@@ -529,7 +529,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	    else if(method.equals("trace")) this.method=METHOD_TRACE;
 	    else if(method.equals("options")) this.method=METHOD_OPTIONS;
 	    else if(method.equals("patch")) this.method=METHOD_PATCH;
-	    else throw new ApplicationException("invalid method type ["+(method.toUpperCase())+"], valid types are POST,GET,HEAD,DELETE,PUT,TRACE,OPTIONS");
+	    else throw new ApplicationException("invalid method type ["+(method.toUpperCase())+"], valid types are POST,GET,HEAD,DELETE,PUT,TRACE,OPTIONS,PATCH");
 	}
 
 
