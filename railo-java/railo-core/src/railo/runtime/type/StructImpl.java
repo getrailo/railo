@@ -5,8 +5,9 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.commons.util.mod.HashMapPro;
+import railo.commons.util.mod.ConcurrentHashMapPro;
 import railo.commons.util.mod.LinkedHashMapPro;
+import railo.commons.util.mod.MapFactory;
 import railo.commons.util.mod.MapPro;
 import railo.commons.util.mod.MapProWrapper;
 import railo.commons.util.mod.SyncMap;
@@ -16,6 +17,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
@@ -42,17 +44,27 @@ public class StructImpl extends StructSupport {
      * @param doubleLinked
      */
     public StructImpl(int type) {
-    	if(type==TYPE_LINKED)		map=new LinkedHashMapPro<Collection.Key,Object>();
+    	/*if(type==TYPE_LINKED)		map=new LinkedHashMapPro<Collection.Key,Object>();
     	else if(type==TYPE_WEAKED)	map=new WeakHashMapPro<Collection.Key,Object>();
     	else if(type==TYPE_SOFT)	map=new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new Object());
         else if(type==TYPE_SYNC)	map=new SyncMap<Collection.Key, Object>(new HashMapPro<Collection.Key,Object>());
-        else 						map=new HashMapPro<Collection.Key,Object>();
+        else 						map=new SyncMap<Collection.Key,Object>();
+    	*/
+    	if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>());
+    	else if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>());
+    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new Object()));
+        //else if(type==TYPE_SYNC)	map=new ConcurrentHashMapPro<Collection.Key,Object>);
+        else 						map=MapFactory.getConcurrentMap();//new ConcurrentHashMapPro<Collection.Key,Object>();
     }
     
     private int getType(){
+    	MapPro m = map;
+    	if(map instanceof SyncMap)
+    		m=((SyncMap)map).getMap();
+    	
     	if(map instanceof LinkedHashMapPro) return TYPE_LINKED;
     	if(map instanceof WeakHashMapPro) return TYPE_WEAKED;
-    	if(map instanceof SyncMap) return TYPE_SYNC;
+    	//if(map instanceof SyncMap) return TYPE_SYNC;
     	if(map instanceof MapProWrapper) return TYPE_SOFT;
     	return TYPE_REGULAR;
     }
