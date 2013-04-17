@@ -30,7 +30,7 @@ public final class MailUtil {
 
 
 
-    public static InternetAddress toInternetAddress(Object emails) throws MailException, AddressException, UnsupportedEncodingException, PageException {
+    public static InternetAddress toInternetAddress(Object emails) throws MailException, UnsupportedEncodingException, PageException {
 
         if ( emails instanceof String )
             return parseEmail( emails );
@@ -43,20 +43,17 @@ public final class MailUtil {
     }
 
 
-    public static InternetAddress[] toInternetAddresses(Object emails) throws MailException, AddressException, UnsupportedEncodingException, PageException {
+    public static InternetAddress[] toInternetAddresses(Object emails) throws MailException, UnsupportedEncodingException, PageException {
 
-        if ( emails instanceof String ){
-
+        if (emails instanceof String )
             return fromList((String) emails);
-        }
-        else if ( Decision.isArray(emails) ) {
-
+        
+        else if ( Decision.isArray(emails) ) 
             return fromArray(Caster.toArray(emails));
-        }
-        else if ( Decision.isStruct(emails) ) {
-
+        
+        else if ( Decision.isStruct(emails) ) 
             return new InternetAddress[]{ fromStruct(Caster.toStruct(emails)) };
-        }
+        
         else
             throw new MailException("e-mail defintions must be one of the following types [string,array,struct], not ["+emails.getClass().getName()+"]");
     }

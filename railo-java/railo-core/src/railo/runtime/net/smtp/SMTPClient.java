@@ -223,7 +223,7 @@ public final class SMTPClient implements Serializable  {
 		tos=add(tos,to);
 	}
 
-	public void addTo(Object to) throws AddressException, UnsupportedEncodingException, PageException, MailException {
+	public void addTo(Object to) throws UnsupportedEncodingException, PageException, MailException {
 		InternetAddress[] tmp = MailUtil.toInternetAddresses(to);
 		for(int i=0;i<tmp.length;i++) {
 			addTo(tmp[i]);
@@ -234,7 +234,7 @@ public final class SMTPClient implements Serializable  {
 		this.from=from;
 	}
 
-	public void setFrom(Object from) throws AddressException, UnsupportedEncodingException, MailException, PageException {
+	public void setFrom(Object from) throws UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] addrs = MailUtil.toInternetAddresses(from);
 		if(addrs.length==0) return;
 		setFrom(addrs[0]);
@@ -244,7 +244,7 @@ public final class SMTPClient implements Serializable  {
 		bccs=add(bccs,bcc);
 	}
 
-	public void addBCC(Object bcc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
+	public void addBCC(Object bcc) throws UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = MailUtil.toInternetAddresses(bcc);
 		for(int i=0;i<tmp.length;i++) {
 			addBCC(tmp[i]);
@@ -255,7 +255,7 @@ public final class SMTPClient implements Serializable  {
 		ccs=add(ccs,cc);
 	}
 
-	public void addCC(Object cc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
+	public void addCC(Object cc) throws UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = MailUtil.toInternetAddresses(cc);
 		for(int i=0;i<tmp.length;i++) {
 			addCC(tmp[i]);
@@ -266,7 +266,7 @@ public final class SMTPClient implements Serializable  {
 		rts=add(rts,rt);
 	}
 
-	public void addReplyTo(Object rt) throws AddressException, UnsupportedEncodingException, MailException, PageException {
+	public void addReplyTo(Object rt) throws UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = MailUtil.toInternetAddresses(rt);
 		for(int i=0;i<tmp.length;i++) {
 			addReplyTo(tmp[i]);
@@ -284,7 +284,7 @@ public final class SMTPClient implements Serializable  {
 		return plainText;
 	}
 
-	public void addFailTo(Object ft) throws AddressException, UnsupportedEncodingException, MailException, PageException {
+	public void addFailTo(Object ft) throws UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = MailUtil.toInternetAddresses(ft);
 		for(int i=0;i<tmp.length;i++) {
 			addFailTo(tmp[i]);
