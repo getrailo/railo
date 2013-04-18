@@ -28,7 +28,7 @@ public final class ExpandPath implements Function {
 		realPath=realPath.replace('\\','/');
 
         String contextPath = pc.getHttpServletRequest().getContextPath();
-        if ( !contextPath.isEmpty() && realPath.startsWith( contextPath ) )
+        if ( !StringUtil.isEmpty( contextPath ) && realPath.startsWith( contextPath ) )
             realPath = realPath.substring( contextPath.length() );
 
         Resource res;
