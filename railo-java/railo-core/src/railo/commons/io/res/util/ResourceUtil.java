@@ -309,11 +309,11 @@ public final class ResourceUtil {
         catch (IOException e) {}
         return res;
     }
-    
 	
 
-    private static boolean isUNCPath(String path) {
-        return SystemUtil.isWindows() && path.startsWith("//") ;
+    public static boolean isUNCPath(String path) {
+
+        return SystemUtil.isWindows() && ( path.startsWith("//") || path.startsWith( "\\\\" ) );
 	}
     
     /**
