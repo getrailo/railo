@@ -1453,8 +1453,7 @@ public final class ConfigWebFactory {
     private static void loadMappings(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAPPING);
         Element el= getChildByName(doc.getDocumentElement(),"mappings");
-        
-        
+
         String strLogger=el.getAttribute("log");
         int logLevel=LogUtil.toIntType(el.getAttribute("log-level"),Log.LEVEL_ERROR);
         if(StringUtil.isEmpty(strLogger)){
@@ -1467,9 +1466,7 @@ public final class ConfigWebFactory {
         }
         
         config.setMappingLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
-        
-        
-        
+
         Element[] _mappings=getChildren(el,"mapping");
         
         HashTable mappings=new HashTable();
@@ -1511,9 +1508,7 @@ public final class ConfigWebFactory {
 	           int clMaxEl=toInt(el.getAttribute("classloader-max-elements"),100);
 	           
 	           if(virtual.equalsIgnoreCase("/railo-context/"))toplevel=true;
-	           
-	           
-	           
+
 	           // physical!=null && 
 	           if((physical!=null || archive!=null)) { 
 	               boolean trusted=toBoolean(el.getAttribute("trusted"),false);
@@ -1526,14 +1521,21 @@ public final class ConfigWebFactory {
 	                   finished=true;
 	                   //break;
 	               }
-		           
 	           }
 	        }
         }
         
-        if(!finished) {
-            tmp=new MappingImpl(config,"/","/",null,false,true,true,true,true,false,false);
-            mappings.put(tmp.getVirtualLowerCase(),tmp);
+        if ( !finished ) {
+
+            if ( (config instanceof ConfigWebImpl) && ResourceUtil.isUNCPath( config.getRootDirectory().getPath() ) ) {
+
+                tmp = new MappingImpl( config, "/", config.getRootDirectory().getPath(), null, false, true, true, true, true, false, false );
+            } else {
+
+                tmp = new MappingImpl( config, "/", "/", null, false, true, true, true, true, false, false );
+            }
+
+            mappings.put( "/", tmp );
         }
         
         Mapping[] arrMapping=new Mapping[mappings.size()];
