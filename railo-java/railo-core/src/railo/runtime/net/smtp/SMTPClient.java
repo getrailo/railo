@@ -169,7 +169,7 @@ public final class SMTPClient implements Serializable  {
 		int index;
 		
 		// username/password
-		index=server.indexOf('@');
+		index=server.lastIndexOf('@');
 		if(index!=-1) {
 			usr=server.substring(0,index);
 			server=server.substring(index+1);
