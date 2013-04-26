@@ -22,6 +22,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
+import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -806,17 +807,46 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		// create manifest
     		StringBuilder manifest=new StringBuilder();
     		
-    		manifest.append("Mapping-Type: \"");
+    		// id
+    		manifest.append("mapping-id: \"");
+			manifest.append(MD5.getDigestAsString(mapping.getStrPhysical()));
+    		manifest.append("\"\n");
+    		
+    		
+    		manifest.append("mapping-type: \"");
     		if(mappingType==MAPPING_CFC)manifest.append("cfc");
     		else if(mappingType==MAPPING_CT)manifest.append("ct");
     		else manifest.append("regular");
     		manifest.append("\"\n");
     		
-    		if(mappingType==MAPPING_REGULAR) {
-    			manifest.append("Mapping-Virtual-Path: \"");
-    			manifest.append(mapping.getVirtual());
-        		manifest.append("\"\n");
-    		}
+    		manifest.append("mapping-virtual-path: \"");
+    		manifest.append(mapping.getVirtual());
+        	manifest.append("\"\n");
+    		
+    		// Hidden
+    		manifest.append("mapping-hidden: ");
+			manifest.append(mapping.isHidden());
+    		manifest.append("\n");
+    		// Physical First
+    		manifest.append("mapping-physical-first: ");
+			manifest.append(mapping.isPhysicalFirst());
+    		manifest.append("\n");
+    		// Readonly
+    		manifest.append("mapping-readonly: ");
+			manifest.append(mapping.isReadonly());
+    		manifest.append("\n");
+    		// Top Level
+    		manifest.append("mapping-top-level: ");
+			manifest.append(mapping.isTopLevel());
+    		manifest.append("\n");
+    		
+    		// Trusted
+    		manifest.append("mapping-trusted: ");
+			manifest.append(mapping.isTrusted());
+    		manifest.append("\n");
+    		
+    		
+
     		
     		mani.createFile(true);
     		IOUtil.write(mani, manifest.toString(), "UTF-8", false);
@@ -948,7 +978,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(ResourceUtil.exists(file)) {
             if(file.isDirectory()) {
             	Resource[] files = file.listResources(filter);
-                for(int i=0;i<files.length;i++) {
+                if(files!=null)for(int i=0;i<files.length;i++) {
                     String p=path+'/'+files[i].getName();
                     //print.ln(files[i]+" - "+p);
                     doCompileFile(mapping,files[i],p,errors);
@@ -1827,7 +1857,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doUpdateComponentMapping() throws PageException {
         admin.updateComponentMapping(
-                getString("virtual",""),
+        		getString("virtual",""),
                 getString("physical",""),
                 getString("archive",""),
                 getString("primary","physical"),

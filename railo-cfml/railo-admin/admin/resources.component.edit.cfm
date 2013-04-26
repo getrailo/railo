@@ -18,8 +18,22 @@
 		<input type="hidden"  name="virtual_#mapping.id#" value="#mapping.virtual#">
 		<table class="maintbl">
 			<tbody>
+				<cfset name=ListCompact(mapping.virtual,'/')>
+						
+				<cfif !isValid("uuid",name)><tr>
+					<th scope="row">#stText.Components.name#</th>
+					<td class="tblContent" nowrap>
+							
+						<cfif isValid("uuid",name)>
+							{undefined}
+						<cfelse>
+							#name#
+						</cfif>
+						<div class="comment">#stText.Components.nameDesc#</div>
+					</td>
+				</tr></cfif>
 				<tr>
-					<th scope="row">#stText.Mappings.PhysicalHead#</th>
+					<th scope="row">#stText.components.Physical#</th>
 					<cfset css=iif(len(mapping.physical) EQ 0 and len(mapping.strPhysical) NEQ 0,de('Red'),de(''))>
 					<td class="tblContent#css#" nowrap <cfif len(mapping.strPhysical)>title="#mapping.strPhysical##newLine()##mapping.Physical#"</cfif>>
 						<cfif mapping.readOnly>
@@ -29,10 +43,11 @@
 								name="physical_#mapping.id#" value="#mapping.strPhysical#" required="no"  
 								style="width:100%" message="#stText.Mappings.PhysicalMissing##mapping.id#)">
 						</cfif>
+						<div class="comment">#stText.Components.physicalDesc#</div>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">#stText.Mappings.ArchiveHead#</th>
+					<th scope="row">#stText.components.Archive#</th>
 					<cfset css=iif(len(mapping.archive) EQ 0 and len(mapping.strArchive) NEQ 0,de('Red'),de(''))>
 					<td class="tblContent#css#" <cfif len(mapping.strArchive)>title="#mapping.strArchive##newLine()##mapping.Archive#"</cfif>>
 						<cfif mapping.readOnly>
@@ -42,10 +57,11 @@
 								name="archive_#mapping.id#" value="#mapping.strArchive#" required="no"  
 								class="xlarge" message="#stText.Mappings.ArchiveMissing##mapping.id#)">
 						</cfif>
+						<div class="comment">#stText.Components.archiveDesc#</div>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">#stText.Mappings.PrimaryHead#</th>
+					<th scope="row">#stText.components.Primary#</th>
 					<td>
 						<cfif mapping.readOnly>
 							<cfif mapping.PhysicalFirst>
@@ -59,6 +75,7 @@
 								<option value="archive" <cfif not mapping.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 							</select>
 						</cfif>
+						<div class="comment">#stText.Components.primaryDesc#</div>
 					</td>
 				</tr>
 				<tr>
@@ -158,7 +175,7 @@
 				<tfoot>
 					<tr>
 						<td colspan="2">
-							<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.downloadArchive#">
+							<input type="submit" class="button cancel" name="subAction" value="#stText.Buttons.downloadArchive#">
 							<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.addArchive#">
 							<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button cancel" name="cancel" value="#stText.Buttons.Cancel#">
 						</td>

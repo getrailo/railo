@@ -147,7 +147,7 @@
 			<tfoot>
 				<tr>
 					<td colspan="2">
-						<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.downloadArchive#">
+						<input type="submit" class="button cancel" name="subAction" value="#stText.Buttons.downloadArchive#">
 						<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.addArchive#">
 						<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 					</td>

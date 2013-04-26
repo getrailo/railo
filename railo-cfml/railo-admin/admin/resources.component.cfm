@@ -1,3 +1,14 @@
+
+<cfset stText.Components.name="Name">
+<cfset stText.Components.nameMissing="Missing the name for the new Mapping, this name is used when you deploy a Railo Archive (.ra,.ras) based on this Mapping.">
+<cfset stText.Components.nameDesc="The name is used as identifier when you automaticly import a Railo Archive build based on this Mapping.">
+<cfset stText.Components.PhysicalDesc="Directory path where the components are located, this path should not include the package.">
+<cfset stText.Components.archiveDesc="File path to a components Railo Archive (.ra or .ras).">
+<cfset stText.Components.PrimaryDesc="Defines where Railo does looks first for a requested component">
+<cfset stText.Components.trustedDesc="When does Railo checks for changes in the source file for a already loaded component">
+
+
+
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="url.action2" default="list">
@@ -165,7 +176,8 @@ Defaults --->
 				</cfloop>
            <cfelseif form.subaction EQ stText.Buttons.Update>
             	
-                <cfset data.virtuals=toArrayFromForm("virtual")>
+                <cfset data.names=toArrayFromForm("name")>
+				<cfset data.virtuals=toArrayFromForm("virtual")>
 				<cfset data.physicals=toArrayFromForm("physical")>
 				<cfset data.archives=toArrayFromForm("archive")>
 				<cfset data.primaries=toArrayFromForm("primary")>
@@ -175,21 +187,24 @@ Defaults --->
                 <cfloop index="idx" from="1" to="#arrayLen(data.physicals)#">
 					<cfif isDefined("data.rows[#idx#]") and data.virtuals[idx] NEQ "">
 						<cfset data.trusteds[idx]=isDefined("data.trusteds[#idx#]") and data.trusteds[idx]>
-						
-						<cfdump var="#data.trusteds[idx]#">
+					<cfset name=data.names[idx]?:"">
+					<cfset virtual=trim(data.virtuals[idx])>
+					<cfif len(name)>
+						<cfset virtual="/"&name>
+					</cfif>
 					<cfadmin 
 						action="updateComponentMapping"
 						type="#request.adminType#"
 						password="#session["password"&request.adminType]#"
 						
-						virtual="#data.virtuals[idx]#"
+						virtual="#virtual#"
 						physical="#data.physicals[idx]#"
 						archive="#data.archives[idx]#"
 						primary="#data.primaries[idx]#"
 						trusted="#data.trusteds[idx]#"
 						remoteClients="#request.getRemoteClients()#">
                 	</cfif>
-				</cfloop><cfdump var="#form.subaction#">
+				</cfloop>
             <cfelse>
                 <cfadmin 
                     action="updateComponent"

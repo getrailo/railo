@@ -94,6 +94,7 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
@@ -2371,7 +2372,7 @@ public final class ConfigWebFactory {
 	           
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
+	           mappings[i]= new MappingImpl(config,ConfigWebAdmin.createVirtual(ctMapping),physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -2415,8 +2416,8 @@ public final class ConfigWebFactory {
         }
         
 	    if(!hasSet) {
-	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true,false,true);
-	        config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        //MappingImpl m=new MappingImpl(config,"/default-customtags/","{railo-web}/customtags/",null,false,true,false,false,true,false,true);
+	        //config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
         
     }
@@ -3630,7 +3631,7 @@ public final class ConfigWebFactory {
       				}
       			}
       			catch(Throwable t){
-      				t.printStackTrace();
+      				SystemOut.printDate(config.getErrWriter(), t.getMessage());
       			}
       		}
       		
@@ -4100,13 +4101,15 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(cMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(cMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(cMapping.getAttribute("trusted"),false);
+	           String virtual=ConfigWebAdmin.createVirtual(cMapping);
+	           
 	           int clMaxEl=toInt(cMapping.getAttribute("classloader-max-elements"),100);
 	           
 	           String primary=cMapping.getAttribute("primary");
 	           
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
+	           mappings[i]= new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
 	        }
 	        
 	        config.setComponentMappings(mappings);
@@ -4150,7 +4153,7 @@ public final class ConfigWebFactory {
         
       	
 	    if(!hasSet) {
-	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true,false,true);
+	        MappingImpl m=new MappingImpl(config,"/default","{railo-web}/components/",null,false,true,false,false,true,false,true);
 	        config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
       	

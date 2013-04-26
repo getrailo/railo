@@ -258,7 +258,7 @@ Path placeholders:
         base="/railo-context/Component.cfc"
 		data-member-default-access="public"
 		dump-template="/railo-context/component-dump.cfm">
-  		<mapping physical="{railo-web}/components/" primary="physical" trusted="true"/>
+  		<mapping virtual="/default" physical="{railo-web}/components/" primary="physical" trusted="true"/>
 	</component>
 	
 	<!--
