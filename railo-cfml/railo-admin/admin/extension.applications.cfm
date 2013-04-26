@@ -5,6 +5,7 @@
 <cfif StructKeyExists(form,'action2')>
 	<cfset url.action2="install3">
 </cfif>
+<cfparam name="inc" default="">
 <cfparam name="url.action2" default="list">
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
@@ -34,7 +35,7 @@
     returnVariable="extensions">
  
 <cfparam name="err" default="#struct(message:"",detail:"")#">
-<cfset data=getData(providers,err)>
+<!--- <cfset data=getData(providers,err)>--->
 
 
 <!--- Action --->
@@ -68,8 +69,8 @@
         	<cflocation url="#request.self#?action=#url.action#&action2=install1&uid=#form.uid#" addtoken="no">
 		</cfcase>
 	</cfswitch>
-<cfinclude template="#url.action#.#url.action2#.cfm"/>
-	<cfcatch>
+<cfsavecontent variable="inc"><cfinclude template="#url.action#.#url.action2#.cfm"/></cfsavecontent>
+	<cfcatch><cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -81,5 +82,10 @@
 <cfsetting enablecfoutputonly="no">
 <!--- 
 Error Output --->
+<cfif len(err.message)>
+<cfset err.message&="<br><br>(Railo still tries to load the failing Extension Providers in a background process)">
+</cfif>
 <cfset printError(err)>
 <cfset printError(error)>
+
+<cfoutput>#inc#</cfoutput>

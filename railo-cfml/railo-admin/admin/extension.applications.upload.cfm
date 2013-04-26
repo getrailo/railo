@@ -86,6 +86,7 @@
 	<cfset qData[key] = configXml.config.info[key].xmlText />
 </cfloop>
 
+
 <!--- set download URL for the extension --->
 <cfset qData.download = zipfile />
 <!--- DLM --->
@@ -97,11 +98,13 @@
 	<cfset qData.provider = "manualupload" />
 <cfelse>
 	<cftry>
-		<cfset providerCFC = loadCFC(qData.provider) />
-		<cfset qData.info = providerCFC.getInfo() />
+		<cfset datas=loadProvidersData(qData.provider)>
+		<cfset data=datas[qData.provider]>
+		<cfset qData.info = data.getInfo />
 		<cfcatch></cfcatch>
 	</cftry>
 </cfif>
+
 <cfif not isStruct(qData.info)>
 	<!--- create 'manual' info --->
 	<cfset qData.info = {

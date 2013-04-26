@@ -1,4 +1,5 @@
 <cfset hasAccess=true />
+<cfset data=getData(providers,err)>
 
 <cfset existing=struct() />
 
@@ -67,7 +68,6 @@
 			<cfloop query="extensions">
 				<cfset uid=createId(extensions.provider,extensions.id)>
 				<cfset existing[uid]=true>
-				
 				<cfif session.extFilter.filter neq "">
 					<cftry>
 						<cfset prov=getProviderData(extensions.provider)>
