@@ -3,6 +3,9 @@ package railo.runtime.functions.component;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -33,7 +36,7 @@ public class ComponentListPackage implements Function {
 	
 
 	public static Array call(PageContext pc , String packageName) throws PageException {
-		String[] names;
+		Set<String> names;
 		try {
 			names = _call(pc, packageName);
 		} catch (IOException e) {
@@ -42,8 +45,9 @@ public class ComponentListPackage implements Function {
 		
 		Array arr=new ArrayImpl();
 		String name;
-		for(int i=0;i<names.length;i++){
-			name=names[i];
+		Iterator<String> it = names.iterator();
+		while(it.hasNext()){
+			name=it.next();
 			if(StringUtil.endsWithIgnoreCase(name, ".cfc")) {
 				name=name.substring(0,name.length()-4);
 			}
@@ -52,9 +56,10 @@ public class ComponentListPackage implements Function {
 		return arr;
 	}
 	
-	private static String[] _call(PageContext pc , String packageName) throws IOException, ApplicationException {
+	private static Set<String> _call(PageContext pc , String packageName) throws IOException, ApplicationException {
 		PageContextImpl pci=(PageContextImpl) pc;
 		ConfigWebImpl config = (ConfigWebImpl) pc.getConfig();
+		Set<String> rtn=null;
 		//var SEP=server.separator.file;
 		
 		// get enviroment configuration
@@ -73,7 +78,7 @@ public class ComponentListPackage implements Function {
 				String _path=ps.getRealpath();
 				_path=ListUtil.trim(_path,"\\/");
 				String[] list = _listMapping(pc,mapping,_path);
-				if(!ArrayUtil.isEmpty(list)) return list;
+				if(!ArrayUtil.isEmpty(list)) rtn=add(rtn,list);
 			}
 		}
 		
@@ -90,7 +95,7 @@ public class ComponentListPackage implements Function {
 					_path=ListUtil.trim(virtual.substring(mapping.getVirtual().length()),"\\/").trim(); 
 					_path=StringUtil.replace(_path, "/", File.separator, false);
 					list = _listMapping(pc,mapping,_path);
-					if(!ArrayUtil.isEmpty(list)) return list;
+					if(!ArrayUtil.isEmpty(list)) rtn=add(rtn,list);
 				}
 			}
 		}
@@ -102,14 +107,22 @@ public class ComponentListPackage implements Function {
 		for(int i=0;i<mappings.length;i++){
 			mapping=mappings[i];
 			list=_listMapping(pc,mapping,path);
-			if(!ArrayUtil.isEmpty(list)) return list;
+			if(!ArrayUtil.isEmpty(list)) rtn=add(rtn,list);
 		}
 		
-		throw new ApplicationException("no package with name ["+packageName+"] found");
-		
+		if(rtn==null)throw new ApplicationException("no package with name ["+packageName+"] found");
+		return rtn;
 	}
 
 	
+	private static Set<String> add(Set<String> set, String[] arr) {
+		if(set==null) set=new HashSet<String>();
+		for(int i=0;i<arr.length;i++){
+			set.add(arr[i]);
+		}
+		return set;
+	}
+
 	private static String[] _listMapping(PageContext pc,Mapping mapping, String path) throws IOException{
 		if(mapping.isPhysicalFirst()) {
 			// check physical
