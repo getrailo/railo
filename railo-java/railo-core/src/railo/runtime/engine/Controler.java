@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -20,6 +21,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebAdmin;
+import railo.runtime.config.DeployHandler;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.op.Caster;
@@ -86,9 +88,15 @@ public final class Controler extends Thread {
             catch (Throwable t) {
 				t.printStackTrace();
 			}
+            
+
+            // every minute
             if(doMinute) {
-				try{ConfigWebAdmin.checkForChangesInConfigFile(configServer);}catch(Throwable t){}
+            	// deploy extensions, archives ...
+				try{DeployHandler.deploy(configServer);}catch(Throwable t){t.printStackTrace();}
+                try{ConfigWebAdmin.checkForChangesInConfigFile(configServer);}catch(Throwable t){}
             }
+            // every hour
             if(doHour) {
             	try{configServer.checkPermGenSpace(true);}catch(Throwable t){}
             }
@@ -109,7 +117,6 @@ public final class Controler extends Thread {
 	}
 
 	private void run(CFMLFactoryImpl cfmlFactory, boolean doMinute, boolean doHour, boolean firstRun) {
-		
 		try {
 				boolean isRunning=cfmlFactory.getUsedPageContextLength()>0;   
 			    if(isRunning) {
@@ -137,12 +144,17 @@ public final class Controler extends Thread {
 					ThreadLocalConfig.register(config);
 				}
 				
+				
 				//every Minute
 				if(doMinute) {
 					if(config==null) {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
 					}
+					
+					// deploy extensions, archives ...
+					try{DeployHandler.deploy(config);}catch(Throwable t){t.printStackTrace();}
+					
 					// clear unused DB Connections
 					try{((ConfigImpl)config).getDatasourceConnectionPool().clear();}catch(Throwable t){}
 					// clear all unused scopes
