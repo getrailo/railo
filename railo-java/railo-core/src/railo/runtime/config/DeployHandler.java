@@ -1,5 +1,6 @@
 package railo.runtime.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.Attributes;
@@ -58,7 +59,7 @@ public class DeployHandler {
 			}
 			
 			// Railo Extensions
-			else
+			else if("re".equalsIgnoreCase(ext))
 				deployExtension(config, child);
 			}
 			catch (ZipException e) {
@@ -82,7 +83,7 @@ public class DeployHandler {
 			moveToFailedFolder(archive);
 			return;
 		}
-		String id=null,type=null,virtual=null,name=null;
+		String type=null,virtual=null,name=null;
 		boolean readOnly,topLevel,trusted,hidden,physicalFirst;
 		InputStream is = null;
 		try{
@@ -90,7 +91,7 @@ public class DeployHandler {
 			Manifest manifest = new Manifest(is);
 		    Attributes attr = manifest.getMainAttributes();
 		    
-		    id = unwrap(attr.getValue("mapping-id"));
+		    //id = unwrap(attr.getValue("mapping-id"));
 		    type = unwrap(attr.getValue("mapping-type"));
 		    virtual = unwrap(attr.getValue("mapping-virtual-path"));
 		    name = ListUtil.trim(virtual, "/");
@@ -99,10 +100,6 @@ public class DeployHandler {
 		    trusted = Caster.toBooleanValue(unwrap(attr.getValue("mapping-trusted")),false);
 		    hidden = Caster.toBooleanValue(unwrap(attr.getValue("mapping-hidden")),false);
 		    physicalFirst = Caster.toBooleanValue(unwrap(attr.getValue("mapping-physical-first")),false);
-		    
-		    //print.e("name:"+name);
-		    //print.e("virtual:"+virtual);
-		    //print.e("type:"+type);
 		}
 		finally{
 			IOUtil.closeEL(is);
@@ -130,32 +127,144 @@ public class DeployHandler {
 			moveToFailedFolder(archive);
 			t.printStackTrace();
 		}
-		// component archive
-		/*else if("cfcx".equalsIgnoreCase(type)){
-			
-			if(StringUtil.isEmpty(id)) {
-				SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Component Archive ["+archive+"], file is to old, the file does not have a id defintion in the MANIFEST.");
-				return;
-			}
-			
-			
-			Resource trgDir = config.getConfigDir().getRealResource("archives").getRealResource(id);
-			Resource trgFile = trgDir.getRealResource(archive.getName());
-			trgDir.mkdirs();
-			// delete existing files
-			ResourceUtil.deleteContent(trgDir, null);
-			ResourceUtil.moveTo(archive, trgFile);
-			
-			try {
-				SystemOut.printDate(config.getOutWriter(),"add component mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
-				ConfigWebAdmin.updateComponentMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", trusted);
-			    
-			}
-			catch (Throwable t) {
-				t.printStackTrace();
-			}
-		}*/
+	}
+	
+
+	private static void deployExtension(Config config, Resource ext) {
+		boolean isWeb=config instanceof ConfigWeb;
+		String type=isWeb?"web":"server";
 		
+		// Manifest
+		Manifest manifest = null;
+		ZipInputStream zis=null;
+        try {
+	        zis = new ZipInputStream( IOUtil.toBufferedInputStream(ext.getInputStream()) ) ;     
+	        ZipEntry entry;
+	        String name;
+	        while ( ( entry = zis.getNextEntry()) != null ) {
+	        	name=entry.getName();
+	        	if(!entry.isDirectory() && name.equalsIgnoreCase("META-INF/MANIFEST.MF")) {
+	        		manifest = toManifest(config,zis,null);
+	        	}
+	            zis.closeEntry() ;
+	        }
+        }
+        catch(Throwable t){
+        	SystemOut.printDate(config.getErrWriter(),t.getMessage());
+			moveToFailedFolder(ext);
+			return;
+        }
+        finally {
+        	IOUtil.closeEL(zis);
+        }
+        
+        int minCoreVersion=0;
+        String strMinCoreVersion="",version=null,name=null;
+        
+        if(manifest!=null) {
+        	Attributes attr = manifest.getMainAttributes();
+        	// version
+        	version=unwrap(attr.getValue("version"));
+
+        	// name
+        	name=unwrap(attr.getValue("name"));
+
+        	// core version
+        	strMinCoreVersion=unwrap(attr.getValue("railo-core-version"));
+        	minCoreVersion=Info.toIntVersion(strMinCoreVersion,minCoreVersion);
+		    
+        }
+        if(StringUtil.isEmpty(name,true)) {
+        	name=ext.getName();
+        	int index=name.lastIndexOf('.');
+        	name=name.substring(0,index-1);
+        }
+        name=name.trim();
+        
+        
+        // check version
+		if(minCoreVersion>Info.getVersionAsInt()) {
+			SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
+			moveToFailedFolder(ext);
+			return;
+		}
+		
+		Resource trgFile=null;
+		try{
+			Resource trgDir = config.getConfigDir().getRealResource("extensions").getRealResource(type).getRealResource(name);
+			trgFile = trgDir.getRealResource(ext.getName());
+			trgDir.mkdirs();
+			ResourceUtil.moveTo(ext, trgFile);
+		}
+	    catch(Throwable t){
+	    	SystemOut.printDate(config.getErrWriter(),t.getMessage());
+			moveToFailedFolder(ext);
+			return;
+	    }
+	    
+		try {
+	        zis = new ZipInputStream( IOUtil.toBufferedInputStream(trgFile.getInputStream()) ) ;     
+	        ZipEntry entry;
+	        String path;
+	        while ( ( entry = zis.getNextEntry()) != null ) {
+	        	path=entry.getName();
+	        	
+	        	// jars
+	        	if(!entry.isDirectory() && startsWith(path,type,"jars") && StringUtil.endsWithIgnoreCase(path, ".jar")) {
+	        		ConfigWebAdmin.updateJar(config,zis,fileName(entry),false);
+	        	}
+	        	
+	        	// flds
+	        	if(!entry.isDirectory() && startsWith(path,type,"flds") && StringUtil.endsWithIgnoreCase(path, ".fld")) {
+	        		ConfigWebAdmin.updateFLD(config, zis, fileName(entry),false);
+	        	}
+	        	
+	        	// tlds
+	        	if(!entry.isDirectory() && startsWith(path,type,"tlds") && StringUtil.endsWithIgnoreCase(path, ".tld")) {
+	        		ConfigWebAdmin.updateTLD(config, zis, fileName(entry),false);
+	        	}
+	        	
+	        	// context
+	        	String realpath;
+	        	if(!entry.isDirectory() && startsWith(path,type,"context") && !StringUtil.startsWith(fileName(entry), '.')) {
+	        		realpath=path.substring(8);
+	        		ConfigWebAdmin.updateContext((ConfigImpl)config, zis, realpath,false);
+	        	}
+	            zis.closeEntry() ;
+	        }
+        }
+	    catch(Throwable t){
+	    	SystemOut.printDate(config.getErrWriter(),t.getMessage());
+			moveToFailedFolder(trgFile);
+			return;
+	    }
+        finally {
+        	IOUtil.closeEL(zis);
+        }
+	}
+
+	private static Manifest toManifest(Config config,InputStream is, Manifest defaultValue) {
+		try {
+			String cs = config.getResourceCharset();
+			String str = IOUtil.toString(is,cs);
+			if(StringUtil.isEmpty(str,true)) return defaultValue;
+			str=str.trim()+"\n";
+			return new Manifest(new ByteArrayInputStream(str.getBytes(cs)));
+		}
+		catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	private static boolean startsWith(String path,String type, String name) {
+		return StringUtil.startsWithIgnoreCase(path, name+"/") || StringUtil.startsWithIgnoreCase(path, type+"/"+name+"/");
+	}
+
+	private static String fileName(ZipEntry entry) {
+		String name = entry.getName();
+		int index=name.lastIndexOf('/');
+		if(index==-1) return name;
+		return name.substring(index+1);
 	}
 
 	private static void moveToFailedFolder(Resource archive) {
@@ -187,51 +296,6 @@ public class DeployHandler {
 			return value.substring(1, value.length()-1);
 		}
 		return value;
-	}
-	
-
-	private static void deployExtension(Config config, Resource ext) throws ZipException, IOException {
-		print.e(ext);
-		//ZipFile file=new ZipFile(FileWrapper.toFile(ext));
-		
-		ZipInputStream zis=null;
-        try {
-	        zis = new ZipInputStream( IOUtil.toBufferedInputStream(ext.getInputStream()) ) ;     
-	        ZipEntry entry;
-	        String name;
-	        while ( ( entry = zis.getNextEntry()) != null ) {
-	        	name=entry.getName();
-	        	
-	        	// jars/, plugins/, applications/, tags/, functions/,
-	        	
-	        	// jars
-	        	if(StringUtil.startsWithIgnoreCase(name, "jars/") && StringUtil.endsWithIgnoreCase(name, ".jar")) {
-	        		print.e(name);
-	        		
-	        		ConfigWebAdmin.updateJar(config,ext);
-	        	}
-	        	
-	        	
-	        	/*Resource target=targetDir.getRealResource(entry.getName());
-	            if(entry.isDirectory()) {
-	                target.mkdirs();
-	            }
-	            else {
-	            	Resource parent=target.getParentResource();
-	                if(!parent.exists())parent.mkdirs();
-	                IOUtil.copy(zis,target,false);
-	            }
-	            target.setLastModified(entry.getTime());
-	            */
-	            zis.closeEntry() ;
-	        }
-        }
-        finally {
-        	IOUtil.closeEL(zis);
-        }
-		
-		//Compress c = Compress.getInstance(ext, Compress.FORMAT_ZIP,true);
-		
 	}
 	
 }

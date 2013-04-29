@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 
@@ -3489,13 +3490,26 @@ public final class ConfigWebAdmin {
 		updateLD(config.getFldFile(),resFld);
 	}
 	
-	public void updateLD(Resource dir,Resource res) throws IOException {
+	private void updateLD(Resource dir,Resource res) throws IOException {
 		if(!dir.exists())dir.createDirectory(true);
     	
     	Resource file = dir.getRealResource(res.getName());
     	if(file.length()!=res.length()){
 			ResourceUtil.copy(res, file);
 		}
+	}
+	
+	static void updateTLD(Config config,InputStream is,String name, boolean closeStream) throws IOException {
+		updateLD(config.getTldFile(),is,name,closeStream);
+	}
+	static void updateFLD(Config config,InputStream is,String name, boolean closeStream) throws IOException {
+		updateLD(config.getFldFile(),is,name,closeStream);
+	}
+	
+	private static void updateLD(Resource dir,InputStream is,String name, boolean closeStream) throws IOException {
+		if(!dir.exists())dir.createDirectory(true);
+    	Resource file = dir.getRealResource(name);
+    	IOUtil.copy(is, file.getOutputStream(), closeStream, true);
 	}
 
 	public void removeTLD(String name) throws IOException {
@@ -3517,7 +3531,7 @@ public final class ConfigWebAdmin {
 	public void updateJar(Resource resJar) throws IOException {
 		updateJar(config, resJar);
 	}
-	static void updateJar(Config config, Resource resJar) throws IOException {
+	private static void updateJar(Config config, Resource resJar) throws IOException {
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		if(!lib.exists())lib.mkdir();
     	
@@ -3528,6 +3542,17 @@ public final class ConfigWebAdmin {
 			ResourceUtil.copy(resJar, fileLib);
 			ConfigWebFactory.reloadLib((ConfigImpl) config);
 		}
+	}
+	
+	static void updateJar(Config config, InputStream is, String name, boolean closeStream) throws IOException {
+		Resource lib = config.getConfigDir().getRealResource("lib");
+		if(!lib.exists())lib.mkdir();
+    	
+		Resource fileLib = lib.getRealResource(name);
+		
+		IOUtil.closeEL(config.getClassLoader());
+		IOUtil.copy(is, fileLib.getOutputStream(), closeStream, true);
+		ConfigWebFactory.reloadLib((ConfigImpl) config);
 	}
 
 	public void updateLogSettings(String name, int level,String virtualpath, int maxfile, int maxfilesize) throws ApplicationException {
@@ -3913,4 +3938,29 @@ public final class ConfigWebAdmin {
     	
     	
 	}
+
+	
+	static void updateContext(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	admin._updateContext(config, is, realpath, closeStream);
+    }
+
+	private void _updateContext(Config config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+    	if(config instanceof ConfigServer) {
+    		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+    		for(int i=0;i<webs.length;i++){
+    			_updateContext(webs[i], is,realpath,closeStream);
+    		}
+    		return;
+    	}
+		
+    	// ConfigWeb
+    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
+        if(trg.exists()) trg.remove(true);
+        Resource p = trg.getParentResource();
+        if(!p.isDirectory()) p.createDirectory(true); {
+            IOUtil.copy(is, trg, closeStream);
+        }
+        _store((ConfigImpl)config);
+    }
 }
