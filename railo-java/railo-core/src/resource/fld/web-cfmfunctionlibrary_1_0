@@ -9854,7 +9854,7 @@ The following things are considered to be empty:
 		<argument>
 			<name>value</name>
 			<alias>object</alias>
-			<type>object</type>
+			<type>any</type>
 			<required>Yes</required>
 			<description></description>
     	</argument>
