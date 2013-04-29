@@ -7,6 +7,7 @@ import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ini.IniFile;
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -85,6 +86,20 @@ public final class Info {
             StringUtil.addZeros(patches,3);    
         intVersion=(major*1000000)+(minor*10000)+(releases*100)+patches;
         fullVersion=intVersion+state;       
+    }
+    
+    public static int toIntVersion(String version, int defaultValue) {
+    	try{
+	    	String[] aVersion = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(version,'.'));
+	    	int ma = Caster.toIntValue(aVersion[0]);
+		    int mi = Caster.toIntValue(aVersion[1]);
+		    int re = Caster.toIntValue(aVersion[2]);
+		    int pa = Caster.toIntValue(aVersion[3]);
+	    	return (ma*1000000)+(mi*10000)+(re*100)+pa;
+    	}
+    	catch(Throwable t){
+    		return defaultValue;
+    	}
     }
     
     // Version <version>.<major>.<minor>.<patches>
