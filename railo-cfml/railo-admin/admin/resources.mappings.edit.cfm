@@ -136,9 +136,18 @@
 		<table class="maintbl">
 			<tbody>
 				<tr>
-					<th scope="row">#stText.Mappings.archiveSecure#</th>
-					<td nowrap><input 
-					type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes" checked> <div class="comment">#stText.Mappings.archiveSecureDesc#</div></td>
+					<th scope="row">#stText.mappings.addCFMLFiles#</th>
+					<td nowrap>
+						<input type="checkbox" class="checkbox" name="addCFMLFiles_#mapping.id#" value="yes" checked>
+						<div class="comment">#stText.mappings.addCFMLFilesDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.mappings.addNoneCFMLFiles#</th>
+					<td nowrap>
+						<input type="checkbox" class="checkbox" name="addNoneCFMLFiles_#mapping.id#" value="yes" checked> 
+						<div class="comment">#stText.mappings.addNoneCFMLFilesDesc#</div>
+					</td>
 				</tr>
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2" attention="#htmleditformat(stText.remote.downloadArchive)#">

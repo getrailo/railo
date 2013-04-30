@@ -161,10 +161,17 @@
 		<table class="maintbl">
 			<tbody>
 				<tr>
-					<th scope="row">#stText.Mappings.archiveSecure#</th>
+					<th scope="row">#stText.Mappings.addCFCFiles#</th>
 					<td>
-						<input type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes" checked>
-						<div class="comment">#stText.Mappings.archiveSecureDesc#</div>
+						<input type="checkbox" class="checkbox" name="addCFMLFiles_#mapping.id#" value="yes" checked>
+						<div class="comment">#stText.Mappings.addCFCFilesDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Mappings.addNoneCFMLFiles#</th>
+					<td>
+						<input type="checkbox" class="checkbox" name="addNoneCFMLFiles_#mapping.id#" value="yes" checked>
+						<div class="comment">#stText.Mappings.addNoneCFMLFilesDesc#</div>
 					</td>
 				</tr>
 				<cfif hasAccess>

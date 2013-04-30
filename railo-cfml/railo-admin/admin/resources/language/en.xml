@@ -42,8 +42,14 @@
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">There is no Certificate available from this host.</data>
 	
-	<data key="mappings.archivesecuredesc">Exclude source files from archive. Source files are only used for codeprints in case of an error</data>
-	<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
+	<data key="mappings.addNoneCFMLFiles">Add None CFML Templates</data>
+	<data key="mappings.addNoneCFMLFilesDesc">Add all None CFML Source Templates as well (.js,.css,.gif,.png ...).</data>
+	<data key="mappings.addCFMLFiles">Add CFML Templates</data>
+	<data key="mappings.addCFMLFilesDesc">Add all CFML Source Templates as well (.cfm,.cfc,.cfml).</data>
+	<data key="mappings.addCFCFiles">Add Component Templates</data>
+	<data key="mappings.addCFCFilesDesc">Add all Component Source Templates as well (.cfc).</data>
+	
+<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
 	<data key="mappings.archiveheaddescription">Name of the archive file (ra or ras), (absolute or relative to the webroot)</data>
 	<data key="mappings.primaryheaddescription">Sets where Railo-files will first be searched</data>
 	<data key="mappings.trustedheaddescription"></data>
