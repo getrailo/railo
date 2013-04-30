@@ -306,7 +306,7 @@ public final class ResourceUtil {
         try {
         	return pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination).getCanonicalResource();
         } 
-        catch (IOException e) {}
+        catch (Throwable t) {}
         return res;
     }
     
