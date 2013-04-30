@@ -25,6 +25,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
+import railo.transformer.bytecode.util.ASMUtil;
 
 public class ComponentListPackage implements Function {
 	
@@ -167,18 +168,27 @@ public class ComponentListPackage implements Function {
 				java.util.List<String> list=new ArrayList<String>();
 				// we use the class files here to get the info, the source files are optional and perhaps not present.
 				Resource[] children = dir.listResources(FILTER_CLASS);
-				String className,c;
+				String className,c,sourceName=null;
 				for(int i=0;i<children.length;i++){
 					className=children[i].getName();
 					className=className.substring(0,className.length()-6);
 					className=packageName+"."+className;
-					//mapping.getClassLoaderForArchive().loadClass(className);
 					
-					// TODO do the following 4 lines with help of ASM this way is ugly but working for the moment
-					c=IOUtil.toString(children[i],null);
-					c=c.substring(0,c.indexOf("<clinit>"));
-					c = ListUtil.last(c, "/\\",true).trim();
-					if(StringUtil.endsWithIgnoreCase(c, ".cfc")) list.add(c);
+					try {
+						Class<?> clazz = mapping.getClassLoaderForArchive().loadClass(className);
+						sourceName=ASMUtil.getSourceName(clazz);
+					}
+					catch (Throwable t) {}
+					
+					if(StringUtil.isEmpty(sourceName)) {
+						c=IOUtil.toString(children[i],null);
+						c=c.substring(0,c.indexOf("<clinit>"));
+						c = ListUtil.last(c, "/\\",true).trim();
+						if(StringUtil.endsWithIgnoreCase(c, ".cfc"))
+							list.add(c);
+					}
+					else list.add(sourceName);
+					
 				}
 				if(list.size()>0) return list.toArray(new String[list.size()]);
 			} 
