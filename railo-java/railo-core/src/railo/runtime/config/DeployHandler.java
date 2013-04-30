@@ -10,8 +10,8 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import railo.print;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -29,7 +29,7 @@ public class DeployHandler {
 	
 
 	private static final ResourceFilter ALL_EXT = new ExtensionResourceFilter(new String[]{".re",".ra",".ras"});
-	private static final ResourceFilter ARCHIVE_EXT = new ExtensionResourceFilter(new String[]{".ra",".ras"});
+	//private static final ResourceFilter ARCHIVE_EXT = new ExtensionResourceFilter(new String[]{".ra",".ras"});
 
 
 	public static void deploy(Config config){
@@ -37,10 +37,7 @@ public class DeployHandler {
 		int ma = Info.getMajorVersion();
 		int mi = Info.getMinorVersion();
 		if(!dir.exists()) {
-			if(!dir.isDirectory()) {
-				SystemOut.printDate(config.getErrWriter(),"["+dir+"] is not a accesible directory");
-			}
-			else if(ma>4 || ma==4 && mi>1) {// FUTURE remove the if contition
+			if(ma>4 || ma==4 && mi>1) {// FUTURE remove the if contition
 				dir.mkdirs();
 			}
 			return;
@@ -159,7 +156,8 @@ public class DeployHandler {
         }
         
         int minCoreVersion=0;
-        String strMinCoreVersion="",version=null,name=null;
+        double minLoaderVersion=0;
+        String strMinCoreVersion="",strMinLoaderVersion="",version=null,name=null;
         
         if(manifest!=null) {
         	Attributes attr = manifest.getMainAttributes();
@@ -172,7 +170,11 @@ public class DeployHandler {
         	// core version
         	strMinCoreVersion=unwrap(attr.getValue("railo-core-version"));
         	minCoreVersion=Info.toIntVersion(strMinCoreVersion,minCoreVersion);
-		    
+        	
+        	// loader version
+        	strMinLoaderVersion=unwrap(attr.getValue("railo-loader-version"));
+        	minLoaderVersion=Caster.toDoubleValue(strMinLoaderVersion,minLoaderVersion);
+        	
         }
         if(StringUtil.isEmpty(name,true)) {
         	name=ext.getName();
@@ -182,9 +184,16 @@ public class DeployHandler {
         name=name.trim();
         
         
-        // check version
+        // check core version
 		if(minCoreVersion>Info.getVersionAsInt()) {
 			SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
+			moveToFailedFolder(ext);
+			return;
+		}
+		
+		// check loader version
+		if(minLoaderVersion>SystemUtil.getLoaderVersion()) {
+			SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Extension ["+ext+"], Railo Loader Version must be at least ["+strMinLoaderVersion+"], update the railo.jar first.");
 			moveToFailedFolder(ext);
 			return;
 		}
