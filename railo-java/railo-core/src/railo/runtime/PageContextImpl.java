@@ -2012,7 +2012,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
             m = restMappings[i];
             if(m.isDefault())defaultMapping=m;
-            if(pathInfo.startsWith(m.getVirtualWithSlash(),0)) {
+            if(pathInfo.startsWith(m.getVirtualWithSlash(),0) && m.getPhysical()!=null) {
             	mapping=m;
             	//result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
             	rl=new RestRequestListener(m,pathInfo.substring(m.getVirtual().length()),matrix,format,hasFormatExtension,accept,contentType,null);
@@ -2021,7 +2021,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
     	
     	// default mapping
-    	if(mapping==null && defaultMapping!=null) {
+    	if(mapping==null && defaultMapping!=null && defaultMapping.getPhysical()!=null) {
     		mapping=defaultMapping;
             //result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
         	rl=new RestRequestListener(mapping,pathInfo,matrix,format,hasFormatExtension,accept,contentType,null);
@@ -2031,7 +2031,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	//base = PageSourceImpl.best(config.getPageSources(this,null,realPath,true,false,true));
     	
     	
-    	if(mapping==null){
+    	if(mapping==null || mapping.getPhysical()==null){
     		RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
     	}
     	else {
