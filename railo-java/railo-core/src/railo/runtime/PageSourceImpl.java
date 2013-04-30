@@ -345,7 +345,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 * @return file Object
 	 */
 	private String getArchiveSourcePath() {
-	    return "ra://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
+	    return "zip://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
 	}
 
     /**
