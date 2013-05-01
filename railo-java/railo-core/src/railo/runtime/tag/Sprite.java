@@ -88,7 +88,7 @@ public final class Sprite extends TagImpl {
 			
 			// TODO use the same resource as for cfimage
 			PageSource ps = pageContext.getCurrentTemplatePageSource();
-			Resource curr = ps.getPhyscalFile();// TODO handle archives
+			Resource curr = ps.getResource();
 			Resource dir = curr.getParentResource();
 			Resource cssDir = dir.getRealResource("css");
 			Resource pathdir = cssDir;

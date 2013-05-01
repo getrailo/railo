@@ -189,7 +189,7 @@ public final class ResourceUtil {
 	        	//res = pc.getPhysical(path,true);
 	            //if(res!=null && res.exists()) return res;
 	        }
-	        res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(path));
+	        res=getRealResource(pc, path, res);
 	        if(res.exists()) return res;
     	//}
         
@@ -257,7 +257,7 @@ public final class ResourceUtil {
 	            //res = pc.getPhysical(destination,true);
 	            //if(res!=null && (res.exists() || parentExists(res))) return res;
 	        }
-	    	res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination));
+	        res=getRealResource(pc, destination, res);
 	        if(res!=null && (res.exists() || parentExists(res))) return res;
         //}
     
@@ -302,17 +302,22 @@ public final class ResourceUtil {
         else res=pc.getConfig().getResource(destination);
         if(res.isAbsolute()) return res;
         
-        
-        try {
-        	return pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination).getCanonicalResource();
-        } 
-        catch (Throwable t) {}
-        return res;
+        return getRealResource(pc,destination,res);
     }
     
 	
 
-    private static boolean isUNCPath(String path) {
+    private static Resource getRealResource(PageContext pc, String destination, Resource defaultValue) {
+    	PageSource ps = pc.getCurrentPageSource();
+    	if(ps!=null) {
+    		ps=ps.getRealPage(destination);
+    		if(ps!=null)return getCanonicalResourceEL(ps.getResource());
+    		
+    	}
+    	return defaultValue;
+	}
+    
+	private static boolean isUNCPath(String path) {
         return SystemUtil.isWindows() && path.startsWith("//") ;
 	}
     
