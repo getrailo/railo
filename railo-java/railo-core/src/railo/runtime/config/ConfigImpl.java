@@ -1191,7 +1191,7 @@ public abstract class ConfigImpl implements Config {
     protected void setTagDirectory(Resource tagDirectory) {
     	this.tagDirectory=tagDirectory;
     	
-    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
+    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true,null);
     	
     	TagLib tl=getCoreTagLib();
     	
@@ -1251,7 +1251,7 @@ public abstract class ConfigImpl implements Config {
     
     protected void setFunctionDirectory(Resource functionDirectory) {
     	//this.functionDirectory=functionDirectory;
-    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
+    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true,null);
     	FunctionLib fl=flds[flds.length-1];
         
         // now overwrite with new data
@@ -2264,7 +2264,7 @@ public abstract class ConfigImpl implements Config {
 
 	@Override
 	public ApplicationListener getApplicationListener() {
-		return applicationListener;//new ModernAppListener();//new ClassicAppListener();
+		return applicationListener;
 	}
 
 	/**
@@ -3164,7 +3164,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false,true,true
+				null,false,true,false,false,false,true,true,null
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}

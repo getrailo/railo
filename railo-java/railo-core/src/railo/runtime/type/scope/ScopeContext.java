@@ -32,6 +32,7 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -53,6 +54,7 @@ import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.clean.DatasourceStorageScopeCleaner;
 import railo.runtime.type.scope.storage.clean.FileStorageScopeCleaner;
 import railo.runtime.type.wrap.MapAsStruct;
+import railo.runtime.util.PageContextUtil;
 
 /**
  * Scope Context handle Apllication and Session Scopes
@@ -895,11 +897,8 @@ public final class ScopeContext {
 		
         Application application=applicationContextes.get(name);
         if(application==null) throw new ApplicationException("there is no application context defined with name ["+name+"]");
-        
-        ApplicationListener listener = jspFactory.getConfig().getApplicationListener();
-		
-            
-		application.touch();
+        ApplicationListener listener = PageContextUtil.getApplicationListener(pc);
+        application.touch();
 		try {
 			listener.onApplicationEnd(jspFactory,name);
 		} 

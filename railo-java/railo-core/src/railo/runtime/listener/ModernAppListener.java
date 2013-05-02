@@ -92,7 +92,7 @@ public class ModernAppListener extends AppListenerSupport {
 			
 			apps.put(pc.getApplicationContext().getName(), app);
 
-			if(!pci.initApplicationContext()) return;
+			if(!pci.initApplicationContext(this)) return;
 			
 			if(rl!=null) {
 				requestedPage=rl.execute(pc, requestedPage);

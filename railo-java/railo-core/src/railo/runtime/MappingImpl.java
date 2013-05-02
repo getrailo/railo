@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -24,6 +25,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -73,9 +75,11 @@ public final class MappingImpl implements Mapping {
 	private boolean appMapping;
 	private boolean ignoreVirtual;
 
+	private ApplicationListener appListener;
+
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual) {
-    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,5000);
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual,ApplicationListener appListener) {
+    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,appListener,5000);
     	
     }
 
@@ -92,7 +96,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual, int classLoaderMaxElements) {
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual,ApplicationListener appListener, int classLoaderMaxElements) {
     	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
         this.hidden=hidden;
@@ -103,8 +107,8 @@ public final class MappingImpl implements Mapping {
         this.topLevel=topLevel;
         this.appMapping=appMapping;
         this.physicalFirst=physicalFirst;
+        this.appListener=appListener;
         this.classLoaderMaxElements=classLoaderMaxElements;
-        
         
         // virtual
         if(virtual.length()==0)virtual="/";
@@ -217,7 +221,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,classLoaderMaxElements);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,appListener,classLoaderMaxElements);
     }
     
     @Override
@@ -457,5 +461,10 @@ public final class MappingImpl implements Mapping {
 		 "physicalFirst:"+physicalFirst+";"+
 		 "readonly:"+readonly+";"+
 		 "hidden:"+hidden+";";
+	}
+
+	public ApplicationListener getApplicationListener() {
+		if(appListener!=null) return appListener;
+		return config.getApplicationListener();
 	}
 }

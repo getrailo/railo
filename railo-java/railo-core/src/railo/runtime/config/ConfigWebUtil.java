@@ -23,6 +23,11 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
+import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.ClassicAppListener;
+import railo.runtime.listener.MixedAppListener;
+import railo.runtime.listener.ModernAppListener;
+import railo.runtime.listener.NoneAppListener;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection.Key;
@@ -415,6 +420,40 @@ public final class ConfigWebUtil {
     		IOUtil.closeEL(is);
     	}
     }
+
+	public static int toListenerMode(String strListenerMode, int defaultValue) {
+		if(StringUtil.isEmpty(strListenerMode,true)) return defaultValue;
+		strListenerMode=strListenerMode.trim();
+		
+		if("current".equalsIgnoreCase(strListenerMode) || "curr".equalsIgnoreCase(strListenerMode))		
+        	return ApplicationListener.MODE_CURRENT;
+        else if("current2root".equalsIgnoreCase(strListenerMode) || "curr2root".equalsIgnoreCase(strListenerMode))		
+        	return ApplicationListener.MODE_CURRENT2ROOT;
+        else if("root".equalsIgnoreCase(strListenerMode))		
+        	return ApplicationListener.MODE_ROOT;
+        
+		return defaultValue;
+	}
+
+	public static ApplicationListener loadListener(String type, ApplicationListener defaultValue) {
+		 if(StringUtil.isEmpty(type,true)) return defaultValue;
+		 type=type.trim();
+		 
+		 // none
+		 if("none".equalsIgnoreCase(type))	
+			 return new NoneAppListener();
+		 // classic
+		 if("classic".equalsIgnoreCase(type))
+			 return new ClassicAppListener();
+		 // modern
+		 if("modern".equalsIgnoreCase(type))	
+			 return new ModernAppListener();
+		 // mixed
+		 if("mixed".equalsIgnoreCase(type))	
+			 return new MixedAppListener();
+        
+		return defaultValue;
+	}
     
     
 }
