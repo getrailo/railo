@@ -42,8 +42,10 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return default value
      * @throws PageException
      */
-    public abstract Object getDefaultValue(PageContext pc, int index)
-            throws PageException;
+    public abstract Object getDefaultValue(PageContext pc, int index) throws PageException;
+    
+
+    // FUTURE public abstract Object getDefaultValue(PageContext pc, int index, Object defaultValue);
 
     /**
      * @return Returns the functionName.
@@ -113,11 +115,9 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      */
     public abstract String getHint();
 
-    
+
     public abstract PageSource getPageSource();
     
-    
-
 	public abstract Struct getMetaData(PageContext pc) throws PageException; 
 	
 

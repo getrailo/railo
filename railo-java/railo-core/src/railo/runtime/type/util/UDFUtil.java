@@ -4,13 +4,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.runtime.Page;
+import railo.runtime.PageContext;
+import railo.runtime.PagePlus;
+import railo.runtime.PageSource;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -102,6 +108,23 @@ public class UDFUtil {
 			}
 		}
 		return sb.toString();
+	}
+
+	public static Object getDefaultValue(PageContext pc, PageSource ps, int udfIndex, int index, Object defaultValue) throws PageException {
+		Page p=ComponentUtil.getPage(pc,ps);
+    	if(p instanceof PagePlus) return ((PagePlus)p).udfDefaultValue(pc,udfIndex,index,defaultValue);
+    	Object rtn = p.udfDefaultValue(pc,udfIndex,index);
+    	if(rtn==null) return defaultValue;// in that case it can make no diff between null and not existing, but this only happens with data from old ra files
+    	return rtn;
+	}
+	
+
+	public static Object getDefaultValue(PageContext pc, UDFPlus udf, int index, Object defaultValue) throws PageException {
+		Page p=ComponentUtil.getPage(pc,udf.getPageSource());
+		if(p instanceof PagePlus) return ((PagePlus)p).udfDefaultValue(pc,udf.getIndex(),index,defaultValue);
+		Object rtn = p.udfDefaultValue(pc,udf.getIndex(),index);
+    	if(rtn==null) return defaultValue;// in that case it can make no diff between null and not existing, but this only happens with data from old ra files
+    	return rtn;
 	}
 
 }
