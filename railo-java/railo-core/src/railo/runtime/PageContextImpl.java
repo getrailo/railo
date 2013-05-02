@@ -1213,6 +1213,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return server;
 	}
     
+    public void reset() {
+    	server=ScopeContext.getServerScope(this);
+	}
+    
     /**
      * @see railo.runtime.PageContext#clusterScope()
      */
