@@ -38,6 +38,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -594,7 +595,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     	// check if has fileUploads	
     		boolean doUploadFile=false;
     		for(int i=0;i<this.params.size();i++) {
-    			if((this.params.get(i)).getType().equals("file")) {
+    			if((this.params.get(i)).getType().equalsIgnoreCase("file")) {
     				doUploadFile=true;
     				break;
     			}
@@ -704,7 +705,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     				hasForm=true;
     				if(this.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
     				if(post!=null){
-    					if(doMultiPart){
+    					if(doMultiPart)	{
     						parts.add(
     							new FormBodyPart(
     								param.getName(),
@@ -840,7 +841,8 @@ public final class Http4 extends BodyTagImpl implements Http {
     				MultipartEntity mpe = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,null,CharsetUtil.toCharset(charset));
     				Iterator<FormBodyPart> it = parts.iterator();
     				while(it.hasNext()) {
-    					mpe.addPart(it.next());
+    					FormBodyPart part = it.next();
+    					mpe.addPart(part.getName(),part.getBody());
     				}
     				eem.setEntity(mpe);
     			}
