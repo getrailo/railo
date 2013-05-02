@@ -30,13 +30,14 @@ Defaults --->
             <cfif not isDefined('form.nullSupport')>
             	<cfset form.nullSupport=false>
             </cfif>
+			
             
 			<cfadmin 
 				action="updateCompilerSettings"
 				type="#request.adminType#"
 				password="#session["password"&request.adminType]#"
 				
-				nullSupport="#nullSupport#"
+				nullSupport="#form.nullSupport#"
 				dotNotationUpperCase="#dotNotUpper#"
                 supressWSBeforeArg="#form.supressWSBeforeArg#"
 				remoteClients="#request.getRemoteClients()#">
