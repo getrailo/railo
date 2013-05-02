@@ -304,8 +304,6 @@ public final class ResourceUtil {
         
         return getRealResource(pc,destination,res);
     }
-    
-	
 
     private static Resource getRealResource(PageContext pc, String destination, Resource defaultValue) {
     	PageSource ps = pc.getCurrentPageSource();
@@ -317,8 +315,8 @@ public final class ResourceUtil {
     	return defaultValue;
 	}
     
-	private static boolean isUNCPath(String path) {
-        return SystemUtil.isWindows() && path.startsWith("//") ;
+	public static boolean isUNCPath(String path) {
+        return SystemUtil.isWindows() && ( path.startsWith("//") || path.startsWith( "\\\\" ) );
 	}
     
     /**

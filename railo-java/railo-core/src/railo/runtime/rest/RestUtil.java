@@ -57,7 +57,6 @@ public class RestUtil {
 		}
 	}
 
-
 	public static boolean isMatch(PageContext pc,Mapping mapping, Resource res) {
 		Resource p = mapping.getPhysical();
 		if(p!=null){
