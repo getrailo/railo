@@ -13,6 +13,7 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.rest.Mapping;
+import railo.runtime.rest.RestUtil;
 import railo.runtime.type.KeyImpl;
 
 public class RestDeleteApplication {
@@ -32,7 +33,7 @@ public class RestDeleteApplication {
 			Mapping mapping;
 			for(int i=0;i<mappings.length;i++){
 				mapping=mappings[i];
-				if(mapping.getPhysical().equals(dir)){
+				if(RestUtil.isMatch(pc,mapping,dir)){
 					admin.removeRestMapping(mapping.getVirtual());
 					admin.store();
 				}
