@@ -80,6 +80,15 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         synchronized(pcs) {
             pcs.clear();
         }
+        
+        if(runningPcs!=null) {
+        	synchronized(runningPcs) {
+        	Iterator<Object> it = runningPcs.valueIterator();
+        	while(it.hasNext()){
+        		((PageContextImpl)it.next()).reset();
+        	}
+        	}
+        }
     }
     
 	@Override

@@ -1197,8 +1197,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		//if(!server.isInitalized()) server.initialize(this);
 		return server;
 	}
+	
+    public void reset() {
+    	server=ScopeContext.getServerScope(this);
+	}
     
-    @Override
+	@Override
     public Cluster clusterScope() throws PageException {
     	return clusterScope(true);
 	}
