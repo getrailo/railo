@@ -1,8 +1,8 @@
 component {
 
 
-	this.name = "__RAILO_ADMIN_STATIC_RESOURCES";
-	
+	this.name = "__RAILO_STATIC_RESOURCE" & ( left( CGI.CF_TEMPLATE_PATH, 6 ) == "zip://" ? "_ARC" : "" );
+
 
 	variables.isDebug = false;		// ATTN: set to false for production!
 
