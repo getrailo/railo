@@ -4040,10 +4040,6 @@ public final class Caster {
         return defaultValue;
     }
 	
-	public static Resource toResourceX(Object src, boolean existing) throws ExpressionException {
-		return toResource(ThreadLocalPageContext.get(), src, existing);
-	}
-
 	public static Resource toResource(PageContext pc,Object src, boolean existing) throws ExpressionException {
 		return toResource(pc,src,existing,pc.getConfig().allowRealPath());
 	}
