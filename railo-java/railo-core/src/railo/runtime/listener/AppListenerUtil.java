@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -103,9 +102,11 @@ public final class AppListenerUtil {
 	
 
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, int mode, RefBoolean isCFC) {
-		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, isCFC);
-		if(mode==ApplicationListener.MODE_ROOT)return getApplicationPageSourceRoot(pc, isCFC);
-		return getApplicationPageSourceCurr2Root(pc, requestedPage, isCFC);
+		if(mode==ApplicationListener.MODE_CURRENT2ROOT)
+			return getApplicationPageSourceCurr2Root(pc, requestedPage, isCFC);
+		if(mode==ApplicationListener.MODE_CURRENT)
+			return getApplicationPageSourceCurrent(requestedPage, isCFC);
+		return getApplicationPageSourceRoot(pc, isCFC);
 	}
 	
 	public static PageSource getApplicationPageSourceCurrent(PageSource requestedPage, RefBoolean isCFC) {
