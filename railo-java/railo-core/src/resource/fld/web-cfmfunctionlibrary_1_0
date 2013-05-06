@@ -2650,7 +2650,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
-	<!-- dateTimeFormat
+	<!-- dateTimeFormat -->
 	<function>
 		<name>dateTimeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
@@ -2690,7 +2690,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
-	 -->
+	
 	<!-- datePart -->
 	<function>
 		<name>datePart</name>
