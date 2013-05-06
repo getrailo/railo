@@ -17,6 +17,7 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.FileWrapper;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Info;
@@ -60,12 +61,10 @@ public class DeployHandler {
 				deployExtension(config, child);
 			}
 			catch (ZipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				SystemOut.printDate(config.getErrWriter(),ExceptionUtil.getStacktrace(e, true));
 			}
 			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				SystemOut.printDate(config.getErrWriter(),ExceptionUtil.getStacktrace(e, true));
 			}
 		}
 	}
