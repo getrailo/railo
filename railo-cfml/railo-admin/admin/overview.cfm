@@ -157,8 +157,8 @@ Error Output --->
 		<cfscript>	
 		string function getRealPath2RailoInstJar(required string valueWhenNotExist, required string valueOnError) localmode="true" {
 			try {
-				root=createObject('java','java.io.File').init('.').getCanonicalPath();
-				directory action="list" directory="#root#" recurse="true" name="res" 
+				var root=expandPath("{classloader-directory}");
+				directory action="list" directory="#root#" recurse="false" name="res" 
 					filter="#function (path){
 						var name=listLast(path,'/\');
 						return name == "railo-instrumentation.jar" or name == "railo-inst.jar";
