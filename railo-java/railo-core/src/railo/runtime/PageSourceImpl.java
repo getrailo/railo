@@ -21,6 +21,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.system.GetDirectoryFromPath;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
@@ -88,6 +89,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	    
 	}
 	
+	
+	
 	/**
 	 * private constructor of the class
 	 * @param mapping
@@ -112,6 +115,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 */
 	public Page getPage() {
 		return page;
+	}
+	
+	public PageSource getParent(){
+		if(realPath.equals("/")) return null;
+		if(StringUtil.endsWith(realPath, '/'))
+			return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath.substring(0, realPath.length()-1)));
+		return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath));
 	}
 
 	
@@ -720,9 +730,24 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
     @Override
     public Resource getResource() {
-    	Resource res = getPhyscalFile();
-    	if(res!=null) return res;
-    	return getArchiveFile();
+    	Resource p = getPhyscalFile();
+    	Resource a = getArchiveFile();
+    	if(mapping.isPhysicalFirst()){
+    		if(a==null) return p;
+        	if(p==null) return a;
+        	
+    		if(p.exists()) return p;
+    		if(a.exists()) return a;
+    		return p;
+    	}
+    	if(p==null) return a;
+    	if(a==null) return p;
+    	
+    	if(a.exists()) return a;
+    	if(p.exists()) return p;
+    	return a;
+    	
+    	//return getArchiveFile();
     }
     
     @Override

@@ -13,6 +13,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -264,11 +265,17 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 			// abs path
 			if(path.startsWith("/")){
 				ConfigWebImpl cwi=(ConfigWebImpl) config;
-				res=cwi.getPhysicalResourceExisting(
-						pc, 
-						ac==null?null:ac.getMappings(), path, 
-						false, false, true);
-				if(res!=null && (!onlyDir || res.isDirectory())) return res;
+				PageSource ps = cwi.getPageSourceExisting(
+						pc, ac==null?null:ac.getMappings(), path, false, false, true, false);
+				//res=cwi.getPhysicalResourceExistingX(
+				//		pc, 
+				//		ac==null?null:ac.getMappings(), path, 
+				//		false, false, true);
+				if(ps!=null){
+					res=ps.getResource();
+					if(!onlyDir || res.isDirectory()) return res;
+				}
+				
 			}
 			// real path
 			else {

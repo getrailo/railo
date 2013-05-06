@@ -21,6 +21,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
@@ -179,11 +180,12 @@ public final class ResourceUtil {
 	        if(StringUtil.startsWith(path,'/')) {
 	        	PageContextImpl pci=(PageContextImpl) pc;
 	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
-	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),path,false,pci.useSpecialMappings(),true);
-	        	if(!ArrayUtil.isEmpty(reses)) {
-	        		for(int i=0;i<reses.length;i++){
-	        			res=reses[i];
-	        			if(res.exists()) return res;
+	        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), path, false, pci.useSpecialMappings(), true);
+	        	//Resource[] reses = cwi.getPhysicalResourcesX(pc,pc.getApplicationContext().getMappings(),path,false,pci.useSpecialMappings(),true);
+	        	if(!ArrayUtil.isEmpty(sources)) {
+	        		
+	        		for(int i=0;i<sources.length;i++){
+	        			if(sources[i].exists()) return sources[i].getResource();
 	        		}
 	        	}
 	        	//res = pc.getPhysical(path,true);
@@ -243,24 +245,22 @@ public final class ResourceUtil {
         if(res.isAbsolute() && (res.exists() || parentExists(res))) {
         	return res;
         }
-        //if(allowRealpath){
-	        if(StringUtil.startsWith(destination,'/')) {
-	        	PageContextImpl pci=(PageContextImpl) pc;
-	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
-	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
-	        	if(!ArrayUtil.isEmpty(reses)) {
-	        		for(int i=0;i<reses.length;i++){
-	        			res=reses[i];
-	        			if(res.exists() || parentExists(res)) return res;
-	        		}
-	        	}
-	            //res = pc.getPhysical(destination,true);
-	            //if(res!=null && (res.exists() || parentExists(res))) return res;
-	        }
-	        res=getRealResource(pc, destination, res);
-	        if(res!=null && (res.exists() || parentExists(res))) return res;
-        //}
-    
+        
+        if(StringUtil.startsWith(destination,'/')) {
+        	PageContextImpl pci=(PageContextImpl) pc;
+        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), destination, 
+        			false, pci.useSpecialMappings(),true);
+        	//Resource[] reses = cwi.getPhysicalResourcesX(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
+        	if(!ArrayUtil.isEmpty(sources)) {
+        		for(int i=0;i<sources.length;i++){
+        			if(sources[i].exists() || parentExists(sources[i])) return sources[i].getResource();
+        		}
+        	}
+        }
+        res=getRealResource(pc, destination, res);
+        if(res!=null && (res.exists() || parentExists(res))) return res;
+        
         throw new ExpressionException("parent directory "+res.getParent()+"  for file "+destination+" doesn't exist");
            
     }
@@ -291,8 +291,10 @@ public final class ResourceUtil {
         if(!(isUNC=isUNCPath(destination)) && StringUtil.startsWith(destination,'/')) {
         	PageContextImpl pci=(PageContextImpl) pc;
         	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
-        	Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
-        	if(!ArrayUtil.isEmpty(arr)) return arr[0];
+        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), destination, false, 
+        			pci.useSpecialMappings(), SystemUtil.isWindows());
+        	//Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
+        	if(!ArrayUtil.isEmpty(sources)) return sources[0].getResource();
         	//Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
             //if(res2!=null) return res2;
         }
@@ -952,6 +954,10 @@ public final class ResourceUtil {
     private static boolean parentExists(Resource res) {
         res=res.getParentResource();
         return res!=null && res.exists();
+    }
+    private static boolean parentExists(PageSource ps) {
+    	PageSource p = ((PageSourceImpl)ps).getParent();
+    	return p!=null && p.exists();
     }
 
 	public static void removeChildren(Resource res) throws IOException {
