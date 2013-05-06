@@ -329,7 +329,7 @@
 <cffunction name="getData" output="no">
 	<cfargument name="providers">
 	<cfargument name="err" type="struct" default="#{}#">
-	<cfargument name="timeout" required="no" type="numeric" default="10000">
+	<cfargument name="timeout" required="no" type="numeric" default="5000">
 	
 	<cfset var datas=loadProvidersData(queryColumnData(providers,'url'),arguments.timeout)>
 	<cfset var data="">
