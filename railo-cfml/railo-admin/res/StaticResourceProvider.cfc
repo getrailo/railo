@@ -1,14 +1,7 @@
 component {
 
 
-	/**
-	* if running from a mapped folder, pass virtualpath as the mapping virtual path, e.g. /railo-context
-	*/
-	function init( settings={} ) {
-
-		param name="settings.virtualpath"	default="";
-
-		var virtualpath = settings.virtualpath;		
+	function init() {
 
 		this.resources = {};
 
@@ -21,34 +14,6 @@ component {
 			, PNG : "image/png"
 		};
 
-		var basepath = getDirectoryFromPath( getCurrentTemplatePath() );
-
-		this.isArchive = ( left( basepath, 6 ) == "zip://" );
-
-		if ( this.isArchive ) {
-
-			if ( basepath CT '!' )
-				basepath = left( basepath, find( '!', basepath ) );
-
-			/*  isArchive is true and no virtualpath was passed, try to guess it
-			    this will only work if the mapping does not have slashes other than
- 			    the 1st leading slash 	//*/
-			if ( !len( virtualpath ) ) {
-
-				var pos = len( CGI.CONTEXT_PATH ) ? 2 : 1;
-
-				virtualpath = '/' & listGetAt( mid( CGI.SCRIPT_NAME, 2 ), pos, '/' );
-			}
-		}
-
-		this.basepath = basepath;
-
-		if ( len( virtualpath ) && ( "\/" CT right( virtualpath, 1 ) ) )
-			virtualpath = left( virtualpath, len( virtualpath ) -1 );
-
-		this.virtualpath = virtualpath;
-		this.vpathlen = len( this.virtualpath );
-
 		return this;
 	}
 
@@ -58,6 +23,8 @@ component {
 		var filename = right( target, 4 ) == ".cfm" ? left( target, len( target ) - 4 ) : target;
 
 		var resInfo = getResInfo( filename );
+
+//		systemOutput( "\_/--> response.isCommitted: " & getPageContext().getResponse().isCommitted(), true );
 
 		if ( resInfo.exists ) {
 
@@ -90,38 +57,26 @@ component {
 		if ( structKeyExists( this.resources, filename ) )
 			return this.resources[ filename ];
 
-		var path = resolvePath( filename );
+		var result = { path: expandPath( filename ) };
 
-		if ( !fileExists( path ) )
-			return { exists: false, path: path };
+		result.exists = fileExists( result.path );
+
+		if ( !result.exists )
+			return result;
 
 		var ext = listLast( filename, '.' );
 
-		var mimeType = structKeyExists( this.mimeTypes, ext ) ? this.mimeTypes[ ext ] : "";
+		result.mimeType = this.mimeTypes.keyExists( ext ) ? this.mimeTypes[ ext ] : "";
 
-		var isText = left( mimeType, 4 ) == "text";
+		result.isText = left( result.mimeType, 4 ) == "text";
 
-		var contents = isText ? fileRead( path ) : fileReadBinary( path );
+		result.contents = result.isText ? fileRead( result.path ) : fileReadBinary( result.path );
 
-		var result = { exists: true, etag: hash( contents ), isText: isText, mimeType: mimeType, path: path };
+		result.etag = hash( result.contents );
 
 		this.resources[ filename ] = result;
 
 		return result;
-	}
-
-
-	private function resolvePath( filename ) {
-
-		if ( !this.isArchive )
-			return expandPath( filename );
-
-		if ( this.vpathlen && ( left( filename, this.vpathlen ) == this.virtualpath ) ) {
-
-			filename = mid( filename, this.vpathlen + 1 );
-		}
-
-		return this.basepath & filename;
 	}
 
 }
