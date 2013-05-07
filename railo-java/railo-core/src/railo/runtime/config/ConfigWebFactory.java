@@ -4437,6 +4437,16 @@ public final class ConfigWebFactory {
 		logLevel = LogUtil.toIntType(application.getAttribute("thread-log-level"), Log.LEVEL_ERROR);
 		config.setThreadLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
 
+		// deploy Logger
+		strLogger = hasAccess ? application.getAttribute("deploy-log") : "";
+		if (StringUtil.isEmpty(strLogger) && hasCS)
+			strLogger = configServer.getDeployLogger().getSource();
+		if (StringUtil.isEmpty(strLogger))
+			strLogger = "{railo-config}/logs/deploy.log";
+
+		logLevel = LogUtil.toIntType(application.getAttribute("deploy-log-level"), Log.LEVEL_INFO);
+		config.setDeployLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+
 		// Listener type
 		ApplicationListener listener;
 		if (mode == ConfigImpl.MODE_STRICT) {

@@ -1,6 +1,7 @@
 package railo.runtime.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.Attributes;
@@ -10,8 +11,10 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -73,9 +76,10 @@ public class DeployHandler {
 		ZipFile file=new ZipFile(FileWrapper.toFile(archive));
 		ZipEntry entry = file.getEntry("META-INF/MANIFEST.MF");
 		
+		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
 		// no manifest
 		if(entry==null) {
-			SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Archive ["+archive+"], file is to old, the file does not have a MANIFEST.");
+			log.error("archive","cannot deploy Railo Archive ["+archive+"], file is to old, the file does not have a MANIFEST.");
 			moveToFailedFolder(archive);
 			return;
 		}
@@ -109,7 +113,7 @@ public class DeployHandler {
 		ResourceUtil.moveTo(archive, trgFile);
 		
 		try {
-			SystemOut.printDate(config.getOutWriter(),"add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
+			log.info("archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
 			if("regular".equalsIgnoreCase(type))
 				ConfigWebAdmin.updateMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", trusted, topLevel);
 			else if("cfc".equalsIgnoreCase(type))
@@ -121,7 +125,7 @@ public class DeployHandler {
 		}
 		catch (Throwable t) {
 			moveToFailedFolder(archive);
-			t.printStackTrace();
+			log.error("archive",ExceptionUtil.getStacktrace(t, true));
 		}
 	}
 	
@@ -129,6 +133,7 @@ public class DeployHandler {
 	private static void deployExtension(Config config, Resource ext) {
 		boolean isWeb=config instanceof ConfigWeb;
 		String type=isWeb?"web":"server";
+		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
 		
 		// Manifest
 		Manifest manifest = null;
@@ -146,7 +151,7 @@ public class DeployHandler {
 	        }
         }
         catch(Throwable t){
-        	SystemOut.printDate(config.getErrWriter(),t.getMessage());
+        	log.error("extension", ExceptionUtil.getStacktrace(t, true));
 			moveToFailedFolder(ext);
 			return;
         }
@@ -185,14 +190,14 @@ public class DeployHandler {
         
         // check core version
 		if(minCoreVersion>Info.getVersionAsInt()) {
-			SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
+			log.error("extension", "cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
 			moveToFailedFolder(ext);
 			return;
 		}
 		
 		// check loader version
 		if(minLoaderVersion>SystemUtil.getLoaderVersion()) {
-			SystemOut.printDate(config.getErrWriter(),"cannot deploy Railo Extension ["+ext+"], Railo Loader Version must be at least ["+strMinLoaderVersion+"], update the railo.jar first.");
+			log.error("extension", "cannot deploy Railo Extension ["+ext+"], Railo Loader Version must be at least ["+strMinLoaderVersion+"], update the railo.jar first.");
 			moveToFailedFolder(ext);
 			return;
 		}
@@ -205,7 +210,7 @@ public class DeployHandler {
 			ResourceUtil.moveTo(ext, trgFile);
 		}
 	    catch(Throwable t){
-	    	SystemOut.printDate(config.getErrWriter(),t.getMessage());
+	    	log.error("extension", ExceptionUtil.getStacktrace(t, true));
 			moveToFailedFolder(ext);
 			return;
 	    }
@@ -214,35 +219,42 @@ public class DeployHandler {
 	        zis = new ZipInputStream( IOUtil.toBufferedInputStream(trgFile.getInputStream()) ) ;     
 	        ZipEntry entry;
 	        String path;
+	        String fileName;
 	        while ( ( entry = zis.getNextEntry()) != null ) {
 	        	path=entry.getName();
-	        	
+	        	print.e(path);
+	        	fileName=fileName(entry);
 	        	// jars
-	        	if(!entry.isDirectory() && startsWith(path,type,"jars") && StringUtil.endsWithIgnoreCase(path, ".jar")) {
-	        		ConfigWebAdmin.updateJar(config,zis,fileName(entry),false);
+	        	if(!entry.isDirectory() && (startsWith(path,type,"jars") || startsWith(path,type,"jar") || startsWith(path,type,"lib") || startsWith(path,type,"libs")) && StringUtil.endsWithIgnoreCase(path, ".jar")) {
+	        		log.info("extension","deploy jar "+fileName);
+	        		ConfigWebAdmin.updateJar(config,zis,fileName,false);
 	        	}
 	        	
 	        	// flds
 	        	if(!entry.isDirectory() && startsWith(path,type,"flds") && StringUtil.endsWithIgnoreCase(path, ".fld")) {
-	        		ConfigWebAdmin.updateFLD(config, zis, fileName(entry),false);
+	        		log.info("extension","deploy fld "+fileName);
+	        		ConfigWebAdmin.updateFLD(config, zis, fileName,false);
 	        	}
 	        	
 	        	// tlds
 	        	if(!entry.isDirectory() && startsWith(path,type,"tlds") && StringUtil.endsWithIgnoreCase(path, ".tld")) {
-	        		ConfigWebAdmin.updateTLD(config, zis, fileName(entry),false);
+	        		log.info("extension","deploy tld "+fileName);
+	        		ConfigWebAdmin.updateTLD(config, zis, fileName,false);
 	        	}
 	        	
 	        	// context
 	        	String realpath;
 	        	if(!entry.isDirectory() && startsWith(path,type,"context") && !StringUtil.startsWith(fileName(entry), '.')) {
 	        		realpath=path.substring(8);
+	        		//log.info("extension","deploy context "+realpath);
+	        		log.info("extension","deploy context "+realpath);
 	        		ConfigWebAdmin.updateContext((ConfigImpl)config, zis, realpath,false);
 	        	}
 	            zis.closeEntry() ;
 	        }
         }
 	    catch(Throwable t){
-	    	SystemOut.printDate(config.getErrWriter(),t.getMessage());
+	    	log.error("extension",ExceptionUtil.getStacktrace(t, true));
 			moveToFailedFolder(trgFile);
 			return;
 	    }
