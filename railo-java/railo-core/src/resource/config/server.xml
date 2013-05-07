@@ -338,6 +338,6 @@ Path placeholders:
 		caster-class-arguments: init arguments provided to the AMFCaster init method, use "CSS" syntax.
 	-->
 	<flex 
-		configuration="xml"/>
+		configuration="manual"/>
 
 </railo-configuration>
