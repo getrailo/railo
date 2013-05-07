@@ -1,11 +1,14 @@
 package railo.runtime.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipInputStream;
@@ -3940,27 +3943,40 @@ public final class ConfigWebAdmin {
 	}
 
 	
-	static void updateContext(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+	static Resource[] updateContext(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
-    	admin._updateContext(config, is, realpath, closeStream);
+    	List<Resource> filesDeployed=new ArrayList<Resource>();
+    	admin._updateContext(config, is, realpath, closeStream, filesDeployed);
+    	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
     }
 
-	private void _updateContext(Config config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+	private void _updateContext(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
     	if(config instanceof ConfigServer) {
     		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
-    		for(int i=0;i<webs.length;i++){
-    			_updateContext(webs[i], is,realpath,closeStream);
+    		if(webs.length==0) return;
+    		if(webs.length==1) {
+    			_updateContext(webs[0], is,realpath,closeStream,filesDeployed);
+    			return;
     		}
-    		return;
+        	try{
+	    		byte[] barr = IOUtil.toBytes(is);
+	    		for(int i=0;i<webs.length;i++){
+	    			_updateContext(webs[i], new ByteArrayInputStream(barr),realpath,true,filesDeployed);
+	    		}
+        	}
+        	finally {
+        		if(closeStream)IOUtil.closeEL(is);
+        	}
+    		return ;
     	}
 		
     	// ConfigWeb
     	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
         if(trg.exists()) trg.remove(true);
         Resource p = trg.getParentResource();
-        if(!p.isDirectory()) p.createDirectory(true); {
-            IOUtil.copy(is, trg, closeStream);
-        }
+        if(!p.isDirectory()) p.createDirectory(true); 
+        IOUtil.copy(is, trg.getOutputStream(false), closeStream,true);
+        filesDeployed.add(trg);
         _store((ConfigImpl)config);
     }
 }
