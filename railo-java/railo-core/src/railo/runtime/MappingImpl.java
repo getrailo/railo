@@ -41,7 +41,7 @@ public final class MappingImpl implements Mapping {
     private String lcVirtual;
     private boolean topLevel;
     private boolean trusted;
-    private final boolean physicalFirst;
+    private boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
     //private PhysicalClassLoader physicalClassLoader;
     private PCLCollection pclCollection;
@@ -101,7 +101,7 @@ public final class MappingImpl implements Mapping {
     	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
-        this.strPhysical=strPhysical;
+        this.strPhysical=StringUtil.isEmpty(strPhysical)?null:strPhysical;
         this.strArchive=StringUtil.isEmpty(strArchive)?null:strArchive;
         this.trusted=trusted;
         this.topLevel=topLevel;
@@ -137,8 +137,13 @@ public final class MappingImpl implements Mapping {
             }
         }
         hasArchive=archive!=null;
+
+        if(archive==null) this.physicalFirst=true;
+        else if(physical==null) this.physicalFirst=false;
+        else this.physicalFirst=physicalFirst;
         
-       //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
+        
+        //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
     }
     
     @Override
@@ -326,7 +331,7 @@ public final class MappingImpl implements Mapping {
 
     @Override
     public boolean isPhysicalFirst() {
-        return physicalFirst || archive==null;
+        return physicalFirst;
     }
 
     @Override
