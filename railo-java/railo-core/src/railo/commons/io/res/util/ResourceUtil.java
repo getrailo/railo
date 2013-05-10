@@ -1048,9 +1048,14 @@ public final class ResourceUtil {
 		ResourceUtil.checkMoveToOK(src, dest);
 		
 		if(src.isFile()){
-			if(!dest.exists()) dest.createFile(false);
-			IOUtil.copy(src,dest);
-			src.remove(false);
+			try{
+				src.moveTo(dest);
+			}
+			catch(IOException e){
+				if(!dest.exists()) dest.createFile(false);
+				IOUtil.copy(src,dest);
+				src.remove(false);
+			}
 		}
 		else {
 			if(!dest.exists()) dest.createDirectory(false);
