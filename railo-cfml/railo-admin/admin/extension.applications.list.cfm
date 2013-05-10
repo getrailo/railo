@@ -15,11 +15,16 @@
 
 <!--- upload own extension --->
 <cfoutput>
-	<h2>#stText.ext.uploadExtension#</h2>
+	<h2>#stText.ext.uploadExtension# (experimentell)</h2>
 	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
 	<cfif structKeyExists(url, 'noextfile')>
 		<div class="error">
 			#stText.ext.nofileuploaded#
+		</div>
+	</cfif>
+	<cfif structKeyExists(url, 'addedRe')>
+		<div class="error">
+			Deployed Railo Extension, see deploy.log for details.
 		</div>
 	</cfif>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=upload" method="post" enctype="multipart/form-data">

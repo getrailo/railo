@@ -20,6 +20,8 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
+import org.xml.sax.SAXException;
+
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -42,6 +44,7 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
@@ -66,6 +69,7 @@ import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.DebugEntry;
+import railo.runtime.config.DeployHandler;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
@@ -633,6 +637,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateerror",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateError();
         else if(check("updateCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTagSetting();
         else if(check("updateExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtension();
+        else if(check("updateRHExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRHExtension();
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
         else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
@@ -1142,6 +1147,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         ResourceUtil.copyRecursive(srcDir, trgDir);    
         store();
     }
+    
     private void doUpdateLabel() throws PageException {
     	if(config instanceof ConfigServer) {
     		 if(admin.updateLabel(getString("admin",action,"hash"),getString("admin",action,"label"))) {
@@ -1177,25 +1183,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private void doRemoveContext() throws PageException, IOException {
     	String strRealpath = getString("admin",action,"destination");
-        
-        ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
+    	ConfigServerImpl server = (ConfigServerImpl) config;
         ConfigWeb[] webs = server.getConfigWebs();
-        ConfigWeb web;
-        Resource trg,p,dsStore;
-        for(int i=0;i<webs.length;i++){
-        	web=webs[i];
-        	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
-        	if(trg.exists()) trg.remove(true);
-        	p=trg.getParentResource();
-            dsStore=p.getRealResource(".DS_Store");
-            dsStore.delete();
-            while(p.isDirectory() && ResourceUtil.isEmptyDirectory(p)) {
-            	p.remove(false);
-            	p=p.getParentResource();
-            	dsStore=p.getRealResource(".DS_Store");
-                dsStore.delete();
-            }
-        }
+        
+    	try {
+    		admin.removeContext(server, strRealpath, true);
+		}
+		catch (SAXException e) {
+			throw Caster.toPageException(e);
+		}
+		
     	store();
     }
     
@@ -3837,7 +3834,20 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
     
-    
+    private void doUpdateRHExtension() throws PageException {
+    	String str = getString("admin", "UpdateExtensions", "source");
+    	Resource src = ResourceUtil.toResourceExisting(config, str);
+    	Resource trg=DeployHandler.getDeployDirectory(config).getRealResource(src.getName());
+    	
+    	try {
+			ResourceUtil.copy(src, trg);
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    	//config.get
+    	DeployHandler.deploy(config);
+	}
     
     private void doUpdateExtension() throws PageException {
     	

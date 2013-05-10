@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
@@ -22,6 +23,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -30,6 +32,7 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
@@ -59,6 +62,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
+import railo.runtime.extension.RHExtension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
 import railo.runtime.functions.other.URLEncodedFormat;
@@ -237,7 +241,7 @@ public final class ConfigWebAdmin {
     		
     	}
     	setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
-    	store(config);
+    	_store(config);
     }
     
     public static void checkForChangesInConfigFile(Config config) {
@@ -309,25 +313,16 @@ public final class ConfigWebAdmin {
 	    return parser.getDocument();
     }
     
-    /**
-     * store changes back to railo xml
-     * @throws PageException
-     * @throws SAXException
-     * @throws ClassNotFoundException
-     * @throws IOException
-     * @throws TagLibException
-     * @throws FunctionLibException
-     */
-    public void store() throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
-    	store(config);
+    private static synchronized void _store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	admin._reload(config, true);
     }
-    
 
-    private synchronized void _store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    private synchronized void _store() throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	_reload(config, true);
     }
     
-    private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    public synchronized void store() throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	reload(config, true);
     }
     
@@ -339,8 +334,7 @@ public final class ConfigWebAdmin {
     private synchronized void _reload(ConfigImpl config, boolean storeInMemoryData) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	renameOldstyleCFX();
     	
-    	
-        createAbort();
+    	createAbort();
         if(config instanceof ConfigServerImpl) {
         	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             
@@ -541,21 +535,21 @@ public final class ConfigWebAdmin {
     static void updateMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, boolean trusted, boolean toplevel) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
     	admin._updateMapping(virtual, physical, archive, primary, trusted, toplevel);
-    	admin._store(config);
+    	admin._store();
     }
     
 
     static void updateComponentMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, boolean trusted) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
     	admin._updateComponentMapping(virtual, physical, archive, primary, trusted);
-    	admin._store(config);
+    	admin._store();
     }
     
 
     static void updateCustomTagMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, boolean trusted) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
     	admin._updateCustomTag(virtual, physical, archive, primary, trusted);
-    	admin._store(config);
+    	admin._store();
     }
 
     /**
@@ -3518,10 +3512,27 @@ public final class ConfigWebAdmin {
 	public void removeTLD(String name) throws IOException {
 		removeLD(config.getTldFile(),name);
 	}
+	
+	public void removeTLDs(String[] names) throws IOException {
+		if(ArrayUtil.isEmpty(names)) return;
+		Resource file = config.getTldFile();
+		for(int i=0;i<names.length;i++){
+			removeLD(file,names[i]);
+		}
+	}
+
+	public void removeFLDs(String[] names) throws IOException {
+		if(ArrayUtil.isEmpty(names)) return;
+		Resource file = config.getFldFile();
+		for(int i=0;i<names.length;i++){
+			removeLD(file,names[i]);
+		}
+	}
 
 	public void removeFLD(String name) throws IOException {
 		removeLD(config.getFldFile(),name);
 	}
+	
 	private void removeLD(Resource dir,String name) throws IOException {
 		if(dir.isDirectory()){
 			Resource[] children = dir.listResources(new MyResourceNameFilter(name));
@@ -3547,7 +3558,7 @@ public final class ConfigWebAdmin {
 		}
 	}
 	
-	static void updateJar(Config config, InputStream is, String name, boolean closeStream) throws IOException {
+	static void updateJar(Config config, InputStream is, String name,boolean closeStream) throws IOException {
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		if(!lib.exists())lib.mkdir();
     	
@@ -3710,12 +3721,15 @@ public final class ConfigWebAdmin {
 	}
 
 	public void removeJar(String strNames) throws IOException {
+		removeJar(ListUtil.listToStringArray(strNames, ','));
+	}
+	public void removeJar(String[] names) throws IOException {
+		if(ArrayUtil.isEmpty(names)) return;
 		
 		
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		boolean changed=false;
 		if(lib.isDirectory()){
-			String[] names = ListUtil.listToStringArray(strNames, ',');
 			for(int n=0;n<names.length;n++){
 				Resource[] children = lib.listResources(new MyResourceNameFilter(names[n].trim()));
 				for(int i=0;i<children.length;i++){
@@ -3941,16 +3955,36 @@ public final class ConfigWebAdmin {
     	
     	
 	}
+	
+	/*private void updatePlugin(Resource src) throws PageException, IOException {
+        Resource srcDir = ResourceUtil.toResourceExisting(config, "zip://"+src.getAbsolutePath());
+        if(!doAccept(srcDir))
+        	throw new ApplicationException("plugin ["+src+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.util.ListUtil.arrayToList(srcDir.list(), ", ")+"]");
+        
+        String name=ResourceUtil.getName(src.getName());
+        
+        Resource dir = config.getConfigDir().getRealResource("context/admin/plugin");
+        Resource trgDir = dir.getRealResource(name);
+        if(trgDir.exists()){
+        	trgDir.remove(true);
+        }
+        
+        ResourceUtil.copyRecursive(srcDir, trgDir);    
+        store();
+    }
+	public static boolean doAccept(Resource res) {
+		return res.isDirectory() && res.getRealResource("/Action.cfc").isFile() && res.getRealResource("/language.xml").isFile();
+    }*/
 
 	
 	static Resource[] updateContext(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
-    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	//ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
     	List<Resource> filesDeployed=new ArrayList<Resource>();
-    	admin._updateContext(config, is, realpath, closeStream, filesDeployed);
+    	ConfigWebAdmin._updateContext(config, is, realpath, closeStream, filesDeployed);
     	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
     }
 
-	private void _updateContext(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
+	private static void _updateContext(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
     	if(config instanceof ConfigServer) {
     		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
     		if(webs.length==0) return;
@@ -3979,4 +4013,224 @@ public final class ConfigWebAdmin {
         filesDeployed.add(trg);
         _store((ConfigImpl)config);
     }
+	private boolean removeContexts(Config config,String[] realpathes, boolean store) throws PageException, IOException, SAXException {
+		if(ArrayUtil.isEmpty(realpathes)) return false;
+		boolean force=false;
+		for(int i=0;i<realpathes.length;i++){
+			if(removeContext(config, realpathes[i],store))
+				force=true;
+		}
+		return force;
+	}
+	public boolean removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
+    	
+		if(config instanceof ConfigServer) {
+    		boolean store=false;
+			ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+    		for(int i=0;i<webs.length;i++){
+	    		if(removeContext(webs[i], realpath,_store)) {
+	    			store=true;
+	    		}
+	    	}
+    		return store;
+    	}
+		
+    	// ConfigWeb
+    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
+        if(trg.exists()) {
+        	trg.remove(true);
+        	if(_store) ConfigWebAdmin._store((ConfigImpl) config);
+        	return true;
+        }
+        return false;
+    }
+
+	static Resource[] updateApplication(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	List<Resource> filesDeployed=new ArrayList<Resource>();
+    	admin._updateApplication(config, is, realpath, closeStream, filesDeployed);
+    	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
+    }
+
+	private void _updateApplication(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
+    	if(config instanceof ConfigServer) {
+    		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+    		if(webs.length==0) return;
+    		if(webs.length==1) {
+    			_updateApplication(webs[0], is,realpath,closeStream,filesDeployed);
+    			return;
+    		}
+        	try{
+	    		byte[] barr = IOUtil.toBytes(is);
+	    		for(int i=0;i<webs.length;i++){
+	    			_updateApplication(webs[i], new ByteArrayInputStream(barr),realpath,true,filesDeployed);
+	    		}
+        	}
+        	finally {
+        		if(closeStream)IOUtil.closeEL(is);
+        	}
+    		return ;
+    	}
+		
+    	// ConfigWeb
+    	
+    	
+    	Resource trg = config.getRootDirectory().getRealResource(realpath);
+    	if(trg.exists()) trg.remove(true);
+        Resource p = trg.getParentResource();
+        if(!p.isDirectory()) p.createDirectory(true); 
+        IOUtil.copy(is, trg.getOutputStream(false), closeStream,true);
+        filesDeployed.add(trg);
+        //_store((ConfigImpl)config);
+    }
+
+	private void removeApplications(Config config,String[] realpathes) throws PageException, IOException, SAXException {
+		if(ArrayUtil.isEmpty(realpathes)) return;
+		for(int i=0;i<realpathes.length;i++){
+			removeApplication(config, realpathes[i]);
+		}
+	}
+	
+	private void removeApplication(Config config,String realpath) throws PageException, IOException, SAXException {
+    	if(config instanceof ConfigServer) {
+    		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+			for(int i=0;i<webs.length;i++){
+				removeApplication(webs[i], realpath);
+    		}
+        	
+    		return ;
+    	}
+		
+    	// ConfigWeb
+    	Resource trg = config.getRootDirectory().getRealResource(realpath);
+    	if(trg.exists()) trg.remove(true);
+    }
+	
+	public static void removeRHExtension(ConfigImpl config,String extensionID) throws SAXException, IOException, PageException {
+		ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+		boolean storeChildren = admin._removeExtension(config, extensionID);
+		admin._store();
+		
+		if(storeChildren && config instanceof ConfigServer) {
+			ConfigServer cs = (ConfigServer)config;
+			ConfigWeb[] webs = cs.getConfigWebs();
+			for(int i=0;i<webs.length;i++) {
+				admin._store((ConfigImpl)webs[i]);
+			}
+		}
+	}
+
+	public boolean _removeExtension(ConfigImpl config,String extensionID) throws IOException, PageException, SAXException {
+		if(!Decision.isUUId(extensionID)) throw new IOException("id ["+extensionID+"] is invalid, it has to be a UUID"); 
+		
+		Element extensions=_getRootElement("extensions");
+		Element[] children = ConfigWebFactory.getChildren(extensions,"rhextension");// RailoHandledExtensions
+      	
+        // Update
+		Element el;
+		String id;
+		String[] arr;
+		boolean storeChildren=false;
+        for(int i=0;i<children.length;i++) {
+      	    el=children[i];
+      	    id=el.getAttribute("id");
+  			if(extensionID.equalsIgnoreCase(id)) {
+  				
+  				// jars
+  				arr=_removeExtensionCheckOtherUsage(children,el,"jars");
+  				removeJar(arr);
+  				// flds
+  				arr=_removeExtensionCheckOtherUsage(children,el,"flds");
+  				removeFLDs(arr);
+  				// tlds
+  				arr=_removeExtensionCheckOtherUsage(children,el,"tlds");
+  				removeTLDs(arr);
+  				// contexts
+  				arr=_removeExtensionCheckOtherUsage(children,el,"contexts");
+  				storeChildren=removeContexts(config, arr,false);
+  				// applications
+  				arr=_removeExtensionCheckOtherUsage(children,el,"applications");
+  				removeApplications(config, arr);
+  				
+  				
+  				
+  				extensions.removeChild(el);
+  				return storeChildren;
+  			}
+      	}
+  		return false;
+	}
+	
+	private String[] _removeExtensionCheckOtherUsage(Element[] children, Element curr,String type) {
+		String currVal=curr.getAttribute(type);
+		if(StringUtil.isEmpty(currVal)) return null;
+		
+		String otherVal;
+		Element other;
+		Set<String> currSet = ListUtil.toSet(ListUtil.trimItems(ListUtil.listToStringArray(currVal, ',')));
+		String[] otherArr;
+		for(int i=0;i<children.length;i++) {
+			other=children[i];
+			if(other==curr) continue;
+			otherVal=other.getAttribute(type);
+			if(StringUtil.isEmpty(otherVal)) continue;
+			otherArr=ListUtil.trimItems(ListUtil.listToStringArray(otherVal, ','));
+			for(int y=0;y<otherArr.length;y++) {
+				currSet.remove(otherArr[y]);
+			}
+		}
+		return currSet.toArray(new String[currSet.size()]);
+	}
+
+
+	public static void updateRHExtension(ConfigImpl config,RHExtension rhExtension) throws SAXException, IOException, PageException {
+		ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+		admin._updateExtension(config, rhExtension);
+		admin._store();
+	}
+
+
+	public void _updateExtension(ConfigImpl config,RHExtension ext) throws IOException {
+		if(!Decision.isUUId(ext.getId())) throw new IOException("id ["+ext.getId()+"] is invalid, it has to be a UUID"); 
+		
+		Element extensions=_getRootElement("extensions");
+		Element[] children = ConfigWebFactory.getChildren(extensions,"rhextension");// RailoHandledExtensions
+      	
+        // Update
+		Element el;
+		String provider,id;
+        for(int i=0;i<children.length;i++) {
+      	    el=children[i];
+      	    provider=el.getAttribute("provider");
+      	    id=el.getAttribute("id");
+  			if(ext.getId().equalsIgnoreCase(id)) {
+  				setExtensionAttrs(el,ext);
+  				return ;
+  			}
+      	}
+        
+     // Insert
+      	el = doc.createElement("rhextension");
+      	setExtensionAttrs(el,ext);
+  		extensions.appendChild(el);
+    	
+	}
+
+
+	private void setExtensionAttrs(Element el, RHExtension ext) {
+		setAttr(el,"id", ext.getId());
+		setAttr(el,"name", ext.getName());
+		setAttr(el,"version", ext.getVersion());
+		setAttr(el,"jars",ListUtil.arrayToList(ext.getJars(), ","));
+		setAttr(el,"flds",ListUtil.arrayToList(ext.getFlds(), ","));
+		setAttr(el,"tlds",ListUtil.arrayToList(ext.getTlds(), ","));
+		setAttr(el,"contexts",ListUtil.arrayToList(ext.getContexts(), ","));
+		setAttr(el,"applications",ListUtil.arrayToList(ext.getApplications(), ","));	
+	}
+
+
+	private void setAttr(Element el, String name, String value) {
+		if(value==null) value="";
+		el.setAttribute(name, value);
+	}
 }

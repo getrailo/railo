@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -25,7 +27,9 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.extension.RHExtension;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.util.ListUtil;
 
 public class DeployHandler {
@@ -37,39 +41,45 @@ public class DeployHandler {
 
 
 	public static void deploy(Config config){
-		Resource dir = config.getConfigDir().getRealResource("deploy");
-		int ma = Info.getMajorVersion();
-		int mi = Info.getMinorVersion();
-		if(!dir.exists()) {
-			if(ma>4 || ma==4 && mi>1) {// FUTURE remove the if contition
-				dir.mkdirs();
-			}
-			return;
-		}
-		
-		Resource[] children = dir.listResources(ALL_EXT);
-		Resource child;
-		String ext;
-		for(int i=0;i<children.length;i++){
-			child=children[i];
-			try {
-			// Railo archives
-			ext=ResourceUtil.getExtension(child, null);
-			if("ra".equalsIgnoreCase(ext) || "ras".equalsIgnoreCase(ext)) {
-				deployArchive(config,child);
+		synchronized (config) {
+			Resource dir = getDeployDirectory(config);
+			int ma = Info.getMajorVersion();
+			int mi = Info.getMinorVersion();
+			if(!dir.exists()) {
+				if(ma>4 || ma==4 && mi>1) {// FUTURE remove the if contition
+					dir.mkdirs();
+				}
+				return;
 			}
 			
-			// Railo Extensions
-			else if("re".equalsIgnoreCase(ext))
-				deployExtension(config, child);
-			}
-			catch (ZipException e) {
-				SystemOut.printDate(config.getErrWriter(),ExceptionUtil.getStacktrace(e, true));
-			}
-			catch (IOException e) {
-				SystemOut.printDate(config.getErrWriter(),ExceptionUtil.getStacktrace(e, true));
+			Resource[] children = dir.listResources(ALL_EXT);
+			Resource child;
+			String ext;
+			for(int i=0;i<children.length;i++){
+				child=children[i];
+				try {
+				// Railo archives
+				ext=ResourceUtil.getExtension(child, null);
+				if("ra".equalsIgnoreCase(ext) || "ras".equalsIgnoreCase(ext)) {
+					deployArchive(config,child);
+				}
+				
+				// Railo Extensions
+				else if("re".equalsIgnoreCase(ext))
+					deployExtension(config, child);
+				}
+				catch (ZipException e) {
+					SystemOut.printDate(config.getErrWriter(),ExceptionUtil.getStacktrace(e, true));
+				}
+				catch (IOException e) {
+					SystemOut.printDate(config.getErrWriter(),ExceptionUtil.getStacktrace(e, true));
+				}
 			}
 		}
+	}
+
+	public static Resource getDeployDirectory(Config config) {
+		return config.getConfigDir().getRealResource("deploy");
 	}
 
 	private static void deployArchive(Config config,Resource archive) throws ZipException, IOException {
@@ -109,10 +119,11 @@ public class DeployHandler {
 		trgDir.mkdirs();
 		
 		// delete existing files
-		ResourceUtil.deleteContent(trgDir, null);
-		ResourceUtil.moveTo(archive, trgFile);
 		
 		try {
+			ResourceUtil.deleteContent(trgDir, null);
+			ResourceUtil.moveTo(archive, trgFile);
+			
 			log.info("archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
 			if("regular".equalsIgnoreCase(type))
 				ConfigWebAdmin.updateMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", trusted, topLevel);
@@ -131,6 +142,7 @@ public class DeployHandler {
 	
 
 	private static void deployExtension(Config config, Resource ext) {
+		ConfigImpl ci = (ConfigImpl)config;
 		boolean isWeb=config instanceof ConfigWeb;
 		String type=isWeb?"web":"server";
 		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
@@ -161,13 +173,17 @@ public class DeployHandler {
         
         int minCoreVersion=0;
         double minLoaderVersion=0;
-        String strMinCoreVersion="",strMinLoaderVersion="",version=null,name=null;
+        String strMinCoreVersion="",strMinLoaderVersion="",version=null,name=null,id=null;
         
         if(manifest!=null) {
         	Attributes attr = manifest.getMainAttributes();
         	// version
         	version=unwrap(attr.getValue("version"));
 
+
+        	// id
+        	id=unwrap(attr.getValue("id"));
+        	
         	// name
         	name=unwrap(attr.getValue("name"));
 
@@ -194,16 +210,27 @@ public class DeployHandler {
 			moveToFailedFolder(ext);
 			return;
 		}
-		
+
 		// check loader version
 		if(minLoaderVersion>SystemUtil.getLoaderVersion()) {
 			log.error("extension", "cannot deploy Railo Extension ["+ext+"], Railo Loader Version must be at least ["+strMinLoaderVersion+"], update the railo.jar first.");
 			moveToFailedFolder(ext);
 			return;
 		}
+		// check id
+		if(!Decision.isUUId(id)) {
+			log.error("extension", "cannot deploy Railo Extension ["+ext+"], this Extension has no valid id ["+id+"],id must be a valid UUID.");
+			moveToFailedFolder(ext);
+			return;
+		}
+		
+		
+		
 		
 		Resource trgFile=null;
 		try{
+			ConfigWebAdmin.removeRHExtension(ci,id);
+			
 			Resource trgDir = config.getConfigDir().getRealResource("extensions").getRealResource(type).getRealResource(name);
 			trgFile = trgDir.getRealResource(ext.getName());
 			trgDir.mkdirs();
@@ -220,26 +247,29 @@ public class DeployHandler {
 	        ZipEntry entry;
 	        String path;
 	        String fileName;
+	        List<String> jars=new ArrayList<String>(), flds=new ArrayList<String>(), tlds=new ArrayList<String>(), contexts=new ArrayList<String>(), applications=new ArrayList<String>();
 	        while ( ( entry = zis.getNextEntry()) != null ) {
 	        	path=entry.getName();
-	        	print.e(path);
 	        	fileName=fileName(entry);
 	        	// jars
 	        	if(!entry.isDirectory() && (startsWith(path,type,"jars") || startsWith(path,type,"jar") || startsWith(path,type,"lib") || startsWith(path,type,"libs")) && StringUtil.endsWithIgnoreCase(path, ".jar")) {
 	        		log.info("extension","deploy jar "+fileName);
 	        		ConfigWebAdmin.updateJar(config,zis,fileName,false);
+	        		jars.add(fileName);
 	        	}
 	        	
 	        	// flds
 	        	if(!entry.isDirectory() && startsWith(path,type,"flds") && StringUtil.endsWithIgnoreCase(path, ".fld")) {
 	        		log.info("extension","deploy fld "+fileName);
 	        		ConfigWebAdmin.updateFLD(config, zis, fileName,false);
+	        		flds.add(fileName);
 	        	}
 	        	
 	        	// tlds
 	        	if(!entry.isDirectory() && startsWith(path,type,"tlds") && StringUtil.endsWithIgnoreCase(path, ".tld")) {
 	        		log.info("extension","deploy tld "+fileName);
-	        		ConfigWebAdmin.updateTLD(config, zis, fileName,false);
+	        		ConfigWebAdmin.updateTLD(config, zis, fileName,false); 
+	        		tlds.add(fileName);
 	        	}
 	        	
 	        	// context
@@ -248,12 +278,37 @@ public class DeployHandler {
 	        		realpath=path.substring(8);
 	        		//log.info("extension","deploy context "+realpath);
 	        		log.info("extension","deploy context "+realpath);
-	        		ConfigWebAdmin.updateContext((ConfigImpl)config, zis, realpath,false);
+	        		ConfigWebAdmin.updateContext(ci, zis, realpath,false);
+	        		contexts.add(realpath);
 	        	}
+	        	
+	        	// applications
+	        	if(!entry.isDirectory() && startsWith(path,type,"applications") && !StringUtil.startsWith(fileName(entry), '.')) {
+	        		realpath=path.substring(13);
+	        		//log.info("extension","deploy context "+realpath);
+	        		log.info("extension","deploy application "+realpath);
+	        		ConfigWebAdmin.updateApplication(ci, zis, realpath,false);
+	        		applications.add(realpath);
+	        	}
+	        	
+	        	
 	            zis.closeEntry() ;
 	        }
+	        
+	        //installation successfull
+	        
+	        ConfigWebAdmin.updateRHExtension(ci,
+	        		new RHExtension(id,name,version,
+	        		jars.toArray(new String[jars.size()]),
+	        		flds.toArray(new String[flds.size()]),
+	        		tlds.toArray(new String[tlds.size()]),
+	        		contexts.toArray(new String[contexts.size()]),
+	        		applications.toArray(new String[applications.size()])));
+	        
         }
 	    catch(Throwable t){
+	    	// installation failed
+	    	
 	    	log.error("extension",ExceptionUtil.getStacktrace(t, true));
 			moveToFailedFolder(trgFile);
 			return;

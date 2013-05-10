@@ -4407,23 +4407,34 @@ public final class ConfigWebFactory {
 
 		// Scope Logger
 		String strLogger = scope.getAttribute("log");
+		if (StringUtil.isEmpty(strLogger) && hasCS)
+			strLogger = configServer.getScopeLogger().getSource();
 		if (StringUtil.isEmpty(strLogger))
 			strLogger = "{railo-web}/logs/scope.log";
 		int logLevel = LogUtil.toIntType(scope.getAttribute("log-level"), Log.LEVEL_ERROR);
 		config.setScopeLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
 
-		// Apllication Logger
+		// Application Logger
 		strLogger = application.getAttribute("application-log");
+		if (StringUtil.isEmpty(strLogger) && hasCS)
+			strLogger = configServer.getApplicationLogger().getSource();
+		if (StringUtil.isEmpty(strLogger)) strLogger = "{railo-web}/logs/application.log";
 		logLevel = LogUtil.toIntType(application.getAttribute("application-log-level"), Log.LEVEL_ERROR);
 		config.setApplicationLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
 
 		// Exception Logger
 		strLogger = application.getAttribute("exception-log");
+		if (StringUtil.isEmpty(strLogger) && hasCS)
+			strLogger = configServer.getExceptionLogger().getSource();
+		if (StringUtil.isEmpty(strLogger)) strLogger = "{railo-web}/logs/exception.log";
 		logLevel = LogUtil.toIntType(application.getAttribute("exception-log-level"), Log.LEVEL_ERROR);
 		config.setExceptionLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
 
 		// Trace Logger
 		strLogger = application.getAttribute("trace-log");
+		if (StringUtil.isEmpty(strLogger) && hasCS)
+			strLogger = configServer.getTraceLogger().getSource();
+		if (StringUtil.isEmpty(strLogger)) strLogger = "{railo-web}/logs/trace.log";
 		logLevel = LogUtil.toIntType(application.getAttribute("trace-log-level"), Log.LEVEL_INFO);
 		config.setTraceLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
 
