@@ -16,14 +16,14 @@ public final class ArrayContains extends BIF {
 	
 	private static final long serialVersionUID = -5400552848978801342L;
 
-	public static double call(PageContext pc , Array array, Object value, boolean substringMatch) throws PageException {
+	public static double call(PageContext pc, Array array, Object value, boolean substringMatch) throws PageException {
 
         if ( substringMatch ) {
 
-            if ( Decision.isSimpleValue( value ) )
-                return callLegacy( pc, array, value );
+            if ( !Decision.isSimpleValue( value ) )
+                throw new FunctionException( pc, "ArrayContains", 3, "substringMatch", "substringMatch can not be true when the value that is searched for is a complex object" );
 
-            throw new FunctionException( pc, "ArrayContains", 3, "substringMatch", "substringMatch can not be true when the value that is searched for is a complex object" );
+            return callLegacy( pc, array, value );
         }
 
         return ArrayFind.call( pc, array, value );
