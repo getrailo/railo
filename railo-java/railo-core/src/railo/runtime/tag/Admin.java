@@ -791,7 +791,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	Resource file = ResourceUtil.toResourceNotExisting(pageContext, strFile);
     	
     	boolean addCFMLFiles = getBoolV("addCFMLFiles", true);
-    	boolean addNoneCFMLFiles=getBoolV("addNoneCFMLFiles", true);
+    	boolean addNonCFMLFiles=getBoolV("addNonCFMLFiles", true);
     	
     	// compile
     	Mapping mapping = doCompileMapping(mappingType,virtual, true);
@@ -812,14 +812,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		
     		
     		// include everything, no filter needed
-    		if(addCFMLFiles && addNoneCFMLFiles)filter=null; 
+    		if(addCFMLFiles && addNonCFMLFiles)filter=null;
     		// CFML Files but no other files
     		else if(addCFMLFiles) {
     			if(mappingType==MAPPING_CFC)filter=new ExtensionResourceFilter(new String[]{"class","cfc","MF"},true,true);
 	    		else filter=new ExtensionResourceFilter(new String[]{"class","cfm","cfml","cfc","MF"},true,true);
     		}
     		// No CFML Files, but all other files
-    		else if(addNoneCFMLFiles) {
+    		else if(addNonCFMLFiles) {
     			filter=new NotResourceFilter(new ExtensionResourceFilter(new String[]{"cfm","cfml","cfc"},false,true));
     		}
     		// no files at all
@@ -877,7 +877,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		
 		// source files
     		Resource[] sources;
-			if(!addCFMLFiles && !addNoneCFMLFiles) sources=new Resource[]{temp,classRoot};
+			if(!addCFMLFiles && !addNonCFMLFiles) sources=new Resource[]{temp,classRoot};
 			else sources=new Resource[]{temp,mapping.getPhysical(),classRoot};
 			
 			CompressUtil.compressZip(ResourceUtil.listResources(sources,filter), file, filter);
