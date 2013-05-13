@@ -520,7 +520,7 @@
 								<cfloop query="timers">
 									<tr>
 										<td align="right" class="tblContent" nowrap>#timers.label#</td>
-										<td align="right" class="tblContent" nowrap>#formatUnit(arguments.custom.unit, timers.time)#</td>
+										<td align="right" class="tblContent" nowrap>#formatUnit(arguments.custom.unit, timers.time * 1000000)#</td>
 										<td align="right" class="tblContent" nowrap>#timers.template#</td>
 									</tr>
 								</cfloop>
