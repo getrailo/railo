@@ -180,13 +180,13 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContains</name>
 		<class>railo.runtime.functions.arrays.ArrayContains</class>
 		<member-name>contains</member-name>
-		<description>Returns true if specified object is present is given array</description>
+		<description>Returns the position of the first element in the array that matches the item that we are searching for, or 0 if the item is not found.</description>
 		<argument>
 			<name>haystack</name>
 			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
-			<description>The array that we are looking for the item</description>
+			<description>The array in which to search for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
@@ -210,20 +210,20 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContainsNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayContainsNoCase</class>
 		<member-name>containsNoCase</member-name>
-		<description>Search an array to find a case insensitive item</description>
+		<description>Returns the position of the first element in the array whose string value contains the substring passed (not case sensitive), or 0 if no such element is found.</description>
 		<argument>
 			<name>haystack</name>
 			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
-			<description>The array that we are looking for the item</description>
+			<description>The array in which to search for the substring</description>
 		</argument>
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
 			<type>object</type>
 			<required>Yes</required>
-			<description>The item that we are looking for in the array</description>
+			<description>The substring to search for (not case sensitive)</description>
 		</argument>
 		<return>
 			<type>number</type>
