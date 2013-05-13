@@ -275,7 +275,7 @@ Defaults --->
 	<cfloop collection="#stVeritfyMessages#" item="hostname">
 		<cfif stVeritfyMessages[hostname].label eq "OK">
 			<div class="message">
-				Verification of mail server [#hostname#] was succesfull.
+				Verification of mail server [#hostname#] was succesful.
 			</div>
 		<cfelse>
 			<div class="error">
