@@ -339,10 +339,15 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	}
     	else {
     		Resource res = ps.getResource();
-    		ReqRspUtil.setContentLength(rsp,res.length());
-    		String mt = servlet.getServletContext().getMimeType(req.getServletPath());
-    		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
-    		IOUtil.copy(res, rsp.getOutputStream(), true);
+    		if(res==null) {
+    			rsp.sendError(404);
+    		}
+    		else {
+	    		ReqRspUtil.setContentLength(rsp,res.length());
+	    		String mt = servlet.getServletContext().getMimeType(req.getServletPath());
+	    		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
+	    		IOUtil.copy(res, rsp.getOutputStream(), true);
+    		}
     	}
 	}
 	

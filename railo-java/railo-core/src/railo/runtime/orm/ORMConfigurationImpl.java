@@ -273,7 +273,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 				//		false, false, true);
 				if(ps!=null){
 					res=ps.getResource();
-					if(!onlyDir || res.isDirectory()) return res;
+					if(res!=null && (!onlyDir || res.isDirectory())) return res;
 				}
 				
 			}

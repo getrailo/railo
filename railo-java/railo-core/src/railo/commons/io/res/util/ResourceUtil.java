@@ -254,7 +254,10 @@ public final class ResourceUtil {
         	//Resource[] reses = cwi.getPhysicalResourcesX(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
         	if(!ArrayUtil.isEmpty(sources)) {
         		for(int i=0;i<sources.length;i++){
-        			if(sources[i].exists() || parentExists(sources[i])) return sources[i].getResource();
+        			if(sources[i].exists() || parentExists(sources[i])) {
+        				res=sources[i].getResource();
+        				if(res!=null) return res;
+        			}
         		}
         	}
         }
@@ -294,7 +297,12 @@ public final class ResourceUtil {
         	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), destination, false, 
         			pci.useSpecialMappings(), SystemUtil.isWindows());
         	//Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
-        	if(!ArrayUtil.isEmpty(sources)) return sources[0].getResource();
+        	if(!ArrayUtil.isEmpty(sources)) {
+        		for(int i=0;i<sources.length;i++){
+        			res=sources[i].getResource();
+        			if(res!=null) return res;
+        		}
+        	}
         	//Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
             //if(res2!=null) return res2;
         }
@@ -311,7 +319,11 @@ public final class ResourceUtil {
     	PageSource ps = pc.getCurrentPageSource();
     	if(ps!=null) {
     		ps=ps.getRealPage(destination);
-    		if(ps!=null)return getCanonicalResourceEL(ps.getResource());
+    		
+    		if(ps!=null){
+    			Resource res = ps.getResource();
+    			if(res!=null)return getCanonicalResourceEL(res);
+    		}
     		
     	}
     	return defaultValue;

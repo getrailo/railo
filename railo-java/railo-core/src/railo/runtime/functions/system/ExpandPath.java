@@ -57,7 +57,12 @@ public final class ExpandPath implements Function {
 	                	return toReturnValue(realPath,res);
 	                }
 	        	}
-	        	return toReturnValue(realPath,sources[0].getResource());
+	        	for(int i=0;i<sources.length;i++){
+	        		res=sources[i].getResource();
+	        		if(res!=null) {
+	        			return toReturnValue(realPath,res);
+	        		}
+	        	}
         	}
 
         	// no expand needed
