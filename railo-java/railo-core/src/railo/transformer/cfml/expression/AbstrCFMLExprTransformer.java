@@ -254,7 +254,6 @@ public abstract class AbstrCFMLExprTransformer {
 	/**
 	 * Initialmethode, wird aufgerufen um den internen Zustand des Objektes zu setzten.
 	 * @param fld Function Libraries zum validieren der Funktionen
-	 * @param doc XML Document des aktuellen CFXD
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
 	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
@@ -282,7 +281,6 @@ public abstract class AbstrCFMLExprTransformer {
 	* <br />
 	* EBNF:<br />
 	* <code>assignOp [":" spaces assignOp];</code>
-	 * @param type 
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
@@ -1457,7 +1455,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* <br />
 	* EBNF:<br />
 	* <code>"variable" | "cgi" | "url" | "form" | "session" | "application" | "arguments" | "cookie" | " client";</code>
-	 * @param idStr String identifier, 
+	 * @param id String identifier,
 	 * wird aus Optimierungszwechen nicht innerhalb dieser Funktion ausgelsen.
 	 * @return CFXD Variable Element oder null
 	 * @throws TemplateException 
@@ -1499,7 +1497,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* EBNF:<br />
 	* <code>(letter | "_") {letter | "_"|digit};</code>
 	 * @param firstCanBeNumber 
-	 * @param lowerCase 
+	 * @param upper
 	* @return Identifier.
 	*/
 	protected Identifier identifier(Data data,boolean firstCanBeNumber,boolean upper) {
@@ -1565,7 +1563,6 @@ public abstract class AbstrCFMLExprTransformer {
 	* <code>[impOp{"," impOp}];</code>
 	* @param name Identifier der Funktion als Zeichenkette
 	* @param checkLibrary Soll gepr￼ft werden ob die Funktion innerhalb der Library existiert.
-	* @param nameProp Identifier als CFXD Element, wenn dieses null ist wird es ignoriert.
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
@@ -1637,7 +1634,7 @@ public abstract class AbstrCFMLExprTransformer {
 			if (count==0 && data.cfml.isCurrent(')'))
 				break;
 
-			// to many Attributes
+			// too many Attributes
 			boolean isDynamic=false;
 			int max=-1;
 			if(checkLibrary) {
@@ -1648,7 +1645,7 @@ public abstract class AbstrCFMLExprTransformer {
 					if(max!=-1 && max <= count)
 						throw new TemplateException(
 							data.cfml,
-							"to many Attributes in function [" + ASMUtil.display(name) + "]");
+							"too many Attributes in function [" + ASMUtil.display(name) + "]");
 				}
 			// Fix
 				else {
@@ -1656,7 +1653,7 @@ public abstract class AbstrCFMLExprTransformer {
 						
 						TemplateException te = new TemplateException(
 							data.cfml,
-							"to many Attributes in function call [" + ASMUtil.display(name) + "]");
+							"too many Attributes in function call [" + ASMUtil.display(name) + "]");
 						UDFUtil.addFunctionDoc(te, flf);
 						throw te;
 					}
