@@ -154,13 +154,14 @@ public class DatasourceConnectionPool {
 
 	private DCStack getDCStack(DataSource datasource, String user, String pass) {
 		String id = createId(datasource,user,pass);
+		synchronized(id) {
+			DCStack stack=dcs.get(id);
 		
-		DCStack stack=dcs.get(id);
-		
-		if(stack==null){
-			dcs.put(id, stack=new DCStack());
+			if(stack==null){
+				dcs.put(id, stack=new DCStack());
+			}
+			return stack;
 		}
-		return stack;
 	}
 	
 	public int openConnections() {
