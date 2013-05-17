@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -13,6 +14,7 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -199,10 +201,22 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	
     	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
-    	if((mapping.isTrusted() || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
+    	if((mapping.getInspectTemplate()==ConfigImpl.INSPECT_NEVER || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
-        long srcLastModified = srcFile.lastModified();
+    	/*{
+    		String dp = getDisplayPath();
+    		String cn = getClassName();
+    		if(dp.endsWith(".cfc") && cn.startsWith("cfc")) {
+    			print.ds("->"+dp);
+    			print.e("trusted:"+mapping.isTrusted());
+    			print.e(mapping.getVirtual());
+    			print.e("mod:"+srcFile.lastModified());
+    		}
+    	}*/
+    	
+    	
+		long srcLastModified = srcFile.lastModified();
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
@@ -840,7 +854,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
 	public static Page loadPage(PageContext pc,PageSource[] arr,Page defaultValue) throws PageException {
 		if(ArrayUtil.isEmpty(arr)) return null;
-		Page p;
+		Page p;print.e(arr);
 		for(int i=0;i<arr.length;i++) {
 			p=arr[i].loadPage(pc,(Page)null);
 			if(p!=null) return p;

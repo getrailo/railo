@@ -22,6 +22,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -49,8 +50,10 @@ import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
 import railo.commons.surveillance.HeapDumper;
+import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
@@ -794,7 +797,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	boolean addNonCFMLFiles=getBoolV("addNonCFMLFiles", true);
     	
     	// compile
-    	Mapping mapping = doCompileMapping(mappingType,virtual, true);
+    	MappingImpl mapping = (MappingImpl) doCompileMapping(mappingType,virtual, true);
         
     	// class files 
     	if(mapping==null)throw new ApplicationException("there is no mapping for ["+virtual+"]");
@@ -865,9 +868,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		manifest.append("\n");
     		
     		// Trusted
-    		manifest.append("mapping-trusted: ");
-			manifest.append(mapping.isTrusted());
-    		manifest.append("\n");
+    		manifest.append("mapping-inspect: \"");
+			manifest.append(ConfigWebUtil.inspectTemplate(mapping.getInspectTemplateRaw(), ""));
+			manifest.append("\"\n");
     		
     		
 
@@ -892,7 +895,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			                mapping.getStrPhysical(),
 			                strFile,
 			                mapping.isPhysicalFirst()?"physical":"archive",
-			                mapping.isTrusted());
+			                mapping.getInspectTemplateRaw());
 			     }
 				else if(mappingType==MAPPING_CT) {
 					admin.updateCustomTag(
@@ -900,7 +903,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			                mapping.getStrPhysical(),
 			                strFile,
 			                mapping.isPhysicalFirst()?"physical":"archive",
-			                mapping.isTrusted());
+			                mapping.getInspectTemplateRaw());
 					
 				}
 				
@@ -910,7 +913,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		                mapping.getStrPhysical(),
 		                strFile,
 		                mapping.isPhysicalFirst()?"physical":"archive",
-		                mapping.isTrusted(),
+		                mapping.getInspectTemplateRaw(),
 		                mapping.isTopLevel()
 		        );
 		        store();
@@ -1039,38 +1042,42 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @throws PageException
      */
     private void doGetContexts() throws PageException {
+    	CFMLFactory[] factories;
+    	if(config instanceof ConfigServerImpl) {
+    		ConfigServerImpl cs=(ConfigServerImpl) config;
+    		factories = cs.getJSPFactories(); 
+    	}
+    	else {
+        	ConfigWebImpl cw=(ConfigWebImpl) config;
+    		factories = new CFMLFactory[]{cw.getFactory()};
+    	}
         
-        if(config instanceof ConfigServerImpl) {
-            ConfigServerImpl cs=(ConfigServerImpl) config;
-            CFMLFactoryImpl[] factories = cs.getJSPFactories(); 
+        railo.runtime.type.Query qry=
+        	new QueryImpl(
+        			new Collection.Key[]{
+        					KeyConstants._path,
+        					KeyConstants._id,KeyConstants._hash,
+        					KeyConstants._label,
+        					HAS_OWN_SEC_CONTEXT,
+        					KeyConstants._url,
+        					CONFIG_FILE},
+        			factories.length,getString("admin",action,"returnVariable"));
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+        ConfigWebImpl cw;
+        for(int i=0;i<factories.length;i++) {
+        	int row=i+1;
+            CFMLFactoryImpl factory = (CFMLFactoryImpl) factories[i];
+            cw = (ConfigWebImpl) factory.getConfig();
+            qry.setAtEL(KeyConstants._path,row,ReqRspUtil.getRootPath(factory.getConfigWebImpl().getServletContext()));
             
-            railo.runtime.type.Query qry=
-            	new QueryImpl(
-            			new Collection.Key[]{
-            					KeyConstants._path,
-            					KeyConstants._id,KeyConstants._hash,
-            					KeyConstants._label,
-            					HAS_OWN_SEC_CONTEXT,
-            					KeyConstants._url,
-            					CONFIG_FILE},
-            			factories.length,getString("admin",action,"returnVariable"));
-            pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+            qry.setAtEL(CONFIG_FILE,row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
+            if(factory.getURL()!=null)qry.setAtEL(KeyConstants._url,row,factory.getURL().toExternalForm());
             
-            for(int i=0;i<factories.length;i++) {
-                int row=i+1;
-                CFMLFactoryImpl factory = factories[i];
-                
-                qry.setAtEL(KeyConstants._path,row,ReqRspUtil.getRootPath(factory.getConfigWebImpl().getServletContext()));
-                
-                qry.setAtEL(CONFIG_FILE,row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
-                if(factory.getURL()!=null)qry.setAtEL(KeyConstants._url,row,factory.getURL().toExternalForm());
-                
 
-                qry.setAtEL(KeyConstants._id,row,factory.getConfig().getId());
-                qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
-                qry.setAtEL(KeyConstants._label,row,factory.getLabel());
-                qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cs.hasIndividualSecurityManager(factory.getConfig().getId())));
-            }
+            qry.setAtEL(KeyConstants._id,row,factory.getConfig().getId());
+            qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
+            qry.setAtEL(KeyConstants._label,row,factory.getLabel());
+            qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cw.hasIndividualSecurityManager()));
         }
     }
 
@@ -1855,7 +1862,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("physical",""),
                 getString("archive",""),
                 getString("primary","physical"),
-                getBool("trusted",false)
+                ConfigWebUtil.inspectTemplate(getString("inspect",""), ConfigImpl.INSPECT_UNDEFINED)
         );
         store();
         adminSync.broadcast(attributes, config);
@@ -1884,7 +1891,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("admin",action,"physical"),
                 getString("admin",action,"archive"),
                 getString("admin",action,"primary"),
-                Caster.toBooleanValue(getString("admin",action,"trusted"))
+                ConfigWebUtil.inspectTemplate(getString("inspect",""), ConfigImpl.INSPECT_UNDEFINED)
         );
         store();
         adminSync.broadcast(attributes, config);
@@ -1908,11 +1915,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetCustomTagMappings() throws PageException {
         Mapping[] mappings = config.getCustomTagMappings();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","inspect"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             int row=i+1;
             qry.setAt("archive",row,m.getArchive());
             qry.setAt("strarchive",row,m.getStrArchive());
@@ -1922,18 +1929,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
             qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
-            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+            qry.setAt("inspect",row,ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
     
     private void doGetComponentMappings() throws PageException {
         Mapping[] mappings = config.getComponentMappings();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","inspect"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             int row=i+1;
             qry.setAt("archive",row,m.getArchive());
             qry.setAt("strarchive",row,m.getStrArchive());
@@ -1943,7 +1950,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
             qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
-            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+            qry.setAt("inspect",row,ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
@@ -1987,12 +1994,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private void doUpdateMapping() throws PageException {
+    	print.e("inspect:"+getString("inspect",""));
         admin.updateMapping(
                 getString("admin",action,"virtual"),
                 getString("admin",action,"physical"),
                 getString("admin",action,"archive"),
                 getString("admin",action,"primary"),
-                Caster.toBooleanValue(getString("admin",action,"trusted")),
+                ConfigWebUtil.inspectTemplate(getString("inspect",""), ConfigImpl.INSPECT_UNDEFINED),
                 Caster.toBooleanValue(getString("toplevel","true"))
         );
         store();
@@ -2011,7 +2019,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         String virtual=getString("admin",action,"virtual");
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             if(!m.getVirtual().equals(virtual)) continue;
             
             sct.set("archive",m.getArchive());
@@ -2022,7 +2030,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             sct.set(KeyConstants._hidden,Caster.toBoolean(m.isHidden()));
             sct.set("physicalFirst",Caster.toBoolean(m.isPhysicalFirst()));
             sct.set("readonly",Caster.toBoolean(m.isReadonly()));
-            sct.set("trusted",Caster.toBoolean(m.isTrusted()));
+            sct.set("inspect",ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
             sct.set("toplevel",Caster.toBoolean(m.isTopLevel()));
 
             pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
@@ -2115,11 +2123,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
 
         Mapping[] mappings = config.getMappings();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted","toplevel"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","inspect","toplevel"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             int row=i+1;
             qry.setAt("archive",row,m.getArchive());
             qry.setAt("strarchive",row,m.getStrArchive());
@@ -2129,7 +2137,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
             qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
-            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+            qry.setAt("inspect",row,ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
             qry.setAt("toplevel",row,Caster.toBoolean(m.isTopLevel()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);

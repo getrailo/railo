@@ -450,6 +450,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.autoimport">Auto Import</data>
 	<data key="components.componentlocalsearch">Lokales Verzeichnis einbeziehen</data>
 	<data key="components.archivemissing">Bitte geben Sie einen Wert für den Archivnamen an. (Zeile </data>
+	<data key="components.createnewcompmapping">Weiteres Directory einbziehen</data>
+	<data key="customtags.createnewcustomtagmapping">Weiteres Directory einbziehen</data>
 	<data key="components.datamemberaccesstypedescription">Definiert wie die Variablen des &apos;this&apos; Scopes (Data Members) ausserhalb einer CFC angesprochen werden können. Eine strenge Objektorientierung würde verlangen, dass ein solcher Zugriff von Aussen gar nicht erst möglich wäre (access=private).</data>
 	<data key="components.autoimportdescription">Die folgende package Definition wird für jedes Template automatisch geladen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
@@ -605,6 +607,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.querycachecleardesc">Drücken Sie den Button oberhalb um den Query Cache zu leeren.</data>
 	<data key="setting.querycacheclear">Query Cache leeren</data>
 	<data key="setting.inspecttemplatealwaysShort">Immer</data>
+
+	<data key="setting.inspecttemplateInheritShort">Erben</data>
 	<data key="setting.inspecttemplatealways">Immer ( Schlecht )</data>
 	<data key="setting.cachedesc">Verschiedene Cache and Performance Einstellungen um die Ausführung zu verbessern.</data>
 	<data key="setting.showversion">Railo Version ausgeben</data>
@@ -620,6 +624,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.inspecttemplateneverShort">Nie</data>
 	<data key="setting.inspecttemplatenever">Nie ( Beste Performance )</data>
 	<data key="setting.server">Kontrolle der Ausgabe von Railo</data>
+	<data key="setting.inspecttemplateInherit">Erben</data>
+	<data key="setting.inspecttemplateInheritDesc">Erbt das Setting definiert in "Performance/Caching"</data>
 	<data key="setting.inspecttemplatealwaysdesc">
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
 </data>

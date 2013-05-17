@@ -125,7 +125,7 @@ import flex.messaging.config.ConfigMap;
  */
 public abstract class ConfigImpl implements Config {
 
-
+	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config
 
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
@@ -1202,7 +1202,7 @@ public abstract class ConfigImpl implements Config {
     protected void setTagDirectory(Resource tagDirectory) {
     	this.tagDirectory=tagDirectory;
     	
-    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true,null);
+    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,ConfigImpl.INSPECT_NEVER,true,true,true,true,false,true,null);
     	
     	TagLib tl=getCoreTagLib();
     	
@@ -1262,7 +1262,7 @@ public abstract class ConfigImpl implements Config {
     
     protected void setFunctionDirectory(Resource functionDirectory) {
     	//this.functionDirectory=functionDirectory;
-    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true,null);
+    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,ConfigImpl.INSPECT_NEVER,true,true,true,true,false,true,null);
     	FunctionLib fl=flds[flds.length-1];
         
         // now overwrite with new data
@@ -3178,7 +3178,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false,true,true,null
+				null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}

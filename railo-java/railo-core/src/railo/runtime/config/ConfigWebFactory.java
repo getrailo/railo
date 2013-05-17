@@ -1646,11 +1646,16 @@ public final class ConfigWebFactory {
 
 				// physical!=null &&
 				if ((physical != null || archive != null)) {
-					boolean trusted = toBoolean(el.getAttribute("trusted"), false);
+					
+					short insTemp=inspectTemplate(el);
+					
+					//boolean trusted = toBoolean(el.getAttribute("trusted"), false);
+					
+					
 					String primary = el.getAttribute("primary");
 					boolean physicalFirst = primary == null || !primary.equalsIgnoreCase("archive");
 
-					tmp = new MappingImpl(config, virtual, physical, archive, trusted, physicalFirst, hidden, readonly, toplevel, false, false, listener, clMaxEl);
+					tmp = new MappingImpl(config, virtual, physical, archive, insTemp, physicalFirst, hidden, readonly, toplevel, false, false, listener, clMaxEl);
 					mappings.put(tmp.getVirtualLowerCase(), tmp);
 					if (virtual.equals("/")) {
 						finished = true;
@@ -1661,7 +1666,7 @@ public final class ConfigWebFactory {
 		}
 
 		if (!finished) {
-			tmp = new MappingImpl(config, "/", "/", null, false, true, true, true, true, false, false, null);
+			tmp = new MappingImpl(config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null);
 			mappings.put(tmp.getVirtualLowerCase(), tmp);
 		}
 
@@ -1674,6 +1679,20 @@ public final class ConfigWebFactory {
 		config.setMappings(arrMapping);
 		// config.setMappings((Mapping[]) mappings.toArray(new
 		// Mapping[mappings.size()]));
+	}
+
+	private static short inspectTemplate(Element el) {
+		String strInsTemp = el.getAttribute("inspect-template");
+		if(StringUtil.isEmpty(strInsTemp)) strInsTemp = el.getAttribute("inspect");
+		if(StringUtil.isEmpty(strInsTemp)) {
+			Boolean trusted=Caster.toBoolean(el.getAttribute("trusted"),null);
+			if(trusted!=null) {
+				if(trusted.booleanValue()) return ConfigImpl.INSPECT_NEVER;
+				return ConfigImpl.INSPECT_ALWAYS;
+			}
+			return ConfigImpl.INSPECT_UNDEFINED;
+		}
+		return ConfigWebUtil.inspectTemplate(strInsTemp,ConfigImpl.INSPECT_UNDEFINED);	
 	}
 
 	private static void loadRest(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
@@ -2422,14 +2441,15 @@ public final class ConfigWebFactory {
 				String archive = ctMapping.getAttribute("archive");
 				boolean readonly = toBoolean(ctMapping.getAttribute("readonly"), false);
 				boolean hidden = toBoolean(ctMapping.getAttribute("hidden"), false);
-				boolean trusted = toBoolean(ctMapping.getAttribute("trusted"), false);
+				//boolean trusted = toBoolean(ctMapping.getAttribute("trusted"), false);
+				short inspTemp=inspectTemplate(ctMapping);
 				int clMaxEl = toInt(ctMapping.getAttribute("classloader-max-elements"), 100);
 
 				String primary = ctMapping.getAttribute("primary");
 
 				boolean physicalFirst = archive == null || !primary.equalsIgnoreCase("archive");
 				hasSet = true;
-				mappings[i] = new MappingImpl(config, ConfigWebAdmin.createVirtual(ctMapping), physical, archive, trusted, physicalFirst, hidden, readonly, true, false, true,
+				mappings[i] = new MappingImpl(config, ConfigWebAdmin.createVirtual(ctMapping), physical, archive, inspTemp, physicalFirst, hidden, readonly, true, false, true,
 						null, clMaxEl);
 				// print.out(mappings[i].isPhysicalFirst());
 			}
@@ -3534,13 +3554,7 @@ public final class ConfigWebFactory {
 		//
 		String strInspectTemplate = java.getAttribute("inspect-template");
 		if (!StringUtil.isEmpty(strInspectTemplate, true)) {
-			strInspectTemplate = strInspectTemplate.trim().toLowerCase();
-			if (strInspectTemplate.equals("always"))
-				config.setInspectTemplate(ConfigImpl.INSPECT_ALWAYS);
-			else if (strInspectTemplate.equals("never"))
-				config.setInspectTemplate(ConfigImpl.INSPECT_NEVER);
-			else
-				config.setInspectTemplate(ConfigImpl.INSPECT_ONCE);
+			config.setInspectTemplate(ConfigWebUtil.inspectTemplate(strInspectTemplate, ConfigImpl.INSPECT_ONCE));
 		}
 		else if (hasCS) {
 			config.setInspectTemplate(configServer.getInspectTemplate());
@@ -4200,7 +4214,8 @@ public final class ConfigWebFactory {
 				String archive = cMapping.getAttribute("archive");
 				boolean readonly = toBoolean(cMapping.getAttribute("readonly"), false);
 				boolean hidden = toBoolean(cMapping.getAttribute("hidden"), false);
-				boolean trusted = toBoolean(cMapping.getAttribute("trusted"), false);
+				//boolean trusted = toBoolean(cMapping.getAttribute("trusted"), false);
+				short inspTemp = inspectTemplate(cMapping);
 				String virtual = ConfigWebAdmin.createVirtual(cMapping);
 
 				int clMaxEl = toInt(cMapping.getAttribute("classloader-max-elements"), 100);
@@ -4209,7 +4224,7 @@ public final class ConfigWebFactory {
 
 				boolean physicalFirst = archive == null || !primary.equalsIgnoreCase("archive");
 				hasSet = true;
-				mappings[i] = new MappingImpl(config, virtual, physical, archive, trusted, physicalFirst, hidden, readonly, true, false, true, null, clMaxEl);
+				mappings[i] = new MappingImpl(config, virtual, physical, archive, inspTemp, physicalFirst, hidden, readonly, true, false, true, null, clMaxEl);
 			}
 
 			config.setComponentMappings(mappings);
@@ -4252,7 +4267,7 @@ public final class ConfigWebFactory {
 		}
 
 		if (!hasSet) {
-			MappingImpl m = new MappingImpl(config, "/default", "{railo-web}/components/", null, false, true, false, false, true, false, true, null);
+			MappingImpl m = new MappingImpl(config, "/default", "{railo-web}/components/", null, ConfigImpl.INSPECT_UNDEFINED, true, false, false, true, false, true, null);
 			config.setComponentMappings(new Mapping[] { m.cloneReadOnly(config) });
 		}
 
@@ -4404,7 +4419,7 @@ public final class ConfigWebFactory {
 
 		Element application = getChildByName(doc.getDocumentElement(), "application");
 		Element scope = getChildByName(doc.getDocumentElement(), "scope");
-
+		
 		// Scope Logger
 		String strLogger = scope.getAttribute("log");
 		if (StringUtil.isEmpty(strLogger) && hasCS)

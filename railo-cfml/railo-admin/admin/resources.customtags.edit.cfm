@@ -21,7 +21,7 @@
 				<cfset name=ListCompact(mapping.virtual,'/')>
 						
 				<cfif !isValid("uuid",name)><tr>
-					<th scope="row">#stText.Components.name#</th>
+					<th scope="row">#stText.customtags.name#</th>
 					<td class="tblContent" nowrap>
 							
 						<cfif isValid("uuid",name)>
@@ -29,11 +29,11 @@
 						<cfelse>
 							#name#
 						</cfif>
-						<div class="comment">#stText.Components.nameDesc#</div>
+						<div class="comment">#stText.customtags.nameDesc#</div>
 					</td>
 				</tr></cfif>
 				<tr>
-					<th scope="row">#stText.components.Physical#</th>
+					<th scope="row">#stText.customtags.Physical#</th>
 					<cfset css=iif(len(mapping.physical) EQ 0 and len(mapping.strPhysical) NEQ 0,de('Red'),de(''))>
 					<td class="tblContent#css#" nowrap <cfif len(mapping.strPhysical)>title="#mapping.strPhysical##newLine()##mapping.Physical#"</cfif>>
 						<cfif mapping.readOnly>
@@ -43,11 +43,11 @@
 								name="physical_#mapping.id#" value="#mapping.strPhysical#" required="no"  
 								style="width:100%" message="#stText.Mappings.PhysicalMissing##mapping.id#)">
 						</cfif>
-						<div class="comment">#stText.Components.physicalDesc#</div>
+						<div class="comment">#stText.customtags.physicalDesc#</div>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">#stText.components.Archive#</th>
+					<th scope="row">#stText.customtags.Archive#</th>
 					<cfset css=iif(len(mapping.archive) EQ 0 and len(mapping.strArchive) NEQ 0,de('Red'),de(''))>
 					<td class="tblContent#css#" <cfif len(mapping.strArchive)>title="#mapping.strArchive##newLine()##mapping.Archive#"</cfif>>
 						<cfif mapping.readOnly>
@@ -57,11 +57,11 @@
 								name="archive_#mapping.id#" value="#mapping.strArchive#" required="no"  
 								class="xlarge" message="#stText.Mappings.ArchiveMissing##mapping.id#)">
 						</cfif>
-						<div class="comment">#stText.Components.archiveDesc#</div>
+						<div class="comment">#stText.customtags.archiveDesc#</div>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">#stText.components.Primary#</th>
+					<th scope="row">#stText.customtags.Primary#</th>
 					<td>
 						<cfif mapping.readOnly>
 							<cfif mapping.PhysicalFirst>
@@ -75,7 +75,7 @@
 								<option value="archive" <cfif not mapping.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 							</select>
 						</cfif>
-						<div class="comment">#stText.Components.primaryDesc#</div>
+						<div class="comment">#stText.customtags.primaryDesc#</div>
 					</td>
 				</tr>
 				<tr>

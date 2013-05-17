@@ -94,7 +94,8 @@ public class DeployHandler {
 			return;
 		}
 		String type=null,virtual=null,name=null;
-		boolean readOnly,topLevel,trusted,hidden,physicalFirst;
+		boolean readOnly,topLevel,hidden,physicalFirst;
+		short inspect;
 		InputStream is = null;
 		try{
 			is = file.getInputStream(entry);
@@ -107,7 +108,14 @@ public class DeployHandler {
 		    name = ListUtil.trim(virtual, "/");
 		    readOnly = Caster.toBooleanValue(unwrap(attr.getValue("mapping-readonly")),false);
 		    topLevel = Caster.toBooleanValue(unwrap(attr.getValue("mapping-top-level")),false);
-		    trusted = Caster.toBooleanValue(unwrap(attr.getValue("mapping-trusted")),false);
+		    inspect = ConfigWebUtil.inspectTemplate(unwrap(attr.getValue("mapping-inspect")), ConfigImpl.INSPECT_UNDEFINED);
+		    if(inspect==ConfigImpl.INSPECT_UNDEFINED) {
+		    	Boolean trusted = Caster.toBoolean(unwrap(attr.getValue("mapping-trusted")),null);
+		    	if(trusted!=null) {
+		    		if(trusted.booleanValue()) inspect=ConfigImpl.INSPECT_NEVER;
+		    		else inspect=ConfigImpl.INSPECT_ALWAYS;
+		    	}	
+		    }
 		    hidden = Caster.toBooleanValue(unwrap(attr.getValue("mapping-hidden")),false);
 		    physicalFirst = Caster.toBooleanValue(unwrap(attr.getValue("mapping-physical-first")),false);
 		}
@@ -126,11 +134,11 @@ public class DeployHandler {
 			
 			log.info("archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
 			if("regular".equalsIgnoreCase(type))
-				ConfigWebAdmin.updateMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", trusted, topLevel);
+				ConfigWebAdmin.updateMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", inspect, topLevel);
 			else if("cfc".equalsIgnoreCase(type))
-				ConfigWebAdmin.updateComponentMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", trusted);
+				ConfigWebAdmin.updateComponentMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", inspect);
 			else if("ct".equalsIgnoreCase(type))
-				ConfigWebAdmin.updateCustomTagMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", trusted);
+				ConfigWebAdmin.updateCustomTagMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", inspect);
 			
 		    
 		}

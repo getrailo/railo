@@ -98,7 +98,8 @@ public interface Mapping  extends Dumpable{
     /**
      * @return Returns the trusted.
      */
-    public abstract boolean isTrusted();
+    public abstract boolean isTrusted(); // FUTURE mark as deprecated; use instead <code>public short getInspectTemplate();</code>
+    // FUTURE public short getInspectTemplate();
 
     public abstract boolean isTopLevel();
 

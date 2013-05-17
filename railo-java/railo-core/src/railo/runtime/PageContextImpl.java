@@ -2884,7 +2884,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	public boolean isTrusted(Page page) {
 		if(page==null)return false;
-		short it = config.getInspectTemplate();
+		
+		short it = ((MappingImpl)page.getPageSource().getMapping()).getInspectTemplate();
 		if(it==ConfigImpl.INSPECT_NEVER)return true;
 		if(it==ConfigImpl.INSPECT_ALWAYS)return false;
 		

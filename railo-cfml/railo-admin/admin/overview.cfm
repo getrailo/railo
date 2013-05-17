@@ -141,6 +141,12 @@ Error Output --->
 	password="#session["password"&request.adminType]#"
 	action="getPerformanceSettings"
 	returnVariable="performance">
+
+<cfadmin 
+	action="getContexts"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="contexts">
 	
 	<cfif request.adminType EQ "server">
 		<cfset names=StructKeyArray(info.servlets)>
@@ -468,12 +474,7 @@ Error Output --->
 	</table>
 	
 	<cfif request.admintype EQ "server">
-		<cfadmin 
-			action="getContexts"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
-			returnVariable="rst">
-	
+		
 		<h2>#stText.Overview.contexts.title#</h2>
 		<div class="itemintro">
 			You can label your web contexts here, so they are more clearly distinguishable for use with extensions etc.
@@ -489,7 +490,8 @@ Error Output --->
 					</tr>
 				</thead>
 				<tbody>
-					<cfloop query="rst">
+					<cfset rst=contexts>
+					<cfloop query="contexts">
 						<tr>
 							<td>
 								<input type="hidden" name="hash_#rst.currentrow#" value="#rst.hash#"/>

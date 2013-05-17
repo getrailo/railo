@@ -244,12 +244,22 @@
 						</select></cfif></td>
 						
 						<td nowrap>
+						<!--- inspect --->
 						<cfif mappings.readOnly>
-								#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
+							<cfif len(mappings.inspect)>
+								#stText.setting['inspecttemplate'&mappings.inspect&'Short']#
 							<cfelse>
-							<select name="trusted_#mappings.currentrow#" onchange="checkTheBox(this)">
-								<option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
-								<option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
+								#stText.setting['inspecttemplateInheritShort']#
+							</cfif>
+						
+						
+							<cfelse>
+							<select name="inspect_#mappings.currentrow#" onchange="checkTheBox(this)">
+							<cfloop list="never,once,always,inherit" item="type">
+									<option value="#type EQ "inherit"?"":type#" <cfif mappings.inspect EQ type or (type EQ "inherit" and mappings.inspect EQ "")>selected</cfif>>
+										#stText.setting['inspecttemplate#type#Short']#
+									</option>
+							</cfloop>
 							</select>
 							</cfif>
 						
@@ -322,11 +332,18 @@
 					<tr>
 						<th scope="row">#stText.Mappings.TrustedHead#</th>
 						<td>
-							<select name="trusted_1" class="medium">
-								<option value="true">#stText.setting.inspecttemplateneverShort#</option>
-								<option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
-							</select>
-							<div class="comment">#stText.Components.trustedDesc#</div>
+							#stText.Components.trustedDesc#
+							<ul class="radiolist">
+							<cfloop list="never,once,always,inherit" item="type">
+								<li><label>
+									<input class="radio" type="radio" name="inspect_1" value="#type EQ "inherit"?"":type#" <cfif type EQ "inherit"> checked="checked"</cfif>>
+									<b>#stText.setting['inspectTemplate'&type]#</b>
+								</label>
+								<div class="comment">#stText.setting['inspectTemplate'&type&"Desc"]#</div>
+								</li>
+							</cfloop>
+							</ul>
+							
 						</td>
 					</tr>
 				</tbody>

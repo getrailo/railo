@@ -376,7 +376,7 @@ public class HibernateSessionFactory {
 				mappings[i]=new MappingImpl(config,
 						"/",
 						resources[i].getAbsolutePath(),
-						null,false,true,false,false,false,true,true,null
+						null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
 						);
 			}
 			return mappings;

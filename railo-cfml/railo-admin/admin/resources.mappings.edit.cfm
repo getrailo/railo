@@ -48,31 +48,22 @@
 					<th scope="row">#stText.setting.inspecttemplate#</th>
 					<td>
 						<cfif mapping.readOnly>
-							<cfif mapping.Trusted>
-								#stText.setting.inspecttemplatenever#
-								<div class="comment">#stText.setting.inspecttemplateneverdesc#</div>
-							<cfelse>
-								#stText.setting.inspecttemplatealways#
-								<div class="comment">#stText.setting.inspecttemplatealwaysdesc#</div>
+							<cfloop list="never,once,always,inherit" item="type">
+							<cfif mapping.inspect EQ type or (type EQ "inherit" and mapping.inspect EQ "")>
+							#stText.setting['inspectTemplate'&type]#
+							<div class="comment">#stText.setting['inspectTemplate'&type&"Desc"]#</div>
 							</cfif>
+							</cfloop>
 						<cfelse>
 							<ul class="radiolist">
-								<li>
-									<label>
-										<!--- never --->
-										<input class="radio" type="radio" name="trusted_#mapping.id#" value="true"<cfif mapping.Trusted> checked="checked"</cfif>>
-										<b>#stText.setting.inspectTemplateNever#</b>
+								<cfloop list="never,once,always,inherit" item="type">
+									<li><label>
+										<input class="radio" type="radio" name="inspect_#mapping.id#" value="#type EQ "inherit"?"":type#" <cfif mapping.inspect EQ type or (type EQ "inherit" and mapping.inspect EQ "")> checked="checked"</cfif>>
+										<b>#stText.setting['inspectTemplate'&type]#</b>
 									</label>
-									<div class="comment">#stText.setting.inspectTemplateNeverDesc#</div>
-								</li>
-								<li>
-									<label>
-										<!--- always --->
-										<input class="radio" type="radio" name="trusted_#mapping.id#" value="false"<cfif not mapping.Trusted> checked="checked"</cfif>>
-										<b>#stText.setting.inspectTemplateAlways#</b>
-									</label>
-									<div class="comment">#stText.setting.inspectTemplateAlwaysDesc#</div>
-								</li>
+									<div class="comment">#stText.setting['inspectTemplate'&type&"Desc"]#</div>
+									</li>
+								</cfloop>
 							</ul>
 						</cfif>
 					</td>

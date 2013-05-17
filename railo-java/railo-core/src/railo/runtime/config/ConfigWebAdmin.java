@@ -532,23 +532,23 @@ public final class ConfigWebAdmin {
         }
     }
     
-    static void updateMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, boolean trusted, boolean toplevel) throws SAXException, IOException, PageException {
+    static void updateMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
-    	admin._updateMapping(virtual, physical, archive, primary, trusted, toplevel);
+    	admin._updateMapping(virtual, physical, archive, primary, inspect, toplevel);
     	admin._store();
     }
     
 
-    static void updateComponentMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, boolean trusted) throws SAXException, IOException, PageException {
+    static void updateComponentMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
-    	admin._updateComponentMapping(virtual, physical, archive, primary, trusted);
+    	admin._updateComponentMapping(virtual, physical, archive, primary, inspect);
     	admin._store();
     }
     
 
-    static void updateCustomTagMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, boolean trusted) throws SAXException, IOException, PageException {
+    static void updateCustomTagMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
-    	admin._updateCustomTag(virtual, physical, archive, primary, trusted);
+    	admin._updateCustomTag(virtual, physical, archive, primary, inspect);
     	admin._store();
     }
 
@@ -563,11 +563,11 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateMapping(String virtual, String physical,String archive,String primary, boolean trusted, boolean toplevel) throws ExpressionException, SecurityException {
+    public void updateMapping(String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws ExpressionException, SecurityException {
     	checkWriteAccess();
-    	_updateMapping(virtual, physical, archive, primary, trusted, toplevel);
+    	_updateMapping(virtual, physical, archive, primary, inspect, toplevel);
     }
-    private void _updateMapping(String virtual, String physical,String archive,String primary, boolean trusted, boolean toplevel) throws ExpressionException, SecurityException {
+    private void _updateMapping(String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws ExpressionException, SecurityException {
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAPPING);
         
         virtual=virtual.trim(); 
@@ -626,7 +626,8 @@ public final class ConfigWebAdmin {
                         el.removeAttribute("archive");
                     }
 		      		el.setAttribute("primary",isArchive?"archive":"physical");
-		      		el.setAttribute("trusted",Caster.toString(trusted));
+		      		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+		      		el.removeAttribute("trusted");
 		      		el.setAttribute("toplevel",Caster.toString(toplevel));
 		      		return ;
 	  			}
@@ -640,7 +641,7 @@ public final class ConfigWebAdmin {
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",isArchive?"archive":"physical");
-  		el.setAttribute("trusted",Caster.toString(trusted));
+  		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
   		el.setAttribute("toplevel",Caster.toString(toplevel));
   		
   		// set / to the end
@@ -824,11 +825,11 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateCustomTag(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
+    public void updateCustomTag(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException, SecurityException {
     	checkWriteAccess();
-    	_updateCustomTag(virtual, physical, archive, primary, trusted);
+    	_updateCustomTag(virtual, physical, archive, primary, inspect);
     }
-    private void _updateCustomTag(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
+    private void _updateCustomTag(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException, SecurityException {
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
         if(!hasAccess)
             throw new SecurityException("no access to change custom tag settings");
@@ -859,7 +860,8 @@ public final class ConfigWebAdmin {
         		el.setAttribute("physical",physical);
 	      		el.setAttribute("archive",archive);
 	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-	      		el.setAttribute("trusted",Caster.toString(trusted));
+	      		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+	      		el.removeAttribute("trusted");
 	      		return ;
   			}
       	}
@@ -870,15 +872,15 @@ public final class ConfigWebAdmin {
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-  		el.setAttribute("trusted",Caster.toString(trusted));
+  		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
   		el.setAttribute("virtual",virtual);
     }
     
-    public void updateComponentMapping(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
+    public void updateComponentMapping(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException, SecurityException {
     	checkWriteAccess();
-    	_updateComponentMapping(virtual, physical, archive, primary, trusted);
+    	_updateComponentMapping(virtual, physical, archive, primary, inspect);
     }	
-    private void _updateComponentMapping(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException {
+    private void _updateComponentMapping(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException {
     	primary=primary.equalsIgnoreCase("archive")?"archive":"physical";
         if(physical==null)physical="";
         else physical=physical.trim();
@@ -920,7 +922,8 @@ public final class ConfigWebAdmin {
       			el.setAttribute("physical",physical);
 	      		el.setAttribute("archive",archive);
 	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-	      		el.setAttribute("trusted",Caster.toString(trusted));
+	      		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+	      		el.removeAttribute("trusted");
 	      		return ;
   			}
       	}
@@ -931,7 +934,7 @@ public final class ConfigWebAdmin {
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-  		el.setAttribute("trusted",Caster.toString(trusted));
+  		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
   		el.setAttribute("virtual",virtual);
     }
 
