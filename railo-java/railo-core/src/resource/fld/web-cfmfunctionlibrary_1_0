@@ -2112,7 +2112,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>CreateDynamicProxy</name>
 		<class>railo.runtime.functions.other.CreateDynamicProxy</class>
-		<status>hidden</status>
 		<description>wrap the given component with a java class that implements the given interfaces.</description>
 		<argument>
 			<name>cfc</name>
