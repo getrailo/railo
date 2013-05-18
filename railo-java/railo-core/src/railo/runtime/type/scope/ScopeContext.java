@@ -514,14 +514,16 @@ public final class ScopeContext {
 				else if("cookie".equals(storage))
 					session=SessionCookie.getInstance(appContext.getName(),pc,getLog());
 				else{
-					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					DataSource ds = ((PageContextImpl)pc).getDataSource(storage);
 					if(ds!=null && ds.isStorage())session=SessionDatasource.getInstance(storage,pc,getLog(),null);
 					else session=SessionCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					
 					if(session==null){
 						// datasource not enabled for storage
 						if(ds!=null)
-							throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage, you have to enable it in the railo administrator.");
+							throw new ApplicationException(
+									"datasource ["+storage+"] is not enabled to be used as session/client storage, " +
+									"you have to enable it in the railo administrator or define key \"storage=true\" for datasources defined in Application.cfc .");
 						
 						CacheConnection cc = Util.getCacheConnection(pc.getConfig(),storage,null);
 						if(cc!=null) 
