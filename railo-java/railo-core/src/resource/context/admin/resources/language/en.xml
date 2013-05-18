@@ -90,7 +90,7 @@
 	<data key="customtags.mode.modern">Modern</data>
 	<data key="customtags.mode.classic">Classic (Railo 1.0 - 3.0)</data>
 	<data key="customtags.mode.custom">Custom</data>
-	<data key="customtags.customtagmappings">Resources</data>
+	<data key="customtags.customtagmappings">Additional Resources</data>
 	<data key="customtags.physicalmissing">Please enter a value for the resource (row </data>
 	<data key="customtags.extensions">Extensions</data>
 	<data key="customtags.customtagmappingsdesc">Directories that Railo checks for Custom Tags.</data>
@@ -492,6 +492,7 @@
 	<data key="components.archive">Archive</data>
 	<data key="components.componentmappings">Additional Resources</data>
 	<data key="components.createnewcompmapping">Create new Additional Resource</data>
+	<data key="customtags.createnewcustomtagmapping">Create new Additional Resource</data>
 	<data key="components.dmatpackage">package</data>
 	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way. Every change on this Component needs a restart from Railo.</data>
 	<data key="login.passwordmissing">Please enter a value for the field password</data>
@@ -673,6 +674,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.querycachecleardesc">Press the button above to clear the query cache.</data>
 	<data key="setting.querycacheclear">Clear query cache</data>
 	<data key="setting.inspecttemplatealwaysShort">Always</data>
+	<data key="setting.inspecttemplateInheritShort">Inherit</data>
 	<data key="setting.inspecttemplatealways">Always ( Bad )</data>
 	<data key="setting.cachedesc">Different Cache and Performance settings to improve overall performance</data>
 	<data key="setting.componentcache">Component path Cache</data>
@@ -690,6 +692,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.cfmlWriterWSPref">Smart whitespace management, same as the simple one, but ignore spaces inside the tags: code, pre and textarea</data>
 	<data key="setting.server">Railo output control</data>
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
+	<data key="setting.inspecttemplateInherit">Inherit</data>
+	<data key="setting.inspecttemplateInheritDesc">Inherit setting defined in "Performance/Caching"</data>
 	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
 	<data key="setting.inspecttemplateoncedesc">When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead.</data>
 	<data key="setting.inspecttemplateonceShort">Once</data>

@@ -262,7 +262,7 @@ millisecond:"ms"
 <cfloop query="timers">
 		<tr>
 			<td align="right" class="cfdebug" nowrap>#timers.label#</td>
-			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, timers.time)#</td>
+			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, timers.time * 1000000)#</td>
 			<td align="right" class="cfdebug" nowrap>#timers.template#</td>
 		</tr>
 </cfloop>                
