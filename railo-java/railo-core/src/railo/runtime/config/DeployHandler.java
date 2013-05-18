@@ -16,6 +16,7 @@ import java.util.zip.ZipInputStream;
 import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.compress.ZipUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -83,21 +84,23 @@ public class DeployHandler {
 	}
 
 	private static void deployArchive(Config config,Resource archive) throws ZipException, IOException {
-		ZipFile file=new ZipFile(FileWrapper.toFile(archive));
+		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
+		String type=null,virtual=null,name=null;
+		boolean readOnly,topLevel,hidden,physicalFirst;
+		short inspect;
+		InputStream is = null;
+		ZipFile file=null;
+		try {
+		file=new ZipFile(FileWrapper.toFile(archive));
 		ZipEntry entry = file.getEntry("META-INF/MANIFEST.MF");
 		
-		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
 		// no manifest
 		if(entry==null) {
 			log.error("archive","cannot deploy Railo Archive ["+archive+"], file is to old, the file does not have a MANIFEST.");
 			moveToFailedFolder(archive);
 			return;
 		}
-		String type=null,virtual=null,name=null;
-		boolean readOnly,topLevel,hidden,physicalFirst;
-		short inspect;
-		InputStream is = null;
-		try{
+		
 			is = file.getInputStream(entry);
 			Manifest manifest = new Manifest(is);
 		    Attributes attr = manifest.getMainAttributes();
@@ -121,6 +124,7 @@ public class DeployHandler {
 		}
 		finally{
 			IOUtil.closeEL(is);
+			ZipUtil.close(file);
 		}
 		Resource trgDir = config.getConfigDir().getRealResource("archives").getRealResource(type).getRealResource(name);
 		Resource trgFile = trgDir.getRealResource(archive.getName());
