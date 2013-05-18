@@ -485,7 +485,7 @@ public final class Zip extends BodyTagImpl {
 			}
 		}
 		finally {
-			ZipUtil.cloeseEL(zos);
+			ZipUtil.close(zos);
 			if(existing!=null)existing.delete();
 			
 		}
