@@ -1,39 +1,55 @@
 <cfinclude template="/railo-context/admin/resources/text.cfm">
 
 
+<cfset itemList = Application.objects.utils.getMemberFunctions()>
+
+<cfset arrAllItems = itemList.keyArray().sort( 'textnocase' )>
+
+<cfif len( url.item )>
+	
+	<cfif !arrAllItems.findNoCase( url.item )>
+	
+		<cfset url.item = "">
+	</cfif>
+</cfif>
+
+
+<cfsavecontent variable="Request.htmlBody">
+	
+	<script type="text/javascript">
+
+		<cfoutput>
+
+			var typeaheadData = #serializeJson( arrAllItems )#;
+		</cfoutput>
+
+		$( function() {
+
+			$( '#search-item' ).typeahead( {
+
+				source: typeaheadData
+			});
+		});
+	</script>
+</cfsavecontent>
+
+
 <cf_doc_layout title="Railo Object Methods Reference">
 
 
 <cfoutput>
 
-	<cfset itemList = Application.objects.utils.getMemberFunctionList()>
-	<cfset arr = itemList.keyArray().sort( 'textnocase' )>
-	
+
 	<form id="form-item-selector" action="#CGI.SCRIPT_NAME#">
 		<div class="centered x-large">
 			
-			#stText.doc.chooseFunction#: 
-			<select id="select-item" name="item">
-				<option value=""> -------------- </option>
-
-				<cfloop array="#arr#" index="obj">
-					<cfif left( obj, 1 ) != "_">
-						<optgroup label="#obj#">
-
-							<cfset arrObjMethods = itemList[ obj ].keyArray().sort( 'textnocase' )>
-
-							<cfloop array="#arrObjMethods#" index="key">
-								<option value="#obj#.#key#" <cfif url.item == "#obj#.#key#">selected="selected"</cfif>>#ucFirst( obj )#.#key#</option>
-							</cfloop>
-						</optgroup>
-					</cfif>
-				</cfloop>
-			</select>
+			#stText.doc.choosetag#: 
+			<input type="text" name="item" id="search-item" autocomplete="off">
 
 			<input type="submit" value="#stText.Buttons.OK#"> 
 		</div>
 		<cfif len( url.item )>
-				
+			
 			<div class="centered" style="padding: 0.5em;"><a href="#CGI.SCRIPT_NAME#">see all object methods</a></div>
 		</cfif>
 	</form>
@@ -43,7 +59,7 @@
 
 		<cfset data = getFunctionData( Application.objects.utils.getBIFName( url.item ) )>
 
-		<h2>Documentation for object method <em>#ucFirst(data.member.type)#.#data.member.name#</em></h2>
+		<h2>Object Method <em>#ucFirst(data.member.type)#.#data.member.name#</em></h2>
 		<cfif data.status EQ "deprecated">
 			<div class="warning nofocus">#stText.doc.depFunction#</div>
 		</cfif>
@@ -101,40 +117,34 @@
 
 	<cfelse><!--- len( url.item) !--->
 
-
 		<!--- render index !--->
-		<cfset arrNamespaces = itemList.keyArray().sort( 'textnocase' )>
 
-		<br>
+		<cfset lastObj    = "">
+		<cfset lastPrefix = "">
+		<cfloop array="#arrAllItems#" item="objMethod">
+			
+			<cfset obj    = listFirst( objMethod, '.' )>
+			<cfset method = listLast( objMethod, '.' )>
 
-		<cfloop array="#arrNamespaces#" index="ns">
+			<cfif obj != lastObj>
 			
-			<cfif arrNamespaces.len() GT 1>
-			
-				<h3 style="margin-top: 1.75em;">#ucFirst( ns )#</h3>
+				<h3 style="margin-top: 1.0em;">#listFirst( objMethod, '.' )#</h3>
+				<cfset lastObj = obj>
 			</cfif>
-			
-			<cfset arrTags = itemList[ ns ].keyArray().sort( 'textnocase' )>
+		
+			<cfif left( method, 1 ) != lastPrefix>
+				
+				<div style="height: 0.65em;">&nbsp;</div>
+				<cfset lastPrefix = left( method, 1 )>
+			</cfif>
 
-			<cfset lastPrefix = left( arrTags[ 1 ], 1 )>
-			<cfloop array="#arrTags#" index="ai">
-
-				<cfif left( ai, 1 ) != lastPrefix>
-					
-					<div style="font-size: 0.65em;">&nbsp;</div>
-					<cfset lastPrefix = left( ai, 1 )>
-				</cfif>
-
-				<a href="#CGI.SCRIPT_NAME#?item=#ns#.#ai#" class="index-item">#ai#</a>
-			</cfloop>
+			<a href="#CGI.SCRIPT_NAME#?item=#objMethod#" class="index-item">#method#</a>
 		</cfloop>
-
 
 	</cfif><!--- len( url.item) !--->
 
 
 </cfoutput>
-
 
 
 </cf_doc_layout>

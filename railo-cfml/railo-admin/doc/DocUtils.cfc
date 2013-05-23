@@ -1,6 +1,75 @@
 component {
 
 
+	
+	function getAllFunctions() {
+
+		var result = getFunctionList().keyArray().sort( 'textnocase' ).filter( function( el ) { return left( el, 1 ) != '_'; } );
+
+		return result;
+	}
+
+
+	function getAllTags() {
+
+		var result = [];
+
+		var itemList = getTagList();
+
+		for ( local.ns in itemList.keyArray() ) {
+
+			for ( local.key in itemList[ ns ].keyArray() ) {
+			
+				result.append( ns & key );
+			}
+		}
+		
+		result.sort( 'textnocase' );
+
+		return result;
+	}
+
+
+	/**
+	* returns an array of namespaces sorted by Len DESC, Text
+	*/
+	function getTagNamespaces() {
+
+		var result = getTagList().keyArray();
+
+		result.sort( function( lhs, rhs ) { 
+
+				var ll = len( lhs );
+				var lr = len( rhs );
+
+				if ( ll != lr )
+					return lr - ll;
+
+				return compareNoCase( lhs, rhs );
+			} 
+		);
+
+		return result;
+	}
+
+
+	function getMemberFunctions() {
+
+		var result = {};
+		var data = getMemberFunctionList();
+
+		for ( local.obj in data.keyArray().sort( 'textnocase' ) ) {
+
+			for ( local.method in data[ obj ].keyArray() ) {
+
+				result[ ucFirst( obj ) & '.' & method ] = data[ obj ][ method ];
+			}
+		}
+
+		return result;
+	}
+
+
 	/**
 	* returns a struct of structs where the keys at the top level represent Object names,
 	* the keys at 2nd level represent member method name, and their value shows the corresponding
