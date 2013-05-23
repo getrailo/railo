@@ -43,7 +43,7 @@
 	<form id="form-item-selector" action="#CGI.SCRIPT_NAME#">
 		<div class="centered x-large">
 			
-			#stText.doc.choosetag#: 
+			#stText.doc.chooseFunction#: 
 			<input type="text" name="item" id="search-item" autocomplete="off">
 
 			<input type="submit" value="#stText.Buttons.OK#"> 
