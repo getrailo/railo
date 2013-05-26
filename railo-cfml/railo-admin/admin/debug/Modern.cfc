@@ -2,48 +2,48 @@
 
 	<cfscript>
 		fields=array(
-		group("Execution Time","Execution times for templates, includes, modules, custom tags, and component method calls. Template execution times over this minimum highlight time appear in red.",3)
-		,field("Minimal Execution Time","minimal","0",true,{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
-		,field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
-		,group("Custom Debugging Output","Define what is outputted",3)
-		,field("Scope Variables","scopes","Enabled",false,"Enable Scope reporting","checkbox","Enabled")
-		,field("General Debug Information ","general","Enabled",false,
-		"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ",
-		"checkbox","Enabled")
+			  group("Execution Time","Execution times for templates, includes, modules, custom tags, and component method calls. Template execution times over this minimum highlight time appear in red.",3)
+			, field("Minimal Execution Time","minimal","0",true,{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
+			, field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
+			, group("Custom Debugging Output","Define what is outputted",3)
+			, field("Scope Variables","scopes","Enabled",false,"Enable Scope reporting","checkbox","Enabled")
+			, field("General Debug Information ","general","Enabled",false,
+				"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ",
+				"checkbox","Enabled")
 		);
 		
 		string function getLabel(){
-		return "Modern";
+			return "Modern";
 		}
+
 		string function getDescription(){
-		return "The new style debug template";
-		}
-		string function getid(){
-		return "railo-modern";
+			return "The new style debug template";
 		}
 		
-		void function onBeforeUpdate(struct custom){
-		//throwWhenEmpty(custom,"color");
-		//throwWhenEmpty(custom,"bgcolor");
-		throwWhenNotNumeric(custom,"minimal");
-		throwWhenNotNumeric(custom,"highlight");
+		string function getid(){
+			return "railo-modern";
+		}
+		
+		void function onBeforeUpdate(struct custom){		
+			throwWhenNotNumeric(custom,"minimal");
+			throwWhenNotNumeric(custom,"highlight");
 		}
 		
 		private void function throwWhenEmpty(struct custom, string name){
-		if(!structKeyExists(custom,name) or len(trim(custom[name])) EQ 0)
-		throw "value for ["&name&"] is not defined";
+			if(!structKeyExists(custom,name) or len(trim(custom[name])) EQ 0)
+			throw "value for ["&name&"] is not defined";
 		}
+
 		private void function throwWhenNotNumeric(struct custom, string name){
-		throwWhenEmpty(custom,name);
-		if(!isNumeric(trim(custom[name])))
-		throw "value for ["&name&"] must be numeric";
+			throwWhenEmpty(custom,name);
+			if(!isNumeric(trim(custom[name])))
+			throw "value for ["&name&"] must be numeric";
 		}
 		
 		private function isColumnEmpty(query qry,string columnName){
-		if(!QueryColumnExists(qry,columnName)) return true;
-		return !len(arrayToList(queryColumnData(qry,columnName),""));
+			if(!QueryColumnExists(qry,columnName)) return true;
+			return !len(arrayToList(queryColumnData(qry,columnName),""));
 		}
-
 
 		private function isSectionOpen( string name ) {
 
@@ -162,6 +162,8 @@
 				#-railo-debug .bold 		{ font-weight: bold; }
 				#-railo-debug .txt-c 	{ text-align: center; }
 				#-railo-debug .txt-r 	{ text-align: right; }
+				#-railo-debug .num-lsv 	{ color: #999; }
+				#-railo-debug .num-lsv:hover 	{ color: inherit; }
 				#-railo-debug tr.nowrap td { white-space: nowrap; }
 				#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
 
@@ -446,20 +448,20 @@
 					<table>
 
 						<cfset renderSectionHeadTR( sectionId
-							, "#formatUnit( arguments.custom.unit, tot-q-loa )# 
+							, "#unitFormat( arguments.custom.unit, tot-q-loa )# 
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Application" )>
 
 						<tr><td><table>
 							<tr>
-								<td class="pad right">#formatUnit( arguments.custom.unit, loa )#</td>
+								<td class="pad right">#unitFormat( arguments.custom.unit, loa )#</td>
 								<td class="pad">Startup/Compilation</td>
 							</tr>
 							<tr>
-								<td class="pad right">#formatUnit( arguments.custom.unit, q )#</td>
+								<td class="pad right">#unitFormat( arguments.custom.unit, q )#</td>
 								<td class="pad">Query</td>
 							</tr>
 							<tr>
-								<td class="pad right bold">#formatUnit( arguments.custom.unit, tot )#</td>
+								<td class="pad right bold">#unitFormat( arguments.custom.unit, tot )#</td>
 								<td class="pad bold">Total</td>
 							</tr>
 						</table></td></tr>
@@ -487,14 +489,14 @@
 										<cfset bad=pages.avg GTE arguments.custom.highlight * 1000>
 										<cfset loa=loa+pages.load>
 										<tr class="nowrap #bad ? 'red' : ''#">
-											<td class="txt-r">#formatUnit(arguments.custom.unit, pages.total-pages.load)#</td>
-											<td class="txt-r">#formatUnit(arguments.custom.unit, pages.avg)#</td>
+											<td class="txt-r">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
+											<td class="txt-r">#unitFormat(arguments.custom.unit, pages.avg)#</td>
 											<td class="txt-c">#pages.count#</td>
 											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
 											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
 										</tr>
 									</cfloop>
-									<tr class="red"><td colspan="3">red = over #formatUnit( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
+									<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
 
 								</table>
 							</td>	<!--- id="-railo-debug-#sectionId#" !--->
@@ -606,7 +608,7 @@
 										<cfloop query="timers">
 											<tr class="nowrap">
 												<td align="right">#timers.label#</td>
-												<td align="right">#formatUnit( arguments.custom.unit, timers.time * 1000000 )#</td>
+												<td align="right">#unitFormat( arguments.custom.unit, timers.time * 1000000 )#</td>
 												<td align="right">#timers.template#</td>
 											</tr>
 										</cfloop>
@@ -677,8 +679,8 @@
 														<br />
 													</cfif>
 												</td>
-												<td class="txt-r">#formatUnit(arguments.custom.unit, total)#</td>
-												<td class="txt-r">#formatUnit(arguments.custom.unit, traces.time)#</td>
+												<td class="txt-r">#unitFormat(arguments.custom.unit, total)#</td>
+												<td class="txt-r">#unitFormat(arguments.custom.unit, traces.time)#</td>
 											</tr>
 										</cfloop>
 									
@@ -707,7 +709,7 @@
 						<div class="section-title">SQL Queries</div>
 						<table>
 							
-							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #formatUnit(total, queries.time)#)" )>
+							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat(total, queries.time)#)" )>
 
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
@@ -728,7 +730,7 @@
 													<th></th>
 													<td class="bold">#queries.name#</td>
 													<td class="txt-r">#queries.count#</td>
-													<td class="txt-r">#formatUnit(arguments.custom.unit, queries.time)#</td>
+													<td class="txt-r">#unitFormat(arguments.custom.unit, queries.time)#</td>
 													<td>#queries.datasource#</td>
 													<td>#queries.src#</td>
 												</tr>
@@ -893,40 +895,42 @@
 		</tr>
 	</cffunction>
 
- 
-	<cffunction name="formatUnit" output="no" returntype="string">
-		<cfargument name="unit" type="string" required="yes" />
-		<cfargument name="time" type="numeric" required="yes" />
-		<cfif arguments.time GTE 100000000>
-			<!--- 1000ms --->
-			<cfreturn int(arguments.time/1000000)&" ms" />
-		<cfelseif arguments.time GTE 10000000>
-			<!--- 100ms --->
-			<cfreturn (int(arguments.time/100000)/10)&" ms" />
-		<cfelseif arguments.time GTE 1000000>
-			<!--- 10ms --->
-			<cfreturn (int(arguments.time/10000)/100)&" ms" />
-		<cfelse>
-			<!--- 0ms --->
-			<cfreturn (int(arguments.time/1000)/1000)&" ms" />
-		</cfif>
-		<cfreturn (arguments.time/1000000)&" ms" />
-	</cffunction>
-
-
 	<cfscript>
 
-		function byteFormat( size ) {
+		function unitFormat( string unit, numeric time ) {
+
+			var result = numberFormat( time / 1000000, "0.00" );
+
+			result = listFirst( result, '.' ) & "<span class='num-lsv'>." & listGetAt( result, 2, '.' ) & "</span> ms";
+
+			return result;
+
+			/*/ not sure what this confusing old impl was supposed to do; arguments.unit was ignored anyway!
+			if ( arguments.time >= 100000000 )
+				return int( arguments.time / 1000000 ) & " ms";
+
+			if ( arguments.time >=  10000000 )
+				return ( int( arguments.time / 100000 ) / 10 ) & " ms";
+
+			if ( arguments.time >=   1000000 )
+				return ( int( arguments.time / 10000 ) / 100 ) & " ms";
+
+			return ( int( arguments.time / 1000 ) / 1000 ) & " ms";
+			//*/
+		}
+
+
+		function byteFormat( numeric size ) {
 
 			var values = [ [ 1099511627776, 'TB' ], [ 1073741824, 'GB' ], [ 1048576, 'MB' ], [ 1024, 'KB' ] ];
 
 			for ( var i in values ) {
 
-				if ( size >= i[ 1 ] )
-					return numberFormat( size / i[ 1 ], '9.99' ) & i[ 2 ];
+				if ( arguments.size >= i[ 1 ] )
+					return numberFormat( arguments.size / i[ 1 ], '9.99' ) & i[ 2 ];
 			}
 
-			return size & 'B';
+			return arguments.size & 'B';
 		}
 	</cfscript>
 
