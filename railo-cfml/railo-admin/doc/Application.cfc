@@ -1,7 +1,7 @@
 component {
 
 
-	this.Name = "__RAILO_DOC";
+	this.Name = "__RAILO_DOCS";
 
 
 	function onApplicationStart() {
