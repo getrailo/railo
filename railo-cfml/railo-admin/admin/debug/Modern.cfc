@@ -355,7 +355,9 @@
 				<legend><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" style="cursor: pointer;" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
 				 Railo Debug Output</a></legend>
 
+
 				<div id="-railo-debug-ALL" class="#isOpen ? '' : 'collapsed'#">
+
 
 					<!--- General --->
 					<cfif isEnabled( arguments.custom, 'general' )>
@@ -442,6 +444,7 @@
 					</cfloop>
 
 					<table>
+
 						<cfset renderSectionHeadTR( sectionId
 							, "#formatUnit( arguments.custom.unit, tot-q-loa )# 
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Application" )>
@@ -487,7 +490,7 @@
 											<td class="txt-r">#formatUnit(arguments.custom.unit, pages.total-pages.load)#</td>
 											<td class="txt-r">#formatUnit(arguments.custom.unit, pages.avg)#</td>
 											<td class="txt-c">#pages.count#</td>
-											<td>#pages.src#</td>
+											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
 											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
 										</tr>
 									</cfloop>
@@ -538,7 +541,7 @@
 					</cfif>
 
 
-					<!--- Implicit Variable Access --->
+					<!--- Implicit variable Access --->
 					<cfif implicitAccess.recordcount>
 
 						<cfset sectionId = "ImpAccess">
@@ -553,6 +556,7 @@
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 									<table class="details">
+
 										<tr>
 											<th>Scope</th>
 											<th>Template</th>
@@ -682,6 +686,7 @@
 								</td>	<!--- id="-railo-debug-#sectionId#" !--->
 							</tr>
 						</table>
+
 					</cfif>
 
 
@@ -729,7 +734,7 @@
 												</tr>
 												<tr>
 													<th class="label">SQL Code:</th>
-													<td id="-railo-debug-query-sql-#queries.currentRow#" title="Click to Select Text" colspan="5" style="cursor: pointer;" onclick="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
+													<td id="-railo-debug-query-sql-#queries.currentRow#" colspan="5" oncontextmenu="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
 												</tr>
 
 												<cfif listFindNoCase(queries.columnlist, 'usage') && isStruct(queries.usage)>
@@ -789,6 +794,7 @@
 								</td>	<!--- id="-railo-debug-#sectionId#" !--->
 							</tr>
 						</table>
+
 					</cfif>
 					
 					
@@ -841,7 +847,7 @@
 										</cfcatch>
 									</cftry>
 									
-									<cfset renderSectionHeadTR( sectionId, "<b>#k# Scope</b> #sc ? '(Estimated Size: #estSize#)' : '(Empty)' #" )>
+									<cfset renderSectionHeadTR( sectionId, "<b>#k# Scope</b> #sc ? '(~#estSize#)' : '(Empty)' #" )>
 
 									<tr><td colspan="3">
 
