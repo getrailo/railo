@@ -163,7 +163,6 @@
 				#-railo-debug .txt-c 	{ text-align: center; }
 				#-railo-debug .txt-r 	{ text-align: right; }
 				#-railo-debug .num-lsv 	{ font-weight: normal; }
-				#-railo-debug .num-lsv:hover 	{ color: inherit; }
 				#-railo-debug tr.nowrap td { white-space: nowrap; }
 				#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
 
@@ -448,20 +447,20 @@
 					<table>
 
 						<cfset renderSectionHeadTR( sectionId
-							, "#unitFormat( arguments.custom.unit, tot-q-loa )# 
+							, "#unitFormat( arguments.custom.unit, tot-q-loa, true )# 
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Application" )>
 
 						<tr><td><table>
 							<tr>
-								<td class="pad right">#unitFormat( arguments.custom.unit, loa )#</td>
+								<td class="pad txt-r">#unitFormat( arguments.custom.unit, loa )#</td>
 								<td class="pad">Startup/Compilation</td>
 							</tr>
 							<tr>
-								<td class="pad right">#unitFormat( arguments.custom.unit, q )#</td>
+								<td class="pad txt-r">#unitFormat( arguments.custom.unit, q )#</td>
 								<td class="pad">Query</td>
 							</tr>
 							<tr>
-								<td class="pad right bold">#unitFormat( arguments.custom.unit, tot )#</td>
+								<td class="pad txt-r bold">#unitFormat( arguments.custom.unit, tot, true )#</td>
 								<td class="pad bold">Total</td>
 							</tr>
 						</table></td></tr>
@@ -569,11 +568,11 @@
 										<cfset total=0 />
 										<cfloop query="implicitAccess">
 											<tr class="nowrap">
-												<td align="left">#implicitAccess.scope#</td>
-												<td align="left">#implicitAccess.template#</td>
-												<td align="right">#implicitAccess.line#</td>
-												<td align="left">#implicitAccess.name#</td>
-												<td align="right">#implicitAccess.count#</td>
+												<td>#implicitAccess.scope#</td>
+												<td>#implicitAccess.template#</td>
+												<td class="txt-r">#implicitAccess.line#</td>
+												<td>#implicitAccess.name#</td>
+												<td class="txt-r">#implicitAccess.count#</td>
 											</tr>
 										</cfloop>
 									
@@ -607,9 +606,9 @@
 										</tr>
 										<cfloop query="timers">
 											<tr class="nowrap">
-												<td align="right">#timers.label#</td>
-												<td align="right">#unitFormat( arguments.custom.unit, timers.time * 1000000 )#</td>
-												<td align="right">#timers.template#</td>
+												<td class="txt-r">#timers.label#</td>
+												<td class="txt-r">#unitFormat( arguments.custom.unit, timers.time * 1000000 )#</td>
+												<td class="txt-r">#timers.template#</td>
 											</tr>
 										</cfloop>
 										
@@ -897,13 +896,14 @@
 
 	<cfscript>
 
-		function unitFormat( string unit, numeric time ) {
+		function unitFormat( string unit, numeric time, boolean prettify=false ) {
 
 			var result = numberFormat( time / 1000000, "0.00" );
 
-			result = listFirst( result, '.' ) & "<span class='num-lsv'>." & listGetAt( result, 2, '.' ) & "</span> ms";
+			if ( prettify )
+				result = listFirst( result, '.' ) & "<span class='num-lsv'>." & listGetAt( result, 2, '.' ) & "</span>";
 
-			return result;
+			return result & " ms";
 
 			/*/ not sure what this confusing old impl was supposed to do; arguments.unit was ignored anyway!
 			if ( arguments.time >= 100000000 )
