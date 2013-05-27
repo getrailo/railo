@@ -19,7 +19,7 @@
 		string function getDescription(){
 			return "The new style debug template";
 		}
-		
+
 		string function getid(){
 			return "railo-modern";
 		}
@@ -162,7 +162,7 @@
 				#-railo-debug .bold 		{ font-weight: bold; }
 				#-railo-debug .txt-c 	{ text-align: center; }
 				#-railo-debug .txt-r 	{ text-align: right; }
-				#-railo-debug .num-lsv 	{ color: #999; }
+				#-railo-debug .num-lsv 	{ font-weight: normal; color: #999; }
 				#-railo-debug .num-lsv:hover 	{ color: inherit; }
 				#-railo-debug tr.nowrap td { white-space: nowrap; }
 				#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
