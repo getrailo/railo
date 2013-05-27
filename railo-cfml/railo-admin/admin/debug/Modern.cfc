@@ -162,7 +162,7 @@
 				#-railo-debug .bold 		{ font-weight: bold; }
 				#-railo-debug .txt-c 	{ text-align: center; }
 				#-railo-debug .txt-r 	{ text-align: right; }
-				#-railo-debug .num-lsv 	{ font-weight: normal; color: #999; }
+				#-railo-debug .num-lsv 	{ font-weight: normal; }
 				#-railo-debug .num-lsv:hover 	{ color: inherit; }
 				#-railo-debug tr.nowrap td { white-space: nowrap; }
 				#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
@@ -489,8 +489,8 @@
 										<cfset bad=pages.avg GTE arguments.custom.highlight * 1000>
 										<cfset loa=loa+pages.load>
 										<tr class="nowrap #bad ? 'red' : ''#">
-											<td class="txt-r">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
-											<td class="txt-r">#unitFormat(arguments.custom.unit, pages.avg)#</td>
+											<td class="txt-r" title="#pages.total - pages.load#">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
+											<td class="txt-r" title="#pages.avg#">#unitFormat(arguments.custom.unit, pages.avg)#</td>
 											<td class="txt-c">#pages.count#</td>
 											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
 											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
