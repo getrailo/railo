@@ -1,43 +1,65 @@
 <cfinclude template="/railo-context/admin/resources/text.cfm">
 
 
+<cfset arrAllItems = Application.objects.utils.getAllFunctions()>
+
+
+<cfif len( url.item )>
+	
+	<cfif !arrAllItems.findNoCase( url.item )>
+	
+		<cfset url.item = "">
+	</cfif>
+</cfif>
+
+
+<cfsavecontent variable="Request.htmlBody">
+	
+	<script type="text/javascript">
+
+		<cfoutput>
+
+			var typeaheadData = #serializeJson( arrAllItems )#;
+		</cfoutput>
+
+		$( function() {
+
+			$( '#search-item' ).typeahead( {
+
+				source: typeaheadData
+			});
+		});
+	</script>
+</cfsavecontent>
+
+
 <cf_doc_layout title="Railo Function Reference">
 
 
 <cfoutput>
 
-	<cfset itemList = getFunctionList()>
-	<cfset arrItems = itemList.keyArray().sort( 'textnocase' )>
 
 	<form id="form-item-selector" action="#CGI.SCRIPT_NAME#">
 		<div class="centered x-large">
 			
 			#stText.doc.chooseFunction#: 
-			<select id="select-item" name="item">
-
-				<option value=""> -------------- </option>
-
-				<cfloop array="#arrItems#" index="key">
-					<cfif left( key, 1 ) != "_">
-						<option value="#key#" <cfif url.item == key>selected="selected"</cfif>>#key#</option>
-					</cfif>
-				</cfloop>
-			</select>
+			<input type="text" name="item" id="search-item" autocomplete="off">
 
 			<input type="submit" value="#stText.Buttons.OK#"> 
 		</div>
 		<cfif len( url.item )>
-				
+			
 			<div class="centered" style="padding: 0.5em;"><a href="#CGI.SCRIPT_NAME#">see all functions</a></div>
 		</cfif>
 	</form>
+
 
 
 	<cfif len( url.item )>
 		
 		<cfset data = getFunctionData( url.item )>
 
-		<h2>Documentation for function <em>#uCase( url.item )#</em></h2>
+		<h2>Function <em>#uCase( url.item )#</em></h2>
 		<cfif data.status EQ "deprecated">
 			<div class="warning nofocus">#stText.doc.depFunction#</div>
 		</cfif>
@@ -106,21 +128,15 @@
 
 	<cfelse><!--- len( url.item) !--->
 		
-		<!--- render index !--->
-		
+		<!--- render index !--->		
 		<br>
 
-		<cfset lastPrefix = left( arrItems[ 1 ], 1 )>
-		<cfloop array="#arrItems#" index="ai">
-
-			<cfif left( ai, 1 ) == '_'>
-				
-				<cfcontinue>
-			</cfif>
+		<cfset lastPrefix = left( arrAllItems[ 1 ], 1 )>
+		<cfloop array="#arrAllItems#" index="ai">
 
 			<cfif left( ai, 1 ) != lastPrefix>
 				
-				<div style="font-size: 0.65em;">&nbsp;</div>
+				<div style="height: 0.65em;"></div>
 				<cfset lastPrefix = left( ai, 1 )>
 			</cfif>
 

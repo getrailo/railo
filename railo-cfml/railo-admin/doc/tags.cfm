@@ -3,11 +3,45 @@
 <cfparam name="URL.namespace" default="cf">
 
 
-<cfif left( url.item, 2 ) == "cf">
+<cfset arrNamespaces = Application.objects.utils.getTagNamespaces()>
+<cfset arrAllItems   = Application.objects.utils.getAllTags()>
+
+<cfif len( url.item )>
 	
-	<cfset url.item = mid( url.item, 3 )>
-	<cfset url.namespace = "cf">
+	<cfif !arrAllItems.findNoCase( url.item )>
+	
+		<cfset url.item = "">
+	</cfif>
+
+	<cfloop array="#arrNamespaces#" item="ns">
+		
+		<cfif left( url.item, len( ns ) ) == ns>
+
+			<cfset url.item = mid( url.item, len( ns ) + 1 )>
+			<cfset url.namespace = ns>
+		</cfif>
+	</cfloop>
 </cfif>
+
+
+<cfsavecontent variable="Request.htmlBody">
+	
+	<script type="text/javascript">
+
+		<cfoutput>
+
+			var typeaheadData = #serializeJson( arrAllItems )#;
+		</cfoutput>
+
+		$( function() {
+
+			$( '#search-item' ).typeahead( {
+
+				source: typeaheadData
+			});
+		});
+	</script>
+</cfsavecontent>
 
 
 <cf_doc_layout title="Railo Tag Reference">
@@ -15,23 +49,11 @@
 
 <cfoutput>
 
-	<cfset itemList = getTagList()>
-
 	<form id="form-item-selector" action="#CGI.SCRIPT_NAME#">
 		<div class="centered x-large">
 			
 			#stText.doc.choosetag#: 
-			<select id="select-item" name="item">
-				<option value=""> -------------- </option>
-				<cfloop collection="#itemList#" item="ns">
-					
-					<cfset arr = itemList[ ns ].keyArray().sort( 'textnocase' )>
-					
-					<cfloop array="#arr#" index="key">
-						<cfset t = ns & key>
-						<option value="#t#" <cfif t == url.namespace & url.item>selected="selected"</cfif>>#t#</option></cfloop>
-				</cfloop>
-			</select>
+			<input type="text" name="item" id="search-item" autocomplete="off">
 
 			<input type="submit" value="#stText.Buttons.OK#"> 
 		</div>
@@ -50,7 +72,7 @@
 		<cfparam name="data.attributes" default="#{}#">
 		<cfparam name="data.attributetype" default="fixed">
 
-		<h2>Documentation for tag <em>&lt;#uCase( tagName )#&gt;</em></h2>
+		<h2>Tag <em>&lt;#uCase( tagName )#&gt;</em></h2>
 
 		<cfif data.status == "deprecated">
 			<div class="warning nofocus">#stText.doc.depTag#</div>
@@ -154,34 +176,21 @@
 	<cfelse><!--- len( url.item) !--->
 
 		<!--- render index !--->
-		<cfset arrNamespaces = itemList.keyArray().sort( 'textnocase' )>
-
 		<br>
 
-		<cfloop array="#arrNamespaces#" index="ns">
-			
-			<cfif arrNamespaces.len() GT 1>
-			
-				<h3>#ns#</h3>	
+		<cfset lastPrefix = "">
+		<cfloop array="#arrAllItems#" item="ai" index="ii">
+
+			<cfif left( ai, 3 ) != lastPrefix>
+				
+				<div style="height: 0.65em;"></div>
+				<cfset lastPrefix = left( ai, 3 )>
 			</cfif>
-			
-			<cfset arrTags = itemList[ ns ].keyArray().sort( 'textnocase' )>
 
-			<cfset lastPrefix = left( arrTags[ 1 ], 1 )>
-			<cfloop array="#arrTags#" index="ai">
-
-				<cfif left( ai, 1 ) != lastPrefix>
-					
-					<div style="font-size: 0.65em;">&nbsp;</div>
-					<cfset lastPrefix = left( ai, 1 )>
-				</cfif>
-
-				<a href="#CGI.SCRIPT_NAME#?item=#ns##ai#" class="index-item">#ns##ai#</a>
-			</cfloop>
+			<a href="#CGI.SCRIPT_NAME#?item=#ai#" class="index-item">#ai#</a>
 		</cfloop>
 
 	</cfif><!--- len( url.item) !--->
-
 
 </cfoutput>
 
