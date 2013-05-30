@@ -1,207 +1,198 @@
-
 package railo.runtime.text.csv;
 
-import java.util.ArrayList;
 
-import railo.runtime.exp.DatabaseException;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
-import railo.transformer.util.CFMLString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
-/**
- * Class to parse a CVS File 
- */
-public final class CSVParser {
-	
-	/**
-	 * parse a CVS File
-	 * @param csv
-	 * @param delimiter
-	 * @param textQualifier
-	 * @param headers
-	 * @param firstrowasheaders
-	 * @return parse CVS as Query
-	 * @throws DatabaseException
-	 * @throws CSVParserException
-	 * @throws PageException
-	 */
-	public Query parse(String csv,char delimiter, char textQualifier,String[] headers, boolean firstrowasheaders) throws DatabaseException, CSVParserException, PageException {
-		//print.ln("delimiter:"+delimiter);
-		//print.ln("textQualifier:"+textQualifier);
-		String[] first=null;
-		
-		CFMLString cfmlStr = new CFMLString(csv,"UTF-8");
-		//print.ln(cfmlStr.toString());
-	// no predefined Header
-		if(headers==null) {
-			// read first line
-			first=readFirstLine(cfmlStr,delimiter,textQualifier);
-			cfmlStr.removeSpace();
-			
-			// set first line to header
-			if(firstrowasheaders) {
-				headers=first;
-				first=null;
-			}
-			// create auto header
-			else {
-				headers=new String[first.length];
-				for(int i=0;i<first.length;i++) {
-					headers[i]="COLUMN_"+(i+1);
-				}
-			}
-		}
-		// remove first line when header is defined and firstrowasheaders is true
-		else if(!cfmlStr.isAfterLast() && firstrowasheaders){
-			readFirstLine(cfmlStr,delimiter,textQualifier);
-		}
-		
-		// create column Array
-		Array[] arrays=new Array[headers.length];
-		for(int i=0;i<arrays.length;i++) {
-			arrays[i]=new ArrayImpl();
-		}
-		// fill first row to data array, when not empty
-		if(first!=null) {
-			for(int i=0;i<arrays.length;i++) {
-				arrays[i].append(first[i]);
-			}	
-		}
-		
-				
-		// read Body
-        //int count=0;
-		while(!cfmlStr.isAfterLast()) {
-            readLine(cfmlStr,delimiter,textQualifier,arrays);
-			cfmlStr.removeSpace();
-		}
-		
-		cfmlStr.removeSpace();
-		
-		return new QueryImpl(headers,arrays,"query");
-		
-	}
-	
-	
-	
-	
-	/**
-	 * @param cfmlStr
-	 * @param delimiter
-	 * @param textQualifier
-	 * @return read the first Line of the CVS
-	 * @throws CSVParserException
-	 */
-	private String[] readFirstLine(CFMLString cfmlStr, char delimiter, char textQualifier) throws CSVParserException {
-		ArrayList list=new ArrayList();
-		
-		do {
-			String value=readValue(cfmlStr,delimiter,textQualifier);
-			list.add(value);
-			if(delimiter!=' ')cfmlStr.removeSpace();
-			if(!cfmlStr.isAfterLast() && cfmlStr.getCurrent()==delimiter) {
-                cfmlStr.next();
-                if(cfmlStr.getCurrent()=='\n')break;
+public class CSVParser {
+
+
+    public static Query toQuery( String csv, char delimiter, char textQualifier, String[] headers, boolean firstRowIsHeaders ) throws CSVParserException, PageException {
+
+        List<List<String>> allRows = parseLines( csv, delimiter, textQualifier, '\\', null );
+
+        int numRows = allRows.size();
+
+        if ( numRows == 0 )
+            throw new CSVParserException( "No data found in CSV string" );
+
+        List<String> row = allRows.get( 0 );
+        int numCols = row.size();
+        int curRow = 0;
+
+        if ( firstRowIsHeaders ) {  // set first line to header
+
+            curRow++;
+
+            if ( headers == null )
+                headers = makeUnique( row.toArray( new String[ numCols ] ) );
+        }
+
+        if( headers == null ) {
+
+            headers = new String[ numCols ];
+
+            for ( int i=0; i < numCols; i++ )
+                headers[ i ] = "COLUMN_" + ( i + 1 );
+        }
+
+        Array[] arrays = new Array[ numCols ];  // create column Arrays
+        for( int i=0; i < numCols; i++ )
+            arrays[ i ] = new ArrayImpl();
+
+        while ( curRow < numRows ) {
+
+            row = allRows.get( curRow++ );
+
+            if ( row.size() != numCols )
+                throw new CSVParserException( "Invalid CSV line size, expected " + numCols + " columns but found " + row.size() + " instead", row.toString() );
+
+            for ( int i=0; i < numCols; i++ ) {
+                arrays[ i ].append( row.get( i ) );
             }
-			else break;
-		}
-		while(!cfmlStr.isAfterLast());
-		
-		return (String[])list.toArray(new String[list.size()]);
-	}	
+        }
 
-	/**
-	 * read a Line of the CVS File
-	 * @param cfmlStr
-	 * @param delimiter
-	 * @param textQualifier
-	 * @param arrays
-	 * @throws CSVParserException
-	 * @throws PageException
-	 */
-	private void readLine(CFMLString cfmlStr, char delimiter, char textQualifier, Array[] arrays) throws CSVParserException, PageException {
-        //print.ln("-----------------");
-        //String[] arr=new String[len];
-		int index=0;
-		do {
-			if(index>=arrays.length)throw new CSVParserException("invalid column count ("+index+"), only "+arrays.length+" columns are allowed");
-            
-            String value = readValue(cfmlStr,delimiter,textQualifier);
-            //print.ln("["+value+"]"+delimiter+":"+textQualifier);
-            arrays[index++].append(value);
-			//arr[index++]=readValue(cfmlStr,delimiter,textQualifier);
-			if(delimiter!=' ')cfmlStr.removeSpace();
-			if(!cfmlStr.isAfterLast() && cfmlStr.getCurrent()==delimiter) {
-                cfmlStr.next();
-                if(cfmlStr.getCurrent()=='\n' || cfmlStr.getCurrent()=='\r')break;
-                //if(cfmlStr.getCurrent()=='\n')break;
+        return new QueryImpl( headers, arrays, "query" );
+    }
+
+    
+    public static List<List<String>> parseLines( String csv, char colDelim, char quote, char escape, String lineComment ) {
+
+        List lines = new ArrayList();
+
+        if ( StringUtil.isEmpty( csv ) )
+            return lines;
+
+        csv = csv.trim();
+
+        boolean inQuotes = false;
+        int pos = 0, lineStart = 0, len = csv.length();
+        char last = 0, c;
+
+        while ( pos < len ) {
+
+            c = csv.charAt( pos );
+
+            if ( c == quote ) {
+                if ( last == quote || last != escape )  // two consecutive quotes or not escaped
+                    inQuotes = !inQuotes;
             }
-			else break;
-			
-		}
-		while(!cfmlStr.isAfterLast());
-		
-		if(arrays.length!=index)
-			throw new CSVParserException("invalid column count, at least "+arrays.length+" columns must be defined");
-	}
+
+            if ( !inQuotes ) {
+
+                if ( c == '\n' ) {
+
+                    addLine( lines, csv.substring( lineStart, pos ), colDelim, quote, escape, lineComment );
+                    lineStart = pos + 1;
+                }
+            }
+
+            last = c;
+            pos++;
+        }
+
+        if ( pos > lineStart )
+            addLine( lines, csv.substring( lineStart, pos ), colDelim, quote, escape, lineComment );
+
+        return lines;
+    }
 
 
+    private static void addLine( List<List<String>> lines, String line, char colDelim, char quote, char escape, String lineComment ) {
+
+        line = line.trim();
+
+        if ( line.isEmpty() )
+            return;
+
+        if ( !StringUtil.isEmpty( lineComment ) && line.startsWith( lineComment ) )
+            return;
+
+        List<String> tokens = new ArrayList();
+
+        boolean inQuotes = false;
+        int p = 0, tokenStart = 0, l = line.length();
+        char last = 0, c;
+        String token;
+
+        while ( p < l ) {
+
+            c = line.charAt( p );
+
+            if ( c == quote ) {
+                if ( last == quote || last != escape )  // two consecutive quotes or not escaped
+                    inQuotes = !inQuotes;
+            }
+
+            if ( !inQuotes ) {
+
+                if ( c == colDelim ) {
+
+                    token = line.substring( tokenStart, p ).trim();
+                    addToken( tokens, token, quote );
+
+                    tokenStart = p + 1;
+                }
+            }
+
+            last = c;
+            p++;
+        }
+
+        if ( p > tokenStart ) {
+
+            token = line.substring( tokenStart, p ).trim();
+            addToken( tokens, token, quote );
+        } else if ( line.charAt( l - 1 ) == colDelim ) {
+
+            addToken( tokens, "", quote );
+        }
+
+        lines.add( tokens );
+    }
 
 
-	/**
-	 * Reads a Single value from a CSV File
-	 * @param cfmlStr CFML String containig csv
-	 * @param delimiter delimiter splits values
-	 * @param textQualifier text qualifier of the value
-	 * @return parsed value
-	 * @throws CSVParserException
-	 */
-	private String readValue(CFMLString cfmlStr,char delimiter,char textQualifier) throws CSVParserException {
-		StringBuffer sb=new StringBuffer();
-		cfmlStr.removeSpace();
-		// Quoted String
-		if(cfmlStr.forwardIfCurrent(textQualifier)) {
-			while(true) {
-				if(cfmlStr.isAfterLast())
-					throw new CSVParserException("invalid CSV File, missing end Qualifier ["+textQualifier+"]");
-				
-				if(cfmlStr.isCurrent(textQualifier)) {
-					cfmlStr.next();
-					if(cfmlStr.isCurrent(textQualifier)) {
-						sb.append(textQualifier);
-					}
-					else {
-						break;
-					}
-				}
-				else sb.append(cfmlStr.getCurrent());
-				cfmlStr.next();
-			}
-			return sb.toString();
-		}
-		// Pure String	
-		while(!cfmlStr.isAfterLast()) {
-			if(cfmlStr.isCurrent(delimiter) || cfmlStr.getCurrent()=='\n') {
-				break;
-			}
-			sb.append(cfmlStr.getCurrent());
-			cfmlStr.next();
-		}
-		return sb.toString().trim();
+    private static void addToken( List<String> tokens, String token, char quote ) {
 
-	}
+        token = token.trim();
 
-/*
-	public static void main(String[] args) throws Exception {
-		Query query=new CSVParser().parse("aaa , \"abc\" , \"bcd\" ,aac\n11,22,33,4\n\"bcd\",1,2,3",',','"',null,false);
-		print.ln(query.toString());
-		
-		//query=new CSVParser().parse("aaa , \"a\"\"b,c\" , \"bcd\" ,c\n11,22,33,4\n\"bcd\",1,2,3",',','"',new String[]{"aaa","bbb","ccc","ddd"});
-		//print.ln(query.toString());
-	}
-	*/
+        if ( token.length() > 2 && token.charAt( 0 ) == quote && token.charAt( token.length() - 1 ) == quote )
+            token = token.substring( 1, token.length() - 1 );
+
+        tokens.add( token );
+    }
+
+
+    private static String[] makeUnique( String[] headers ) {
+
+        int c = 1;
+        Set set = new TreeSet( String.CASE_INSENSITIVE_ORDER );
+        String header, orig;
+
+        for (int i=0; i<headers.length; i++) {
+
+            orig = header = headers[ i ];
+
+            while ( set.contains( header ) )
+                header = orig + "_" + ++c;
+
+            set.add( header );
+
+            if ( header != orig )       // ref comparison for performance
+                headers[ i ] = header;
+        }
+
+        return headers;
+    }
+
 }
