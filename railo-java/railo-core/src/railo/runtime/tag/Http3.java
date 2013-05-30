@@ -740,7 +740,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 		        catch (IOException e1) {}
 		        
 		        if(name!=null) {
-		        	Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
+                    Query qry = CSVParser.toQuery( str, delimiter, textqualifier, columns, firstrowasheaders  );
                     pageContext.setVariable(name,qry);
 		        }
 		    }
