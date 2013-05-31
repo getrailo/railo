@@ -15,6 +15,10 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ModernApplicationContext;
+import railo.runtime.op.Caster;
+import railo.runtime.type.util.KeyConstants;
 
 public class Util {
 	
@@ -194,4 +198,33 @@ public class Util {
 		if(ConfigImpl.CACHE_DEFAULT_FUNCTION==type) return "function";
 		return defaultValue;
 	}
+
+
+    /**
+     * returns true if the webAdminPassword matches the passed password if one is passed, or a password defined
+     * in Application.cfc as this.webAdminPassword if null or empty-string is passed for password
+     *
+     * @param pc
+     * @param password
+     * @return
+     * @throws railo.runtime.exp.SecurityException
+     */
+    static String getPassword( PageContext pc, String password ) throws railo.runtime.exp.SecurityException {   // TODO: move this to a utility class in a more generic package?
+
+        password = ( password == null ) ? "" : password.trim();
+
+        if ( password.isEmpty() ) {
+
+            ApplicationContext appContext = pc.getApplicationContext();
+
+            if ( appContext instanceof ModernApplicationContext)
+                password = Caster.toString( ( (ModernApplicationContext)appContext ).getCustom( KeyConstants._webAdminPassword ), "" );
+        }
+
+        if ( password.isEmpty() )
+            throw new railo.runtime.exp.SecurityException( "A Web Admin Password is required to manipulate Cache connections. " +
+                    "You can either pass the password as an argument to this function, or set it in Application.cfc with the variable [this.webAdminPassword]." );
+
+        return password;
+    }
 }

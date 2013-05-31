@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.scope.ArgumentIntKey;
 
 public class KeyConstants {
 	public static final Key _A=KeyImpl._const("A");
@@ -698,7 +699,7 @@ public class KeyConstants {
 	public static final Key _remote_addr = KeyImpl._const("remote_addr");
 	public static final Key _remote_host = KeyImpl._const("remote_host");
 	public static final Key _request_method = KeyImpl._const("request_method");
-	public static final Key _request_url = KeyImpl._const("request_url");
+    public static final Key _request_url = KeyImpl._const("request_url");
 	public static final Key _REDIRECT_URL = KeyImpl._const("REDIRECT_URL");
 	public static final Key _request_uri = KeyImpl._const("request_uri");
 	public static final Key _REDIRECT_QUERY_STRING = KeyImpl._const("REDIRECT_QUERY_STRING");
@@ -836,6 +837,8 @@ public class KeyConstants {
 	public static final Key _alter = KeyImpl._const("alter");
 	public static final Key _database = KeyImpl._const("database");
 	public static final Key _exception = KeyImpl._const("exception");
+	public static final Key _webAdminPassword = KeyImpl._const("webAdminPassword");
+
 	public static final Key _parsebody = KeyImpl._const("parsebody");
 	
 	private static HashSet<String> _____keys;
