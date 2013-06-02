@@ -41,13 +41,13 @@
 	<jar version="" path="flex-messaging-remoting.jar" comment=""/>
 	<jar version="" path="fonts.jar" comment=""/>
 	<jar version="" path="fusiondebug-api-server.jar" comment=""/>
-	<jar version="1.3.170" path="h2.jar" comment=""/>
+	<jar version="1.3.172" path="h2.jar" comment=""/>
 	<jar version="3.5.5" path="hibernate.jar" comment=""/>
-	<jar version="" path="hypersonic-hsqldb.jar" comment=""/>
-	<jar version="" path="icepdf-core.jar" comment=""/>
+	<jar version="1.8.0" path="hypersonic-hsqldb.jar" comment=""/>
+	<jar version="3.1.0_3" path="icepdf-core.jar" comment=""/>
 	<jar version="1.16.1" path="jacob.jar" comment=""/>
 	<jar version="1.0.8" path="javaparser.jar" comment=""/>
-	<jar version="" path="javassist.jar" comment=""/>
+	<jar version="3.9.0.GA" path="javassist.jar" comment=""/>
 	<jar version="" path="javax.servlet.jar" comment=""/>
 	<jar version="" path="jcommon.jar" comment=""/>
 	<jar version="" path="jencrypt.jar" comment=""/>
