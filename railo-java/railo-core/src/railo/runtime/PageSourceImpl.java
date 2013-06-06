@@ -854,7 +854,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
 	public static Page loadPage(PageContext pc,PageSource[] arr,Page defaultValue) throws PageException {
 		if(ArrayUtil.isEmpty(arr)) return null;
-		Page p;print.e(arr);
+		Page p;
 		for(int i=0;i<arr.length;i++) {
 			p=arr[i].loadPage(pc,(Page)null);
 			if(p!=null) return p;
