@@ -1994,8 +1994,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private void doUpdateMapping() throws PageException {
-    	print.e("inspect:"+getString("inspect",""));
-        admin.updateMapping(
+    	admin.updateMapping(
                 getString("admin",action,"virtual"),
                 getString("admin",action,"physical"),
                 getString("admin",action,"archive"),
