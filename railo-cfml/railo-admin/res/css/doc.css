@@ -13,8 +13,6 @@ header { height: 120px; margin-bottom: 1em; border-bottom: 1px solid #CCC; }
 
 footer { min-height: 60px; }
 
-input, select, textarea { border-radius: 5px; }
-
 header { background-image: url(../img/bg-header.png.cfm); }
 header nav { position: absolute; bottom: 0; left: 0.5em; font-size: 1.25em; }
 header nav a, header nav a:visited { display: inline-block; margin: 0.25em; padding: 0.1em 0.35em; text-decoration: none; border: 1px solid transparent; border-radius: 5px; color: #FFF; }
@@ -32,6 +30,8 @@ header nav a:hover, header nav a:active { background-color: #FFF; color: #F60; b
 #wrapper { width: 960px; margin: 0 auto; border-left: 1px solid #CCC; border-right: 1px solid #CCC; }
 
 #content { padding: 1em; }
+
+#search-item { height: 30px; }
 
 .x-large { font-size: 1.5em; }
 .x-small { font-size: 0.75em; }

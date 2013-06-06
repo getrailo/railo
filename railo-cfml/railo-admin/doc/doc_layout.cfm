@@ -23,7 +23,8 @@
 		<title>#Attributes.title#</title>
 		<meta name="description" value="#Attributes.description#">
 
-		<link rel="stylesheet" href="../res/css/normalize2.min.css.cfm">
+		<link rel="stylesheet" href="../res/css/bootstrap2.min.css.cfm">
+		<link rel="stylesheet" href="../res/css/bootstrap2-responsive.min.css.cfm">
 		<link rel="stylesheet" href="../res/css/doc.css.cfm">
 
 		<cfif Request.keyExists( "htmlHead" )>
@@ -70,6 +71,7 @@
 	</cfoutput>
 
 		<script src="../res/js/jquery-1.9.min.js.cfm"></script>
+		<script src="../res/js/bootstrap2.min.js.cfm"></script>
 
 		<script type="text/javascript">
 
