@@ -57,15 +57,14 @@ public class RunAsJavaApplication {
         if(adminContextDir==null) webContextDir=appDir;
         servlet.setInitParameter("railo-server-directory",adminContextDir);
         servlet.setInitParameter("railo-web-directory",webContextDir);
-                
+          
+        /**
+         * Add for remote flash support
+         */
         //servlet = servlets.addServlet("openamf","/flashservices/gateway/*,/openamf/gateway/*","servlet.AMFServlet");
-        servlet = servlets.addServlet("openamf","/openamf/gateway/*","railo.loader.servlet.AMFServlet");
-        
-        servlets.addServlet("AxisServlet","*.jws","org.apache.axis.transport.http.AxisServlet");
-        //servlets.addServlet("AxisServlet","*.jws","AxisServlet");
-
-        servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
-        servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
+        //servlet = servlets.addServlet("openamf","/openamf/gateway/*","railo.loader.servlet.AMFServlet");
+        //servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
+        //servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
         
         appDir+=path;
            context.setResourceBase(appDir);
