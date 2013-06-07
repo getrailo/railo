@@ -1040,23 +1040,32 @@ public abstract class ConfigImpl implements Config {
     // map resource to root mapping when same filesystem
         Mapping rootMapping = this.mappings[this.mappings.length-1];
         Resource root;
-     // Physical
-        if(rootMapping.hasPhysical()) {
-	        root=rootMapping.getPhysical();
-	        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
-	        	String realpath="";
-	        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
-	        		root=root.getParentResource();
-	        		realpath+="../";
-	        	}
-	        	String p2c=ResourceUtil.getPathToChild(res,root);
-	        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
-	        		p2c=p2c.substring(1);
-	        	realpath+=p2c;
-	        	
-	        	return rootMapping.getPageSource(realpath);
-	        }
+        if(rootMapping.hasPhysical() && 
+        		res.getResourceProvider().getScheme().equals((root=rootMapping.getPhysical()).getResourceProvider().getScheme())) {
+	        
+        	String realpath="";
+        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
+        		root=root.getParentResource();
+        		realpath+="../";
+        	}
+        	String p2c=ResourceUtil.getPathToChild(res,root);
+        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
+        		p2c=p2c.substring(1);
+        	realpath+=p2c;
+        	
+        	return rootMapping.getPageSource(realpath);
+	        
         }
+        // MUST better impl than this
+        if(this instanceof ConfigWebImpl) {
+        	Resource parent = res.getParentResource();
+        	if(parent!=null && !parent.equals(res)) {
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath());
+        		return m.getPageSource(res.getName());
+        	}
+        }
+        
+		
      // Archive
         // MUST check archive
         return defaultValue;
