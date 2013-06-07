@@ -51,25 +51,25 @@ public class RunAsJavaApplication {
         		"railo.debug.loader.servlet.CFMLServlet");
         
         servlet.setInitOrder(0);
-        
+
+        //servlet = servlets.addServlet("RESTServlet", "/rest/*", "railo.debug.loader.servlet.RESTServlet");
+
         //servlet = servlets.addServlet("FileServlet","/","servlet.FileServlet");
         
         if(adminContextDir==null) webContextDir=appDir;
         servlet.setInitParameter("railo-server-directory",adminContextDir);
         servlet.setInitParameter("railo-web-directory",webContextDir);
           
-        /**
-         * Add for remote flash support
-         */
-        //servlet = servlets.addServlet("openamf","/flashservices/gateway/*,/openamf/gateway/*","servlet.AMFServlet");
-        //servlet = servlets.addServlet("openamf","/openamf/gateway/*","railo.loader.servlet.AMFServlet");
-        //servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
-        //servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
+        /* Uncomment to add remote flash support; toggle block comment by adding/removing a '/' at the beginning of this line
+        servlet = servlets.addServlet("openamf","/flashservices/gateway/*,/openamf/gateway/*","servlet.AMFServlet");
+        servlet = servlets.addServlet("openamf","/openamf/gateway/*","railo.loader.servlet.AMFServlet");
+        servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
+        servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
+        //*/
         
         appDir+=path;
-           context.setResourceBase(appDir);
-           context.addHandler(new ResourceHandler());
-           
+        context.setResourceBase(appDir);
+        context.addHandler(new ResourceHandler());
     }
     
     public static void addWebXmlContext(HttpServer server, String strContext,String host,String path, String appDir,String webContextDir, String adminContextDir) {
@@ -89,7 +89,6 @@ public class RunAsJavaApplication {
     }
   /**
  * @param args
- * @throws Exception 
  * @throws Exception
  */ 
 public static void main (String[] args) throws Exception {
