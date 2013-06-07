@@ -39,7 +39,6 @@ public class RunAsJavaApplication {
 
         // Create a servlet container
         ServletHandler servlets = new ServletHandler();
-
         context.addHandler(servlets);
 
         // Map a servlet onto the container
@@ -50,7 +49,8 @@ public class RunAsJavaApplication {
         servlet.setInitParameter("railo-server-directory", adminContextDir);
         servlet.setInitParameter("railo-web-directory", webContextDir);
 
-        servlet = servlets.addServlet("RESTServlet", "/rest/*", "railo.debug.loader.servlet.RESTServlet");
+        // Uncomment line below to debug Railo REST Servlet
+        //servlet = servlets.addServlet("RESTServlet", "/rest/*", "railo.debug.loader.servlet.RESTServlet");
 
         //servlet = servlets.addServlet("FileServlet","/","servlet.FileServlet");
 
