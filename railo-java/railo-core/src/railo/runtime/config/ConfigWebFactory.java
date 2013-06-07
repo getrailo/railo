@@ -133,6 +133,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.Undefined;
@@ -4516,16 +4517,17 @@ public final class ConfigWebFactory {
 		}
 
 		// Req Timeout
-		String reqTimeoutApplication = application.getAttribute("requesttimeout");
-		String reqTimeoutScope = scope.getAttribute("requesttimeout"); // deprecated
-		if (hasAccess && !StringUtil.isEmpty(reqTimeoutApplication)) {
-			config.setRequestTimeout(reqTimeoutApplication);
+		TimeSpan ts=null;
+		if(hasAccess) {
+			String reqTimeoutApplication = application.getAttribute("requesttimeout");
+			String reqTimeoutScope = scope.getAttribute("requesttimeout"); // deprecated
+			
+			if (!StringUtil.isEmpty(reqTimeoutApplication)) ts=Caster.toTimespan(reqTimeoutApplication);
+			if (ts==null && !StringUtil.isEmpty(reqTimeoutScope))  ts=Caster.toTimespan(reqTimeoutScope);
 		}
-		else if (hasAccess && !StringUtil.isEmpty(reqTimeoutScope)) {
-			config.setRequestTimeout(reqTimeoutScope);
-		}
-		else if (hasCS)
-			config.setRequestTimeout(configServer.getRequestTimeout());
+		
+		if (ts!=null && ts.getMillis()>0) config.setRequestTimeout(ts);
+		else if (hasCS) config.setRequestTimeout(configServer.getRequestTimeout());
 
 		// Req Timeout Log
 		String strReqTimeLog = application.getAttribute("requesttimeout-log");

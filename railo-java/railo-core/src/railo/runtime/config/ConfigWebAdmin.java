@@ -1927,8 +1927,9 @@ public final class ConfigWebAdmin {
      * updates request timeout value
      * @param span
      * @throws SecurityException
+     * @throws ApplicationException 
      */
-    public void updateRequestTimeout(TimeSpan span) throws SecurityException {
+    public void updateRequestTimeout(TimeSpan span) throws SecurityException, ApplicationException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -1938,7 +1939,9 @@ public final class ConfigWebAdmin {
         
         Element application=_getRootElement("application");
         if(span!=null){
-        application.setAttribute("requesttimeout",span.getDay()+","+span.getHour()+","+span.getMinute()+","+span.getSecond());
+        	if(span.getMillis()<=0)
+        		throw new ApplicationException("value must be a positive number");
+        	application.setAttribute("requesttimeout",span.getDay()+","+span.getHour()+","+span.getMinute()+","+span.getSecond());
         }
         else application.removeAttribute("requesttimeout");
         
