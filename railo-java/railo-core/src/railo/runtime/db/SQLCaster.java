@@ -11,7 +11,9 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.TimeZone;
 
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
@@ -110,7 +112,7 @@ public final class SQLCaster {
 		}
     }
     
-    public static void setValue(PreparedStatement stat, int parameterIndex, SQLItem item) throws PageException, SQLException, DatabaseException {
+    public static void setValue(TimeZone tz,PreparedStatement stat, int parameterIndex, SQLItem item) throws PageException, SQLException, DatabaseException {
         Object value=item.getValue();
     	if(item.isNulls() || value==null) {
             stat.setNull(parameterIndex,item.getType()); 
@@ -256,7 +258,12 @@ public final class SQLCaster {
     	return;
     	case Types.DATE:			
     		try {
-    			stat.setDate(parameterIndex,new Date((Caster.toDate(value,null).getTime())));
+    			stat.setDate(
+    					parameterIndex,
+    					new Date(Caster.toDate(value,tz).getTime()),
+    					TimeZoneUtil.getCalendar(tz));
+    			
+    			//stat.setDate(parameterIndex,new Date((Caster.toDate(value,null).getTime())));
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))
@@ -265,8 +272,12 @@ public final class SQLCaster {
     	return;
     	case Types.TIME:	
     		try {
-    			stat.setObject(parameterIndex, new Time((Caster.toDate(value,null).getTime())), type);
-    			////stat.setTime(parameterIndex,new Time(Caster.toDate(value,null).getTime()));
+    			
+    			//stat.setObject(parameterIndex, new Time((Caster.toDate(value,null).getTime())), type);
+    			stat.setTime(
+    					parameterIndex,
+    					new Time(Caster.toDate(value,tz).getTime()),
+    					TimeZoneUtil.getCalendar(tz));
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))
@@ -275,8 +286,12 @@ public final class SQLCaster {
     	return;
     	case Types.TIMESTAMP:
     		try {
-    			stat.setObject(parameterIndex, new Timestamp((Caster.toDate(value,null).getTime())), type);
-    			////stat.setTimestamp(parameterIndex,new Timestamp(Caster.toDate(value,null).getTime()));
+    			//stat.setObject(parameterIndex, new Timestamp((Caster.toDate(value,null).getTime())), type);
+    			//stat.setObject(parameterIndex, value, type);
+    			stat.setTimestamp(
+    					parameterIndex,
+    					new Timestamp(Caster.toDate(value,tz).getTime()),
+    					TimeZoneUtil.getCalendar(tz));
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))
@@ -449,7 +464,7 @@ public final class SQLCaster {
 				return ((java.sql.Array)value).getArray();
 			}
 			else if(value instanceof ResultSet) {
-				return new QueryImpl((ResultSet)value,"query");
+				return new QueryImpl((ResultSet)value,"query",null);
 			}
 			else
 				return value;

@@ -412,7 +412,7 @@ public class aprint {
     
     private static void _(PrintStream ps,ResultSet res) {
     	try {
-			_(ps, new QueryImpl(res,"query").toString());
+			_(ps, new QueryImpl(res,"query",null).toString());
 		} catch (PageException e) {
 			_(ps, res.toString());
 		}

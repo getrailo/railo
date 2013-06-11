@@ -464,7 +464,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					return EVAL_PAGE;
 				}
 			}
-			else query=executeDatasoure(sql,result!=null);
+			else query=executeDatasoure(sql,result!=null,pageContext.getTimeZone());
 			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
 			
 			if(cachedWithin!=null) {
@@ -610,13 +610,13 @@ cachename: Name of the cache in secondary cache.
 		} 
 	}
 	
-	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
+	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData,TimeZone tz) throws PageException {
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		
 		try {
 			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
-				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
+				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),tz);
 			
 			
 			return new QueryImpl(pageContext,dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData,true);
