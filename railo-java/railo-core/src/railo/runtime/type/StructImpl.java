@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.lang.SerializableObject;
 import railo.commons.util.mod.ConcurrentHashMapPro;
 import railo.commons.util.mod.LinkedHashMapPro;
 import railo.commons.util.mod.MapFactory;
@@ -52,7 +53,7 @@ public class StructImpl extends StructSupport {
     	*/
     	if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>());
     	else if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>());
-    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new Object()));
+    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new SerializableObject()));
         //else if(type==TYPE_SYNC)	map=new ConcurrentHashMapPro<Collection.Key,Object>);
         else 						map=MapFactory.getConcurrentMap();//new ConcurrentHashMapPro<Collection.Key,Object>();
     }

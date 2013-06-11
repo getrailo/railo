@@ -1,5 +1,6 @@
 package railo.commons.util.mod;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import java.util.Set;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 
-public class MapProWrapper<K, V> implements MapPro<K, V> {
+public class MapProWrapper<K, V> implements MapPro<K, V>,Serializable {
 
 	private final V NULL;
 	private Map<K, V> map;
