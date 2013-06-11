@@ -43,4 +43,4 @@ Once the build has finished you will find the files in the railo-build/build dir
 
 Notes
 -----
-This is currently a work in progress so it probably might not work at all. 
+This is currently a work in progress, so if you encounter any issues, please let us know!
