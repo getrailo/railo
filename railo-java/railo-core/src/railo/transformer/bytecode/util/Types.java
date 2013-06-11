@@ -145,7 +145,6 @@ public final class Types {
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);
     public final static Type QUERY_COLUMN=Type.getType(railo.runtime.type.QueryColumn.class);
-    //public final static Type QUERY_IMPL=Type.getType(railo.runtime.type.QueryImpl.class);
     
     public final static Type PAGE_EXCEPTION=Type.getType(PageException.class);
 
