@@ -274,7 +274,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         	if(closeConn)response.setHeader("connection", "close");
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
-            if(barr.length<=150) allowCompression=false;
+            if(barr.length<=512) allowCompression=false;
             
             out = getOutputStream();
 	        

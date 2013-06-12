@@ -18,6 +18,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.mimetype.MimeType;
+import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -156,8 +157,7 @@ public final class Content extends BodyTagImpl {
         	rsp.setContentType(type);
         	
         	// TODO more dynamic implementation, configuration in admin?
-        	MimeType mt = MimeType.getInstance(type);
-        	if(mt.match(MimeType.IMAGE_GIF) || mt.match(MimeType.IMAGE_JPG) || mt.match(MimeType.IMAGE_PNG)) {
+        	if(!HTTPUtil.isTextMimeType(type)) {
         		((PageContextImpl)pageContext).getRootOut().setAllowCompression(false);
         	}
         }
