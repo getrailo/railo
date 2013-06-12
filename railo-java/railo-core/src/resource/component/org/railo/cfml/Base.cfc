@@ -271,8 +271,8 @@
 		<cfargument name="methodArguments" type="Array">
 		
 		<cfscript>
-			var attrName = Right(methodname, Len(methodname)-3);
-			var methodType = Left(methodname, 3);
+			var attrName = Right(arguments.methodname, Len(arguments.methodname)-3);
+			var methodType = Left(arguments.methodname, 3);
 			var tagname = getTagName();
 			var supportedTagAttributes = getSupportedTagAttributes().attributes;
 			var tagAttributes = getAttributes();
@@ -299,7 +299,7 @@
 			}
 			
 			if(methodType EQ "set" && (StructKeyExists(supportedTagAttributes, attrName) || ListFindNoCase(lAllowedExtra, attrName))){
-				variables.attributes[attrName] = methodArguments[1];
+				variables.attributes[attrName] = arguments.methodArguments[1];
 				return this;
 			}
 			
