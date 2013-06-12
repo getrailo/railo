@@ -126,7 +126,7 @@ component {
 		
 		if (arguments.attrib.output EQ "browser") {
 
-			echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #attrib.format# -->' & variables.NEWLINE);
+			echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #arguments.attrib.format# -->' & variables.NEWLINE);
 			echo('<div id="#dumpID#" class="-railo-dump">#result#</div>' & variables.NEWLINE);
 			echo('<!-- ==stop== dump -->' & variables.NEWLINE);
 		}
