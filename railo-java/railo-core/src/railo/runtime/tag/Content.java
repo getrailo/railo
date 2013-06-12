@@ -17,6 +17,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -150,7 +151,16 @@ public final class Content extends BodyTagImpl {
             throw new ApplicationException("content is already flushed","you can't rewrite head of response after part of the page is flushed");
         
         // set type
-        setContentType(rsp);
+        if(!StringUtil.isEmpty(type,true)) {
+        	type=type.trim();
+        	rsp.setContentType(type);
+        	
+        	// TODO more dynamic implementation, configuration in admin?
+        	MimeType mt = MimeType.getInstance(type);
+        	if(mt.match(MimeType.IMAGE_GIF) || mt.match(MimeType.IMAGE_JPG) || mt.match(MimeType.IMAGE_PNG)) {
+        		((PageContextImpl)pageContext).getRootOut().setAllowCompression(false);
+        	}
+        }
         
         Range[] ranges=getRanges();
         boolean hasRanges=ranges!=null && ranges.length>0;
@@ -240,17 +250,6 @@ public final class Content extends BodyTagImpl {
     @Override
 	public int doEndTag()	{
 		return strFile == null ? EVAL_PAGE : SKIP_PAGE;
-	}
-
-	
-	/**
-	 * set the content type of the side
-	 * @param rsp HTTP Servlet Response object
-	 */
-	private void setContentType(HttpServletResponse rsp) {
-        if(!StringUtil.isEmpty(type)) {
-        	rsp.setContentType(type);
-        }
 	}
 
     /**
