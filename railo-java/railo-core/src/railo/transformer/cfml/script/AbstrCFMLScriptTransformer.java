@@ -1452,7 +1452,6 @@ int pos=data.cfml.getPos();
 					return null;
 				}
 			}
-			print.e(attrValue);
 		}
 		
 		if(attrValue!=null){
