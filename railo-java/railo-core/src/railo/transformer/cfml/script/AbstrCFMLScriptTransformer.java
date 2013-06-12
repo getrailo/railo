@@ -1444,8 +1444,15 @@ int pos=data.cfml.getPos();
 		short attrType=ATTR_TYPE_NONE;
 		if(attr!=null){
 			attrType = attr.getScriptSupport();
-			if(ATTR_TYPE_REQUIRED==attrType || (!data.cfml.isCurrent(';') && ATTR_TYPE_OPTIONAL==attrType))
+			char c = data.cfml.getCurrent();
+			if(ATTR_TYPE_REQUIRED==attrType || (!data.cfml.isCurrent(';') && ATTR_TYPE_OPTIONAL==attrType)) {
 				attrValue =attributeValue(data, tlt.getScript().getRtexpr());
+				if(attrValue!=null && isOperator(c)) {
+					data.cfml.setPos(pos);
+					return null;
+				}
+			}
+			print.e(attrValue);
 		}
 		
 		if(attrValue!=null){
@@ -1465,6 +1472,10 @@ int pos=data.cfml.getPos();
 		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
 		return tag;
+	}
+
+	private boolean isOperator(char c) {
+		return c=='=' || c=='+' || c=='-';
 	}
 
 	/*protected Statement __singleAttrStatement(Body parent, Data data, String tagName,String attrName,int attrType, boolean allowExpression, boolean allowTwiceAttr) throws TemplateException {
