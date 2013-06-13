@@ -2995,6 +2995,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(ds==null) ds=getConfig().getDataSource(datasource);
 		return ds;
 	}
+		
+// FUTURE add to PageContext
+	public DataSource getDataSource(String datasource, DataSource defaultValue) {
+		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		if(ds==null) ds=getConfig().getDataSource(datasource,defaultValue);
+		return ds;
+	}
 
 	public void setActiveQuery(ActiveQuery activeQuery) {
 		this.activeQueries.add(activeQuery);
