@@ -271,8 +271,8 @@
 		<cfargument name="methodArguments" type="Array">
 		
 		<cfscript>
-			var attrName = Right(methodname, Len(methodname)-3);
-			var methodType = Left(methodname, 3);
+			var attrName = mid( arguments.methodname, 4 );
+			var methodType = left( arguments.methodname, 3 );
 			var tagname = getTagName();
 			var supportedTagAttributes = getSupportedTagAttributes().attributes;
 			var tagAttributes = getAttributes();
@@ -285,8 +285,7 @@
 					break;
 				case "query":
 					lAllowedExtra = "sql";	
-					break;
-			
+					break;			
 			}
 
 			if(methodType EQ "get" && (StructKeyExists(supportedTagAttributes, attrName) || ListFindNoCase(lAllowedExtra, attrName))){
@@ -299,14 +298,12 @@
 			}
 			
 			if(methodType EQ "set" && (StructKeyExists(supportedTagAttributes, attrName) || ListFindNoCase(lAllowedExtra, attrName))){
-				variables.attributes[attrName] = methodArguments[1];
+				variables.attributes[attrName] = arguments.methodArguments[1];
 				return this;
 			}
 			
-			throw("There is no method with the name #methodName#", "expression");
-	
+			throw("There is no method with the name #arguments.methodName#", "expression");	
 		</cfscript>
-
-	</cffunction>	
+	</cffunction>
 	
 </cfcomponent>
