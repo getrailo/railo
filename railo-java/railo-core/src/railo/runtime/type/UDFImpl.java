@@ -460,7 +460,9 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 				f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
 			} 
 			catch (ExpressionException e) {}
-			func.setTitle(f+udf.getFunctionName());
+			f+=udf.getFunctionName();
+			if(udf instanceof UDFGSProperty) f+=" (generated)";
+			func.setTitle(f);
 		}
 
 		if(udf instanceof UDFImpl)func.setComment("source:"+((UDFImpl)udf).getPageSource().getDisplayPath());
