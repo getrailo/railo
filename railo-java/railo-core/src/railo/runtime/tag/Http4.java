@@ -1546,12 +1546,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static String headerValue(String value) {
 		if(value==null) return null;
 		value=value.trim();
-		int len=value.length();
+		value=value.replace('\n', ' ');
+		value=value.replace('\r', ' ');
+		/*int len=value.length();
 		char c;
 		for(int i=0;i<len;i++){
 			c=value.charAt(i);
 			if(c=='\n' || c=='\r') return value.substring(0,i);
-		}
+		}*/
 		return value;
 	}
 
