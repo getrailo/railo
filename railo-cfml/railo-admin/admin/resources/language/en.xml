@@ -42,8 +42,8 @@
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">There is no Certificate available from this host.</data>
 	
-	<data key="mappings.addNoneCFMLFiles">Add None CFML Templates</data>
-	<data key="mappings.addNoneCFMLFilesDesc">Add all None CFML Source Templates as well (.js,.css,.gif,.png ...).</data>
+	<data key="mappings.addNonCFMLFiles">Add Non CFML Templates</data>
+	<data key="mappings.addNonCFMLFilesDesc">Add all Non CFML Source Templates as well (.js,.css,.gif,.png ...).</data>
 	<data key="mappings.addCFMLFiles">Add CFML Templates</data>
 	<data key="mappings.addCFMLFilesDesc">Add all CFML Source Templates as well (.cfm,.cfc,.cfml).</data>
 	<data key="mappings.addCFCFiles">Add Component Templates</data>

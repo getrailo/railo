@@ -44,8 +44,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="services.certificate.subject">Subject</data>
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">Der angewählte Host stellt keine Zertifikate zu Verfügung.</data>
-	<data key="mappings.addNoneCFMLFiles">Füge nicht CFML Source Templates hinzu</data>
-	<data key="mappings.addNoneCFMLFilesDesc">Füge alle nicht CFML Templates zu Archiv hinzu (.js,css,gif,png ...).</data>
+	<data key="mappings.addNonCFMLFiles">Füge nicht CFML Source Templates hinzu</data>
+	<data key="mappings.addNonCFMLFilesDesc">Füge alle nicht CFML Templates zu Archiv hinzu (.js,css,gif,png ...).</data>
 	<data key="mappings.addCFMLFiles">Füge CFML Source Templates hinzu</data>
 	<data key="mappings.addCFMLFilesDesc">Füge alle CFML Source Templates hinzu (.cfm,.cfc,.cfml).</data>
 	<data key="mappings.addCFCFiles">Füge Component Source Templates hinzu</data>
