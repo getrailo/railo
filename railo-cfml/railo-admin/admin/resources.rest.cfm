@@ -113,10 +113,10 @@ Error Output --->
 <cfset stText.rest.changes="Allow Change Mappings">
 <cfset stText.rest.changesDesc="Allow to add or remove Mappings in the Application with help of the function restInitApplication/restDeleteApplication.">
 <cfset stText.rest.mapping="Mappings">
-<cfset stText.rest.mappingDesc="Mappings ...">
+<cfset stText.rest.mappingDesc="">
 
 
-<cfset stText.rest.desc="Rest is ...">
+<cfset stText.rest.desc="">
 <cfset stText.rest.VirtualHead="Virtual">
 <cfset stText.rest.PhysicalHead="Physical">
 <cfset stText.rest.DefaultHead="Default">
