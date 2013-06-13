@@ -558,6 +558,12 @@ public final class Operator {
 			if(left==right) return true;
 			return false;
 		}
+	
+		/*ComponentImpl lefti=(ComponentImpl) left;
+		ComponentImpl righti=(ComponentImpl) right;
+		print.e(lefti.getName()+"="+lefti._getName());
+		print.e(righti.getName()+"="+righti._getName());*/
+		
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		if(!checkOnlyPublicAppearance && !__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive,checkOnlyPublicAppearance)) return false;
 		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive,checkOnlyPublicAppearance)) return false;
