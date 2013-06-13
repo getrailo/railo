@@ -59,7 +59,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 	@Override
 	public Component getComponent() {
-		return component;
+		return component.top;
 	}
 
     @Override
