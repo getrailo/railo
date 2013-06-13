@@ -293,7 +293,7 @@ public abstract class AbstrCFMLExprTransformer {
 		try{
 			if (data.cfml.forwardIfCurrent(":")) {
 				comments(data);
-	            return new NamedArgument(expr,assignOp(data),type,varKeyUpperCase);
+				return new NamedArgument(expr,assignOp(data),type,varKeyUpperCase);
 			}
 			else if(expr instanceof DynAssign){
 				DynAssign da=(DynAssign) expr;
@@ -1073,6 +1073,12 @@ public abstract class AbstrCFMLExprTransformer {
 			expr = OpString.toExprString(expr, new LitString(str.toString(),line,data.cfml.getPosition()));
 		}
         comments(data);
+        
+        if(expr instanceof Variable) {
+        	Variable var=(Variable) expr;
+        	var.setFromHash(true);
+        }
+        
 		return expr;
 		
 	}
