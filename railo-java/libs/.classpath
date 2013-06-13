@@ -72,7 +72,6 @@
 	<classpathentry exported="true" kind="lib" path="PDFBox.jar"/>
 	<classpathentry exported="true" kind="lib" path="PDFRenderer.jar"/>
 	<classpathentry exported="true" kind="lib" path="postgresql.jar"/>
-	<classpathentry exported="true" kind="lib" path="railo-sl4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="serializer.jar"/>
 	<classpathentry exported="true" kind="lib" path="slf4j-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="ss_css2.jar"/>
@@ -106,5 +105,6 @@
 	<classpathentry kind="lib" path="apache-commons-httpmime.jar"/>
 	<classpathentry kind="lib" path="xmlbeans.jar"/>
 	<classpathentry kind="lib" path="javasysmon.jar"/>
+	<classpathentry kind="lib" path="slf4j-nop.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
