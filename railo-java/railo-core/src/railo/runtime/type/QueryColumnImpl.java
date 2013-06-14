@@ -761,8 +761,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
 	
-	@Override
+	/*@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
-	}
+	}*/
 }

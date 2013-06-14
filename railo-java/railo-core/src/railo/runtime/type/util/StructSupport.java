@@ -254,8 +254,8 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
 
-	@Override
+    /*@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
-	}
+	}*/
 }
