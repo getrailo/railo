@@ -2,6 +2,9 @@ package railo.runtime.type.util;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Set;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -821,12 +824,12 @@ public class KeyConstants {
 	public static final Key _exception = KeyImpl._const("exception");
 	public static final Key _parsebody = KeyImpl._const("parsebody");
 	
-	private static HashSet<String> _____keys;
+	private static Set<String> _____keys;
 	
 	public static String getFieldName(String key) {
 		if(_____keys==null) {
 			Field[] fields = KeyConstants.class.getFields();
-			_____keys=new HashSet<String>();
+			_____keys=Collections.synchronizedSet(new HashSet<String>());
 			for(int i=0;i<fields.length;i++){
 				if(fields[i].getType()!=Key.class) continue;
 				_____keys.add(fields[i].getName());
