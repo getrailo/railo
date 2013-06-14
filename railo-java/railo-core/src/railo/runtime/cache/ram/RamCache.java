@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.CacheEntry;
@@ -19,7 +20,7 @@ import railo.runtime.type.Struct;
 public class RamCache extends CacheSupport {
 
 	private static final int DEFAULT_CONTROL_INTERVALL = 60;
-	private Map<String, RamCacheEntry> entries= new HashMap<String, RamCacheEntry>();
+	private Map<String, RamCacheEntry> entries= new ConcurrentHashMap<String, RamCacheEntry>();
 	private long missCount;
 	private int hitCount;
 	
