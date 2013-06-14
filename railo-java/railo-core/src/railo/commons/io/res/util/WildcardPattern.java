@@ -37,7 +37,7 @@ public class WildcardPattern {
         this.pattern = pattern;
         this.isInclude = !isExclude;
         
-        StringTokenizer tokenizer = new StringTokenizer( pattern, ",;" );
+        StringTokenizer tokenizer = new StringTokenizer( pattern, ",;|" );
         
         patterns = new ArrayList<ParsedPattern>();
         
