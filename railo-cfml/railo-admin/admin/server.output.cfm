@@ -67,18 +67,10 @@ Defaults --->
 	</cftry>
 </cfif>
 
-<!--- 
-Error Output --->
+<!--- Error Output --->
 <cfset printError(error)>
-
-<cfset stText.setting.suppressContent="Supress Content for CFC Remoting">
-<cfset stText.setting.suppressContentDescription="Suppress content written to response stream when a Component is invoked remotely. Only work when content not was flushed before.">
-<cfset stText.setting.bufferOutput="Buffer Output">
-<cfset stText.setting.bufferOutputDescription="if set to true (default) the output written to the body of the tag is buffered and in case of a exception also outputted.
-			if set to false the content to body is ignored and not disabled when a failure in the body of the tag occur.">
 				
-<!--- 
-Redirtect to entry --->
+<!--- Redirtect to entry --->
 <cfif cgi.request_method EQ "POST" and error.message EQ "">
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 </cfif>
