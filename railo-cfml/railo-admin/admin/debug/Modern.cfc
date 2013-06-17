@@ -55,7 +55,6 @@
 			return cookieValue && ( bitAnd( cookieValue, variables.allSections[ name ] ) );
 		}
 
-
 		private function isEnabled( custom, key ) {
 		
 			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
@@ -221,7 +220,7 @@
 
 					, setCookie: 		function( name, value, expires ) {
 
-						document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" );
+						document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" ) + "; path=/";
 					}
 
 					, removeCookie: 	function( name ) {
@@ -287,7 +286,7 @@
 
 					, setFlag: 		function( name ) {
 
-						var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, 0 ) | __RAILO.debug.allSections[ name ];
+						var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, __RAILO.debug.allSections.ALL ) | __RAILO.debug.allSections[ name ];
 
 						__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
 
