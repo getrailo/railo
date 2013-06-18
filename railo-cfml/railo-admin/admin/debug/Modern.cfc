@@ -773,18 +773,16 @@
 						return;
 
 					obj = __RAILO.util.getDomObject( obj );
-
 					obj.className += " " + cls;
 				}
 
-				, removeClass: 	function( obj, cls ) {
+				, removeClass: 		function( obj, cls ) {
 
 					obj = __RAILO.util.getDomObject( obj );
-
 					obj.className = obj.className.replace( cls, "" );
 				}
 
-				, toggleCssClass: 	function( obj, cls ) {		// returns true if class is there after the operation
+				, toggleClass: 		function( obj, cls ) {		// returns true if class is there after the operation
 
 					obj = __RAILO.util.getDomObject( obj );
 
