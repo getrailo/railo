@@ -303,6 +303,7 @@
 									<cfset loa=0>
 									<cfset tot=0>
 									<cfset q=0>
+									<cfset hasBad = false>
 									<cfloop query="pages">
 										<cfset tot=tot+pages.total>
 										<cfset q=q+pages.query>
@@ -310,6 +311,9 @@
 											<cfcontinue>
 										</cfif>
 										<cfset bad=pages.avg GTE arguments.custom.highlight * 1000>
+										<cfif bad>
+											<cfset hasBad = true>
+										</cfif>
 										<cfset loa=loa+pages.load>
 										<tr class="nowrap #bad ? 'red' : ''#">
 											<td class="txt-r" title="#pages.total - pages.load#">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
@@ -319,13 +323,13 @@
 											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
 										</tr>
 									</cfloop>
-									<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
-
+									<cfif hasBad>									
+										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
+									</cfif>
 								</table>
 							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
-
 
 					<!--- Exceptions --->
 					<cfif structKeyExists( arguments.debugging,"exceptions" ) && arrayLen( arguments.debugging.exceptions )>
@@ -364,7 +368,6 @@
 							</tr>
 						</table>
 					</cfif>
-
 
 					<!--- Implicit variable Access --->
 					<cfif implicitAccess.recordcount>
@@ -406,7 +409,6 @@
 						</table>
 					</cfif>
 
-
 					<!--- Timers --->
 					<cfif timers.recordcount>
 
@@ -441,7 +443,6 @@
 							</tr>
 						</table>
 					</cfif>
-
 
 					<!--- Traces --->
 					<cfif traces.recordcount>
@@ -513,7 +514,6 @@
 						</table>
 
 					</cfif>
-
 
 					<!--- Queries --->
 					<cfif queries.recordcount>
@@ -619,9 +619,7 @@
 								</td>	<!--- id="-railo-debug-#sectionId#" !--->
 							</tr>
 						</table>
-
-					</cfif>
-					
+					</cfif>					
 					
 					<!--- Scopes --->
 					<cfif isEnabled( arguments.custom, "scopes" )>
@@ -697,9 +695,8 @@
 						</table>
 					</cfif>
 				
-				</div>	<!--- div#-railo-debug-ALL !--->
-
-			</fieldset>	<!--- id="-railo-err" !--->
+				</div>	<!--- #-railo-debug-ALL !--->
+			</fieldset>	<!--- #-railo-debug !--->
 		</cfoutput>
 
 		<script>
