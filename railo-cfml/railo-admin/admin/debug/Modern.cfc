@@ -134,230 +134,57 @@
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 		</cfif>
 		
-
-			<style type="text/css">
-		
-				#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; border: 1px solid #CCC; border-radius: 5px; background-color: #FFF; color: #222; }
-				#-railo-debug legend 	{ padding: 0 1em; background-color: #FFF; color: #222; }
-
-				#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; }
-				#-railo-debug.large, #-railo-debug.large td	{ font-size: 10pt; }
-				#-railo-debug.small, #-railo-debug.small td	{ font-size: 8.5pt; }
-
-				#-railo-debug table		{ empty-cells: show; }				
-				#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #999; margin-left: 9pt; }
-				
-				#-railo-debug table.details th { border:1px solid #e0e0e0; font-size: 0.9em; font-weight: normal; background-color: #f2f2f2; color: #3c3e40; }
-				#-railo-debug table.details td, #-railo-debug table.details th { padding: 2px 5px; }
-				#-railo-debug table.details td	{ border-bottom: 1px solid #e0e0e0; }
-				#-railo-debug table.details tr:last-child td { border-bottom: 0; }
-				
-				#-railo-debug .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:#007bb7; }
-				#-railo-debug .section-title:first-child	{ margin-top: auto; }
-				#-railo-debug .label		{ white-space: nowrap; vertical-align: top; text-align: right; padding-right: 1em; }
-
-				#-railo-debug .collapsed	{ display: none; }
-
-				#-railo-debug .bold 		{ font-weight: bold; }
-				#-railo-debug .txt-c 	{ text-align: center; }
-				#-railo-debug .txt-r 	{ text-align: right; }
-				#-railo-debug .num-lsv 	{ font-weight: normal; }
-				#-railo-debug tr.nowrap td { white-space: nowrap; }
-				#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
-
-				#-railo-debug .underline { text-decoration: underline; }
-				#-railo-debug .underline.selected, .underline:hover { background-color: #222; color: #FFF; }
-
-				.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==)
-			    					no-repeat left center; padding: 4px 0 4px 16px; }
-
-				.-railo-icon-minus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)
-									no-repeat left center; padding: 4px 0 4px 16px; }
-
-				.pad 	{ padding-left: 16px; }
-			</style>
-
-			<script>
-
-				var __RAILO = __RAILO || {};
-
-				__RAILO.util = 	{
-
-					getCookie: 			function( name, def ) {
-
-						var cookies = document.cookie.split( '; ' );
-						var len = cookies.length;
-						var parts;
-
-						for ( var i=0; i<len; i++ ) {
-
-							parts = cookies[ i ].split( '=' );
-
-							if ( parts[ 0 ] == name )
-								return unescape( parts[ 1 ] );
-						}
-
-						return def;
-					}
-
-					, getCookieNames:	function() {
-
-						var result = [];
-
-						var cookies = document.cookie.split( '; ' );
-						var len = cookies.length;
-						var parts;
-
-						for ( var i=0; i<len; i++ ) {
-
-							parts = cookies[ i ].split( '=' );
-
-							result.push( parts[ 0 ] );
-						}
-
-						return result;
-					}
-
-					, setCookie: 		function( name, value, expires ) {
-
-						document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" ) + "; path=/";
-					}
-
-					, removeCookie: 	function( name ) {
-
-						__RAILO.util.setCookie( name, "", new Date( 0 ) );
-					}
-
-
-					/** returns the element if it is an object, or finds the object by id */
-					, getDomObject: 	function( obj ) {
-
-						if ( typeof obj == 'string' || obj instanceof String )
-							return document.getElementById( obj );
-
-						return obj;
-					}
-
-					, hasCssClass: 		function( obj, cls ) {
-
-						obj = __RAILO.util.getDomObject( obj );
-
-						return ( obj.className.indexOf( cls ) > -1 );
-					}
-
-					, addCssClass: 		function( obj, cls ) {
-
-						if ( __RAILO.util.hasCssClass( obj, cls ) )
-							return;
-
-						obj = __RAILO.util.getDomObject( obj );
-
-						obj.className += " " + cls;
-					}
-
-					, removeCssClass: 	function( obj, cls ) {
-
-						obj = __RAILO.util.getDomObject( obj );
-
-						obj.className = obj.className.replace( cls, "" );
-					}
-
-					, toggleCssClass: 	function( obj, cls ) {	// returns true if class was added
-
-						obj = __RAILO.util.getDomObject( obj );
-
-						if ( __RAILO.util.hasCssClass( obj, cls ) )
-							__RAILO.util.removeCssClass( obj, cls );
-						else
-							__RAILO.util.addCssClass( obj, cls );
-
-						return ( __RAILO.util.hasCssClass( obj, cls ) );
-					}
-				};
-
-
-				__RAILO.debug = {
-
-					<cfoutput>
-					  cookieName: 	"#variables.cookieName#"
-					, bitmaskAll: 	Math.pow( 2, 31 ) - 1
-					, allSections: 	#serializeJSON( variables.allSections )#
-					</cfoutput>
-
-					, setFlag: 		function( name ) {
-
-						var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, __RAILO.debug.allSections.ALL ) | __RAILO.debug.allSections[ name ];
-
-						__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
-
-						return value;
-					}
-
-					, clearFlag: 	function( name ) {
-
-						var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, 0 ) & ( __RAILO.debug.bitmaskAll - __RAILO.debug.allSections[ name ] );
-
-						__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
-
-						return value;
-					}
-
-					, toggleSection: 	function( name ) {
-
-						var btn = __RAILO.util.getDomObject( "-railo-debug-btn-" + name );
-						var obj = __RAILO.util.getDomObject( "-railo-debug-" + name )
-
-						var isOpen = ( __RAILO.util.getCookie( __RAILO.debug.cookieName, 0 ) & __RAILO.debug.allSections[ name ] ) > 0;
-
-						if ( isOpen ) {
-
-							__RAILO.util.removeCssClass( btn, '-railo-icon-minus' );
-							__RAILO.util.addCssClass( btn, '-railo-icon-plus' );
-
-							__RAILO.util.addCssClass( obj, 'collapsed' );
-
-							__RAILO.debug.clearFlag( name );
-						} else {
-
-							__RAILO.util.removeCssClass( btn, '-railo-icon-plus' );
-							__RAILO.util.addCssClass( btn, '-railo-icon-minus' );
-
-							__RAILO.util.removeCssClass( obj, 'collapsed' );
-
-							__RAILO.debug.setFlag( name );
-						}
-					}
-
-					, selectText: 	function( id ) {
-
-				        if ( document.selection ) {
-
-				            var range = document.body.createTextRange();
-				            range.moveToElementText( document.getElementById( id ) );
-				            range.select();
-				        } else if ( window.getSelection ) {
-
-				            var range = document.createRange();
-				            range.selectNode( document.getElementById( id ) );
-				            window.getSelection().addRange( range );
-				        }
-				    }
-				};
-			</script>
+		<style type="text/css">	
+			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; border: 1px solid #CCC; border-radius: 5px; background-color: #FFF; color: #222; }
+			#-railo-debug.collapsed	{ padding: 0; border-width: 0; }
+			#-railo-debug legend 	{ padding: 0 1em; background-color: #FFF; color: #222; }
+
+			#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; }
+			#-railo-debug.large, #-railo-debug.large td	{ font-size: 10pt; }
+			#-railo-debug.small, #-railo-debug.small td	{ font-size: 8.5pt; }
+
+			#-railo-debug table		{ empty-cells: show; }				
+			#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #999; margin-left: 9pt; }
+			
+			#-railo-debug table.details th { border:1px solid #e0e0e0; font-size: 0.9em; font-weight: normal; background-color: #f2f2f2; color: #3c3e40; }
+			#-railo-debug table.details td, #-railo-debug table.details th { padding: 2px 5px; }
+			#-railo-debug table.details td	{ border-bottom: 1px solid #e0e0e0; }
+			#-railo-debug table.details tr:last-child td { border-bottom: 0; }
+			
+			#-railo-debug .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:#007bb7; }
+			#-railo-debug .section-title:first-child	{ margin-top: auto; }
+			#-railo-debug .label		{ white-space: nowrap; vertical-align: top; text-align: right; padding-right: 1em; }
+
+			#-railo-debug .collapsed	{ display: none; }
+
+			#-railo-debug .bold 		{ font-weight: bold; }
+			#-railo-debug .txt-c 	{ text-align: center; }
+			#-railo-debug .txt-r 	{ text-align: right; }
+			#-railo-debug .num-lsv 	{ font-weight: normal; }
+			#-railo-debug tr.nowrap td { white-space: nowrap; }
+			#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
+
+			#-railo-debug .underline { text-decoration: underline; }
+			#-railo-debug .underline.selected, .underline:hover { background-color: #222; color: #FFF; }
+			#-railo-debug .pad 	{ padding-left: 16px; }
+			#-railo-debug a 	{ cursor: pointer; }
+
+			.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat left center; padding: 4px 0 4px 16px; }
+			.-railo-icon-minus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)     no-repeat left center; padding: 4px 0 4px 16px; }
+		</style>
 
 		<cfoutput>
 
+			<cfset sectionId = "ALL">
+			<cfset isOpen = isSectionOpen( sectionId )>
+				
 			<!-- Railo Debug Output !-->
-			<fieldset id="-railo-debug" class="#arguments.custom.size#">
+			<fieldset id="-railo-debug" class="#arguments.custom.size# #isOpen ? '' : 'collapsed'#">
 
-				<cfset sectionId = "ALL">
-				<cfset isOpen = isSectionOpen( sectionId )>
-				<legend><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" style="cursor: pointer;" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
+				<legend><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" onclick="__RAILO.debug.toggleSection( '#sectionId#' ) ? __RAILO.util.removeClass('-railo-debug', 'collapsed') : __RAILO.util.addClass('-railo-debug', 'collapsed');">
 				 Railo Debug Output</a></legend>
 
-
 				<div id="-railo-debug-ALL" class="#isOpen ? '' : 'collapsed'#">
-
 
 					<!--- General --->
 					<cfif isEnabled( arguments.custom, 'general' )>
@@ -421,8 +248,7 @@
 								</td>
 							</tr>
 						</table>
-					</cfif>
-					
+					</cfif>					
 					
 					<!--- Execution Time --->
 					<cfset sectionId = "ExecTime">
@@ -467,17 +293,17 @@
 						<tr>
 							<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 								<table class="details">
-
 									<tr>
 										<th>Total Time</th>
-										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addCssClass( this, 'selected' );" class="underline" style="cursor: pointer;" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif></th>
+										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif></th>
 										<th>Count</th>
 										<th>Template</th>
-										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addCssClass( this, 'selected' );" class="underline" style="cursor: pointer;" title="Order by ID (starting with the next request)">ID</a></cfif></th>
+										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by ID (starting with the next request)">ID</a></cfif></th>
 									</tr>
 									<cfset loa=0>
 									<cfset tot=0>
 									<cfset q=0>
+									<cfset hasBad = false>
 									<cfloop query="pages">
 										<cfset tot=tot+pages.total>
 										<cfset q=q+pages.query>
@@ -485,6 +311,9 @@
 											<cfcontinue>
 										</cfif>
 										<cfset bad=pages.avg GTE arguments.custom.highlight * 1000>
+										<cfif bad>
+											<cfset hasBad = true>
+										</cfif>
 										<cfset loa=loa+pages.load>
 										<tr class="nowrap #bad ? 'red' : ''#">
 											<td class="txt-r" title="#pages.total - pages.load#">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
@@ -494,13 +323,13 @@
 											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
 										</tr>
 									</cfloop>
-									<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
-
+									<cfif hasBad>									
+										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
+									</cfif>
 								</table>
 							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
-
 
 					<!--- Exceptions --->
 					<cfif structKeyExists( arguments.debugging,"exceptions" ) && arrayLen( arguments.debugging.exceptions )>
@@ -539,7 +368,6 @@
 							</tr>
 						</table>
 					</cfif>
-
 
 					<!--- Implicit variable Access --->
 					<cfif implicitAccess.recordcount>
@@ -581,7 +409,6 @@
 						</table>
 					</cfif>
 
-
 					<!--- Timers --->
 					<cfif timers.recordcount>
 
@@ -616,7 +443,6 @@
 							</tr>
 						</table>
 					</cfif>
-
 
 					<!--- Traces --->
 					<cfif traces.recordcount>
@@ -688,7 +514,6 @@
 						</table>
 
 					</cfif>
-
 
 					<!--- Queries --->
 					<cfif queries.recordcount>
@@ -794,9 +619,7 @@
 								</td>	<!--- id="-railo-debug-#sectionId#" !--->
 							</tr>
 						</table>
-
-					</cfif>
-					
+					</cfif>					
 					
 					<!--- Scopes --->
 					<cfif isEnabled( arguments.custom, "scopes" )>
@@ -872,12 +695,171 @@
 						</table>
 					</cfif>
 				
-				</div>	<!--- div#-railo-debug-ALL !--->
-
-			</fieldset>	<!--- id="-railo-err" !--->
+				</div>	<!--- #-railo-debug-ALL !--->
+			</fieldset>	<!--- #-railo-debug !--->
 		</cfoutput>
 
-	</cffunction>
+		<script>
+			var __RAILO = __RAILO || {};
+
+			__RAILO.util = 	{
+
+				getCookie: 			function( name, def ) {
+
+					var cookies = document.cookie.split( '; ' );
+					var len = cookies.length;
+					var parts;
+
+					for ( var i=0; i<len; i++ ) {
+
+						parts = cookies[ i ].split( '=' );
+
+						if ( parts[ 0 ] == name )
+							return unescape( parts[ 1 ] );
+					}
+
+					return def;
+				}
+
+				, getCookieNames:	function() {
+
+					var result = [];
+
+					var cookies = document.cookie.split( '; ' );
+					var len = cookies.length;
+					var parts;
+
+					for ( var i=0; i<len; i++ ) {
+
+						parts = cookies[ i ].split( '=' );
+
+						result.push( parts[ 0 ] );
+					}
+
+					return result;
+				}
+
+				, setCookie: 		function( name, value, expires ) {
+
+					document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" ) + "; path=/";
+				}
+
+				, removeCookie: 	function( name ) {
+
+					__RAILO.util.setCookie( name, "", new Date( 0 ) );
+				}
+
+				, getDomObject: 	function( obj ) {			// returns the element if it is an object, or finds the object by id */
+
+					if ( typeof obj == 'string' || obj instanceof String )
+						return document.getElementById( obj );
+
+					return obj;
+				}
+
+				, hasClass: 		function( obj, cls ) {
+
+					obj = __RAILO.util.getDomObject( obj );
+
+					return ( obj.className.indexOf( cls ) > -1 );
+				}
+
+				, addClass: 		function( obj, cls ) {
+
+					if ( __RAILO.util.hasClass( obj, cls ) )
+						return;
+
+					obj = __RAILO.util.getDomObject( obj );
+					obj.className += " " + cls;
+				}
+
+				, removeClass: 		function( obj, cls ) {
+
+					obj = __RAILO.util.getDomObject( obj );
+					obj.className = obj.className.replace( cls, "" );
+				}
+
+				, toggleClass: 		function( obj, cls ) {		// returns true if class is there after the operation
+
+					obj = __RAILO.util.getDomObject( obj );
+
+					if ( __RAILO.util.hasClass( obj, cls ) )
+						__RAILO.util.removeClass( obj, cls );
+					else
+						__RAILO.util.addClass( obj, cls );
+
+					return ( __RAILO.util.hasClass( obj, cls ) );
+				}
+			};
+
+
+			__RAILO.debug = {
+
+				<cfoutput>
+				  cookieName: 	"#variables.cookieName#"
+				, bitmaskAll: 	Math.pow( 2, 31 ) - 1
+				, allSections: 	#serializeJSON( variables.allSections )#
+				</cfoutput>
+
+				, setFlag: 		function( name ) {
+
+					var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, __RAILO.debug.allSections.ALL ) | __RAILO.debug.allSections[ name ];
+
+					__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
+
+					return value;
+				}
+
+				, clearFlag: 	function( name ) {
+
+					var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, 0 ) & ( __RAILO.debug.bitmaskAll - __RAILO.debug.allSections[ name ] );
+
+					__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
+
+					return value;
+				}
+
+				, toggleSection: 	function( name ) {
+
+					var btn = __RAILO.util.getDomObject( "-railo-debug-btn-" + name );
+					var obj = __RAILO.util.getDomObject( "-railo-debug-" + name );
+					var isOpen = ( __RAILO.util.getCookie( __RAILO.debug.cookieName, 0 ) & __RAILO.debug.allSections[ name ] ) > 0;
+
+					if ( isOpen ) {
+
+						__RAILO.util.removeClass( btn, '-railo-icon-minus' );
+						__RAILO.util.addClass( btn, '-railo-icon-plus' );
+						__RAILO.util.addClass( obj, 'collapsed' );
+						__RAILO.debug.clearFlag( name );
+					} else {
+
+						__RAILO.util.removeClass( btn, '-railo-icon-plus' );
+						__RAILO.util.addClass( btn, '-railo-icon-minus' );
+						__RAILO.util.removeClass( obj, 'collapsed' );
+						__RAILO.debug.setFlag( name );
+					}
+
+					return !isOpen;					// returns true if section is open after the operation
+				}
+
+				, selectText: 	function( id ) {
+
+			        if ( document.selection ) {
+
+			            var range = document.body.createTextRange();
+			            range.moveToElementText( document.getElementById( id ) );
+			            range.select();
+			        } else if ( window.getSelection ) {
+
+			            var range = document.createRange();
+			            range.selectNode( document.getElementById( id ) );
+			            window.getSelection().addRange( range );
+			        }
+			    }
+			};
+		</script>
+
+	</cffunction>	<!--- output() !--->
 
 
 	<cffunction name="renderSectionHeadTR" output="#true#">
@@ -887,9 +869,9 @@
 		<cfargument name="label2" default="">
 
 		<tr>
-			<td><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" style="cursor: pointer;" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
+			<td><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
 				#label1#</a></td>
-			<td class="pad"><a style="cursor: pointer;" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">#label2#</a></td>
+			<td class="pad"><a onclick="__RAILO.debug.toggleSection( '#sectionId#' );">#label2#</a></td>
 		</tr>
 	</cffunction>
 
