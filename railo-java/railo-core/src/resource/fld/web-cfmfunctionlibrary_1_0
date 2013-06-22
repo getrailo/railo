@@ -1534,6 +1534,7 @@ sort direction:
 			<type>struct</type>
 		</return>
 	</function>
+
 	<!-- CacheGetProperties -->
 	<function>
 		<name>CacheGetProperties</name>
@@ -1695,6 +1696,102 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 			<type>void</type>
 		</return>
 	</function>
+
+    <!-- CacheRegionNew -->
+    <function>
+        <name>CacheRegionNew</name>
+        <class>railo.runtime.functions.cache.CacheRegionNew</class>
+        <status>deprecated</status>
+        <description>this function exists solely for the purpose of compatibility with other CFML Engines.  we strongly recommend not to use this function.
+        to create a cache connection either declare it in your Application.cfc or create it via the in the Administrator interface.</description>
+        <argument>
+            <name>cacheName</name>
+            <alias>cache,region</alias>
+            <type>string</type>
+            <required>yes</required>
+            <description>the name of the cache connection to create (also known as Region in other CFML engines).</description>
+        </argument>
+        <argument>
+            <name>properties</name>
+            <alias>propsSruct,props</alias>
+            <type>any</type>
+            <required>no</required>
+            <description>a structure specifying the cache properties</description>
+        </argument>
+        <argument>
+            <name>throwOnError</name>
+            <type>any</type>
+            <required>no</required>
+            <description>specifies whether the function should throw an exception if a cache connection with that name already exists (default is true)</description>
+        </argument>
+        <argument>
+            <name>password</name>
+            <alias>webAdminPassword</alias>
+            <type>string</type>
+            <required>no</required>
+            <description>the password for the web administrator is required to interact with Cache Connections.
+            you can optionally set it for your Application in Application.cfc using the variable [this.webAdminPassword].</description>
+        </argument>
+        <return>
+            <type>void</type>
+        </return>
+    </function>
+
+    <!-- CacheRegionRemove -->
+    <function>
+        <name>CacheRegionRemove</name>
+        <class>railo.runtime.functions.cache.CacheRegionRemove</class>
+        <status>deprecated</status>
+        <description>this function exists solely for the purpose of compatibility with other CFML Engines.  we strongly recommend not to use this function.
+        it is recommended to use the Administrator interface in order to remove a cache connection.</description>
+        <argument>
+            <name>cacheName</name>
+            <alias>cache,region</alias>
+            <type>string</type>
+            <required>yes</required>
+            <description>the name of the cache connection to remove (also known as Region in other CFML engines).</description>
+        </argument>
+        <argument>
+            <name>password</name>
+            <alias>webAdminPassword</alias>
+            <type>string</type>
+            <required>no</required>
+            <description>the password for the web administrator is required to interact with Cache Connections.
+            you can optionally set it for your Application in Application.cfc using the variable [this.webAdminPassword].</description>
+        </argument>
+        <return>
+            <type>void</type>
+        </return>
+    </function>
+
+    <!-- CacheRegionExists -->
+    <function>
+        <name>CacheRegionExists</name>
+        <class>railo.runtime.functions.cache.CacheRegionExists</class>
+        <status>deprecated</status>
+        <description>this function exists solely for the purpose of compatibility with other CFML Engines.  we strongly recommend not to use this function.
+        it is recommended to use the Administrator interface in order to add or remove cache connections.
+
+        this functions returns true if a cache connection with the passed cacheName exists.</description>
+        <argument>
+            <name>cacheName</name>
+            <alias>cache,region</alias>
+            <type>string</type>
+            <required>yes</required>
+            <description>the name of the cache connection to check (also known as Region in other CFML engines).</description>
+        </argument>
+        <argument>
+            <name>password</name>
+            <alias>webAdminPassword</alias>
+            <type>string</type>
+            <required>No</required>
+            <description>the password for the web administrator is required to interact with Cache Connections.
+            you can optionally set it for your Application in Application.cfc using the variable [this.webAdminPassword].</description>
+        </argument>
+        <return>
+            <type>boolean</type>
+        </return>
+    </function>
 	
 	<!-- ceiling -->
 	<function>
@@ -5528,8 +5625,20 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 		<name>GetLocalHostIP</name>
 		<class>railo.runtime.functions.system.GetLocalHostIP</class>
 		<description>Returns the localhost IP address, which is 127.0.0.1 for IPv4 and ::1 for IPv6 addresses.</description>
+		<argument>
+		    <name>all</name>
+		    <type>boolean</type>
+		    <required>false</required>
+		    <description>pass true to get an Array with all of the local IP addresses. default [false] will return a String with one value.</description>
+		</argument>
+		<argument>
+            <name>refresh</name>
+            <type>boolean</type>
+            <required>false</required>
+            <description>on some systems getting all of the IP addresses can take some time so the result is cached after the first call, if the system's IP addresses were modified, pass true to refresh that cache.</description>
+        </argument>
 		<return>
-			<type>string</type>
+			<type>any</type>
 		</return>
 	</function>
 	
@@ -10495,7 +10604,7 @@ The following things are considered to be empty:
 			- email: a string containig a valid email address.
 			- eurodate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A date in the form d/m/y, d-m-y, or d.m.y. The m and d format can be 1 or 2 digits; y can be 2 or 4 digits. 
 			- float or numeric: a numeric value; equivalent to the IsNumeric function.
-			- guid: a Globally Unique Identifier in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX where X is a hexadecimal number.
+			- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where X is a hexadecimal number.
 			- integer: an integer.
 			- query: a query object; equivalent to the IsQuery function.
 			- range: a numeric range, specified by the min and max attributes.
@@ -10505,7 +10614,7 @@ The following things are considered to be empty:
 			- struct: a structure; equivalent to the IsStruct function.
 			- telephone: a standard US telephone number.
 			- URL: an http, https, ftp, file, mailto, or news URL,
-			- UUID: a Universally Unique Identifier in the format XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXX, where X is a hexadecimal number. See CreateUUID.
+			- UUID: a ColdFusion Universally Unique Identifier, formatted "XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXX", where X is a hexadecimal number. See CreateUUID.
 			- USdate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years.
 			- variableName: a string formatted according to ColdFusion variable naming conventions.
 			- zipcode: U.S., 5- or 9-digit format ZIP codes.</description>

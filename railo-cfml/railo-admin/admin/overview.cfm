@@ -447,13 +447,13 @@ Error Output --->
 					<h3>
 						<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">#stText.Overview.issueTracker#</a>
 					</h3>
-					<div class="comment">#stText.Overview.bookDesc#</div>
+					<div class="comment">#stText.Overview.issueTrackerDesc#</div>
 					
 					<!--- Blog --->
 					<h3>
 						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
-					<div class="comment">#stText.Overview.bookDesc#</div>
+					<div class="comment">#stText.Overview.blogDesc#</div>
 					
 					
 					

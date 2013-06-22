@@ -224,7 +224,7 @@
 							<table class="tbl" cellpadding="2" cellspacing="0">
 								<tr>
 									<td class="cfdebug" nowrap>Template</td>
-									<td class="cfdebug">#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)</td>
+									<td class="cfdebug">#_cgi.SCRIPT_NAME# (#_cgi.cf_template_path#)</td>
 								</tr>
 								<tr>
 									<td class="cfdebug" nowrap>User Agent</td>
