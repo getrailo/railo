@@ -86,7 +86,7 @@ public final class CreateObject implements Function {
             if(type.equals(".net") || type.equals("dotnet")) {
                 return doDotNet(pc,className);
             }
-			throw new ExpressionException("invalid argument for function createObject, first argument (type), " +
+			throw new ExpressionException("Invalid argument for function createObject, first argument (type), " +
 					"must be (com, java, webservice or component) other types are not supported");
 		
 	} 
@@ -96,8 +96,7 @@ public final class CreateObject implements Function {
 	}
 	private static void checkAccess(PageContext pc, String type) throws SecurityException {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_TAG_OBJECT)==SecurityManager.VALUE_NO) 
-			throw new SecurityException("can't access function [createObject] with type ["+type+"]","access is prohibited by security manager");
-		
+			throw new SecurityException("Can't access function [createObject] with type ["+type+"]","Access is denied by the Security Manager");
     }
 	
 	 
@@ -130,7 +129,7 @@ public final class CreateObject implements Function {
 				throw Caster.toPageException(e);
 			}
         }
-        throw new SecurityException("can't create Java Object ["+className+"], direct java access is deinied by security manager");
+        throw new SecurityException("Can't create Java object ["+className+"]: direct Java access is denied by the Security Manager");
 	} 
     
     /*public static java.util.List<Resource> getJavaSettings(PageContext pc) {
