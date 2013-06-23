@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.cache.CacheSupport;
@@ -16,10 +18,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
 import railo.runtime.type.Struct;
 
-public class RamCache extends CacheSupport {
+public class RamCache extends CacheSupport { 
 
 	private static final int DEFAULT_CONTROL_INTERVALL = 60;
-	private Map<String, RamCacheEntry> entries= new HashMap<String, RamCacheEntry>();
+	private Map<String, RamCacheEntry> entries= Collections.synchronizedMap(new HashMap<String, RamCacheEntry>());
 	private long missCount;
 	private int hitCount;
 	
