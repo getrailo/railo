@@ -839,6 +839,9 @@ public class KeyConstants {
 	public static final Key _database = KeyImpl._const("database");
 	public static final Key _exception = KeyImpl._const("exception");
 	public static final Key _parsebody = KeyImpl._const("parsebody");
+	public static final Key _extended_info = KeyImpl._const("extended_info");
+	public static final Key _codePrintHTML = KeyImpl._const("codePrintHTML");
+	public static final Key _codePrintPlain = KeyImpl._const("codePrintPlain");
 	
 	private static Set<String> _____keys;
 	

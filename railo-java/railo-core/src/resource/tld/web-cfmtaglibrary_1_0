@@ -12574,6 +12574,16 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>a native java exception Object, if this attribute is defined all other will be ignored</description>
 		</attribute>
+		<attribute>
+			<type>numeric</type>
+			<name>contextlevel</name>
+			<status>hidden</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>entry context level</description>
+		</attribute>
+		
+		
 	</tag>
 	<!-- Timer -->
 	<tag>

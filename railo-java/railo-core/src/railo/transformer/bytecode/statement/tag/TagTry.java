@@ -42,12 +42,6 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 			Types.PAGE_EXCEPTION,
 			new Type[]{Types.THROWABLE});
 	
-	// PageException setCatch(Throwable t)
-	/*private static final Method SET_CATCH_T = new Method(
-			"setCatch",
-			Types.PAGE_EXCEPTION,
-			new Type[]{Types.THROWABLE});*/
-	
 	
 	public static final Method SET_CATCH_PE = new Method(
 			"setCatch",
@@ -199,7 +193,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 				adapter.invokeVirtual(Types.PAGE_EXCEPTION, TYPE_EQUAL);
 				
 				adapter.ifZCmp(Opcodes.IFEQ, endIf);
-					catchBody(bc,adapter,tag,pe,true);
+					catchBody(bc,adapter,tag,pe,true,true);
 					
 	            adapter.visitJumpInsn(Opcodes.GOTO, endAllIfs);
 	            
@@ -209,7 +203,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 			}
 			// else 
 			if(tagElse!=null){
-				catchBody(bc, adapter, tagElse, pe, true);
+				catchBody(bc, adapter, tagElse, pe, true,true);
 			}
 			else{
 				// pc.setCatch(pe,true);
@@ -235,12 +229,12 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 	}
 	
 
-	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth) throws BytecodeException {
+	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth, boolean store) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
         adapter.loadLocal(pe);
         adapter.push(caugth);
-        adapter.push(true);
+        adapter.push(store);
         adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
 		tag.getBody().writeOut(bc);
     	
