@@ -21,7 +21,6 @@ import javax.servlet.ServletConfig;
 import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -266,7 +265,7 @@ public final class ConfigWebFactory {
 	/**
 	 * reloads the Config Object
 	 * 
-	 * @param config
+	 * @param cs
 	 * @param force
 	 * @throws SAXException
 	 * @throws ClassNotFoundException
@@ -301,7 +300,7 @@ public final class ConfigWebFactory {
 	}
 
 	/**
-	 * @param configServer
+	 * @param cs
 	 * @param config
 	 * @param doc
 	 * @throws ClassNotFoundException
@@ -374,14 +373,6 @@ public final class ConfigWebFactory {
 		loadMonitors(cs, config, doc);
 		loadLogin(cs, config, doc);
 		config.setLoadTime(System.currentTimeMillis());
-
-		// this call is needed to make sure the railo StaticLoggerBinder is
-		// loaded
-		try {
-			StaticLoggerBinder.getSingleton();
-		}
-		catch (Throwable t) {
-		}
 
 		if (config instanceof ConfigWebImpl)
 			TagUtil.addTagMetaData((ConfigWebImpl) config);

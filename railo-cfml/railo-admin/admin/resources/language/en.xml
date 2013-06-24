@@ -659,7 +659,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
 	<data key="setting.dotNotationOriginalCase">Keep original case</data>
 	
-<data key="setting.supressWSBeforeArg">Supress white space before cfargument</data>
+	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
 
 	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
@@ -685,12 +685,18 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.showversion">Output Railo version</data>
 	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
 	<data key="setting.allowCompression">Compression</data>
-	<data key="setting.allowCompressionDescription">Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser)</data>
+	<data key="setting.allowCompressionDescription">Enable compression (GZip) for the Railo Response stream for text-based responses when supported by the client (Web Browser)</data>
 	
-	<data key="setting.cfmlWriterReg">No white space management</data>
-	<data key="setting.cfmlWriterWS">Simple white space management, every whitespace following a whitespace is removed</data>
-	<data key="setting.cfmlWriterWSPref">Smart whitespace management, same as the simple one, but ignore spaces inside the tags: code, pre and textarea</data>
+	<data key="setting.cfmlWriterReg">No whitespace management</data>
+	<data key="setting.cfmlWriterWS">Simple whitespace management - every whitespace character that follows whitespace is removed</data>
+	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
+
+	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
+	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
+	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>
+
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
 	<data key="setting.inspecttemplateInherit">Inherit</data>
 	<data key="setting.inspecttemplateInheritDesc">Inherit setting defined in "Performance/Caching"</data>
