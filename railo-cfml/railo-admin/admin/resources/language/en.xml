@@ -63,7 +63,7 @@
 	<data key="mappings.compiledesc">Compile all cfm and cfc files inside the mapping</data>
 	<data key="mappings.physicalmissing">Please enter a value for the resource (row </data>
 	<data key="mappings.archive">Archive</data>
-	<data key="mappings.toplevelhead">Top Level</data>
+	<data key="mappings.toplevelhead">Web Accessible</data>
 	<data key="mappings.virtualhead">Virtual</data>
 	<data key="mappings.compiletitle">compile</data>
 	<data key="mappings.primaryhead">Primary</data>

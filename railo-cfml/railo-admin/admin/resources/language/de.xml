@@ -64,7 +64,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="mappings.compiledesc">Kompilieren Sie alle cfm und cfc-Dateien innerhalb des Mappings</data>
 	<data key="mappings.physicalmissing">Bitte geben Sie einen Wert für die Ressource an. (Zeile </data>
 	<data key="mappings.archive">Archiv</data>
-	<data key="mappings.toplevelhead">Top Level</data>
+	<data key="mappings.toplevelhead">Web Zugänglich</data>
 	<data key="mappings.virtualhead">Virtuell</data>
 	<data key="mappings.compiletitle">kompilieren</data>
 	<data key="mappings.primaryhead">Primär</data>
