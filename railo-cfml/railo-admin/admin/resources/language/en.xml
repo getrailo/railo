@@ -485,7 +485,7 @@
 	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
 	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
-	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
+	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: {url})</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
 	<data key="components.componentmappingsearchdesc">Search the component in the mappings defined, this include the implicit mapping &quot;/&quot;, that points on the webroot</data>

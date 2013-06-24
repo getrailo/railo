@@ -101,7 +101,8 @@
 						<cfelse>
 							<b>#component.strcomponentDumpTemplate#</b>
 						</cfif>
-						<div class="comment">#stText.Components.ComponentDumpTemplateDescription#</div>
+						<cfset _url="#findNoCase("https",cgi.server_protocol)?"https":"http"#://#cgi.http_host##cgi.context_path#/railo-context/Admin.cfc">
+						<div class="comment">#replace(stText.Components.ComponentDumpTemplateDescription,'{url}',"<a href=""#_url#"">#_url#</a>",'all')#</div>
 					</td>
 				</tr>
 				<tr>
