@@ -1,7 +1,6 @@
 ﻿<cfscript>
 component {
 
-	ColorCaster=createObject('java','railo.commons.color.ColorCaster');
 	NEWLINE="
 ";
 	TAB = chr(9);
@@ -262,14 +261,9 @@ component {
 		// define colors
 		var h1Color = arguments.meta.highLightColor;
 		var h2Color = arguments.meta.normalColor;
-		var borderColor = arguments.meta.highLightColor;
+		var borderColor = darkenColor( arguments.meta.highLightColor );
 
 		arguments.meta.normalColor = "white";
-
-		try {
-			borderColor = ColorCaster.toHexString(ColorCaster.toColor(h1Color).darker().darker());
-		}
-		catch(e) {}
 
 
 			if(arguments.level EQ 0){
@@ -510,6 +504,43 @@ component {
 		return key;
 	}
 
+
+	/** darkens a hex color */
+	function darkenColor( color, delta=3 ) {
+
+		if ( len( arguments.color ) != 7 || left( arguments.color, 1 ) != '##' )
+			return arguments.color;
+
+		var result = "##";
+
+		for ( var i=2; i<=7; i++ ) {
+
+			var ch = inputBaseN( mid( arguments.color, i, 1 ), 16 );
+			ch = max( 0, ch - arguments.delta );
+			result &= formatBaseN( ch, 16 );
+		}
+
+		return result;
+	}
+
+
+	/** brightens a hex color */
+	function brightenColor( color, delta=3 ) {
+
+		if ( len( arguments.color ) != 7 || left( arguments.color, 1 ) != '##' )
+			return arguments.color;
+
+		var result = "##";
+
+		for ( var i=2; i<=7; i++ ) {
+
+			var ch = inputBaseN( mid( arguments.color, i, 1 ), 16 );
+			ch = min( 15, ch + arguments.delta );
+			result &= formatBaseN( ch, 16 );
+		}
+
+		return result;
+	}
 
 }
 </cfscript>
