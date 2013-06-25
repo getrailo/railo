@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;

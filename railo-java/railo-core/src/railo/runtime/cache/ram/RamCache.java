@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.CacheEntry;
