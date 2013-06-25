@@ -3,12 +3,18 @@ package railo.commons.net.http.httpclient4;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpMessage;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -29,6 +35,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -46,6 +53,7 @@ import railo.commons.net.http.httpclient4.entity.ByteArrayHttpEntity;
 import railo.commons.net.http.httpclient4.entity.EmptyHttpEntity;
 import railo.commons.net.http.httpclient4.entity.ResourceHttpEntity;
 import railo.commons.net.http.httpclient4.entity.TemporaryStreamHttpEntity;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
@@ -100,6 +108,32 @@ public class HTTPEngine4Impl {
     	HttpPost post = new HttpPost(url.toExternalForm());
     	return _invoke(url,post, username, password, timeout,maxRedirect, charset, useragent, proxy, headers);
     }
+    
+
+    
+
+    public static HTTPResponse post(URL url, String username,String password, long timeout,  int maxRedirect,
+            String charset, String useragent,
+            ProxyData proxy, railo.commons.net.http.Header[] headers,Map<String,String> params) throws IOException {
+    	HttpPost post = new HttpPost(url.toExternalForm());
+    	if(params!=null && params.size()>0) {
+    		List<NameValuePair> list = new ArrayList<NameValuePair>();
+        	Iterator<Entry<String, String>> it = params.entrySet().iterator();
+        	Entry<String, String> e;
+    		while(it.hasNext()){
+    			e = it.next();
+    			list.add(new BasicNameValuePair(e.getKey(),e.getValue()));
+    		}
+    		if(StringUtil.isEmpty(charset))
+    			charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    		post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(list,charset));
+    	}
+    	
+    	
+    	
+    	return _invoke(url,post, username, password, timeout,maxRedirect, charset, useragent, proxy, headers);
+    }
+    
     
     /**
 	 * does a http put request
