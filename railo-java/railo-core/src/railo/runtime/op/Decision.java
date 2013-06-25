@@ -893,8 +893,7 @@ public final class Decision {
           && !str.startsWith( "ftp://" )
           && !str.startsWith( "mailto:" )
           && !str.startsWith( "news:" )
-          && !str.startsWith( "urn:" )
-        )                                       return false;
+          && !str.startsWith( "urn:" ) )        return false;
 
         try {
 
@@ -906,6 +905,17 @@ public final class Decision {
             if ( proto.equals( "http" ) || proto.equals( "https" ) || proto.equals( "file" ) || proto.equals( "ftp" ) ) {
 
                 if ( uri.getHost() == null )    return false;
+
+                String path = uri.getPath();
+                if ( path != null ) {
+
+                    int len = path.length();
+                    for ( int i=0; i<len; i++ ) {
+
+                        if ( "?<>:*|\"".indexOf( path.charAt( i ) ) > -1 )
+                            return false;
+                    }
+                }
             }
 
             return true;
