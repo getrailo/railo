@@ -882,23 +882,30 @@ public final class Decision {
 
         String str = Caster.toString( value, null );
 
-        if ( str == null )                  return false;
-        if ( str.indexOf( ':' ) == -1 )     return false;
+        if ( str == null )                      return false;
+        if ( str.indexOf( ':' ) == -1 )         return false;
+
+        str = str.toLowerCase().trim();
+
+        if ( !str.startsWith( "http://" )
+          && !str.startsWith( "https://" )
+          && !str.startsWith( "file://" )
+          && !str.startsWith( "ftp://" )
+          && !str.startsWith( "mailto:" )
+          && !str.startsWith( "news:" )
+          && !str.startsWith( "urn:" )
+        )                                       return false;
 
         try {
 
-            URI uri = new URI( str.trim() );
+            URI uri = new URI( str );
             String proto = uri.getScheme();
 
-            if ( proto == null )            return false;
+            if ( proto == null )                return false;
 
-            if ( proto.equalsIgnoreCase( "http" ) || proto.equalsIgnoreCase( "https" ) || proto.equalsIgnoreCase( "file" ) || proto.equalsIgnoreCase( "ftp" ) ) {
+            if ( proto.equals( "http" ) || proto.equals( "https" ) || proto.equals( "file" ) || proto.equals( "ftp" ) ) {
 
-                if ( uri.getHost() == null )return false;
-            }
-            else if ( !proto.equalsIgnoreCase( "mailto" ) && !proto.equalsIgnoreCase( "news" ) && !proto.equalsIgnoreCase( "urn" ) ) {
-
-                return false;
+                if ( uri.getHost() == null )    return false;
             }
 
             return true;
