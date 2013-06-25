@@ -2,6 +2,7 @@ package railo.runtime.op;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.text.DateFormat;
@@ -58,11 +59,9 @@ import railo.runtime.type.dt.DateTime;
 public final class Decision {
 
 	private static final String STRING_DEFAULT_VALUE = "this is a unique string";
-	
-	private static Pattern emailPattern; 
+
 	private static Pattern ssnPattern;
 	private static Pattern phonePattern;
-	private static Pattern urlPattern;
 	private static Pattern zipPattern; 
 
 	/**
@@ -875,18 +874,40 @@ public final class Decision {
 	}	
 
 	/**
-	 * returns if given object is a URL
+	 * returns true if the given object is a valid URL
 	 * @param value
 	 * @return
 	 */
-	public static boolean isURL(Object value) {
-		String str = Caster.toString(value,null);
-		if(str==null)return false;
-		
-		if(urlPattern==null)
-			urlPattern=Pattern.compile("^((http|https|ftp|file)\\:\\/\\/([a-zA-Z0-0]*:[a-zA-Z0-0]*(@))?[a-zA-Z0-9-\\.]+(\\.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?\\/?([a-zA-Z0-9-\\._\\? \\,\\'\\/\\+&amp;%\\$#\\=~])*)|((mailto)\\:[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*@([a-zA-Z0-9-]+\\.)+[a-zA-Z0-9]{2,7})|((news)\\: [a-zA-Z0-9\\.]*)$");
-		return urlPattern.matcher(str.trim()).matches();
-	}
+    public static boolean isURL( Object value ) {
+
+        String str = Caster.toString( value, null );
+
+        if ( str == null )                  return false;
+        if ( str.indexOf( ':' ) == -1 )     return false;
+
+        try {
+
+            URI uri = new URI( str.trim() );
+            String proto = uri.getScheme();
+
+            if ( proto == null )            return false;
+
+            if ( proto.equalsIgnoreCase( "http" ) || proto.equalsIgnoreCase( "https" ) || proto.equalsIgnoreCase( "file" ) || proto.equalsIgnoreCase( "ftp" ) ) {
+
+                if ( uri.getHost() == null )return false;
+            }
+            else if ( !proto.equalsIgnoreCase( "mailto" ) && !proto.equalsIgnoreCase( "news" ) && !proto.equalsIgnoreCase( "urn" ) ) {
+
+                return false;
+            }
+
+            return true;
+        }
+        catch ( Exception ex ) {
+
+            return false;
+        }
+    }
 	
 	/**
 	 * returns if given object is a zip code
