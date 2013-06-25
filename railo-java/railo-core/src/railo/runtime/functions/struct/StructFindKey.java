@@ -11,7 +11,8 @@ import java.util.Map.Entry;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -23,7 +24,9 @@ import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;
 
-public final class StructFindKey implements Function {
+public final class StructFindKey extends BIF {
+	
+	private static final long serialVersionUID = 598706098288773975L;
 	
 	public static Array call(PageContext pc , railo.runtime.type.Struct struct, String value) throws PageException {
 		return _call(pc,struct,value,false);
@@ -79,10 +82,10 @@ public final class StructFindKey implements Function {
 	                abort=getValues(array,((Collection)o), value, all, createKey(coll,path,key));
 	            }
 	            else if(o instanceof List){
-	            	abort=getValues(array,ListAsArray.toArray((List)o), value, all, createKey(coll,path,key));
+	            	abort=getValues(array,ListAsArray.toArray((List<?>)o), value, all, createKey(coll,path,key));
 	            }
 	            else if(o instanceof Map){
-	            	abort=getValues(array,MapAsStruct.toStruct((Map)o), value, all, createKey(coll,path,key));
+	            	abort=getValues(array,MapAsStruct.toStruct((Map<?,?>)o), value, all, createKey(coll,path,key));
 	            }
             }
         }
@@ -101,5 +104,10 @@ public final class StructFindKey implements Function {
 	}
 	static boolean isArray(Collection coll) {
 		return coll instanceof Array && !(coll instanceof Argument);
+	}
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==3) return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]),Caster.toString(args[2]));
+		return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]));
 	}
 }

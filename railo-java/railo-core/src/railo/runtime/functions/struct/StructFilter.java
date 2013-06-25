@@ -10,7 +10,7 @@ import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
@@ -19,7 +19,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 
 
-public final class StructFilter implements Function {
+public final class StructFilter extends BIF {
 
 	private static final long serialVersionUID = -91410716194244194L;
 
@@ -48,5 +48,10 @@ public final class StructFilter implements Function {
 				rtn.set(e.getKey(), value);
 		}
 		return rtn;
+	}
+
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,Caster.toStruct(args[0]),Caster.toFunction(args[1]));
 	}
 }

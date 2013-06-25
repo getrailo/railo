@@ -17,7 +17,7 @@ import railo.runtime.PageContext;
 import railo.runtime.concurrency.UDFCaller;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
@@ -25,7 +25,7 @@ import railo.runtime.type.Iteratorable;
 import railo.runtime.type.UDF;
 
 
-public final class Each implements Function {
+public final class Each extends BIF {
 
 	private static final long serialVersionUID = 1955185705863596525L;
 
@@ -101,7 +101,7 @@ public final class Each implements Function {
 	public static void afterCall(PageContext pc, List<Future<String>> futures) throws PageException {
 		try{
 			Iterator<Future<String>> it = futures.iterator();
-			Future<String> f;
+			//Future<String> f;
 			while(it.hasNext()){
 				pc.write(it.next().get());
 			}
@@ -134,5 +134,12 @@ public final class Each implements Function {
 			return;
 		}
 		futures.add(es.submit(new UDFCaller(pc, udf, args, true)));
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==4) return call(pc,args[0],Caster.toFunction(args[1]),Caster.toBooleanValue(args[2]),Caster.toDoubleValue(args[3]));
+		if(args.length==3) return call(pc,args[0],Caster.toFunction(args[1]),Caster.toBooleanValue(args[2]));
+		return call(pc,args[0],Caster.toFunction(args[1]));
 	}
 }
