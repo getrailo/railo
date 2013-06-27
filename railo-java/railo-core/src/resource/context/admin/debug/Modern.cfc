@@ -165,7 +165,8 @@
 			#-railo-debug .underline { text-decoration: underline; }
 			#-railo-debug .underline.selected, .underline:hover { background-color: #222; color: #FFF; }
 			#-railo-debug .pad 	{ padding-left: 16px; }
-			#-railo-debug td a 	{ color: #22A; cursor: pointer; }
+			#-railo-debug a 	{ cursor: pointer; }
+			#-railo-debug td a 	{ color: #22A; }
 			#-railo-debug td a:hover	{ color: #66F; }
 			#-railo-debug pre 	{ background-color: #EEE; padding: 1em; border: solid 1px #333; border-radius: 1em; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; }
 
