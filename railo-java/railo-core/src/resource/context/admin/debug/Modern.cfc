@@ -135,11 +135,11 @@
 		</cfif>
 		
 		<style type="text/css">	
-			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; border: 1px solid #CCC; border-radius: 5px; background-color: #FFF; color: #222; }
+			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; border: 1px solid #CCC; border-radius: 5px; }
 			#-railo-debug.collapsed	{ padding: 0; border-width: 0; }
 			#-railo-debug legend 	{ padding: 0 1em; background-color: #FFF; color: #222; }
 
-			#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; }
+			#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; background-color: #FFF; color: #222; }
 			#-railo-debug.large, #-railo-debug.large td	{ font-size: 10pt; }
 			#-railo-debug.small, #-railo-debug.small td	{ font-size: 8.5pt; }
 
@@ -165,7 +165,8 @@
 			#-railo-debug .underline { text-decoration: underline; }
 			#-railo-debug .underline.selected, .underline:hover { background-color: #222; color: #FFF; }
 			#-railo-debug .pad 	{ padding-left: 16px; }
-			#-railo-debug a 	{ cursor: pointer; }
+			#-railo-debug td a 	{ color: #22A; cursor: pointer; }
+			#-railo-debug td a:hover	{ color: #66F; }
 			#-railo-debug pre 	{ background-color: #EEE; padding: 1em; border: solid 1px #333; border-radius: 1em; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; }
 
 			.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat left center; padding: 4px 0 4px 16px; }
@@ -346,7 +347,7 @@
 						</cfif>
 
 						<table>
-							<cfset renderSectionHeadTR( sectionId, "#arguments.debugging.pageParts.recordCount# Profiling Data Points" )>
+							<cfset renderSectionHeadTR( sectionId, "#arguments.debugging.pageParts.recordCount# Data Points" )>
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 
