@@ -69,7 +69,7 @@
 
 		private function buildSectionStruct() {
 
-			var otherSections = [ "ALL", "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Query", "Timer", "Trace" ];
+			var otherSections = [ "ALL", "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Profiler", "Query", "Timer", "Trace" ];
 			var i = 0;
 
 			var result = {};
@@ -144,8 +144,7 @@
 			#-railo-debug.small, #-railo-debug.small td	{ font-size: 8.5pt; }
 
 			#-railo-debug table		{ empty-cells: show; }				
-			#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #999; margin-left: 9pt; }
-			
+			#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #999; margin-left: 9pt; max-width: 100%; }
 			#-railo-debug table.details th { border:1px solid #e0e0e0; font-size: 0.9em; font-weight: normal; background-color: #f2f2f2; color: #3c3e40; }
 			#-railo-debug table.details td, #-railo-debug table.details th { padding: 2px 5px; }
 			#-railo-debug table.details td	{ border-bottom: 1px solid #e0e0e0; }
@@ -154,12 +153,11 @@
 			#-railo-debug .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:#007bb7; }
 			#-railo-debug .section-title:first-child	{ margin-top: auto; }
 			#-railo-debug .label		{ white-space: nowrap; vertical-align: top; text-align: right; padding-right: 1em; }
-
 			#-railo-debug .collapsed	{ display: none; }
-
 			#-railo-debug .bold 		{ font-weight: bold; }
 			#-railo-debug .txt-c 	{ text-align: center; }
 			#-railo-debug .txt-r 	{ text-align: right; }
+			#-railo-debug table.details td.txt-r { padding-right: 1em; }
 			#-railo-debug .num-lsv 	{ font-weight: normal; }
 			#-railo-debug tr.nowrap td { white-space: nowrap; }
 			#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
@@ -168,6 +166,7 @@
 			#-railo-debug .underline.selected, .underline:hover { background-color: #222; color: #FFF; }
 			#-railo-debug .pad 	{ padding-left: 16px; }
 			#-railo-debug a 	{ cursor: pointer; }
+			#-railo-debug pre 	{ background-color: #EEE; padding: 1em; border: solid 1px #333; border-radius: 1em; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; }
 
 			.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat left center; padding: 4px 0 4px 16px; }
 			.-railo-icon-minus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)     no-repeat left center; padding: 4px 0 4px 16px; }
@@ -295,8 +294,8 @@
 								<table class="details">
 									<tr>
 										<th>Total Time</th>
-										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif></th>
 										<th>Count</th>
+										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif></th>
 										<th>Template</th>
 										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by ID (starting with the next request)">ID</a></cfif></th>
 									</tr>
@@ -317,8 +316,8 @@
 										<cfset loa=loa+pages.load>
 										<tr class="nowrap #bad ? 'red' : ''#">
 											<td class="txt-r" title="#pages.total - pages.load#">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
-											<td class="txt-r" title="#pages.avg#">#unitFormat(arguments.custom.unit, pages.avg)#</td>
-											<td class="txt-c">#pages.count#</td>
+											<td class="txt-r">#pages.count#</td>
+											<td class="txt-r" title="#pages.avg#"><cfif pages.count GT 1>#unitFormat(arguments.custom.unit, pages.avg)#<cfelse>-</cfif></td>
 											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
 											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
 										</tr>
@@ -331,8 +330,50 @@
 						</tr>
 					</table>
 
+
+
+					<cfif structKeyExists( arguments.debugging, "pageParts" ) && arguments.debugging.pageParts.recordCount GT 0>
+
+						<cfset sectionId = "Profiler">
+						<cfset isOpen = isSectionOpen( sectionId )>
+
+						<div class="section-title">Profiler Information</div>
+
+						<cfset var multiplier = 1>
+						<cfset var configArgs = getPageContext().getConfig().getExecutionLogFactory().getArgumentsAsStruct()>
+						<cfif configArgs.keyExists( "unit" ) && configArgs.unit == "micro">
+							<cfset multiplier = 1000>
+						</cfif>
+
+						<table>
+							<cfset renderSectionHeadTR( sectionId, "#arguments.debugging.pageParts.recordCount# Profiling Data Points" )>
+							<tr>
+								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
+
+									<cfset var qPageParts = arguments.debugging.pageParts>
+									<table class="details">
+										<tr><th>Total Time</th><th>Count</th><!---th>Min</th><th>Max</th!---><th>Avg Time</th><th>Source</th></tr>
+										<cfloop query="#qPageParts#">
+
+											<tr><td class="txt-r">#unitFormat( '', qPageParts.total * multiplier )#</td><td class="txt-r">#qPageParts.count#</td>
+												<cfif qPageParts.count GT 1>
+													<!---td class="txt-r">#qPageParts.min#</td><td class="txt-r">#qPageParts.max#</td!---><td class="txt-r">#unitFormat( '', qPageParts.avg * multiplier )#</td>
+												<cfelse>
+													<!---td></td><td></td!---><td class="txt-r">-</td>
+												</cfif>
+												<td><a id="-railo-debug-btn-#sectionId#-#qPageParts.currentRow#-details" class="-railo-icon-plus" onclick="__RAILO.util.toggleClass( '-railo-debug-Profiler-#qPageParts.currentRow#-details', 'collapsed' ) ? ( __RAILO.util.removeClass( this, '-railo-icon-minus'), __RAILO.util.addClass( this, '-railo-icon-plus') ) : ( __RAILO.util.removeClass( this, '-railo-icon-plus'), __RAILO.util.addClass( this, '-railo-icon-minus') )">#qPageParts.path# (#qPageParts.start# - #qPageParts.end#)</a></td></tr>
+											<tr id="-railo-debug-#sectionId#-#qPageParts.currentRow#-details" class="collapsed"><td colspan="8">#htmlCodeFormat( rtrim( getSnippet( qPageParts.path, qPageParts.start, qPageParts.end ) ) )#</td></tr>
+										</cfloop>
+									</table>
+
+								</td>
+							</tr>
+						</table>
+					</cfif>
+
+
 					<!--- Exceptions --->
-					<cfif structKeyExists( arguments.debugging,"exceptions" ) && arrayLen( arguments.debugging.exceptions )>
+					<cfif structKeyExists( arguments.debugging, "exceptions" ) && arrayLen( arguments.debugging.exceptions )>
 
 						<cfset sectionId = "Exceptions">
 						<cfset isOpen = isSectionOpen( sectionId )>
@@ -724,7 +765,6 @@
 				, getCookieNames:	function() {
 
 					var result = [];
-
 					var cookies = document.cookie.split( '; ' );
 					var len = cookies.length;
 					var parts;
@@ -732,7 +772,6 @@
 					for ( var i=0; i<len; i++ ) {
 
 						parts = cookies[ i ].split( '=' );
-
 						result.push( parts[ 0 ] );
 					}
 
@@ -760,7 +799,6 @@
 				, hasClass: 		function( obj, cls ) {
 
 					obj = __RAILO.util.getDomObject( obj );
-
 					return ( obj.className.indexOf( cls ) > -1 );
 				}
 
@@ -779,7 +817,7 @@
 					obj.className = obj.className.replace( cls, "" );
 				}
 
-				, toggleClass: 		function( obj, cls ) {		// returns true if class is there after the operation
+				, toggleClass: 		function( obj, cls ) {
 
 					obj = __RAILO.util.getDomObject( obj );
 
@@ -804,18 +842,14 @@
 				, setFlag: 		function( name ) {
 
 					var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, __RAILO.debug.allSections.ALL ) | __RAILO.debug.allSections[ name ];
-
 					__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
-
 					return value;
 				}
 
 				, clearFlag: 	function( name ) {
 
 					var value = __RAILO.util.getCookie( __RAILO.debug.cookieName, 0 ) & ( __RAILO.debug.bitmaskAll - __RAILO.debug.allSections[ name ] );
-
 					__RAILO.util.setCookie( __RAILO.debug.cookieName, value );
-
 					return value;
 				}
 
@@ -912,6 +946,35 @@
 			}
 
 			return arguments.size & 'B';
+		}
+
+
+		function getSnippet( filename, start=1, end=0 ) {
+
+			if ( !isDefined( "variables.cache.sources" ) )
+				variables.cache.sources = {};
+
+			try {
+
+				if ( variables.cache.sources.keyExists( filename ) ) {
+
+					local.src = variables.cache.sources[ filename ];
+				} else {
+
+					local.src = fileRead( filename );
+					variables.cache.sources[ filename ] = src;
+				}
+
+				if ( end == 0 )
+					end = len( src );
+
+				var result = mid( src, start, end - start + 1 );
+
+				return result;
+			} catch ( ex ) {
+
+				return "Failed to retrieve snippet: #ex.message#";
+			}
 		}
 	</cfscript>
 
