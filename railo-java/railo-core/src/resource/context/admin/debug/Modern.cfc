@@ -272,20 +272,20 @@
 					<table>
 
 						<cfset renderSectionHeadTR( sectionId
-							, "#unitFormat( arguments.custom.unit, tot-q-loa, true )# 
+							, "#unitFormat( arguments.custom.unit, tot-q-loa, true )# ms
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Application" )>
 
 						<tr><td><table>
 							<tr>
-								<td class="pad txt-r">#unitFormat( arguments.custom.unit, loa )#</td>
+								<td class="pad txt-r">#unitFormat( arguments.custom.unit, loa )# ms</td>
 								<td class="pad">Startup/Compilation</td>
 							</tr>
 							<tr>
-								<td class="pad txt-r">#unitFormat( arguments.custom.unit, q )#</td>
+								<td class="pad txt-r">#unitFormat( arguments.custom.unit, q )# ms</td>
 								<td class="pad">Query</td>
 							</tr>
 							<tr>
-								<td class="pad txt-r bold">#unitFormat( arguments.custom.unit, tot, true )#</td>
+								<td class="pad txt-r bold">#unitFormat( arguments.custom.unit, tot, true )# ms</td>
 								<td class="pad bold">Total</td>
 							</tr>
 						</table></td></tr>
@@ -294,9 +294,9 @@
 							<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 								<table class="details">
 									<tr>
-										<th>Total Time</th>
+										<th>Total Time (ms)</th>
 										<th>Count</th>
-										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif></th>
+										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif> (ms)</th>
 										<th>Template</th>
 										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by ID (starting with the next request)">ID</a></cfif></th>
 									</tr>
@@ -324,13 +324,12 @@
 										</tr>
 									</cfloop>
 									<cfif hasBad>									
-										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
+										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# ms average execution time</td></tr>
 									</cfif>
 								</table>
 							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
-
 
 
 					<cfif structKeyExists( arguments.debugging, "pageParts" ) && arguments.debugging.pageParts.recordCount GT 0>
@@ -353,7 +352,7 @@
 
 									<cfset var qPageParts = arguments.debugging.pageParts>
 									<table class="details">
-										<tr><th>Total Time</th><th>Count</th><!---th>Min</th><th>Max</th!---><th>Avg Time</th><th>Source</th></tr>
+										<tr><th>Total Time (ms)</th><th>Count</th><!---th>Min</th><th>Max</th!---><th>Avg Time (ms)</th><th>Source</th></tr>
 										<cfloop query="#qPageParts#">
 
 											<tr><td class="txt-r">#unitFormat( '', qPageParts.total * multiplier )#</td><td class="txt-r">#qPageParts.count#</td>
@@ -469,7 +468,7 @@
 
 										<tr>
 											<th align="center">Label</th>
-											<th>Time</th>
+											<th>Time (ms)</th>
 											<th>Template</th>
 										</tr>
 										<cfloop query="timers">
@@ -517,8 +516,8 @@
 												<th>Action</th>
 											</cfif>
 											<th>Var</th>
-											<th>Total Time</th>
-											<th>Trace Slot Time</th>
+											<th>Total Time (ms)</th>
+											<th>Trace Slot Time (ms)</th>
 										</tr>
 										<cfset total=0 />
 										<cfloop query="traces">
@@ -574,7 +573,7 @@
 						<div class="section-title">SQL Queries</div>
 						<table>
 							
-							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat(total, queries.time)#)" )>
+							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat(total, queries.time)# ms)" )>
 
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
@@ -587,7 +586,7 @@
 													<th></th>
 													<th>Name</th>
 													<th>Records</th>
-													<th>Time</th>
+													<th>Time (ms)</th>
 													<th>Datasource</th>
 													<th>Source</th>
 												</tr>
@@ -919,7 +918,7 @@
 			if ( prettify )
 				result = listFirst( result, '.' ) & "<span class='num-lsv'>." & listGetAt( result, 2, '.' ) & "</span>";
 
-			return result & " ms";
+			return result;
 
 			/*/ not sure what this confusing old impl was supposed to do; arguments.unit was ignored anyway!
 			if ( arguments.time >= 100000000 )
