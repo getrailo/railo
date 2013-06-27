@@ -913,7 +913,7 @@
 
 		function unitFormat( string unit, numeric time, boolean prettify=false ) {
 
-			var result = numberFormat( time / 1000000, "0.00" );
+			var result = numberFormat( time / 1000000, "0.000" );
 
 			if ( prettify )
 				result = listFirst( result, '.' ) & "<span class='num-lsv'>." & listGetAt( result, 2, '.' ) & "</span>";
