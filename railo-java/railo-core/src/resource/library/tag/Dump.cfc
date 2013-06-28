@@ -130,7 +130,7 @@ component {
 			echo('<!-- ==stop== dump -->' & variables.NEWLINE);
 		}
 		else if (arguments.attrib.output EQ "console") {
-			systemOutput(result);
+			systemOutput(result,true);
 		}
 		else {
 			file action="write" addnewline="yes" file="#arguments.attrib.output#" output="#result#";
