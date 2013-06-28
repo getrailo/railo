@@ -218,7 +218,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * @return value component
      */
     public Component getComponent() {
-        return component;
+        return component.top;
     }
 
     /*public Object get(PageContext pc, String key, Object defaultValue) {

@@ -125,7 +125,7 @@ import flex.messaging.config.ConfigMap;
  */
 public abstract class ConfigImpl implements Config {
 
-
+	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config
 
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
@@ -262,6 +262,7 @@ public abstract class ConfigImpl implements Config {
     
     private LogAndSource requestTimeoutLogger=null;
     private LogAndSource applicationLogger=null;
+    private LogAndSource deployLogger=null;
     private LogAndSource exceptionLogger=null;
 	private LogAndSource traceLogger=null;
 
@@ -964,10 +965,11 @@ public abstract class ConfigImpl implements Config {
     public Resource getPhysical(Mapping[] mappings, String realPath, boolean alsoDefaultMapping) {
     	throw new PageRuntimeException(new DeprecatedException("method not supported"));
     }
-    
 
     public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
-    	PageSource[] pages = getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping);
+    	// now that archives can be used the same way as physical resources, there is no need anymore to limit to that
+    	throw new PageRuntimeException(new DeprecatedException("method not supported"));
+    	/*PageSource[] pages = getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping);
     	List<Resource> list=new ArrayList<Resource>();
     	Resource res;
     	for(int i=0;i<pages.length;i++) {
@@ -975,14 +977,16 @@ public abstract class ConfigImpl implements Config {
     		res=pages[i].getPhyscalFile();
     		if(res!=null) list.add(res);
     	}
-    	return list.toArray(new Resource[list.size()]);
+    	return list.toArray(new Resource[list.size()]);*/
     }
     
 
     public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
-    	PageSource ps = getPageSourceExisting(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping,true);
+    	// now that archives can be used the same way as physical resources, there is no need anymore to limit to that
+    	throw new PageRuntimeException(new DeprecatedException("method not supported"));
+    	/*PageSource ps = getPageSourceExisting(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping,true);
     	if(ps==null) return null;
-    	return ps.getPhyscalFile();
+    	return ps.getPhyscalFile();*/
     }
 
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
@@ -1036,23 +1040,32 @@ public abstract class ConfigImpl implements Config {
     // map resource to root mapping when same filesystem
         Mapping rootMapping = this.mappings[this.mappings.length-1];
         Resource root;
-     // Physical
-        if(rootMapping.hasPhysical()) {
-	        root=rootMapping.getPhysical();
-	        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
-	        	String realpath="";
-	        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
-	        		root=root.getParentResource();
-	        		realpath+="../";
-	        	}
-	        	String p2c=ResourceUtil.getPathToChild(res,root);
-	        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
-	        		p2c=p2c.substring(1);
-	        	realpath+=p2c;
-	        	
-	        	return rootMapping.getPageSource(realpath);
-	        }
+        if(rootMapping.hasPhysical() && 
+        		res.getResourceProvider().getScheme().equals((root=rootMapping.getPhysical()).getResourceProvider().getScheme())) {
+	        
+        	String realpath="";
+        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
+        		root=root.getParentResource();
+        		realpath+="../";
+        	}
+        	String p2c=ResourceUtil.getPathToChild(res,root);
+        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
+        		p2c=p2c.substring(1);
+        	realpath+=p2c;
+        	
+        	return rootMapping.getPageSource(realpath);
+	        
         }
+        // MUST better impl than this
+        if(this instanceof ConfigWebImpl) {
+        	Resource parent = res.getParentResource();
+        	if(parent!=null && !parent.equals(res)) {
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath());
+        		return m.getPageSource(res.getName());
+        	}
+        }
+        
+		
      // Archive
         // MUST check archive
         return defaultValue;
@@ -1077,6 +1090,13 @@ public abstract class ConfigImpl implements Config {
     public LogAndSource getApplicationLogger() {
     	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return applicationLogger;
+    }
+    
+    public LogAndSource getDeployLogger() {
+    	if(deployLogger==null){
+    		deployLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_INFO),"");
+    	}
+		return deployLogger;
     }
     
     public LogAndSource getScopeLogger() {
@@ -1191,7 +1211,7 @@ public abstract class ConfigImpl implements Config {
     protected void setTagDirectory(Resource tagDirectory) {
     	this.tagDirectory=tagDirectory;
     	
-    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
+    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,ConfigImpl.INSPECT_NEVER,true,true,true,true,false,true,null);
     	
     	TagLib tl=getCoreTagLib();
     	
@@ -1251,7 +1271,7 @@ public abstract class ConfigImpl implements Config {
     
     protected void setFunctionDirectory(Resource functionDirectory) {
     	//this.functionDirectory=functionDirectory;
-    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
+    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,ConfigImpl.INSPECT_NEVER,true,true,true,true,false,true,null);
     	FunctionLib fl=flds[flds.length-1];
         
         // now overwrite with new data
@@ -1826,6 +1846,9 @@ public abstract class ConfigImpl implements Config {
     protected void setApplicationLogger(LogAndSource applicationLogger) {
         this.applicationLogger=applicationLogger;
     }
+    protected void setDeployLogger(LogAndSource deployLogger) {
+        this.deployLogger=deployLogger;
+    }
 
     protected void setScopeLogger(LogAndSource scopeLogger) {
         this.scopeLogger=scopeLogger;
@@ -2264,7 +2287,7 @@ public abstract class ConfigImpl implements Config {
 
 	@Override
 	public ApplicationListener getApplicationListener() {
-		return applicationListener;//new ModernAppListener();//new ClassicAppListener();
+		return applicationListener;
 	}
 
 	/**
@@ -3164,7 +3187,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false,true,true
+				null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}

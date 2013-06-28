@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -19,7 +19,10 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
 
-public final class StructFindValue implements Function {
+public final class StructFindValue extends BIF {
+
+	private static final long serialVersionUID = 1499023912262918840L;
+
 	public static Array call(PageContext pc , railo.runtime.type.Struct struct, String value) throws PageException {
 		return call(pc,struct,value,"one");
 	}
@@ -75,4 +78,10 @@ public final class StructFindValue implements Function {
         
         return abort;
     }
+    
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==3) return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]),Caster.toString(args[2]));
+		return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]));
+	}
 }

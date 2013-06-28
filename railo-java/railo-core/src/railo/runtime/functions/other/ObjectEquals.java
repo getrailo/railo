@@ -68,6 +68,13 @@ public class ObjectEquals {
 	
 	private static boolean _equals(HashSet<Object> done,Component left, Component right) {
 		if(left==null || right==null) return false;
+		
+		/*ComponentImpl lefti=(ComponentImpl) left;
+		ComponentImpl righti=(ComponentImpl) right;
+		print.e(lefti.getName()+"="+lefti._getName());
+		print.e(righti.getName()+"="+righti._getName());*/
+		
+		
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		
 		if(!_equals(done,left.getComponentScope(),right.getComponentScope())) return false;

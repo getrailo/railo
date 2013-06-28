@@ -1420,7 +1420,7 @@ public final class Caster {
      * @throws PageException
      */
     public static Long toLong(Object o) throws PageException {
-        if(o instanceof Long) return (Long)o;
+        if(o instanceof Long) return (Long)o; 
         return Long.valueOf(toLongValue(o));
         
     }
@@ -2674,7 +2674,7 @@ public final class Caster {
     	if(o instanceof ObjectWrap) {
             return toQuery(((ObjectWrap)o).getEmbededObject());
         }
-        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
+        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query", ThreadLocalPageContext.getTimeZone());
         throw new CasterException(o,"query");
     }
     
@@ -4040,10 +4040,6 @@ public final class Caster {
         return defaultValue;
     }
 	
-	public static Resource toResourceX(Object src, boolean existing) throws ExpressionException {
-		return toResource(ThreadLocalPageContext.get(), src, existing);
-	}
-
 	public static Resource toResource(PageContext pc,Object src, boolean existing) throws ExpressionException {
 		return toResource(pc,src,existing,pc.getConfig().allowRealPath());
 	}

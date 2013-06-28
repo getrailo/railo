@@ -160,6 +160,11 @@ public final class UDFAddProperty extends UDFGSProperty {
 	public Object getDefaultValue(PageContext pc, int index) throws PageException {
 		return prop.getDefault();
 	}
+	
+	@Override
+	public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException {
+		return prop.getDefault();
+	}
 
 	@Override
 	public String getReturnTypeAsString() {

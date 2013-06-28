@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
@@ -135,13 +136,13 @@ public class QueryImpl implements Query,Objects {
 	 * @param name 
 	 * @throws PageException
      */
-    public QueryImpl(ResultSet result, int maxrow, String name) throws PageException {
+    public QueryImpl(ResultSet result, int maxrow, String name, TimeZone tz) throws PageException {
     	this.name=name;
         //Stopwatch stopwatch=new Stopwatch();
 		//stopwatch.start();
 		long start=System.nanoTime();
     	try {
-            fillResult(null,result,maxrow,false,false);
+            fillResult(null,result,maxrow,false,false,tz);
         } catch (SQLException e) {
             throw new DatabaseException(e,null);
         } catch (IOException e) {
@@ -158,11 +159,11 @@ public class QueryImpl implements Query,Objects {
     }
     
     
-    public QueryImpl(ResultSet result, String name) throws PageException {
+    public QueryImpl(ResultSet result, String name,TimeZone tz) throws PageException {
 		this.name=name;
         
 		try {	
-		    fillResult(null,result,-1,true,false);
+		    fillResult(null,result,-1,true,false,tz);
 		} 
 		catch (SQLException e) {
 			throw new DatabaseException(e,null);
@@ -193,7 +194,7 @@ public class QueryImpl implements Query,Objects {
 		this.name=name;
 		this.template=template;
         this.sql=sql;
-		
+		TimeZone tz = ThreadLocalPageContext.getTimeZone(pc);
         //ResultSet result=null;
 		Statement stat=null;
 		// check SQL Restrictions
@@ -228,7 +229,7 @@ public class QueryImpl implements Query,Objects {
 	        	//closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
-	            setItems(preStat,items);
+	            setItems(ThreadLocalPageContext.getTimeZone(pc),preStat,items);
 		        hasResult=QueryUtil.execute(pc,preStat);    
 	        }
 			int uc;
@@ -236,10 +237,10 @@ public class QueryImpl implements Query,Objects {
 			do {
 				if(hasResult) {
 					res=stat.getResultSet();
-					if(fillResult(dc,res, maxrow, true,createGeneratedKeys))break;
+					if(fillResult(dc,res, maxrow, true,createGeneratedKeys,tz))break;
 				}
 				else if((uc=setUpdateCount(stat))!=-1){
-					if(uc>0 && createGeneratedKeys)setGeneratedKeys(dc, stat);
+					if(uc>0 && createGeneratedKeys)setGeneratedKeys(dc, stat,tz);
 				}
 				else break;
 				try{
@@ -281,10 +282,10 @@ public class QueryImpl implements Query,Objects {
 		return -1;
 	}
 	
-	private boolean setGeneratedKeys(DatasourceConnection dc,Statement stat)  {
+	private boolean setGeneratedKeys(DatasourceConnection dc,Statement stat, TimeZone tz)  {
 		try{
 			ResultSet rs = stat.getGeneratedKeys();
-			setGeneratedKeys(dc, rs);
+			setGeneratedKeys(dc, rs,tz);
 			return true;
 		}
 		catch(Throwable t) {t.printStackTrace();
@@ -292,8 +293,8 @@ public class QueryImpl implements Query,Objects {
 		}
 	}
 	
-	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
-		generatedKeys=new QueryImpl(rs,"");
+	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs, TimeZone tz) throws PageException  {
+		generatedKeys=new QueryImpl(rs,"",tz);
 		
 		// ACF compatibility action 
 		if(generatedKeys.getColumnCount()==1 && DataSourceUtil.isMSSQL(dc)) {
@@ -327,10 +328,9 @@ public class QueryImpl implements Query,Objects {
 	}*/
 
 
-	private void setItems(PreparedStatement preStat, SQLItem[] items) throws DatabaseException, PageException, SQLException {
-		
+	private void setItems(TimeZone tz,PreparedStatement preStat, SQLItem[] items) throws DatabaseException, PageException, SQLException {
 		for(int i=0;i<items.length;i++) {
-            SQLCaster.setValue(preStat,i+1,items[i]);
+            SQLCaster.setValue(tz,preStat,i+1,items[i]);
         }
 	}
 
@@ -347,7 +347,7 @@ public class QueryImpl implements Query,Objects {
         if(timeout>0)stat.setQueryTimeout(timeout);
 	}
 
-    private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {
+    private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys, TimeZone tz) throws SQLException, IOException, PageException {
     	if(result==null) return false;
     	recordcount=0;
 		ResultSetMetaData meta = result.getMetaData();
@@ -413,7 +413,7 @@ public class QueryImpl implements Query,Objects {
 			columncount=0;
 			columnNames=null;
 			columns=null;
-			setGeneratedKeys(dc, result);
+			setGeneratedKeys(dc, result,tz);
 			return false;
 		}
 		
@@ -425,7 +425,7 @@ public class QueryImpl implements Query,Objects {
 				break;
 			}
 			for(int i=0;i<usedColumns.length;i++) {
-			    columns[i].add(casts[i].toCFType(types[i], result, usedColumns[i]+1));
+			    columns[i].add(casts[i].toCFType(tz,types[i], result, usedColumns[i]+1));
 			}
 			++recordcount;
 		}
@@ -2942,8 +2942,8 @@ public class QueryImpl implements Query,Objects {
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
 	
-	@Override
+	/*@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
-	}
+	}*/
 }

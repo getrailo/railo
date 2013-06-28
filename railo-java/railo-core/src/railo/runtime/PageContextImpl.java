@@ -39,6 +39,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -60,6 +61,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.db.DataSource;
@@ -99,7 +101,9 @@ import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.JavaSettings;
 import railo.runtime.listener.JavaSettingsImpl;
+import railo.runtime.listener.ModernAppListener;
 import railo.runtime.listener.ModernAppListenerException;
+import railo.runtime.listener.NoneAppListener;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
@@ -1193,8 +1197,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		//if(!server.isInitalized()) server.initialize(this);
 		return server;
 	}
+	
+    public void reset() {
+    	server=ScopeContext.getServerScope(this);
+	}
     
-    @Override
+	@Override
     public Cluster clusterScope() throws PageException {
     	return clusterScope(true);
 	}
@@ -1894,7 +1902,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     @Override
     public void executeRest(String realPath, boolean throwExcpetion) throws PageException  {
-    	ApplicationListener listener=config.getApplicationListener();
+    	ApplicationListener listener=null;//config.get ApplicationListener();
 	    try{
     	String pathInfo = req.getPathInfo();
     	
@@ -2012,7 +2020,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
             m = restMappings[i];
             if(m.isDefault())defaultMapping=m;
-            if(pathInfo.startsWith(m.getVirtualWithSlash(),0)) {
+            if(pathInfo.startsWith(m.getVirtualWithSlash(),0) && m.getPhysical()!=null) {
             	mapping=m;
             	//result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
             	rl=new RestRequestListener(m,pathInfo.substring(m.getVirtual().length()),matrix,format,hasFormatExtension,accept,contentType,null);
@@ -2021,7 +2029,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
     	
     	// default mapping
-    	if(mapping==null && defaultMapping!=null) {
+    	if(mapping==null && defaultMapping!=null && defaultMapping.getPhysical()!=null) {
     		mapping=defaultMapping;
             //result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
         	rl=new RestRequestListener(mapping,pathInfo,matrix,format,hasFormatExtension,accept,contentType,null);
@@ -2031,33 +2039,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	//base = PageSourceImpl.best(config.getPageSources(this,null,realPath,true,false,true));
     	
     	
-    	if(mapping==null){
+    	if(mapping==null || mapping.getPhysical()==null){
     		RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
     	}
     	else {
     		base=config.toPageSource(null, mapping.getPhysical(), null);
-    		listener.onRequest(this, base,rl);
+    		listener=((MappingImpl)base.getMapping()).getApplicationListener();
+    	    listener.onRequest(this, base,rl);
     	}
     	
-    	
-    	
-    	//RestRequestListener rl = new RestRequestListener(mapping,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
-    	
-    	/*if(result!=null){
-    		//railo.runtime.rest.Source source=result.getSource();
-    		//print.e(source.getPageSource());
-
-    		//base=source.getPageSource();
-    		//req.setAttribute("client", "railo-rest-1-0");
-    		//req.setAttribute("rest-path", callerPath);
-    		//req.setAttribute("rest-result", result);
-    		listener.onRequest(this, base);
-    		//doInclude(source.getPageSource());
-    	}
-    	else {
-    		if(mapping==null)RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
-    		else RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found in mapping ["+mapping.getVirtual()+"]");
-    	}*/
     	
     	
     	}
@@ -2068,6 +2058,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    		if(fdEnabled){
 	        		FDSignal.signal(pe, false);
 	        	}
+	    		if(listener==null) {
+	    			if(base==null)listener=config.getApplicationListener();
+	    			else listener=((MappingImpl)base.getMapping()).getApplicationListener();
+	    		}
 	    		listener.onError(this,pe);	
 	    	}
 	    	else log(false);
@@ -2088,7 +2082,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
     	//SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
-	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
 	    	base=null;
 	    	int index = realPath.indexOf('/',9);
@@ -2112,9 +2105,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    		}*/
 	    	}
 	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
-	    	
 	    }
 	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
+	    ApplicationListener listener=gatewayContext?new NoneAppListener():((MappingImpl)base.getMapping()).getApplicationListener();
 	    
 	    try {
 	    	listener.onRequest(this,base,null);
@@ -2609,9 +2602,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return return  value of method "onApplicationStart" or true
      * @throws PageException 
      */
-    public boolean initApplicationContext() throws PageException {
+    public boolean initApplicationContext(ApplicationListener listener) throws PageException {
     	boolean initSession=false;
-	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
+    	//AppListenerSupport listener = (AppListenerSupport) config.get ApplicationListener();
     	KeyLock<String> lock = config.getContextLock();
     	String name=StringUtil.emptyIfNull(applicationContext.getName());
     	String token=name+":"+getCFID();
@@ -2891,7 +2884,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	public boolean isTrusted(Page page) {
 		if(page==null)return false;
-		short it = config.getInspectTemplate();
+		
+		short it = ((MappingImpl)page.getPageSource().getMapping()).getInspectTemplate();
 		if(it==ConfigImpl.INSPECT_NEVER)return true;
 		if(it==ConfigImpl.INSPECT_ALWAYS)return false;
 		
@@ -2999,6 +2993,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public DataSource getDataSource(String datasource) throws PageException {
 		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
 		if(ds==null) ds=getConfig().getDataSource(datasource);
+		return ds;
+	}
+		
+// FUTURE add to PageContext
+	public DataSource getDataSource(String datasource, DataSource defaultValue) {
+		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		if(ds==null) ds=getConfig().getDataSource(datasource,defaultValue);
 		return ds;
 	}
 

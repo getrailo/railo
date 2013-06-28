@@ -136,6 +136,8 @@ public class Variable extends ExpressionBase implements Invoker {
 	int countFM=0;
 	private boolean ignoredFirstMember;
 
+	private boolean fromHash=false;
+
 	public Variable(Position start,Position end) {
 		super(start,end);
 	}
@@ -595,6 +597,14 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		
 		
 		return named;
+	}
+
+	public void setFromHash(boolean fromHash) {
+		this.fromHash=fromHash;
+	}
+
+	public boolean fromHash() {
+		return fromHash;
 	}
 	
 }

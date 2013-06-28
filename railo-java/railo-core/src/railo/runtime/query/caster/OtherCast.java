@@ -3,12 +3,13 @@ package railo.runtime.query.caster;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.TimeZone;
 
 public class OtherCast implements Cast {
 
 
 	@Override
-	public Object toCFType(int type, ResultSet rst, int columnIndex) throws SQLException {
+	public Object toCFType(TimeZone tz, int type, ResultSet rst, int columnIndex) throws SQLException {
 		if(type!=Types.SMALLINT) return rst.getObject(columnIndex);
 		
 		

@@ -46,6 +46,7 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigServerFactory;
 import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
@@ -330,16 +331,23 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         ConfigWeb config = factory.getConfig();
-        Resource res = ((ConfigWebImpl)config).getPhysicalResourceExisting(null, null, req.getServletPath(), false, true, true); 
+        PageSource ps = config.getPageSourceExisting(null, null, req.getServletPath(), false, true, true, false);
+        //Resource res = ((ConfigWebImpl)config).getPhysicalResourceExistingX(null, null, req.getServletPath(), false, true, true); 
         
-		if(res==null) {
+		if(ps==null) {
     		rsp.sendError(404);
     	}
     	else {
-    		ReqRspUtil.setContentLength(rsp,res.length());
-    		String mt = servlet.getServletContext().getMimeType(req.getServletPath());
-    		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
-    		IOUtil.copy(res, rsp.getOutputStream(), true);
+    		Resource res = ps.getResource();
+    		if(res==null) {
+    			rsp.sendError(404);
+    		}
+    		else {
+	    		ReqRspUtil.setContentLength(rsp,res.length());
+	    		String mt = servlet.getServletContext().getMimeType(req.getServletPath());
+	    		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
+	    		IOUtil.copy(res, rsp.getOutputStream(), true);
+    		}
     	}
 	}
 	

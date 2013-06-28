@@ -23,10 +23,12 @@
 		<cfargument name="extends" required="false" type="boolean" default="false" />
 		<cfset var result = {}/>
 		<cfset var access = "" />
-		<cfset var meta = getComponentmetadata(arguments.cfc)/>
-		<cfset var methods = filterFunction(meta.functions,arguments.methods) />
-		<cfset result.functions = createObject('java','java.util.ArrayList').init() />	
-		<cfset result.functions.addAll(methods) />
+		<cfset var meta = getComponentmetadata(arguments.cfc)/>		
+		<cfset result.functions = createObject('java','java.util.ArrayList').init() />
+		<cfif structKeyExists(meta,'FUNCTIONS')>
+			<cfset var methods = filterFunction(meta.functions,arguments.methods) />
+			<cfset result.functions.addAll(methods) />
+		</cfif>	
 		<cfif arguments.extends>
 			<cfset addExtendedFunctions(meta.extends,result.functions,arguments.methods)/>	
 		</cfif>

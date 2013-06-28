@@ -28,7 +28,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -41,9 +40,8 @@ import railo.runtime.writer.CFMLWriter;
  */
 public abstract class PageExceptionImpl extends PageException {
 
-	private static final Collection.Key RAW_TRACE = KeyImpl.intern("raw_trace");
-	private static final Collection.Key CODE_PRINT_HTML = KeyImpl.intern("codePrintHTML");
-	private static final Collection.Key CODE_PRINT_PLAIN = KeyImpl.intern("codePrintPlain");
+	private static final long serialVersionUID = -5816929795661373219L;
+	
 	
 	
 	
@@ -62,7 +60,7 @@ public abstract class PageExceptionImpl extends PageException {
 	private String type;
 	private String customType;
 	private boolean isInitTagContext=false;
-	private LinkedList sources=new LinkedList();
+	private LinkedList<PageSource> sources=new LinkedList<PageSource>();
 	private String varName;
 
 
@@ -113,7 +111,7 @@ public abstract class PageExceptionImpl extends PageException {
         
 		if(e instanceof IPageException) {
             IPageException pe=(IPageException)e;
-			this.additional=pe.getAddional();
+			this.additional=pe.getAdditional();
 			this.setDetail(pe.getDetail());
 			this.setErrorCode(pe.getErrorCode());
 			this.setExtendedInfo(pe.getExtendedInfo());
@@ -175,17 +173,17 @@ public abstract class PageExceptionImpl extends PageException {
 
 	public static Array getTagContext(Config config,StackTraceElement[] traces) {
 		Array tagContext=new ArrayImpl();
-		_getTagContext( config,tagContext,traces,new LinkedList());
+		_getTagContext( config,tagContext,traces,new LinkedList<PageSource>());
 		return tagContext;
 	}
 	
 
-	private static void _getTagContext(Config config, Array tagContext, Throwable t, LinkedList sources) {
+	private static void _getTagContext(Config config, Array tagContext, Throwable t, LinkedList<PageSource> sources) {
 		_getTagContext(config, tagContext, getStackTraceElements(t), sources);
 	}
 	
 	private static void _getTagContext(Config config, Array tagContext, StackTraceElement[] traces, 
-			LinkedList sources) {
+			LinkedList<PageSource> sources) {
 		//StackTraceElement[] traces = getStackTraceElements(t);
 		
 		int line=0;
@@ -215,7 +213,7 @@ public abstract class PageExceptionImpl extends PageException {
 				if(res.exists())	
 					content=IOUtil.toStringArray(IOUtil.getReader(res,config.getTemplateCharset()));
 				else {
-					if(sources.size()>index)ps=(PageSource) sources.get(index);
+					if(sources.size()>index)ps = sources.get(index);
 					else ps=null;
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
@@ -232,7 +230,7 @@ public abstract class PageExceptionImpl extends PageException {
 			if(tagContext.size()>0){
 				try {
 					Struct last=(Struct) tagContext.getE(tagContext.size());
-					if(last.get(RAW_TRACE).equals(trace.toString()))continue;
+					if(last.get(KeyConstants._Raw_Trace).equals(trace.toString()))continue;
 				} 
 				catch (Exception e) {
 					//e.printStackTrace();
@@ -244,16 +242,16 @@ public abstract class PageExceptionImpl extends PageException {
 			item.setEL(KeyConstants._template,template);
 			item.setEL(KeyConstants._line,new Double(line));
 			item.setEL(KeyConstants._id,"??");
-			item.setEL(RAW_TRACE,trace.toString());
+			item.setEL(KeyConstants._Raw_Trace,trace.toString());
 			item.setEL(KeyConstants._type,"cfml");
 			item.setEL(KeyConstants._column,new Double(0));
 			if(content!=null) {
-				item.setEL(CODE_PRINT_HTML,getCodePrint(content,line,true));
-				item.setEL(CODE_PRINT_PLAIN,getCodePrint(content,line,false));
+				item.setEL(KeyConstants._codePrintHTML,getCodePrint(content,line,true));
+				item.setEL(KeyConstants._codePrintPlain,getCodePrint(content,line,false));
 			}
 			else {
-				item.setEL(CODE_PRINT_HTML,"");
-				item.setEL(CODE_PRINT_PLAIN,"");
+				item.setEL(KeyConstants._codePrintHTML,"");
+				item.setEL(KeyConstants._codePrintPlain,"");
 			}
 			// FUTURE id 
 			tagContext.appendEL(item);
@@ -297,12 +295,12 @@ public abstract class PageExceptionImpl extends PageException {
 		struct.setEL("StackTrace",getStackTraceAsString());
 		struct.setEL(KeyConstants._template,pc. getHttpServletRequest().getServletPath());
 		
-			struct.setEL(KeyConstants._Detail,getDetail());
-			struct.setEL("ErrorCode",getErrorCode());
-			struct.setEL("ExtendedInfo",getExtendedInfo());
-			struct.setEL(KeyConstants._type,getTypeAsString());
-			struct.setEL("TagContext",getTagContext(pc.getConfig()));
-			struct.setEL("additional",additional);
+		struct.setEL(KeyConstants._Detail,getDetail());
+		struct.setEL("ErrorCode",getErrorCode());
+		struct.setEL("ExtendedInfo",getExtendedInfo());
+		struct.setEL(KeyConstants._type,getTypeAsString());
+		struct.setEL("TagContext",getTagContext(pc.getConfig()));
+		struct.setEL("additional",additional);
 			// TODO RootCause,StackTrace
 		
 		return struct;
@@ -328,14 +326,14 @@ public abstract class PageExceptionImpl extends PageException {
         if(getTagContext(config).size()==0) return "";
         
         Struct sct=(Struct) getTagContext(config).get(1,null);
-        return Caster.toString(sct.get("template",""),"");
+        return Caster.toString(sct.get(KeyConstants._template,""),"");
     }
     
 	public String getLine(Config config) {
         if(getTagContext(config).size()==0) return "";
         
         Struct sct=(Struct) getTagContext(config).get(1,null);
-        return Caster.toString(sct.get("line",""),"");
+        return Caster.toString(sct.get(KeyConstants._line,""),"");
     }
     
 	@Override
@@ -352,12 +350,12 @@ public abstract class PageExceptionImpl extends PageException {
 			struct.set(KeyConstants._template,pr.getDisplayPath());
 			struct.set(KeyConstants._line,new Double(line));
 			struct.set(KeyConstants._id,"??");
-			struct.set("Raw_Trace",(element!=null)?element.toString():"");
+			struct.set(KeyConstants._Raw_Trace,(element!=null)?element.toString():"");
 			struct.set(KeyConstants._Type,"cfml");
 			struct.set(KeyConstants._column,new Double(column));
 			if(content!=null){
-				struct.set(CODE_PRINT_HTML,getCodePrint(content,line,true));
-				struct.set(CODE_PRINT_PLAIN,getCodePrint(content,line,false));
+				struct.set(KeyConstants._codePrintHTML,getCodePrint(content,line,true));
+				struct.set(KeyConstants._codePrintPlain,getCodePrint(content,line,false));
 			}
 			tagContext.append(struct);
 		} 
@@ -431,7 +429,7 @@ public abstract class PageExceptionImpl extends PageException {
 				
 				
 				// Code
-				String strCode=((Struct)tagContext.get(1,null)).get("codePrintPlain","").toString();
+				String strCode=((Struct)tagContext.get(1,null)).get(KeyConstants._codePrintPlain,"").toString();
 				String[] arrCode = ListUtil.listToStringArray(strCode, '\n');
 				arrCode=ListUtil.trim(arrCode);
 				DumpTable code=new DumpTable("#ff9900","#FFCC00","#000000");

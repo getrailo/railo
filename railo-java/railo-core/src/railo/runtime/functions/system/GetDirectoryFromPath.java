@@ -10,7 +10,10 @@ import railo.runtime.ext.function.Function;
 
 public final class GetDirectoryFromPath implements Function {
 	public static String call(PageContext pc , String path) {
-		
+		return invoke(path);
+	}
+	
+	public static String invoke(String path) {
 		int posOfLastDel = path.lastIndexOf('/');
 		String parent = "";
 		

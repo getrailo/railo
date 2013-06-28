@@ -3,6 +3,7 @@ package railo.runtime.query.caster;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.TimeZone;
 
 public interface Cast {
 
@@ -16,5 +17,5 @@ public interface Cast {
 	public static final Cast TIME=new TimeCast();
 	public static final Cast TIMESTAMP=new TimestampCast();
 	
-	public Object toCFType(int type,ResultSet rst, int columnIndex) throws SQLException, IOException;
+	public Object toCFType(TimeZone tz,int type,ResultSet rst, int columnIndex) throws SQLException, IOException;
 }

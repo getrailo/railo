@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
@@ -397,7 +398,7 @@ public class SimpleQueryColumn implements QueryColumn {
 			}
 			
 		}
-		return data[row-1]=cast.toCFType(type, res, index);
+		return data[row-1]=cast.toCFType(null, type, res, index);
 	}
 
 	

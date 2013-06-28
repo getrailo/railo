@@ -76,7 +76,11 @@ topic=no
 	<cffunction name="getDescription" returntype="string" output="no">
     	<cfreturn "Processing a JMS messages in Railo">
     </cffunction>
-    
+	
+	<cffunction name="getListenerCFCDescription" returntype="string" output="no">
+    	<cfreturn "Path to a Listener Component with the following function: onIncomingMessage(string msgId (JMS Message id), string originatorID (destination name), string GatewayType (topic or queue), boolean transacted, any msg (text or struct, depending on the message), any jmsmsg (original JMS Message), jmssession (original JMS session))">
+    </cffunction>
+	
 	<cffunction name="onBeforeUpdate" returntype="void" output="false">
 		<cfargument name="cfcPath" required="true" type="string">
 		<cfargument name="startupMode" required="true" type="string">

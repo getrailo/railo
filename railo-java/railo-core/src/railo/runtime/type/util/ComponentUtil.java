@@ -731,7 +731,8 @@ public final class ComponentUtil {
             	param.set(KeyConstants._default, "[runtime expression]");
             }
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
-            	param.set(KeyConstants._default, ComponentUtil.getPage(pc,udf.pageSource).udfDefaultValue(pc,udf.index,y));
+            	param.set(KeyConstants._default, 
+            			UDFUtil.getDefaultValue(pc, udf.pageSource, udf.index, y, null));
             }
             
             hint=args[y].getHint();

@@ -84,7 +84,8 @@ public class CollectionUtil {
 		return rtn.toArray(new String[rtn.size()]);
 	}
 
-	public static int hashCode(Collection coll) {
+	/*public static int hashCode(Collection coll) { produce infiniti loop when there is a refrerence to itself or a anchestor
+
 		int hashCode = 1;
 		Iterator<Entry<Key, Object>> it = coll.entryIterator();
 		Entry<Key, Object> e;
@@ -98,5 +99,5 @@ public class CollectionUtil {
 			);
 		}
 		return hashCode;
-	}
+	}*/
 }

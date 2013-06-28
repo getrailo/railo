@@ -371,8 +371,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
 	
-	@Override
+	/*@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
-	}
+	}*/
 }

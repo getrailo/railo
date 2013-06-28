@@ -10,26 +10,28 @@
 		<cfcase value="#stText.Buttons.verify#">
 			<cfset data.urls=toArrayFromForm("url")>
 			<cfset data.rows=toArrayFromForm("row")>
+			
 			<cfloop from="1" to="#arrayLen(data.urls)#" index="idx">
 				<cfif arrayIndexExists(data.rows,idx)>
-					<cftry>
-						<cfadmin 
-							action="verifyExtensionProvider"
-							type="#request.adminType#"
-							password="#session["password"&request.adminType]#"
-							
-							url="#trim(data.urls[idx])#">
-							<cfset stVeritfyMessages["#data.urls[idx]#"].Label = "OK">
-						<cfcatch>
-							<cfset stVeritfyMessages["#data.urls[idx]#"].Label = "Error">
-							<cfset stVeritfyMessages["#data.urls[idx]#"].message = cfcatch.message>
-							<cfset stVeritfyMessages["#data.urls[idx]#"].detail = cfcatch.detail>
-							
-						</cfcatch>
-					</cftry> 
+					<cfset data.validUrls[idx]=data.urls[idx]>
 				</cfif>
 			</cfloop>
 			
+			<cfif arrayLen(data.validUrls)>
+				<cfset datas=loadProvidersData(data.validUrls,10000,true)>
+			<cfelse>
+				<cfset datas={}>
+			</cfif>
+			
+			<cfloop collection="#datas#" index="provider" item="data">
+				<cfif isSimpleValue(data)>
+					<cfset stVeritfyMessages[provider].Label = "Error">
+					<cfset stVeritfyMessages[provider].message = "was not able to retrieve data from ["&provider&"] within 10 seconds.">
+					<cfset stVeritfyMessages[provider].detail = "">
+				<cfelse>
+					<cfset stVeritfyMessages[provider].Label = "OK">
+				</cfif>
+			</cfloop>
 		</cfcase>
 		<cfcase value="#stText.Buttons.save#">
 			<cfset data.urls=toArrayFromForm("url")>
@@ -86,17 +88,14 @@
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="providers">
+	
+	
+
+
 
 <cfset hasAccess=true>
 
-<cfset infos={}>
-<cfloop query="providers">
-	<cftry>
-		<cfset provider = loadCFC(providers.url)>
-		<cfset infos[providers.url] = provider.getInfo()>
-		<cfcatch></cfcatch>
-	</cftry>
-</cfloop>
+<cfset datas=loadProvidersData(queryColumnData(providers,'url'),100)>
 
 
 
@@ -109,7 +108,12 @@ list all mappings and display necessary edit fields --->
 	
 	<cfset doMode=false>
 	<cfloop query="providers">
-		<cfif StructKeyExists(infos,providers.url) and StructKeyExists(infos[providers.url],"mode") and trim(infos[providers.url].mode) EQ "develop">
+		<cfif 
+			StructKeyExists(datas,providers.url) and 
+			!isSimpleValue(datas[providers.url]) and
+			StructKeyExists(datas[providers.url],"getInfo") and 
+			StructKeyExists(datas[providers.url].getInfo,"mode") and 
+			trim(datas[providers.url].getInfo.mode) EQ "develop">
 			<cfset doMode=true>
 		</cfif>
 	</cfloop>
@@ -144,26 +148,32 @@ list all mappings and display necessary edit fields --->
 							<input type="hidden" name="url_#providers.currentrow#" value="#providers.url#">
 							#providers.url#
 						</td>
-						<cfset hasData = StructKeyExists(infos,providers.url) />
+						<cfset hasData = 
+								StructKeyExists(datas,providers.url) and 
+								!isSimpleValue(datas[providers.url]) and
+								StructKeyExists(datas[providers.url],"getInfo")/>
+						<cfif hasData>
+							<cfset info=datas[providers.url].getInfo>
+						</cfif>
 						 
 						<!--- title --->
 						<td>
-							<cfif hasData and StructKeyExists(infos[providers.url],"image")>
-								<cfset dn=getDumpNail(infos[providers.url].image,100,30)>
+							<cfif hasData and StructKeyExists(info,"image")>
+								<cfset dn=getDumpNail(info.image,100,30)>
 								<cfif len(dn)>
 									<img src="#dn#" border="0"/> &nbsp;
 								</cfif>
 							</cfif>
-							<cfif hasData and StructKeyExists(infos[providers.url],"title") and len(trim(infos[providers.url].title))>
-								#infos[providers.url].title#
+							<cfif hasData and StructKeyExists(info,"title") and len(trim(info.title))>
+								#info.title#
 							</cfif>
 						</td>
 						<!--- mode --->
 						<cfif doMode>
 							<td>
 								<cfif hasData>
-									<cfif StructKeyExists(infos[providers.url],"mode") and len(trim(infos[providers.url].mode))>
-										#infos[providers.url].mode#
+									<cfif StructKeyExists(info,"mode") and len(trim(info.mode))>
+										#info.mode#
 									<cfelse>
 										production
 									</cfif>
@@ -171,11 +181,11 @@ list all mappings and display necessary edit fields --->
 							</td>
 						</cfif>
 						<!--- check --->
-						<td>
-							<cfif StructKeyExists(stVeritfyMessages, providers.url)>
-								#stVeritfyMessages[providers.url].label#
-							</cfif>
-						</td>
+						<cfif StructKeyExists(stVeritfyMessages, providers.url)>
+							<td  class="tooltipMe favorite_inactive" title="#stVeritfyMessages[providers.url].message#">#stVeritfyMessages[providers.url].label#</td>
+						<cfelse>
+							<td>&nbsp;</td>
+						</cfif>
 					</tr>
 				</cfloop>
 			</tbody>

@@ -14,7 +14,6 @@
 <!--- create config struct --->
 <cfset config=manager.createConfig()>
 
-<!--- loadcfc --->
 <cfset install=manager.loadInstallCFC(form.repPath)>
 
 

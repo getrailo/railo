@@ -452,14 +452,14 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
         return true;
     }
 
-    @Override
-    public int hashCode() {
+    // TODO add again current implementation creates a infinti loop when child=this
+    /*public int hashCode() {
         int h = 0;
         Iterator<Entry<K,V>> i = entrySet().iterator();
         while (i.hasNext())
             h += i.next().hashCode();
         return h;
-    }
+    }*/
 
     /**
      * Returns a string representation of this map.  The string representation

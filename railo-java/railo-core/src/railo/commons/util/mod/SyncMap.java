@@ -15,18 +15,25 @@ public class SyncMap<K,V>
         private static final long serialVersionUID = 1978198479659022715L;
 
         private final MapPro<K,V> m;     // Backing Map
-        final Object      mutex;        // Object on which to synchronize
+        final Serializable      mutex;        // Object on which to synchronize
 
+        public SyncMap() {
+            this(null);
+        }
+        
         public SyncMap(MapPro<K,V> m) {
-            if (m==null)
-                throw new NullPointerException();
-            this.m = m;
+            if (m==null) this.m = new HashMapPro<K, V>();
+            else this.m = m;
             mutex = this;
         }
 
-        SyncMap(MapPro<K,V> m, Object mutex) {
+        SyncMap(MapPro<K,V> m, Serializable mutex) {
             this.m = m;
             this.mutex = mutex;
+        }
+        
+        public MapPro<K, V> getMap(){
+        	return m;
         }
 
         public int size() {

@@ -32,6 +32,7 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -53,6 +54,7 @@ import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.clean.DatasourceStorageScopeCleaner;
 import railo.runtime.type.scope.storage.clean.FileStorageScopeCleaner;
 import railo.runtime.type.wrap.MapAsStruct;
+import railo.runtime.util.PageContextUtil;
 
 /**
  * Scope Context handle Apllication and Session Scopes
@@ -211,7 +213,7 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc,getLog());
 				}
 				else{
-					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					DataSource ds = ((PageContextImpl)pc).getDataSource(storage,null);
 					if(ds!=null)client=ClientDatasource.getInstance(storage,pc,getLog());
 					else client=ClientCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					
@@ -512,14 +514,16 @@ public final class ScopeContext {
 				else if("cookie".equals(storage))
 					session=SessionCookie.getInstance(appContext.getName(),pc,getLog());
 				else{
-					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					DataSource ds = ((PageContextImpl)pc).getDataSource(storage,null);
 					if(ds!=null && ds.isStorage())session=SessionDatasource.getInstance(storage,pc,getLog(),null);
 					else session=SessionCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					
 					if(session==null){
 						// datasource not enabled for storage
 						if(ds!=null)
-							throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage, you have to enable it in the railo administrator.");
+							throw new ApplicationException(
+									"datasource ["+storage+"] is not enabled to be used as session/client storage, " +
+									"you have to enable it in the railo administrator or define key \"storage=true\" for datasources defined in Application.cfc .");
 						
 						CacheConnection cc = Util.getCacheConnection(pc.getConfig(),storage,null);
 						if(cc!=null) 
@@ -895,11 +899,8 @@ public final class ScopeContext {
 		
         Application application=applicationContextes.get(name);
         if(application==null) throw new ApplicationException("there is no application context defined with name ["+name+"]");
-        
-        ApplicationListener listener = jspFactory.getConfig().getApplicationListener();
-		
-            
-		application.touch();
+        ApplicationListener listener = PageContextUtil.getApplicationListener(pc);
+        application.touch();
 		try {
 			listener.onApplicationEnd(jspFactory,name);
 		} 

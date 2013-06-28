@@ -28,6 +28,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.loader.TP;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
@@ -315,6 +316,10 @@ public final class SystemUtil {
         }
         return homeFile;
     }
+    
+    public static Resource getClassLoadeDirectory(){
+    	return ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
+    }
 
     /**
      * get class pathes from all url ClassLoaders
@@ -409,6 +414,12 @@ public final class SystemUtil {
             if(path.startsWith("}",5)) path=getHomeDirectory().getRealResource(path.substring(6)).toString();
             else if(path.startsWith("-dir}",5)) path=getHomeDirectory().getRealResource(path.substring(10)).toString();
             else if(path.startsWith("-directory}",5)) path=getHomeDirectory().getRealResource(path.substring(16)).toString();
+        }
+        // ClassLoaderDir
+        else if(path.startsWith("{classloader")) {
+            if(path.startsWith("}",12)) path=getClassLoadeDirectory().getRealResource(path.substring(13)).toString();
+            else if(path.startsWith("-dir}",12)) path=getClassLoadeDirectory().getRealResource(path.substring(17)).toString();
+            else if(path.startsWith("-directory}",12)) path=getClassLoadeDirectory().getRealResource(path.substring(23)).toString();
         }
         return path;
     }

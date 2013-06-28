@@ -500,37 +500,45 @@ public final class Reflector {
 
 
     private static Object[] cleanArgs(Object[] args) {
+    	Set<Object> done=new HashSet<Object>();
     	if(args==null) return args;
     	
     	for(int i=0;i<args.length;i++){
-    		args[i]=_clean(args[i]);
+    		args[i]=_clean(done,args[i]);
     	}
     	return args;
     }
 	
 	
-    private static Object _clean(Object obj)  {
-		if(obj instanceof ObjectWrap) {
-			try {
-				return ((ObjectWrap)obj).getEmbededObject();
-			} catch (PageException e) {
-				return obj;
+    private static Object _clean(Set<Object> done,Object obj)  {
+    	if(done.contains(obj)) return obj;
+    	done.add(obj);
+    	try {
+			if(obj instanceof ObjectWrap) {
+				try {
+					return ((ObjectWrap)obj).getEmbededObject();
+				} catch (PageException e) {
+					return obj;
+				}
 			}
-		}
-		if(obj instanceof Collection) return  _clean((Collection)obj);
-		if(obj instanceof Map) return  _clean((Map)obj);
-		if(obj instanceof List) return  _clean((List)obj);
-		if(obj instanceof Object[]) return  _clean((Object[])obj);
+			if(obj instanceof Collection) return  _clean(done,(Collection)obj);
+			if(obj instanceof Map) return  _clean(done,(Map)obj);
+			if(obj instanceof List) return  _clean(done,(List)obj);
+			if(obj instanceof Object[]) return  _clean(done,(Object[])obj);
+    	}
+    	finally {
+    		done.remove(obj);
+    	}
 		return obj;
 	}
     
-    private static Object _clean(Collection coll) {
+    private static Object _clean(Set<Object> done,Collection coll) {
     	Iterator<Object> vit = coll.valueIterator();
     	Object v;
     	boolean change=false;
     	while(vit.hasNext()){
     		v=vit.next();
-    		if(v!=_clean(v)) {
+    		if(v!=_clean(done,v)) {
     			change=true;
     			break;
     		}
@@ -542,19 +550,19 @@ public final class Reflector {
     	Entry<Key, Object> e;
     	while(eit.hasNext()){
     		e=eit.next();
-    		coll.setEL(e.getKey(), _clean(e.getValue()));
+    		coll.setEL(e.getKey(), _clean(done,e.getValue()));
     	}
     	
     	return coll;
     }
     
-    private static Object _clean(Map map) {
+    private static Object _clean(Set<Object> done,Map map) {
     	Iterator vit = map.values().iterator();
     	Object v;
     	boolean change=false;
     	while(vit.hasNext()){
     		v=vit.next();
-    		if(v!=_clean(v)) {
+    		if(v!=_clean(done,v)) {
     			change=true;
     			break;
     		}
@@ -566,19 +574,19 @@ public final class Reflector {
     	Entry e;
     	while(eit.hasNext()){
     		e=eit.next();
-    		map.put(e.getKey(), _clean(e.getValue()));
+    		map.put(e.getKey(), _clean(done,e.getValue()));
     	}
     	
     	return map;
     }
     
-    private static Object _clean(List list) {
+    private static Object _clean(Set<Object> done,List list) {
     	Iterator it = list.iterator();
     	Object v;
     	boolean change=false;
     	while(it.hasNext()){
     		v=it.next();
-    		if(v!=_clean(v)) {
+    		if(v!=_clean(done,v)) {
     			change=true;
     			break;
     		}
@@ -588,16 +596,16 @@ public final class Reflector {
     	list=Duplicator.duplicateList(list, false);
     	it = list.iterator();
     	while(it.hasNext()){
-    		list.add(_clean(it.next()));
+    		list.add(_clean(done,it.next()));
     	}
     	
     	return list;
     }
     
-    private static Object _clean(Object[] src) {
+    private static Object _clean(Set<Object> done,Object[] src) {
     	boolean change=false;
     	for(int i=0;i<src.length;i++){
-    		if(src[i]!=_clean(src[i])) {
+    		if(src[i]!=_clean(done,src[i])) {
     			change=true;
     			break;
     		}
@@ -606,7 +614,7 @@ public final class Reflector {
     	
     	Object[] trg=new Object[src.length];
 		for(int i=0;i<trg.length;i++) {
-			trg[i]=_clean(src[i]);
+			trg[i]=_clean(done,src[i]);
 		}
     	
     	return trg;

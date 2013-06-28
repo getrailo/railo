@@ -2,7 +2,7 @@ package railo.runtime;
 
 import java.util.Iterator;
 
-import railo.commons.util.mod.HashMapPro;
+import railo.commons.util.mod.MapFactory;
 import railo.commons.util.mod.MapPro;
 import railo.runtime.component.Member;
 import railo.runtime.config.NullSupportHelper;
@@ -53,13 +53,13 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public ComponentScopeShadow(ComponentImpl component, ComponentScopeShadow scope,boolean cloneShadow) {
         this.component=component;
-        this.shadow=cloneShadow?(MapPro)Duplicator.duplicateMap(scope.shadow,new HashMapPro<Key,Object>(), false):scope.shadow;
+        this.shadow=cloneShadow?(MapPro)Duplicator.duplicateMap(scope.shadow,MapFactory.getConcurrentMap(), false):scope.shadow;
 	}
 
 
 	@Override
 	public Component getComponent() {
-		return component;
+		return component.top;
 	}
 
     @Override

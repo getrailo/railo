@@ -1118,4 +1118,10 @@ public final class ASMUtil {
 	public static String getClassName(byte[] barr){
 		return new ClassReader(barr).getClassName();
 	}
+
+
+	public static String getSourceName(Class clazz) throws IOException {
+		return SourceNameClassVisitor.getSourceName(clazz);
+	}
+	
 }

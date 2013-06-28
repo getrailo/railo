@@ -11,12 +11,12 @@ public class RequestMonitor {
 	//public void checkSlowRequest(Object obj){/* ignored */ }
 	//public boolean isRequestTimedOut()
 	public long getRequestTimeout(){
-		return ThreadLocalPageContext.get().getRequestTimeout();
+		return ThreadLocalPageContext.get().getRequestTimeout()/1000;
 	}
 	
 	
 	public void overrideRequestTimeout(long timeout){
-		ThreadLocalPageContext.get().setRequestTimeout(timeout);
+		ThreadLocalPageContext.get().setRequestTimeout(timeout*1000);
 	}
 	
 	

@@ -63,7 +63,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * A Page that can produce Components
  */
-public abstract class ComponentPage extends Page  {
+public abstract class ComponentPage extends PagePlus  {
 	
 	private static final long serialVersionUID = -3483642653131058030L;
 	

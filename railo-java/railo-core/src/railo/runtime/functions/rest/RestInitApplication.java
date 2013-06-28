@@ -9,6 +9,7 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.rest.Mapping;
+import railo.runtime.rest.RestUtil;
 
 public class RestInitApplication {
 
@@ -48,7 +49,7 @@ public class RestInitApplication {
 			mapping=mappings[i];
 			if(mapping.getVirtualWithSlash().equals(virtual)){
 				// directory has changed
-				if(!dir.equals(mapping.getPhysical()) || (defaultMapping!=null && mapping.isDefault()!=defaultMapping.booleanValue())) {
+				if(!RestUtil.isMatch(pc, mapping, dir) || (defaultMapping!=null && mapping.isDefault()!=defaultMapping.booleanValue())) {
 					update(pc,dir,virtual,RestDeleteApplication.getPassword(pc,webAdminPassword),defaultMapping==null?mapping.isDefault():defaultMapping.booleanValue());
 				}
 				mapping.reset(pc);

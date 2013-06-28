@@ -46,8 +46,7 @@
         <cfthrow message="missing config file in extension package" />
     </cfif>
     
-    <!--- loadcfc --->
-	<cfset install=manager.loadInstallCFC(zip)>
+    <cfset install=manager.loadInstallCFC(zip)>
 
 	<cfcatch>
     	<cfset display=false>

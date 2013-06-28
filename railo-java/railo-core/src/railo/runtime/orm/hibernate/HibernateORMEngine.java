@@ -444,7 +444,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) {
 		if(ormConf.saveMapping()){
-			Resource res=cfc.getPageSource().getPhyscalFile();
+			Resource res=cfc.getPageSource().getResource();
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
@@ -461,7 +461,7 @@ public class HibernateORMEngine implements ORMEngine {
 	
 	private static long loadMapping(StringBuilder sb,ORMConfiguration ormConf, Component cfc) {
 		
-		Resource res=cfc.getPageSource().getPhyscalFile();
+		Resource res=cfc.getPageSource().getResource();
 		if(res!=null){
 			res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 			try{

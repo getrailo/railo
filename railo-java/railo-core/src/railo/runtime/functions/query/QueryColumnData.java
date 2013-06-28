@@ -3,6 +3,7 @@ package railo.runtime.functions.query;
 import java.util.Iterator;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
@@ -24,9 +25,12 @@ public class QueryColumnData extends BIF {
 		Array arr=new ArrayImpl();
 		QueryColumn column = query.getColumn(KeyImpl.init(columnName));
 	    Iterator<Object> it = column.valueIterator();
+	    Object value;
 		while(it.hasNext()) {
-			if(udf!=null)arr.append(udf.call(pc, new Object[]{it.next()}, true));
-			else arr.append(it.next());
+			value=it.next();
+			if(!NullSupportHelper.full() && value==null) value="";
+			if(udf!=null)arr.append(udf.call(pc, new Object[]{value}, true));
+			else arr.append(value);
 		}
 		return arr;		
 	} 

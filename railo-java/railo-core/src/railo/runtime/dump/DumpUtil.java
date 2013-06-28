@@ -244,7 +244,7 @@ public class DumpUtil {
 			// Resultset
 			if(o instanceof ResultSet) {
 				try {
-					DumpData dd = new QueryImpl((ResultSet)o,"query").toDumpData(pageContext,maxlevel,props);
+					DumpData dd = new QueryImpl((ResultSet)o,"query",pageContext.getTimeZone()).toDumpData(pageContext,maxlevel,props);
 					if(dd instanceof DumpTable)
 						((DumpTable)dd).setTitle(Caster.toClassName(o));
 					return setId(id,dd);

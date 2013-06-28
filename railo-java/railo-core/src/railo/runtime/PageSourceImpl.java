@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -13,6 +14,7 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -21,6 +23,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.system.GetDirectoryFromPath;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
@@ -88,6 +91,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	    
 	}
 	
+	
+	
 	/**
 	 * private constructor of the class
 	 * @param mapping
@@ -112,6 +117,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 */
 	public Page getPage() {
 		return page;
+	}
+	
+	public PageSource getParent(){
+		if(realPath.equals("/")) return null;
+		if(StringUtil.endsWith(realPath, '/'))
+			return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath.substring(0, realPath.length()-1)));
+		return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath));
 	}
 
 	
@@ -189,10 +201,22 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	
     	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
-    	if((mapping.isTrusted() || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
+    	if((mapping.getInspectTemplate()==ConfigImpl.INSPECT_NEVER || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
-        long srcLastModified = srcFile.lastModified();
+    	/*{
+    		String dp = getDisplayPath();
+    		String cn = getClassName();
+    		if(dp.endsWith(".cfc") && cn.startsWith("cfc")) {
+    			print.ds("->"+dp);
+    			print.e("trusted:"+mapping.isTrusted());
+    			print.e(mapping.getVirtual());
+    			print.e("mod:"+srcFile.lastModified());
+    		}
+    	}*/
+    	
+    	
+		long srcLastModified = srcFile.lastModified();
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
@@ -345,7 +369,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 * @return file Object
 	 */
 	private String getArchiveSourcePath() {
-	    return "ra://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
+	    return "zip://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
 	}
 
     /**
@@ -720,9 +744,24 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
     @Override
     public Resource getResource() {
-    	Resource res = getPhyscalFile();
-    	if(res!=null) return res;
-    	return getArchiveFile();
+    	Resource p = getPhyscalFile();
+    	Resource a = getArchiveFile();
+    	if(mapping.isPhysicalFirst()){
+    		if(a==null) return p;
+        	if(p==null) return a;
+        	
+    		if(p.exists()) return p;
+    		if(a.exists()) return a;
+    		return p;
+    	}
+    	if(p==null) return a;
+    	if(a==null) return p;
+    	
+    	if(a.exists()) return a;
+    	if(p.exists()) return p;
+    	return a;
+    	
+    	//return getArchiveFile();
     }
     
     @Override
@@ -798,15 +837,14 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		for(int i=0;i<arr.length;i++) {
 			if(pageExist(arr[i])) return arr[i];
 		}
-		
-		// get the best none existing
+		/*// get the best none existing
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i].getPhyscalFile()!=null) return arr[i];
 		}
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i].getDisplayPath()!=null) return arr[i];
 		}
-		
+		*/
 		return arr[0];
 	}
 

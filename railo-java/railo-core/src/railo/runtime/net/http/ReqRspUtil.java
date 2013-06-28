@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
@@ -27,8 +26,6 @@ import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigWeb;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
@@ -103,7 +100,7 @@ public final class ReqRspUtil {
 			for(int i=0;i<cookies.length;i++){
 				cookie=cookies[i];	
 				// value (is decoded by the servlet engine with iso-8859-1)
-				if(!StringUtil.isAscci(cookie.getValue())) {
+				if(!StringUtil.isAscii(cookie.getValue())) {
 					tmp=encode(cookie.getValue(), "iso-8859-1");
 					cookie.setValue(decode(tmp, charset,false));
 				}

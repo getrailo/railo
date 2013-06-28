@@ -26,7 +26,7 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
-import railo.commons.util.mod.HashMapPro;
+import railo.commons.util.mod.MapFactory;
 import railo.commons.util.mod.MapPro;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.DataMember;
@@ -37,6 +37,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.NullSupportHelper;
+import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.dump.DumpData;
@@ -226,7 +227,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    		
 	    		if(useShadow) {
 	    			ComponentScopeShadow css = (ComponentScopeShadow)scope;
-	    			trg.scope=new ComponentScopeShadow(trg,(MapPro)duplicateDataMember(trg,css.getShadow(),new HashMapPro(),deepCopy));
+	    			trg.scope=new ComponentScopeShadow(trg,(MapPro)duplicateDataMember(trg,css.getShadow(),MapFactory.getConcurrentMap(),deepCopy));
 	    		}
 	    	}
 	    	
@@ -370,7 +371,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
 	    	// TODO get per CFC setting this._triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
 		    _udfs=new HashMap<Key,UDF>();
-		    _data=new HashMapPro<Key,Member>();
+		    _data=MapFactory.getConcurrentMap();
 	    }
 	    
 	    // implements
@@ -380,7 +381,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
-	        if(base==null) scope=new ComponentScopeShadow(this,new HashMapPro<Key,Object>());
+	        if(base==null) scope=new ComponentScopeShadow(this,MapFactory.getConcurrentMap());
 		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope,false);
 	    }
 	    else {
@@ -1953,13 +1954,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
-        try {
-        	out.writeUTF(new ScriptConverter().serialize(this));
-		} 
-		catch (Throwable t) {
-			//print.printST(t);
+		try {
+			out.writeUTF(new ScriptConverter().serialize(this));
 		}
-		
+		catch (ConverterException e) {
+			throw ExceptionUtil.toIOException(e);
+		}
 	}
 
 	@Override

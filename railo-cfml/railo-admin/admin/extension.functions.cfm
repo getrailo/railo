@@ -47,10 +47,100 @@
 	</cffunction>
 	
 	
+	<cffunction name="loadProvidersData" output="yes" returntype="struct">
+		<cfargument name="providers" required="yes" type="array">
+		<cfargument name="timeout" default="5000" type="numeric">
+    	<cfargument name="forceReload" default="false" type="boolean">
+    	
+		<cfset local.cfcNames="">
+		<cfset local.datas={}>
+		<cfloop array="#arguments.providers#" item="local.cfcName">
+			<cfif !arguments.forceReload>
+				<!--- session --->
+		        <cfif 
+					StructKeyExists(session,"cfcs") and 
+					StructKeyExists(session.cfcs,cfcName) and 
+					StructKeyExists(session.cfcs[cfcName],'getInfo') and
+					StructKeyExists(session.cfcs[cfcName].getInfo,'lastModified') and
+					DateAdd("n",10,session.cfcs[cfcName].getInfo.lastModified) GT now()>
+					<cfset datas[cfcName]=session.cfcs[cfcName]>
+		        	<cfcontinue/>
+		        </cfif>
+		        
+		        
+	    		<!--- request (within request we only try once to load the data) --->
+		        <cfif 
+					StructKeyExists(request,"cfcs") and 
+					StructKeyExists(request.cfcs,cfcName)>
+		        	<cfset datas[cfcName]=request.cfcs[cfcName]>
+		        	<cfcontinue/>
+		        </cfif>
+	        </cfif>
+	        <cfset datas[cfcName]=false>
+	        <cfset cfcNames=listAppend(cfcNames,cfcName)>
+		</cfloop>
+	
+		<cfif len(cfcNames) EQ 0> <cfreturn datas></cfif>
+        <cfset var names="">
+		<cfloop list="#cfcnames#" item="local.cfcName">
+			
+			<!--- when was the last try to recieve this data?, we try only every  --->
+	        <cfif 
+				StructKeyExists(session,"cfcstries") and 
+				StructKeyExists(session.cfcstries,cfcName)>
+				<cfif  DateAdd("s",60,session.cfcstries[cfcName]) GT now()>
+					<cfcontinue/>
+				</cfif>
+			</cfif>
+	        <cfset session.cfcstries[cfcName]=now()>
+		        
+			
+			
+			
+			<cfset session.cfcs[cfcName]={}>
+        	<cfset request.cfcs[cfcName]={}>
+			<cfset var name="t"&createUniqueId()>
+			<cfset listAppend(names,name)>
+			<cfthread name="#name#" wsdl="#cfcName#?wsdl" sess="#session.cfcs[cfcName]#" req="#request.cfcs[cfcName]#">
+				<cfsetting requesttimeout="50000">
+				<cfset var cfc= createObject('webservice',attributes.wsdl)>
+				
+				<!--- list Applications --->
+		        <cfset attributes.req.listApplications=cfc.listApplications()>
+		        <cfset attributes.sess.listApplications=attributes.req.listApplications>
+				
+				<!--- get Info --->
+		        <cfset attributes.req.getInfo=cfc.getInfo()>
+		        <cfset attributes.req.getInfo.lastModified=now()>
+		        <cfset attributes.sess.getInfo=attributes.req.getInfo>
+		        
+			</cfthread>
+		</cfloop>
+		<!--- <cfset systemOutput('<print-stack-trace>',true,true)>--->
+		<cfif arguments.timeout GT 0>
+			<cfthread action="join" names="#names#" timeout="#arguments.timeout#"/>
+		</cfif>
+		
+		<cfloop list="#cfcNames#" item="local.cfcName">
+			<cfif 
+				StructKeyExists(request,"cfcs") and 
+				StructKeyExists(request.cfcs,cfcName) and 
+				StructKeyExists(request.cfcs[cfcName],'getInfo') and
+				StructKeyExists(request.cfcs[cfcName].getInfo,'lastModified')>
+				<cfset datas[cfcName]=request.cfcs[cfcName]>
+			</cfif>
+		</cfloop>
+		<cfreturn datas>
+		
+    </cffunction>
+	
 	<cffunction name="loadCFC" returntype="struct" output="yes">
 		<cfargument name="provider" required="yes" type="string">
+		<cfset systemOutput("deprecated function call:<print-stack-trace>",true,true)>
 		<cfreturn createObject('component',"ExtensionProviderProxy").init(arguments.provider)>
 	</cffunction>
+	
+	
 	<cfset request.loadCFC=loadCFC>
 	
 	
@@ -90,6 +180,10 @@
 		<cfset var detail={}>
 		<cfset detail.all=[]>
 		<cfset var tmp="">
+		<cfif not isDefined('data')>
+			<cfset data=getData(providers,{message:''},1000)>
+		</cfif>
+		
 		<cfif isQuery(data)><cfloop query="data">
 			<cfif data.uid EQ uid>
 				<cfset tmp=querySlice(data,data.currentrow,1)>
@@ -201,18 +295,31 @@
 	<cffunction name="getProviderData" returntype="struct" output="yes">
 		<cfargument name="provider" required="yes" type="string">
 		<cfargument name="isHash" required="no" type="boolean" default="false">
+		<cfargument name="timeout" required="no" type="numeric" default="1000">
 		<cfif not isHash>
 			<cfset arguments.provider=hash(arguments.provider)>
 		</cfif>
+		<cfset var datas=loadProvidersData(queryColumnData(providers,'url'),arguments.timeout)>
 		
-		<cfset var detail=struct()>
+		<cfset var detail={}>
 		<cfloop query="providers">
 			<cfif hash(providers.url) EQ arguments.provider>
+				<cfset var data=datas[providers.url]>
+				<cfif isSimpleValue(data)>
+					<cfthrow message="was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+				</cfif>
+				<cfset detail.app=data.listApplications>
+				<cfset detail.info=data.getInfo>
+				<cfset detail.url=providers.url>
+				<cfset detail.info.cfc=providers.url>
+				
+				<!---
 				<cfset detail.provider=loadCFC(providers.url)>
 				<cfset detail.app=detail.provider.listApplications()>
 				<cfset detail.info=detail.provider.getInfo()>
 				<cfset detail.url=providers.url>
 				<cfset detail.info.cfc=providers.url>
+				--->
 			</cfif>
 		</cfloop>
 		<cfreturn detail>
@@ -221,13 +328,28 @@
 
 <cffunction name="getData" output="no">
 	<cfargument name="providers">
-	<cfargument name="err">
+	<cfargument name="err" type="struct" default="#{}#">
+	<cfargument name="timeout" required="no" type="numeric" default="5000">
+	
+	<cfset var datas=loadProvidersData(queryColumnData(providers,'url'),arguments.timeout)>
 	<cfset var data="">
+		
+	
     <cfloop query="providers">
-        <cftry>
-            <cfset local.provider=loadCFC(providers.url)>
-            <cfset local._apps=provider.listApplications()>
-            <cfset local._info=provider.getInfo()>
+        <!---  ---><cftry>
+            
+			<cfset var _data=datas[providers.url]>
+			<cfif isSimpleValue(_data)>
+				<cfif len(err.message)>
+					<cfset err.message&="<br>was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+                <cfelse>
+					<cfset err.message="was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+                </cfif>
+				<cfcontinue>
+			</cfif>
+				
+			<cfset local._apps=_data.listApplications>
+            <cfset local._info=_data.getInfo>
             <cfset local._url=providers.url>
             <cfif IsSimpleValue(data)>
                 <cfset data=queryNew(_apps.columnlist&",provider,info,uid")>
@@ -249,14 +371,14 @@
             </cfloop>
             
             
-            <cfcatch>
+            <cfcatch><cfrethrow>
                 <cfif len(err.message)>
                     <cfset err.message&="<br>can't load provider [#providers.url#]">
                 <cfelse>
                     <cfset err.message="can't load provider [#providers.url#]">
                 </cfif>
             </cfcatch>
-        </cftry>
+        </cftry><!------>
     </cfloop>
     <cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
     <cfreturn data>

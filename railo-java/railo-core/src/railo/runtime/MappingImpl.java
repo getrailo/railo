@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -24,6 +25,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -38,8 +40,8 @@ public final class MappingImpl implements Mapping {
 	private String virtual;
     private String lcVirtual;
     private boolean topLevel;
-    private boolean trusted;
-    private final boolean physicalFirst;
+    private short inspect;
+    private boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
     //private PhysicalClassLoader physicalClassLoader;
     private PCLCollection pclCollection;
@@ -73,9 +75,11 @@ public final class MappingImpl implements Mapping {
 	private boolean appMapping;
 	private boolean ignoreVirtual;
 
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual) {
-    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,5000);
+	private ApplicationListener appListener;
+
+    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, short inspect, 
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual,ApplicationListener appListener) {
+    	this(config, virtual, strPhysical, strArchive, inspect, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,appListener,5000);
     	
     }
 
@@ -91,20 +95,20 @@ public final class MappingImpl implements Mapping {
      * @param readonly
      * @throws IOException
      */
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual, int classLoaderMaxElements) {
+    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, short inspect, 
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual,ApplicationListener appListener, int classLoaderMaxElements) {
     	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
-        this.strPhysical=strPhysical;
+        this.strPhysical=StringUtil.isEmpty(strPhysical)?null:strPhysical;
         this.strArchive=StringUtil.isEmpty(strArchive)?null:strArchive;
-        this.trusted=trusted;
+        this.inspect=inspect;
         this.topLevel=topLevel;
         this.appMapping=appMapping;
         this.physicalFirst=physicalFirst;
+        this.appListener=appListener;
         this.classLoaderMaxElements=classLoaderMaxElements;
-        
         
         // virtual
         if(virtual.length()==0)virtual="/";
@@ -133,8 +137,13 @@ public final class MappingImpl implements Mapping {
             }
         }
         hasArchive=archive!=null;
+
+        if(archive==null) this.physicalFirst=true;
+        else if(physical==null) this.physicalFirst=false;
+        else this.physicalFirst=physicalFirst;
         
-       //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
+        
+        //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
     }
     
     @Override
@@ -217,19 +226,21 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,classLoaderMaxElements);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,inspect,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,appListener,classLoaderMaxElements);
     }
     
     @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
         
+		
+		
 		DumpTable htmlBox = new DumpTable("mapping","#ff6600","#ffcc99","#000000");
 		htmlBox.setTitle("Mapping");
 		htmlBox.appendRow(1,new SimpleDumpData("virtual"),new SimpleDumpData(virtual));
 		htmlBox.appendRow(1,new SimpleDumpData("physical"),DumpUtil.toDumpData(strPhysical,pageContext,maxlevel,dp));
 		htmlBox.appendRow(1,new SimpleDumpData("archive"),DumpUtil.toDumpData(strArchive,pageContext,maxlevel,dp));
-		htmlBox.appendRow(1,new SimpleDumpData("trusted"),new SimpleDumpData(Caster.toString(trusted)));
+		htmlBox.appendRow(1,new SimpleDumpData("inspect"),new SimpleDumpData(ConfigWebUtil.inspectTemplate(getInspectTemplateRaw(),"")));
 		htmlBox.appendRow(1,new SimpleDumpData("physicalFirst"),new SimpleDumpData(Caster.toString(physicalFirst)));
 		htmlBox.appendRow(1,new SimpleDumpData("readonly"),new SimpleDumpData(Caster.toString(readonly)));
 		htmlBox.appendRow(1,new SimpleDumpData("hidden"),new SimpleDumpData(Caster.toString(hidden)));
@@ -239,7 +250,27 @@ public final class MappingImpl implements Mapping {
 		return htmlBox;
     }
 
-    @Override
+    /**
+     * inspect template setting (Config.INSPECT_*), if not defined with the mapping the config setting is returned
+     * @return
+     */
+    public short getInspectTemplate() {
+		if(inspect==ConfigImpl.INSPECT_UNDEFINED) return config.getInspectTemplate();
+		return inspect;
+	}
+    
+    /**
+     * inspect template setting (Config.INSPECT_*), if not defined with the mapping, Config.INSPECT_UNDEFINED is returned
+     * @return
+     */
+    public short getInspectTemplateRaw() {
+		return inspect;
+	}
+    
+    
+	
+
+	@Override
     public PageSource getPageSource(String realPath) {
     	boolean isOutSide = false;
 		realPath=realPath.replace('\\','/');
@@ -322,7 +353,7 @@ public final class MappingImpl implements Mapping {
 
     @Override
     public boolean isPhysicalFirst() {
-        return physicalFirst || archive==null;
+        return physicalFirst;
     }
 
     @Override
@@ -341,8 +372,9 @@ public final class MappingImpl implements Mapping {
     }
 
     @Override
+    @Deprecated
     public boolean isTrusted() {
-        return trusted;
+        return getInspectTemplate()==ConfigImpl.INSPECT_NEVER;
     }
 
     @Override
@@ -453,9 +485,14 @@ public final class MappingImpl implements Mapping {
 		 "Archive:"+getArchive()+";"+
 		 "Physical:"+getPhysical()+";"+
 		 "topLevel:"+topLevel+";"+
-		 "trusted:"+trusted+";"+
+		 "inspect:"+ConfigWebUtil.inspectTemplate(getInspectTemplateRaw(),"")+";"+
 		 "physicalFirst:"+physicalFirst+";"+
 		 "readonly:"+readonly+";"+
 		 "hidden:"+hidden+";";
+	}
+
+	public ApplicationListener getApplicationListener() {
+		if(appListener!=null) return appListener;
+		return config.getApplicationListener();
 	}
 }

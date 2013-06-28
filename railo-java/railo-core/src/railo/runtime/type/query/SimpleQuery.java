@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngineFactory;
@@ -84,7 +85,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	private ArrayInt arrCurrentRow=new ArrayInt();
 	
 
-	public SimpleQuery(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
+	public SimpleQuery(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,TimeZone tz) throws PageException {
 		this.name=name;
 		this.template=template;
         this.sql=sql;
@@ -113,7 +114,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	        	PreparedStatement preStat = dc.getPreparedStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
-	            setItems(preStat,items);
+	            setItems(tz,preStat,items);
 		        hasResult=preStat.execute();    
 	        }
 			ResultSet res;
@@ -142,9 +143,9 @@ public class SimpleQuery implements Query, ResultSet, Objects {
         if(fetchsize>0)stat.setFetchSize(fetchsize);
         if(timeout>0)stat.setQueryTimeout(timeout);
 	}
-	private void setItems(PreparedStatement preStat, SQLItem[] items) throws DatabaseException, PageException, SQLException {
+	private void setItems(TimeZone tz,PreparedStatement preStat, SQLItem[] items) throws DatabaseException, PageException, SQLException {
 		for(int i=0;i<items.length;i++) {
-            SQLCaster.setValue(preStat,i+1,items[i]);
+            SQLCaster.setValue(tz,preStat,i+1,items[i]);
         }
 	}
 	

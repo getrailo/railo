@@ -16,27 +16,29 @@ import railo.runtime.type.Struct;
 
 public final class GetBaseTagData implements Function {
 	
-    public static Struct call(PageContext pc , String tagName) throws PageException {
+	private static final long serialVersionUID = -7016207088098049143L;
+
+	public static Struct call(PageContext pc , String tagName) throws PageException {
 		return call(pc,tagName,-1);
 	}
 	
     public static Struct call(PageContext pc , String tagName, double minLevel) throws PageException {
-    	//print.out("tagname:"+tagName);
     	CFTag tag=getParentCFTag(pc.getCurrentTag(), tagName, (int)minLevel);
         if(tag==null) throw new ExpressionException("can't find base tag with name ["+tagName+"]");
         return tag.getVariablesScope();
 	}
     
-    public synchronized static CFTag getParentCFTag(Tag srcTag,String trgTagName, int minLevel) {
+    public synchronized static CFTag getParentCFTag(Tag tag,String trgTagName, int minLevel) {
         String pureName=trgTagName;
         int level=0;
         CFTag cfTag;
-        while(srcTag!=null) {
-        	// cftag
-        	if(srcTag instanceof CFTag && minLevel<=++level) {
-                cfTag=(CFTag)srcTag;
+        while(tag!=null) {
+        	if(tag instanceof CFTag && minLevel<=(level++)) {
+            	cfTag=(CFTag)tag;
                 if(cfTag instanceof CFTagCore){
+            	
                 	CFTagCore tc=(CFTagCore) cfTag;
+                	
                 	if((tc.getName()+"").equalsIgnoreCase(pureName))
                 		return cfTag;
                 	if(StringUtil.startsWithIgnoreCase(pureName,"cf")) {
@@ -54,8 +56,7 @@ public final class GetBaseTagData implements Function {
                         return cfTag;
                 }
             }
-            srcTag=srcTag.getParent();
-            
+        	tag=tag.getParent();
         }
         return null;
     }

@@ -21,6 +21,7 @@ public class ComponentFactory {
 		deploy(dir,path,doNew,"Mail");
 		deploy(dir,path,doNew,"Query");
 		deploy(dir,path,doNew,"Result");
+		deploy(dir,path,doNew,"Administrator");
 		
 		// orm
 		dir = dir.getRealResource("orm");

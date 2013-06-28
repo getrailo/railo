@@ -284,7 +284,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
-        Query qry = new QueryImpl(columns,"query");
+        Query qry = new QueryImpl(columns,"query",pageContext.getTimeZone());
         
 		int len=qry.getRecordcount();
 
@@ -403,8 +403,8 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
-        railo.runtime.type.Query catalogs = new QueryImpl(metaData.getCatalogs(),"query");
-        railo.runtime.type.Query scheme = new QueryImpl(metaData.getSchemas(),"query");
+        railo.runtime.type.Query catalogs = new QueryImpl(metaData.getCatalogs(),"query",pageContext.getTimeZone());
+        railo.runtime.type.Query scheme = new QueryImpl(metaData.getSchemas(),"query",pageContext.getTimeZone());
         
         Pattern p=null;
         if(pattern!=null && !"%".equals(pattern)) 
@@ -459,7 +459,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
 		ResultSet columns = metaData.getExportedKeys(dbname, schema, table);
-		railo.runtime.type.Query qry = new QueryImpl(columns,"query");		
+		railo.runtime.type.Query qry = new QueryImpl(columns,"query",pageContext.getTimeZone());		
 		
         qry.setExecutionTime(stopwatch.time());        
         
@@ -503,7 +503,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet tables = metaData.getIndexInfo(dbname, schema, table, false, true);
-        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
         
         // type int 2 string
         int rows = qry.getRecordcount();
@@ -552,7 +552,7 @@ public final class DBInfo extends TagImpl {
 		}
 		
         ResultSet tables = metaData.getProcedures(dbname, schema, pattern);
-        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -578,7 +578,7 @@ public final class DBInfo extends TagImpl {
 		
 		ResultSet tables = metaData.getProcedureColumns(dbname, schema, procedure, pattern);
 		
-		railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+		railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -604,7 +604,7 @@ public final class DBInfo extends TagImpl {
 		pattern=setCase(metaData, pattern);
 		
         ResultSet tables = metaData.getTables(dbname, null, pattern, null);
-        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
         
         qry.setExecutionTime(stopwatch.time());
         
@@ -643,7 +643,7 @@ public final class DBInfo extends TagImpl {
         
 		checkTable(metaData);
 		ResultSet result = metaData.getSchemas();
-		Query qry = new QueryImpl(result,"query");
+		Query qry = new QueryImpl(result,"query",pageContext.getTimeZone());
 		
 		
 		qry.rename(TABLE_SCHEM,USER);

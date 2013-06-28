@@ -42,8 +42,14 @@
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">There is no Certificate available from this host.</data>
 	
-	<data key="mappings.archivesecuredesc">Exclude source files from archive. Source files are only used for codeprints in case of an error</data>
-	<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
+	<data key="mappings.addNonCFMLFiles">Add Non CFML Templates</data>
+	<data key="mappings.addNonCFMLFilesDesc">Add all Non CFML Source Templates as well (.js,.css,.gif,.png ...).</data>
+	<data key="mappings.addCFMLFiles">Add CFML Templates</data>
+	<data key="mappings.addCFMLFilesDesc">Add all CFML Source Templates as well (.cfm,.cfc,.cfml).</data>
+	<data key="mappings.addCFCFiles">Add Component Templates</data>
+	<data key="mappings.addCFCFilesDesc">Add all Component Source Templates as well (.cfc).</data>
+	
+<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
 	<data key="mappings.archiveheaddescription">Name of the archive file (ra or ras), (absolute or relative to the webroot)</data>
 	<data key="mappings.primaryheaddescription">Sets where Railo-files will first be searched</data>
 	<data key="mappings.trustedheaddescription"></data>
@@ -84,7 +90,7 @@
 	<data key="customtags.mode.modern">Modern</data>
 	<data key="customtags.mode.classic">Classic (Railo 1.0 - 3.0)</data>
 	<data key="customtags.mode.custom">Custom</data>
-	<data key="customtags.customtagmappings">Resources</data>
+	<data key="customtags.customtagmappings">Additional Resources</data>
 	<data key="customtags.physicalmissing">Please enter a value for the resource (row </data>
 	<data key="customtags.extensions">Extensions</data>
 	<data key="customtags.customtagmappingsdesc">Directories that Railo checks for Custom Tags.</data>
@@ -486,8 +492,9 @@
 	<data key="components.archive">Archive</data>
 	<data key="components.componentmappings">Additional Resources</data>
 	<data key="components.createnewcompmapping">Create new Additional Resource</data>
+	<data key="customtags.createnewcustomtagmapping">Create new Additional Resource</data>
 	<data key="components.dmatpackage">package</data>
-	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way.</data>
+	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way. Every change on this Component needs a restart from Railo.</data>
 	<data key="login.passwordmissing">Please enter a value for the field password</data>
 	<data key="login.retypenewpasswordmissing">Please reenter the new password</data>
 	<data key="login.password">Password</data>
@@ -652,7 +659,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
 	<data key="setting.dotNotationOriginalCase">Keep original case</data>
 	
-<data key="setting.supressWSBeforeArg">Supress white space before cfargument</data>
+	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
 
 	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
@@ -667,6 +674,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.querycachecleardesc">Press the button above to clear the query cache.</data>
 	<data key="setting.querycacheclear">Clear query cache</data>
 	<data key="setting.inspecttemplatealwaysShort">Always</data>
+	<data key="setting.inspecttemplateInheritShort">Inherit</data>
 	<data key="setting.inspecttemplatealways">Always ( Bad )</data>
 	<data key="setting.cachedesc">Different Cache and Performance settings to improve overall performance</data>
 	<data key="setting.componentcache">Component path Cache</data>
@@ -677,13 +685,21 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.showversion">Output Railo version</data>
 	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
 	<data key="setting.allowCompression">Compression</data>
-	<data key="setting.allowCompressionDescription">Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser)</data>
+	<data key="setting.allowCompressionDescription">Enable compression (GZip) for the Railo Response stream for text-based responses when supported by the client (Web Browser)</data>
 	
-	<data key="setting.cfmlWriterReg">No white space management</data>
-	<data key="setting.cfmlWriterWS">Simple white space management, every whitespace following a whitespace is removed</data>
-	<data key="setting.cfmlWriterWSPref">Smart whitespace management, same as the simple one, but ignore spaces inside the tags: code, pre and textarea</data>
+	<data key="setting.cfmlWriterReg">No whitespace management</data>
+	<data key="setting.cfmlWriterWS">Simple whitespace management - every whitespace character that follows whitespace is removed</data>
+	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
+
+	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
+	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
+	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>
+
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
+	<data key="setting.inspecttemplateInherit">Inherit</data>
+	<data key="setting.inspecttemplateInheritDesc">Inherit setting defined in "Performance/Caching"</data>
 	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
 	<data key="setting.inspecttemplateoncedesc">When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead.</data>
 	<data key="setting.inspecttemplateonceShort">Once</data>
@@ -1171,7 +1187,8 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
 		<data key="services.update.lib">Update JAR's</data>
 	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
-	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
+	<data key="settings.gateway.ListenerCfcPath">Listener Component</data>
+	<data key="settings.gateway.ListenerCfcPathDesc">Path to the Component that is listening to the Gateways action</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>
 	<data key="settings.gateway.startupModeManual">Manual</data>

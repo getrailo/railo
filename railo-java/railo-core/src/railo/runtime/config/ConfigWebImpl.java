@@ -267,7 +267,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				m=new MappingImpl(this,
 					virtual,
 					physical,
-					archive,false,true,false,false,false,true,false
+					archive,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,false,null
 					);
 				applicationMappings.put(key, m);
 			}
@@ -449,4 +449,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean getFullNullSupport() {
 			return configServer.getFullNullSupport();
 		}
+		public boolean hasIndividualSecurityManager() {
+			return configServer.hasIndividualSecurityManager(getId());
+	    }
 }

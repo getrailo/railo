@@ -662,7 +662,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	/**
 	 * @return the arguments
 	 */
-	public final List getArguments() {
+	public final List<Argument> getArguments() {
 		return arguments;
 	}
 

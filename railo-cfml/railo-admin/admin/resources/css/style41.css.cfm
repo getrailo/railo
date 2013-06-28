@@ -314,7 +314,7 @@ table.nospacing {
 */
 tr.OK td {background-color:#e0f3e6;}
 tr.notOK td {background-color:#f9e0e0;}
-.tblContentRed		{padding-left:5px;padding-right:5px;border:1px solid #cc0000;b}
+.tblContentRed		{padding-left:5px;padding-right:5px;border:1px solid #cc0000;color:red}
 .tblContentGreen	{padding-left:5px;padding-right:5px;border:1px solid #009933;}
 .tblContentYellow	{padding-left:5px;padding-right:5px;border:1px solid #ccad00;background-color:#fff9da;}
 /* tables */

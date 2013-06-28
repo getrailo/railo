@@ -524,6 +524,7 @@ public final class Operator {
 	}
 	
 	public static boolean _equalsComplexEL(Set<Object> done,Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+		if(left==right) return true;
 		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
 			try {
 				return equals(left, right, caseSensitive);
@@ -549,17 +550,23 @@ public final class Operator {
 		
 		if(left instanceof Map && right instanceof Map)
 			return __equalsComplexEL(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive,checkOnlyPublicAppearance);
-		
 		return left.equals(right);
 	}
 	
 	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
-		if(left==null || right==null) return false;
-		if(!left.getPageSource().equals(right.getPageSource())) return false;
+		if(left==null || right==null) {
+			if(left==right) return true;
+			return false;
+		}
+	
+		/*ComponentImpl lefti=(ComponentImpl) left;
+		ComponentImpl righti=(ComponentImpl) right;
+		print.e(lefti.getName()+"="+lefti._getName());
+		print.e(righti.getName()+"="+righti._getName());*/
 		
+		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		if(!checkOnlyPublicAppearance && !__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive,checkOnlyPublicAppearance)) return false;
 		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive,checkOnlyPublicAppearance)) return false;
-
 		return true;
 	}
 	
@@ -570,10 +577,16 @@ public final class Operator {
 		Object l,r;
 		while(it.hasNext()){
 			k=it.next();
-			r=right.get(k,NULL);
-			if(r==NULL) return false;
 			l=left.get(k,NULL);
-			if(!_equalsComplexEL(done,r, l, caseSensitive,checkOnlyPublicAppearance)) return false;
+			r=right.get(k,NULL);
+			if(l==NULL || r==NULL) {
+				if(l==r) continue;
+				return false;
+			}
+			
+			if(!_equalsComplexEL(done,r, l, caseSensitive,checkOnlyPublicAppearance)) {
+				return false;
+			}
 		}
 		return true;
 	}

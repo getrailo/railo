@@ -15,6 +15,7 @@ import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -205,11 +206,11 @@ public final class Update extends TagImpl {
         }
         
         try {
-            return new QueryImpl(meta.getPrimaryKeys(tablequalifier, tableowner, tablename),-1,"query");
+            return new QueryImpl(meta.getPrimaryKeys(tablequalifier, tableowner, tablename),-1,"query",pageContext.getTimeZone());
         } 
 		catch (SQLException e) {
 		    try {
-		        return new QueryImpl(meta.getBestRowIdentifier(tablequalifier, tableowner, tablename, 0, false),-1,"query");
+		        return new QueryImpl(meta.getBestRowIdentifier(tablequalifier, tableowner, tablename, 0, false),-1,"query",pageContext.getTimeZone());
             } 
 		    catch (SQLException sqle) {
                 throw new DatabaseException("can't find primary keys of table ["+tablename+"]",sqle,null,dc);

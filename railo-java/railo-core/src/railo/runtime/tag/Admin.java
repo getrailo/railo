@@ -20,8 +20,12 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
+import org.xml.sax.SAXException;
+
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
+import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -34,17 +38,22 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.LogResourceFilter;
+import railo.commons.io.res.filter.NotResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
 import railo.commons.surveillance.HeapDumper;
+import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
@@ -63,6 +72,7 @@ import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.DebugEntry;
+import railo.runtime.config.DeployHandler;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
@@ -212,13 +222,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private ConfigWebAdmin admin;
     private ConfigImpl config;
     
-    private ResourceFilter filter=
+    private static final ResourceFilter FILTER_CFML_TEMPLATES=new LogResourceFilter(
         new OrResourceFilter(new ResourceFilter[]{
                 new DirectoryResourceFilter(),
                 new ExtensionResourceFilter("cfm"),
                 new ExtensionResourceFilter("cfc"),
                 new ExtensionResourceFilter("cfml")
-        });
+        }));
 	private AdminSync adminSync;
 	
     
@@ -630,6 +640,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateerror",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateError();
         else if(check("updateCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTagSetting();
         else if(check("updateExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtension();
+        else if(check("updateRHExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRHExtension();
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
         else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
@@ -782,10 +793,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	String strFile = getString("admin",action,"file");
     	Resource file = ResourceUtil.toResourceNotExisting(pageContext, strFile);
     	
-    	boolean secure = getBoolV("secure", false);
+    	boolean addCFMLFiles = getBoolV("addCFMLFiles", true);
+    	boolean addNonCFMLFiles=getBoolV("addNonCFMLFiles", true);
     	
     	// compile
-    	Mapping mapping = doCompileMapping(mappingType,virtual, true);
+    	MappingImpl mapping = (MappingImpl) doCompileMapping(mappingType,virtual, true);
         
     	// class files 
     	if(mapping==null)throw new ApplicationException("there is no mapping for ["+virtual+"]");
@@ -798,55 +810,78 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	try {
     		if(file.exists())file.delete();
     		if(!file.exists())file.createFile(true);
-        	//Resource ra = ResourceUtil.toResourceNotExisting(pageContext, "zip://"+file.getPath());
-        	//ResourceUtil.copyRecursive(classRoot, ra);
-    		if(mappingType==MAPPING_CFC)filter=new ExtensionResourceFilter(new String[]{"class","cfc","MF"},true,true);
-    		else filter=new ExtensionResourceFilter(new String[]{"class","cfm","cfml","cfc","MF"},true,true);
-			
+        	
+    		ResourceFilter filter;
+    		
+    		
+    		// include everything, no filter needed
+    		if(addCFMLFiles && addNonCFMLFiles)filter=null;
+    		// CFML Files but no other files
+    		else if(addCFMLFiles) {
+    			if(mappingType==MAPPING_CFC)filter=new ExtensionResourceFilter(new String[]{"class","cfc","MF"},true,true);
+	    		else filter=new ExtensionResourceFilter(new String[]{"class","cfm","cfml","cfc","MF"},true,true);
+    		}
+    		// No CFML Files, but all other files
+    		else if(addNonCFMLFiles) {
+    			filter=new NotResourceFilter(new ExtensionResourceFilter(new String[]{"cfm","cfml","cfc"},false,true));
+    		}
+    		// no files at all
+    		else  {
+    			filter=new ExtensionResourceFilter(new String[]{"class","MF"},true,true);
+    		}
+    		
+    		
     		// create manifest
     		StringBuilder manifest=new StringBuilder();
     		
-    		manifest.append("Mapping-Type: \"");
+    		// id
+    		manifest.append("mapping-id: \"");
+			manifest.append(MD5.getDigestAsString(mapping.getStrPhysical()));
+    		manifest.append("\"\n");
+    		
+    		
+    		manifest.append("mapping-type: \"");
     		if(mappingType==MAPPING_CFC)manifest.append("cfc");
     		else if(mappingType==MAPPING_CT)manifest.append("ct");
     		else manifest.append("regular");
     		manifest.append("\"\n");
     		
-    		if(mappingType==MAPPING_REGULAR) {
-    			manifest.append("Mapping-Virtual-Path: \"");
-    			manifest.append(mapping.getVirtual());
-        		manifest.append("\"\n");
-    		}
+    		manifest.append("mapping-virtual-path: \"");
+    		manifest.append(mapping.getVirtual());
+        	manifest.append("\"\n");
+    		
+    		// Hidden
+    		manifest.append("mapping-hidden: ");
+			manifest.append(mapping.isHidden());
+    		manifest.append("\n");
+    		// Physical First
+    		manifest.append("mapping-physical-first: ");
+			manifest.append(mapping.isPhysicalFirst());
+    		manifest.append("\n");
+    		// Readonly
+    		manifest.append("mapping-readonly: ");
+			manifest.append(mapping.isReadonly());
+    		manifest.append("\n");
+    		// Top Level
+    		manifest.append("mapping-top-level: ");
+			manifest.append(mapping.isTopLevel());
+    		manifest.append("\n");
+    		
+    		// Trusted
+    		manifest.append("mapping-inspect: \"");
+			manifest.append(ConfigWebUtil.inspectTemplate(mapping.getInspectTemplateRaw(), ""));
+			manifest.append("\"\n");
+    		
+    		
+
     		
     		mani.createFile(true);
     		IOUtil.write(mani, manifest.toString(), "UTF-8", false);
     		
 		// source files
     		Resource[] sources;
-			if(!secure) sources=new Resource[]{temp,mapping.getPhysical(),classRoot};
-			else sources=new Resource[]{temp,classRoot};
-				
-			/*ZipOutputStream zos = null;
-	        try {
-	        	zos = new ZipOutputStream(IOUtil.toBufferedOutputStream(file.getOutputStream()));
-	        	CompressUtil.compressZip(sources, zos, filter);
-	        	
-	        	// Manifest
-	        	ZipEntry ze=new ZipEntry("/META-INF2/MANIFEST.MF");
-	    		ze.setTime(System.currentTimeMillis());
-	    		zos.putNextEntry(ze);
-	            try {
-	                IOUtil.copy(new ByteArrayInputStream(manifest.toString().getBytes("UTF-8")),zos,false,false);
-	            } 
-	            finally {
-	                zos.closeEntry();
-	            }
-	        	
-	        	
-	        }
-	        finally {
-	            IOUtil.closeEL(zos);
-	        }*/
+			if(!addCFMLFiles && !addNonCFMLFiles) sources=new Resource[]{temp,classRoot};
+			else sources=new Resource[]{temp,mapping.getPhysical(),classRoot};
 			
 			CompressUtil.compressZip(ResourceUtil.listResources(sources,filter), file, filter);
 			
@@ -860,7 +895,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			                mapping.getStrPhysical(),
 			                strFile,
 			                mapping.isPhysicalFirst()?"physical":"archive",
-			                mapping.isTrusted());
+			                mapping.getInspectTemplateRaw());
 			     }
 				else if(mappingType==MAPPING_CT) {
 					admin.updateCustomTag(
@@ -868,7 +903,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			                mapping.getStrPhysical(),
 			                strFile,
 			                mapping.isPhysicalFirst()?"physical":"archive",
-			                mapping.isTrusted());
+			                mapping.getInspectTemplateRaw());
 					
 				}
 				
@@ -878,7 +913,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		                mapping.getStrPhysical(),
 		                strFile,
 		                mapping.isPhysicalFirst()?"physical":"archive",
-		                mapping.isTrusted(),
+		                mapping.getInspectTemplateRaw(),
 		                mapping.isTopLevel()
 		        );
 		        store();
@@ -947,8 +982,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doCompileFile(Mapping mapping,Resource file,String path,Map<String,String> errors) throws PageException {
         if(ResourceUtil.exists(file)) {
             if(file.isDirectory()) {
-            	Resource[] files = file.listResources(filter);
-                for(int i=0;i<files.length;i++) {
+            	Resource[] files = file.listResources(FILTER_CFML_TEMPLATES);
+                if(files!=null)for(int i=0;i<files.length;i++) {
                     String p=path+'/'+files[i].getName();
                     //print.ln(files[i]+" - "+p);
                     doCompileFile(mapping,files[i],p,errors);
@@ -1007,38 +1042,42 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @throws PageException
      */
     private void doGetContexts() throws PageException {
+    	CFMLFactory[] factories;
+    	if(config instanceof ConfigServerImpl) {
+    		ConfigServerImpl cs=(ConfigServerImpl) config;
+    		factories = cs.getJSPFactories(); 
+    	}
+    	else {
+        	ConfigWebImpl cw=(ConfigWebImpl) config;
+    		factories = new CFMLFactory[]{cw.getFactory()};
+    	}
         
-        if(config instanceof ConfigServerImpl) {
-            ConfigServerImpl cs=(ConfigServerImpl) config;
-            CFMLFactoryImpl[] factories = cs.getJSPFactories(); 
+        railo.runtime.type.Query qry=
+        	new QueryImpl(
+        			new Collection.Key[]{
+        					KeyConstants._path,
+        					KeyConstants._id,KeyConstants._hash,
+        					KeyConstants._label,
+        					HAS_OWN_SEC_CONTEXT,
+        					KeyConstants._url,
+        					CONFIG_FILE},
+        			factories.length,getString("admin",action,"returnVariable"));
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+        ConfigWebImpl cw;
+        for(int i=0;i<factories.length;i++) {
+        	int row=i+1;
+            CFMLFactoryImpl factory = (CFMLFactoryImpl) factories[i];
+            cw = (ConfigWebImpl) factory.getConfig();
+            qry.setAtEL(KeyConstants._path,row,ReqRspUtil.getRootPath(factory.getConfigWebImpl().getServletContext()));
             
-            railo.runtime.type.Query qry=
-            	new QueryImpl(
-            			new Collection.Key[]{
-            					KeyConstants._path,
-            					KeyConstants._id,KeyConstants._hash,
-            					KeyConstants._label,
-            					HAS_OWN_SEC_CONTEXT,
-            					KeyConstants._url,
-            					CONFIG_FILE},
-            			factories.length,getString("admin",action,"returnVariable"));
-            pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+            qry.setAtEL(CONFIG_FILE,row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
+            if(factory.getURL()!=null)qry.setAtEL(KeyConstants._url,row,factory.getURL().toExternalForm());
             
-            for(int i=0;i<factories.length;i++) {
-                int row=i+1;
-                CFMLFactoryImpl factory = factories[i];
-                
-                qry.setAtEL(KeyConstants._path,row,ReqRspUtil.getRootPath(factory.getConfigWebImpl().getServletContext()));
-                
-                qry.setAtEL(CONFIG_FILE,row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
-                if(factory.getURL()!=null)qry.setAtEL(KeyConstants._url,row,factory.getURL().toExternalForm());
-                
 
-                qry.setAtEL(KeyConstants._id,row,factory.getConfig().getId());
-                qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
-                qry.setAtEL(KeyConstants._label,row,factory.getLabel());
-                qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cs.hasIndividualSecurityManager(factory.getConfig().getId())));
-            }
+            qry.setAtEL(KeyConstants._id,row,factory.getConfig().getId());
+            qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
+            qry.setAtEL(KeyConstants._label,row,factory.getLabel());
+            qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cw.hasIndividualSecurityManager()));
         }
     }
 
@@ -1115,6 +1154,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         ResourceUtil.copyRecursive(srcDir, trgDir);    
         store();
     }
+    
     private void doUpdateLabel() throws PageException {
     	if(config instanceof ConfigServer) {
     		 if(admin.updateLabel(getString("admin",action,"hash"),getString("admin",action,"label"))) {
@@ -1150,25 +1190,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private void doRemoveContext() throws PageException, IOException {
     	String strRealpath = getString("admin",action,"destination");
-        
-        ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
+    	ConfigServerImpl server = (ConfigServerImpl) config;
         ConfigWeb[] webs = server.getConfigWebs();
-        ConfigWeb web;
-        Resource trg,p,dsStore;
-        for(int i=0;i<webs.length;i++){
-        	web=webs[i];
-        	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
-        	if(trg.exists()) trg.remove(true);
-        	p=trg.getParentResource();
-            dsStore=p.getRealResource(".DS_Store");
-            dsStore.delete();
-            while(p.isDirectory() && ResourceUtil.isEmptyDirectory(p)) {
-            	p.remove(false);
-            	p=p.getParentResource();
-            	dsStore=p.getRealResource(".DS_Store");
-                dsStore.delete();
-            }
-        }
+        
+    	try {
+    		admin.removeContext(server, strRealpath, true);
+		}
+		catch (SAXException e) {
+			throw Caster.toPageException(e);
+		}
+		
     	store();
     }
     
@@ -1827,11 +1858,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doUpdateComponentMapping() throws PageException {
         admin.updateComponentMapping(
-                getString("virtual",""),
+        		getString("virtual",""),
                 getString("physical",""),
                 getString("archive",""),
                 getString("primary","physical"),
-                getBool("trusted",false)
+                ConfigWebUtil.inspectTemplate(getString("inspect",""), ConfigImpl.INSPECT_UNDEFINED)
         );
         store();
         adminSync.broadcast(attributes, config);
@@ -1860,7 +1891,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("admin",action,"physical"),
                 getString("admin",action,"archive"),
                 getString("admin",action,"primary"),
-                Caster.toBooleanValue(getString("admin",action,"trusted"))
+                ConfigWebUtil.inspectTemplate(getString("inspect",""), ConfigImpl.INSPECT_UNDEFINED)
         );
         store();
         adminSync.broadcast(attributes, config);
@@ -1884,11 +1915,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetCustomTagMappings() throws PageException {
         Mapping[] mappings = config.getCustomTagMappings();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","inspect"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             int row=i+1;
             qry.setAt("archive",row,m.getArchive());
             qry.setAt("strarchive",row,m.getStrArchive());
@@ -1898,18 +1929,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
             qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
-            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+            qry.setAt("inspect",row,ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
     
     private void doGetComponentMappings() throws PageException {
         Mapping[] mappings = config.getComponentMappings();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","inspect"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             int row=i+1;
             qry.setAt("archive",row,m.getArchive());
             qry.setAt("strarchive",row,m.getStrArchive());
@@ -1919,7 +1950,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
             qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
-            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+            qry.setAt("inspect",row,ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
@@ -1963,12 +1994,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private void doUpdateMapping() throws PageException {
-        admin.updateMapping(
+    	admin.updateMapping(
                 getString("admin",action,"virtual"),
                 getString("admin",action,"physical"),
                 getString("admin",action,"archive"),
                 getString("admin",action,"primary"),
-                Caster.toBooleanValue(getString("admin",action,"trusted")),
+                ConfigWebUtil.inspectTemplate(getString("inspect",""), ConfigImpl.INSPECT_UNDEFINED),
                 Caster.toBooleanValue(getString("toplevel","true"))
         );
         store();
@@ -1987,7 +2018,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         String virtual=getString("admin",action,"virtual");
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             if(!m.getVirtual().equals(virtual)) continue;
             
             sct.set("archive",m.getArchive());
@@ -1998,7 +2029,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             sct.set(KeyConstants._hidden,Caster.toBoolean(m.isHidden()));
             sct.set("physicalFirst",Caster.toBoolean(m.isPhysicalFirst()));
             sct.set("readonly",Caster.toBoolean(m.isReadonly()));
-            sct.set("trusted",Caster.toBoolean(m.isTrusted()));
+            sct.set("inspect",ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
             sct.set("toplevel",Caster.toBoolean(m.isTopLevel()));
 
             pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
@@ -2091,11 +2122,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
 
         Mapping[] mappings = config.getMappings();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted","toplevel"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","inspect","toplevel"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
-            Mapping m=mappings[i];
+            MappingImpl m=(MappingImpl) mappings[i];
             int row=i+1;
             qry.setAt("archive",row,m.getArchive());
             qry.setAt("strarchive",row,m.getStrArchive());
@@ -2105,7 +2136,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
             qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
-            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+            qry.setAt("inspect",row,ConfigWebUtil.inspectTemplate(m.getInspectTemplateRaw(), ""));
             qry.setAt("toplevel",row,Caster.toBoolean(m.isTopLevel()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
@@ -3810,7 +3841,20 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
     
-    
+    private void doUpdateRHExtension() throws PageException {
+    	String str = getString("admin", "UpdateExtensions", "source");
+    	Resource src = ResourceUtil.toResourceExisting(config, str);
+    	Resource trg=DeployHandler.getDeployDirectory(config).getRealResource(src.getName());
+    	
+    	try {
+			ResourceUtil.copy(src, trg);
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    	//config.get
+    	DeployHandler.deploy(config);
+	}
     
     private void doUpdateExtension() throws PageException {
     	

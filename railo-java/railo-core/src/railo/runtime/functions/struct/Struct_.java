@@ -7,12 +7,17 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class Struct_ implements Function {
+
+	private static final long serialVersionUID = 8708684598035273346L;
+
 	public static Struct call(PageContext pc , Object[] objArr) throws PageException {
 		return _call(objArr, "invalid argument for function struct, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")");
 	}
@@ -33,7 +38,7 @@ public class Struct_ implements Function {
 					for(int y=0;y<arr.length-1;y++) {
 						s=touch(s,arr[y]);
 					}
-					s.set(arr[arr.length-1], fv.getValue());	
+					s.set(KeyImpl.init(arr[arr.length-1]), fv.getValue());	
 				}
 			}
 			else {
@@ -43,11 +48,11 @@ public class Struct_ implements Function {
 		return sct;
 	}
 	private static Struct touch(Struct parent,String name) {
-		name=name.trim();
-		Object obj=parent.get(name, null); 
+		Key key = KeyImpl.init(name.trim());
+		Object obj=parent.get(key, null); 
 		if(obj instanceof Struct) return (Struct) obj;
 		Struct sct=new StructImpl();
-		parent.setEL(name, sct);
+		parent.setEL(key, sct);
 		return sct;
 	}
 	
