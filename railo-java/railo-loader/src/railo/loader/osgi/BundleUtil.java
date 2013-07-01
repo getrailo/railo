@@ -1,0 +1,43 @@
+package railo.loader.osgi;
+
+import java.io.InputStream;
+import java.io.IOException;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+
+import railo.commons.io.res.Resource;
+
+public class BundleUtil {
+	
+	public static Bundle addBundle(BundleContext context,Resource bundle, boolean start) throws IOException, BundleException {
+    	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
+    }
+    
+	public static Bundle addBundle(BundleContext context,String id,Resource bundle, boolean start) throws IOException, BundleException {
+		
+		InputStream is = bundle.getInputStream();
+		try {
+        	Bundle b = context.installBundle(id,is);
+        	if(start)b.start();
+        	return b;
+        }
+        finally {
+        	is.close();
+        }
+	}
+	
+	public static String bundleState(int state, String defaultValue) {
+		switch(state){
+		case Bundle.UNINSTALLED: return "UNINSTALLED";
+		case Bundle.INSTALLED: return "INSTALLED";
+		case Bundle.RESOLVED: return "RESOLVED";
+		case Bundle.STARTING: return "STARTING";
+		case Bundle.STOPPING: return "STOPPING";
+		case Bundle.ACTIVE: return "ACTIVE";
+		}
+		
+		return defaultValue;
+	}
+}
