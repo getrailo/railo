@@ -20,7 +20,6 @@ import railo.runtime.debug.Debugger;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
-import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
 import railo.runtime.type.Array;
@@ -733,10 +732,11 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void clear();
 
-    /**
-     * @return returns the ftp pool
+    /*
+     * removed because loader no longer has references to other jars
+     * TODO add a pool interface that is library independent
      */
-    public abstract FTPPool getFTPPool();
+    //public abstract FTPPool getFTPPool();
 
     /**
      * @return return the request timeout for this pagecontext in milli seconds

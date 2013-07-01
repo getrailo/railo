@@ -12,6 +12,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -132,7 +133,7 @@ public final class Ftp extends TagImpl {
 
 	@Override
 	public int doEndTag() throws PageException	{
-	    pool=pageContext.getFTPPool();
+	    pool=((PageContextImpl)pageContext).getFTPPool();
 	    FTPClient client = null; 
 	    
 	    
