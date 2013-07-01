@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.zip.ZipFile;
 
 import railo.commons.io.res.Resource;
 
@@ -91,6 +92,13 @@ public class Util {
          closeEL(is);
          closeEL(os);
       }
+     
+     public static void closeEL(ZipFile zf) {
+         try {
+           if(zf!=null)zf.close();
+       } 
+       catch (Throwable e) {}
+     }
 
      /**
       * close inputstream without a Exception

@@ -22,9 +22,16 @@ import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
+import org.apache.felix.framework.Felix;
+import org.apache.felix.framework.ext.FelixBundleContext;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
+
 import railo.Version;
 import railo.loader.TP;
-import railo.loader.classloader.RailoClassLoader;
+import railo.loader.osgi.BundleLoader;
+import railo.loader.osgi.BundleUtil;
+import railo.loader.osgi.OSGiUtil;
 import railo.loader.util.ExtensionFilter;
 import railo.loader.util.Util;
 
@@ -38,16 +45,20 @@ public class CFMLEngineFactory {
 	 // set to false to disable patch loading, for example in major alpha releases
     private static final boolean PATCH_ENABLED = true;
     
-	private static CFMLEngineFactory factory;
+    private Felix felix;
+	private Bundle bundle;
+    private CFMLEngine engine;
+    
+    private static CFMLEngineFactory factory;
     private static File railoServerRoot;
     private static CFMLEngineWrapper engineListener;
-    private CFMLEngine engine;
     private ClassLoader mainClassLoader=new TP().getClass().getClassLoader();
     private int version;
     private List<EngineChangeListener> listeners=new ArrayList<EngineChangeListener>();
     private File resourceRoot;
 
 	private PrintWriter out;
+
     
     
     /**
@@ -250,6 +261,8 @@ public class CFMLEngineFactory {
                 }
             }
             else {
+            	bundle=loadBundle(railo);
+            	
             	try {
             		engine=getEngine(new RailoClassLoader(railo,mainClassLoader));
             	}
@@ -282,7 +295,18 @@ public class CFMLEngineFactory {
     }
     
 
-    private String getCoreExtension() throws ServletException {
+    private Bundle loadBundle(File railo) throws BundleException, IOException {
+    	if(felix==null)felix=OSGiUtil.loadFelix();
+    	else if(bundle!=null) remove(bundle); // uninstall already loaded bundles
+    	return BundleLoader.buildAndLoad(felix.getBundleContext(),getBundleDirectory(),railo);
+	}
+
+	private static void remove(Bundle bundle) throws BundleException {
+    	bundle.stop();
+    	bundle.uninstall();
+	}
+
+	private String getCoreExtension() throws ServletException {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
         if(res!=null) return "rcs";
         
@@ -536,6 +560,12 @@ public class CFMLEngineFactory {
         File pd = new File(getResourceRoot(),"patches");
         if(!pd.exists())pd.mkdirs();
         return pd;
+    }
+    
+    private File getBundleDirectory() throws IOException {
+        File bd = new File(getResourceRoot(),"bundles");
+        if(!bd.exists())bd.mkdirs();
+        return bd;
     }
 
     /**

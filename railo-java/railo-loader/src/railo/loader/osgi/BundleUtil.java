@@ -1,5 +1,7 @@
 package railo.loader.osgi;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -10,7 +12,23 @@ import org.osgi.framework.BundleException;
 import railo.commons.io.res.Resource;
 
 public class BundleUtil {
+	public static Bundle addBundle(BundleContext context,File bundle, boolean start) throws IOException, BundleException {
+    	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
+    }
 	
+	public static Bundle addBundle(BundleContext context,String id,File bundle, boolean start) throws IOException, BundleException {
+		
+		InputStream is = new FileInputStream(bundle);
+		try {
+        	Bundle b = context.installBundle(id,is);
+        	if(start)b.start();
+        	return b;
+        }
+        finally {
+        	is.close();
+        }
+	}
+    
 	public static Bundle addBundle(BundleContext context,Resource bundle, boolean start) throws IOException, BundleException {
     	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
     }

@@ -262,16 +262,4 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		
 		
 	}
-	
-	public static void main(String[] args) throws Exception {
-		Cast caster = CFMLEngineFactory.getInstance().getCastUtil();
-		Resource target=caster.toResource("/Users/mic/tmp/test.zip");
-		Resource jar=caster.toResource("/Users/mic/libs/imqq.jar");
-		BundleBuilderFactory bf = new BundleBuilderFactory("Test", "test", "", "1.0.0", null);
-		bf.addJar(jar);
-		
-		bf.build(target);
-		
-		
-	}
 }
