@@ -10,17 +10,14 @@ import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
-import railo.print;
 import railo.commons.io.cache.Cache;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PagePlus;
 import railo.runtime.PageSource;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.component.MemberSupport;
@@ -39,7 +36,6 @@ import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
-import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentIntKey;
@@ -55,7 +51,7 @@ import railo.runtime.writer.BodyContentUtil;
 /**
  * defines a abstract class for a User defined Functions
  */
-public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externalizable {
+public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
 	
 	private static final FunctionArgument[] EMPTY = new FunctionArgument[0];
 	private static final RamCache DEFAULT_CACHE=new RamCache();
@@ -433,7 +429,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 			try {
 				Object oa=null;
                 try {
-                    oa = UDFUtil.getDefaultValue(pageContext, (UDFPlus)udf, i, null);//udf.getDefaultValue(pageContext,i,null);
+                    oa = UDFUtil.getDefaultValue(pageContext, udf, i, null);//udf.getDefaultValue(pageContext,i,null);
                 } catch (PageException e1) {
                 }
                 if(oa==null)oa="null";

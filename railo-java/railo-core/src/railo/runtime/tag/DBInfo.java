@@ -20,7 +20,6 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
@@ -672,7 +671,7 @@ public final class DBInfo extends TagImpl {
 
 	public static Object getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			Object ds=((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
+			Object ds=pageContext.getApplicationContext().getDefDataSource();
 
 			if(StringUtil.isEmpty(ds))
 				throw new ApplicationException(

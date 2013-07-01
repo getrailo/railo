@@ -10,7 +10,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
@@ -349,7 +349,7 @@ public final class Application extends TagImpl {
 	@Override
 	public int doStartTag() throws PageException	{
         
-        ApplicationContextPro ac;
+        ApplicationContext ac;
         boolean initORM;
         if(action==ACTION_CREATE){
         	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,
@@ -358,7 +358,7 @@ public final class Application extends TagImpl {
         	pageContext.setApplicationContext(ac);
         }
         else {
-        	ac=(ApplicationContextPro) pageContext.getApplicationContext();
+        	ac= pageContext.getApplicationContext();
         	initORM=set(ac);
         }
         
@@ -371,7 +371,7 @@ public final class Application extends TagImpl {
 		return ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource());
 	}
 
-	private boolean set(ApplicationContextPro ac) throws PageException {
+	private boolean set(ApplicationContext ac) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);

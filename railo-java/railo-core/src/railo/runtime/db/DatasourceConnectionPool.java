@@ -113,7 +113,7 @@ public class DatasourceConnectionPool {
 
 	public void remove(DataSource datasource) {
 		Object[] arr = dcs.keySet().toArray();
-		String key,id=createId(datasource);
+		String key,id=datasource.id();
         for(int i=0;i<arr.length;i++) {
         	key=(String) arr[i];
         	if(key.startsWith(id)) {
@@ -183,7 +183,7 @@ public class DatasourceConnectionPool {
 	}
 
 	private RefInteger _getCounter(DataSource datasource) {
-		String did = createId(datasource);
+		String did = datasource.id();
 		RefInteger ri=counter.get(did);
 		if(ri==null) {
 			counter.put(did,ri=new RefIntegerImpl(0));
@@ -192,10 +192,6 @@ public class DatasourceConnectionPool {
 	}
 
 	public static String createId(DataSource datasource, String user, String pass) {
-		return createId(datasource)+":"+user+":"+pass;
-	}
-	private static String createId(DataSource datasource) {
-		if(datasource instanceof DataSourcePro) return ((DataSourceSupport)datasource).id();
-		return datasource.getClazz().getName()+":"+datasource.getDsnTranslated()+":"+datasource.getClazz().getName();
+		return datasource.id()+":"+user+":"+pass;
 	}
 }

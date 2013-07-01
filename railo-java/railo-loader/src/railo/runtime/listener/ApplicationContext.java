@@ -5,6 +5,7 @@ import java.io.Serializable;
 import railo.commons.io.res.Resource;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
@@ -88,12 +89,16 @@ public interface ApplicationContext extends Serializable {
 
 	public boolean getSecureJson();
 
-	// FUTURE deprecated use instead getDefDataSource()
+	/**
+	 * @deprecated use instead getDefDataSource()
+	 */
 	public String getDefaultDataSource();
 	
 	public boolean isORMEnabled();
 
-	// FUTURE deprecated use instead getDefaultDataSource()
+	/**
+	 * @deprecated use instead getDefaultDataSource()
+	 */
 	public String getORMDatasource();
 
 	public ORMConfiguration getORMConfiguration();
@@ -181,4 +186,30 @@ public interface ApplicationContext extends Serializable {
 	public JavaSettings getJavaSettings();
 	
 	public Resource[] getRestCFCLocations();
+	
+	public DataSource[] getDataSources();
+    public DataSource getDataSource(String dataSourceName) throws PageException;
+    public DataSource getDataSource(String dataSourceName, DataSource defaultValue);
+
+    public void setDataSources(DataSource[] dataSources);
+    
+    /**
+     * default datasource name (String) or datasource (DataSource Object)
+     * @return
+     */
+	public Object getDefDataSource();
+	/**
+     * orm datasource name (String) or datasource (DataSource Object)
+     * @return
+     */
+	public Object getORMDataSource();
+	
+
+	public void setDefDataSource(Object datasource);
+	public void setORMDataSource(Object string);
+	
+
+
+	public abstract boolean getBufferOutput();
+	public abstract void setBufferOutput(boolean bufferOutput);
 }

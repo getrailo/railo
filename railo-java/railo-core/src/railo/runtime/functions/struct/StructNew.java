@@ -4,6 +4,7 @@
 package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
@@ -18,18 +19,24 @@ public final class StructNew extends BIF {
 	public static Struct call(PageContext pc ) {
         return new StructImpl();
     }
-    public static Struct call(PageContext pc ,String type) throws FunctionException {
-        type=type.toLowerCase();
-        if(type.equals("linked")) return new StructImpl(Struct.TYPE_LINKED);
-        else if(type.equals("weak")) return new StructImpl(Struct.TYPE_WEAKED);
-        else if(type.equals("syncronized")) return new StructImpl(Struct.TYPE_SYNC);
-        else if(type.equals("synchronized")) return new StructImpl(Struct.TYPE_SYNC);
-        else if(type.equals("sync")) return new StructImpl(Struct.TYPE_SYNC);
-        else if(type.equals("soft")) return new StructImpl(StructImpl.TYPE_SOFT);
-        else if(type.equals("normal")) return new StructImpl();
-        
-        else throw new FunctionException(pc,"structNew",1,"type","valid values are [normal, weak, linked, soft, synchronized]");
+    public static Struct call(PageContext pc ,String type) throws ApplicationException {
+    	return new StructImpl(toType(type));
     }
+    
+    public static int toType(String type) throws ApplicationException {
+    	type=type.toLowerCase();
+    	if(type.equals("linked")) return Struct.TYPE_LINKED;
+    	else if(type.equals("weaked")) return Struct.TYPE_WEAKED;
+    	else if(type.equals("weak")) return Struct.TYPE_WEAKED;
+        else if(type.equals("syncronized")) return Struct.TYPE_SYNC;
+        else if(type.equals("synchronized")) return Struct.TYPE_SYNC;
+        else if(type.equals("sync")) return Struct.TYPE_SYNC;
+        else if(type.equals("soft")) return StructImpl.TYPE_SOFT;
+        else if(type.equals("normal")) return StructImpl.TYPE_REGULAR;
+        else if(type.equals("regular")) return StructImpl.TYPE_REGULAR;
+        else throw new ApplicationException("valid struct types are [normal, weak, linked, soft, synchronized]");
+    }
+    
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
 		if(args.length==1) return call(pc,Caster.toString(args[0]));

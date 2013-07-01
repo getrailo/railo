@@ -17,14 +17,13 @@ import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
+import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
-import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
@@ -383,7 +382,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	public int doStartTag() throws PageException	{
 		// default datasource
 		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
-			Object obj = ((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
+			Object obj = pageContext.getApplicationContext().getDefDataSource();
 			if(StringUtil.isEmpty(obj))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
@@ -483,7 +482,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 			if(logdb){
 				boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-				((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+				pageContext.getDebugger().addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 			}
 		}
 		

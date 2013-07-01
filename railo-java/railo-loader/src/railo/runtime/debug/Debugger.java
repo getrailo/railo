@@ -48,21 +48,6 @@ public interface Debugger {
     public DebugEntryTemplatePart getEntry(PageContext pc,PageSource source, int startPos, int endPos);
 
     /**
-     * add new query execution time
-     * @param query 
-     * @param datasource 
-     * @param name
-     * @param sql
-     * @param recordcount
-     * @param src
-     * @param time 
-     */
-    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time); // FUTURE deprecated
-    // FUTURE public void addQuery(Query query,DataSource datasource,String name,SQL sql, int recordcount, PageSource src,int time);
-    
-    // FUTURE add ans set method above to deprecated -> public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
-    
-    /**
      * sets if toHTML print html output info or not
      * @param output The output to set.
      */
@@ -118,5 +103,31 @@ public interface Debugger {
 	public void addImplicitAccess(String scope, String name);
 
 	public ImplicitAccess[] getImplicitAccesses(int scope, String name);
-	
+
+    /**
+     * add new query execution time
+     * @param query 
+     * @param datasource 
+     * @param name
+     * @param sql
+     * @param recordcount
+     * @param src
+     * @param time 
+     * @deprecated use instead <code>addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time)</code>
+     */
+    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
+    
+    /**
+     * add new query execution time
+     * @param query 
+     * @param datasource 
+     * @param name
+     * @param sql
+     * @param recordcount
+     * @param src
+     * @param time 
+     */
+    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
+    
+    public DebugTrace[] getTraces(PageContext pc);
 }

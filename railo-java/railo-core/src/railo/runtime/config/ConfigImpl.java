@@ -632,33 +632,6 @@ public abstract class ConfigImpl implements Config {
     	if(resourceCL==null) throw new RuntimeException("no RCL defined yet!");
     	return resourceCL;   
     }
-
-    @Override
-    public ClassLoader getClassLoader(Resource[] reses) throws IOException {
-    	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
-    	//PageContextImpl pci=(PageContextImpl) ThreadLocalPageContext.get();
-    	//if(pci==null) 
-    		throw new RuntimeException("this method is no longer suported");
-    	//return pci.getClassLoader(reses);
-    	////return getResourceClassLoader().getCustomResourceClassLoader(reses);   
-    }
-    
-	/* *
-	 * @return the classLoaderFactory
-	
-	public ResourceClassLoaderFactory getClassLoaderFactory() {
-		return classLoaderFactory;
-	} */
-
-	/* *
-	 * @param classLoaderFactory the classLoaderFactory to set
-	/
-    protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
-		if(this.classLoaderFactory!=null){
-			classLoaderFactory.reset();
-		}
-		this.classLoaderFactory = classLoaderFactory;
-	} */
     
     protected void setResourceClassLoader(ResourceClassLoader resourceCL) {
     	this.resourceCL=resourceCL;

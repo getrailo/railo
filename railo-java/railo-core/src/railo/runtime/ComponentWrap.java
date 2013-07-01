@@ -21,7 +21,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
+public final class ComponentWrap extends StructSupport implements Component, Objects {
    
     private int access;
     private ComponentAccess component;
@@ -329,7 +329,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 
 	@Override
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return ((ComponentPro)component).getProperties(onlyPeristent,includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+		return component.getProperties(onlyPeristent,includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 
 	@Override
@@ -378,4 +378,9 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     public void registerUDF(Collection.Key key, UDFProperties props){
 		component.registerUDF(key, props);
     }
+
+	@Override
+	public Class getJavaAccessClass(PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+		return component.getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
+	}
 }

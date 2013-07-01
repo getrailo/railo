@@ -78,11 +78,12 @@ public interface VariableUtil {
      * @param value Value to set
      * @return value setted
      * @throws PageException
+     * @deprecated use instead <code>set(PageContext pc, Object coll, Collection.Key key,Object value)</code>
      */
-    public abstract Object set(PageContext pc, Object coll, String key,
+    public Object set(PageContext pc, Object coll, String key,
             Object value) throws PageException;
     
-    // FUTURE add and set above to depr public Object set(PageContext pc, Object coll, Collection.Key key,Object value) throws PageException {
+    public Object set(PageContext pc, Object coll, Collection.Key key,Object value) throws PageException;
 
     /**
      * sets a value to the Object

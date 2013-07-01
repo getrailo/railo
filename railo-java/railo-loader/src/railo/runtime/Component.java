@@ -44,11 +44,14 @@ public interface Component extends Struct,Objects,CFObject {
      * this class is generated dynamic when used
      * @param isNew 
      * @throws PageException
-     * FUTURE deprecated
+     * @deprecated use instead <code>getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg)</code>
      */
     public Class getJavaAccessClass(RefBoolean isNew) throws PageException;
-    // FUTURE public Class getJavaAccessClass(PageContext pc,RefBoolean isNew) throws PageException;
-
+    
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException;
+        
+    
+    
     /**
      * @return Returns the display name.
      */
@@ -131,9 +134,17 @@ public interface Component extends Struct,Objects,CFObject {
 	/**
 	 * return all properties from component
 	 * @param onlyPeristent if true return only columns where attribute persistent is not set to false
+	 * @deprecated use instead <code>getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly)</code>
+	 */
+	public Property[] getProperties(boolean onlyPeristent);
+	
+	/**
+	 * return all properties from component
+	 * @param onlyPeristent if true return only columns where attribute persistent is not set to false
 	 * @return
 	 */
-	public Property[] getProperties(boolean onlyPeristent);// FUTURE deprecated
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly);
+
 
 	public void setProperty(Property property) throws PageException;
 	

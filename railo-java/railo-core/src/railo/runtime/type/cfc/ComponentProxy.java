@@ -6,7 +6,6 @@ import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -21,14 +20,19 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ComponentProxy implements ComponentPro {
+public abstract class ComponentProxy implements Component {
 	
 	public abstract Component getComponent(); 
-	
+
 
 	@Override
 	public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
 		return getComponent().getJavaAccessClass(isNew);
+	}
+
+	@Override
+	public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException{
+   		return getComponent().getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
 	}
 
 	@Override
@@ -341,6 +345,11 @@ public abstract class ComponentProxy implements ComponentPro {
 	@Override
 	public Property[] getProperties(boolean onlyPeristent) {
 		return getComponent().getProperties(onlyPeristent);
+	}
+	
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
+		return getComponent().getProperties(onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
 	}
 
 	@Override

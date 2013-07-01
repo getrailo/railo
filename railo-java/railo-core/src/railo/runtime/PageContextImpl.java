@@ -94,14 +94,10 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
-import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationContext;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
-import railo.runtime.listener.JavaSettings;
 import railo.runtime.listener.JavaSettingsImpl;
-import railo.runtime.listener.ModernAppListener;
 import railo.runtime.listener.ModernAppListenerException;
 import railo.runtime.listener.NoneAppListener;
 import railo.runtime.monitor.RequestMonitor;
@@ -2990,14 +2986,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 // FUTURE add to PageContext
 	public DataSource getDataSource(String datasource) throws PageException {
-		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		DataSource ds = getApplicationContext().getDataSource(datasource,null);
 		if(ds==null) ds=getConfig().getDataSource(datasource);
 		return ds;
 	}
 		
 // FUTURE add to PageContext
 	public DataSource getDataSource(String datasource, DataSource defaultValue) {
-		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		DataSource ds = getApplicationContext().getDataSource(datasource,null);
 		if(ds==null) ds=getConfig().getDataSource(datasource,defaultValue);
 		return ds;
 	}

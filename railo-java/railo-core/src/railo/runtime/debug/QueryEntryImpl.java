@@ -6,7 +6,7 @@ import railo.runtime.type.Query;
 /**
  * 
  */
-public final class QueryEntryImpl implements QueryEntryPro {
+public final class QueryEntryImpl implements QueryEntry {
 
 	private static final long serialVersionUID = 8655915268130645466L;
 	

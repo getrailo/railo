@@ -130,7 +130,7 @@ public interface Creation {
 
     public abstract Struct createStruct(int type);
     
-    // FUTURE public abstract Struct createStruct(String type);
+    public abstract Struct createStruct(String type) throws PageException;
 
     /**
      * creates a query object with given data
@@ -150,17 +150,6 @@ public interface Creation {
      * @return created query Object
      */
     public abstract Query createQuery(Collection.Key[] columns, int rows, String name) throws PageException;
-
-    /**
-	 * creates a query object with a resultset from a sql query
-	 * @param dc Connection to a database
-	 * @param name 
-	 * @param sql sql to execute
-	 * @param maxrow maxrow for the resultset
-     * @throws PageException
-     * @deprecated replaced with <code>{@link #createQuery(DatasourceConnection, SQL, int, int, int, String)}</code>
-	 */	
-    public abstract Query createQuery(DatasourceConnection dc,SQL sql,int maxrow, String name) throws PageException;
 
     /**
      * @param dc Connection to a database

@@ -5,7 +5,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.type.util.ArrayUtil;
 
-public abstract class ApplicationContextSupport implements ApplicationContextPro {
+public abstract class ApplicationContextSupport implements ApplicationContext {
 
 	private static final long serialVersionUID = 1384678713928757744L;
 	

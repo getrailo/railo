@@ -410,7 +410,7 @@ public final class Page extends BodyBase {
         getImports(imports, this); 
     	
     	// parent
-    	String parent="railo/runtime/PagePlus";
+    	String parent="railo/runtime/Page";
     	if(isComponent()) parent="railo/runtime/ComponentPage";
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
@@ -425,7 +425,7 @@ public final class Page extends BodyBase {
 	    GeneratorAdapter constrAdapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_PS,null,null,cw);
 		BytecodeContext constr = new BytecodeContext(null,null,this,externalizer,keys,cw,name,constrAdapter,CONSTRUCTOR_PS,writeLog(),supressWSbeforeArg);
 		constrAdapter.loadThis();
-        Type t=Types.PAGE_PLUS;
+        Type t=Types.PAGE;
         if(isComponent())t=Types.COMPONENT_PAGE;
         else if(isInterface())t=Types.INTERFACE_PAGE;
         

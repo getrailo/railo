@@ -36,12 +36,10 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourcePro;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
@@ -120,7 +118,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 	@Override
 	public ORMSession createSession(PageContext pc) throws PageException {
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext appContext = pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
 		
 		DataSource ds=o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
@@ -171,7 +169,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext appContext = pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME);
 		
@@ -384,15 +382,13 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	private Object hash(PageContext pc) throws PageException {
-		ApplicationContextPro appContext=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext appContext=pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
 		DataSource ds;
 		if(o instanceof DataSource) ds=(DataSource) o;
 		else ds=((PageContextImpl)pc).getDataSource(Caster.toString(o));
-		if(ds instanceof DataSourcePro)
-			return hash=((DataSourcePro)ds).id()+":"+appContext.getORMConfiguration().hash();
 		
-		return ds.getClazz()+":"+ds.getDsnTranslated()+":"+appContext.getORMConfiguration().hash();
+		return hash=ds.id()+":"+appContext.getORMConfiguration().hash();
 	}
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {

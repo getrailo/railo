@@ -47,7 +47,7 @@ import railo.runtime.type.util.KeyConstants;
 /**
  * Class to debug the application
  */
-public final class DebuggerImpl implements DebuggerPro {
+public final class DebuggerImpl implements Debugger {
 	private static final long serialVersionUID = 3957043879267494311L;
 
 	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
@@ -155,8 +155,9 @@ public final class DebuggerImpl implements DebuggerPro {
 
         // Queries
         int len=queries.size();
+        QueryEntry entry;
         for(int i=0;i<len;i++) {
-            QueryEntryPro entry=(QueryEntryPro) queries.get(i);
+            entry= queries.get(i);
             String path=entry.getSrc();
             Object o=entries.get(path);
             
@@ -169,13 +170,6 @@ public final class DebuggerImpl implements DebuggerPro {
         return arrPages;
     }
 
-	/*private DumpData _toDumpData(int value) {
-        return new SimpleDumpData(_toString(value));
-    }
-	private DumpData _toDumpData(long value) {
-        return new SimpleDumpData(_toString(value));
-    }*/
-	
 	private String _toString(long value) {
         if(value<=0) return "0";
         return String.valueOf(value);
@@ -271,9 +265,10 @@ public final class DebuggerImpl implements DebuggerPro {
         }
 		int row=0;
 		try {
+			QueryEntry qe;
 		    while(qryIt.hasNext()) {
 		        row++;
-		        QueryEntryPro qe=(QueryEntryPro) qryIt.next();
+		        qe= qryIt.next();
 				qryQueries.setAt(KeyConstants._name,row,qe.getName()==null?"":qe.getName());
 		        qryQueries.setAt(KeyConstants._time,row,Long.valueOf(qe.getExecutionTime()));
 		        qryQueries.setAt(KeyConstants._sql,row,qe.getSQL().toString());

@@ -30,9 +30,11 @@ import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.struct.StructNew;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
@@ -109,6 +111,11 @@ public final class CreationImpl implements Creation,Serializable {
     }
 
     @Override
+    public Struct createStruct(String type) throws ApplicationException {
+    	return new StructImpl(StructNew.toType(type));
+    }
+
+    @Override
     public Query createQuery(String[] columns, int rows, String name) {
         return new QueryImpl(columns,rows,name);
     }
@@ -117,11 +124,6 @@ public final class CreationImpl implements Creation,Serializable {
     public Query createQuery(Collection.Key[] columns, int rows, String name) throws DatabaseException {
         return new QueryImpl(columns,rows,name);
     }
-    
-    @Override
-    public Query createQuery(DatasourceConnection dc, SQL sql, int maxrow, String name) throws PageException {
-		return new QueryImpl(ThreadLocalPageContext.get(),dc,sql,maxrow,-1,-1,name);
-	}
     
     public Query createQuery(DatasourceConnection dc, SQL sql, int maxrow, int fetchsize, int timeout, String name) throws PageException {
 		return new QueryImpl(ThreadLocalPageContext.get(),dc,sql,maxrow,fetchsize,timeout,name);

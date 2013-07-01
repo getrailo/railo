@@ -71,8 +71,13 @@ public interface DataSourceManager {
 	 */
 	public abstract void end();
 
-	public abstract void remove(String datasource);// FUTURE deprecated
-	//FUTURE public abstract void remove(DataSource datasource);
+	/**
+	 * @deprecated use instead <code>remove(DataSource datasource)</code>
+	 * @param datasource
+	 */
+	public abstract void remove(String datasource);
+	
+	public abstract void remove(DataSource datasource);
 
 	public abstract void release();
 

@@ -37,6 +37,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
     public abstract FunctionArgument[] getFunctionArguments();
 
     /**
+     * @deprecated use instead <code> getDefaultValue(PageContext pc, int index, Object defaultValue)</code>
      * @param pc
      * @param index
      * @return default value
@@ -45,7 +46,9 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
     public abstract Object getDefaultValue(PageContext pc, int index) throws PageException;
     
 
-    // FUTURE public abstract Object getDefaultValue(PageContext pc, int index, Object defaultValue);
+	 public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException;
+	 
+	 public int getIndex();
 
     /**
      * @return Returns the functionName.

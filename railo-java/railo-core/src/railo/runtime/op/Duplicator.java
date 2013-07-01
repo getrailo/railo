@@ -104,7 +104,6 @@ public final class Duplicator {
 	    	}
 	    	
 	
-	    	//if(object instanceof CollectionPlus)return ((CollectionPlus)object).duplicate(deepCopy,ThreadLocalDuplication.getMap());
 	    	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
 	    	if(object instanceof Duplicable)return ((Duplicable)object).duplicate(deepCopy);
 	    	if(object instanceof UDF)		return ((UDF)object).duplicate();

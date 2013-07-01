@@ -11,11 +11,17 @@ import railo.runtime.type.Query;
 public interface QueryEntry extends Serializable {
 
     /**
-     * @return Returns the exe.
+     * @return return the query executionn time in mili seconds
+	 * @deprecated use instead <code>getExecutionTime()</code>
      */
     public abstract int getExe();
-    // FUTURE add the following method ans set method above to deprecated -> public abstract long getExeutionTime();
-
+    
+    /**
+	 * @return return the query executionn time in nanoseconds
+	 */
+	public long getExecutionTime();
+    
+    
     /**
      * @return Returns the query.
      */

@@ -17,12 +17,11 @@ import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
+import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
-import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -173,7 +172,7 @@ public final class Insert extends TagImpl {
 					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 					if(logdb) {
 						boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+						pageContext.getDebugger().addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 					}
 				}
 			}
@@ -189,7 +188,7 @@ public final class Insert extends TagImpl {
 
 	public static Object getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			Object ds = ((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
+			Object ds = pageContext.getApplicationContext().getDefDataSource();
 
 			if(StringUtil.isEmpty(ds))
 				throw new ApplicationException(

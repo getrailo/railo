@@ -62,16 +62,29 @@ public interface DataSource extends Cloneable {
             + ALLOW_REVOKE + ALLOW_DROP + ALLOW_ALTER;
 
     /**
-     * @return Returns the dsn.
+     * @deprecated use instead <code>getConnectionString()</code>
      */
-    public abstract String getDsnOriginal(); // FUTURE deprecated
-    // FUTURE public abstract String getConnectionStringOriginal();
+    public abstract String getDsnOriginal();
+    
+    /**
+     * @deprecated use instead <code>getConnectionStringOriginal()</code>
+     */
+    public abstract String getDsnTranslated();
+    
+    /**
+     * @return Returns the connection string with NOT replaced placeholders.
+     */
+    public String getConnectionString();
 
     /**
-     * @return Returns the dsn.
+     * @return unique id of the DataSource
      */
-    public abstract String getDsnTranslated(); // FUTURE deprecated
-    // FUTURE public abstract String getConnectionStringTranslated();
+    public String id();
+    
+    /**
+     * @return Returns the connection string with replaced placeholders.
+     */
+    public abstract String getConnectionStringTranslated();
     
     
 

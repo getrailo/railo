@@ -14,6 +14,7 @@ import org.apache.axis.providers.java.RPCProvider;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
+import railo.runtime.engine.ThreadLocalPageContext;
 
 
 /**
@@ -52,7 +53,7 @@ public final class ComponentHandler extends BasicHandler {
     protected void setupService(MessageContext msgContext) throws Exception {
         RefBoolean isnew=new RefBooleanImpl(false);
         Component cfc=(Component) msgContext.getProperty(Constants.COMPONENT);
-        Class clazz=cfc.getJavaAccessClass(isnew);
+        Class clazz=cfc.getJavaAccessClass(ThreadLocalPageContext.get(),isnew, false,true,true,true);
         String clazzName=clazz.getName();
         
         ClassLoader classLoader=clazz.getClassLoader();

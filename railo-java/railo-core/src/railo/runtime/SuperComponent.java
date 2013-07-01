@@ -29,7 +29,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements ComponentPro, Member,Sizeable {
+public class SuperComponent extends MemberSupport implements Component, Member,Sizeable {
 	
 	private ComponentImpl comp;
 
@@ -465,5 +465,10 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     }
+
+	@Override
+	public Class getJavaAccessClass(PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+		return comp.getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
+	}
 	
 }

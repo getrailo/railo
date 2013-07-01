@@ -13,7 +13,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.JavaSettings;
 import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.net.s3.Properties;
@@ -39,7 +39,7 @@ public class GetApplicationSettings {
 	}
 	
 	public static Struct call(PageContext pc, boolean suppressFunctions) {
-		ApplicationContextPro ac = (ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac = pc.getApplicationContext();
 		Component cfc = null;
 		if(ac instanceof ModernApplicationContext)cfc= ((ModernApplicationContext)ac).getComponent();
 		

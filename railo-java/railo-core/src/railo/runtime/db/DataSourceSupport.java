@@ -10,7 +10,7 @@ import railo.commons.lang.ClassUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 
-public abstract class DataSourceSupport implements DataSourcePro, Cloneable {
+public abstract class DataSourceSupport implements DataSource, Cloneable {
 
     private Class clazz;
 	private final boolean blob;
@@ -137,8 +137,8 @@ public abstract class DataSourceSupport implements DataSourcePro, Cloneable {
 	@Override
 	public boolean equals(Object obj) {
 		if(this==obj)return true;
-		if(!(obj instanceof DataSourcePro)) return false;
-		DataSourcePro ds = (DataSourcePro)obj;
+		if(!(obj instanceof DataSource)) return false;
+		DataSource ds = (DataSource)obj;
 		return id().equals(ds.id());
 	} 
 	

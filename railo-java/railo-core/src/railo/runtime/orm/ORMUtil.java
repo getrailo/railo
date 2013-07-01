@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
@@ -175,8 +174,6 @@ public class ORMUtil {
 	}*/
 
 	private static Property[] getProperties(Component cfc) {
-		if(cfc instanceof ComponentPro)
-			return ((ComponentPro)cfc).getProperties(true,true,false,false);
-		return cfc.getProperties(true);
+		return cfc.getProperties(true,true,false,false);
 	}
 }
