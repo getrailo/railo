@@ -185,11 +185,10 @@ public interface CFMLEngine {
 	 */
 	public Object getFDController();
 
-	/**
-	 * returns the Blaze DS Util 
-	 * @return Blaze DS Util 
+	/*
+	 * removed to avoid library conflicts, the blazeds implementation is no longer under developement an in a separate jar
 	 */
-	public Object getBlazeDSUtil(); 
+	// public Object getBlazeDSUtil(); 
 
 	/**
 	 * returns the Resource Util 

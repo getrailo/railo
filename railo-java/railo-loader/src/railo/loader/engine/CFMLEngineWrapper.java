@@ -176,13 +176,6 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	}
 
 	/**
-	 * @see railo.loader.engine.CFMLEngine#getBlazeDSUtil()
-	 */
-	public Object getBlazeDSUtil() {
-		return engine.getBlazeDSUtil();
-	}
-
-	/**
 	 * @see railo.loader.engine.CFMLEngine#getFDController()
 	 */
 	public Object getFDController() {

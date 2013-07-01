@@ -475,11 +475,6 @@ public final class CFMLEngineImpl implements CFMLEngine {
     }
 
 	@Override
-	public Object getBlazeDSUtil() {
-		return new BlazeDSImpl();
-	}
-
-	@Override
 	public Object getFDController() {
 		engine.allowRequestTimeout(false);
 		
