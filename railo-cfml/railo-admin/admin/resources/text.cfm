@@ -1,3 +1,9 @@
+<cfif len( session.railo_admin_lang GT 5 ) || ( session.railo_admin_lang CT ".." )>
+
+	<cfset cookie.railo_admin_lang  = "en">
+	<cfset session.railo_admin_lang = "en">
+</cfif>
+
 <cfset sHelpURL = "http://www.getrailo.com/help/stHelp.json">
 <cfparam name="request.stLocalHelp" default="#structNew()#">
 <cfparam name="request.stWebMediaHelp" default="#structNew()#">
