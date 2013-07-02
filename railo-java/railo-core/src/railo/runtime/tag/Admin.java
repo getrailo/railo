@@ -1354,7 +1354,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetDebugData() throws PageException {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
-                pageContext.getDebugger().getDebuggingData(pageContext));
+                pageContext.getConfig().debug()?pageContext.getDebugger().getDebuggingData(pageContext):null);
     }
     private void doGetLoggedDebugData() throws PageException {
     	

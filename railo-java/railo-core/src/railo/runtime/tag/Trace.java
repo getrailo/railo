@@ -176,7 +176,8 @@ public final class Trace extends BodyTagImpl {
 			
 			
 		}
-		
+		if(!pageContext.getConfig().debug())
+			throw new ApplicationException("debugging is disabled");
 		DebugTrace trace = pageContext.getDebugger().addTrace(type,category,text,page,var,varValue);
 		DebugTrace[] traces = ((DebuggerPro)pageContext.getDebugger()).getTraces(pageContext);
 		

@@ -326,7 +326,7 @@ public final class Cache extends BodyTagImpl {
 		if(hasBody)hasBody=!StringUtil.isEmpty(body);
 		
         // call via cfcache disable debugger output
-            pageContext.getDebugger().setOutput(false);
+            if(pageContext.getConfig().debug())pageContext.getDebugger().setOutput(false);
 		
         HttpServletResponse rsp = pageContext.getHttpServletResponse();
         

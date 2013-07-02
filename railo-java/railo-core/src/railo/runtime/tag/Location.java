@@ -110,7 +110,7 @@ public final class Location extends TagImpl {
 		} catch (IOException e) {
 			throw new NativeException(e);
 		}
-        pageContext.getDebugger().setOutput(false);
+        if(pageContext.getConfig().debug())pageContext.getDebugger().setOutput(false);
 		throw new Abort(Abort.SCOPE_REQUEST);
 	}
 	

@@ -333,7 +333,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public void onDebug(PageContext pc) throws PageException {
-		if(((PageContextImpl)pc).isGatewayContext()) return;
+		if(((PageContextImpl)pc).isGatewayContext() || !pc.getConfig().debug()) return;
 		ComponentAccess app = apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
 			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)},true);

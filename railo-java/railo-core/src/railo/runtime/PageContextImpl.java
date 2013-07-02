@@ -75,6 +75,7 @@ import railo.runtime.debug.DebugCFMLWriter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
@@ -236,7 +237,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Client client;
 	private Application application;
 
-    private DebuggerImpl debugger=new DebuggerImpl();
+    private DebuggerPro debugger=new DebuggerImpl();
 	private long requestTimeout=-1;
 	private short enablecfoutputonly=0;
 	private int outputState;
@@ -437,7 +438,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         this.servlet=servlet;
 
          // Writers
-        if(config.debugLogOutput()) {
+        if(config.debug() && config.debugLogOutput()) {
         	CFMLWriter w = config.getCFMLWriter(req,rsp);
         	w.setAllowCompression(false);
         	DebugCFMLWriter dcw = new DebugCFMLWriter(w);
@@ -1897,7 +1898,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     @Override
     public Debugger getDebugger() {
-		return debugger;
+		return config.debug()?debugger:null;
 	}
     
     @Override

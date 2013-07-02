@@ -4,7 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
@@ -47,5 +51,15 @@ public class DebuggerUtil {
 	private Struct _pointOutClosuresInPersistentScopes(PageContext pc, Struct sct, Set<Object> done) {
 		
 		return null;
+	}
+	
+	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
+		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
+			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
+				((QueryImpl)query).enableShowQueryUsage();
+				return true;
+			}
+		}
+		return false;
 	}
 }

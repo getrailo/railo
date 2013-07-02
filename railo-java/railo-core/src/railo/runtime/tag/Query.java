@@ -17,8 +17,8 @@ import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
@@ -482,7 +482,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(pageContext.getConfig().debug() && debug) {
 			boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 			if(logdb){
-				boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+				boolean debugUsage=DebuggerUtil.debugQueryUsage(pageContext,query);
 				((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 			}
 		}

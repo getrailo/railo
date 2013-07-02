@@ -21,7 +21,7 @@ public final class Setting extends BodyTagImpl {
 	* @param showdebugoutput value to set
 	**/
 	public void setShowdebugoutput(boolean showdebugoutput)	{
-		pageContext.getDebugger().setOutput(showdebugoutput);
+		if(pageContext.getConfig().debug())pageContext.getDebugger().setOutput(showdebugoutput);
 	}
 
 	/** set the value enablecfoutputonly
