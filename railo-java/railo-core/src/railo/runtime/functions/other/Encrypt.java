@@ -53,7 +53,7 @@ public final class Encrypt implements Function {
         try {
 
             if ( CFMXCompat.isCfmxCompat( algorithm ) )
-                return Coder.encode( encoding, new CFMXCompat().transformString( key, input.getBytes() ) );
+                return Coder.encode( encoding, new CFMXCompat().transformString( key, input.getBytes( Cryptor.DEFAULT_CHARSET ) ) );
 
             byte[] baIVS = null;
             if ( ivOrSalt instanceof String )

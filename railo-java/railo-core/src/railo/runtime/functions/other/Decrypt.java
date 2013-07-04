@@ -53,7 +53,7 @@ public final class Decrypt implements Function {
         try {
 
             if ( CFMXCompat.isCfmxCompat( algorithm ) )
-                return Coder.encode( encoding, new CFMXCompat().transformString( key, input.getBytes() ) );
+                return new String( invoke( Coder.decode( encoding, input ), key, algorithm, null, 0 ), Cryptor.DEFAULT_CHARSET );
 
             byte[] baIVS = null;
             if ( ivOrSalt instanceof String )
