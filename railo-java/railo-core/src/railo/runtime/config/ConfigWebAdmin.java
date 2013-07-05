@@ -137,17 +137,22 @@ public final class ConfigWebAdmin {
     
     /**
      * @param password
+     * @throws IOException 
+     * @throws DOMException 
      * @throws ExpressionException 
      */
-    public void setPassword(String password) throws SecurityException {
+    public void setPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        if(password==null || password.length()==0) {
-            if(root.getAttribute("password")!=null)
-                root.removeAttribute("password");
+        
+        if(root.hasAttribute("password")) root.removeAttribute("password");
+        
+        
+        if(StringUtil.isEmpty(password)) {
+            if(root.hasAttribute("pw")) root.removeAttribute("pw");
         }
         else {
-            root.setAttribute("password",new BlowfishEasy("tpwisgh").encryptString(password));
+            root.setAttribute("pw",ConfigWebFactory.hash(password));
         }
     }
 
@@ -2716,12 +2721,16 @@ public final class ConfigWebAdmin {
     /**
      * @param password
      * @throws SecurityException 
+     * @throws IOException 
+     * @throws DOMException 
      */
-    public void updateDefaultPassword(String password) throws SecurityException {
+    public void updateDefaultPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.setAttribute("default-password",new BlowfishEasy("tpwisgh").encryptString(password));
-        ((ConfigServerImpl)config).setDefaultPassword(password);
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password"); // remove old PW type
+        String hpw=ConfigWebFactory.hash(password);
+        root.setAttribute("default-pw",hpw);
+        ((ConfigServerImpl)config).setDefaultPassword(hpw);
     }
 
 	public void removeDefaultPassword() throws SecurityException {

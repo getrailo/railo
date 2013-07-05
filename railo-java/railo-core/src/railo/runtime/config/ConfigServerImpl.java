@@ -212,6 +212,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     protected String getDefaultPassword() {
         return defaultPassword;
     }
+    
+    
     /**
      * @param defaultPassword The defaultPassword to set.
      */

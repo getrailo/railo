@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,9 +30,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.digest.Hash;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
@@ -50,6 +51,7 @@ import railo.commons.lang.ByteSizeParser;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassLoaderHelper;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -164,10 +166,11 @@ public final class ConfigWebFactory {
 	 * @throws IOException
 	 * @throws TagLibException
 	 * @throws FunctionLibException
+	 * @throws NoSuchAlgorithmException 
 	 */
 
 	public static ConfigWebImpl newInstance(CFMLFactoryImpl factory, ConfigServerImpl configServer, Resource configDir, boolean isConfigDirACustomSetting,
-			ServletConfig servletConfig) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
+			ServletConfig servletConfig) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException, NoSuchAlgorithmException {
 		// DO NOT REMOVE!!!!
 		try {
 			new LabelBlockImpl("aa");
@@ -273,6 +276,7 @@ public final class ConfigWebFactory {
 	 * @throws IOException
 	 * @throws TagLibException
 	 * @throws FunctionLibException
+	 * @throws NoSuchAlgorithmException 
 	 */
 	public static void reloadInstance(ConfigServerImpl cs, ConfigWebImpl cw, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException,
 			FunctionLibException {
@@ -2308,6 +2312,21 @@ public final class ConfigWebFactory {
 			return str;
 		return "encrypted:" + new BlowfishEasy("sdfsdfs").encryptString(str);
 	}
+	public static String hash(String str) throws IOException {
+		if (StringUtil.isEmpty(str))
+			return "";
+		
+		// decrypt encrypted password first
+		if (StringUtil.startsWithIgnoreCase(str, "encrypted:")) {
+			str=decrypt(str);
+		}
+		try {
+			return Hash.hash(str,Hash.ALGORITHM_SHA_256,5,Hash.ENCODING_HEX);
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw ExceptionUtil.toIOException(e);
+		}
+	}
 
 	private static Struct toStruct(String str) {
 
@@ -2504,22 +2523,44 @@ public final class ConfigWebFactory {
 	 * @param configServer
 	 * @param config
 	 * @param doc
+	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
-		// password
+	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		Element railoConfiguration = doc.getDocumentElement();
-		String password = railoConfiguration.getAttribute("password");
-		if (!StringUtil.isEmpty(password)) {
-			config.setPassword(new BlowfishEasy("tpwisgh").decryptString(password));
+		
+		
+		
+		// password
+		String hpw=railoConfiguration.getAttribute("pw");
+		if(StringUtil.isEmpty(hpw)) {
+			// old password type
+			String pwEnc = railoConfiguration.getAttribute("password"); // encrypted password (reversable)
+			if (!StringUtil.isEmpty(pwEnc)) {
+				String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
+				hpw=hash(pwDec);
+			}
 		}
+		if(!StringUtil.isEmpty(hpw))
+			config.setPassword(hpw);
 		else if (configServer != null) {
 			config.setPassword(configServer.getDefaultPassword());
 		}
 
+		// default password
 		if (config instanceof ConfigServerImpl) {
-			password = railoConfiguration.getAttribute("default-password");
-			if (!StringUtil.isEmpty(password))
-				((ConfigServerImpl) config).setDefaultPassword(new BlowfishEasy("tpwisgh").decryptString(password));
+			hpw=railoConfiguration.getAttribute("default-pw");
+			if(StringUtil.isEmpty(hpw)) {
+				// old password type
+				String pwEnc = railoConfiguration.getAttribute("default-password"); // encrypted password (reversable)
+				if (!StringUtil.isEmpty(pwEnc)) {
+					String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
+					hpw=hash(pwDec);
+				}
+			}
+			
+			if(!StringUtil.isEmpty(hpw))
+				((ConfigServerImpl) config).setDefaultPassword(hpw);
 		}
 
 		// mode

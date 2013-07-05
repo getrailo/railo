@@ -748,15 +748,25 @@ public abstract class ConfigImpl implements Config {
     }
 
     /**
-     * @return gets the password
+     * @return gets the password as hash
      */
     protected String getPassword() {
         return password;
     }
     
+    protected boolean isPasswordEqual(String rawPassword) {
+    	try {
+    		return password.equals(ConfigWebFactory.hash(rawPassword));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+    }
+    
     @Override
     public boolean hasPassword() {
-        return password!=null && password.length()>0;
+        return !StringUtil.isEmpty(password);
     }
     
     @Override

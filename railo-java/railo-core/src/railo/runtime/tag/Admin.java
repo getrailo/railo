@@ -20,6 +20,7 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
+import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
 import railo.print;
@@ -1267,7 +1268,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
     private void doUpdateDefaultPassword() throws PageException {
-        admin.updateDefaultPassword(getString("admin",action,"newPassword"));
+        try {
+			admin.updateDefaultPassword(getString("admin",action,"newPassword"));
+		}
+		catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
         store();
     }
     private void doRemoveDefaultPassword() throws PageException {
