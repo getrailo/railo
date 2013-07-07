@@ -168,7 +168,7 @@
 			#-railo-debug a 	{ cursor: pointer; }
 			#-railo-debug td a 	{ color: #22A; }
 			#-railo-debug td a:hover	{ color: #66F; }
-			#-railo-debug pre 	{ background-color: #EEE; padding: 1em; border: solid 1px #333; border-radius: 1em; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; }
+			#-railo-debug pre 	{ background-color: #EEE; padding: 1em; border: solid 1px #333; border-radius: 1em; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; tab-size: 2; }
 
 			.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat left center; padding: 4px 0 4px 16px; }
 			.-railo-icon-minus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)     no-repeat left center; padding: 4px 0 4px 16px; }
@@ -271,7 +271,6 @@
 					</cfloop>
 
 					<table>
-
 						<cfset renderSectionHeadTR( sectionId
 							, "#unitFormat( arguments.custom.unit, tot-q-loa, true )# ms
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Application" )>
@@ -290,7 +289,6 @@
 								<td class="pad bold">Total</td>
 							</tr>
 						</table></td></tr>
-
 						<tr>
 							<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 								<table class="details">
@@ -396,7 +394,7 @@
 											<th>Line</th>
 										</tr>
 										<cfloop array="#arguments.debugging.exceptions#" index="local.exp">
-											<tr class="nowrap">
+											<tr>
 												<td>#exp.type#</td>
 												<td>#exp.message#</td>
 												<td>#exp.detail#</td>
@@ -420,7 +418,6 @@
 						<div class="section-title">Implicit Variable Access</div>
 
 						<table>
-
 							<cfset renderSectionHeadTR( sectionId, "#implicitAccess.recordcount# Implicit Variable Access#( implicitAccess.recordcount GT 1 ) ? 'es' : ''#" )>
 
 							<tr>
@@ -436,7 +433,7 @@
 										</tr>
 										<cfset total=0 />
 										<cfloop query="implicitAccess">
-											<tr class="nowrap">
+											<tr>
 												<td>#implicitAccess.scope#</td>
 												<td>#implicitAccess.template#</td>
 												<td class="txt-r">#implicitAccess.line#</td>
@@ -473,7 +470,7 @@
 											<th>Template</th>
 										</tr>
 										<cfloop query="timers">
-											<tr class="nowrap">
+											<tr>
 												<td class="txt-r">#timers.label#</td>
 												<td class="txt-r">#unitFormat( arguments.custom.unit, timers.time * 1000000 )#</td>
 												<td class="txt-r">#timers.template#</td>
@@ -504,7 +501,6 @@
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 									<table class="details">
-
 										<tr>
 											<th>Type</th>
 											<cfif hasCategory>
@@ -523,7 +519,7 @@
 										<cfset total=0 />
 										<cfloop query="traces">
 											<cfset total=total+traces.time />
-											<tr class="nowrap">
+											<tr>
 												<td>#traces.type#</td>
 												<cfif hasCategory>
 													<td>#traces.category#&nbsp;</td>
@@ -562,19 +558,16 @@
 
 						<cfset sectionId = "Query">
 						<cfset isOpen = isSectionOpen( sectionId )>
-
-						<cfset local.total=0>
+						<cfset local.total  =0>
 						<cfset local.records=0>
-
 						<cfloop query="queries">
-							<cfset total+=queries.time>
-							<cfset records+=queries.count>
+							<cfset total   += queries.time>
+							<cfset records += queries.count>
 						</cfloop>
 						
 						<div class="section-title">SQL Queries</div>
 						<table>
-							
-							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat(total, queries.time)# ms)" )>
+							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat( arguments.custom.unit, total )# ms)" )>
 
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
@@ -600,7 +593,7 @@
 													<td>#queries.src#</td>
 												</tr>
 												<tr>
-													<th class="label">SQL Code:</th>
+													<th class="label">SQL:</th>
 													<td id="-railo-debug-query-sql-#queries.currentRow#" colspan="5" oncontextmenu="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
 												</tr>
 
