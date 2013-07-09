@@ -2,6 +2,8 @@ package railo.runtime.text.csv;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import railo.print;
 import railo.commons.lang.StringUtil;
 
 
@@ -12,7 +14,7 @@ public class CSVString {
     private char delim;
 
     public CSVString( String input, char delim ) {
-
+    	print.e(input.length());
         this.buffer = input.toCharArray();
         this.delim = delim;
     }
@@ -55,7 +57,7 @@ public class CSVString {
             next();
         } while ( hasNext() );
 
-        sb.append( buffer[ pos ] );
+        if(pos<buffer.length)sb.append( buffer[ pos ] );
         line.add( sb.toString().trim() );
 
         if ( isValidLine( line ) )
