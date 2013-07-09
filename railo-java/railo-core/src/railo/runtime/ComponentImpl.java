@@ -34,6 +34,7 @@ import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.dump.DumpData;
@@ -2053,10 +2054,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	public void writeExternal(ObjectOutput out) throws IOException {
         try {
         	out.writeUTF(new ScriptConverter().serialize(this));
-		} 
-		catch (Throwable t) {
-			//print.printST(t);
 		}
+        catch (ConverterException e) {
+        	throw ExceptionUtil.toIOException(e);
+        }
 		
 	}
 
