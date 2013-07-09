@@ -164,6 +164,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return configServer;
     }
     
+    /*public ConfigServer getConfigServer(String key, String nonce) throws ExpressionException {
+        if(!configServer.hasPassword())
+            throw new ExpressionException("Cannot access, no password is defined");
+        if(!configServer.isPasswordEqual(password))
+            throw new ExpressionException("No access, password is invalid");
+        return configServer;
+    }*/
+    
     public String getServerId() {
         return configServer.getId();
     }
