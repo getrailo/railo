@@ -105,7 +105,6 @@ public class QueryImpl implements Query,Objects {
 
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
 	public static final Collection.Key GENERATEDKEYS = KeyImpl.intern("GENERATEDKEYS");
-	public static final Collection.Key ID = KeyImpl.intern("ID");
 	
 	
 	
@@ -300,7 +299,7 @@ public class QueryImpl implements Query,Objects {
 		if(generatedKeys.getColumnCount()==1 && DataSourceUtil.isMSSQL(dc)) {
 			generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
 			generatedKeys.renameEL(GENERATEDKEYS,KeyConstants._IDENTITYCOL);
-			generatedKeys.renameEL(ID,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(KeyConstants._ID,KeyConstants._IDENTITYCOL);
 		}
 	}
 	
