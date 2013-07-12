@@ -1871,9 +1871,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			
 			
 			try {
-				if(statusCode!=404)
-					forceWrite("<!-- Railo ["+Info.getVersionAsString()+"] Error -->");
-				
+
 				String template=getConfig().getErrorTemplate(statusCode);
 				if(!StringUtil.isEmpty(template)) {
 					try {
