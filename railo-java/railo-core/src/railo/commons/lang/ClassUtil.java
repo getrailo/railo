@@ -12,10 +12,9 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
-import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -320,7 +319,7 @@ public final class ClassUtil {
 	 */
 	public static String[] getClassPath(Config config) {
 
-        Map pathes=new HashTable();
+        Map<String,String> pathes=MapFactory.<String,String>getConcurrentMap();
 		String pathSeperator=System.getProperty("path.separator");
 		if(pathSeperator==null)pathSeperator=";";
 			

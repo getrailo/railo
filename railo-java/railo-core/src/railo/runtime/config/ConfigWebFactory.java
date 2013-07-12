@@ -30,7 +30,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
 import railo.commons.digest.MD5;
@@ -58,6 +58,7 @@ import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -1571,7 +1572,7 @@ public final class ConfigWebFactory {
 
 		Element[] _mappings = getChildren(el, "mapping");
 
-		HashTable mappings = new HashTable();
+		Map<String,Mapping> mappings = MapFactory.<String,Mapping>getConcurrentMap();
 		Mapping tmp;
 
 		if (configServer != null && config instanceof ConfigWeb) {
@@ -1670,7 +1671,7 @@ public final class ConfigWebFactory {
 		int index = 0;
 		Iterator it = mappings.keySet().iterator();
 		while (it.hasNext()) {
-			arrMapping[index++] = (Mapping) mappings.get(it.next());
+			arrMapping[index++] = mappings.get(it.next());
 		}
 		config.setMappings(arrMapping);
 		// config.setMappings((Mapping[]) mappings.toArray(new
@@ -3985,15 +3986,16 @@ public final class ConfigWebFactory {
 
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CFX_SETTING);
 
-		HashTable map = new HashTable();
+		Map<String,CFXTagClass> map = MapFactory.<String,CFXTagClass>getConcurrentMap();
 		if (configServer != null) {
 			try {
 				if (configServer.getCFXTagPool() != null) {
-					Map classes = configServer.getCFXTagPool().getClasses();
-					Iterator it = classes.keySet().iterator();
+					Map<String,CFXTagClass> classes = configServer.getCFXTagPool().getClasses();
+					Iterator<Entry<String, CFXTagClass>> it = classes.entrySet().iterator();
+					Entry<String, CFXTagClass> e;
 					while (it.hasNext()) {
-						Object key = it.next();
-						map.put(key, ((CFXTagClass) classes.get(key)).cloneReadOnly());
+						e = it.next();
+						map.put(e.getKey(), e.getValue().cloneReadOnly());
 					}
 				}
 			}

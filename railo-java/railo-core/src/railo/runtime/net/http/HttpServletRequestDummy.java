@@ -20,7 +20,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.Pair;
@@ -34,6 +34,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.ItAsEnum;
+import railo.runtime.type.scope.Application;
 import railo.runtime.util.EnumerationWrapper;
 
 public final class HttpServletRequestDummy implements HttpServletRequest,Serializable {
@@ -531,7 +532,7 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	
 	@Override
 	public Map getParameterMap() {
-		Map p=new HashTable(); 
+		Map<String,Object> p=MapFactory.<String,Object>getConcurrentMap(); 
 		for(int i=0;i<parameters.length;i++) {
 			p.put(parameters[i].getName(), parameters[i].getValue());
 		}

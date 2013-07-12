@@ -14,7 +14,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.UserDataHandler;
 import org.xml.sax.SAXException;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -87,9 +87,9 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 	/**
 	 * @return retun the inner map
 	 */
-	public Map getMap() {
+	public Map<String,Node> getMap() {
 		NodeList elements=XMLUtil.getChildNodes(node,Node.ELEMENT_NODE,false,null);// TODO ist das false hier ok?
-		Map map=new HashTable();
+		Map<String,Node> map=MapFactory.<String,Node>getConcurrentMap();
 		int len=elements.getLength();
 		
 		for(int i=0;i<len;i++) {

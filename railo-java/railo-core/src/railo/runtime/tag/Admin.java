@@ -20,11 +20,9 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
-import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-import railo.print;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
@@ -960,7 +958,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         for(int i=0;i<mappings.length;i++) {
             Mapping mapping = mappings[i];
             if(mapping.getVirtualLowerCaseWithSlash().equals(virtual)) {
-            	Map<String,String> errors = stoponerror?null:new HashTable();
+            	Map<String,String> errors = stoponerror?null:MapFactory.<String,String>getConcurrentMap();
                 doCompileFile(mapping,mapping.getPhysical(),"",errors);
                 if(errors!=null && errors.size()>0) {
                 	StringBuilder sb=new StringBuilder();

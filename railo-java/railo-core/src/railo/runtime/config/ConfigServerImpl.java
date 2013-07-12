@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
@@ -54,7 +54,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private Map<String,CFMLFactory> initContextes;
     //private Map contextes;
     private SecurityManager defaultSecurityManager;
-    private Map managers=new HashTable();
+    private Map<String,SecurityManager> managers=MapFactory.<String,SecurityManager>getConcurrentMap();
     private String defaultPassword;
     private Resource rootDir;
     private URL updateLocation;

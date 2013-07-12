@@ -3,7 +3,7 @@ package railo.transformer.library.tag;
 import java.io.File;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.tag.CFImportTag;
 
 
@@ -75,7 +75,7 @@ public final class CustomTagLib extends TagLib {
      * @see railo.transformer.library.tag.TagLib#getTags()
      */
     public Map getTags() {
-        return new HashTable();
+        return MapFactory.<String,String>getConcurrentMap();
     }
 
     /**

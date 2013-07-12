@@ -1,5 +1,7 @@
 package railo.runtime.regex;
 
+import java.util.Map;
+
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.MatchResult;
 import org.apache.oro.text.regex.Pattern;
@@ -9,7 +11,7 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import org.apache.oro.text.regex.Perl5Substitution;
 import org.apache.oro.text.regex.Util;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.op.Constants;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -21,7 +23,7 @@ import railo.runtime.type.StructImpl;
  */
 public final class Perl5Util {
     
-    private static HashTable patterns=new HashTable();
+    private static Map<String,Pattern> patterns=MapFactory.<String,Pattern>getConcurrentMap();
     
 	/**
 	 * return index of the first occurence of the pattern in input text

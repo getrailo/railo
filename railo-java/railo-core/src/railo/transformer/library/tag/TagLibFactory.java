@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -23,6 +23,7 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -50,7 +51,7 @@ public final class TagLibFactory extends DefaultHandler {
 	
 	private XMLReader xmlReader;
 	
-	private static Map hashLib=new HashTable();
+	private static Map<String,TagLib> hashLib=MapFactory.<String,TagLib>getConcurrentMap();
 	private static TagLib systemTLD;
 	private TagLib lib=new TagLib();
 	
@@ -400,7 +401,7 @@ public final class TagLibFactory extends DefaultHandler {
 	 * @return TagLib
 	 */
 	private static TagLib getHashLib(String key) {
-		return (TagLib)hashLib.get(key);
+		return hashLib.get(key);
 	}
 	
 	/**
