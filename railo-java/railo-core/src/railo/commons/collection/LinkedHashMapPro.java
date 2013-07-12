@@ -1,4 +1,4 @@
-package railo.commons.util.mod;
+package railo.commons.collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -121,12 +121,11 @@ public class LinkedHashMapPro<K,V>
      * by superclass resize.  It is overridden for performance, as it is
      * faster to iterate using our linked list.
      */
-    @Override
-    void transfer(HashMapPro.Entry[] newTable, boolean rehash) {
+    void transfer(HashMapPro.Entry[] newTable) {
         int newCapacity = newTable.length;
         for (Entry<K,V> e = header.after; e != header; e = e.after) {
-            if (rehash)
-                e.hash = (e.key == null) ? 0 : hash(e.key);
+            //if (rehash)
+            //    e.hash = (e.key == null) ? 0 : hash(e.key);
             int index = indexFor(e.hash, newCapacity);
             e.next = newTable[index];
             newTable[index] = e;

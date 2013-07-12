@@ -1,4 +1,4 @@
-package railo.commons.util.mod;
+package railo.commons.collection;
 
 import java.io.BufferedReader;
 import java.io.IOException;

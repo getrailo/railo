@@ -6,6 +6,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
+import railo.commons.digest.WangJenkins;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
@@ -17,79 +18,93 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
-public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable {
+public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable,WangJenkins {
+
+	private static final long[] byteTable = createLookupTable();
+	private static final long HSTART = 0xBB40E64DA205B064L;
+	private static final long HMULT = 7664345821815920749L;
 	
 	//private boolean intern;
 	private String key;
-	private String lcKey;
-	private String ucKey;
-	//private int hashcode;
+	private transient String lcKey;
+	private transient String ucKey;
+	private transient int wjh;
+	private transient long h64;
 	
 	public KeyImpl() {
 		// DO NOT USE, JUST FOR UNSERIALIZE
 	}
 	
+	private static final long[] createLookupTable() {
+		long[] _byteTable = new long[256];
+		long h = 0x544B2FBACAAF1684L;
+		for (int i = 0; i < 256; i++) {
+			for (int j = 0; j < 31; j++) {
+				h = (h >>> 7) ^ h;
+				h = (h << 11) ^ h;
+				h = (h >>> 10) ^ h;
+			}
+			_byteTable[i] = h;
+		}
+		return _byteTable;
+	}
+
+	private long createHash64(CharSequence cs) {
+		long h = HSTART;
+		final long hmult = HMULT;
+		final long[] ht = byteTable;
+		final int len = cs.length();
+		for (int i = 0; i < len; i++) {
+			char ch = cs.charAt(i);
+			h = (h * hmult) ^ ht[ch & 0xff];
+			h = (h * hmult) ^ ht[(ch >>> 8) & 0xff];
+		}
+		return h;
+	}
 	
+	@Override
+	public int wangJenkinsHash() {
+		if(wjh==0) {
+			int h = hashCode();
+			h += (h <<  15) ^ 0xffffcd7d;
+	        h ^= (h >>> 10);
+	        h += (h <<   3);
+	        h ^= (h >>>  6);
+	        h += (h <<   2) + (h << 14);
+	        wjh= h ^ (h >>> 16);
+		}
+		return wjh;
+	}
+
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeObject(key);
-		out.writeObject(lcKey);
-		out.writeObject(ucKey);
-		//out.writeBoolean(intern);
 	}
+
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
 		key=(String) in.readObject();
-		lcKey=((String) in.readObject());
-		ucKey=(String) in.readObject();
-		//intern= in.readBoolean();
-		//if(intern)lcKey=lcKey.intern();
+		ucKey=key.toUpperCase();
+		h64=createHash64(ucKey);	
 	}
-	
-	
+
 	protected KeyImpl(String key) {
 		this.key=key;
-		this.lcKey=key.toLowerCase();
-		//RefIntegerImpl count=log.get(key);
-		//if(count!=null) count.plus(1);
-		//else log.put(key, new RefIntegerImpl(1));
-		
+		this.ucKey=key.toUpperCase();
+		h64=createHash64(ucKey);
 	}
-	
-	/*public static void print(){
-		//Iterator<Entry<String, RefIntegerImpl>> it = log.entrySet().iterator();
-		String[] keys = log.keySet().toArray(new String[log.size()]);
-		Arrays.sort(keys);
-		int total=0,big=0;
-		for(int i=0;i<keys.length;i++){
-			RefIntegerImpl value = log.get(keys[i]);
-			if(value.toInt()>10 && keys[i].length()<=10 && keys[i].indexOf('.')==-1 && keys[i].indexOf('-')==-1) {
-				print.e("public static final Key "+keys[i]+"=KeyImpl.intern(\""+keys[i]+"\");");
-				big++;
-			}
-			total++;
-		}
-		print.e("total:"+total);
-		print.e("big:"+big);
-	}*/
-	
-	
-	
-	/*private KeyImpl(String key, boolean intern) {
-		this.key=key;
-		this.lcKey=intern?key.toLowerCase():key.toLowerCase();
-		this.intern=intern;
-	}*/	
-	
+
 	/**
 	 * for dynamic loading of key objects
 	 * @param string
 	 * @return
 	 */
 	public static Collection.Key init(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
 
 	public static Collection.Key _const(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
@@ -107,28 +122,8 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 
 	public synchronized static Collection.Key intern(String key) {
 		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
-		/*Long l= keys.get(key);
-		String st=ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
-		String[] arr = railo.runtime.type.List.listToStringArray(st,'\n');
-		if(l!=null) {
-			if(arr[2].indexOf("/Users/mic/")==-1)
-				keys.put(key, l.longValue()+1);
-		}
-		else {
-
-			if(arr[2].indexOf("/Users/mic/")==-1)
-				keys.put(key, 1L);
-		}*/
 		return new KeyImpl(key);
 	}
-	
-	/*public static void dump(){
-		Iterator<Entry<String, Long>> it = keys.entrySet().iterator();
-		while(it.hasNext()){
-			Entry<String, Long> e = it.next();
-			if(e.getValue()>1)print.o(e.getKey()+":"+e.getValue());
-		}
-	}*/
 	
 	@Override
 	public char charAt(int index) {
@@ -137,20 +132,20 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 
 	@Override
 	public char lowerCharAt(int index) {
-		return lcKey.charAt(index);
+		return getLowerString().charAt(index);
 	}
 	
 	public char upperCharAt(int index) {
-		return getUpperString().charAt(index);
+		return ucKey.charAt(index);
 	}
 
 	@Override
 	public String getLowerString() {
+		if(lcKey==null)lcKey=StringUtil.toLowerCase(key);
 		return lcKey;
 	}
 	
 	public String getUpperString() {
-		if(ucKey==null)ucKey=StringUtil.toUpperCase(key);
 		return ucKey;
 	}
 
@@ -165,16 +160,16 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	}
 
 	@Override
-	public boolean equals(Object other) {//call++;
+	public boolean equals(Object other) {
 		if(this==other) return true;
 		if(other instanceof KeyImpl)	{
-			return lcKey.equals((((KeyImpl)other).lcKey));
+			return hash()==((KeyImpl)other).hash();
 		}
 		if(other instanceof String)	{
 			return key.equalsIgnoreCase((String)other);
 		}
 		if(other instanceof Key)	{
-			return lcKey.equalsIgnoreCase(((Key)other).getLowerString());
+			return ucKey.equalsIgnoreCase(((Key)other).getUpperString());
 		}
 		return false;
 	}
@@ -184,20 +179,23 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public boolean equalsIgnoreCase(Key other) {
 		if(this==other) return true;
 		if(other instanceof KeyImpl)	{
-			return lcKey.equals((((KeyImpl)other).lcKey));
+			return h64==((KeyImpl)other).h64;//return lcKey.equals((((KeyImpl)other).lcKey));
 		}
-		return lcKey.equalsIgnoreCase(other.getLowerString());
+		return ucKey.equalsIgnoreCase(other.getLowerString());
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
-		return lcKey.hashCode();
+		return ucKey.hashCode();
+	}
+	
+	// FUTURE add to interface
+	public long hash() {
+		return h64;
 	}
 
 	@Override
-	public int getId() {
+	public int getId() {// set to deprecated, use instead hash()
 		return hashCode();
 	}
 
@@ -394,5 +392,5 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 			keys[i]=init(arr[i]);
 		}
 		return keys;
-	}
+	}	  
 }

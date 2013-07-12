@@ -23,7 +23,7 @@
  *
  */
 
-package railo.commons.util.mod;
+package railo.commons.collection;
 
 import java.util.Arrays;
 import java.util.Collection;

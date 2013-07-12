@@ -23,7 +23,7 @@
  *
  */
 
-package railo.commons.util.mod;
+package railo.commons.collection;
 
 import java.io.Externalizable;
 import java.util.Collection;

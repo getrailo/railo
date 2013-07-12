@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package railo.commons.util.mod;
+package railo.commons.collection;
 
 import java.util.Random;
 

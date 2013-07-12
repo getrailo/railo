@@ -1,4 +1,4 @@
-package railo.commons.util.mod;
+package railo.commons.collection;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -110,11 +110,6 @@ public class WeakHashMapPro<K,V>
         }
     }
 
-    /**
-     * If {@code true} then perform alternate hashing to reduce the incidence of
-     * collisions due to weak hash code calculation.
-     */
-    transient final boolean useAltHashing=false;
 
     /**
      * A randomizing value associated with this instance that is applied to
@@ -447,10 +442,10 @@ public class WeakHashMapPro<K,V>
         }
 
         Entry<K,V>[] newTable = newTable(newCapacity);
-        boolean oldAltHashing = useAltHashing;
+        //boolean oldAltHashing = useAltHashing;
         //useAltHashing |= sun.misc.VM.isBooted() && (newCapacity >= Holder.ALTERNATIVE_HASHING_THRESHOLD);
-        boolean rehash = oldAltHashing ^ useAltHashing;
-        transfer(oldTable, newTable, rehash);
+        //boolean rehash = oldAltHashing ^ useAltHashing;
+        transfer(oldTable, newTable);
         table = newTable;
 
         /*
@@ -462,13 +457,13 @@ public class WeakHashMapPro<K,V>
             threshold = (int)(newCapacity * loadFactor);
         } else {
             expungeStaleEntries();
-            transfer(newTable, oldTable, false);
+            transfer(newTable, oldTable);
             table = oldTable;
         }
     }
 
     /** Transfers all entries from src to dest tables */
-    private void transfer(Entry<K,V>[] src, Entry<K,V>[] dest, boolean rehash) {
+    private void transfer(Entry<K,V>[] src, Entry<K,V>[] dest) {
         for (int j = 0; j < src.length; ++j) {
             Entry<K,V> e = src[j];
             src[j] = null;
@@ -480,9 +475,9 @@ public class WeakHashMapPro<K,V>
                     e.value = null; //  "   "
                     size--;
                 } else {
-                    if (rehash) {
+                    /*if (rehash) {
                         e.hash = hash(key);
-                    }
+                    }*/
                     int i = indexFor(e.hash, dest.length);
                     e.next = dest[i];
                     dest[i] = e;

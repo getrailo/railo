@@ -1,4 +1,4 @@
-package railo.commons.util.mod;
+package railo.commons.collection;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.*;
 import java.util.*;
@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import railo.commons.digest.WangJenkins;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Null;
 
 /**
@@ -150,10 +152,23 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * that otherwise encounter collisions for hashCodes that do not
      * differ in lower or upper bits.
      */
-    private static int hash(int h) {
-        // Spread bits to regularize both segment and index locations,
+    private static int _hash(int h) {
+    	// Spread bits to regularize both segment and index locations,
         // using variant of single-word Wang/Jenkins hash.
         h += (h <<  15) ^ 0xffffcd7d;
+        h ^= (h >>> 10);
+        h += (h <<   3);
+        h ^= (h >>>  6);
+        h += (h <<   2) + (h << 14);
+        return h ^ (h >>> 16);
+    }
+    
+    private static int hash(Object o) {
+    	if(o instanceof KeyImpl) {
+    		return ((KeyImpl)o).wangJenkinsHash();
+    	}
+    	int h=o.hashCode();
+    	h += (h <<  15) ^ 0xffffcd7d;
         h ^= (h >>> 10);
         h += (h <<   3);
         h ^= (h >>>  6);
@@ -167,7 +182,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * @return the segment
      */
     final Segment<K,V> segmentFor(int hash) {
-        return segments[(hash >>> segmentShift) & segmentMask];
+    	return segments[(hash >>> segmentShift) & segmentMask];
     }
 
     /* ---------------- Inner Classes -------------- */
@@ -319,6 +334,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
          */
         V readValueUnderLock(HashEntry<K,V> e) {
             lock();
+            //return e.value;
             try {
                 return e.value;
             } finally {
@@ -336,7 +352,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
             if (count != 0) { // read-volatile
                 HashEntry<K,V> e = getFirst(hash);
                 while (e != null) {
-                    if (e.hash == hash && key.equals(e.key)) {
+                    if (e.hash == hash && (key==e.key || key.equals(e.key))) {
                         V v = e.value;
                         if (v != null)
                             return v;
@@ -840,23 +856,24 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * @throws NullPointerException if the specified key is null
      */
     public V get(Object key) {
-        int hash = hash(key.hashCode());
-        return segmentFor(hash).get(key, hash);
+    	int hash = hash(key);
+    	return segmentFor(hash).get(key, hash);
     }
     
 	@Override
 	public V g(K key) throws PageException {
-		int hash = hash(key.hashCode());
+		int hash = hash(key);
 		return segmentFor(hash).getE(this,key, hash);
 	}
 	private V ge(Object key) throws PageException {
-		int hash = hash(key.hashCode());
+		int hash = hash(key);
 		return segmentFor(hash).getE(this,key, hash);
 	}
 
 	@Override
 	public V g(K key, V defaultValue) {
-		int hash = hash(key.hashCode());
+		int hash = hash(key);
+		//int hash = hash(key.hashCode());
 		return segmentFor(hash).get(key, hash,defaultValue);
 	}
     
@@ -872,7 +889,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * @throws NullPointerException if the specified key is null
      */
     public boolean containsKey(Object key) {
-        int hash = hash(key.hashCode());
+        int hash = hash(key);
         return segmentFor(hash).containsKey(key, hash);
     }
 
@@ -966,7 +983,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * @throws NullPointerException if the specified key or value is null
      */
     public V put(K key, V value) {
-        int hash = hash(key.hashCode());
+        int hash = hash(key);
         return segmentFor(hash).put(key, hash, value, false);
     }
 
@@ -992,32 +1009,32 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * @throws NullPointerException if the specified key is null
      */
     public V remove(Object key) {
-        int hash = hash(key.hashCode());
+        int hash = hash(key);
         return segmentFor(hash).r(key, hash, null);
     }
 
 
 	@Override
 	public V r(K key) throws PageException {
-		int hash = hash(key.hashCode());
+		int hash = hash(key);
         return segmentFor(hash).r(this,key, hash);
 	}
 	
 	public V rem(Object key) throws PageException {
-		int hash = hash(key.hashCode());
+		int hash = hash(key);
         return segmentFor(hash).r(this,key, hash);
 	}
 
 	@Override
 	public V r(K key, V defaultValue) {
-		int hash = hash(key.hashCode());
+		int hash = hash(key);
         return segmentFor(hash).r(key, hash, defaultValue);
 	}
 
     private boolean remove(Map.Entry e) {
     	Object k = e.getKey();
     	Object v = e.getValue();
-        int hash = hash(k.hashCode());
+        int hash = hash(k);
         return segmentFor(hash)._remove(k, hash, v,Null.NULL) != Null.NULL;
     }
 

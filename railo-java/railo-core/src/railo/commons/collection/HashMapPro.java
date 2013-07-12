@@ -23,7 +23,7 @@
  *
  */
 
-package railo.commons.util.mod;
+package railo.commons.collection;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.Serializable;
@@ -35,7 +35,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import railo.print;
+import railo.commons.collection.HashMapPro.Entry;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 
 public class HashMapPro<K,V>
     extends AbstractMapPro<K,V>
@@ -45,7 +49,7 @@ public class HashMapPro<K,V>
     /**
      * The default initial capacity - MUST be a power of two.
      */
-    static final int DEFAULT_INITIAL_CAPACITY = 16;
+    public static final int DEFAULT_INITIAL_CAPACITY = 32;
 
     /**
      * The maximum capacity, used if a higher value is implicitly specified
@@ -162,11 +166,6 @@ public class HashMapPro<K,V>
         }
     }
 
-    /**
-     * If {@code true} then perform alternative hashing of String keys to reduce
-     * the incidence of collisions due to weak hash code calculation.
-     */
-    transient final boolean useAltHashing=false;
 
     /**
      * A randomizing value associated with this instance that is applied to
@@ -258,8 +257,9 @@ public class HashMapPro<K,V>
      * otherwise encounter collisions for hashCodes that do not differ
      * in lower bits. Note: Null keys always map to hash 0, thus index 0.
      */
-    final int hash(Object k) {
-        int h = 0;
+    final static int hash(Object k) {
+    	//if(k instanceof KeyImpl) return k.hashCode();
+    	int h = 0;
         /*if (useAltHashing) {
             if (k instanceof String) {
                 return Hashing.stringHash32((String) k);
@@ -268,19 +268,20 @@ public class HashMapPro<K,V>
         }*/
 
         h ^= k.hashCode();
-
+        
         // This function ensures that hashCodes that differ only by
         // constant multiples at each bit position have a bounded
         // number of collisions (approximately 8 at default load factor).
         h ^= (h >>> 20) ^ (h >>> 12);
         return h ^ (h >>> 7) ^ (h >>> 4);
     }
+    
 
     /**
      * Returns index for hash code h.
      */
     static int indexFor(int h, int length) {
-        return h & (length-1);
+    	return h & (length-1);
     }
 
     /**
@@ -317,13 +318,122 @@ public class HashMapPro<K,V>
         for (Entry<K,V> e = table[indexFor(hash, table.length)];
              e != null;
              e = e.next) {
-            Object k;
-            if (e.hash == hash &&
-                ((k = e.key) == key || key.equals(k)))
+        	if (e.hash == hash &&
+                ((e.key) == key || key.equals(e.key)))
                 return e.getValue();
         }
+   
         return defaultValue;
     }
+    
+
+    public static void main(String[] args) {
+    	/*
+657
+653
+656
+741
+239
+243
+233
+225
+    	 */
+    	//HashMapPro<Key, Object> map=new HashMapPro<Key, Object>();
+    	long startx=System.currentTimeMillis();
+		for(int i=0;i<10000000;i++){
+			KeyImpl.init("K"+i);
+		}
+		print.e("init.key:"+(System.currentTimeMillis()-startx));
+
+    	
+    	
+    	HashMapPro<Key,Object> map=new HashMapPro<Key,Object>();
+    	ConcurrentHashMapPro<Key,Object> map2=new ConcurrentHashMapPro<Key,Object>();
+    	Key[] keys=new Key[100];
+    	for(int i=0;i<100;i++){
+    		keys[i]=KeyImpl.init("K"+i);
+    		map.put(keys[i], ""+i);
+    		map2.put(keys[i], ""+i);
+    	}
+    	
+    	for(int i=0;i<100;i++){
+    		keys[i]=KeyImpl.init("K"+i);
+    	}
+    	
+    	long start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			//map.g(keys[37],null);
+			map.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("HM.get:"+(System.currentTimeMillis()-start));
+
+		
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			map.g(keys[37],null);
+			//map.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("HM.g:"+(System.currentTimeMillis()-start));
+		
+
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			//map.g(keys[37],null);
+			map.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("HM.get:"+(System.currentTimeMillis()-start));
+
+		
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			map.g(keys[37],null);
+			//map.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("HM.g:"+(System.currentTimeMillis()-start));
+		
+		
+		/////////////////////////////////////////
+		
+
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			//map.g(keys[37],null);
+			map2.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("CHM.get:"+(System.currentTimeMillis()-start));
+
+		
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			map2.g(keys[37],null);
+			//map.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("CHM.g:"+(System.currentTimeMillis()-start));
+		
+
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			//map.g(keys[37],null);
+			map2.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("CHM.get:"+(System.currentTimeMillis()-start));
+
+		
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			map2.g(keys[37],null);
+			//map.get(keys[37]);
+			//k.hashCode();
+		}
+		print.e("CHM.g:"+(System.currentTimeMillis()-start));
+	}
     
     public V g(K key) throws PageException {
         if (key == null) return getForNullKey();
@@ -376,9 +486,8 @@ public class HashMapPro<K,V>
         for (Entry<K,V> e = table[indexFor(hash, table.length)];
              e != null;
              e = e.next) {
-            Object k;
             if (e.hash == hash &&
-                ((k = e.key) == key || (key != null && key.equals(k))))
+                ((e.key) == key || (key != null && key.equals(e.key))))
                 return e;
         }
         return null;
@@ -481,18 +590,18 @@ public class HashMapPro<K,V>
      *        is irrelevant).
      */
     void resize(int newCapacity) {
-        Entry[] oldTable = table;
+    	Entry<K, V>[] oldTable = table;
         int oldCapacity = oldTable.length;
         if (oldCapacity == MAXIMUM_CAPACITY) {
             threshold = Integer.MAX_VALUE;
             return;
         }
 
-        Entry[] newTable = new Entry[newCapacity];
-        boolean oldAltHashing = useAltHashing;
+        Entry<K, V>[] newTable = new Entry[newCapacity];
+        //boolean oldAltHashing = useAltHashing;
         //useAltHashing |= sun.misc.VM.isBooted() && (newCapacity >= Holder.ALTERNATIVE_HASHING_THRESHOLD);
-        boolean rehash = oldAltHashing ^ useAltHashing;
-        transfer(newTable, rehash);
+        //boolean rehash = oldAltHashing ^ useAltHashing;
+        transfer(newTable);
         table = newTable;
         threshold = (int)Math.min(newCapacity * loadFactor, MAXIMUM_CAPACITY + 1);
     }
@@ -500,14 +609,14 @@ public class HashMapPro<K,V>
     /**
      * Transfers all entries from current table to newTable.
      */
-    void transfer(Entry[] newTable, boolean rehash) {
+    void transfer(Entry<K, V>[] newTable) {
         int newCapacity = newTable.length;
         for (Entry<K,V> e : table) {
             while(null != e) {
                 Entry<K,V> next = e.next;
-                if (rehash) {
+                /*if (rehash) {
                     e.hash = null == e.key ? 0 : hash(e.key);
-                }
+                }*/
                 int i = indexFor(e.hash, newCapacity);
                 e.next = newTable[i];
                 newTable[i] = e;
