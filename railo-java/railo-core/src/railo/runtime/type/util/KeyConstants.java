@@ -858,22 +858,4 @@ public class KeyConstants {
 		//if(!_____keys.contains(key))print.e(key);
 		return _____keys.contains(key)?key:null;
 	}
-	
-	/*public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, PageException {
-	
-		
-			Field[] fields = KeyConstants.class.getFields();
-			String name;
-			String value;
-			for(int i=0;i<fields.length;i++){
-				if(fields[i].getType()!=Key.class) continue;
-				name=fields[i].getName().substring(1);
-				value=Caster.toString(fields[i].get(null));
-				if(!name.equals(value))print.e(name+":"+value);
-			}
-		
-	}*/
-	
-	
-	
 }
