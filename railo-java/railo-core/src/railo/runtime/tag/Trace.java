@@ -87,12 +87,12 @@ public final class Trace extends BodyTagImpl {
 
 		strType = strType.toLowerCase().trim();
 
-        if      (strType.startsWith("info")) 			type=Log.LEVEL_INFO;
-		else if (strType.startsWith("warn")) 			type=Log.LEVEL_WARN;
-		else if (strType.startsWith("error")) 			type=Log.LEVEL_ERROR;
-		else if (strType.startsWith("fatal"))	        type=Log.LEVEL_FATAL;
-		else if (strType.startsWith("debug")) 			type=Log.LEVEL_DEBUG;
-		else throw new ApplicationException("invalid value ["+strType+"] for attribute [type], valid values are [Debug, Info, Warning, Error, Fatal]");
+        if      (strType.startsWith("info"))            type=Log.LEVEL_INFO;
+        else if (strType.startsWith("warn"))            type=Log.LEVEL_WARN;
+        else if (strType.startsWith("error"))           type=Log.LEVEL_ERROR;
+        else if (strType.startsWith("fatal"))           type=Log.LEVEL_FATAL;
+        else if (strType.startsWith("debug"))           type=Log.LEVEL_DEBUG;
+        else throw new ApplicationException("invalid value ["+strType+"] for attribute [type], valid values are [Debug, Info, Warning, Error, Fatal]");
 	}
 
 	/**
