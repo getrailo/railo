@@ -80,29 +80,19 @@ public final class Trace extends BodyTagImpl {
 	}
 
 	/**
-	 * @param type the type to set
+	 * @param strType the type to set
 	 * @throws ApplicationException 
 	 */
 	public void setType(String strType) throws ApplicationException {
+
 		strType = strType.toLowerCase().trim();
-		if("info".equals(strType)) 						type=Log.LEVEL_INFO;
-		if("information".equals(strType))				type=Log.LEVEL_INFO;
-		else if("warn".equals(strType)) 				type=Log.LEVEL_WARN;
-		else if("warning".equals(strType)) 				type=Log.LEVEL_WARN;
-		else if("error".equals(strType)) 				type=Log.LEVEL_ERROR;
-		else if("fatal information".equals(strType))	type=Log.LEVEL_FATAL;
-		else if("fatal-information".equals(strType)) 	type=Log.LEVEL_FATAL;
-		else if("fatal_information".equals(strType)) 	type=Log.LEVEL_FATAL;
-		else if("fatalinformation".equals(strType)) 	type=Log.LEVEL_FATAL;
-		else if("fatal info".equals(strType)) 			type=Log.LEVEL_FATAL;
-		else if("fatal-info".equals(strType)) 			type=Log.LEVEL_FATAL;
-		else if("fatal_info".equals(strType)) 			type=Log.LEVEL_FATAL;
-		else if("fatalinfo".equals(strType)) 			type=Log.LEVEL_FATAL;
-		else if("fatal".equals(strType)) 				type=Log.LEVEL_FATAL;
-		else if("debug".equals(strType)) 				type=Log.LEVEL_DEBUG;
-		else if("debugging".equals(strType)) 			type=Log.LEVEL_DEBUG;
-		else if("debuging".equals(strType)) 			type=Log.LEVEL_DEBUG;
-		else throw new ApplicationException("invalid value ["+strType+"] for attribute [type], valid values are [Debug, Information, Warning, Error, Fatal Information]");
+
+        if      (strType.startsWith("info")) 			type=Log.LEVEL_INFO;
+		else if (strType.startsWith("warn")) 			type=Log.LEVEL_WARN;
+		else if (strType.startsWith("error")) 			type=Log.LEVEL_ERROR;
+		else if (strType.startsWith("fatal"))	        type=Log.LEVEL_FATAL;
+		else if (strType.startsWith("debug")) 			type=Log.LEVEL_DEBUG;
+		else throw new ApplicationException("invalid value ["+strType+"] for attribute [type], valid values are [Debug, Info, Warning, Error, Fatal]");
 	}
 
 	/**
@@ -131,10 +121,15 @@ public final class Trace extends BodyTagImpl {
 	
 	@Override
 	public int doEndTag() throws PageException {
-		try {
-			_doEndTag();
-		}
-		catch (IOException e) {}
+
+        if (pageContext.getConfig().debug()) {
+
+            try {
+                _doEndTag();
+            }
+            catch (IOException e) {}
+        }
+
 		return EVAL_PAGE;
 	}
 	
@@ -172,12 +167,8 @@ public final class Trace extends BodyTagImpl {
 			catch (ConverterException e) {
 				if(value!=null)varValue="("+Caster.toTypeName(value)+")";
 			}
-			
-			
-			
 		}
-		if(!pageContext.getConfig().debug())
-			throw new ApplicationException("debugging is disabled");
+
 		DebugTrace trace = pageContext.getDebugger().addTrace(type,category,text,page,var,varValue);
 		DebugTrace[] traces = ((DebuggerPro)pageContext.getDebugger()).getTraces(pageContext);
 		
