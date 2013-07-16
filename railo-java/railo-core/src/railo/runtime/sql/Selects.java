@@ -11,8 +11,8 @@ import railo.runtime.sql.exp.value.ValueNumber;
 
 public class Selects {
 
-	private List orderbys=new ArrayList();
-	private List selects=new ArrayList();
+	private List<Column> orderbys=new ArrayList<Column>();
+	private List<Select> selects=new ArrayList<Select>();
 	
 
 
@@ -25,7 +25,7 @@ public class Selects {
 	 */
 	public Column[] getOrderbys() {
 		if(orderbys==null) return new Column[0];
-		return (Column[]) orderbys.toArray(new Column[orderbys.size()]);
+		return orderbys.toArray(new Column[orderbys.size()]);
 	}
 
 	public void addSelect(Select select) {
@@ -34,7 +34,7 @@ public class Selects {
 	
 	public Select[] getSelects() {
 		if(selects==null) return new Select[0];
-		return (Select[]) selects.toArray(new Select[selects.size()]);
+		return selects.toArray(new Select[selects.size()]);
 	}
 	
 
@@ -117,12 +117,12 @@ public class Selects {
 		// order by
 		if(__selects.orderbys!=null && __selects.orderbys.size()>0) {
 			sb.append("order by\n\t");
-			Iterator it = __selects.orderbys.iterator();
+			Iterator<Column> it = __selects.orderbys.iterator();
 			Expression exp;
 			boolean first = true;
 			while(it.hasNext()) {
 				if(!first)sb.append("\t,");
-				exp=(Expression) it.next();
+				exp=it.next();
 				sb.append(exp.toString(false)+" "+(exp.isDirectionBackward()?"DESC":"ASC")+"\n");
 				first=false;
 			}
@@ -131,29 +131,29 @@ public class Selects {
 	}
 
 	public Column[] getTables() {
-		Iterator it = selects.iterator();
+		Iterator<Select> it = selects.iterator();
 		Select s;
-		ArrayList rtn=new ArrayList();
+		ArrayList<Column> rtn=new ArrayList<Column>();
 		Column[] froms;
 		while(it.hasNext()) {
-			s=(Select) it.next();
+			s=it.next();
 			froms = s.getFroms();
 			for(int i=0;i<froms.length;i++) {
 				rtn.add(froms[i]);
 			}
 		}
-		return (Column[]) rtn.toArray(new Column[rtn.size()]);
+		return rtn.toArray(new Column[rtn.size()]);
 	}
 
 	public boolean isDistinct() {
 		Select s;
 		int len=selects.size();
 		if(len==1) {
-			s=(Select)selects.get(0);
+			s=selects.get(0);
 			return s.isDistinct();
 		}
 		for(int i=1;i<len;i++) {
-			s=(Select)selects.get(i);
+			s=selects.get(i);
 			if(!s.isUnionDistinct()) return false;
 		}
 		return true;
