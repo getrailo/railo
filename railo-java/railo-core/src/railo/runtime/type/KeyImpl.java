@@ -29,6 +29,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	private transient String lcKey;
 	private transient String ucKey;
 	private transient int wjh;
+	private transient int sfm=-1;
 	private transient long h64;
 	
 	public KeyImpl() {
@@ -75,6 +76,16 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		return wjh;
 	}
+	
+	public int slotForMap() {
+		if(sfm == -1) {
+	    	int h = 0;
+	        h ^= hashCode();
+	        h ^= (h >>> 20) ^ (h >>> 12);
+	        sfm = h ^ (h >>> 7) ^ (h >>> 4);
+		}
+		return sfm;
+    }
 
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeObject(key);
@@ -86,7 +97,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		h64=createHash64(ucKey);	
 	}
 
-	protected KeyImpl(String key) {
+	public KeyImpl(String key) {
 		this.key=key;
 		this.ucKey=key.toUpperCase();
 		h64=createHash64(ucKey);
@@ -98,29 +109,27 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 * @return
 	 */
 	public static Collection.Key init(String key) {
+		//return KeyConstants.getKey(key);
 		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
 
 	public static Collection.Key _const(String key) {
+		//return KeyConstants.getKey(key);
 		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
-
-	/**
-	 * used for static iniatisation of a key object (used by compiler)
-	 * @param string
-	 * @return
-	 */
 	public synchronized static Collection.Key getInstance(String key) {
+		//return KeyConstants.getKey(key);
 		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
 
 	public synchronized static Collection.Key intern(String key) {
+		//return KeyConstants.getKey(key);
 		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
