@@ -66,8 +66,7 @@
 				<cftry>
 					<cfset funcName=coll.diff[name].action>
 					<cfif len(funcName)>
-						<cfset var _listener=duplicate(variables.listener)>
-						<cfset _listener[funcName](coll.diff[name])>
+						<cfset variables.listener[funcName](coll.diff[name])>
 					</cfif>
 					<cfcatch>
 						<cfset _handleError(cfcatch, "start") />
