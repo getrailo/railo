@@ -31,7 +31,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.util.QueryUtil;
 
 /**
  * 
@@ -75,18 +74,14 @@ public final class QoQ {
     	
 	// Order By	
 		if(orders.length>0) {
-            
-			for(int i=orders.length-1;i>=0;i--) {
-				Column order = orders[i];
-				target.sort(order.getColumn().toLowerCase(),order.isDirectionBackward()?Query.ORDER_DESC:Query.ORDER_ASC);
-			}
-			if(maxrows>-1) {
-			    target.cutRowsTo(maxrows);
-			}
+			order(target,orders);
+			if(maxrows>-1) target.cutRowsTo(maxrows);
 		}
     // Distinct
         if(selects.isDistinct()) {
-            Key[] _keys = target.getColumnNames();
+        	order(target,selects.getDistincts());
+        	//print.e(selects.getDistincts());
+        	Key[] _keys = target.getColumnNames();
             QueryColumn[] columns=new QueryColumn[_keys.length];
             for(int i=0;i<columns.length;i++) {
                 columns[i]=target.getColumn(_keys[i]);
@@ -112,7 +107,15 @@ public final class QoQ {
     
 
 
-    private void executeSingle(PageContext pc, Select select, Query qr, QueryImpl target, int maxrows, SQL sql,boolean hasOrders) throws PageException {
+    private static void order(Query qry, Column[] columns) throws PageException {
+    	Column col;
+    	for(int i=columns.length-1;i>=0;i--) {
+			col = columns[i];
+			qry.sort(col.getColumn(),col.isDirectionBackward()?Query.ORDER_DESC:Query.ORDER_ASC);
+		}
+	}
+
+	private void executeSingle(PageContext pc, Select select, Query qr, QueryImpl target, int maxrows, SQL sql,boolean hasOrders) throws PageException {
     	ValueNumber oTop = select.getTop();
 		if(oTop!=null) {
 			int top=(int)oTop.getValueAsDouble();
