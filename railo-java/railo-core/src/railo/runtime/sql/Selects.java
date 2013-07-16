@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.sql.exp.Column;
 import railo.runtime.sql.exp.Expression;
 import railo.runtime.sql.exp.op.Operation;
@@ -157,5 +158,21 @@ public class Selects {
 			if(!s.isUnionDistinct()) return false;
 		}
 		return true;
+	}
+	public Column[] getDistincts() throws DatabaseException {
+		List<Column> columns=new ArrayList<Column>();
+		Select s;
+		int len=selects.size();
+		if(len==1) {
+			s=selects.get(0);
+			Expression[] _selects = s.getSelects();
+			for(int i=0;i<_selects.length;i++){
+				if(_selects[i] instanceof Column) {
+					columns.add((Column) _selects[i]);
+				}	
+			}
+			return columns.toArray(new Column[columns.size()]);
+		}
+		throw new DatabaseException("not supported for Union distinct",null,null,null,null);
 	}
 }
