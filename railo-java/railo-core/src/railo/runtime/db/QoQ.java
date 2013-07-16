@@ -86,16 +86,22 @@ public final class QoQ {
 		}
     // Distinct
         if(selects.isDistinct()) {
-            String[] _keys=target.getColumns();
+            Key[] _keys = target.getColumnNames();
             QueryColumn[] columns=new QueryColumn[_keys.length];
             for(int i=0;i<columns.length;i++) {
                 columns[i]=target.getColumn(_keys[i]);
             }
             
             int i;
+            Object l,r;
             outer:for(int row=target.getRecordcount();row>1;row--) {
                 for(i=0;i<columns.length;i++) {
-                    if(!Operator.equals(QueryUtil.getValue(columns[i],row),QueryUtil.getValue(columns[i],row-1),true))
+                	l=columns[i].get(row,null);
+                	r=columns[i].get(row-1,null);
+                	if(l==null || r==null) {
+                		if(l!=r)continue outer;
+                	}
+                	else if(!Operator.equals(l,r,true))
                         continue outer;
                 }
                 target.removeRow(row);
