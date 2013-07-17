@@ -1,13 +1,19 @@
 package railo.commons.collection;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.*;
-import java.util.*;
-import java.io.Serializable;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
-import railo.commons.digest.WangJenkins;
+import railo.commons.lang.types.RefBoolean;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Null;
@@ -85,19 +91,19 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * The default initial capacity for this table,
      * used when not otherwise specified in a constructor.
      */
-    static final int DEFAULT_INITIAL_CAPACITY = 16;
+    public static final int DEFAULT_INITIAL_CAPACITY = 32;
 
     /**
      * The default load factor for this table, used when not
      * otherwise specified in a constructor.
      */
-    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+    public static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
     /**
      * The default concurrency level for this table, used when not
      * otherwise specified in a constructor.
      */
-    static final int DEFAULT_CONCURRENCY_LEVEL = 16;
+    public static final int DEFAULT_CONCURRENCY_LEVEL = 16;
 
     /**
      * The maximum capacity, used if a higher value is implicitly
@@ -111,7 +117,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      * The maximum number of segments to allow; used to bound
      * constructor arguments.
      */
-    static final int MAX_SEGMENTS = 1 << 16; // slightly conservative
+    static final int MAX_SEGMENTS = 1 << 32; // slightly conservative
 
     /**
      * Number of unsynchronized retries in size and containsValue
@@ -121,6 +127,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
      */
     static final int RETRIES_BEFORE_LOCK = 2;
 
+	
     /* ---------------- Fields -------------- */
 
     /**
@@ -145,23 +152,6 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
 
     /* ---------------- Small Utilities -------------- */
 
-    /**
-     * Applies a supplemental hash function to a given hashCode, which
-     * defends against poor quality hash functions.  This is critical
-     * because ConcurrentHashMap uses power-of-two length hash tables,
-     * that otherwise encounter collisions for hashCodes that do not
-     * differ in lower or upper bits.
-     */
-    private static int _hash(int h) {
-    	// Spread bits to regularize both segment and index locations,
-        // using variant of single-word Wang/Jenkins hash.
-        h += (h <<  15) ^ 0xffffcd7d;
-        h ^= (h >>> 10);
-        h += (h <<   3);
-        h ^= (h >>>  6);
-        h += (h <<   2) + (h << 14);
-        return h ^ (h >>> 16);
-    }
     
     private static int hash(Object o) {
     	if(o instanceof KeyImpl) {
@@ -364,7 +354,7 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
             return defaultValue;
         }
         
-        V getE(Map map,Object key, int hash) throws PageException {
+        V getE(Map<K,V> map,Object key, int hash) throws PageException {
             if (count != 0) { // read-volatile
                 HashEntry<K,V> e = getFirst(hash);
                 while (e != null) {
@@ -379,10 +369,6 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
             }
             throw HashMapPro.invalidKey(map, key,false);
         }
-        
-        
-        
-        
 
         boolean containsKey(Object key, int hash) {
             if (count != 0) { // read-volatile
@@ -452,6 +438,23 @@ public class ConcurrentHashMapPro<K, V> extends AbstractMapPro<K, V>
             }
         }
 
+        V repl(K key, int hash, V newValue, RefBoolean replaced) {
+            lock();
+            try {
+                HashEntry<K,V> e = getFirst(hash);
+                while (e != null && (e.hash != hash || !key.equals(e.key)))
+                    e = e.next;
+
+                if(e==null) return null;
+                replaced.setValue(true);
+                V oldValue = e.value;
+                e.value = newValue;
+                return oldValue;
+            } 
+            finally {
+                unlock();
+            }
+        }
 
         V put(K key, int hash, V value, boolean onlyIfAbsent) {
             lock();
