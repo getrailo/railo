@@ -144,7 +144,7 @@
 			#-railo-debug.small, #-railo-debug.small td	{ font-size: 8.5pt; }
 
 			#-railo-debug table		{ empty-cells: show; border-collapse: collapse; border-spacing: 0; }
-			#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #999; margin-left: 9pt; max-width: 100%; }
+			#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #ddd; margin-left: 9pt; max-width: 100%; }
 			#-railo-debug table.details th { font-size: 9pt; font-weight: normal; background-color: #f2f2f2; color: #3c3e40; }
 			#-railo-debug table.details td, #-railo-debug table.details th { padding: 2px 4px;  border: 1px solid #ddd; }
 
