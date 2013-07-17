@@ -134,25 +134,23 @@
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 		</cfif>
 		
-		<style type="text/css">	
-			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; border: 1px solid #CCC; border-radius: 5px; }
+		<style type="text/css">
+			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; background-color: #FFF; color: #222; border: 1px solid #CCC; border-radius: 5px; text-shadow: none; }
 			#-railo-debug.collapsed	{ padding: 0; border-width: 0; }
 			#-railo-debug legend 	{ padding: 0 1em; background-color: #FFF; color: #222; }
 
-			#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; background-color: #FFF; color: #222; }
+			#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; }
 			#-railo-debug.large, #-railo-debug.large td	{ font-size: 10pt; }
 			#-railo-debug.small, #-railo-debug.small td	{ font-size: 8.5pt; }
 
-			#-railo-debug table		{ empty-cells: show; }				
+			#-railo-debug table		{ empty-cells: show; border-collapse: collapse; border-spacing: 0; }				
 			#-railo-debug table.details	{ margin-top: 0.5em; border: 1px solid #999; margin-left: 9pt; max-width: 100%; }
-			#-railo-debug table.details th { border:1px solid #e0e0e0; font-size: 0.9em; font-weight: normal; background-color: #f2f2f2; color: #3c3e40; }
-			#-railo-debug table.details td, #-railo-debug table.details th { padding: 2px 5px; }
-			#-railo-debug table.details td	{ border-bottom: 1px solid #e0e0e0; }
-			#-railo-debug table.details tr:last-child td { border-bottom: 0; }
+			#-railo-debug table.details th { font-size: 9pt; font-weight: normal; background-color: #f2f2f2; color: #3c3e40; }
+			#-railo-debug table.details td, #-railo-debug table.details th { padding: 2px 4px;  border: 1px solid #ddd; }
 			
-			#-railo-debug .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:#007bb7; }
+			#-railo-debug .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:#555; }
 			#-railo-debug .section-title:first-child	{ margin-top: auto; }
-			#-railo-debug .label		{ white-space: nowrap; vertical-align: top; text-align: right; padding-right: 1em; }
+			#-railo-debug .label		{ white-space: nowrap; vertical-align: top; text-align: right; padding-right: 1em; background-color: inherit; color: inherit; text-shadow: none; }
 			#-railo-debug .collapsed	{ display: none; }
 			#-railo-debug .bold 		{ font-weight: bold; }
 			#-railo-debug .txt-c 	{ text-align: center; }
@@ -162,12 +160,11 @@
 			#-railo-debug tr.nowrap td { white-space: nowrap; }
 			#-railo-debug tr.red td, #-railo-debug .red 	{ background-color: #FDD; }
 
-			#-railo-debug .underline { text-decoration: underline; }
-			#-railo-debug .underline.selected, .underline:hover { background-color: #222; color: #FFF; }
+			#-railo-debug .sortby.selected, #-railo-debug .sortby:hover { background-color: #25A; color: #FFF; }
 			#-railo-debug .pad 	{ padding-left: 16px; }
 			#-railo-debug a 	{ cursor: pointer; }
-			#-railo-debug td a 	{ color: #22A; }
-			#-railo-debug td a:hover	{ color: #66F; }
+			#-railo-debug td a 	{ color: #25A; }
+			#-railo-debug td a:hover	{ color: #58C; text-decoration: underline; }
 			#-railo-debug pre 	{ background-color: #EEE; padding: 1em; border: solid 1px #333; border-radius: 1em; white-space: pre-wrap; word-break: break-all; word-wrap: break-word; tab-size: 2; }
 
 			.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat left center; padding: 4px 0 4px 16px; }
@@ -295,9 +292,9 @@
 									<tr>
 										<th>Total Time (ms)</th>
 										<th>Count</th>
-										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif> (ms)</th>
+										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif> (ms)</th>
 										<th>Template</th>
-										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="underline" title="Order by ID (starting with the next request)">ID</a></cfif></th>
+										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by ID (starting with the next request)">ID</a></cfif></th>
 									</tr>
 									<cfset loa=0>
 									<cfset tot=0>
@@ -356,11 +353,11 @@
 
 											<tr><td class="txt-r">#unitFormat( '', qPageParts.total * multiplier )#</td><td class="txt-r">#qPageParts.count#</td>
 												<cfif qPageParts.count GT 1>
-													<!---td class="txt-r">#qPageParts.min#</td><td class="txt-r">#qPageParts.max#</td!---><td class="txt-r">#unitFormat( '', qPageParts.avg * multiplier )#</td>
+													<td class="txt-r">#unitFormat( '', qPageParts.avg * multiplier )#</td>
 												<cfelse>
-													<!---td></td><td></td!---><td class="txt-r">-</td>
+													<td class="txt-r">-</td>
 												</cfif>
-												<td><a id="-railo-debug-btn-#sectionId#-#qPageParts.currentRow#-details" class="-railo-icon-plus" onclick="__RAILO.util.toggleClass( '-railo-debug-Profiler-#qPageParts.currentRow#-details', 'collapsed' ) ? ( __RAILO.util.removeClass( this, '-railo-icon-minus'), __RAILO.util.addClass( this, '-railo-icon-plus') ) : ( __RAILO.util.removeClass( this, '-railo-icon-plus'), __RAILO.util.addClass( this, '-railo-icon-minus') )">#qPageParts.path# (#qPageParts.start# - #qPageParts.end#)</a></td></tr>
+												<td><a id="-railo-debug-btn-#sectionId#-#qPageParts.currentRow#-details" class="-railo-icon-plus" onclick="__RAILO.util.toggleClass( '-railo-debug-Profiler-#qPageParts.currentRow#-details', 'collapsed' ) ? ( __RAILO.util.removeClass( this, '-railo-icon-minus'), __RAILO.util.addClass( this, '-railo-icon-plus') ) : ( __RAILO.util.removeClass( this, '-railo-icon-plus'), __RAILO.util.addClass( this, '-railo-icon-minus') )">#qPageParts.path#</a> (#qPageParts.start# - #qPageParts.end#)</td></tr>
 											<tr id="-railo-debug-#sectionId#-#qPageParts.currentRow#-details" class="collapsed"><td colspan="8">#htmlCodeFormat( rtrim( getSnippet( qPageParts.path, qPageParts.start, qPageParts.end ) ) )#</td></tr>
 										</cfloop>
 									</table>
@@ -425,18 +422,18 @@
 									<table class="details">
 
 										<tr>
-											<th>Scope</th>
 											<th>Template</th>
 											<th>Line</th>
+											<th>Scope</th>
 											<th>Var</th>
 											<th>Count</th>
 										</tr>
 										<cfset total=0 />
 										<cfloop query="implicitAccess">
 											<tr>
-												<td>#implicitAccess.scope#</td>
 												<td>#implicitAccess.template#</td>
 												<td class="txt-r">#implicitAccess.line#</td>
+												<td>#implicitAccess.scope#</td>
 												<td>#implicitAccess.name#</td>
 												<td class="txt-r">#implicitAccess.count#</td>
 											</tr>
