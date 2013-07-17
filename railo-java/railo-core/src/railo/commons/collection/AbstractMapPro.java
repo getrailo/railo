@@ -721,10 +721,10 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
 
     }
     
-    public static PageException invalidKey(Map map,Object key, boolean remove) {
+    public static PageException invalidKey(Map<?,?> map,Object key, boolean remove) {
 
 		StringBuilder sb=new StringBuilder();
-		Iterator it = map.keySet().iterator();
+		Iterator<?> it = map.keySet().iterator();
 		Object k;
 		while(it.hasNext()){
 			k = it.next();
