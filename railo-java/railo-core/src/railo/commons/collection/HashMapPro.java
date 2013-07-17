@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,8 +36,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import railo.print;
-import railo.commons.collection.HashMapPro.Entry;
+
+import railo.aprint;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -258,7 +259,7 @@ public class HashMapPro<K,V>
      * in lower bits. Note: Null keys always map to hash 0, thus index 0.
      */
     final static int hash(Object k) {
-    	//if(k instanceof KeyImpl) return k.hashCode();
+    	if(k instanceof KeyImpl) return ((KeyImpl) k).slotForMap();
     	int h = 0;
         /*if (useAltHashing) {
             if (k instanceof String) {
@@ -328,32 +329,27 @@ public class HashMapPro<K,V>
     
 
     public static void main(String[] args) {
-    	/*
-657
-653
-656
-741
-239
-243
-233
-225
-    	 */
+
     	//HashMapPro<Key, Object> map=new HashMapPro<Key, Object>();
     	long startx=System.currentTimeMillis();
 		for(int i=0;i<10000000;i++){
 			KeyImpl.init("K"+i);
 		}
-		print.e("init.key:"+(System.currentTimeMillis()-startx));
+		aprint.e("init.key:"+(System.currentTimeMillis()-startx));
 
     	
     	
     	HashMapPro<Key,Object> map=new HashMapPro<Key,Object>();
+    	Map<Key,Object> sm = Collections.synchronizedMap(map);
     	ConcurrentHashMapPro<Key,Object> map2=new ConcurrentHashMapPro<Key,Object>();
+    	HashMap<Key,Object> hm=new HashMap<Key,Object>();
+
     	Key[] keys=new Key[100];
     	for(int i=0;i<100;i++){
     		keys[i]=KeyImpl.init("K"+i);
     		map.put(keys[i], ""+i);
     		map2.put(keys[i], ""+i);
+    		hm.put(keys[i], ""+i);
     	}
     	
     	for(int i=0;i<100;i++){
@@ -366,7 +362,7 @@ public class HashMapPro<K,V>
 			map.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("HM.get:"+(System.currentTimeMillis()-start));
+		aprint.e("HM.get:"+(System.currentTimeMillis()-start));
 
 		
     	start=System.currentTimeMillis();
@@ -375,7 +371,7 @@ public class HashMapPro<K,V>
 			//map.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("HM.g:"+(System.currentTimeMillis()-start));
+		aprint.e("HM.g:"+(System.currentTimeMillis()-start));
 		
 
     	start=System.currentTimeMillis();
@@ -384,16 +380,17 @@ public class HashMapPro<K,V>
 			map.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("HM.get:"+(System.currentTimeMillis()-start));
+		aprint.e("HM.get:"+(System.currentTimeMillis()-start));
 
 		
     	start=System.currentTimeMillis();
 		for(int i=0;i<100000000;i++){
-			map.g(keys[37],null);
+			//map.g(keys[37],null);
+			map.put(keys[37], "");
 			//map.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("HM.g:"+(System.currentTimeMillis()-start));
+		aprint.e("HM.put:"+(System.currentTimeMillis()-start));
 		
 		
 		/////////////////////////////////////////
@@ -405,7 +402,7 @@ public class HashMapPro<K,V>
 			map2.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("CHM.get:"+(System.currentTimeMillis()-start));
+		aprint.e("CHM.get:"+(System.currentTimeMillis()-start));
 
 		
     	start=System.currentTimeMillis();
@@ -414,7 +411,7 @@ public class HashMapPro<K,V>
 			//map.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("CHM.g:"+(System.currentTimeMillis()-start));
+		aprint.e("CHM.g:"+(System.currentTimeMillis()-start));
 		
 
     	start=System.currentTimeMillis();
@@ -423,16 +420,61 @@ public class HashMapPro<K,V>
 			map2.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("CHM.get:"+(System.currentTimeMillis()-start));
+		aprint.e("CHM.get:"+(System.currentTimeMillis()-start));
 
 		
     	start=System.currentTimeMillis();
 		for(int i=0;i<100000000;i++){
-			map2.g(keys[37],null);
+			//map2.g(keys[37],null);
+			map2.put(keys[37], "");
 			//map.get(keys[37]);
 			//k.hashCode();
 		}
-		print.e("CHM.g:"+(System.currentTimeMillis()-start));
+		aprint.e("CHM.put:"+(System.currentTimeMillis()-start));
+		
+		
+/////////////////////////////////////////
+		
+
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			//map.g(keys[37],null);
+			sm.get(keys[37]);
+			//k.hashCode();
+		}
+		aprint.e("SM.get:"+(System.currentTimeMillis()-start));
+
+		
+    	start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			//map2.g(keys[37],null);
+			sm.put(keys[37], "");
+			//map.get(keys[37]);
+			//k.hashCode();
+		}
+		aprint.e("SM.put:"+(System.currentTimeMillis()-start));
+		
+		
+	/////////////////////////////////////////
+			
+		
+		start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+		//map.g(keys[37],null);
+		hm.get(keys[37]);
+		//k.hashCode();
+		}
+		aprint.e("SM.get:"+(System.currentTimeMillis()-start));
+	
+	
+		start=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+		//map2.g(keys[37],null);
+		hm.put(keys[37], "");
+		//map.get(keys[37]);
+		//k.hashCode();
+		}
+		aprint.e("SM.put:"+(System.currentTimeMillis()-start));
 	}
     
     public V g(K key) throws PageException {
