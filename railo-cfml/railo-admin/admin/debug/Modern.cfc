@@ -154,7 +154,10 @@
 			#-railo-debug .collapsed	{ display: none; }
 			#-railo-debug .bold 		{ font-weight: bold; }
 			#-railo-debug .txt-c 	{ text-align: center; }
+			#-railo-debug .txt-l 	{ text-align: left; }
 			#-railo-debug .txt-r 	{ text-align: right; }
+			#-railo-debug .faded 	{ color: #999; }
+			#-railo-debug .ml14px 	{ margin-left: 14px; }
 			#-railo-debug table.details td.txt-r { padding-right: 1em; }
 			#-railo-debug .num-lsv 	{ font-weight: normal; }
 			#-railo-debug tr.nowrap td { white-space: nowrap; }
@@ -201,7 +204,7 @@
 							</tr>
 							<tr>
 								<td colspan="2" id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
-									<table style="margin-left: 14px;">
+									<table class="ml14px">
 										<tr>
 											<td class="label" colspan="2">
 												#server.coldfusion.productname#
@@ -316,7 +319,7 @@
 											<td class="txt-r">#pages.count#</td>
 											<td class="txt-r" title="#pages.avg#"><cfif pages.count GT 1>#unitFormat(arguments.custom.unit, pages.avg)#<cfelse>-</cfif></td>
 											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
-											<td class="txt-r" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
+											<td class="txt-r faded" title="#pages.id#">#pages.id % 10000#</td>
 										</tr>
 									</cfloop>
 									<cfif hasBad>
@@ -610,7 +613,7 @@
 
 													<tr>
 														<th></th>
-														<th colspan="5" style="text-align: left;">Query usage within the request:</th>
+														<th colspan="5" class="txt-l">Query usage within the request:</th>
 													</tr>
 
 													<cfset local.arr = usageRead>
@@ -669,7 +672,6 @@
 								<tr><td style="font-size: 4px;">&nbsp;</td></tr>
 
 								<cfset sectionId = k>
-
 								<cfswitch expression="#k#">
 
 									<cfcase value="Client">
@@ -706,20 +708,19 @@
 
 									<tr><td colspan="3">
 
-										<table id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+										<table id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'# ml14px"><tr><td>
 
 											<cfif isOpen>
 												<cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry>
 											<cfelse>
 												the Scope will be displayed with the next request
 											</cfif>
-
 										</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
 									</td></tr>
 								<cfelse>
 
 									<tr>
-										<td style="padding-left: 16px; color: ##667;"><b>#k# Scope</b> (Not Enabled for this Application)</td>
+										<td class="faded" style="padding-left: 16px;"><b>#k# Scope</b> (Not Enabled for this Application)</td>
 									</tr>
 								</cfif>
 							</cfloop>
