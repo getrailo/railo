@@ -59,7 +59,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public UndefinedImpl(PageContextImpl pc, short type) {
 		this.type=type;
 		this.pc=pc;
-		this.debug=pc.getConfig().debug() && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS);
 	}
 	
 	
@@ -482,7 +481,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		local=pc.localScope();
 		allowImplicidQueryCall=pc.getConfig().allowImplicidQueryCall();
         type=pc.getConfig().getScopeCascadingType();
-        
+        debug=pc.getConfig().debug() && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS);
+		
 		// Strict
 		if(type==Config.SCOPE_STRICT) {
 			//print.ln("strict");
