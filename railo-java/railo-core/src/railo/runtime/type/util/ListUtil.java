@@ -977,10 +977,10 @@ public final class ListUtil {
 		return sb.toString();
 	}
 	
-	public static String listToList(java.util.List list, String delimiter) throws PageException {
+	public static String listToList(java.util.List<?> list, String delimiter) throws PageException {
 		if(list.size()==0) return "";
 		StringBuilder sb=new StringBuilder();
-		Iterator it = list.iterator();
+		Iterator<?> it = list.iterator();
 		
 		if(it.hasNext()) sb.append(Caster.toString(it.next()));
 			
@@ -1147,6 +1147,10 @@ public final class ListUtil {
             arr[i]=Caster.toString(array.get(i+1,null));
         }
         return arr;
+    }
+    
+    public static String[] toStringArray(Set<String> set) {
+        return set.toArray(new String[set.size()]);
     }
     
     public static String[] toStringArray(List<String> list) {
