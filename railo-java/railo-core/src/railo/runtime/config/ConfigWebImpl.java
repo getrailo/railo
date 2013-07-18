@@ -2,6 +2,7 @@ package railo.runtime.config;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -34,6 +36,7 @@ import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.debug.DebuggerPool;
 import railo.runtime.engine.ThreadQueueImpl;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -45,6 +48,7 @@ import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.ReqRspUtil;
+import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
@@ -164,13 +168,22 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return configServer;
     }
     
-    /*public ConfigServer getConfigServer(String key, String nonce) throws ExpressionException {
-        if(!configServer.hasPassword())
-            throw new ExpressionException("Cannot access, no password is defined");
-        if(!configServer.isPasswordEqual(password))
-            throw new ExpressionException("No access, password is invalid");
-        return configServer;
-    }*/
+    public ConfigServer getConfigServer(String key, String nonce) throws PageException {
+    	String[] keys=configServer.getAuthenticationKeys();
+    	
+    	// check if one of the keys matching
+    	String hash;
+    	for(int i=0;i<keys.length;i++){
+    		try {
+				hash=Hash.hash(keys[i], nonce, Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
+				if(hash.equals(key)) return configServer;
+			}
+			catch (NoSuchAlgorithmException e) {
+				throw Caster.toPageException(e);
+			}
+    	}
+    	throw new ApplicationException("No access, no matching key found");
+    }
     
     public String getServerId() {
         return configServer.getId();

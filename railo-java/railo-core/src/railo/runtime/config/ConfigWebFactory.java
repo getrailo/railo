@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -30,6 +32,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -195,7 +198,7 @@ public final class ConfigWebFactory {
 				+ "===================================================================\n"
 
 		);
-
+		
 		boolean doNew = doNew(configDir);
 
 		Resource configFile = configDir.getRealResource("railo-web.xml.cfm");
@@ -2547,7 +2550,17 @@ public final class ConfigWebFactory {
 		else if (configServer != null) {
 			config.setPassword(configServer.getDefaultPassword());
 		}
-
+		
+		if(config instanceof ConfigServerImpl) {
+			ConfigServerImpl csi=(ConfigServerImpl)config;
+			String keyList=railoConfiguration.getAttribute("auth-keys");
+			if(!StringUtil.isEmpty(keyList)) {
+				String[] keys = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.toListRemoveEmpty(keyList, ',')));
+				csi.setAuthenticationKeys(keys);
+			}
+		}
+		
+		
 		// default password
 		if (config instanceof ConfigServerImpl) {
 			hpw=railoConfiguration.getAttribute("default-pw");

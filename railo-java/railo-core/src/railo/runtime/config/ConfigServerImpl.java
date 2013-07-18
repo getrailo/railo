@@ -69,6 +69,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private int delay=0;
 	private boolean captcha=false;
 	private static ConfigServerImpl instance;
+
+	private String[] authKeys;
 	
 	/**
      * @param engine 
@@ -590,4 +592,16 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	public boolean getFullNullSupport() {
 		return fullNullSupport;
 	}
+
+	public String[] getAuthenticationKeys() {
+		return authKeys;
+	}
+
+	protected void setAuthenticationKeys(String[] authKeys) {
+		this.authKeys = authKeys;
+	}
+	
+	public ConfigServer getConfigServer(String key,String nonce) {
+        return this;
+    }
 }
