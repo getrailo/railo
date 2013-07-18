@@ -509,7 +509,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
     		debugger.reset();
     	}
-	
+		else ((DebuggerImpl)debugger).resetTraces(); // traces can alo be used when debugging is off
+		
 		this.serverPassword=null;
 
 		boolean isChild=parent!=null;
@@ -1891,7 +1892,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     @Override
     public Debugger getDebugger() {
-		return config.debug()?debugger:null;
+		return debugger;
 	}
     
     @Override

@@ -693,6 +693,10 @@ public final class DebuggerImpl implements DebuggerPro {
         return qryOutputLog;
         
 	}
+
+	public void resetTraces() {
+		traces.clear();
+	}
 }
 
 final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
