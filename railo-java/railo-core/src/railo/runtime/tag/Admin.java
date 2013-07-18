@@ -292,6 +292,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         // update Password
         else if(action.equals("updatepassword")) {
+        	
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
                         getString("oldPassword",null),getString("admin",action,"newPassword",true));
@@ -305,7 +306,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         try {
             // Password
-            password = getString("password","");
+            password = ConfigWebFactory.hash(getString("password",""));
             // Config
             config=(ConfigImpl)pageContext.getConfig();
             if(type==TYPE_SERVER)
@@ -1043,13 +1044,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doUpdateAuthKey() throws PageException {  
         try {
-            admin.updateAuthKey(getString("key",null),null);
+            admin.updateAuthKey(getString("key",null));
         }catch (Exception e) {} 
         store();
     }
     private void doRemoveAuthKey() throws PageException {  
         try {
-            admin.removeAuthKeys(getString("key",null),null);
+            admin.removeAuthKeys(getString("key",null));
         }catch (Exception e) {} 
         store();
     }
@@ -1282,7 +1283,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
                 password);
-        
     }
     
     /**

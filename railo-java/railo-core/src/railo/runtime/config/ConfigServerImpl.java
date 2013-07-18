@@ -594,7 +594,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	}
 
 	public String[] getAuthenticationKeys() {
-		return authKeys;
+		return authKeys==null?new String[0]:authKeys;
 	}
 
 	protected void setAuthenticationKeys(String[] authKeys) {

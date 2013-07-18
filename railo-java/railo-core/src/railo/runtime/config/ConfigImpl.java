@@ -754,9 +754,10 @@ public abstract class ConfigImpl implements Config {
         return password;
     }
     
-    protected boolean isPasswordEqual(String rawPassword) {
+    protected boolean isPasswordEqual(String password) {
+    	if(this.password.equals(password)) return true;
     	try {
-    		return password.equals(ConfigWebFactory.hash(rawPassword));
+    		return this.password.equals(ConfigWebFactory.hash(password));
 		}
 		catch (IOException e) {
 			e.printStackTrace();

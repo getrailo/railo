@@ -59,6 +59,7 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
+import railo.commons.net.URLEncoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.CFMLFactory;
@@ -2556,6 +2557,10 @@ public final class ConfigWebFactory {
 			String keyList=railoConfiguration.getAttribute("auth-keys");
 			if(!StringUtil.isEmpty(keyList)) {
 				String[] keys = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.toListRemoveEmpty(keyList, ',')));
+				for(int i=0;i<keys.length;i++){
+					keys[i]=URLDecoder.decode(keys[i], "UTF-8", true);
+				}
+				
 				csi.setAuthenticationKeys(keys);
 			}
 		}

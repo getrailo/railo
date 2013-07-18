@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +154,7 @@ public final class ConfigWebAdmin {
             if(root.hasAttribute("pw")) root.removeAttribute("pw");
         }
         else {
-            root.setAttribute("pw",ConfigWebFactory.hash(password));
+            root.setAttribute("pw",password);
         }
     }
 
@@ -4247,5 +4249,59 @@ public final class ConfigWebAdmin {
 	private void setAttr(Element el, String name, String value) {
 		if(value==null) value="";
 		el.setAttribute(name, value);
+	}
+
+
+	public void updateAuthKey(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// merge new key and existing
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			set.add(keys[i]);
+		}
+		set.add(key);
+		
+		
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+		
+		
+	}
+
+	public void removeAuthKeys(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// remove key
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			if(!key.equals(keys[i]))set.add(keys[i]);
+		}
+
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+	}
+
+	private String authKeysAsList(Set<String> set) throws PageException {
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = set.iterator();
+		String key;
+		while(it.hasNext()){
+			key=it.next().trim();
+			if(sb.length()>0)sb.append(',');
+			try {
+				sb.append(URLEncoder.encode(key, "UTF-8"));
+			}
+			catch (UnsupportedEncodingException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return sb.toString();
 	}
 }

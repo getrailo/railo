@@ -69,6 +69,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private ConfigServerImpl configServer;
     private SecurityManager securityManager;
     private static final LockManager lockManager= LockManagerImpl.getInstance(false);
+	private static final long FIVE_SECONDS = 5000;
     private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;
@@ -78,6 +79,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
+	private long lastNonce;
 	
     
 
@@ -168,14 +170,22 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return configServer;
     }
     
-    public ConfigServer getConfigServer(String key, String nonce) throws PageException {
+    public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
+    	if(lastNonce>timeNonce)
+        	throw new ApplicationException("last access was with a newer nonce");
+    	long now = System.currentTimeMillis();
+    	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
+    		throw new ApplicationException("nonce is outdated");
+    	
+    	lastNonce=timeNonce;
+    	
     	String[] keys=configServer.getAuthenticationKeys();
     	
     	// check if one of the keys matching
     	String hash;
     	for(int i=0;i<keys.length;i++){
     		try {
-				hash=Hash.hash(keys[i], nonce, Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
+				hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
 				if(hash.equals(key)) return configServer;
 			}
 			catch (NoSuchAlgorithmException e) {
@@ -418,12 +428,13 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.hasPassword();
 		}
 		
-		public void setPassword(boolean server, String passwordOld, String passwordNew) 
+		public void setPassword(boolean server, String passwordOldRaw, String passwordNewRaw) 
 			throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
 	    	ConfigImpl config=server?configServer:this;
-	    	    
+	    	String passwordNew=ConfigWebFactory.hash(passwordNewRaw);
+	    	String passwordOld=ConfigWebFactory.hash(passwordOldRaw);
 		    if(!config.hasPassword()) { 
-		        config.setPassword(passwordNew);
+		    	config.setPassword(passwordNew);
 		        
 		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordNew);
 		        admin.setPassword(passwordNew);
