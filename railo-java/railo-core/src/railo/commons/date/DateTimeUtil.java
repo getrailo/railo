@@ -1,8 +1,11 @@
 package railo.commons.date;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -10,6 +13,12 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public abstract class DateTimeUtil {
+	
+	private final static SimpleDateFormat HTTP_TIME_STRING_FORMAT;
+	static {
+		HTTP_TIME_STRING_FORMAT = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
+		HTTP_TIME_STRING_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
 	
     private static final double DAY_MILLIS = 86400000D;
 	private static final long CF_UNIX_OFFSET = 2209161600000L;
@@ -214,6 +223,16 @@ public abstract class DateTimeUtil {
 	public abstract long getDiff(TimeZone tz, int datePart,DateTime left,DateTime right);
 
 	public abstract String toString(DateTime dt, TimeZone tz);
+
+	public static String toHTTPTimeString(long time) {
+		return toHTTPTimeString(new Date(time));
+	}
+	
+	public static String toHTTPTimeString(Date date) {
+		synchronized(HTTP_TIME_STRING_FORMAT){
+			return StringUtil.replace(HTTP_TIME_STRING_FORMAT.format(date),"+00:00","",true);
+		}
+	}
 
 
 }

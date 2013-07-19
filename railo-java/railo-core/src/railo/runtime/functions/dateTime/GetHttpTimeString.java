@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
@@ -16,30 +17,16 @@ import railo.runtime.type.dt.DateTimeImpl;
 
 public final class GetHttpTimeString implements Function {
 	
-	private final static SimpleDateFormat HTTP_TIME_STRING_FORMAT;
-	static {
-		HTTP_TIME_STRING_FORMAT = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
-		HTTP_TIME_STRING_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-	}
-	
-	
-	private static String toHTTPTimeString(Date date) {
-		synchronized(HTTP_TIME_STRING_FORMAT){
-			return StringUtil.replace(HTTP_TIME_STRING_FORMAT.format(date),"+00:00","",true);
-		}
-	}
-	
-	
 	public static String call(PageContext pc) {
-		return toHTTPTimeString(new DateTimeImpl(pc));
+		return DateTimeUtil.toHTTPTimeString(new DateTimeImpl(pc));
 	}
 
 	public static String call(PageContext pc , DateTime datetime) {
-        return toHTTPTimeString(datetime==null?new DateTimeImpl(pc):datetime);
+        return DateTimeUtil.toHTTPTimeString(datetime==null?new DateTimeImpl(pc):datetime);
     }
 	
 	public static String invoke(DateTime datetime) {
-        return toHTTPTimeString(datetime);
+        return DateTimeUtil.toHTTPTimeString(datetime);
 	}
 	
 	public static String invoke() {

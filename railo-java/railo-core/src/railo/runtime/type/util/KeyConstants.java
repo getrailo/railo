@@ -748,6 +748,7 @@ public class KeyConstants {
 	public static final Key _server_software = KeyImpl._const("server_software");
 	public static final Key _application = KeyImpl._const("application");
 	public static final Key _cookie = KeyImpl._const("cookie");
+	public static final Key _cookies = KeyImpl._const("cookies");
 	public static final Key _cluster = KeyImpl._const("cluster");
 	public static final Key _form = KeyImpl._const("form");
 	public static final Key _request = KeyImpl._const("request");
