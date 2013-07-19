@@ -16,7 +16,7 @@ public abstract class DateTimeUtil {
 	
 	private final static SimpleDateFormat HTTP_TIME_STRING_FORMAT;
 	static {
-		HTTP_TIME_STRING_FORMAT = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
+		HTTP_TIME_STRING_FORMAT = new SimpleDateFormat("EE, dd-MMM-yyyy HH:mm:ss zz",Locale.ENGLISH);
 		HTTP_TIME_STRING_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 	
