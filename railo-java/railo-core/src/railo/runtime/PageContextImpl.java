@@ -438,7 +438,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         this.servlet=servlet;
 
          // Writers
-        if(config.debug() && config.debugLogOutput()) {
+        if(config.debugLogOutput()) {
         	CFMLWriter w = config.getCFMLWriter(req,rsp);
         	w.setAllowCompression(false);
         	DebugCFMLWriter dcw = new DebugCFMLWriter(w);
