@@ -261,6 +261,7 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	}
 
 	private void log(String str) {
+        if (true) return;
 		StackTraceElement[] traces = new Throwable().getStackTrace();
 		StackTraceElement trace;
 		String template;
