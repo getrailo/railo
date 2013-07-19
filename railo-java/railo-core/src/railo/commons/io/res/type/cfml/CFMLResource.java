@@ -168,7 +168,7 @@ public class CFMLResource extends ResourceSupport {
 			else
 				obj = provider.call(null, cfc, "getBinary", ZERO_ARGS);
 			if(obj==null) obj=new byte[0];
-			return Caster.toInputStream(obj);
+			return Caster.toInputStream(obj,null);
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);

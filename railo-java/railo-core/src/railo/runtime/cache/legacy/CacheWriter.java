@@ -2,6 +2,7 @@ package railo.runtime.cache.legacy;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import railo.commons.io.ForkWriter;
 import railo.commons.io.IOUtil;
@@ -13,7 +14,7 @@ public class CacheWriter extends ForkWriter {
 	private Resource cacheFile;
 
 	public CacheWriter(Writer out, Resource cacheFile) throws IOException {
-		super(out, IOUtil.getWriter(cacheFile, null));
+		super(out, IOUtil.getWriter(cacheFile, (Charset)null));
 		this.out=out;
 		this.cacheFile=cacheFile;
 	}

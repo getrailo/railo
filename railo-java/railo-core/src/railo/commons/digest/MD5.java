@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import railo.commons.io.CharsetUtil;
+
 
 /**
  * 
@@ -273,8 +275,7 @@ public MD5(String input) {
      count = 0L;
      buffer = null;
      digest = null;
-     byte bytes[] = new byte[input.length()];
-     input.getBytes(0, bytes.length, bytes, 0);
+     byte bytes[] = input.getBytes(CharsetUtil.UTF8);
      //stringp = true;
      in = new ByteArrayInputStream(bytes);
      state = new int[4];
@@ -293,9 +294,6 @@ public MD5(byte[] bytes) {
     count = 0L;
     buffer = null;
     digest = null;
-    //byte bytes[] = new byte[input.length()];
-    //input.getBytes(0, bytes.length, bytes, 0);
-    //stringp = true;
     in = new ByteArrayInputStream(bytes);
     state = new int[4];
     buffer = new byte[64];

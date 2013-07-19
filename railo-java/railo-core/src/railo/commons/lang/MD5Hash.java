@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 
@@ -430,7 +431,7 @@ public final class MD5Hash {
      *
      */
     public void update (String s) {
-        update(s.getBytes());
+        update(s.getBytes(CharsetUtil.UTF8));
     }
 
     /**

@@ -3,6 +3,7 @@ package railo.runtime.crypt;
 import java.security.MessageDigest;
 import java.util.Random;
 
+import railo.commons.io.CharsetUtil;
 import railo.runtime.exp.ExceptionHandler;
 
 
@@ -310,40 +311,7 @@ public final class Blowfish {
 
 		}
 
-		public static boolean selfTest() {
-			byte testKey1[] = {
-				28, 88, 127, 28, 19, -110, 79, -17
-			};
-			int tv_p1[] = {
-				0x30553228, 0x6d6f295a
-			};
-			int tv_c1[] = {
-				0x55cb3774, 0xd13ef201
-			};
-			int tv_t1[] = new int[2];
-			String sTestKey2 = "Who is John Galt?";
-			byte testKey2[] = sTestKey2.getBytes();
-			int tv_p2[] = {
-				0xfedcba98, 0x76543210
-			};
-			int tv_c2[] = {
-				0xcc91732b, 0x8022f684
-			};
-			int tv_t2[] = new int[2];
-			BlowfishECB testbf1 = new BlowfishECB(testKey1);
-			testbf1.encrypt(tv_p1, tv_t1);
-			if(tv_t1[0] != tv_c1[0] || tv_t1[1] != tv_c1[1])
-				return false;
-			testbf1.decrypt(tv_t1);
-			if(tv_t1[0] != tv_p1[0] || tv_t1[1] != tv_p1[1])
-				return false;
-			BlowfishECB testbf2 = new BlowfishECB(testKey2);
-			testbf2.encrypt(tv_p2, tv_t2);
-			if(tv_t2[0] != tv_c2[0] || tv_t2[1] != tv_c2[1])
-				return false;
-			testbf2.decrypt(tv_t2);
-			return tv_t2[0] == tv_p2[0] && tv_t2[1] == tv_p2[1];
-		}
+		
 
 		protected long encryptBlock(long lPlainBlock) {
 			int nHi = Blowfish.longHi32(lPlainBlock);
@@ -582,7 +550,7 @@ public final class Blowfish {
 		MessageDigest digest = null;
 		try {
 			digest = MessageDigest.getInstance("SHA1");
-			digest.update(password.getBytes());
+			digest.update(password.getBytes(CharsetUtil.UTF8));
 		}
 		catch(Exception e) {
 			ExceptionHandler.printStackTrace(e);

@@ -1,5 +1,6 @@
 package railo.commons.i18n;
 
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class FormatUtil {
 			Resource file = dir.getRealResource(locale.getLanguage()+"-"+locale.getCountry()+appendix+".df");
 			if(file.isFile()) {
 				try {
-					String content=IOUtil.toString(file, null);
+					String content=IOUtil.toString(file, (Charset)null);
 					String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(content, '\n');
 					String line;
 					SimpleDateFormat sdf;

@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.BitSet;
 
 import org.apache.commons.codec.net.URLCodec;
+
+import railo.commons.io.CharsetUtil;
 /** 
  * @deprecated use instead railo.commons.net.URLEncoder
  * 
@@ -27,6 +29,10 @@ public class URLEncoder {
     }
 
 
+	public static String encode(String str, java.nio.charset.Charset charset) throws UnsupportedEncodingException {
+		return new String(URLCodec.encodeUrl(WWW_FORM_URL, str.getBytes(charset)),"us-ascii");
+	}
+	
 	public static String encode(String str, String encoding) throws UnsupportedEncodingException {
 		return new String(URLCodec.encodeUrl(WWW_FORM_URL, str.getBytes(encoding)),"us-ascii");
 	}
@@ -34,6 +40,6 @@ public class URLEncoder {
     
 	
 	public static String encode(String str) throws UnsupportedEncodingException {
-		return encode(str,"UTF-8");
+		return encode(str,CharsetUtil.UTF8);
 	}
 }

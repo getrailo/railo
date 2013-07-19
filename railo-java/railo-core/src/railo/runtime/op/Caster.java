@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
@@ -41,6 +42,7 @@ import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
@@ -4104,13 +4106,13 @@ public final class Caster {
 		return defaultValue;
 	}
 
-	public static byte[] toBytes(Object obj) throws PageException {
+	public static byte[] toBytes(Object obj,Charset charset) throws PageException {
 		try {
 			if(obj instanceof byte[]) return (byte[]) obj;
 			if(obj instanceof InputStream)return IOUtil.toBytes((InputStream)obj);
 			if(obj instanceof Resource)return IOUtil.toBytes((Resource)obj);
 			if(obj instanceof File)return IOUtil.toBytes((File)obj);
-			if(obj instanceof String) return ((String)obj).getBytes();
+			if(obj instanceof String) return ((String)obj).getBytes(charset==null?SystemUtil.getCharset():charset);
 			if(obj instanceof Blob) {
 				InputStream is=null;
 				try {
@@ -4131,13 +4133,13 @@ public final class Caster {
 		throw new CasterException(obj,byte[].class);
 	}
 
-	public static InputStream toInputStream(Object obj) throws PageException {
+	public static InputStream toInputStream(Object obj,Charset charset) throws PageException {
 		try {
 			if(obj instanceof InputStream)return (InputStream)obj;
 			if(obj instanceof byte[]) return new ByteArrayInputStream((byte[]) obj);
 			if(obj instanceof Resource)return ((Resource)obj).getInputStream();
 			if(obj instanceof File)return new FileInputStream((File)obj);
-			if(obj instanceof String) return new ByteArrayInputStream(((String)obj).getBytes());
+			if(obj instanceof String) return new ByteArrayInputStream(((String)obj).getBytes(charset==null?SystemUtil.getCharset():charset));
 			if(obj instanceof Blob) return ((Blob)obj).getBinaryStream();
 		}
 		catch(IOException ioe) {

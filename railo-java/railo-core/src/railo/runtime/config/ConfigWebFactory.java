@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -918,7 +919,7 @@ public final class ConfigWebFactory {
 	}
 
 	static String createContentFromResource(Resource resource) throws IOException {
-		return IOUtil.toString(resource, null);
+		return IOUtil.toString(resource, (Charset)null);
 	}
 
 	static void createFileFromResourceCheckSizeDiffEL(String resource, Resource file) {

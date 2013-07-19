@@ -21,6 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
@@ -222,7 +223,7 @@ public final class S3 implements S3Constants {
 		if(hasObj)objectName=checkObjectName(objectName);
 		
 
-		Entity re = HTTPEngine3Impl.getByteArrayEntity(acp.toXMLString().getBytes("iso-8859-1"),"text/html");
+		Entity re = HTTPEngine3Impl.getByteArrayEntity(acp.toXMLString().getBytes(CharsetUtil.ISO88591),"text/html");
 		
 		
 		String dateTimeString = Util.toHTTPTimeString();
@@ -343,7 +344,7 @@ public final class S3 implements S3Constants {
 			strXML="<CreateBucketConfiguration><LocationConstraint>EU</LocationConstraint></CreateBucketConfiguration>";
 		}
 		
-		byte[] barr = strXML.getBytes("iso-8859-1");
+		byte[] barr = strXML.getBytes(CharsetUtil.ISO88591);
 		put(bucketName, null, acl,HTTPEngine3Impl.getByteArrayEntity(barr,"text/html"));	
 	}
 	

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -1064,7 +1065,7 @@ public final class XMLUtil {
 	}
 	
 	public static InputSource toInputSource(Resource res) throws IOException {
-        	String str = IOUtil.toString((res), null);
+        	String str = IOUtil.toString((res), (Charset)null);
         	return new InputSource(new StringReader(str));
     }
 
@@ -1079,17 +1080,17 @@ public final class XMLUtil {
             return toInputSource(pc, value.toString());
         }
         if(value instanceof Resource) {
-        	String str = IOUtil.toString(((Resource)value), null);
+        	String str = IOUtil.toString(((Resource)value), (Charset)null);
         	return new InputSource(new StringReader(str));
         }
 		if(value instanceof File) {
-        	String str = IOUtil.toString(ResourceUtil.toResource(((File)value)), null);
+        	String str = IOUtil.toString(ResourceUtil.toResource(((File)value)),(Charset)null);
         	return new InputSource(new StringReader(str));
         }
 		if(value instanceof InputStream) {
 			InputStream is = (InputStream)value;
 			try {
-				String str = IOUtil.toString(is, null);
+				String str = IOUtil.toString(is, (Charset)null);
 	        	return new InputSource(new StringReader(str));
 			}
 			finally {

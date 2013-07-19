@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import railo.print;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -677,7 +678,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         InputStream is = getSourceAsInputStream();
         if(is==null) return null;
         try {
-        	return IOUtil.toStringArray(IOUtil.getReader(is,getMapping().getConfig().getTemplateCharset()));
+        	return IOUtil.toStringArray(IOUtil.getReader(is,CharsetUtil.toCharset(getMapping().getConfig().getTemplateCharset())));
         }
         finally {
         	IOUtil.closeEL(is);

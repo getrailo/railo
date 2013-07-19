@@ -1,5 +1,7 @@
 package railo.runtime.coder;
 
+import railo.commons.io.CharsetUtil;
+
 
 public final class Base64Util {
 	
@@ -33,7 +35,7 @@ public final class Base64Util {
 	 * @return true if base64
 	 */
 	public static boolean isBase64(String isValidString) {
-		return isBase64(isValidString.getBytes());
+		return isBase64(isValidString.getBytes(CharsetUtil.UTF8));
 	}
 	/** Initializations */
 	static {

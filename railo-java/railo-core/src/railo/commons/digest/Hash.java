@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import railo.print;
+import railo.commons.io.CharsetUtil;
 
 public class Hash {
 	
@@ -12,7 +13,6 @@ public class Hash {
 	//public static final char[] ENCODING_ASCII = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 	private static final byte[] DEL=new byte[]{58};
 	
-	public static final Charset CHARSET_UTF_8=Charset.forName("UTF-8");
 	
 	public static final String ALGORITHM_MD5="MD5";
 	public static final String ALGORITHM_SHA_256="SHA-256";
@@ -48,9 +48,9 @@ public class Hash {
 	public static String hash(String str, String nonce, String algorithm,char[] encoding) throws NoSuchAlgorithmException {
 		MessageDigest md=MessageDigest.getInstance(algorithm);
 	    md.reset();
-	    md.update(toBytes(str, CHARSET_UTF_8));
+	    md.update(toBytes(str, CharsetUtil.UTF8));
 	    md.update(DEL);
-	    md.update(toBytes(nonce, CHARSET_UTF_8));
+	    md.update(toBytes(nonce, CharsetUtil.UTF8));
 	    return new String( enc(md.digest(),encoding)); // no charset needed because all characters are below us-ascii (hex)
 	}
 	
@@ -62,7 +62,7 @@ public class Hash {
 			for(int i=0;i<numIterations;i++){
 				mdc=(MessageDigest) md.clone();
 				mdc.reset();
-			    mdc.update(toBytes(str, CHARSET_UTF_8));
+			    mdc.update(toBytes(str, CharsetUtil.UTF8));
 			    str=new String(enc(mdc.digest(),encoding));
 			}
 			return str;
@@ -79,7 +79,7 @@ public class Hash {
 	public static String hash(String str, String algorithm,char[] encoding) throws NoSuchAlgorithmException {
 		MessageDigest md=MessageDigest.getInstance(algorithm);
 	    md.reset();
-	    md.update(toBytes(str, CHARSET_UTF_8));
+	    md.update(toBytes(str, CharsetUtil.UTF8));
 	    return new String( enc(md.digest(),encoding)); // no charset needed because all characters are below us-ascii (hex)
 	}
 	

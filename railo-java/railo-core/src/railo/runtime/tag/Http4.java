@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
@@ -1081,7 +1082,7 @@ public final class Http4 extends BodyTagImpl implements Http {
                     	}
                     }
                     catch (UnsupportedEncodingException uee) {
-                    	str = IOUtil.toString(is,null);
+                    	str = IOUtil.toString(is,(Charset)null);
                     }
                 }
                 catch (IOException ioe) {

@@ -2,6 +2,7 @@ package railo.runtime.orm.hibernate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -213,7 +214,7 @@ public class HibernateSessionFactory {
 	private static void executeSQLScript(ORMConfiguration ormConf,DatasourceConnection dc) throws SQLException, IOException {
         Resource sqlScript = ormConf.getSqlScript();
         if(sqlScript!=null && sqlScript.isFile()) {
-            BufferedReader br = IOUtil.toBufferedReader(IOUtil.getReader(sqlScript,null));
+            BufferedReader br = IOUtil.toBufferedReader(IOUtil.getReader(sqlScript,(Charset)null));
             String line;
             StringBuilder sql=new StringBuilder();
             String str;

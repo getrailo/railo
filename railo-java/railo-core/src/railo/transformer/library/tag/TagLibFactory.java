@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -79,7 +80,7 @@ public final class TagLibFactory extends DefaultHandler {
 	private TagLibFactory(String saxParser,Resource res) throws TagLibException {
 		Reader r=null;
 		try {
-			InputSource is=new InputSource(r=IOUtil.getReader(res.getInputStream(), null));
+			InputSource is=new InputSource(r=IOUtil.getReader(res.getInputStream(), (Charset)null));
 			is.setSystemId(res.getPath());
 			init(saxParser,is);
 		} catch (IOException e) {

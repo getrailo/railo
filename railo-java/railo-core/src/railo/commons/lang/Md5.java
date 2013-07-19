@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import railo.commons.io.CharsetUtil;
+
 
 /**
  * class to create a MD5 sum 
@@ -299,7 +301,7 @@ public final class Md5 {
      */
     private Md5 (String input) {
     	
-    	this( input.getBytes() );
+    	this( input.getBytes(CharsetUtil.UTF8));
     }    
   
     /**

@@ -3058,11 +3058,11 @@ public final class ConfigWebAdmin {
 	private String checkCharset(String charset)  throws PageException{
 		charset=charset.trim();
 		if("system".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("jre".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("os".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		
 		// check access
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_SETTING);

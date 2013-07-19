@@ -283,8 +283,8 @@ public abstract class ConfigImpl implements Config {
 
     private short compileType=RECOMPILE_NEVER;
     
-    private String resourceCharset=SystemUtil.getCharset();
-    private String templateCharset=SystemUtil.getCharset();
+    private String resourceCharset=SystemUtil.getCharset().name();
+    private String templateCharset=SystemUtil.getCharset().name();
     private String webCharset="UTF-8";
 
 	private String mailDefaultEncoding = "UTF-8";
@@ -1661,7 +1661,7 @@ public abstract class ConfigImpl implements Config {
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
-        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset());
+        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset().name());
         	//else
         		//this.scheduler.reinit(scheduleDirectory,logger);
         } 

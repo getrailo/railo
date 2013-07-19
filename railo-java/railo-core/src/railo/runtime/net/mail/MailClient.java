@@ -2,6 +2,7 @@ package railo.runtime.net.mail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -507,7 +509,7 @@ public abstract class MailClient {
     	InputStream is=null;
     	
     	try {
-    		return getContent(is=bp.getInputStream(), getCharsetFromContentType(bp.getContentType()));
+    		return getContent(is=bp.getInputStream(), CharsetUtil.toCharset(getCharsetFromContentType(bp.getContentType())));
         }
         catch(IOException mie) {
         	IOUtil.closeEL(is);
@@ -523,7 +525,7 @@ public abstract class MailClient {
         }
     }
     
-    private String getContent(InputStream is,String charset) throws IOException {
+    private String getContent(InputStream is,Charset charset) throws IOException {
 		return MailUtil.decode(IOUtil.toString(is, charset));
     }
     

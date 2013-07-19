@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -708,7 +709,7 @@ public final class Http3 extends BodyTagImpl implements Http {
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
                     }
                     catch (UnsupportedEncodingException uee) {
-                    	str = IOUtil.toString(is,null);
+                    	str = IOUtil.toString(is,(Charset)null);
                     }
                 }
                 catch (IOException ioe) {

@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.text.AttributedString;
 import java.util.Iterator;
 import java.util.Locale;
@@ -830,7 +831,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		String content = getBase64String(format);
 		if(inHTMLFormat) content="data:image/" + format + ";base64,"+content;
-		IOUtil.write(destination, content, null, false);
+		IOUtil.write(destination, content, (Charset)null, false);
 		return content;
 	}
 	
