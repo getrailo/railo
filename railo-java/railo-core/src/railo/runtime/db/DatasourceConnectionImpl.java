@@ -56,7 +56,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
     @Override
     public boolean isTimeout() {
         int timeout=datasource.getConnectionTimeout();
-        if(timeout<1)timeout=1;
+        if(timeout <= 0) return false;
         timeout*=60000;      
         return (time+timeout)<System.currentTimeMillis();
     }
