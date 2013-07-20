@@ -941,7 +941,7 @@
 		}
 
 
-		function getSnippet( filename, start=1, end=0 ) {
+		function getSnippet( filename, start=0, end=0 ) {
 
 			if ( !isDefined( "variables.cache.sources" ) )
 				variables.cache.sources = {};
@@ -960,9 +960,7 @@
 				if ( end == 0 )
 					end = len( src );
 
-				var result = mid( src, start, end - start + 1 );
-
-				return result;
+				return src.substring( start, end );
 			} catch ( ex ) {
 
 				return "Failed to retrieve snippet: #ex.message#";
