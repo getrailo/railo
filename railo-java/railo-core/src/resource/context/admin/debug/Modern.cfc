@@ -360,7 +360,7 @@
 												<cfelse>
 													<td class="txt-r">-</td>
 												</cfif>
-												<td><a id="-railo-debug-btn-#sectionId#-#qPageParts.currentRow#-details" class="-railo-icon-plus" onclick="__RAILO.util.toggleClass( '-railo-debug-Profiler-#qPageParts.currentRow#-details', 'collapsed' ) ? ( __RAILO.util.removeClass( this, '-railo-icon-minus'), __RAILO.util.addClass( this, '-railo-icon-plus') ) : ( __RAILO.util.removeClass( this, '-railo-icon-plus'), __RAILO.util.addClass( this, '-railo-icon-minus') )">#qPageParts.path#</a> (#qPageParts.start# - #qPageParts.end#)</td></tr>
+												<td><a id="-railo-debug-btn-#sectionId#-#qPageParts.currentRow#-details" class="-railo-icon-plus" onclick="__RAILO.util.toggleClass( '-railo-debug-Profiler-#qPageParts.currentRow#-details', 'collapsed' ) ? ( __RAILO.util.removeClass( this, '-railo-icon-minus'), __RAILO.util.addClass( this, '-railo-icon-plus') ) : ( __RAILO.util.removeClass( this, '-railo-icon-plus'), __RAILO.util.addClass( this, '-railo-icon-minus') )">#qPageParts.path#</a> <span class="faded">(#qPageParts.start# - #qPageParts.end#)</span></td></tr>
 											<tr id="-railo-debug-#sectionId#-#qPageParts.currentRow#-details" class="collapsed"><td colspan="8">#htmlCodeFormat( rtrim( getSnippet( qPageParts.path, qPageParts.start, qPageParts.end ) ) )#</td></tr>
 										</cfloop>
 									</table>
