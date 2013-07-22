@@ -583,6 +583,11 @@ public abstract class PageExceptionImpl extends PageException {
 	public String getTypeAsString() {
 		return type;
 	}
+    
+
+	public String getType() { // for compatibility to ACF
+		return type;
+	}
 	
 	@Override
 	public String getCustomTypeAsString() {
