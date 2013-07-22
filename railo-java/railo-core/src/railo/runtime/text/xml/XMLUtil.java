@@ -334,7 +334,7 @@ public final class XMLUtil {
 			}			
 		// Root
 			else if(k.equals(XMLROOT)) {
-				doc.appendChild(XMLCaster.toNode(doc,value));
+				doc.appendChild(XMLCaster.toNode(doc,value,false));
 			}			
 		// Parent
 			else if(k.equals(XMLPARENT)) {
@@ -392,7 +392,7 @@ public final class XMLUtil {
 			}
 			else {
 				boolean isIndex=false;
-			    Node child = XMLCaster.toNode(doc,value);
+			    Node child = XMLCaster.toNode(doc,value,false);
 				if(!k.getString().equalsIgnoreCase(child.getNodeName()) && !(isIndex=Decision.isInteger(k))) {
 					throw new XMLException("if you assign a XML Element to a XMLStruct , assignment property must have same name like XML Node Name", "Property Name is "+k.getString()+" and XML Element Name is "+child.getNodeName());
 				}
