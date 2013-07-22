@@ -213,7 +213,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		/*Name*/ sb.append(enc(name)).append('=').append(enc(value));
 		/*Path*/sb.append(";Path=").append(enc(path));
 		/*Domain*/if(!StringUtil.isEmpty(domain))sb.append(";Domain=").append(enc(domain));
-		/*Expires*/if(expires!=EXPIRES_NULL)sb.append(";Expires=").append(DateTimeUtil.toHTTPTimeString(System.currentTimeMillis()+(expires*1000L)));
+		/*Expires*/if(expires!=EXPIRES_NULL)sb.append(";Expires=").append(DateTimeUtil.toHTTPTimeString(System.currentTimeMillis()+(expires*1000L),false));
 		/*Secure*/if(secure)sb.append(";Secure");
 		/*HTTPOnly*/if(httpOnly)sb.append(";HTTPOnly");
 		
