@@ -3,6 +3,7 @@ package railo.commons.io;
 import java.nio.charset.Charset;
 
 import railo.print;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
@@ -22,10 +23,12 @@ public class CharsetUtil {
 	}
 
 	public static Charset toCharset(String charset) {
+		if(StringUtil.isEmpty(charset,true)) return null;
 		return Charset.forName(charset.trim());
 	}
 
 	public static Charset toCharset(String charset,Charset defaultValue) {
+		if(StringUtil.isEmpty(charset)) return defaultValue;
 		try{
 			return Charset.forName(charset);
 		}
