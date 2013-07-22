@@ -427,7 +427,6 @@ public final class S3 implements S3Constants {
 		bucketName=checkBucket(bucketName);
 		objectName=checkObjectName(objectName);
 		
-		//String dateTimeString = GetHttpTimeString.invoke();
 		long epoch = (System.currentTimeMillis()/1000)+(secondsValid);
 		String cs = "GET\n\n\n"+epoch+"\n/"+bucketName+"/"+objectName;
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
