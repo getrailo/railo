@@ -18,15 +18,15 @@ import railo.runtime.type.dt.DateTimeImpl;
 public final class GetHttpTimeString implements Function {
 	
 	public static String call(PageContext pc) {
-		return DateTimeUtil.toHTTPTimeString(new DateTimeImpl(pc));
+		return DateTimeUtil.toHTTPTimeString(new DateTimeImpl(pc),true);
 	}
 
 	public static String call(PageContext pc , DateTime datetime) {
-        return DateTimeUtil.toHTTPTimeString(datetime==null?new DateTimeImpl(pc):datetime);
+        return DateTimeUtil.toHTTPTimeString(datetime==null?new DateTimeImpl(pc):datetime,true);
     }
 	
 	public static String invoke(DateTime datetime) {
-        return DateTimeUtil.toHTTPTimeString(datetime);
+        return DateTimeUtil.toHTTPTimeString(datetime,true);
 	}
 	
 	public static String invoke() {
