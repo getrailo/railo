@@ -335,6 +335,12 @@ Error Output --->
 							<th scope="row">#stText.overview.railoID#</th>
 							<td>#getRailoId().server.id#</td>
 						</tr>
+						<!---
+						<tr>
+							<th scope="row">#stText.overview.railoID#</th>
+							<td>#getRailoId().server.ioid#</td>
+						</tr>
+						--->
 						<cfif request.adminType EQ "web">
 							<tr>
 								<th scope="row">#stText.Overview.InstalledTLs#</th>

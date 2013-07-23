@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -1973,17 +1974,20 @@ public abstract class ConfigImpl implements Config {
     @Override
     public String getId() {
     	if(id==null){
-    		id = getId(getSecurityKey(),getSecurityToken(),securityKey);
+    		id = getId(getSecurityKey(),getSecurityToken(),false,securityKey);
     	}
     	return id;
 	}
 
-    public static String getId(String key, String token,String defaultValue) {
+    public static String getId(String key, String token,boolean addMacAddress,String defaultValue) {
     	
 		try {
+			if(addMacAddress){// because this was new we could swutch to a new ecryption // FUTURE cold we get rid of the old one?
+				return Hash.sha256(key+";"+token+":"+SystemUtil.getMacAddress());
+			}
 			return Md5.getDigestAsString(key+token);
 		} 
-    	catch (IOException e) {
+    	catch (Throwable t) {
 			return defaultValue;
 		}
 	}
