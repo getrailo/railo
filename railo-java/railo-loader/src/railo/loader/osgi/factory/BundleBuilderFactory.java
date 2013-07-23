@@ -73,17 +73,21 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		sb.append("Bundle-ManifestVersion: ").append(MANIFEST_VERSION).append('\n');
 		if(!Util.isEmpty(version))sb.append("Bundle-Version: ").append(version).append('\n');
 		if(!Util.isEmpty(activator))sb.append("Bundle-Activator: ").append(activator).append('\n');
+		sb.append("DynamicImport-Package: ").append("railo.*,railo.loader.engine.*").append('\n');
 		
 		// jars bundled
-		sb.append("jars-bundled: ");
+		/*sb.append("jars-bundled: ");
 		Iterator<String> it = jarsUsed.iterator();
 		boolean first=true;
 		while(it.hasNext()){
-			if(!first) sb.append(',');
+			if(!first) {
+				sb.append("\n ;");
+			}
 			sb.append(it.next());
 			first=false;
 		}
-		sb.append('\n');
+		
+		sb.append('\n');*/
 		
 		return sb.toString();// NL at the end is needed, so no trim
 	}

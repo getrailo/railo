@@ -7,6 +7,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.felix.framework.Felix;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -52,11 +53,12 @@ public class BundleLoader {
 		if(Util.isEmpty(cp)) throw new IOException("railo core ["+rc+"] is invalid, no Class-Path defintion found in the META-INF/MANIFEST.MF File");
 		
 		// add jars to bundle
-		StringTokenizer st=new StringTokenizer(cp,",");
+		StringTokenizer st=new StringTokenizer(cp,";");
 		String jarName;
 		File jar;
 		while (st.hasMoreTokens()) {
 			jarName=st.nextToken().trim();
+			if(Util.isEmpty(jarName))continue;
 			jar=new File(jarDirectory,jarName);
 			if(!jar.isFile()) {
 				throw new BundleException("Missing jar "+jar); // MUST try to download jar
@@ -70,5 +72,14 @@ public class BundleLoader {
 	
 	private static Bundle load(BundleContext bc,File bundle) throws IOException, BundleException {
         return BundleUtil.addBundle(bc, bundle, true);
+	}
+	
+	public static void main(String[] args) throws BundleException, IOException, ClassNotFoundException {
+		Felix felix = OSGiUtil.loadFelix();
+		
+		File file=new File("/Users/mic/Tmp/4020000.bundle");
+    	Bundle b = load(felix.getBundleContext(),file);
+    	System.out.println(b.loadClass("railo.runtime.engine.CFMLEngineImpl"));
+    	
 	}
 }

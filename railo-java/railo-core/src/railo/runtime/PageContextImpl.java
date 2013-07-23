@@ -233,7 +233,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Client client;
 	private Application application;
 
-    private DebuggerPro debugger=new DebuggerImpl();
+    private DebuggerImpl debugger=new DebuggerImpl();
 	private long requestTimeout=-1;
 	private short enablecfoutputonly=0;
 	private int outputState;
@@ -505,7 +505,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
     		debugger.reset();
     	}
-		else ((DebuggerImpl)debugger).resetTraces(); // traces can alo be used when debugging is off
+		else debugger.resetTraces(); // traces can alo be used when debugging is off
 		
 		this.serverPassword=null;
 

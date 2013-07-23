@@ -169,6 +169,18 @@ public final class DebuggerImpl implements Debugger {
         
         return arrPages;
     }
+	
+
+	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
+		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
+			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
+				((QueryImpl)query).enableShowQueryUsage();
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	private String _toString(long value) {
         if(value<=0) return "0";

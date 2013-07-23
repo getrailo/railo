@@ -170,7 +170,7 @@ public final class Update extends TagImpl {
 					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 					if(logdb){
 						boolean debugUsage=DebuggerUtil.debugQueryUsage(pageContext,query);
-						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+						pageContext.getDebugger().addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 					}
 				}
 			}

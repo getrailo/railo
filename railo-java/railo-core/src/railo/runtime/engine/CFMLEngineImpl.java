@@ -67,7 +67,6 @@ import railo.runtime.op.ExceptonImpl;
 import railo.runtime.op.OperationImpl;
 import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.StructImpl;
-import railo.runtime.util.BlazeDSImpl;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;

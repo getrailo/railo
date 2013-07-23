@@ -28,6 +28,7 @@ import org.osgi.framework.BundleException;
 import railo.Version;
 import railo.loader.TP;
 import railo.loader.osgi.BundleLoader;
+import railo.loader.osgi.BundleUtil;
 import railo.loader.osgi.OSGiUtil;
 import railo.loader.osgi.factory.BundleBuilderFactoryException;
 import railo.loader.util.ExtensionFilter;
@@ -260,7 +261,9 @@ public class CFMLEngineFactory {
             }
             else {
             	bundle=loadBundle(railo);
+            	log("loaded bundle2:"+bundle.getSymbolicName());
             	engine=getEngine(bundle);
+            	log("loaded engine2:"+engine);
             	/*try {
             	}
             	catch(EOFException e) {
@@ -330,7 +333,10 @@ public class CFMLEngineFactory {
 	    	}
 	    	
 			bundle=loadBundle(rc);
-	    	return getEngine(bundle);
+	    	log("loaded bundle3:"+bundle.getSymbolicName());
+	    	engine = getEngine(bundle);
+        	log("loaded engine3:"+engine);
+        	return engine;
     	}
     	finally {
     		rc.delete();
@@ -443,8 +449,11 @@ public class CFMLEngineFactory {
         
         String v="";
         try {
+        	
         	bundle=loadBundle(newRailo);
+        	log("loaded bundle1:"+bundle.getSymbolicName());
             CFMLEngine e = getEngine(bundle);
+        	log("loaded engine1:"+e);
             if(e==null)throw new IOException("can't load engine");
             v=e.getVersion();
             engine=e;
@@ -667,7 +676,10 @@ public class CFMLEngineFactory {
      * @throws InvocationTargetException
      */
     private CFMLEngine getEngine(Bundle bundle) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        Class<?> clazz = bundle.loadClass("railo.runtime.engine.CFMLEngineImpl");
+        log("state:"+BundleUtil.bundleState(bundle.getState(),""));
+    	
+    	Class<?> clazz = bundle.loadClass("railo.runtime.engine.CFMLEngineImpl");
+        log("class:"+clazz.getName());
         Method m = clazz.getMethod("getInstance",new Class[]{CFMLEngineFactory.class});
         return (CFMLEngine) m.invoke(null,new Object[]{this});
         
