@@ -1,5 +1,7 @@
 package railo.runtime.type.scope;
 
+import java.io.IOException;
+
 import railo.commons.io.SystemUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
@@ -39,6 +41,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key  COLDFUSION= KeyConstants._coldfusion;
     private static final Key  SERVLET= KeyConstants._servlet;
     private static final Key  ARCH= KeyImpl.intern("arch");
+    private static final Key  MAC_ADDRESS= KeyImpl.intern("macAddress");
     private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
     private static final Key  JAVA_AGGENT_SUPPORTED= KeyImpl.intern("javaAgentSupported");
     private static final Key  LOADER_VERSION= KeyImpl.intern("loaderVersion");
@@ -116,6 +119,10 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		ReadOnlyStruct os=new ReadOnlyStruct();
 			os.setEL(KeyConstants._name,System.getProperty("os.name") );
 			os.setEL(ARCH,System.getProperty("os.arch") );
+			try {
+				os.setEL(MAC_ADDRESS,SystemUtil.getMacAddress());
+			}
+			catch (IOException e) {}
 			int arch=SystemUtil.getOSArch();
 			if(arch!=SystemUtil.ARCH_UNKNOW)os.setEL(ARCH_MODEL,new Double(arch) );
 			os.setEL(VERSION,System.getProperty("os.version") );

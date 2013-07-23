@@ -9,9 +9,12 @@ import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -156,7 +159,8 @@ public final class SystemUtil {
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
 	private static Boolean isCLI;
-	private static double loaderVersion=0D; 
+	private static double loaderVersion=0D;
+	private static String macAddress; 
 
     /**
      * returns if the file system case sensitive or not
@@ -920,5 +924,20 @@ public final class SystemUtil {
 			}
 		}
 		return loaderVersion;
+	}
+	public static String getMacAddress() throws IOException {
+		if(macAddress==null) {
+			InetAddress ip = InetAddress.getLocalHost();
+			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+			byte[] mac = network.getHardwareAddress();
+	  
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < mac.length; i++) {
+				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));		
+			}
+			
+			macAddress= sb.toString();
+		}
+		return macAddress;
 	}
 }
