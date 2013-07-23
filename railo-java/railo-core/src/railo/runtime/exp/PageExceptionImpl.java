@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -211,13 +212,13 @@ public abstract class PageExceptionImpl extends PageException {
 				}
 				 
 				if(res.exists())	
-					content=IOUtil.toStringArray(IOUtil.getReader(res,config.getTemplateCharset()));
+					content=IOUtil.toStringArray(IOUtil.getReader(res,CharsetUtil.toCharset(config.getTemplateCharset())));
 				else {
 					if(sources.size()>index)ps = sources.get(index);
 					else ps=null;
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
-							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), config.getTemplateCharset()));
+							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), CharsetUtil.toCharset(config.getTemplateCharset())));
 						template=ps.getDisplayPath();
 					}
 				}	
@@ -580,6 +581,11 @@ public abstract class PageExceptionImpl extends PageException {
     
     @Override
 	public String getTypeAsString() {
+		return type;
+	}
+    
+
+	public String getType() { // for compatibility to ACF
 		return type;
 	}
 	

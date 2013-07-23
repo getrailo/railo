@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.safehaus.uuid.UUIDGenerator;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.lang.ExceptionUtil;
@@ -66,9 +66,9 @@ public final class ScopeContext {
 	private static final long SESSION_MEMORY_TIMESPAN =  5*MINUTE;
 	
 	private static UUIDGenerator generator = UUIDGenerator.getInstance();
-	private Map<String,Map<String,Scope>> cfSessionContextes=new HashTable();
-	private Map<String,Map<String,Scope>> cfClientContextes=new HashTable();
-	private Map<String,Application> applicationContextes=new HashTable();
+	private Map<String,Map<String,Scope>> cfSessionContextes=MapFactory.<String,Map<String,Scope>>getConcurrentMap();
+	private Map<String,Map<String,Scope>> cfClientContextes=MapFactory.<String,Map<String,Scope>>getConcurrentMap();
+	private Map<String,Application> applicationContextes=MapFactory.<String,Application>getConcurrentMap();
 
 	private int maxSessionTimeout=0;
 
@@ -127,7 +127,7 @@ public final class ScopeContext {
 		Map<String,Scope> context=parent.get(key);
 		if(context!=null) return context;
 		
-		context = new HashTable();
+		context = MapFactory.<String,Scope>getConcurrentMap();
 		parent.put(key,context);
 		return context;
 		

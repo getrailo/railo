@@ -2,13 +2,14 @@ package railo.runtime.search;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
@@ -27,7 +28,9 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.scope.Application;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
 /**
@@ -42,7 +45,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 	private DateTime lastUpdate;
     private SearchEngineSupport searchEngine;
 	//TODO change visibility to private
-    protected Map indexes=new HashTable();
+    protected Map<String,SearchIndex> indexes=MapFactory.<String,SearchIndex>getConcurrentMap();
 
     private DateTime created;
 
@@ -192,16 +195,16 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             // populate query with a single row
                 qv=new QueryImpl(columns,1,"query");
                 // body
-                qv.setAt("key", 1, key);
+                qv.setAt(KeyConstants._key, 1, key);
                 key="key";
 
                 // body
-                qv.setAt("body", 1, body);
+                qv.setAt(KeyConstants._body, 1, body);
                 body="body";
 
                 // title
                 if(!StringUtil.isEmpty(title)){
-                	qv.setAt("title", 1, title);
+                	qv.setAt(KeyConstants._title, 1, title);
                 	title="title";
                 }
 
@@ -213,22 +216,22 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 
                 // custom1
                 if(!StringUtil.isEmpty(custom1)){
-                	qv.setAt("custom1", 1, custom1);
+                	qv.setAt(KeyConstants._custom1, 1, custom1);
                 	custom1="custom1";
                 }
                 // custom2
                 if(!StringUtil.isEmpty(custom2)){
-                	qv.setAt("custom2", 1, custom2);
+                	qv.setAt(KeyConstants._custom2, 1, custom2);
                 	custom2="custom2";
                 }
                 // custom3
                 if(!StringUtil.isEmpty(custom3)){
-                	qv.setAt("custom3", 1, custom3);
+                	qv.setAt(KeyConstants._custom3, 1, custom3);
                 	custom3="custom3";
                 }
                 // custom4
                 if(!StringUtil.isEmpty(custom4)){
-                	qv.setAt("custom4", 1, custom4);
+                	qv.setAt(KeyConstants._custom4, 1, custom4);
                 	custom4="custom4";
                 }
             }
@@ -370,13 +373,13 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      * @throws SearchException
      */
     private void createIndex(SearchIndex index) throws SearchException {
-        Iterator it = indexes.keySet().iterator();
+        Iterator<String> it = indexes.keySet().iterator();
         SearchIndex otherIndex=null;
         
         while(it.hasNext()) {
             Object key=it.next();
             if(key.equals(index.getId())) {
-                otherIndex=(SearchIndex) indexes.get(key);
+                otherIndex=indexes.get(key);
                 break;
             }
         }
@@ -456,7 +459,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
         while(it.hasNext()) {
             Object id = it.next();
             if(id.equals(SearchIndex.toId(type,key,queryName))) {
-                SearchIndex index=(SearchIndex) indexes.get(id);
+                SearchIndex index = indexes.get(id);
 
                 IndexResult ir=_deleteIndex(index.getId());
                 Element indexEl=searchEngine.getIndexElement(searchEngine.getCollectionElement(name),index.getId());
@@ -576,7 +579,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             		
                 int row=len+y+1;
                 record = records[y];
-            	si=(SearchIndex)indexes.get(record.getId());
+            	si=indexes.get(record.getId());
 
                 title=record.getTitle();
                 custom1=record.getCustom1();
@@ -585,24 +588,24 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 custom4=record.getCustom4();
                 url=record.getUrl();
                 
-                qry.setAt("title",row,title);
-                qry.setAt("custom1",row,custom1);
-                qry.setAt("custom2",row,custom2);
-                qry.setAt("custom3",row,custom3);
-                qry.setAt("custom4",row,custom4);
+                qry.setAt(KeyConstants._title,row,title);
+                qry.setAt(KeyConstants._custom1,row,custom1);
+                qry.setAt(KeyConstants._custom2,row,custom2);
+                qry.setAt(KeyConstants._custom3,row,custom3);
+                qry.setAt(KeyConstants._custom4,row,custom4);
                 qry.setAt("categoryTree",row,record.getCategoryTree());
-                qry.setAt("category",row,record.getCategory());
-                qry.setAt("type",row,record.getMimeType());
-                qry.setAt("author",row,record.getAuthor());
-                qry.setAt("size",row,record.getSize());
+                qry.setAt(KeyConstants._category,row,record.getCategory());
+                qry.setAt(KeyConstants._type,row,record.getMimeType());
+                qry.setAt(KeyConstants._author,row,record.getAuthor());
+                qry.setAt(KeyConstants._size,row,record.getSize());
 
-                qry.setAt("summary",row,record.getSummary());
-                qry.setAt("context",row,record.getContextSummary());
-                qry.setAt("score",row,new Float(record.getScore()));
-                qry.setAt("key",row,record.getKey());
-                qry.setAt("url",row,url);
-                qry.setAt("collection",row,getName());
-                qry.setAt("rank",row,new Double(row));
+                qry.setAt(KeyConstants._summary,row,record.getSummary());
+                qry.setAt(KeyConstants._context,row,record.getContextSummary());
+                qry.setAt(KeyConstants._score,row,new Float(record.getScore()));
+                qry.setAt(KeyConstants._key,row,record.getKey());
+                qry.setAt(KeyConstants._url,row,url);
+                qry.setAt(KeyConstants._collection,row,getName());
+                qry.setAt(KeyConstants._rank,row,new Double(row));
                 String rootPath,file;
                 String urlPath;
                 if(si!=null) {
@@ -612,7 +615,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 		rootPath=rootPath.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
                 		file=record.getKey();
                 		file=file.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
-                		qry.setAt("url",row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyConstants._url,row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
@@ -625,21 +628,21 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 		catch (MalformedURLException e) {}
                 		if(StringUtil.isEmpty(urlPath))urlPath=rootPath;
                 		file=record.getKey();
-                		qry.setAt("url",row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyConstants._url,row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
                 	default:
-                		qry.setAt("url",row,toURL(si.getUrlpath(),url));
+                		qry.setAt(KeyConstants._url,row,toURL(si.getUrlpath(),url));
                 	break;
                 	}
                 	
                 	
-                    if(StringUtil.isEmpty(title))      qry.setAt("title",row,si.getTitle());
-                    if(StringUtil.isEmpty(custom1))    qry.setAt("custom1",row,si.getCustom1());
-                    if(StringUtil.isEmpty(custom2))    qry.setAt("custom2",row,si.getCustom2());
-                    if(StringUtil.isEmpty(custom3))    qry.setAt("custom3",row,si.getCustom3());
-                    if(StringUtil.isEmpty(custom4))    qry.setAt("custom4",row,si.getCustom4());
+                    if(StringUtil.isEmpty(title))      qry.setAt(KeyConstants._title,row,si.getTitle());
+                    if(StringUtil.isEmpty(custom1))    qry.setAt(KeyConstants._custom1,row,si.getCustom1());
+                    if(StringUtil.isEmpty(custom2))    qry.setAt(KeyConstants._custom2,row,si.getCustom2());
+                    if(StringUtil.isEmpty(custom3))    qry.setAt(KeyConstants._custom3,row,si.getCustom3());
+                    if(StringUtil.isEmpty(custom4))    qry.setAt(KeyConstants._custom4,row,si.getCustom4());
                     
                 }
             }
@@ -690,12 +693,13 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 	
 
     protected SearchIndex[] getIndexes() {
-    	Iterator it = indexes.keySet().iterator();
+    	//Iterator<Entry<String, SearchIndex>> it = indexes.entrySet().iterator();
+    	Iterator<SearchIndex> it = indexes.values().iterator();
 		int len=indexes.size();
 		SearchIndex[] rtn=new SearchIndex[len];
 		int count=0;
 		while(it.hasNext()) {
-			rtn[count++]=(SearchIndex) indexes.get(it.next());
+			rtn[count++]=it.next();
 		}
 		return rtn;
 	}
@@ -724,7 +728,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 
 	// FUTURE
 	public Object getIndexesAsQuery() {
-		Iterator it = indexes.entrySet().iterator();
+		Iterator<Entry<String, SearchIndex>> it = indexes.entrySet().iterator();
 		
 		final String v="VARCHAR";
         Query query=null;
@@ -740,33 +744,32 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             query=new QueryImpl(cols, 0,"query");
         }
         
-	    
-        Map.Entry entry;
+        Entry<String, SearchIndex> entry;
         SearchIndex index;
         int row=0;
 		while(it.hasNext()) {
 			query.addRow();
 			row++;
-        	entry=(Entry) it.next();
-        	index=(SearchIndex) entry.getValue();
+        	entry = it.next();
+        	index=entry.getValue();
         	if(index==null)continue;
 	        try {
 		        
                 query.setAt("categories",row,ListUtil.arrayToList(index.getCategories(),""));
                 query.setAt("categoryTree",row,index.getCategoryTree());
                 
-                query.setAt("custom1",row,index.getCustom1());
-                query.setAt("custom2",row,index.getCustom2());
-                query.setAt("custom3",row,index.getCustom3());
-                query.setAt("custom4",row,index.getCustom4());
+                query.setAt(KeyConstants._custom1,row,index.getCustom1());
+                query.setAt(KeyConstants._custom2,row,index.getCustom2());
+                query.setAt(KeyConstants._custom3,row,index.getCustom3());
+                query.setAt(KeyConstants._custom4,row,index.getCustom4());
                 
-                query.setAt("extensions",row,ListUtil.arrayToList(index.getExtensions(),","));
-                query.setAt("key",row,index.getKey());
-                query.setAt("language",row,index.getLanguage());
-                query.setAt("query",row,index.getQuery());
-                query.setAt("title",row,index.getTitle());
+                query.setAt(KeyConstants._extensions,row,ListUtil.arrayToList(index.getExtensions(),","));
+                query.setAt(KeyConstants._key,row,index.getKey());
+                query.setAt(KeyConstants._language,row,index.getLanguage());
+                query.setAt(KeyConstants._query,row,index.getQuery());
+                query.setAt(KeyConstants._title,row,index.getTitle());
                 query.setAt("urlpath",row,index.getUrlpath());
-                query.setAt("type",row,SearchIndex.toStringTypeEL(index.getType()));
+                query.setAt(KeyConstants._type,row,SearchIndex.toStringTypeEL(index.getType()));
                 
 	        }
 		    catch(PageException pe) {}

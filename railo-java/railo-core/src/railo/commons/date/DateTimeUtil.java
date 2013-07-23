@@ -1,8 +1,11 @@
 package railo.commons.date;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -10,6 +13,16 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public abstract class DateTimeUtil {
+	
+	private final static SimpleDateFormat HTTP_TIME_STRING_FORMAT_OLD;
+	private final static SimpleDateFormat HTTP_TIME_STRING_FORMAT;
+	static {
+		HTTP_TIME_STRING_FORMAT_OLD = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
+		HTTP_TIME_STRING_FORMAT_OLD.setTimeZone(TimeZone.getTimeZone("GMT"));
+		
+		HTTP_TIME_STRING_FORMAT = new SimpleDateFormat("EE, dd-MMM-yyyy HH:mm:ss zz",Locale.ENGLISH);
+		HTTP_TIME_STRING_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
 	
     private static final double DAY_MILLIS = 86400000D;
 	private static final long CF_UNIX_OFFSET = 2209161600000L;
@@ -214,6 +227,28 @@ public abstract class DateTimeUtil {
 	public abstract long getDiff(TimeZone tz, int datePart,DateTime left,DateTime right);
 
 	public abstract String toString(DateTime dt, TimeZone tz);
+
+	public static String toHTTPTimeString(long time, boolean oldFormat) {
+		return toHTTPTimeString(new Date(time),oldFormat);
+	}
+	
+	/**
+	 * converts a date to a http time String 
+	 * @param date date to convert
+	 * @param oldFormat "old" in that context means the format support the existing functionality in CFML like the function getHTTPTimeString, in that format the date parts are separated by a space (like "EE, dd MMM yyyy HH:mm:ss zz"),
+	 * in the "new" format, the date part is separated by "-" (like "EE, dd-MMM-yyyy HH:mm:ss zz")
+	 * @return
+	 */
+	public static String toHTTPTimeString(Date date, boolean oldFormat) {
+		if(oldFormat) {
+			synchronized(HTTP_TIME_STRING_FORMAT_OLD){
+				return StringUtil.replace(HTTP_TIME_STRING_FORMAT_OLD.format(date),"+00:00","",true);
+			}
+		}
+		synchronized(HTTP_TIME_STRING_FORMAT){
+			return StringUtil.replace(HTTP_TIME_STRING_FORMAT.format(date),"+00:00","",true);
+		}
+	}
 
 
 }

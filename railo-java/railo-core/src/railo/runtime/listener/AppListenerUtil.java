@@ -57,7 +57,7 @@ public final class AppListenerUtil {
 	public static final Collection.Key ALLOW = KeyImpl.intern("allow");
 	public static final Collection.Key STORAGE = KeyImpl.intern("storage");
 	public static final Collection.Key READ_ONLY = KeyImpl.intern("readOnly");
-	public static final Collection.Key DATABASE = KeyImpl.intern("database");
+	public static final Collection.Key DATABASE = KeyConstants._database;
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
 		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, filename);

@@ -190,7 +190,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		Node[] nodes=getChildNodesAsArray();
 		
 		// if index Greater len append
-			if(index>nodes.length) return append(value);
+		if(index>nodes.length) return append(value);
 		
 		// remove all children
 		clear();
@@ -201,7 +201,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 		
 		// set new Element
-		append(XMLCaster.toNode(doc,value));
+		append(XMLCaster.toNode(doc,value,true));
 		
 		// set all after new Element
 		for(int i=index;i<nodes.length;i++) {
@@ -270,7 +270,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	
 	@Override
 	public Object append(Object o) throws PageException {
-		return parent.appendChild(XMLCaster.toNode(doc,o));
+		return parent.appendChild(XMLCaster.toNode(doc,o,true));
 	}
 	
 	public Object appendEL(Object o) {
@@ -321,7 +321,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 		
 		// set new Element
-		append(XMLCaster.toNode(doc,value));
+		append(XMLCaster.toNode(doc,value,true));
 		
 		// set all after new Element
 		for(int i=index;i<=nodes.length;i++) {
@@ -340,7 +340,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		clear();
 		
 		// set new Element
-		append(XMLCaster.toNode(doc,o));
+		append(XMLCaster.toNode(doc,o,true));
 		
 		// set all after new Element
 		for(int i=0;i<nodes.length;i++) {

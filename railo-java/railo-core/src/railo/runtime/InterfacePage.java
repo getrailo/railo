@@ -10,15 +10,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * A Page that can produce Components
  */
 public abstract class InterfacePage extends Page  {
-	
-	private static final railo.runtime.type.Collection.Key METHOD = KeyImpl.intern("method");
-	private static final railo.runtime.type.Collection.Key COMPONENT = KeyImpl.intern("component");
-	
 	
 	@Override
 	public void call(PageContext pc) throws PageException {
@@ -33,7 +30,7 @@ public abstract class InterfacePage extends Page  {
             }
             
 			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
-            if(pc.getBasePageSource()==this.getPageSource())
+            if(pc.getBasePageSource()==this.getPageSource() && pc.getConfig().debug())
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
@@ -48,7 +45,7 @@ public abstract class InterfacePage extends Page  {
                 	throw new ApplicationException("can not instantiate interface ["+this.getPageSource().getComponentName()+"] as a component");	
             
             // WDDX
-            if(pc.urlFormScope().containsKey(METHOD)) 
+            if(pc.urlFormScope().containsKey(KeyConstants._method)) 
             	throw new ApplicationException("can not instantiate interface ["+this.getPageSource().getComponentName()+"] as a component");
             
             // invoking via include
@@ -60,7 +57,7 @@ public abstract class InterfacePage extends Page  {
 			//TODO component.setAccess(pc,Component.ACCESS_PUBLIC);
 			String cdf = pc.getConfig().getComponentDumpTemplate();
 			if(cdf!=null && cdf.trim().length()>0) {
-			    pc.variablesScope().set(COMPONENT,interf);
+			    pc.variablesScope().set(KeyConstants._component,interf);
 			    pc.doInclude(cdf);
 			}
 			else pc.write(pc.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(pc,interf.toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true));

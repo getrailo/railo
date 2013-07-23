@@ -1,4 +1,4 @@
-package railo.commons.collections;
+package railo.commons.collection;
 
 /**
  * class to fill objects, objetcs will be sorted by long key.

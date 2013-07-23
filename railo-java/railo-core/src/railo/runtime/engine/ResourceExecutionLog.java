@@ -1,6 +1,7 @@
 package railo.runtime.engine;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -108,7 +109,7 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 		}
 		sb.append("\n");
 		try {
-			IOUtil.write(file, header+sb.toString()+content.toString(), null, false);
+			IOUtil.write(file, header+sb.toString()+content.toString(), (Charset)null, false);
 		} catch (IOException ioe) {
 			err(pc,ioe);
 		}

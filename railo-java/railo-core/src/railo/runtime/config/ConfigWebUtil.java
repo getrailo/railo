@@ -397,7 +397,7 @@ public final class ConfigWebUtil {
     	if(!config.hasPassword())
             throw new SecurityException("can't access, no password is defined");
         //print.ln(config.getPassword()+".equalsIgnoreCase("+password+")");
-        if(!config.getPassword().equalsIgnoreCase(password)){
+        if(!config.isPasswordEqual(password)){
         	if(StringUtil.isEmpty(password)){
         		if(type==null)
         			throw new SecurityException("Access is protected",

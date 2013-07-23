@@ -1,8 +1,10 @@
 package railo.runtime.type.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import railo.commons.lang.StringList;
@@ -232,6 +234,23 @@ public final class ListUtil {
             }
         }
         if(last<len)array._append(list.substring(last));
+
+        return array;
+    }
+    
+    public static List<String> toListRemoveEmpty(String list, char delimiter) {
+        int len=list.length();
+        List<String> array=new ArrayList<String>();
+        if(len==0) return array;
+        int last=0;
+        
+        for(int i=0;i<len;i++) {
+            if(list.charAt(i)==delimiter) {
+                if(last<i)array.add(list.substring(last,i));
+                last=i+1;
+            }
+        }
+        if(last<len)array.add(list.substring(last));
 
         return array;
     }
@@ -958,10 +977,10 @@ public final class ListUtil {
 		return sb.toString();
 	}
 	
-	public static String listToList(java.util.List list, String delimiter) throws PageException {
+	public static String listToList(java.util.List<?> list, String delimiter) throws PageException {
 		if(list.size()==0) return "";
 		StringBuilder sb=new StringBuilder();
-		Iterator it = list.iterator();
+		Iterator<?> it = list.iterator();
 		
 		if(it.hasNext()) sb.append(Caster.toString(it.next()));
 			
@@ -1128,6 +1147,14 @@ public final class ListUtil {
             arr[i]=Caster.toString(array.get(i+1,null));
         }
         return arr;
+    }
+    
+    public static String[] toStringArray(Set<String> set) {
+        return set.toArray(new String[set.size()]);
+    }
+    
+    public static String[] toStringArray(List<String> list) {
+    	return list.toArray(new String[list.size()]);
     }
     
     /**

@@ -15,7 +15,7 @@ public class URLDecoder {
 	 */
 	public static String decode(String str, boolean force) {
 		try {
-			return decode(str,SystemUtil.getCharset(), force);
+			return decode(str,SystemUtil.getCharset().name(), force);
 		} 
 		catch (UnsupportedEncodingException e) {
 			return str;

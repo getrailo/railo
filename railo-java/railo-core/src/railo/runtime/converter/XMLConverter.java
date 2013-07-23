@@ -106,8 +106,6 @@ public final class XMLConverter extends ConverterSupport {
 		return goIn()+strDate+" "+strTime;
 		*/
 		return goIn()+JSONDateFormat.format(dateTime,null);
-		
-		// HTTP TIME STRING return goIn()+GetHttpTimeString.invoke(dateTime);
 	}
 
 	/**

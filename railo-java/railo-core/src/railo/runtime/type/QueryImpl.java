@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.NClob;
@@ -105,7 +106,6 @@ public class QueryImpl implements Query,Objects {
 
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
 	public static final Collection.Key GENERATEDKEYS = KeyImpl.intern("GENERATEDKEYS");
-	public static final Collection.Key ID = KeyImpl.intern("ID");
 	
 	
 	
@@ -300,7 +300,7 @@ public class QueryImpl implements Query,Objects {
 		if(generatedKeys.getColumnCount()==1 && DataSourceUtil.isMSSQL(dc)) {
 			generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
 			generatedKeys.renameEL(GENERATEDKEYS,KeyConstants._IDENTITYCOL);
-			generatedKeys.renameEL(ID,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(KeyConstants._ID,KeyConstants._IDENTITYCOL);
 		}
 	}
 	
@@ -1848,7 +1848,7 @@ public class QueryImpl implements Query,Objects {
 		Object obj = getObject(columnIndex);
 		if(obj==null)return null;
 		try {
-			return Caster.toInputStream(obj);
+			return Caster.toInputStream(obj,(Charset)null);
 		} catch (Exception e) {
 			throw new SQLException(e.getMessage());
 		}
@@ -1859,7 +1859,7 @@ public class QueryImpl implements Query,Objects {
 		Object obj = getObject(columnName);
 		if(obj==null)return null;
 		try {
-			return Caster.toInputStream(obj);
+			return Caster.toInputStream(obj,(Charset)null);
 		} catch (Exception e) {
 			throw new SQLException(e.getMessage());
 		}
@@ -1915,7 +1915,7 @@ public class QueryImpl implements Query,Objects {
 		Object obj = getObject(columnIndex);
 		if(obj==null) return null;
 		try {
-			return Caster.toBytes(obj);
+			return Caster.toBytes(obj,(Charset)null);
 		} catch (Exception e) {
 			throw new SQLException(e.getMessage());
 		}
@@ -1926,7 +1926,7 @@ public class QueryImpl implements Query,Objects {
 		Object obj = getObject(columnName);
 		if(obj==null) return null;
 		try {
-			return Caster.toBytes(obj);
+			return Caster.toBytes(obj,(Charset)null);
 		} catch (Exception e) {
 			throw new SQLException(e.getMessage());
 		}

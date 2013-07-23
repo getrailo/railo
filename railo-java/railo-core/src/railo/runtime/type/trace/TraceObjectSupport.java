@@ -92,7 +92,7 @@ public class TraceObjectSupport implements TraceObject {
 		qry.setAtEL(PARAMS, row, addional);
 		*/
 		String action=type(traces[2].getMethodName());
-		debugger.addTrace(type, category, text, template,line,action, varName, varValue);
+		if(debugger!=null)debugger.addTrace(type, category, text, template,line,action, varName, varValue);
 			
 	}	
 	

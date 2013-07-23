@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.PageException;
 import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
@@ -83,7 +85,7 @@ public final class SystemUtil {
     private static Resource tempFile;
     private static Resource homeFile;
     private static Resource[] classPathes;
-    private static String charset=System.getProperty("file.encoding");
+    private static Charset charset;
     private static String lineSeparator=System.getProperty("line.separator","\n");
     private static MemoryPoolMXBean permGenSpaceBean;
 
@@ -91,8 +93,13 @@ public final class SystemUtil {
 	public static int jreArch=-1;
 	
 	static {
-		if(charset==null || charset.equalsIgnoreCase("MacRoman"))
-			charset="cp1252";
+		String strCharset=System.getProperty("file.encoding");
+		if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
+			strCharset="cp1252";
+
+		if(strCharset.equalsIgnoreCase("utf-8")) charset=CharsetUtil.UTF8;
+		else if(strCharset.equalsIgnoreCase("iso-8859-1")) charset=CharsetUtil.ISO88591;
+		else charset=CharsetUtil.toCharset(strCharset,null);
 		
 		// Perm Gen
 		permGenSpaceBean=getPermGenSpaceBean();
@@ -526,11 +533,14 @@ public final class SystemUtil {
 		return id;
     }
 
-    public static String getCharset() {
+    public static Charset getCharset() {
     	return charset;
     }
 
 	public static void setCharset(String charset) {
+		SystemUtil.charset = CharsetUtil.toCharset(charset);
+	}
+	public static void setCharset(Charset charset) {
 		SystemUtil.charset = charset;
 	}
 

@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -137,17 +139,22 @@ public final class ConfigWebAdmin {
     
     /**
      * @param password
+     * @throws IOException 
+     * @throws DOMException 
      * @throws ExpressionException 
      */
-    public void setPassword(String password) throws SecurityException {
+    public void setPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        if(password==null || password.length()==0) {
-            if(root.getAttribute("password")!=null)
-                root.removeAttribute("password");
+        
+        if(root.hasAttribute("password")) root.removeAttribute("password");
+        
+        
+        if(StringUtil.isEmpty(password)) {
+            if(root.hasAttribute("pw")) root.removeAttribute("pw");
         }
         else {
-            root.setAttribute("password",new BlowfishEasy("tpwisgh").encryptString(password));
+            root.setAttribute("pw",password);
         }
     }
 
@@ -2744,12 +2751,16 @@ public final class ConfigWebAdmin {
     /**
      * @param password
      * @throws SecurityException 
+     * @throws IOException 
+     * @throws DOMException 
      */
-    public void updateDefaultPassword(String password) throws SecurityException {
+    public void updateDefaultPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.setAttribute("default-password",new BlowfishEasy("tpwisgh").encryptString(password));
-        ((ConfigServerImpl)config).setDefaultPassword(password);
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password"); // remove old PW type
+        String hpw=ConfigWebFactory.hash(password);
+        root.setAttribute("default-pw",hpw);
+        ((ConfigServerImpl)config).setDefaultPassword(hpw);
     }
 
 	public void removeDefaultPassword() throws SecurityException {
@@ -3075,11 +3086,11 @@ public final class ConfigWebAdmin {
 	private String checkCharset(String charset)  throws PageException{
 		charset=charset.trim();
 		if("system".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("jre".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("os".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		
 		// check access
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_SETTING);
@@ -4266,5 +4277,59 @@ public final class ConfigWebAdmin {
 	private void setAttr(Element el, String name, String value) {
 		if(value==null) value="";
 		el.setAttribute(name, value);
+	}
+
+
+	public void updateAuthKey(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// merge new key and existing
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			set.add(keys[i]);
+		}
+		set.add(key);
+		
+		
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+		
+		
+	}
+
+	public void removeAuthKeys(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// remove key
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			if(!key.equals(keys[i]))set.add(keys[i]);
+		}
+
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+	}
+
+	private String authKeysAsList(Set<String> set) throws PageException {
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = set.iterator();
+		String key;
+		while(it.hasNext()){
+			key=it.next().trim();
+			if(sb.length()>0)sb.append(',');
+			try {
+				sb.append(URLEncoder.encode(key, "UTF-8"));
+			}
+			catch (UnsupportedEncodingException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return sb.toString();
 	}
 }

@@ -25,13 +25,12 @@ import railo.runtime.sql.exp.op.Operation3;
 import railo.runtime.sql.exp.op.OperationN;
 import railo.runtime.sql.exp.value.Value;
 import railo.runtime.sql.exp.value.ValueNumber;
-import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.util.QueryUtil;
 
 /**
  * 
@@ -62,7 +61,7 @@ public final class QoQ {
     	Select[] arrSelects = selects.getSelects();
     	
     	
-    	QueryImpl target=new QueryImpl(new String[0],0,"query");
+    	QueryImpl target=new QueryImpl(new Collection.Key[0],0,"query");
 		target.setSql(sql);
     	
     	for(int i=0;i<arrSelects.length;i++) {
@@ -75,27 +74,29 @@ public final class QoQ {
     	
 	// Order By	
 		if(orders.length>0) {
-            
-			for(int i=orders.length-1;i>=0;i--) {
-				Column order = orders[i];
-				target.sort(order.getColumn().toLowerCase(),order.isDirectionBackward()?Query.ORDER_DESC:Query.ORDER_ASC);
-			}
-			if(maxrows>-1) {
-			    target.cutRowsTo(maxrows);
-			}
+			order(target,orders);
+			if(maxrows>-1) target.cutRowsTo(maxrows);
 		}
     // Distinct
         if(selects.isDistinct()) {
-            String[] _keys=target.getColumns();
+        	order(target,selects.getDistincts());
+        	//print.e(selects.getDistincts());
+        	Key[] _keys = target.getColumnNames();
             QueryColumn[] columns=new QueryColumn[_keys.length];
             for(int i=0;i<columns.length;i++) {
                 columns[i]=target.getColumn(_keys[i]);
             }
             
             int i;
+            Object l,r;
             outer:for(int row=target.getRecordcount();row>1;row--) {
                 for(i=0;i<columns.length;i++) {
-                    if(!Operator.equals(QueryUtil.getValue(columns[i],row),QueryUtil.getValue(columns[i],row-1),true))
+                	l=columns[i].get(row,null);
+                	r=columns[i].get(row-1,null);
+                	if(l==null || r==null) {
+                		if(l!=r)continue outer;
+                	}
+                	else if(!Operator.equals(l,r,true))
                         continue outer;
                 }
                 target.removeRow(row);
@@ -106,7 +107,15 @@ public final class QoQ {
     
 
 
-    private void executeSingle(PageContext pc, Select select, Query qr, QueryImpl target, int maxrows, SQL sql,boolean hasOrders) throws PageException {
+    private static void order(Query qry, Column[] columns) throws PageException {
+    	Column col;
+    	for(int i=columns.length-1;i>=0;i--) {
+			col = columns[i];
+			qry.sort(col.getColumn(),col.isDirectionBackward()?Query.ORDER_DESC:Query.ORDER_ASC);
+		}
+	}
+
+	private void executeSingle(PageContext pc, Select select, Query qr, QueryImpl target, int maxrows, SQL sql,boolean hasOrders) throws PageException {
     	ValueNumber oTop = select.getTop();
 		if(oTop!=null) {
 			int top=(int)oTop.getValueAsDouble();
@@ -118,7 +127,7 @@ public final class QoQ {
 		Expression[] expSelects = select.getSelects();
 		int selCount=expSelects.length;
 
-		Map selects=new HashMap();
+		Map<Collection.Key,Object> selects=new HashMap<Collection.Key,Object>();
 		Iterator<Key> it;
 		Key k;
 	// headers
@@ -129,19 +138,22 @@ public final class QoQ {
 				it = qr.keyIterator();
 				while(it.hasNext()){
 					k = it.next();
-					selects.put(k.getLowerString(),k.getLowerString());
-					queryAddColumn(target,k.getLowerString());
+					selects.put(k,k);
+					queryAddColumn(target,k);
 				}
 			}
 			else {
-				String alias=expSelect.getAlias();
-				alias=alias.toLowerCase();
+				Key alias = Caster.toKey(expSelect.getAlias());
+				//alias=alias.toLowerCase();
 				
 				selects.put(alias,expSelect);
 				queryAddColumn(target,alias);
 			}
 		}
-		String[] headers = (String[])selects.keySet().toArray(new String[selects.size()]);
+		
+		
+		Collection.Key[] headers = 
+			selects.keySet().toArray(new Collection.Key[selects.size()]);
 		//QueryImpl rtn=new QueryImpl(headers,0,"query");
 		//rtn.setSql(sql);
 		
@@ -185,20 +197,20 @@ public final class QoQ {
 		
 	}
 
-	private void queryAddColumn(QueryImpl query, String column) throws DatabaseException {
+	private void queryAddColumn(QueryImpl query, Collection.Key column) throws PageException {
 		if(!query.containsKey(column)) {
 			query.addColumn(column, new ArrayImpl());
 		}
 	}
 
-	private Array array(String value, int recordcount) {
+	/*private Array array(String value, int recordcount) {
 		Array array = new ArrayImpl();
 		if(recordcount==0) return array;
 		for(int i=0;i<recordcount;i++) {
 			array.appendEL(value);
 		}
 		return array;
-	}
+	}*/
 
 	/*private QueryImpl execute2(PageContext pc,SQL sql, Query qr, Select select,Column[] orders,int maxrows) throws PageException {
 		
@@ -302,9 +314,9 @@ public final class QoQ {
 	 * @return value
 	 * @throws PageException
 	 */
-	private Object getValue(PageContext pc,SQL sql,Query querySource, int row, String key, Object value) throws PageException {
+	private Object getValue(PageContext pc,SQL sql,Query querySource, int row, Collection.Key key, Object value) throws PageException {
 		if(value instanceof Expression)return executeExp(pc,sql,querySource, ((Expression)value),row);
-		return querySource.getAt(key,row);
+		return querySource.getAt(key,row,null);
 	}
 
 	/**

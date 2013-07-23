@@ -5,14 +5,15 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.collection.ConcurrentHashMapPro;
+import railo.commons.collection.HashMapPro;
+import railo.commons.collection.LinkedHashMapPro;
+import railo.commons.collection.MapFactory;
+import railo.commons.collection.MapPro;
+import railo.commons.collection.MapProWrapper;
+import railo.commons.collection.SyncMap;
+import railo.commons.collection.WeakHashMapPro;
 import railo.commons.lang.SerializableObject;
-import railo.commons.util.mod.ConcurrentHashMapPro;
-import railo.commons.util.mod.LinkedHashMapPro;
-import railo.commons.util.mod.MapFactory;
-import railo.commons.util.mod.MapPro;
-import railo.commons.util.mod.MapProWrapper;
-import railo.commons.util.mod.SyncMap;
-import railo.commons.util.mod.WeakHashMapPro;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -37,26 +38,42 @@ public class StructImpl extends StructSupport {
 		this(TYPE_REGULAR);//asx
 	}
 	
+	/**
+     * This implementation spares its clients from the unspecified, 
+     * generally chaotic ordering provided by normally Struct , 
+     * without incurring the increased cost associated with TreeMap. 
+     * It can be used to produce a copy of a map that has the same order as the original
+     * @param type
+     */
+    public StructImpl(int type) {
+    	this(type,HashMapPro.DEFAULT_INITIAL_CAPACITY);
+    }
+	
     /**
      * This implementation spares its clients from the unspecified, 
      * generally chaotic ordering provided by normally Struct , 
      * without incurring the increased cost associated with TreeMap. 
      * It can be used to produce a copy of a map that has the same order as the original
-     * @param doubleLinked
+     * @param type
+     * @param initialCapacity initial capacity - MUST be a power of two.
      */
-    public StructImpl(int type) {
+    public StructImpl(int type, int initialCapacity) {
     	/*if(type==TYPE_LINKED)		map=new LinkedHashMapPro<Collection.Key,Object>();
     	else if(type==TYPE_WEAKED)	map=new WeakHashMapPro<Collection.Key,Object>();
     	else if(type==TYPE_SOFT)	map=new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new Object());
         else if(type==TYPE_SYNC)	map=new SyncMap<Collection.Key, Object>(new HashMapPro<Collection.Key,Object>());
         else 						map=new SyncMap<Collection.Key,Object>();
     	*/
-    	if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>());
-    	else if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>());
-    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new SerializableObject()));
+    	if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>(initialCapacity));
+    	else if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>(initialCapacity));
+    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(ReferenceMap.HARD,ReferenceMap.SOFT,initialCapacity,0.75f),new SerializableObject()));
         //else if(type==TYPE_SYNC)	map=new ConcurrentHashMapPro<Collection.Key,Object>);
-        else 						map=MapFactory.getConcurrentMap();//new ConcurrentHashMapPro<Collection.Key,Object>();
+        else 						map=MapFactory.getConcurrentMap(initialCapacity);//new ConcurrentHashMapPro<Collection.Key,Object>();
     }
+    
+    
+    
+    
     
     private int getType(){
     	MapPro m = map;
@@ -121,7 +138,7 @@ public class StructImpl extends StructSupport {
 		catch(Throwable t) {
 			MapPro<Key, Object> old = map;
 			try{	
-				map = new railo.commons.util.mod.SyncMap(map);
+				map = new railo.commons.collection.SyncMap(map);
 				Set<Key> set = map.keySet();
 				Collection.Key[] keys = new Collection.Key[size()];
 				synchronized(map){

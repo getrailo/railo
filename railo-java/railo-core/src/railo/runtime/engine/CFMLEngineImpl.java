@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
 import railo.cli.servlet.HTTPServletImpl;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -87,8 +87,8 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
 public final class CFMLEngineImpl implements CFMLEngine {
     
     
-	private static Map<String,CFMLFactory> initContextes=new HashTable();
-    private static Map<String,CFMLFactory> contextes=new HashTable();
+	private static Map<String,CFMLFactory> initContextes=MapFactory.<String,CFMLFactory>getConcurrentMap();
+    private static Map<String,CFMLFactory> contextes=MapFactory.<String,CFMLFactory>getConcurrentMap();
     private static ConfigServerImpl configServer=null;
     private static CFMLEngineImpl engine=null;
     //private ServletConfig config;

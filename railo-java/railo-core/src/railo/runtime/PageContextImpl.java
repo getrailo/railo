@@ -75,6 +75,7 @@ import railo.runtime.debug.DebugCFMLWriter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
@@ -191,7 +192,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/**
 	 * Field <code>executionTime</code>
 	 */
-	protected int executionTime=0;
+	protected long executionTime=0;
 	
 	private HTTPServletRequestWrap req;
 	private HttpServletResponse rsp;
@@ -232,7 +233,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Client client;
 	private Application application;
 
-    private DebuggerImpl debugger=new DebuggerImpl();
+    private DebuggerPro debugger=new DebuggerImpl();
 	private long requestTimeout=-1;
 	private short enablecfoutputonly=0;
 	private int outputState;
@@ -504,7 +505,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
     		debugger.reset();
     	}
-	
+		else ((DebuggerImpl)debugger).resetTraces(); // traces can alo be used when debugging is off
+		
 		this.serverPassword=null;
 
 		boolean isChild=parent!=null;
@@ -765,7 +767,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void doInclude(PageSource[] sources, boolean runOnce) throws PageException {
     	// debug
 		if(!gatewayContext && config.debug()) {
-			int currTime=executionTime;
+			long currTime=executionTime;
             long exeTime=0;
             long time=System.nanoTime();
             
@@ -774,7 +776,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             DebugEntryTemplate debugEntry=debugger.getEntry(this,currentPage.getPageSource());
             try {
                 addPageSource(currentPage.getPageSource(),true);
-                debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
+                debugEntry.updateFileLoadTime((System.nanoTime()-time));
                 exeTime=System.nanoTime();
 
                 currentPage.call(this);
@@ -794,8 +796,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 			finally {
 				includeOnce.add(currentPage.getPageSource());
-				int diff= ((int)(System.nanoTime()-exeTime)-(executionTime-currTime));
-			    executionTime+=(int)(System.nanoTime()-time);
+				long diff= ((System.nanoTime()-exeTime)-(executionTime-currTime));
+			    executionTime+=(System.nanoTime()-time);
 				debugEntry.updateExeTime(diff);
 				removeLastPageSource(true);
 			}	
@@ -1709,6 +1711,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			
 			ExceptionHandler.printStackTrace(this,pe);
 			ExceptionHandler.log(getConfig(),pe);
+
 			// error page exception
 			if(ep!=null) {
 				try {
@@ -1722,11 +1725,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					if(Abort.isSilentAbort(t)) return;
 					pe=Caster.toPageException(t);
 				}
-				
 			}
 			
 			// error page request
-			
 			ep=errorPagePool.getErrorPage(pe,ErrorPageImpl.TYPE_REQUEST);
 			if(ep!=null) {
 				PageSource ps = ep.getTemplate();
@@ -1748,18 +1749,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						return;
 					} catch (Throwable t) {
 						pe=Caster.toPageException(t);
-						
 					}
-					
 				}
-				else pe=new ApplicationException("The error page template for type request only works if the actual source file also exists . If the exception file is in an Railo archive (.rc/.rcs), you need to use type exception instead.");
+				else pe=new ApplicationException("The error page template for type request only works if the actual source file also exists. If the exception file is in an Railo archive (.rc/.rcs), you need to use type exception instead.");
 			}
 			
-			
 			try {
-				if(statusCode!=404)
-					forceWrite("<!-- Railo ["+Info.getVersionAsString()+"] Error -->");
-				
+
 				String template=getConfig().getErrorTemplate(statusCode);
 				if(!StringUtil.isEmpty(template)) {
 					try {
@@ -1775,8 +1771,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				}
 				if(!Abort.isSilentAbort(pe))forceWrite(getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
-			catch (Exception e) { 
-			}
+			catch (Exception e) {}
 		}
 	}
 
@@ -2679,9 +2674,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		this.thread=thread;
 	}
 
+	// FUTURE add as long
     @Override
     public int getExecutionTime() {
-        return executionTime;
+        return (int)executionTime;
     }
 
     @Override

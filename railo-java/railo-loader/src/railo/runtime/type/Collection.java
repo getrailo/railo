@@ -199,6 +199,7 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	 */
     	public int length();
 
-        
+    	// Future add; returns a 64 bit based hashcode for the Key
+        // public long hash();
     }
 }

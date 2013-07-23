@@ -22,8 +22,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
-import railo.print;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
@@ -293,6 +292,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         // update Password
         else if(action.equals("updatepassword")) {
+        	
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
                         getString("oldPassword",null),getString("admin",action,"newPassword",true));
@@ -306,7 +306,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         try {
             // Password
-            password = getString("password","");
+            password = ConfigWebFactory.hash(getString("password",""));
             // Config
             config=(ConfigImpl)pageContext.getConfig();
             if(type==TYPE_SERVER)
@@ -687,6 +687,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("hasindividualsecurity",  ACCESS_FREE) && check2(ACCESS_READ            )) doHasIndividualSecurity();
         else if(check("resetpassword",          ACCESS_FREE) && check2(ACCESS_WRITE            )) doResetPassword();
         else if(check("stopThread", 			ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doStopThread();
+
+        else if(check("updateAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doUpdateAuthKey();
+        else if(check("removeAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doRemoveAuthKey();
+        else if(check("listAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doListAuthKey();
         
         else if(check("createsecuritymanager",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE            )) doCreateSecurityManager();
         else if(check("getsecuritymanager",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ            )) doGetSecurityManager();
@@ -959,7 +963,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         for(int i=0;i<mappings.length;i++) {
             Mapping mapping = mappings[i];
             if(mapping.getVirtualLowerCaseWithSlash().equals(virtual)) {
-            	Map<String,String> errors = stoponerror?null:new HashTable();
+            	Map<String,String> errors = stoponerror?null:MapFactory.<String,String>getConcurrentMap();
                 doCompileFile(mapping,mapping.getPhysical(),"",errors);
                 if(errors!=null && errors.size()>0) {
                 	StringBuilder sb=new StringBuilder();
@@ -1036,6 +1040,26 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             admin.setPassword(getString("contextPath",null),null);
         }catch (Exception e) {} 
         store();
+    }
+
+    private void doUpdateAuthKey() throws PageException {  
+        try {
+            admin.updateAuthKey(getString("key",null));
+        }catch (Exception e) {} 
+        store();
+    }
+    private void doRemoveAuthKey() throws PageException {  
+        try {
+            admin.removeAuthKeys(getString("key",null));
+        }catch (Exception e) {} 
+        store();
+    }
+    
+    private void doListAuthKey() throws PageException {
+    	ConfigServerImpl cs=(ConfigServerImpl) config;
+    	pageContext.setVariable(
+                 getString("admin",action,"returnVariable"),
+                 Caster.toArray(cs.getAuthenticationKeys()));
     }
 
     /**
@@ -1259,7 +1283,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
                 password);
-        
     }
     
     /**
@@ -1267,7 +1290,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
     private void doUpdateDefaultPassword() throws PageException {
-        admin.updateDefaultPassword(getString("admin",action,"newPassword"));
+        try {
+			admin.updateDefaultPassword(getString("admin",action,"newPassword"));
+		}
+		catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
         store();
     }
     private void doRemoveDefaultPassword() throws PageException {
@@ -1354,7 +1382,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetDebugData() throws PageException {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
-                pageContext.getDebugger().getDebuggingData(pageContext));
+                pageContext.getConfig().debug()?pageContext.getDebugger().getDebuggingData(pageContext):null);
     }
     private void doGetLoggedDebugData() throws PageException {
     	

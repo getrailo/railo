@@ -7,13 +7,17 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -30,8 +34,9 @@ import org.xml.sax.SAXException;
 
 import railo.aprint;
 import railo.print;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.digest.Hash;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
@@ -50,12 +55,15 @@ import railo.commons.lang.ByteSizeParser;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassLoaderHelper;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
+import railo.commons.net.URLEncoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -164,10 +172,11 @@ public final class ConfigWebFactory {
 	 * @throws IOException
 	 * @throws TagLibException
 	 * @throws FunctionLibException
+	 * @throws NoSuchAlgorithmException 
 	 */
 
 	public static ConfigWebImpl newInstance(CFMLFactoryImpl factory, ConfigServerImpl configServer, Resource configDir, boolean isConfigDirACustomSetting,
-			ServletConfig servletConfig) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
+			ServletConfig servletConfig) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException, NoSuchAlgorithmException {
 		// DO NOT REMOVE!!!!
 		try {
 			new LabelBlockImpl("aa");
@@ -191,7 +200,7 @@ public final class ConfigWebFactory {
 				+ "===================================================================\n"
 
 		);
-
+		
 		boolean doNew = doNew(configDir);
 
 		Resource configFile = configDir.getRealResource("railo-web.xml.cfm");
@@ -273,6 +282,7 @@ public final class ConfigWebFactory {
 	 * @throws IOException
 	 * @throws TagLibException
 	 * @throws FunctionLibException
+	 * @throws NoSuchAlgorithmException 
 	 */
 	public static void reloadInstance(ConfigServerImpl cs, ConfigWebImpl cw, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException,
 			FunctionLibException {
@@ -909,7 +919,7 @@ public final class ConfigWebFactory {
 	}
 
 	static String createContentFromResource(Resource resource) throws IOException {
-		return IOUtil.toString(resource, null);
+		return IOUtil.toString(resource, (Charset)null);
 	}
 
 	static void createFileFromResourceCheckSizeDiffEL(String resource, Resource file) {
@@ -1567,7 +1577,7 @@ public final class ConfigWebFactory {
 
 		Element[] _mappings = getChildren(el, "mapping");
 
-		HashTable mappings = new HashTable();
+		Map<String,Mapping> mappings = MapFactory.<String,Mapping>getConcurrentMap();
 		Mapping tmp;
 
 		if (configServer != null && config instanceof ConfigWeb) {
@@ -1666,7 +1676,7 @@ public final class ConfigWebFactory {
 		int index = 0;
 		Iterator it = mappings.keySet().iterator();
 		while (it.hasNext()) {
-			arrMapping[index++] = (Mapping) mappings.get(it.next());
+			arrMapping[index++] = mappings.get(it.next());
 		}
 		config.setMappings(arrMapping);
 		// config.setMappings((Mapping[]) mappings.toArray(new
@@ -2308,6 +2318,21 @@ public final class ConfigWebFactory {
 			return str;
 		return "encrypted:" + new BlowfishEasy("sdfsdfs").encryptString(str);
 	}
+	public static String hash(String str) throws IOException {
+		if (StringUtil.isEmpty(str))
+			return "";
+		
+		// decrypt encrypted password first
+		if (StringUtil.startsWithIgnoreCase(str, "encrypted:")) {
+			str=decrypt(str);
+		}
+		try {
+			return Hash.hash(str,Hash.ALGORITHM_SHA_256,5,Hash.ENCODING_HEX);
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw ExceptionUtil.toIOException(e);
+		}
+	}
 
 	private static Struct toStruct(String str) {
 
@@ -2504,22 +2529,58 @@ public final class ConfigWebFactory {
 	 * @param configServer
 	 * @param config
 	 * @param doc
+	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
-		// password
+	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		Element railoConfiguration = doc.getDocumentElement();
-		String password = railoConfiguration.getAttribute("password");
-		if (!StringUtil.isEmpty(password)) {
-			config.setPassword(new BlowfishEasy("tpwisgh").decryptString(password));
+		
+		
+		
+		// password
+		String hpw=railoConfiguration.getAttribute("pw");
+		if(StringUtil.isEmpty(hpw)) {
+			// old password type
+			String pwEnc = railoConfiguration.getAttribute("password"); // encrypted password (reversable)
+			if (!StringUtil.isEmpty(pwEnc)) {
+				String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
+				hpw=hash(pwDec);
+			}
 		}
+		if(!StringUtil.isEmpty(hpw))
+			config.setPassword(hpw);
 		else if (configServer != null) {
 			config.setPassword(configServer.getDefaultPassword());
 		}
-
+		
+		if(config instanceof ConfigServerImpl) {
+			ConfigServerImpl csi=(ConfigServerImpl)config;
+			String keyList=railoConfiguration.getAttribute("auth-keys");
+			if(!StringUtil.isEmpty(keyList)) {
+				String[] keys = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.toListRemoveEmpty(keyList, ',')));
+				for(int i=0;i<keys.length;i++){
+					keys[i]=URLDecoder.decode(keys[i], "UTF-8", true);
+				}
+				
+				csi.setAuthenticationKeys(keys);
+			}
+		}
+		
+		
+		// default password
 		if (config instanceof ConfigServerImpl) {
-			password = railoConfiguration.getAttribute("default-password");
-			if (!StringUtil.isEmpty(password))
-				((ConfigServerImpl) config).setDefaultPassword(new BlowfishEasy("tpwisgh").decryptString(password));
+			hpw=railoConfiguration.getAttribute("default-pw");
+			if(StringUtil.isEmpty(hpw)) {
+				// old password type
+				String pwEnc = railoConfiguration.getAttribute("default-password"); // encrypted password (reversable)
+				if (!StringUtil.isEmpty(pwEnc)) {
+					String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
+					hpw=hash(pwDec);
+				}
+			}
+			
+			if(!StringUtil.isEmpty(hpw))
+				((ConfigServerImpl) config).setDefaultPassword(hpw);
 		}
 
 		// mode
@@ -3944,15 +4005,16 @@ public final class ConfigWebFactory {
 
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CFX_SETTING);
 
-		HashTable map = new HashTable();
+		Map<String,CFXTagClass> map = MapFactory.<String,CFXTagClass>getConcurrentMap();
 		if (configServer != null) {
 			try {
 				if (configServer.getCFXTagPool() != null) {
-					Map classes = configServer.getCFXTagPool().getClasses();
-					Iterator it = classes.keySet().iterator();
+					Map<String,CFXTagClass> classes = configServer.getCFXTagPool().getClasses();
+					Iterator<Entry<String, CFXTagClass>> it = classes.entrySet().iterator();
+					Entry<String, CFXTagClass> e;
 					while (it.hasNext()) {
-						Object key = it.next();
-						map.put(key, ((CFXTagClass) classes.get(key)).cloneReadOnly());
+						e = it.next();
+						map.put(e.getKey(), e.getValue().cloneReadOnly());
 					}
 				}
 			}

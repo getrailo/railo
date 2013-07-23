@@ -31,22 +31,6 @@ public class DebuggerPool {
 		
 		while(queue.size()>((ConfigWebImpl)pc.getConfig()).getDebugMaxRecordsLogged())
 			queue.poll();
-		
-		/*
-		 store to file
-		 
-		OutputStream os = null;
-	   	try {
-	   		String str = pc.serialize(debugger.getDebuggingData(pc,true));
-	   		Resource res = storage.getRealResource(IDGenerator.stringId()+".cfs");
-	   		IOUtil.write(res, str.getBytes("UTF-8"));
-			}
-	   	catch (Exception e) {
-				e.printStackTrace();
-			}
-	   	finally {
-	   		IOUtil.closeEL(os);
-	   	}*/
 	}
 
 	public Array getData(PageContext pc) {
@@ -57,20 +41,6 @@ public class DebuggerPool {
 			arr.appendEL(it.next());
 		}
 		return arr;
-		
-    	/*Resource[] children = storage.listResources(new ExtensionResourceFilter(".cfs"));
-    	Array arr=new ArrayImpl();
-    	String str;
-		for(int i=0;i<children.length && i<10;i++){print.o(children[i].toString());
-    		try {
-				str=IOUtil.toString(children[i], "UTF-8");
-				arr.appendEL(pc.evaluate(str));
-			} 
-    		catch (Exception e) {
-				print.e(e);
-			}
-    	}
-    	return arr;*/
 	}
 
 }

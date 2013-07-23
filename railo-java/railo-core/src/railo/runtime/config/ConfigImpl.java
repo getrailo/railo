@@ -189,7 +189,7 @@ public abstract class ConfigImpl implements Config {
     private boolean _mergeFormAndURL=false;
 
     private int _debug;
-    private int debugLogOutput;
+    private int debugLogOutput=SERVER_BOOLEAN_FALSE;
     private int debugOptions=0;
 
     private boolean suppresswhitespace = false;
@@ -283,8 +283,8 @@ public abstract class ConfigImpl implements Config {
 
     private short compileType=RECOMPILE_NEVER;
     
-    private String resourceCharset=SystemUtil.getCharset();
-    private String templateCharset=SystemUtil.getCharset();
+    private String resourceCharset=SystemUtil.getCharset().name();
+    private String templateCharset=SystemUtil.getCharset().name();
     private String webCharset="UTF-8";
 
 	private String mailDefaultEncoding = "UTF-8";
@@ -450,11 +450,9 @@ public abstract class ConfigImpl implements Config {
     
     /**
      * private constructor called by factory method
-     * @param configDir config directory
-     * @param configFile config file
-     * @param id 
-     * @throws FunctionLibException 
-     * @throws TagLibException 
+     * @param factory
+     * @param configDir - config directory
+     * @param configFile - config file
      */
     protected ConfigImpl(CFMLFactory factory,Resource configDir, Resource configFile) {
         this(factory,configDir,configFile,
@@ -721,15 +719,26 @@ public abstract class ConfigImpl implements Config {
     }
 
     /**
-     * @return gets the password
+     * @return gets the password as hash
      */
     protected String getPassword() {
         return password;
     }
     
+    protected boolean isPasswordEqual(String password) {
+    	if(this.password.equals(password)) return true;
+    	try {
+    		return this.password.equals(ConfigWebFactory.hash(password));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+    }
+    
     @Override
     public boolean hasPassword() {
-        return password!=null && password.length()>0;
+        return !StringUtil.isEmpty(password);
     }
     
     @Override
@@ -930,7 +939,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * @param mappings2 
+     * @param mappings
      * @param realPath
      * @param alsoDefaultMapping ignore default mapping (/) or not
      * @return physical path from mapping
@@ -1473,7 +1482,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * @param sessionTimeout The sessionTimeout to set.
+     * @param clientTimeout The sessionTimeout to set.
      */
     protected void setClientTimeout(TimeSpan clientTimeout) {
         this.clientTimeout = clientTimeout;
@@ -1625,7 +1634,7 @@ public abstract class ConfigImpl implements Config {
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
-        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset());
+        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset().name());
         	//else
         		//this.scheduler.reinit(scheduleDirectory,logger);
         } 
@@ -1715,13 +1724,13 @@ public abstract class ConfigImpl implements Config {
     protected void setDataSources(Map<String,DataSource> datasources) {
         this.datasources=datasources;
     }
+
     /**
-     * @param customTagMapping The customTagMapping to set.
+     * @param customTagMappings The customTagMapping to set.
      */
     protected void setCustomTagMappings(Mapping[] customTagMappings) {
     	this.customTagMappings = customTagMappings;
     }
-    
 
     @Override
     public Mapping[] getCustomTagMappings() {
@@ -1755,12 +1764,14 @@ public abstract class ConfigImpl implements Config {
     public long getLoadTime() {
         return loadTime;
     }
+
     /**
      * @param loadTime The loadTime to set.
      */
     protected void setLoadTime(long loadTime) {
         this.loadTime = loadTime;
     }
+
     /**
      * @return Returns the configLogger.
      * /
@@ -1797,6 +1808,7 @@ public abstract class ConfigImpl implements Config {
     public PageSource getBaseComponentPageSource() {
         return getBaseComponentPageSource(ThreadLocalPageContext.get());
     }
+
     public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
         	baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,getBaseComponentTemplate(),false,false,true));
@@ -1819,6 +1831,7 @@ public abstract class ConfigImpl implements Config {
     protected void setApplicationLogger(LogAndSource applicationLogger) {
         this.applicationLogger=applicationLogger;
     }
+
     protected void setDeployLogger(LogAndSource deployLogger) {
         this.deployLogger=deployLogger;
     }
@@ -1826,7 +1839,6 @@ public abstract class ConfigImpl implements Config {
     protected void setScopeLogger(LogAndSource scopeLogger) {
         this.scopeLogger=scopeLogger;
     }
-
 
     protected void setMappingLogger(LogAndSource mappingLogger) {
         this.mappingLogger=mappingLogger;
@@ -1852,8 +1864,6 @@ public abstract class ConfigImpl implements Config {
     public boolean getRestAllowChanges() {
         return restAllowChanges;
     }*/
-    
-    
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)
@@ -1951,7 +1961,6 @@ public abstract class ConfigImpl implements Config {
 		}
 	}
     
-    
     public String getSecurityKey() {
     	return securityKey;
     }
@@ -2025,7 +2034,6 @@ public abstract class ConfigImpl implements Config {
         }
     	this.deployDirectory=deployDirectory;
     }
-    
 
     @Override
     public abstract Resource getRootDirectory();
@@ -2053,7 +2061,6 @@ public abstract class ConfigImpl implements Config {
     protected void setSuppressWhitespace(boolean suppresswhitespace) {
         this.suppresswhitespace = suppresswhitespace;
     }
-    
 
     public boolean isSuppressContent() {
         return suppressContent;
@@ -2062,7 +2069,6 @@ public abstract class ConfigImpl implements Config {
     protected void setSuppressContent(boolean suppressContent) {
         this.suppressContent = suppressContent;
     }
-    
 
 	@Override
 	public String getDefaultEncoding() {
@@ -2102,7 +2108,7 @@ public abstract class ConfigImpl implements Config {
 	
 	/**
 	 * sets the charset for the response stream
-	 * @param outputEncoding
+	 * @param webCharset
 	 */
 	protected void setWebCharset(String webCharset) {
 		this.webCharset = webCharset;
@@ -2159,7 +2165,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param mailDefaultCharset the mailDefaultCharset to set
+	 * @param mailDefaultEncoding the mailDefaultCharset to set
 	 */
 	protected void setMailDefaultEncoding(String mailDefaultEncoding) {
 		this.mailDefaultEncoding = mailDefaultEncoding;
@@ -2203,11 +2209,7 @@ public abstract class ConfigImpl implements Config {
 
 	protected void addResourceProvider(String strProviderScheme, String strProviderClass, Map arguments) throws ClassException {
 		// old buld in S3
-		
-		
-		Object o=null;
-		
-		o=ClassUtil.loadInstance(strProviderClass);
+		Object o=ClassUtil.loadInstance(strProviderClass);
 		
 		if(o instanceof ResourceProvider) {
 			ResourceProvider rp=(ResourceProvider) o;
@@ -2217,6 +2219,7 @@ public abstract class ConfigImpl implements Config {
 		else 
 			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
 	}
+
 	protected void addResourceProvider(String strProviderScheme, Class providerClass, Map arguments) throws ClassException {
 		Object o=ClassUtil.loadInstance(providerClass);
 		
@@ -2322,7 +2325,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param proxyPassword the proxyPassword to set
+	 * @param proxy the proxyPassword to set
 	 */
 	protected void setProxyData(ProxyData proxy) {
 		this.proxy = proxy;
@@ -2357,8 +2360,6 @@ public abstract class ConfigImpl implements Config {
 		if(sessionScopeDir==null) sessionScopeDir=getConfigDir().getRealResource("session-scope");
 		return sessionScopeDir;
 	}
-	
-	
 
 	/*public int getClientScopeMaxAge() {
 		return clientScopeMaxAge;
@@ -2367,8 +2368,6 @@ public abstract class ConfigImpl implements Config {
 	public void setClientScopeMaxAge(int age) {
 		this. clientScopeMaxAge=age;
 	}*/
-	
-	
 
 	@Override
 	public long getClientScopeDirSize() {
@@ -2759,7 +2758,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param localMode the localMode to set
+	 * @param strLocalMode the localMode to set
 	 */
 	protected void setLocalMode(String strLocalMode) {
 		this.localMode=AppListenerUtil.toLocalMode(strLocalMode,this.localMode);
@@ -2820,7 +2819,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param classClusterScope the classClusterScope to set
+	 * @param clusterClass the classClusterScope to set
 	 */
 	protected void setClusterClass(Class clusterClass) {
 		this.clusterClass = clusterClass;
@@ -3168,16 +3167,11 @@ public abstract class ConfigImpl implements Config {
 		return m;
 	}
 
-	
 
 	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
-	
 	private Map<String,UDF> udfCache=new ReferenceMap();
-	
-	
-	
-	
+
 	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
 		if(componentPathCache==null) return null; 
@@ -3207,8 +3201,6 @@ public abstract class ConfigImpl implements Config {
 		if(ctPatchCache==null) ctPatchCache=Collections.synchronizedMap(new HashMap<String, InitFile>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
 		ctPatchCache.put(key.toLowerCase(),initFile);
 	}
-	
-	
 
 	public Struct listCTCache() {
 		Struct sct=new StructImpl();
@@ -3227,18 +3219,18 @@ public abstract class ConfigImpl implements Config {
 		if(ctPatchCache==null) return; 
 		ctPatchCache.clear();
 	}
-	
 
 	public void clearFunctionCache() {
 		udfCache.clear();
 	}
+
 	public UDF getFromFunctionCache(String key) {
 		return udfCache.get(key);
 	}
+
 	public void putToFunctionCache(String key,UDF udf) {
 		udfCache.put(key, udf);
 	}
-	
 	
 	public Struct listComponentCache() {
 		Struct sct=new StructImpl();
@@ -3257,12 +3249,11 @@ public abstract class ConfigImpl implements Config {
 		if(componentPathCache==null) return; 
 		componentPathCache.clear();
 	}
-	
-	
 
 	public ImportDefintion getComponentDefaultImport() {
 		return componentDefaultImport;
 	}
+
 	protected void setComponentDefaultImport(String str) {
 		ImportDefintion cdi = ImportDefintionImpl.getInstance(str, null);
 		if(cdi!=null)this.componentDefaultImport= cdi;
@@ -3290,7 +3281,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param componentLocalSearch the componentLocalSearch to set
+	 * @param componentRootSearch the componentLocalSearch to set
 	 */
 	protected void setComponentRootSearch(boolean componentRootSearch) {
 		this.componentRootSearch = componentRootSearch;
@@ -3319,6 +3310,7 @@ public abstract class ConfigImpl implements Config {
 		if(componentMetaData==null) return null;
 		return componentMetaData.get(key.toLowerCase());
 	}
+
 	public void putComponentMetadata(String key,ComponentMetaData data) {
 		if(componentMetaData==null) componentMetaData=new HashMap<String, ComponentMetaData>();
 		componentMetaData.put(key.toLowerCase(),data);
@@ -3338,7 +3330,6 @@ public abstract class ConfigImpl implements Config {
 			this.meta=meta;
 			this.lastMod=lastMod;
 		}
-		
 	}
  
 	private DebugEntry[] debugEntries;
@@ -3354,16 +3345,16 @@ public abstract class ConfigImpl implements Config {
 	public DebugEntry getDebugEntry(String ip, DebugEntry defaultValue) {
 		if(debugEntries.length==0) return defaultValue;
 		short[] sarr;
+
 		try {
 			sarr = IPRange.toShortArray(ip);
 		} catch (IOException e) {
 			return defaultValue;
 		}
+
 		for(int i=0;i<debugEntries.length;i++){
 			if(debugEntries[i].getIpRange().inRange(sarr)) return debugEntries[i];
 		}
-		
-		
 		
 		return defaultValue;
 	}
@@ -3372,13 +3363,10 @@ public abstract class ConfigImpl implements Config {
 	protected void setDebugMaxRecordsLogged(int debugMaxRecordsLogged) {
 		this.debugMaxRecordsLogged=debugMaxRecordsLogged;
 	}
+
 	public int getDebugMaxRecordsLogged() {
 		return debugMaxRecordsLogged;
 	}
-	
-	public abstract int getLoginDelay();
-	
-	public abstract boolean getLoginCaptcha();
 
 	private boolean dotNotationUpperCase=true;
 	protected void setDotNotationUpperCase(boolean dotNotationUpperCase) {
@@ -3397,13 +3385,6 @@ public abstract class ConfigImpl implements Config {
 	public boolean getSupressWSBeforeArg() {
 		return getSupressWSBeforeArg;
 	}
-
-	public abstract boolean getFullNullSupport();
-	
-	
-
-	public abstract Cluster createClusterScope() throws PageException;
-
 
 	private RestSettings restSetting=new RestSettingImpl(false,UDF.RETURN_FORMAT_JSON);
 	protected void setRestSetting(RestSettings restSetting){
@@ -3480,8 +3461,18 @@ public abstract class ConfigImpl implements Config {
 	protected void setCheckForChangesInConfigFile(boolean checkForChangesInConfigFile) {
 		this.checkForChangesInConfigFile=checkForChangesInConfigFile;
 	}
+
 	public boolean checkForChangesInConfigFile() {
 		return checkForChangesInConfigFile;
 	}
+
+
+    public abstract int getLoginDelay();
+
+    public abstract boolean getLoginCaptcha();
+
+    public abstract boolean getFullNullSupport();
+
+    public abstract Cluster createClusterScope() throws PageException;
 	
 }

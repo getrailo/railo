@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
@@ -434,7 +435,7 @@ public final class PDFDocument {
 				body="";
 				
 				try {
-					InputSource input = new InputSource(IOUtil.getReader(is,strCharset));
+					InputSource input = new InputSource(IOUtil.getReader(is,CharsetUtil.toCharset(strCharset)));
 					body=beautifyHTML(input,base);
 				} 
 				catch (Throwable t) {}

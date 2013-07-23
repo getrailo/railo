@@ -3,6 +3,7 @@ package railo.runtime.schedule;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.log.LogAndSource;
@@ -104,7 +105,7 @@ class ExecutionThread extends Thread {
         	    String str;
                 try {
                     InputStream stream = rsp.getContentAsStream();
-                    str = stream==null?"":IOUtil.toString(stream,null);
+                    str = stream==null?"":IOUtil.toString(stream,(Charset)null);
                     if(str==null)str="";
                 } 
                 catch (IOException e) {

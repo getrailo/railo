@@ -2,8 +2,8 @@ package railo.runtime;
 
 import java.util.Iterator;
 
-import railo.commons.util.mod.MapFactory;
-import railo.commons.util.mod.MapPro;
+import railo.commons.collection.MapFactory;
+import railo.commons.collection.MapPro;
 import railo.runtime.component.Member;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
@@ -40,7 +40,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @param component
 	 * @param shadow
 	 */
-	public ComponentScopeShadow(ComponentImpl component, MapPro<Key,Object> shadow) {
+	public ComponentScopeShadow(ComponentImpl component, MapPro shadow) {
         this.component=component;
         this.shadow=shadow;
         

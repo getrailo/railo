@@ -3283,25 +3283,36 @@ The following things are considered to be empty:
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
-The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+		    <description>The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
-- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.</description>
+        </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
 			<default>uu</default>
-		<description>
-The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
+		    <description>The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045
 - Hex: the characters A-F and 0-9 represent the hexadecimal byte values
 - UU(default): the UNIX standard UUEncode algorithm</description>
-    </argument>
+        </argument>
+        <argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3315,30 +3326,43 @@ The binary encoding used to represent the data as a string. Must be the same as 
 			<name>input</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>Binary data to decrypt.</description>
-    </argument>
+		    <description>Binary data to decrypt.</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>
+		    <description>
 Key or seed used to encrypt the string.
 - For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
 - For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
-    </argument>
+        </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
+		    <description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
 - DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.
+        </argument>
+        <argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4022,40 +4046,52 @@ dec: descending (z to a) sort order.
 			<type>string</type>
 			<required>Yes</required>
 		<description>String to encrypt.</description>
-    </argument>
+    	</argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>
+		    <description>
 Key or seed used to encrypt the string.
 - For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
 - For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
-    </argument>
+    	</argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
-The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+		    <description>The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
-- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.</description>
+    	</argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
 			<default>uu</default>
-		<description>
-The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
+            <description>The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045.
 - Hex: the characters A-F and 0-9 represent the hexadecimal byte values.
-- UU(default): the UNIX standard UUEncode algorithm .</description>
-    </argument>
+- UU(default): the UNIX standard UUEncode algorithm .
+            </description>
+    	</argument>
+    	<argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4069,8 +4105,8 @@ The binary encoding used to represent the data as a string. Must be the same as 
 			<name>bytes</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>Binary data to encrypt.</description>
-    </argument>
+		    <description>Binary data to encrypt.</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
@@ -4085,14 +4121,27 @@ Key or seed used to encrypt the string.
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
+		    <description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
-- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.</description>
+        </argument>
+        <argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>

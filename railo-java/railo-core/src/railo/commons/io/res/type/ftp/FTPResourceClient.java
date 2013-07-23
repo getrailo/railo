@@ -1,11 +1,12 @@
 package railo.commons.io.res.type.ftp;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 
@@ -17,7 +18,7 @@ public final class FTPResourceClient extends FTPClient {
 	private final FTPConnectionData ftpConnectionData;
 	private long lastAccess;
 	private final Object token=new SerializableObject();
-	private final HashTable files=new HashTable();
+	private final Map<String,FTPFileWrap> files=MapFactory.<String,FTPFileWrap>getConcurrentMap();
 	private final int cacheTimeout;
 
 	public FTPResourceClient(FTPConnectionData ftpConnectionData,int cacheTimeout) {
@@ -68,7 +69,7 @@ public final class FTPResourceClient extends FTPClient {
 
 	public FTPFile getFTPFile(FTPResource res) throws IOException {
 		String path=res.getInnerPath();
-		FTPFileWrap fw = (FTPFileWrap) files.get(path);
+		FTPFileWrap fw = files.get(path);
 		
 		if(fw==null) {
 			return createFTPFile(res);

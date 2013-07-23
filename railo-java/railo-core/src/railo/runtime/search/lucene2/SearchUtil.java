@@ -16,7 +16,7 @@ import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.th.ThaiAnalyzer;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.search.SearchException;
@@ -27,14 +27,14 @@ import railo.runtime.search.lucene2.analyzer.PortugueseAnalyzer;
 import railo.runtime.search.lucene2.analyzer.SpanishAnalyzer;
 public final class SearchUtil {
 
-	private static Map analyzers=new HashTable();
+	private static Map<String,Analyzer> analyzers=MapFactory.<String,Analyzer>getConcurrentMap();
 	
 	public static Analyzer getAnalyzer(String language) throws SearchException {
         if(language==null)language="english";
         else language=language.toLowerCase().trim();
         language=railo.runtime.search.SearchUtil.translateLanguage(language);
 		
-        Analyzer analyzer=(Analyzer) analyzers.get(language);
+        Analyzer analyzer=analyzers.get(language);
         if(analyzer!=null) return analyzer;
         
         

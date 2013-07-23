@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.zip.ZipFile;
 
@@ -28,6 +29,7 @@ import javax.mail.Transport;
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicMatch;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.PageException;
 
@@ -450,7 +452,18 @@ public final class IOUtil {
          }
      }
 
- 	public static Reader getReader(Resource res, String charset) throws IOException {
+    /**
+     * @deprecated use instead <code>{@link #getReader(Resource, Charset)}</code>
+     * @param res
+     * @param charset
+     * @return
+     * @throws IOException
+     */
+  	public static Reader getReader(Resource res, String charset) throws IOException {
+  		return getReader(res, CharsetUtil.toCharset(charset));
+  	}
+  	
+ 	public static Reader getReader(Resource res, Charset charset) throws IOException {
  		/*
  		00 00 FE FF  	UTF-32, big-endian
  		FF FE 00 00 	UTF-32, little-endian
@@ -466,18 +479,18 @@ public final class IOUtil {
 	        int second = is.read();
 	        // FE FF 	UTF-16, big-endian
 	        if (first == 0xFE && second == 0xFF)    {
-	        	return _getReader(is, "UTF-16BE");
+	        	return _getReader(is, CharsetUtil.UTF16BE);
 	        }
 	        // FF FE 	UTF-16, little-endian
 	        if (first == 0xFF && second == 0xFE)    {
-	        	return _getReader(is, "UTF-16LE");
+	        	return _getReader(is, CharsetUtil.UTF16LE);
 	        }
 	        
 	        int third=is.read();
 	        // EF BB BF 	UTF-8
 	        if (first == 0xEF && second == 0xBB && third == 0xBF)    {
 	        	//is.reset();
-	 			return _getReader(is, "utf-8");
+	 			return _getReader(is,CharsetUtil.UTF8);
 	        }
 	 		/*
 	        int forth=is.read();
@@ -514,80 +527,47 @@ public final class IOUtil {
  		}
         return _getReader(is, charset);             
    }
- 	
 
- public static Reader getReader(InputStream is, String charset) throws IOException {
- 		
- 		boolean markSupported=is.markSupported();
-        if(!markSupported) return _getReader(is, charset);
-        
-        if(markSupported) is.mark(4);
-        
-        int first = is.read();
-        int second = is.read();
-        // FE FF 	UTF-16, big-endian
-        if (first == 0xFE && second == 0xFF)    {
-        	//is.reset();
- 			return _getReader(is, "utf-16BE");
-        }
-        // FF FE 	UTF-16, little-endian
-        if (first == 0xFF && second == 0xFE)    {
-        	//is.reset();
- 			return _getReader(is, "UTF-16LE");
-        }
-        
-        int third=is.read();
-        // EF BB BF 	UTF-8
-        if (first == 0xEF && second == 0xBB && third == 0xBF)    {
- 			//is.reset();
- 			//print.err("reset");
-        	return _getReader(is, "utf-8");
-        }
+ 	public static Reader getReader(InputStream is, Charset charset) throws IOException {
+ 	 		
+ 	 		boolean markSupported=is.markSupported();
+ 	        if(!markSupported) return _getReader(is, charset);
+ 	        
+ 	        if(markSupported) is.mark(4);
+ 	        
+ 	        int first = is.read();
+ 	        int second = is.read();
+ 	        // FE FF 	UTF-16, big-endian
+ 	        if (first == 0xFE && second == 0xFF)    {
+ 	        	//is.reset();
+ 	 			return _getReader(is, CharsetUtil.UTF16BE);
+ 	        }
+ 	        // FF FE 	UTF-16, little-endian
+ 	        if (first == 0xFF && second == 0xFE)    {
+ 	 			return _getReader(is, CharsetUtil.UTF16LE);
+ 	        }
+ 	        
+ 	        int third=is.read();
+ 	        // EF BB BF 	UTF-8
+ 	        if (first == 0xEF && second == 0xBB && third == 0xBF)    {
+ 	        	return _getReader(is, CharsetUtil.UTF8);
+ 	        }
 
-        /*int forth=is.read();
-        // 00 00 FE FF  	UTF-32, big-endian
-        if (first == 0x00 && second == 0x00 && third == 0xFE  && forth == 0xFF)    {
-        	is.reset();
- 			return _getReader(is, "utf-32");
-        }
-        // FF FE 00 00 	UTF-32, little-endian
-        if (first == 0xFF && second == 0xFE && third == 0x00  && forth == 0x00)    {
-        	is.reset();
- 			return _getReader(is, "utf-32");
-        }*/
-        
-        
-        
-        
- 		/*if(markSupported) is.mark(3);
- 		if (is.read() == 0xEF && is.read() == 0xBB && is.read() == 0xBF)    {
- 			return _getReader(is, "utf-8");
-        }*/
- 		is.reset();
-    	return _getReader(is,charset);       
-   }
- 	
- 	
-     
-     /* *
-      * returns a Reader for the given File and charset (Automaticly check BOM Files)
-      * @param file
-      * @param charset
-      * @return Reader
-      * @throws IOException
-      * /
-     public static Reader getReader(File file, String charset) throws IOException {
-    	InputStream is=null;
-  		try {
-  			is=new FileInputStream(file);
-  		}
-  		catch(IOException ioe) {
-  			closeEL(is);
-  			throw ioe;
-  		}
-    	return _getReader(is, charset);
-    }*/
-     
+ 	 		is.reset();
+ 	    	return _getReader(is,charset);       
+ 	   }
+ 	 	
+ 	/**
+ 	 * @deprecated use instead <code>{@link #getReader(InputStream, Charset)}</code>
+ 	 * @param is
+ 	 * @param charset
+ 	 * @return
+ 	 * @throws IOException
+ 	 */
+ 	public static Reader getReader(InputStream is, String charset) throws IOException {
+ 		return getReader(is, CharsetUtil.toCharset(charset));    
+    }
+ 	 
      /**
       * returns a Reader for the given InputStream
       * @param is
@@ -595,26 +575,49 @@ public final class IOUtil {
       * @return Reader
       * @throws IOException
       */
-     private static Reader _getReader(InputStream is, String charset) throws IOException {
-    	 if(charset==null) charset=SystemUtil.getCharset();
-         return new BufferedReader(new InputStreamReader(is,charset.trim()));
-     }
+	 private static Reader _getReader(InputStream is, Charset charset) throws IOException {
+		 if(charset==null) charset=SystemUtil.getCharset();
+	     return new BufferedReader(new InputStreamReader(is,charset));
+	 }
 
     /**
+     * @deprecated use instead <code>{@link #toString(InputStream, Charset)}</code>
+     * @param is
+     * @param charset
+     * @return
+     * @throws IOException
+     */
+     public static String toString(InputStream is, String charset) throws IOException {
+         return toString(is,CharsetUtil.toCharset(charset));
+     }
+     
+     /**
      * reads string data from a InputStream
      * @param is
      * @param charset 
      * @return string from inputstream
     * @throws IOException 
     */
-     public static String toString(InputStream is, String charset) throws IOException {
+     public static String toString(InputStream is, Charset charset) throws IOException {
          return toString(getReader(is,charset));
      }
      
+     /**
+      * @deprecated use instead <code>{@link #toString(byte[], Charset)}</code>
+      * @param barr
+      * @param charset
+      * @return
+      * @throws IOException
+      */
      public static String toString(byte[] barr, String charset) throws IOException {
+         return toString(barr,CharsetUtil.toCharset(charset));
+     }
+     
+     public static String toString(byte[] barr, Charset charset) throws IOException {
          return toString(getReader(new ByteArrayInputStream(barr),charset));
      }
-
+     
+     
    /**
     * reads String data from a Reader
     * @param reader
@@ -643,24 +646,16 @@ public final class IOUtil {
    }
 
    /**
-    * reads String data from File
-     * @param file 
-     * @param charset 
-     * @return readed string
+    * @deprecated use instead <code>{@link #toString(Resource, Charset)}</code>
+    * @param file
+    * @param charset
+    * @return
     * @throws IOException
-    * /
-   public static String toString(File file, String charset) throws IOException {
-       Reader r = null;
-       try {
-    	   r=getReader(file,charset);
-           String str = toString(r);
-           return str;
-       }
-       finally {
-           closeEL(r);
-       }
-   }*/
-
+    */
+   public static String toString(Resource file, String charset) throws IOException {
+	   return toString(file, CharsetUtil.toCharset(charset));
+   }
+   
    /**
     * reads String data from File
      * @param file 
@@ -668,7 +663,7 @@ public final class IOUtil {
      * @return readed string
     * @throws IOException
     */
-   public static String toString(Resource file, String charset) throws IOException {
+   public static String toString(Resource file, Charset charset) throws IOException {
        Reader r = null;
        try {
     	   r = getReader(file,charset);
@@ -704,6 +699,7 @@ public final class IOUtil {
     }
 
     /**
+     * @deprecated use instead <code>{@link #write(Resource, String, Charset, boolean)}</code> 
      * writes a String to a object
      * @param file 
      * @param string String to write to file
@@ -711,12 +707,13 @@ public final class IOUtil {
      * @param append  append to cuuretn data or overwrite existing data
      * @throws IOException
      */
-    public static void write(File file, String string, String charset, boolean append) throws IOException {
-        if(charset==null) {
+    public static void write(File file, String string, String strCharset, boolean append) throws IOException {
+        Charset charset;
+    	if(StringUtil.isEmpty(strCharset)) {
             charset=SystemUtil.getCharset();
-        }
-                
-        
+        }  
+    	else charset=CharsetUtil.toCharset(strCharset);
+    		
         OutputStreamWriter writer=null;
         try {
             writer=new OutputStreamWriter(new BufferedFileOutputStream(file,append),charset);
@@ -728,7 +725,19 @@ public final class IOUtil {
         }
     }
     
+    /**
+     * @deprecated use instead <code>{@link #write(Resource, String, Charset, boolean)}</code>
+     * @param res
+     * @param string
+     * @param charset
+     * @param append
+     * @throws IOException
+     */
     public static void write(Resource res, String string, String charset, boolean append) throws IOException {
+    	write(res, string, CharsetUtil.toCharset(charset), append);
+    }
+    
+    public static void write(Resource res, String string, Charset charset, boolean append) throws IOException {
         if(charset==null) {
             charset=SystemUtil.getCharset();
         }
@@ -736,7 +745,7 @@ public final class IOUtil {
         
         Writer writer=null;
         try {
-            writer=IOUtil.getWriter(res, charset,append);
+            writer=getWriter(res, charset,append);
             writer.write(string);
         }
         finally {
@@ -758,6 +767,7 @@ public final class IOUtil {
     }
     
     /**
+     * @deprecated use instead <code>{@link #toBytes(Resource)}</code> 
      * @param file 
      * @return returns the Content of the file as byte array
      * @throws IOException
@@ -805,10 +815,22 @@ public final class IOUtil {
 		if(r instanceof BufferedReader) return (BufferedReader) r;
 		return new BufferedReader(r);
 	}
-    
+
+    /**
+     * @deprecated use instead <code>{@link #getBufferedReader(Resource, Charset)}</code>
+     * @param res
+     * @param charset
+     * @return
+     * @throws IOException
+     */
     public static BufferedReader getBufferedReader(Resource res,String charset) throws IOException {
+		return getBufferedReader(res,CharsetUtil.toCharset(charset));
+	}
+    
+    public static BufferedReader getBufferedReader(Resource res,Charset charset) throws IOException {
 		return toBufferedReader(getReader(res, charset));
 	}
+    
     
     public static BufferedWriter toBufferedWriter(Writer w) {
 		if(w instanceof BufferedWriter) return (BufferedWriter) w;
@@ -923,7 +945,18 @@ public final class IOUtil {
         }
     }
     
- 	public static Writer getWriter(Resource res, String charset) throws IOException {
+    /**
+     * @deprecated use instead <code>{@link #getWriter(Resource, Charset)}</code>
+     * @param res
+     * @param charset
+     * @return
+     * @throws IOException
+     */
+    public static Writer getWriter(Resource res, String charset) throws IOException {
+    	return getWriter(res, CharsetUtil.toCharset(charset));
+    }
+    
+ 	public static Writer getWriter(Resource res, Charset charset) throws IOException {
  		OutputStream os=null;
  		try {
  			os=res.getOutputStream();
@@ -935,8 +968,20 @@ public final class IOUtil {
  		return getWriter(os, charset);
    	 
  	}
-    
+ 	
+ 	/**
+ 	 * @deprecated use instead <code>{@link #getWriter(Resource, Charset,boolean)}</code>
+ 	 * @param res
+ 	 * @param charset
+ 	 * @param append
+ 	 * @return
+ 	 * @throws IOException
+ 	 */
  	public static Writer getWriter(Resource res, String charset, boolean append) throws IOException {
+ 		return getWriter(res, CharsetUtil.toCharset(charset), append);
+ 	}
+ 	
+ 	public static Writer getWriter(Resource res, Charset charset, boolean append) throws IOException {
  		OutputStream os=null;
  		try {
  			os=res.getOutputStream(append);
@@ -949,6 +994,7 @@ public final class IOUtil {
  	}
     
     /**
+     * @deprecated use instead <code>{@link #getWriter(Resource, Charset)}</code> 
      * returns a Reader for the given File and charset (Automaticly check BOM Files)
      * @param file
      * @param charset
@@ -968,6 +1014,7 @@ public final class IOUtil {
    }
     
     /**
+     * @deprecated use instead <code>{@link #getWriter(Resource, Charset, boolean)}</code> 
      * returns a Reader for the given File and charset (Automaticly check BOM Files)
      * @param file
      * @param charset
@@ -986,7 +1033,18 @@ public final class IOUtil {
  		return getWriter(os, charset);
    }
      
-
+    
+    /**
+     * @deprecated use instead <code>{@link #getWriter(OutputStream, Charset)}</code>
+     * @param os
+     * @param charset
+     * @return
+     * @throws IOException
+     */
+    public static Writer getWriter(OutputStream os, String charset) throws IOException {
+    	return getWriter(os, CharsetUtil.toCharset(charset));
+    }
+    
     /**
      * returns a Reader for the given InputStream
      * @param is
@@ -994,9 +1052,9 @@ public final class IOUtil {
      * @return Reader
      * @throws IOException
      */
-    public static Writer getWriter(OutputStream os, String charset) throws IOException {
+    public static Writer getWriter(OutputStream os, Charset charset) throws IOException {
    	 if(charset==null) charset=SystemUtil.getCharset();
-        return new BufferedWriter(new OutputStreamWriter(os,charset.trim()));
+        return new BufferedWriter(new OutputStreamWriter(os,charset));
     }
 
 	public static String read(Reader reader, int size) throws IOException {

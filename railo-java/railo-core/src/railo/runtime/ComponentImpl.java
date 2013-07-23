@@ -18,6 +18,10 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.print;
+import railo.commons.collection.HashMapPro;
+import railo.commons.collection.MapFactory;
+import railo.commons.collection.MapPro;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
@@ -26,8 +30,6 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
-import railo.commons.util.mod.MapFactory;
-import railo.commons.util.mod.MapPro;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.DataMember;
 import railo.runtime.component.InterfaceCollection;
@@ -95,8 +97,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 
 	private ComponentProperties properties;
-	private Map<Key,Member> _data;
-    private Map<Key,UDF> _udfs;
+	private MapPro<Key,Member> _data;
+    private MapPro<Key,UDF> _udfs;
 
 	ComponentImpl top=this;
     ComponentImpl base;
@@ -216,18 +218,18 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				trg.base=base._duplicate(deepCopy,false);
 				
 				trg._data=trg.base._data;
-				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key,UDF>(trg.base._udfs));
+				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMapPro<Key,UDF>(trg.base._udfs));
 
 	    		if(useShadow) trg.scope=new ComponentScopeShadow(trg,(ComponentScopeShadow)trg.base.scope,false);
 			}
 	    	else {
 	    		// clone data member, ignore udfs for the moment
-	    		trg._data=duplicateDataMember(trg, _data, new HashMap(), deepCopy);
-	    		trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key, UDF>());
+	    		trg._data=duplicateDataMember(trg, _data, new HashMapPro(), deepCopy);
+	    		trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMapPro<Key, UDF>());
 	    		
 	    		if(useShadow) {
 	    			ComponentScopeShadow css = (ComponentScopeShadow)scope;
-	    			trg.scope=new ComponentScopeShadow(trg,(MapPro)duplicateDataMember(trg,css.getShadow(),MapFactory.getConcurrentMap(),deepCopy));
+	    			trg.scope=new ComponentScopeShadow(trg,duplicateDataMember(trg,css.getShadow(),MapFactory.getConcurrentMap(),deepCopy));
 	    		}
 	    	}
 	    	
@@ -305,7 +307,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param deepCopy
      * @return
      */
-    public static Map duplicateDataMember(ComponentImpl c,Map map,Map newMap,boolean deepCopy){
+    public static MapPro duplicateDataMember(ComponentImpl c,MapPro map,MapPro newMap,boolean deepCopy){
         Iterator it=map.entrySet().iterator();
         Map.Entry entry;
         Object value;
@@ -321,9 +323,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return newMap;
     }
     
-    public static Map<Key, UDF> duplicateUTFMap(ComponentImpl src,ComponentImpl trg,Map<Key,UDF> srcMap, Map<Key, UDF> trgMap){
+    public static MapPro<Key, UDF> duplicateUTFMap(ComponentImpl src,ComponentImpl trg,MapPro<Key,UDF> srcMap, MapPro<Key, UDF> trgMap){
     	Iterator<Entry<Key, UDF>> it = srcMap.entrySet().iterator();
-        Map.Entry<Key, UDF> entry;
+        Entry<Key, UDF> entry;
         UDF udf;
         while(it.hasNext()) {
             entry=it.next();
@@ -364,13 +366,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	this.dataMemberDefaultAccess=base.dataMemberDefaultAccess;
 	    	this._triggerDataMember=base._triggerDataMember;
 	    	_data=base._data;
-	    	_udfs=new HashMap<Key,UDF>(base._udfs);
+	    	_udfs=new HashMapPro<Key,UDF>(base._udfs);
 	    	setTop(this,base);
 	    }
 	    else {
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
 	    	// TODO get per CFC setting this._triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
-		    _udfs=new HashMap<Key,UDF>();
+		    _udfs=new HashMapPro<Key,UDF>();
 		    _data=MapFactory.getConcurrentMap();
 	    }
 	    
@@ -483,8 +485,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
     Object _call(PageContext pc, Collection.Key key, Struct namedArgs, Object[] args,boolean superAccess) throws PageException {
-        Member member=getMember(pc,key,false, superAccess);
-        if(member instanceof UDF) {
+    	
+    	Member member=getMember(pc,key,false, superAccess);
+    	if(member instanceof UDF) {
         	return _call(pc,(UDF)member,namedArgs,args);
         }
         return onMissingMethod(pc, -1, member, key.getString(), args, namedArgs, superAccess);
@@ -598,7 +601,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				}
 			}
 			
-			// sync no
+			// sync no 385|263
 			else {
 			    try {
 	            	parent=beforeCall(pc);
@@ -620,8 +623,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      */
 	public Variables beforeCall(PageContext pc) {
     	Variables parent=pc.variablesScope();
-        pc.setVariablesScope(scope);
-        return parent;
+    	pc.setVariablesScope(scope);
+    	return parent;
     }
 	
 	/**
@@ -784,7 +787,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param dataMember do also check if key super
      * @return matching entry if exists otherwise null
      */
-    protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
+	protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyConstants._super)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());

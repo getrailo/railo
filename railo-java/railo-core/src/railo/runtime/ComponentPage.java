@@ -130,7 +130,7 @@ public abstract class ComponentPage extends Page  {
             
             // METHOD INVOCATION
 			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
-            if(pc.getBasePageSource()==this.getPageSource())
+            if(pc.getBasePageSource()==this.getPageSource() && pc.getConfig().debug())
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             

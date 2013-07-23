@@ -28,7 +28,7 @@ public final class Cookie extends TagImpl {
 	/** Schedules the expiration of a cookie variable. Can be specified as a date (as in, 10/09/97), 
 	** 	number of days (as in, 10, 100), "Now", or "Never". Using Now effectively deletes the cookie from
 	** 	the client browser. */
-	private Object expires="-1";
+	private Object expires=null;
 
 	/** The name of the cookie variable. */
 	private String name;
@@ -45,7 +45,7 @@ public final class Cookie extends TagImpl {
 		value="";
 		domain=null;
 		path="/";
-		expires="-1";
+		expires=null;
 		name=null;
 		httponly=false;
 		preservecase=false;

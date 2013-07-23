@@ -635,16 +635,6 @@ public final class DebuggerImpl implements Debugger {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}
 
-	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
-		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
-			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
-				((QueryImpl)query).enableShowQueryUsage();
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void init(Config config) {
 		this.starttime=new DateTimeImpl(config);
 	}
@@ -697,6 +687,10 @@ public final class DebuggerImpl implements Debugger {
         }
         return qryOutputLog;
         
+	}
+
+	public void resetTraces() {
+		traces.clear();
 	}
 }
 

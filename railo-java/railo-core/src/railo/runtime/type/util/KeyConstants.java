@@ -1,16 +1,33 @@
 package railo.runtime.type.util;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Collections;
 
+import railo.commons.collection.ConcurrentHashMapPro;
+import railo.commons.collection.MapPro;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 
 public class KeyConstants {
 	public static final Key _A=KeyImpl._const("A");
+	public static final Key _G=KeyImpl._const("G");
+	public static final Key _H=KeyImpl._const("H");
+	public static final Key _K=KeyImpl._const("K");
+	public static final Key _L=KeyImpl._const("L");
+	public static final Key _O=KeyImpl._const("O");
+	public static final Key _P=KeyImpl._const("P");
+	public static final Key _R=KeyImpl._const("R");
+	public static final Key _S=KeyImpl._const("S");
+	public static final Key _T=KeyImpl._const("T");
+	public static final Key _U=KeyImpl._const("U");
+	public static final Key _V=KeyImpl._const("V");
+	public static final Key _W=KeyImpl._const("W");
+	public static final Key _Y=KeyImpl._const("Y");
+	public static final Key _Z=KeyImpl._const("Z");
 	public static final Key _AAA=KeyImpl._const("AAA");
 	public static final Key _ABC=KeyImpl._const("ABC");
 	public static final Key _ACCESS=KeyImpl._const("ACCESS");
@@ -732,6 +749,7 @@ public class KeyConstants {
 	public static final Key _server_software = KeyImpl._const("server_software");
 	public static final Key _application = KeyImpl._const("application");
 	public static final Key _cookie = KeyImpl._const("cookie");
+	public static final Key _cookies = KeyImpl._const("cookies");
 	public static final Key _cluster = KeyImpl._const("cluster");
 	public static final Key _form = KeyImpl._const("form");
 	public static final Key _request = KeyImpl._const("request");
@@ -846,37 +864,33 @@ public class KeyConstants {
 	public static final Key _codePrintHTML = KeyImpl._const("codePrintHTML");
 	public static final Key _codePrintPlain = KeyImpl._const("codePrintPlain");
 	
-	private static Set<String> _____keys;
+	private static MapPro<String,Key> _____keys;
 	
 	public static String getFieldName(String key) {
+		init();
+		return _____keys.containsKey(key)?"_"+key:null;
+	}
+
+	public static Key getKey(String key) {
+		init();
+		Key k = _____keys.get(key);
+		if(k==null) return new KeyImpl(key);
+		return k;
+	}
+
+	public static void init() {
 		if(_____keys==null) {
 			Field[] fields = KeyConstants.class.getFields();
-			_____keys=Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
+			_____keys=new ConcurrentHashMapPro<String,Key>();
 			for(int i=0;i<fields.length;i++){
-				if(fields[i].getType()!=Key.class) continue;
-				_____keys.add(fields[i].getName());
+				if(fields[i].getType()!=Key.class || !fields[i].getName().startsWith("_")) continue;
+				try {
+					_____keys.put(fields[i].getName().substring(1),(Key)fields[i].get(null));
+				}
+				catch (Throwable t) {
+					t.printStackTrace();
+				}
 			}
 		}
-		key="_"+key;
-		//if(!_____keys.contains(key))print.e(key);
-		return _____keys.contains(key)?key:null;
 	}
-	
-	/*public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, PageException {
-	
-		
-			Field[] fields = KeyConstants.class.getFields();
-			String name;
-			String value;
-			for(int i=0;i<fields.length;i++){
-				if(fields[i].getType()!=Key.class) continue;
-				name=fields[i].getName().substring(1);
-				value=Caster.toString(fields[i].get(null));
-				if(!name.equals(value))print.e(name+":"+value);
-			}
-		
-	}*/
-	
-	
-	
 }

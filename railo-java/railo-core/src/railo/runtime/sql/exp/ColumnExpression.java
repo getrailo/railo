@@ -1,6 +1,8 @@
 package railo.runtime.sql.exp;
 
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.util.QueryUtil;
@@ -40,12 +42,12 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 
 	@Override
 	public String getAlias() {
-		if(!hasAlias()) return getColumn();
+		if(!hasAlias()) return getColumn().getString();
 		return super.getAlias();
 	}
 
-	public String getColumn() {
-		return column;
+	public Collection.Key getColumn() {
+		return KeyImpl.init(column);
 	}
 
 	public String getTable() {
@@ -66,7 +68,7 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	public int getColumnIndex() {
 		return columnIndex;
 	}
-	
+	// MUST hanle null correctly
 	public Object getValue(Query qr, int row) throws PageException {
 		if(col==null)col = qr.getColumn(getColumn());
 		return QueryUtil.getValue(col,row);

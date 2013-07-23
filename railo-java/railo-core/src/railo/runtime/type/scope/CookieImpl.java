@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -33,6 +34,7 @@ import railo.runtime.type.util.KeyConstants;
  */
 public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProtected {
 	
+	
 	private static final long serialVersionUID = -2341079090783313736L;
 
 	public static final int NEVER = 946626690;
@@ -47,7 +49,9 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	private static final Object[] IS_HTTP_ONLY_ARGS = new Object[]{}; 
 
 	private static final Class[] SET_HTTP_ONLY_ARGS_CLASSES = new Class[]{boolean.class};
-	private static final Object[] SET_HTTP_ONLY_ARGS = new Object[]{Boolean.TRUE}; 
+	private static final Object[] SET_HTTP_ONLY_ARGS = new Object[]{Boolean.TRUE};
+
+	private static final int EXPIRES_NULL = -1; 
 	private static Method isHttpOnly; 
 	private static Method setHttpOnly;
     
@@ -73,7 +77,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     	
 		if(Decision.isStruct(value)) {
 			Struct sct = Caster.toStruct(value);
-			int expires=Caster.toIntValue(sct.get(KeyConstants._expires,null),-1);
+			int expires=Caster.toIntValue(sct.get(KeyConstants._expires,null),EXPIRES_NULL);
 			Object val=sct.get(KeyConstants._value,null);
 			boolean secure=Caster.toBooleanValue(sct.get(KeyConstants._secure,null),false);
 			boolean httpOnly=Caster.toBooleanValue(sct.get(KeyConstants._httponly,null),false);
@@ -85,7 +89,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 			
 			setCookie(key, val, expires, secure, path, domain,httpOnly,preserveCase,encode.booleanValue());
 		}
-		else setCookie(key,value,-1,false,"/",null,false,false,false);
+		else setCookie(key,value,null,false,"/",null,false,false,true);
 		return value;
 	}
 	
@@ -157,10 +161,13 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     @Override
 	public void setCookie(Collection.Key key, Object value, Object expires, boolean secure, String path, String domain, 
 			boolean httpOnly, boolean preserveCase, boolean encode) throws PageException {
-		int exp=-1;
+		int exp=EXPIRES_NULL;
 		
 		// expires
-		if(expires instanceof Date) {
+		if(expires==null) {
+			exp=EXPIRES_NULL;
+		}
+		else if(expires instanceof Date) {
 			exp=toExpires((Date)expires);
 		}
 		else if(expires instanceof TimeSpan) {
@@ -200,6 +207,23 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     private void _addCookie(Key key, String value, int expires, boolean secure, String path, String domain, 
     		boolean httpOnly, boolean preserveCase, boolean encode) {
     	String name=preserveCase?key.getString():key.getUpperString();
+    	
+    	// build the value
+    	StringBuilder sb=new StringBuilder();
+		/*Name*/ sb.append(enc(name)).append('=').append(enc(value));
+		/*Path*/sb.append(";Path=").append(enc(path));
+		/*Domain*/if(!StringUtil.isEmpty(domain))sb.append(";Domain=").append(enc(domain));
+		/*Expires*/if(expires!=EXPIRES_NULL)sb.append(";Expires=").append(DateTimeUtil.toHTTPTimeString(System.currentTimeMillis()+(expires*1000L),false));
+		/*Secure*/if(secure)sb.append(";Secure");
+		/*HTTPOnly*/if(httpOnly)sb.append(";HTTPOnly");
+		
+		rsp.addHeader("Set-Cookie", sb.toString());
+        
+	}
+    
+    /*private void _addCookieOld(Key key, String value, int expires, boolean secure, String path, String domain, 
+    		boolean httpOnly, boolean preserveCase, boolean encode) {
+    	String name=preserveCase?key.getString():key.getUpperString();
     	if(encode) {
     		name=enc(name);
     		value=enc(value);
@@ -213,7 +237,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
         if(httpOnly) setHTTPOnly(cookie);
         rsp.addCookie(cookie);
         
-	}
+	}*/
 
 
 	private int toExpires(String expires) throws ExpressionException {
@@ -316,7 +340,9 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     	return ReqRspUtil.decode(str,charset,false);
 	}
     public String enc(String str) {
-    	return ReqRspUtil.encode(str,charset);
+    	if(ReqRspUtil.needEncoding(str, true))
+    		return ReqRspUtil.encode(str,charset);
+    	return str;
 	}
 
 
