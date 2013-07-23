@@ -1,7 +1,6 @@
 package railo.loader.engine;
 
 import java.io.BufferedOutputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,15 +22,14 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.apache.felix.framework.Felix;
-import org.apache.felix.framework.ext.FelixBundleContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 import railo.Version;
 import railo.loader.TP;
 import railo.loader.osgi.BundleLoader;
-import railo.loader.osgi.BundleUtil;
 import railo.loader.osgi.OSGiUtil;
+import railo.loader.osgi.factory.BundleBuilderFactoryException;
 import railo.loader.util.ExtensionFilter;
 import railo.loader.util.Util;
 
@@ -252,7 +250,7 @@ public class CFMLEngineFactory {
                 engine=getCore(coreExt);
             	
                 
-                railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
+               railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
                if(PATCH_ENABLED) {
 	                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
 	                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
@@ -262,14 +260,13 @@ public class CFMLEngineFactory {
             }
             else {
             	bundle=loadBundle(railo);
-            	
-            	try {
-            		engine=getEngine(new RailoClassLoader(railo,mainClassLoader));
+            	engine=getEngine(bundle);
+            	/*try {
             	}
             	catch(EOFException e) {
             		System.err.println("Railo patch file "+railo+" is invalid, please delete it");
             		engine=getCore(getCoreExtension());
-            	}
+            	}*/
             }
             version=Util.toInVersion(engine.getVersion());
             
@@ -295,10 +292,10 @@ public class CFMLEngineFactory {
     }
     
 
-    private Bundle loadBundle(File railo) throws BundleException, IOException {
+    private Bundle loadBundle(File railo) throws BundleException, IOException, BundleBuilderFactoryException {
     	if(felix==null)felix=OSGiUtil.loadFelix();
     	else if(bundle!=null) remove(bundle); // uninstall already loaded bundles
-    	return BundleLoader.buildAndLoad(felix.getBundleContext(),getBundleDirectory(),railo);
+    	return BundleLoader.buildAndLoad(felix.getBundleContext(),getBundleDirectory(),getJarDirectory(),railo);
 	}
 
 	private static void remove(Bundle bundle) throws BundleException {
@@ -316,15 +313,27 @@ public class CFMLEngineFactory {
         throw new ServletException("missing core file");
 	}
 
-	private CFMLEngine getCore(String ext) throws SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
-    	InputStream is = null;
-    	try {
-    		is = new TP().getClass().getResourceAsStream("/core/core."+ext);
-    		RailoClassLoader classLoader=new RailoClassLoader(is,mainClassLoader,ext.equalsIgnoreCase("rcs"));
-    		return getEngine(classLoader);
+	private CFMLEngine getCore(String ext) throws BundleBuilderFactoryException, IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		File rc = new File(Util.getTempDirectory(),"tmp_"+System.currentTimeMillis()+".rc");
+		try {
+			InputStream is = null;
+			OutputStream os = null;
+	    	try {
+	    		is = new TP().getClass().getResourceAsStream("/core/core."+ext);
+	    		os=new FileOutputStream(rc);
+	    		Util.copy(is, os);
+	    		
+	    	}
+	    	finally {
+	    		Util.closeEL(is);
+	    		Util.closeEL(os);
+	    	}
+	    	
+			bundle=loadBundle(rc);
+	    	return getEngine(bundle);
     	}
     	finally {
-    		Util.closeEL(is);
+    		rc.delete();
     	}
 	}
 
@@ -430,13 +439,12 @@ public class CFMLEngineFactory {
         	t.printStackTrace();
         }
         
-        // Test new railo version valid
-        //FileClassLoader classLoader=new FileClassLoader(newRailo,mainClassLoader);
-        RailoClassLoader classLoader=new RailoClassLoader(newRailo,mainClassLoader);
-        //URLClassLoader classLoader=new URLClassLoader(new URL[]{newRailo.toURL()},mainClassLoader);
+
+        
         String v="";
         try {
-            CFMLEngine e = getEngine(classLoader);
+        	bundle=loadBundle(newRailo);
+            CFMLEngine e = getEngine(bundle);
             if(e==null)throw new IOException("can't load engine");
             v=e.getVersion();
             engine=e;
@@ -445,7 +453,6 @@ public class CFMLEngineFactory {
             callListeners(e);
         }
         catch (Exception e) {
-            classLoader=null;
             System.gc();
             try {
                 newRailo.delete();
@@ -567,6 +574,12 @@ public class CFMLEngineFactory {
         if(!bd.exists())bd.mkdirs();
         return bd;
     }
+    
+    private File getJarDirectory() throws IOException {
+        File bd = new File(getResourceRoot(),"jars");
+        if(!bd.exists())bd.mkdirs();
+        return bd;
+    }
 
     /**
      * return directory to railo resource root
@@ -644,17 +657,17 @@ public class CFMLEngineFactory {
   
     /**
      * Load CFMl Engine Implementation (railo.runtime.engine.CFMLEngineImpl) from a Classloader
-     * @param classLoader
-     * @return loaded CFML Engine
-     * @throws ClassNotFoundException 
-     * @throws NoSuchMethodException 
-     * @throws SecurityException 
-     * @throws InvocationTargetException 
-     * @throws IllegalAccessException 
-     * @throws IllegalArgumentException 
+     * @param bundle
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
      */
-    private CFMLEngine getEngine(ClassLoader classLoader) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        Class clazz=classLoader.loadClass("railo.runtime.engine.CFMLEngineImpl");
+    private CFMLEngine getEngine(Bundle bundle) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        Class<?> clazz = bundle.loadClass("railo.runtime.engine.CFMLEngineImpl");
         Method m = clazz.getMethod("getInstance",new Class[]{CFMLEngineFactory.class});
         return (CFMLEngine) m.invoke(null,new Object[]{this});
         

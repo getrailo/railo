@@ -2,6 +2,9 @@ package railo.loader.osgi.factory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,10 +18,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import railo.commons.io.res.Resource;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
-import railo.runtime.util.Cast;
 
 public class BundleBuilderFactory {
 	
@@ -41,7 +41,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	private String version;
 	private String activator;
 
-	private List<Resource> jars=new ArrayList<Resource>(); 
+	private List<File> jars=new ArrayList<File>(); 
 
 	/**
 	 * 
@@ -71,7 +71,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		sb.append("Bundle-SymbolicName: ").append(symbolicName).append('\n');
 		if(!Util.isEmpty(description))sb.append("Bundle-Description: ").append(description).append('\n');
 		sb.append("Bundle-ManifestVersion: ").append(MANIFEST_VERSION).append('\n');
-		if(!Util.isEmpty(description))sb.append("Bundle-Version: ").append(version).append('\n');
+		if(!Util.isEmpty(version))sb.append("Bundle-Version: ").append(version).append('\n');
 		if(!Util.isEmpty(activator))sb.append("Bundle-Activator: ").append(activator).append('\n');
 		
 		// jars bundled
@@ -87,13 +87,13 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		
 		return sb.toString();// NL at the end is needed, so no trim
 	}
-	
-	public void addJar(Resource jar){
+
+	public void addJar(File jar){
 		jars.add(jar);
 	}
 	
-	public void build(Resource target) throws IOException {
-		OutputStream os = target.getOutputStream();
+	public void build(File target) throws IOException {
+		OutputStream os = new FileOutputStream(target);
 		try{
 			build(os);
 		}
@@ -111,8 +111,8 @@ Import-Package: Indicates which Java packages will be required from the outside 
 			// jars
 			List<String> jarsUsed=new ArrayList<String>();
 			{
-				Resource jar;
-				Iterator<Resource> it = jars.iterator();
+				File jar;
+				Iterator<File> it = jars.iterator();
 				while(it.hasNext()){
 					jar=it.next();
 					log("jar:"+jar.getName());
@@ -143,12 +143,12 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 	
 
-	private void handleEntry(ZipOutputStream target, Resource res, EntryListener listener) throws IOException {
-		ZipInputStream zis = new ZipInputStream(res.getInputStream());
+	private void handleEntry(ZipOutputStream target, File file, EntryListener listener) throws IOException {
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
 		try{
 			ZipEntry entry;
 			while((entry=zis.getNextEntry())!=null){
-				listener.handleEntry(res,zis,entry);
+				listener.handleEntry(file,zis,entry);
 				zis.closeEntry();
 			}
 		}
@@ -166,7 +166,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		}
 
 		@Override
-		public void handleEntry(Resource zipFile,ZipInputStream source,ZipEntry entry) throws IOException {
+		public void handleEntry(File zipFile,ZipInputStream source,ZipEntry entry) throws IOException {
 			
 			// manifest
 			if("META-INF/MANIFEST.MF".equalsIgnoreCase(entry.getName())) {
@@ -218,7 +218,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	
 	public interface EntryListener {
 
-		public void handleEntry(Resource zipFile, ZipInputStream source, ZipEntry entry) throws IOException;
+		public void handleEntry(File zipFile, ZipInputStream source, ZipEntry entry) throws IOException;
 
 	}
 	
@@ -251,9 +251,8 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 	
 
-	public static void test(String[] jars, String trg) throws Exception {
-		Cast caster = CFMLEngineFactory.getInstance().getCastUtil();
-		Resource target=caster.toResource(trg);
+	/*public static void test(String[] jars, String trg) throws Exception {
+		File target=new File(trg);
 		BundleBuilderFactory bf = new BundleBuilderFactory("Test", "test", "", "1.0.0", null);
 		for(int i=0;i<jars.length;i++){
 			bf.addJar(caster.toResource(jars[i]));
@@ -261,5 +260,5 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		bf.build(target);
 		
 		
-	}
+	}*/
 }

@@ -1,7 +1,6 @@
 package railo.runtime.type;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.PageException;
