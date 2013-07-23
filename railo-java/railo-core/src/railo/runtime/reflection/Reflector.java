@@ -3,6 +3,7 @@ package railo.runtime.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.exp.SecurityException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -54,6 +57,9 @@ public final class Reflector {
 
 	
     private static final Object NULL = new Object();
+
+
+	private static final Collection.Key SET_ACCESSIBLE = KeyImpl.intern("setAccessible");
     
     
 	private static WeakConstructorStorage cStorage=new WeakConstructorStorage();
@@ -800,6 +806,9 @@ public final class Reflector {
 		if(obj==null) {
 			throw new ExpressionException("can't call method ["+methodName+"] on object, object is null");
 		}
+		
+		checkAccesibility(obj,methodName);
+        
         
 		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
 		if(mi==null)
@@ -818,10 +827,22 @@ public final class Reflector {
 	}
 	
 
+	private static void checkAccesibility(Object obj, Key methodName) {
+		if(methodName.equals(SET_ACCESSIBLE) && obj instanceof Member) {
+        	Member member=(Member) obj;
+        	Class<?> clazz = member.getDeclaringClass();
+        	if(clazz.getPackage().getName().startsWith("railo.")) {
+        		throw new PageRuntimeException(new SecurityException("Changing the accesibility of an object's members in the railo.* package is not allowed"));
+        	}        	
+        }
+	}
+
 	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args, Object defaultValue) {
 		if(obj==null) {
 			return defaultValue;
 		}
+		checkAccesibility(obj,methodName);
+        
 		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
 		if(mi==null)
 		    return defaultValue;
