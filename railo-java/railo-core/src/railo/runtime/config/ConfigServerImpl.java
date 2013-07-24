@@ -71,7 +71,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private static ConfigServerImpl instance;
 
 	private String[] authKeys;
-	private String ioID;
+	private String idPro;
 	
 	/**
      * @param engine 
@@ -151,11 +151,11 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return null;
     }
     
-    public String getIOId() {
-    	if(ioID==null){
-    		ioID = getId(getSecurityKey(),getSecurityToken(),true,null);
+    public String getIdPro() {
+    	if(idPro==null){
+    		idPro = getId(getSecurityKey(),getSecurityToken(),true,null);
     	}
-    	return ioID;
+    	return idPro;
     }
     
     /**

@@ -21,7 +21,7 @@ import railo.runtime.type.util.KeyConstants;
 public final class GetRailoId implements Function {
 
 	private static final Collection.Key SECURITY_KEY = KeyImpl.intern("securityKey");
-	private static final Collection.Key IO_ID = KeyImpl.intern("ioID");
+	private static final Collection.Key ID_PRO = KeyImpl.intern("idPro");
 
 	public static Struct call(PageContext pc ) throws PageException {
 		Struct sct=new StructImpl();
@@ -37,7 +37,7 @@ public final class GetRailoId implements Function {
     		ConfigWebImpl cwi = (ConfigWebImpl)config;
     		server.set(SECURITY_KEY, cwi.getServerSecurityKey());
     		server.set(KeyConstants._id, cwi.getServerId());
-    		server.set(IO_ID, cwi.getIOServerId());
+    		server.set(ID_PRO, cwi.getServerIdPro());
     		sct.set(KeyConstants._server, server);
     	}
     	
