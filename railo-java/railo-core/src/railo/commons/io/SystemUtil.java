@@ -925,18 +925,21 @@ public final class SystemUtil {
 		}
 		return loaderVersion;
 	}
-	public static String getMacAddress() throws IOException {
+	public static String getMacAddress() {
 		if(macAddress==null) {
-			InetAddress ip = InetAddress.getLocalHost();
-			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-			byte[] mac = network.getHardwareAddress();
-	  
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < mac.length; i++) {
-				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));		
+			try{
+				InetAddress ip = InetAddress.getLocalHost();
+				NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+				byte[] mac = network.getHardwareAddress();
+		  
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < mac.length; i++) {
+					sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));		
+				}
+				macAddress= sb.toString();
 			}
+			catch(Throwable t){}
 			
-			macAddress= sb.toString();
 		}
 		return macAddress;
 	}
