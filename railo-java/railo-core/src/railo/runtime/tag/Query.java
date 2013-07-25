@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -24,6 +25,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -210,9 +212,19 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	/** set the value datasource
 	*  The name of the data source from which this query should retrieve data.
 	* @param datasource value to set
+	 * @throws ClassException 
 	**/
-	public void setDatasource(String datasource) throws PageException	{
-		this.datasource=((PageContextImpl)pageContext).getDataSource(datasource);
+
+	public void setDatasource(Object datasource) throws PageException, ClassException	{
+		if (Decision.isString(datasource)) {
+			this.datasource=((PageContextImpl)pageContext).getDataSource((String)datasource);
+		} else if (Decision.isStruct(datasource)) {
+			this.datasource=AppListenerUtil.toDataSource("__temp__", (Struct)datasource);
+		} else {
+			throw new ApplicationException("attribute [datasource] must be datasource name or a datasource definition(struct)");
+			
+		}
+
 	}
 
 	/** set the value timeout
