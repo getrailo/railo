@@ -1922,11 +1922,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    		try {
 					HttpServletRequest _req = getHttpServletRequest();
 	    			write("Available sevice mappings are:<ul>");
-					railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+	    			railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+	    			railo.runtime.rest.Mapping _mapping;
 					String path;
 					for(int i=0;i<mappings.length;i++){
-						path=_req.getContextPath()+ReqRspUtil.getScriptName(_req)+mappings[i].getVirtual();
-						write("<li>"+path+"</li>");
+						_mapping=mappings[i];
+						Resource p = _mapping.getPhysical();
+						path=_req.getContextPath()+ReqRspUtil.getScriptName(_req)+_mapping.getVirtual();
+						write("<li "+(p==null || !p.isDirectory()?" style=\"color:red\"":"")+">"+path+"</li>");
 						
 						
 					}
