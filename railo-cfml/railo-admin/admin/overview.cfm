@@ -406,17 +406,19 @@ Error Output --->
 			</td>
 			<td width="2%"></td>
 			<td valign="top" width="33%">
-				<script type="text/javascript">
-					function updateBindError()
-					{
-						//console.log(arguments);
-						$('##updateinfo').after('<div class=""error"">Update info could not be retrieved</div>');
-					}
-				</script>
-				<h2 id="updateinfo">Update Info</h2>
-				<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
-				<cfdiv onBindError="updateBindError"
-				bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
+
+				<h2>Update Info</h2>
+				<div id="updateInfoDesc"></div>
+
+				<cfsavecontent variable="Request.htmlBody" append="true">
+					<script type="text/javascript">
+
+						$( function() {
+
+							$('##updateInfoDesc').load('update.cfm?#session.urltoken#&adminType=#request.admintype#');
+						} );
+					</script>
+				</cfsavecontent>
 
 				<!--- Memory Usage --->
 				<cftry>
@@ -514,7 +516,7 @@ Error Output --->
 							<tr>
 								<td></td>
 								<td colspan="3" style="background-color:##FCC;">
-									Warning: 
+									Warning:
 									<cfif ( contexts.clientElements GT filesThreshold )>
 										<b>#numberFormat( contexts.clientElements, "," )#</b> Client files
 									</cfif>
