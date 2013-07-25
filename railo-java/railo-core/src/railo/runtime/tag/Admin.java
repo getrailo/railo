@@ -41,6 +41,7 @@ import railo.commons.io.res.filter.LogResourceFilter;
 import railo.commons.io.res.filter.NotResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
+import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -191,6 +192,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Key PROCEDURE = KeyImpl.intern("procedure");
 	private static final Key SERVER_LIBRARY = KeyImpl.intern("serverlibrary");
 	private static final Key KEEP_ALIVE = KeyImpl.intern("keepalive");
+	private static final Key CLIENT_SIZE = KeyImpl.intern("clientSize");
+	private static final Key SESSION_SIZE = KeyImpl.intern("sessionSize");
+	private static final Key CLIENT_ELEMENTS = KeyImpl.intern("clientElements");
+	private static final Key SESSION_ELEMENTS = KeyImpl.intern("sessionElements");
 
 	private static final short MAPPING_REGULAR = 1;
 	private static final short MAPPING_CT = 2;
@@ -1084,7 +1089,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         					KeyConstants._label,
         					HAS_OWN_SEC_CONTEXT,
         					KeyConstants._url,
-        					CONFIG_FILE},
+        					CONFIG_FILE,
+        					CLIENT_SIZE,CLIENT_ELEMENTS,SESSION_SIZE,SESSION_ELEMENTS},
         			factories.length,getString("admin",action,"returnVariable"));
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
         ConfigWebImpl cw;
@@ -1102,10 +1108,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
             qry.setAtEL(KeyConstants._label,row,factory.getLabel());
             qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cw.hasIndividualSecurityManager()));
+
+            setScopeDirInfo(qry,row,CLIENT_SIZE,CLIENT_ELEMENTS,cw.getClientScopeDir());
+            setScopeDirInfo(qry,row,SESSION_SIZE,SESSION_ELEMENTS,cw.getSessionScopeDir());
         }
     }
 
-    private void doHasIndividualSecurity() throws PageException {
+    private void setScopeDirInfo(Query qry, int row, Key sizeName,Key elName, Resource dir) { 
+    	qry.setAtEL(sizeName,row,Caster.toDouble(ResourceUtil.getRealSize(dir)));
+    	qry.setAtEL(elName,row,Caster.toDouble(ResourceUtil.getChildCount(dir)));	
+	}
+
+	private void doHasIndividualSecurity() throws PageException {
         pageContext.setVariable(
                  getString("admin",action,"returnVariable"),
                  Caster.toBoolean(

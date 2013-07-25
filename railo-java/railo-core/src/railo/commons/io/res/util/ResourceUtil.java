@@ -1110,6 +1110,26 @@ public final class ResourceUtil {
 		return 0;
 	}
 
+	public static int getChildCount(Resource res) {
+		return getChildCount(res, null);
+	}
+	
+	public static int getChildCount(Resource res, ResourceFilter filter) {
+		if(res.isFile()) {
+			return 1;
+		}
+		else if(res.isDirectory()) {
+			int size=0;
+			Resource[] children = filter==null?res.listResources():res.listResources(filter);
+			for(int i=0;i<children.length;i++) {
+				size+=getChildCount(children[i]);
+			}
+			return size;
+		}
+		
+		return 0;
+	}
+
 
 	/**
 	 * return if Resource is empty, means is directory and has no children or a empty file,
