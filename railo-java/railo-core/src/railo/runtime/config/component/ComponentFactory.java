@@ -38,6 +38,7 @@ public class ComponentFactory {
 		if(!testDir.exists())testDir.mkdirs();
 		deploy(testDir,testPath,doNew,"AdministratorTest");
 		deploy(testDir,testPath,doNew,"RailoTestSuite");
+		deploy(testDir,testPath,doNew,"RailoTestSuiteRunner");
 		deploy(testDir,testPath,doNew,"RailoTestCase");
 		}
 		
