@@ -47,7 +47,6 @@
 			<cfset curr=server.railo.version>
 			<cfset avi=getAviableVersion(update)>
 			<cfset hasUpdate=curr LT avi>
-			<cfset hasUpdate=1>
 		</cfif>
 
 		<!--- Extensions --->
