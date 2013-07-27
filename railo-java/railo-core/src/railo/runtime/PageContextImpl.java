@@ -1358,14 +1358,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 	
     private void param(String type, String name, Object defaultValue, double min,double max, String strPattern, int maxLength) throws PageException {
-		
-    	
+
     	// check attributes type
-    	if(type==null)type="any";
+    	if (type==null) type="any";
 		else type=type.trim().toLowerCase();
 
     	// check attributes name
-    	if(StringUtil.isEmpty(name))
+    	if (StringUtil.isEmpty(name))
 			throw new ExpressionException("The attribute name is required");
     	
     	Object value=null;
@@ -1381,7 +1380,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		}
 		
 		// cast and set value
-		if(!"any".equals(type)) {
+		if (!"any".equals(type)) {
 			// range
 			if("range".equals(type)) {
 				double number = Caster.toDoubleValue(value);
@@ -1392,33 +1391,38 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				setVariable(name,Caster.toDouble(number));
 			}
 			// regex
-			else if("regex".equals(type) || "regular_expression".equals(type)) {
+			else if ("regex".equals(type) || "regular_expression".equals(type)) {
 				String str=Caster.toString(value);
 				
 				if(strPattern==null) throw new ExpressionException("Missing attribute [pattern]");
 				
 				try {
+
 					Pattern pattern = new Perl5Compiler().compile(strPattern, Perl5Compiler.DEFAULT_MASK);
 			        PatternMatcherInput input = new PatternMatcherInput(str);
 			        if( !new Perl5Matcher().matches(input, pattern))
 			        	throw new ExpressionException("The value ["+str+"] doesn't match the provided pattern ["+strPattern+"]");
-			        
 				} catch (MalformedPatternException e) {
+
 					throw new ExpressionException("The provided pattern ["+strPattern+"] is invalid",e.getMessage());
 				}
+
 				setVariable(name,str);
 			}
+            else if ( type.startsWith( "int" ) ) {
+
+                if ( !Decision.isCastableToNumeric( value ) || ( Caster.toIntValue( value ) != Caster.toDoubleValue( value ) ) )
+                    throw new ExpressionException("The value [" + value + "] is not a valid integer");
+            }
 			else {
-				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
+				if (!Decision.isCastableTo(type,value,true,true,maxLength)) {
 					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
 						StringBuilder msg=new StringBuilder(CasterException.createMessage(value, type));
 						msg.append(" with a maximum length of "+maxLength+" characters");
 						throw new CasterException(msg.toString());	
 					}
-					throw new CasterException(value,type);	
+					throw new CasterException(value,type);
 				}
-				
-				
 				
 				setVariable(name,value);
 				//REALCAST setVariable(name,Caster.castTo(this,type,value,true));
@@ -1426,11 +1430,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		}
 	    else if(isNew) setVariable(name,value);
 	}
-    
-    
-    
-    
-	
+
+
     @Override
     public Object removeVariable(String var) throws PageException {
 		return VariableInterpreter.removeVariable(this,var);
