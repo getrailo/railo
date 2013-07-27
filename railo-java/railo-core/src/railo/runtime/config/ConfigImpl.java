@@ -398,7 +398,7 @@ public abstract class ConfigImpl implements Config {
 	protected int writerType=CFML_WRITER_REFULAR;
 	private long configFileLastModified;
 	private boolean checkForChangesInConfigFile;
-	
+	private String apiKey=null;
 	
 	
 	/**
@@ -3505,5 +3505,13 @@ public abstract class ConfigImpl implements Config {
     public abstract boolean getFullNullSupport();
 
     public abstract Cluster createClusterScope() throws PageException;
+
+	protected void setApiKey(String apiKey) {
+		this.apiKey=apiKey;
+	}
+	
+	public String getApiKey() {
+		return apiKey;
+	}
 	
 }

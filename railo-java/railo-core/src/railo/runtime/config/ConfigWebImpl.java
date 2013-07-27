@@ -488,4 +488,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean hasIndividualSecurityManager() {
 			return configServer.hasIndividualSecurityManager(getId());
 	    }
+		public String getServerApiKey() {
+			return configServer.getApiKey();
+	    }
 }

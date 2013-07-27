@@ -2566,6 +2566,11 @@ public final class ConfigWebFactory {
 			}
 		}
 		
+		// api key
+		String apiKey = railoConfiguration.getAttribute("api-key");
+		if(!StringUtil.isEmpty(apiKey))config.setApiKey(apiKey);
+		
+		
 		
 		// default password
 		if (config instanceof ConfigServerImpl) {
