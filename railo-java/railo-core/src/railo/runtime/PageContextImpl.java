@@ -706,10 +706,41 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return pathList.getLast().getRealPage(realPath);
 	}
     
-    public PageSource getRelativePageSourceExisting(String realPath) {
+   public PageSource getRelativePageSourceExisting(String realPath) {
     	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
     	if(pathList.size()==0) return null;
 		PageSource ps = pathList.getLast().getRealPage(realPath);
+		if(PageSourceImpl.pageExist(ps)) return ps;
+		return null;
+	}
+    
+     /**
+     * 
+     * @param realPath
+     * @param previous relative not to the caller, relative to the callers caller
+     * @return
+     */
+    public PageSource getRelativePageSourceExisting(String realPath, boolean previous ) {
+    	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
+    	if(pathList.size()==0) return null;
+    	
+    	PageSource ps=null,tmp=null;
+    	if(previous) {
+    		boolean valid=false;
+    		ps=pathList.getLast();
+    		for(int i=pathList.size()-2;i>=0;i--){
+    			tmp=pathList.get(i);
+    			if(tmp!=ps) {
+    				ps=tmp;
+    				valid=true;
+    				break;
+    			}
+    		}
+    		if(!valid) return null;
+    	}
+    	else ps=pathList.getLast();
+    	
+    	ps = ps.getRealPage(realPath);
 		if(PageSourceImpl.pageExist(ps)) return ps;
 		return null;
 	}
