@@ -349,12 +349,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	/** 
 	 * default Constructor
-	 * @param factoryImpl 
 	 * @param scopeContext
 	 * @param config Configuration of the CFML Container
-	 * @param compiler CFML Compiler
 	 * @param queryCache Query Cache Object
 	 * @param id identity of the pageContext
+	 * @param servlet
 	 */
 	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id,HttpServlet servlet) {
 		// must be first because is used after
@@ -1389,8 +1388,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 	
     private void param(String type, String name, Object defaultValue, double min,double max, String strPattern, int maxLength) throws PageException {
-		
-    	
+
     	// check attributes type
     	if(type==null)type="any";
 		else type=type.trim().toLowerCase();
@@ -1439,6 +1437,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				}
 				setVariable(name,str);
 			}
+			else if ( type.equals( "int" ) || type.equals( "integer" ) ) {
+
+				if ( !Decision.isInteger( value ) )
+					throw new ExpressionException( "The value [" + value + "] is not a valid integer" );
+			}
 			else {
 				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
 					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
@@ -1449,26 +1452,20 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					throw new CasterException(value,type);	
 				}
 				
-				
-				
 				setVariable(name,value);
 				//REALCAST setVariable(name,Caster.castTo(this,type,value,true));
 			}
 		}
 	    else if(isNew) setVariable(name,value);
 	}
-    
-    
-    
-    
-	
+
+
     @Override
     public Object removeVariable(String var) throws PageException {
 		return VariableInterpreter.removeVariable(this,var);
 	}
 
     /**
-     * 
      * a variable reference, references to variable, to modifed it, with global effect.
      * @param var variable name to get
      * @return return a variable reference by string syntax ("scopename.key.key" -> "url.name")
