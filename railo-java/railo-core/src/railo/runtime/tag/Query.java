@@ -216,15 +216,16 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	**/
 
 	public void setDatasource(Object datasource) throws PageException, ClassException	{
-		if (Decision.isString(datasource)) {
-			this.datasource=((PageContextImpl)pageContext).getDataSource((String)datasource);
-		} else if (Decision.isStruct(datasource)) {
-			this.datasource=AppListenerUtil.toDataSource("__temp__", (Struct)datasource);
-		} else {
+		if (Decision.isStruct(datasource)) {
+			this.datasource=AppListenerUtil.toDataSource("__temp__", Caster.toStruct(datasource));
+		} 
+		else if (Decision.isString(datasource)) {
+			this.datasource=((PageContextImpl)pageContext).getDataSource(Caster.toString(datasource));
+		} 
+		else {
 			throw new ApplicationException("attribute [datasource] must be datasource name or a datasource definition(struct)");
 			
 		}
-
 	}
 
 	/** set the value timeout
