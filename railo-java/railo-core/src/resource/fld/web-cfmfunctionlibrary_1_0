@@ -6341,6 +6341,52 @@ Default list delimiter: comma character.</description>
 			<type>string</type>
 		</return>
 	</function>
+	<!-- hash40 -->
+	<function>
+		<name>hash40</name>
+		<class>railo.runtime.functions.string.Hash40</class>
+		<description>This function only exists for backward compstibility to Railo 4.0 or older version that has produced a incorrect result for non us-ascii caharacters,
+		Only use this function for backward compatibility.
+		
+		Converts a variable-length string to a 32-byte, hexadecimal
+        string, using the MD5 algorithm. (It is not possible to convert
+        the hash result back to the source string.)
+        32-byte, hexadecimal string</description>
+		<argument>
+			<name>input</name>
+			<type>any</type>
+			<required>Yes</required>
+		<description>String to hash.</description>
+    </argument>
+		<argument>
+			<name>algorithm</name>
+			<type>string</type>
+			<required>No</required>
+		<description>The algorithm to use to hash the string. Supported are the following algorithms:
+- CFMX_COMPAT: generating a hash string using classic CFML algorithm.
+- MD5: (default) Generates a 32-character, hexadecimal string, using the MD5 algorithm.
+- SHA: Generates a 28-character string using the Secure Hash Standard SHA-1 algorithm specified by Nation Institute of Standards and Technology (NIST) FIPS-180-2.
+- SHA-256: Generates a 44-character string using the SHA-256 algorithm specified by FIPS-180-2.
+- SHA-384: Generates a 64-character string using the SHA-384 algorithm specified by FIPS-180-2.
+- SHA-512: Generates an 88-character string using the SHA-1 algorithm specified by FIPS-180-2.</description>
+    </argument>
+		<argument>
+			<name>encoding</name>
+			<type>string</type>
+			<required>No</required>
+			<description>A string specifying the encoding to use when converting
+            the string to byte data used by the hash algorithm.</description>
+		</argument>
+		<argument>
+			<name>numIterations</name>
+			<type>number</type>
+			<required>No</required>
+			<description>number of iterations; default is 1.</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- hour -->
 	<function>
 		<name>hour</name>
