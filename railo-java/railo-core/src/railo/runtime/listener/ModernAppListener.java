@@ -26,6 +26,7 @@ import railo.runtime.component.Member;
 import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.Abort;
+import railo.runtime.exp.PostContentAbort;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
@@ -373,7 +374,9 @@ public class ModernAppListener extends AppListenerSupport {
 		} 
 		catch (PageException pe) {
 			if(Abort.isSilentAbort(pe)) {
-				if(catchAbort)return Boolean.FALSE;
+				if(catchAbort)
+					return ( pe instanceof PostContentAbort) ? Boolean.TRUE : Boolean.FALSE;
+
 				throw pe;
 			}
 			throw new ModernAppListenerException(pe,eventName.getString());
