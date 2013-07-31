@@ -17,9 +17,9 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
-import railo.commons.lang.mimetype.MimeType;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContextImpl;
+import railo.runtime.exp.PostContentAbort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
@@ -31,9 +31,6 @@ import railo.runtime.type.util.ListUtil;
 /**
 * Defines the MIME type returned by the current page. Optionally, lets you specify the name of a file
 *   to be returned with the page.
-*
-*
-*
 **/
 public final class Content extends BodyTagImpl {
 
@@ -94,7 +91,7 @@ public final class Content extends BodyTagImpl {
     /** 
     * the content to output as binary
     * @param content value to set
-    * @deprecated replaced with <code>{@link #setVariable(String)}</code>
+    * @deprecated replaced with <code>{@link #setVariable(Object)}</code>
     **/
     public void setContent(byte[] content)    {
         this.content=content;
@@ -135,19 +132,18 @@ public final class Content extends BodyTagImpl {
             throw Caster.toPageException(e);
         }*/
     }
+
+
     private int _doStartTag() throws PageException   {
         // check the file before doing anyrhing else
     	Resource file=null;
 		if(content==null && !StringUtil.isEmpty(strFile)) 
     		file = ResourceUtil.toResourceExisting(pageContext,strFile);
-        
-    	
-    	
-    	
+
 		// get response object
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
 	    
-        // check commited
+        // check committed
         if(rsp.isCommitted())
             throw new ApplicationException("content is already flushed","you can't rewrite head of response after part of the page is flushed");
         
@@ -170,8 +166,7 @@ public final class Content extends BodyTagImpl {
         else if(_range==RANGE_NO) {
             rsp.setHeader("Accept-Ranges", "none");
             hasRanges=false;
-        }	
-        
+        }
         
         // set content
         if(this.content!=null || file!=null) {
@@ -230,7 +225,7 @@ public final class Content extends BodyTagImpl {
                 if(deletefile && file!=null) ResourceUtil.removeEL(file, true);
                 ((PageContextImpl)pageContext).getRootOut().setClosed(true);
             }
-            throw new railo.runtime.exp.Abort(railo.runtime.exp.Abort.SCOPE_REQUEST);
+            throw new PostContentAbort();
         }
         // clear current content
         else if(reset)pageContext.clear();
@@ -258,7 +253,6 @@ public final class Content extends BodyTagImpl {
      */
     public void hasBody(boolean hasBody) {
     }
-    
 
 
 	private Range[] getRanges() {
@@ -278,6 +272,7 @@ public final class Content extends BodyTagImpl {
 		}
 		return null;
 	}
+
 	private Range[] getRanges(String name,String range) {
 		if(StringUtil.isEmpty(range, true)) return null;
 		range=StringUtil.removeWhiteSpace(range);
@@ -325,12 +320,15 @@ public final class Content extends BodyTagImpl {
 
 	private void failRange(String name, String range) {
 		PrintWriter err = pageContext.getConfig().getErrWriter();
-		SystemOut.printDate(err,"fails to parse the header field ["+name+":"+range+"]");
+		SystemOut.printDate(err,"failed to parse the header field ["+name+":"+range+"]");
 	}
 }
+
 class Range {
+
 	long from;
 	long to;
+
 	public Range(long from, long len) {
 		this.from = from;
 		this.to = len;
