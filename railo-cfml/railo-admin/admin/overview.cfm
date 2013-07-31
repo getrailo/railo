@@ -408,7 +408,7 @@ Error Output --->
 			<td valign="top" width="33%">
 
 				<h2>Update Info</h2>
-				<div id="updateInfoDesc"></div>
+				<div id="updateInfoDesc"><div style="text-align: center;"><img src="../res/img/spinner16.gif.cfm"></div></div>
 
 				<cfsavecontent variable="Request.htmlBody" append="true">
 					<script type="text/javascript">
