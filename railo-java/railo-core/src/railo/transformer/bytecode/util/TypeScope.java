@@ -64,6 +64,7 @@ public final class TypeScope {
     public final static Method METHOD_ARGUMENT_BIND=new Method("argumentsScope",SCOPES[Scope.SCOPE_ARGUMENTS],new Type[]{Types.BOOLEAN_VALUE});
     public final static Method METHOD_VAR_BIND=new Method("localScope",SCOPES[ScopeSupport.SCOPE_VAR],new Type[]{Types.BOOLEAN_VALUE});
     
+    public final static Method METHOD_LOCAL_EL=new Method("localGet",Types.OBJECT,new Type[]{Types.BOOLEAN_VALUE, Types.OBJECT});
     public final static Method METHOD_LOCAL_BIND=new Method("localGet",Types.OBJECT,new Type[]{Types.BOOLEAN_VALUE});
     public final static Method METHOD_LOCAL_TOUCH=new Method("localTouch",			Types.OBJECT,new Type[]{});
     public final static Method METHOD_THIS_BIND=new Method("thisGet",Types.OBJECT,new Type[]{Types.BOOLEAN_VALUE});

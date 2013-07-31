@@ -1151,9 +1151,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	return local; 
     }
 
-    
+
     public Object localGet() throws PageException { 
     	return localGet(false);
+    }
+    
+    public Object localGet(boolean bind, Object defaultValue) { 
+    	if(undefined.getCheckArguments()){
+    		return localScope(bind);
+    	}
+    	return undefinedScope().get(KeyConstants._local,defaultValue);
     }
     
     public Object localGet(boolean bind) throws PageException { 
@@ -1187,6 +1194,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		return ((ComponentScope)undefined.variablesScope()).getComponent();
     	}
     	return undefinedScope().get(KeyConstants._THIS);
+    }
+    
+    public Object thisGet(Object defaultValue) { 
+    	return thisTouch(defaultValue);
+    }
+
+    public Object thisTouch(Object defaultValue) {
+    	// inside a component
+    	if(undefined.variablesScope() instanceof ComponentScope){
+    		return ((ComponentScope)undefined.variablesScope()).getComponent();
+    	}
+    	return undefinedScope().get(KeyConstants._THIS,defaultValue);
     }
     
 	
