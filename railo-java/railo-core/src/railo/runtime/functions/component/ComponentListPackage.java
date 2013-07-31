@@ -183,10 +183,13 @@ public class ComponentListPackage implements Function {
 					
 					if(StringUtil.isEmpty(sourceName)) {
 						c=IOUtil.toString(children[i],(Charset)null);
-						c=c.substring(0,c.indexOf("<clinit>"));
-						c = ListUtil.last(c, "/\\",true).trim();
-						if(StringUtil.endsWithIgnoreCase(c, ".cfc"))
-							list.add(c);
+						int loc = c.indexOf("<clinit>");
+						if(loc !=-1) {
+							c=c.substring(0,loc);
+							c = ListUtil.last(c, "/\\",true).trim();
+							if(StringUtil.endsWithIgnoreCase(c, ".cfc"))
+								list.add(c);
+						}
 					}
 					else list.add(sourceName);
 					
