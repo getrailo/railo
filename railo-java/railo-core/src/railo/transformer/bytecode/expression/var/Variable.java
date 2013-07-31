@@ -262,7 +262,7 @@ public class Variable extends ExpressionBase implements Invoker {
 
 			// UDF
 			else if(member instanceof UDF) {
-				return _writeOutUDF(bc,(UDF) member);
+				rtn= _writeOutUDF(bc,(UDF) member);
 			}
     	}
     	return rtn;
