@@ -9772,7 +9772,7 @@ Manipulates existing PDF documents. The following list describes some of the tas
             - ExecutionTime: Execution time for the SQL request. (numeric)</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>any</type>
 			<name>dataSource</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
