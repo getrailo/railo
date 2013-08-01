@@ -321,7 +321,7 @@ public final class Caster {
 
     /**
      * cast a Object to a Double Object (reference Type)
-     * @param o Object to cast
+     * @param f Object to cast
      * @return casted Double Object
      * @throws PageException
      */
@@ -1070,7 +1070,7 @@ public final class Caster {
 
     /**
      * cast a Object to a char value (primitive value type)
-     * @param o Object to cast
+     * @param str Object to cast
      * @return casted char value
      * @throws PageException
      */
@@ -1848,7 +1848,7 @@ public final class Caster {
     
     /**
      * cast a String to a String (do Nothing)
-     * @param o Object to cast
+     * @param str
      * @return casted String
      * @throws PageException
      */
@@ -2401,6 +2401,10 @@ public final class Caster {
         if(Decision.isSimpleValue(o) || Decision.isArray(o))
         	throw new CasterException(o,"Struct");
         if(o instanceof Collection) return new CollectionStruct((Collection)o);
+
+        if ( o == null )
+            throw new CasterException( "null can not be casted to a Struct" );
+
         return new ObjectStruct(o);
     }
     
