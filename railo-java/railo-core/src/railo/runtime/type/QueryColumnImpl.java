@@ -252,7 +252,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     public Object get(int row, Object defaultValue) {
     	if(row<1 || row>size) return defaultValue;
-		return data[row-1];
+		Object result = data[row-1];
+        return ( result == null ) ? defaultValue : result;
 	}
 
     // FUTURE this method should replace the method above, but it needs adjustment with all callers
