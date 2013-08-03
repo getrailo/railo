@@ -53,7 +53,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	
 	/**
 	 * constructor of the class
-	 * @param pageContextImpl 
+	 * @param pc
 	 * @param type type of the undefined scope (ServletConfigImpl.SCOPE_STRICT;ServletConfigImpl.SCOPE_SMALL;ServletConfigImpl.SCOPE_STANDART)
 	 */
 	public UndefinedImpl(PageContextImpl pc, short type) {
@@ -171,7 +171,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			rtn=qryStack.getDataFromACollection(pc,key,Null.NULL);
 			if(rtn!=Null.NULL) {
 				if(debug) debugCascadedAccess(pc,"query", key);
-				if(!NullSupportHelper.full() && rtn==null) return "";
+
+                if ( rtn == null )
+                    return NullSupportHelper.empty();
+
 				return rtn;
 		    }
 		}
@@ -265,7 +268,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
 	/**
 	 * return a list of String with the scope names
-	 * @param key
 	 * @return
 	 */
 	public List<String> getScopeNames() {
