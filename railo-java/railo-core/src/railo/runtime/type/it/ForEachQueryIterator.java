@@ -2,6 +2,7 @@ package railo.runtime.type.it;
 
 import java.util.Iterator;
 
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection.Key;
@@ -14,12 +15,13 @@ public class ForEachQueryIterator implements Iterator {
 	private Query qry;
 	private int pid;
 	private int start,current=0;
-
+	Key[] names;
 
 	public ForEachQueryIterator(Query qry, int pid){
 		this.qry=qry;
 		this.pid=pid;
 		this.start=qry.getCurrentrow(pid);
+        this.names = qry.getColumnNames();
 	}
 	
 	@Override
@@ -32,9 +34,8 @@ public class ForEachQueryIterator implements Iterator {
 		try {
 			if(qry.go(++current,pid)) {
 				Struct sct=new StructImpl();
-				Key[] names = qry.getColumnNames();
 				for(int i=0;i<names.length;i++){
-					sct.setEL(names[i], qry.get(names[i],null));
+					sct.setEL(names[i], qry.get( names[i], NullSupportHelper.empty() ));
 				}
 				return sct;
 			}
