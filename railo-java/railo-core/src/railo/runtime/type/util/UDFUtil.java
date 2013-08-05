@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.commons.digest.HashUtil;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PagePlus;
@@ -21,6 +22,10 @@ import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
 public class UDFUtil {
+
+	private static final char CACHE_DEL = ';';
+	private static final char CACHE_DEL2 = ':';
+
 
 	/**
 	 * add detailed function documentation to the exception
@@ -85,10 +90,12 @@ public class UDFUtil {
 	}
 
 	public static String callerHash(UDF udf, Object[] args, Struct values) throws ApplicationException {
-		StringBuilder sb=new StringBuilder(udf.getPageSource().getDisplayPath())
-			.append(';')
-			.append(udf.getFunctionName())
-			.append(';');
+		StringBuilder sb=new StringBuilder()
+			.append(HashUtil.create64BitHash(udf.getPageSource().getDisplayPath()))
+			.append(CACHE_DEL)
+			.append(HashUtil.create64BitHash(udf.getFunctionName()))
+			.append(CACHE_DEL);
+		
 		
 		if(values!=null) {
 			Iterator<Entry<Key, Object>> it = values.entryIterator();
@@ -96,18 +103,18 @@ public class UDFUtil {
 			while(it.hasNext()){
 				e = it.next();
 				if(!Decision.isSimpleValue(e.getValue())) throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
-				sb.append(e.getKey().getString()).append(':').append(e.getValue()).append(';');
+				sb.append(((KeyImpl)e.getKey()).hash()).append(CACHE_DEL2).append(HashUtil.create64BitHash(e.getValue().toString())).append(CACHE_DEL);
 				
 			}
 		}
 		else if(args!=null){
 			for(int i=0;i<args.length;i++){
 				if(!Decision.isSimpleValue(args[i])) throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
-				sb.append(args[i]).append(';');
+				sb.append(HashUtil.create64BitHash(args[i].toString())).append(CACHE_DEL);
 				
 			}
 		}
-		return sb.toString();
+		return HashUtil.create64BitHashAsString(sb, Character.MAX_RADIX);
 	}
 
 	public static Object getDefaultValue(PageContext pc, PageSource ps, int udfIndex, int index, Object defaultValue) throws PageException {
