@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
@@ -754,15 +755,10 @@ public class QueryImpl implements Query,Objects {
 		if(index!=-1) {
 			return columns[index].get(row,defaultValue);
 		}
-		if(key.getString().length()>0) {
-	        char c=key.lowerCharAt(0);
-	        if(c=='r') {
-	            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
-	        }
-	        else if(c=='c') {
-	            if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
-	            else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
-	        }
+		if(key.length()>=10) {
+	        if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
+	        if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
+	        if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
 		}
         return defaultValue;
 	}
@@ -776,22 +772,19 @@ public class QueryImpl implements Query,Objects {
 	public Object getAt(Collection.Key key, int row) throws PageException {
 		int index=getIndexFromKey(key);
 		if(index!=-1) {
-			if(NullSupportHelper.full()) return columns[index].get(row, null);
+			return columns[index].get(row, null);
+			/*if(NullSupportHelper.full()) return columns[index].get(row, null);
 			Object v = columns[index].get(row, null);
-			return v==null?"":v;
+			return v==null?"":v;*/
 		}
-        if(key.getString().length()>0) {
-        	char c=key.lowerCharAt(0);
-	        if(c=='r') {
-	            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
-			}
-	        else if(c=='c') {
-			    if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
-			    else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
-			}
+        if(key.length()>=10) {
+        	if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
+        	if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
+			if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
         }
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
+	
 
     @Override
     public synchronized int removeRow(int row) throws PageException {
@@ -1192,15 +1185,10 @@ public class QueryImpl implements Query,Objects {
 		int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
         
-		if(key.getString().length()>0) {
-        	char c=key.lowerCharAt(0);
-	        if(c=='r') {
-	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
-	        }
-	        if(c=='c') {
-	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
-	        }
+		if(key.length()>=10) {
+        	if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 		}
         throw new DatabaseException("key ["+key.getString()+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
@@ -1231,15 +1219,10 @@ public class QueryImpl implements Query,Objects {
 	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
         int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
-        if(key.length()>0) {
-        	char c=key.lowerCharAt(0);
-	        if(c=='r') {
-	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
-	        }
-	        if(c=='c') {
-	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
-	        }
+        if(key.length()>=10) {
+        	if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
         }
         return defaultValue;
 	}
@@ -1497,8 +1480,8 @@ public class QueryImpl implements Query,Objects {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
 		
-		Object o=getAt(keys[col-1],row,NullSupportHelper.NULL());
-		if(o==NullSupportHelper.NULL())
+		Object o=getAt(keys[col-1],row,Null.NULL);
+		if(o==Null.NULL)
 			throw new IndexOutOfBoundsException("invalid row index to retrieve Data from query, valid index goes from 1 to "+getRecordcount());
 		return Caster.toString( o,NullSupportHelper.full()?null:"");
     }
@@ -1619,24 +1602,6 @@ public class QueryImpl implements Query,Objects {
         }
         return cols;
     }
-
-    /*public synchronized Struct _getMetaData() {
-    	
-        Struct cols=new StructImpl();
-        for(int i=0;i<columns.length;i++) {
-            cols.setEL(columnNames[i],columns[i].getTypeAsString());
-        }
-        
-        Struct sct=new StructImpl();
-        sct.setEL(KeyConstants._NAME,getName());
-        sct.setEL(KeyConstants._COLUMNS,cols);
-        sct.setEL(KeyConstants._SQL,sql==null?"":sql.toString());
-        sct.setEL(KeyConstants._executionTime,new Double(exeTime));
-        sct.setEL(KeyConstants._RECORDCOUNT,new Double(getRowCount()));
-        sct.setEL(KeyConstants._cached,Caster.toBoolean(isCached()));
-        return sct;
-        
-    }*/
 
 	/**
 	 * @return the sql

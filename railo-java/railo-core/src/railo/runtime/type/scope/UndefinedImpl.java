@@ -171,7 +171,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			rtn=qryStack.getDataFromACollection(pc,key,Null.NULL);
 			if(rtn!=Null.NULL) {
 				if(debug) debugCascadedAccess(pc,"query", key);
-				if(!NullSupportHelper.full() && rtn==null) return "";
+				//if(!NullSupportHelper.full() && rtn==null) return "";
 				return rtn;
 		    }
 		}
@@ -359,6 +359,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 				return rtn;
             }
         }
+        
         
         // variable
         rtn=variable.get(key,NullSupportHelper.NULL());
