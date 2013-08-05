@@ -427,9 +427,9 @@
 									<cfinput type="radio" class="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 									#item#
 								</cfloop>
-								<cfif len(trim(field.getDescription()))><br><div class="comment">#field.getDescription()#</div></cfif>
 							<!--- @todo type checkbox,radio --->
 							</cfif>
+								<cfif len(trim(field.getDescription()))><br><div class="comment">#field.getDescription()#</div></cfif>
 						</td>
 					</tr>
 				</cfloop>
