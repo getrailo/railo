@@ -350,87 +350,92 @@ public class QueryImpl implements Query,Objects {
 
     private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys, TimeZone tz) throws SQLException, IOException, PageException {
     	if(result==null) return false;
-    	recordcount=0;
-		ResultSetMetaData meta = result.getMetaData();
-		columncount=meta.getColumnCount();
-		
-	// set header arrays
-		Collection.Key[] tmpColumnNames = new Collection.Key[columncount];
-		int count=0;
-		Collection.Key key;
-		String columnName;
-		for(int i=0;i<columncount;i++) {
-			columnName=QueryUtil.getColumnName(meta,i+1);
-			if(StringUtil.isEmpty(columnName))columnName="column_"+i;
-			key=KeyImpl.init(columnName);
-			int index=getIndexFrom(tmpColumnNames,key,0,i);
-			if(index==-1) {
-				tmpColumnNames[i]=key;
-				count++;
+    	try {
+	    	recordcount=0;
+			ResultSetMetaData meta = result.getMetaData();
+			columncount=meta.getColumnCount();
+			
+		// set header arrays
+			Collection.Key[] tmpColumnNames = new Collection.Key[columncount];
+			int count=0;
+			Collection.Key key;
+			String columnName;
+			for(int i=0;i<columncount;i++) {
+				columnName=QueryUtil.getColumnName(meta,i+1);
+				if(StringUtil.isEmpty(columnName))columnName="column_"+i;
+				key=KeyImpl.init(columnName);
+				int index=getIndexFrom(tmpColumnNames,key,0,i);
+				if(index==-1) {
+					tmpColumnNames[i]=key;
+					count++;
+				}
 			}
-		}
-		
-
-		columncount=count;
-		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
-		Cast[] casts = new Cast[columncount];
-		
-	// get all used ints
-		int[] usedColumns=new int[columncount];
-		count=0;
-		for(int i=0;i<tmpColumnNames.length;i++) {
-			if(tmpColumnNames[i]!=null) {
-				usedColumns[count++]=i;
-			}
-		}	
-					
-	// set used column names
-		int[] types=new int[columns.length];
-		for(int i=0;i<usedColumns.length;i++) {
-            columnNames[i]=tmpColumnNames[usedColumns[i]];
-            columns[i]=new QueryColumnImpl(this,columnNames[i],types[i]=meta.getColumnType(usedColumns[i]+1));
-            
-            if(types[i]==Types.TIMESTAMP)	casts[i]=Cast.TIMESTAMP;
-            else if(types[i]==Types.TIME)	casts[i]=Cast.TIME;
-            else if(types[i]==Types.DATE)	casts[i]=Cast.DATE;
-            else if(types[i]==Types.CLOB)	casts[i]=Cast.CLOB;
-            else if(types[i]==Types.BLOB)	casts[i]=Cast.BLOB;
-            else if(types[i]==Types.BIT)	casts[i]=Cast.BIT;
-            else if(types[i]==Types.ARRAY)	casts[i]=Cast.ARRAY;
-            //else if(types[i]==Types.TINYINT)	casts[i]=Cast.ARRAY;
-            
-            else if(types[i]==CFTypes.OPAQUE){
-            	if(SQLUtil.isOracle(result.getStatement().getConnection()))
-            		casts[i]=Cast.ORACLE_OPAQUE;
-            	else 
-            		casts[i]=Cast.OTHER;
-				
-            }
-            else casts[i]=Cast.OTHER;
-		}
-		
-		if(createGeneratedKeys && columncount==1 && columnNames[0].equals(GENERATED_KEYS) && dc!=null && DataSourceUtil.isMSSQLDriver(dc)) {
-			columncount=0;
-			columnNames=null;
-			columns=null;
-			setGeneratedKeys(dc, result,tz);
-			return false;
-		}
-		
-
-	// fill data
-		//Object o;
-		while(result.next()) {
-			if(maxrow>-1 && recordcount>=maxrow) {
-				break;
-			}
+			
+	
+			columncount=count;
+			columnNames=new Collection.Key[columncount];
+			columns=new QueryColumnImpl[columncount];
+			Cast[] casts = new Cast[columncount];
+			
+		// get all used ints
+			int[] usedColumns=new int[columncount];
+			count=0;
+			for(int i=0;i<tmpColumnNames.length;i++) {
+				if(tmpColumnNames[i]!=null) {
+					usedColumns[count++]=i;
+				}
+			}	
+						
+		// set used column names
+			int[] types=new int[columns.length];
 			for(int i=0;i<usedColumns.length;i++) {
-			    columns[i].add(casts[i].toCFType(tz,types[i], result, usedColumns[i]+1));
+	            columnNames[i]=tmpColumnNames[usedColumns[i]];
+	            columns[i]=new QueryColumnImpl(this,columnNames[i],types[i]=meta.getColumnType(usedColumns[i]+1));
+	            
+	            if(types[i]==Types.TIMESTAMP)	casts[i]=Cast.TIMESTAMP;
+	            else if(types[i]==Types.TIME)	casts[i]=Cast.TIME;
+	            else if(types[i]==Types.DATE)	casts[i]=Cast.DATE;
+	            else if(types[i]==Types.CLOB)	casts[i]=Cast.CLOB;
+	            else if(types[i]==Types.BLOB)	casts[i]=Cast.BLOB;
+	            else if(types[i]==Types.BIT)	casts[i]=Cast.BIT;
+	            else if(types[i]==Types.ARRAY)	casts[i]=Cast.ARRAY;
+	            //else if(types[i]==Types.TINYINT)	casts[i]=Cast.ARRAY;
+	            
+	            else if(types[i]==CFTypes.OPAQUE){
+	            	if(SQLUtil.isOracle(result.getStatement().getConnection()))
+	            		casts[i]=Cast.ORACLE_OPAQUE;
+	            	else 
+	            		casts[i]=Cast.OTHER;
+					
+	            }
+	            else casts[i]=Cast.OTHER;
 			}
-			++recordcount;
-		}
-		if(closeResult)result.close();
+			
+			if(createGeneratedKeys && columncount==1 && columnNames[0].equals(GENERATED_KEYS) && dc!=null && DataSourceUtil.isMSSQLDriver(dc)) {
+				columncount=0;
+				columnNames=null;
+				columns=null;
+				setGeneratedKeys(dc, result,tz);
+				return false;
+			}
+			
+	
+		// fill data
+			//Object o;
+			while(result.next()) {
+				if(maxrow>-1 && recordcount>=maxrow) {
+					break;
+				}
+				for(int i=0;i<usedColumns.length;i++) {
+				    columns[i].add(casts[i].toCFType(tz,types[i], result, usedColumns[i]+1));
+				}
+				++recordcount;
+			}
+    	}
+    	finally {
+    		if(closeResult)IOUtil.closeEL(result);
+    	}
+		
 		return true;
 	}
 
