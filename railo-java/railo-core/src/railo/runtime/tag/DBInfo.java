@@ -285,6 +285,7 @@ public final class DBInfo extends TagImpl {
 		
         ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
         Query qry = new QueryImpl(columns,"query",pageContext.getTimeZone());
+        columns.close();
         
 		int len=qry.getRecordcount();
 
@@ -318,7 +319,9 @@ public final class DBInfo extends TagImpl {
 			
 			set=(Set) primaries.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(set==null) {
-				set=toSet(metaData.getPrimaryKeys(dbname, null, tblName),"COLUMN_NAME");
+				ResultSet pks = metaData.getPrimaryKeys(dbname, null, tblName);
+				set=toSet(pks,"COLUMN_NAME");
+				pks.close();
 				primaries.put(tblName,set);
 			}
 			isPrimary.append(set.contains(qry.getAt(COLUMN_NAME, i))?"YES":"NO"); 
@@ -336,7 +339,9 @@ public final class DBInfo extends TagImpl {
 		for(int i=1;i<=len;i++) {
 			map=(Map) foreigns.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(map==null) {
-				map=toMap(metaData.getImportedKeys(dbname, schema, table),"FKCOLUMN_NAME",new String[]{"PKCOLUMN_NAME","PKTABLE_NAME"});
+				ResultSet keys = metaData.getImportedKeys(dbname, schema, table); 
+				map=toMap(keys,"FKCOLUMN_NAME",new String[]{"PKCOLUMN_NAME","PKTABLE_NAME"});
+				keys.close();
 				foreigns.put(tblName, map);
 			}
 			inner = map.get(qry.getAt(COLUMN_NAME, i));
@@ -460,7 +465,7 @@ public final class DBInfo extends TagImpl {
 		
 		ResultSet columns = metaData.getExportedKeys(dbname, schema, table);
 		railo.runtime.type.Query qry = new QueryImpl(columns,"query",pageContext.getTimeZone());		
-		
+		columns.close();
         qry.setExecutionTime(stopwatch.time());        
         
 		pageContext.setVariable(name, qry);
@@ -553,6 +558,7 @@ public final class DBInfo extends TagImpl {
 		
         ResultSet tables = metaData.getProcedures(dbname, schema, pattern);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
+        tables.close();
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -579,6 +585,7 @@ public final class DBInfo extends TagImpl {
 		ResultSet tables = metaData.getProcedureColumns(dbname, schema, procedure, pattern);
 		
 		railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
+		tables.close();
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -605,7 +612,7 @@ public final class DBInfo extends TagImpl {
 		
         ResultSet tables = metaData.getTables(dbname, null, pattern, null);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
-        
+        tables.close();
         qry.setExecutionTime(stopwatch.time());
         
         
