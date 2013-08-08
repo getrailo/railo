@@ -45,6 +45,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
+import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.expression.var.Variable;
@@ -1131,6 +1132,19 @@ public final class ASMUtil {
 
 	public static Class toClass(Type type) throws ClassException {
 		return ClassUtil.toClass(type.getClassName());
+	}
+
+
+	
+
+	public static boolean hasOnlyDataMembers(Variable var) {
+		Iterator<Member> it = var.getMembers().iterator();
+		Member m;
+		while(it.hasNext()){
+			m = it.next();
+			if(!(m instanceof DataMember)) return false;
+		}
+		return true;
 	}
 	
 }
