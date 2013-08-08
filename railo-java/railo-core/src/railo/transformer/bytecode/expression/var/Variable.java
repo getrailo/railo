@@ -415,6 +415,8 @@ public class Variable extends ExpressionBase implements Invoker {
 		adapter.loadArg(0);
 		// class
 		Type bifClass = Types.toType(bif.getClassName());
+		Type rtnType=Types.toType(bif.getReturnType());
+		if(rtnType==Types.VOID)rtnType=Types.STRING;
 		
 		// arguments
 		Argument[] args = bif.getArguments();
@@ -469,6 +471,29 @@ public class Variable extends ExpressionBase implements Invoker {
 					argTypes[y+1]=Types.toType(args[y].getStringType());
 					args[y].writeOutValue(bc, Types.isPrimitiveType(argTypes[y+1])?MODE_VALUE:MODE_REF);
 				}
+				// if no method exists for the exact match of arguments, call the method with all arguments (when exists)
+				if(methodExists(bifClass,"call",argTypes,rtnType)==Boolean.FALSE) {
+					ArrayList<FunctionLibFunctionArg> _args = bif.getFlf().getArg();
+					
+					Type[] tmp = new Type[_args.size()+1];
+					
+					// fill the existing
+					for(int i=0;i<argTypes.length;i++){
+						tmp[i]=argTypes[i];
+					}
+					
+					// get the rest with default values
+					FunctionLibFunctionArg flfa;
+					for(int i=argTypes.length;i<tmp.length;i++){
+						flfa = _args.get(i-1);
+						tmp[i]=Types.toType(flfa.getTypeAsString());
+						getDefaultValue(flfa).value.writeOut(
+								bc, 
+								Types.isPrimitiveType(tmp[i])?MODE_VALUE:MODE_REF);
+					}
+					argTypes=tmp;
+				}
+ 				
 			}
 			
 		}
@@ -480,13 +505,7 @@ public class Variable extends ExpressionBase implements Invoker {
 			argTypes[1]=Types.OBJECT_ARRAY;
 			ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, args);	
 		}
-		
-		// return type
-		Type rtnType=Types.toType(bif.getReturnType());
-		if(rtnType==Types.VOID)rtnType=Types.STRING;
-		adapter.	invokeStatic(bifClass,new Method("call",rtnType,argTypes));
-		
-		
+		adapter.invokeStatic(bifClass,new Method("call",rtnType,argTypes));
 		if(mode==MODE_REF || !last) {
 			if(Types.isPrimitiveType(rtnType)) {
 				adapter.invokeStatic(Types.CASTER,new Method("toRef",Types.toRefType(rtnType),new Type[]{rtnType}));
@@ -501,6 +520,36 @@ public class Variable extends ExpressionBase implements Invoker {
 	
 
 	
+	/**
+	 * checks if a method exists
+	 * @param clazz
+	 * @param methodName
+	 * @param args
+	 * @param returnType
+	 * @return returns null when checking fi
+	 */
+	private static Boolean methodExists(Type clazz, String methodName, Type[] args, Type returnType)  {
+		try {
+			Class _clazz=ASMUtil.toClass(clazz);
+			Class[] _args=new Class[args.length];
+			for(int i=0;i<_args.length;i++){
+				_args[i]=ASMUtil.toClass(args[i]);
+			}
+			Class rtn = ASMUtil.toClass(returnType);
+		
+			try {
+				java.lang.reflect.Method m = _clazz.getMethod(methodName, _args);
+				return m.getReturnType()==rtn;
+			}
+			catch (Exception e) {
+				return false;
+			}
+			
+		}
+		catch (Exception e) {e.printStackTrace();
+			return null;
+		}
+	}
 
 	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope, boolean doOnlyScope) throws BytecodeException {
 
@@ -635,25 +684,25 @@ public class Variable extends ExpressionBase implements Invoker {
 		
 		// if not required return the default value
 		if(!flfa.getRequired()) {
-			String defaultValue = flfa.getDefaultValue();
-			String type=flfa.getTypeAsString().toLowerCase();
-			
-			if(defaultValue==null) {
-				if(type.equals("boolean") || type.equals("bool")) 
-					return new VT(LitBoolean.FALSE,type,-1);
-				if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
-					return new VT(LitDouble.ZERO,type,-1);
-				return new VT(null,type,-1);
-			}
-			return new VT(CastOther.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+			return getDefaultValue(flfa);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
 	
-	
-	
+	private static VT getDefaultValue(FunctionLibFunctionArg flfa) {
+		String defaultValue = flfa.getDefaultValue();
+		String type = flfa.getTypeAsString();
+		if(defaultValue==null) {
+			if(type.equals("boolean") || type.equals("bool")) 
+				return new VT(LitBoolean.FALSE,type,-1);
+			if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
+				return new VT(LitDouble.ZERO,type,-1);
+			return new VT(null,type,-1);
+		}
+		return new VT(CastOther.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+	}
 
 	private static String getName(Expression expr) throws BytecodeException {
 		String name = ASMUtil.toString(expr);

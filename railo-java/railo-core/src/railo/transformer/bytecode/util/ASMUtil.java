@@ -18,6 +18,8 @@ import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ClassException;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
@@ -1124,6 +1126,11 @@ public final class ASMUtil {
 
 	public static String getSourceName(Class clazz) throws IOException {
 		return SourceNameClassVisitor.getSourceName(clazz);
+	}
+
+
+	public static Class toClass(Type type) throws ClassException {
+		return ClassUtil.toClass(type.getClassName());
 	}
 	
 }
