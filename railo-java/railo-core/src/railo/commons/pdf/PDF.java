@@ -94,6 +94,13 @@ public class PDF {
 				new Object[]{pathToFontDirs,Caster.toBoolean(embed)},
 				new Class[]{String.class,boolean.class});
 	}
+	
+
+	public void setDefaultTTFs(String string, String string2, String string3) throws PageException {
+		invoke(pd4ml,"setDefaultTTFs",
+				new Object[]{string,string2,string3},
+				new Class[]{String.class,String.class,String.class});
+	}
 
 	public void setPageFooter(PDFPageMark footer) throws PageException {
 		//if(isEvaluation) return;
@@ -198,5 +205,6 @@ public class PDF {
 			throw Caster.toPageException(e);
 		}
 	}
+
 
 }
