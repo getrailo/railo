@@ -2152,7 +2152,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    }
 	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
-	    ApplicationListener listener=gatewayContext?new NoneAppListener():((MappingImpl)base.getMapping()).getApplicationListener();
+	    ApplicationListener listener=gatewayContext?config.getApplicationListener():((MappingImpl)base.getMapping()).getApplicationListener();
+	    
 	    
 	    try {
 	    	listener.onRequest(this,base,null);
