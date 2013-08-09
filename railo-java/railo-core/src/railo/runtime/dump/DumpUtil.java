@@ -1,7 +1,6 @@
 package railo.runtime.dump;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
@@ -29,7 +28,6 @@ import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Coder;
-import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;

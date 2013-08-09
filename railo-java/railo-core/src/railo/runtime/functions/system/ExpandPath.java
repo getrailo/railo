@@ -5,7 +5,6 @@ package railo.runtime.functions.system;
 
 import java.io.IOException;
 
-import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;

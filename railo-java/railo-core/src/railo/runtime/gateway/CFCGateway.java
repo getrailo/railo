@@ -2,13 +2,9 @@ package railo.runtime.gateway;
 
 import java.util.Map;
 
-import railo.runtime.gateway.GatewayPro;
-import railo.runtime.gateway.GatewayEnginePro;
-import railo.runtime.gateway.GatewayException;
-import railo.runtime.gateway.proxy.GatewayProFactory;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
+import railo.runtime.gateway.proxy.GatewayProFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

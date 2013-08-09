@@ -11,9 +11,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public class CacheSetProperties {
 

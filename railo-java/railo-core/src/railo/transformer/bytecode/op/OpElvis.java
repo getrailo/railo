@@ -19,12 +19,10 @@ import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.Variable;
-import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
-import railo.transformer.bytecode.visitor.IfVisitor;
 
 public final class OpElvis extends ExpressionBase {
 

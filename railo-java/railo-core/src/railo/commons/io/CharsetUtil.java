@@ -2,10 +2,7 @@ package railo.commons.io;
 
 import java.nio.charset.Charset;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 
 public class CharsetUtil {
 	public static final Charset UTF8;

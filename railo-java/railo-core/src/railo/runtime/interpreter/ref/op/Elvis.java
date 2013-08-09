@@ -2,7 +2,6 @@ package railo.runtime.interpreter.ref.op;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.decision.IsDefined;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.literal.LFunctionValue;

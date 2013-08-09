@@ -10,12 +10,9 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
-import railo.runtime.tag.util.DeprecatedUtil;
 
 public final class Hash implements Function {
 	

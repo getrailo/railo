@@ -1,12 +1,9 @@
 package railo.runtime.functions.string;
 
-import java.util.Locale;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.international.LSParseNumber;
 import railo.runtime.op.Caster;
 
 public class ParseNumber {

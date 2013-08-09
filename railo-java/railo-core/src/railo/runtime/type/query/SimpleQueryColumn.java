@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;

@@ -1,7 +1,5 @@
 package railo.runtime.type.scope;
 
-import java.io.IOException;
-
 import railo.commons.io.SystemUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;

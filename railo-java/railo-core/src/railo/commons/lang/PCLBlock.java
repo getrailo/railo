@@ -8,7 +8,6 @@ import java.net.URL;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceClassLoader;
 import railo.runtime.type.Sizeable;
 
 /**

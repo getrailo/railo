@@ -34,7 +34,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.ItAsEnum;
-import railo.runtime.type.scope.Application;
 import railo.runtime.util.EnumerationWrapper;
 
 public final class HttpServletRequestDummy implements HttpServletRequest,Serializable {

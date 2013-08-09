@@ -1,7 +1,5 @@
 package railo.runtime.gateway;
 
-import railo.runtime.gateway.GatewayException;
-
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
 

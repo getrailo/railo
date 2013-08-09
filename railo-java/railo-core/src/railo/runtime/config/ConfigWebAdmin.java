@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 
@@ -25,7 +24,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -34,7 +32,6 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
-import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
@@ -56,7 +53,6 @@ import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.WDDXConverter;
-import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;

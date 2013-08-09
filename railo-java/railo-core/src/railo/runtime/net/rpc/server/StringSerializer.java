@@ -2,9 +2,8 @@ package railo.runtime.net.rpc.server;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axis.encoding.ser.SimpleSerializer;
 import org.apache.axis.encoding.SerializationContext;
-
+import org.apache.axis.encoding.ser.SimpleSerializer;
 import org.apache.commons.lang.StringUtils;
 
 public class StringSerializer extends SimpleSerializer {

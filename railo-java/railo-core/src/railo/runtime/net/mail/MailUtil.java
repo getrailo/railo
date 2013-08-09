@@ -1,13 +1,5 @@
 package railo.runtime.net.mail;
 
-import railo.commons.lang.StringUtil;
-import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
-import railo.runtime.type.Array;
-import railo.runtime.type.Struct;
-import railo.runtime.type.util.ListUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.net.IDN;
 import java.util.ArrayList;
@@ -16,6 +8,14 @@ import java.util.Iterator;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeUtility;
+
+import railo.commons.lang.StringUtil;
+import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.type.Array;
+import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public final class MailUtil {
 

@@ -24,7 +24,6 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
 
 /**

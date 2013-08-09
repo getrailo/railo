@@ -3,13 +3,7 @@
  */
 package railo.runtime.functions.dateTime;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import railo.commons.date.DateTimeUtil;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.dt.DateTime;

@@ -3,7 +3,6 @@ package railo.runtime.net.mail;
 import java.util.Map;
 
 import railo.commons.collection.MapFactory;
-import railo.runtime.cfx.customtag.CFXTagClass;
 
 public final class SMTPExceptionImpl extends SMTPException {
     

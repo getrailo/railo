@@ -16,7 +16,6 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 
 import railo.commons.lang.ClassException;
@@ -30,8 +29,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.util.ListUtil;
 
-import com.sun.jndi.ldap.ctl.SortControl;
-import com.sun.jndi.ldap.ctl.SortKey;
 import com.sun.net.ssl.internal.ssl.Provider;
 
 

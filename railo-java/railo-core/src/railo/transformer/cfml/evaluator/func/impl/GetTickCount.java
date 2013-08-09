@@ -6,7 +6,6 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.literal.LitDouble;
-import railo.transformer.bytecode.literal.LitInteger;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.function.FunctionLibFunction;

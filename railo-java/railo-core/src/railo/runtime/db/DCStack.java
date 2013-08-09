@@ -3,8 +3,6 @@ package railo.runtime.db;
 import java.sql.SQLException;
 
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
 
 class DCStack {
 

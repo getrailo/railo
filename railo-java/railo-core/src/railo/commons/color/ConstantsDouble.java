@@ -1,9 +1,9 @@
 package railo.commons.color;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Collections;
 
 import railo.runtime.op.Caster;
 

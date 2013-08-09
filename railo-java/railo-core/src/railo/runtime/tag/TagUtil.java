@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,7 +18,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;

@@ -10,8 +10,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.debug.DebugEntry;
 import railo.runtime.debug.Debugger;
-import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageRuntimeException;
 
 public class DebugExecutionLog extends ExecutionLogSupport {
 	

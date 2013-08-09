@@ -13,10 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import railo.runtime.gateway.GatewayPro;
-import railo.runtime.gateway.GatewayEnginePro;
-import railo.runtime.gateway.GatewayException;
-
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.exp.PageException;

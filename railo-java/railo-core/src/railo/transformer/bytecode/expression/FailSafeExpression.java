@@ -7,12 +7,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.statement.FlowControlFinal;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
-import railo.transformer.bytecode.visitor.OnFinally;
-import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 public class FailSafeExpression  extends ExpressionBase implements Opcodes {
 

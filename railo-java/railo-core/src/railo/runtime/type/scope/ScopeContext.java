@@ -32,7 +32,6 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
