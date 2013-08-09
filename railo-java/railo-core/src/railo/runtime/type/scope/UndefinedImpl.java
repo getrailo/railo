@@ -168,10 +168,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
-			rtn=qryStack.getDataFromACollection(pc,key,Null.NULL);
-			if(rtn!=Null.NULL) {
+			rtn=qryStack.getDataFromACollection(pc,key,NullSupportHelper.NULL());
+			if(rtn!=NullSupportHelper.NULL()) {
 				if(debug) debugCascadedAccess(pc,"query", key);
-				//if(!NullSupportHelper.full() && rtn==null) return "";
+				if(!NullSupportHelper.full() && rtn==null) return "";
 				return rtn;
 		    }
 		}
@@ -359,7 +359,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 				return rtn;
             }
         }
-        
         
         // variable
         rtn=variable.get(key,NullSupportHelper.NULL());

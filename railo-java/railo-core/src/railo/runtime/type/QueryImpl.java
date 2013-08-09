@@ -705,7 +705,7 @@ public class QueryImpl implements Query,Objects {
 	@Override
 	public void clear() {
 		for(int i=0;i<columns.length;i++) {
-            columns[i].clear();
+			columns[i].clear();
         }
         recordcount=0;
 	}
@@ -776,12 +776,9 @@ public class QueryImpl implements Query,Objects {
 	public Object getAt(Collection.Key key, int row) throws PageException {
 		int index=getIndexFromKey(key);
 		if(index!=-1) {
-			return columns[index].get(row, null);
-			/*if(NullSupportHelper.full()) return columns[index].get(row, null);
-			Object v = columns[index].get(row, null);
-			return v==null?"":v;*/
+			return columns[index].get(row, NullSupportHelper.empty());
 		}
-        if(key.length()>=10) {
+		if(key.length()>=10) {
         	if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
         	if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
 			if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
@@ -1484,8 +1481,8 @@ public class QueryImpl implements Query,Objects {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
 		
-		Object o=getAt(keys[col-1],row,Null.NULL);
-		if(o==Null.NULL)
+		Object o=getAt(keys[col-1],row,NullSupportHelper.NULL());
+		if(o==NullSupportHelper.NULL())
 			throw new IndexOutOfBoundsException("invalid row index to retrieve Data from query, valid index goes from 1 to "+getRecordcount());
 		return Caster.toString( o,NullSupportHelper.full()?null:"");
     }
