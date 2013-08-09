@@ -166,6 +166,9 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
+        this.sessionStorage=((ConfigImpl)config).getSessionStorage();
+        this.clientStorage=((ConfigImpl)config).getClientStorage();
+        
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSetting=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
@@ -351,8 +354,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	@Override
 	public String getClientstorage() {
 		if(!initClientStorage) {
-			Object o=get(component,CLIENT_STORAGE,null);
-			if(o!=null)clientStorage=Caster.toString(o,clientStorage);
+			String str=Caster.toString(get(component,CLIENT_STORAGE,null),null);
+			if(!StringUtil.isEmpty(str))clientStorage=str;
 			initClientStorage=true;
 		}
 		return clientStorage;
@@ -395,8 +398,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	@Override
 	public String getSessionstorage() {
 		if(!initSessionStorage) {
-			Object o=get(component,SESSION_STORAGE,null);
-			if(o!=null)sessionStorage=Caster.toString(o,sessionStorage);
+			String str=Caster.toString(get(component,SESSION_STORAGE,null),null);
+			if(!StringUtil.isEmpty(str))sessionStorage=str;
 			initSessionStorage=true;
 		}
 		return sessionStorage;

@@ -187,7 +187,7 @@ public final class ScopeContext {
 			boolean isMemory=false;
 			String storage = appContext.getClientstorage();
 			if(StringUtil.isEmpty(storage,true)){
-				storage="file";
+				storage=ConfigImpl.DEFAULT_STORAGE_CLIENT;
 			}
 			else if("ram".equalsIgnoreCase(storage)) {
 				storage="memory";
@@ -486,7 +486,7 @@ public final class ScopeContext {
 			boolean isMemory=false;
 			String storage = appContext.getSessionstorage();
 			if(StringUtil.isEmpty(storage,true)){
-				storage="memory";
+				storage=ConfigImpl.DEFAULT_STORAGE_SESSION;
 				isMemory=true;
 			}
 			else if("ram".equalsIgnoreCase(storage)) {

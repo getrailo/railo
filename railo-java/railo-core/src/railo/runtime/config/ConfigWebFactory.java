@@ -3512,8 +3512,35 @@ public final class ConfigWebFactory {
 		else if (hasCS)
 			config.setMergeFormAndURL(configServer.mergeFormAndURL());
 
+		// Client-Storage
+		{
+			String clientStorage = scope.getAttribute("clientstorage");
+			if (StringUtil.isEmpty(clientStorage, true)) 
+				clientStorage = scope.getAttribute("client-storage");
+			
+			if (hasAccess && !StringUtil.isEmpty(clientStorage)) {
+				config.setClientStorage(clientStorage);
+			}
+			else if (hasCS)
+				config.setClientStorage(configServer.getClientStorage());
+		}
+		
+		// Session-Storage
+		{
+			String sessionStorage = scope.getAttribute("sessionstorage");
+			if (StringUtil.isEmpty(sessionStorage, true)) 
+				sessionStorage = scope.getAttribute("session-storage");
+			
+			if (hasAccess && !StringUtil.isEmpty(sessionStorage)) {
+				config.setSessionStorage(sessionStorage);
+			}
+			else if (hasCS)
+				config.setSessionStorage(configServer.getSessionStorage());
+		}
+		
 		// Client Timeout
 		String clientTimeout = scope.getAttribute("clienttimeout");
+		if(StringUtil.isEmpty(clientTimeout, true)) clientTimeout = scope.getAttribute("client-timeout");
 		if (StringUtil.isEmpty(clientTimeout, true)) {
 			// deprecated
 			clientTimeout = scope.getAttribute("client-max-age");

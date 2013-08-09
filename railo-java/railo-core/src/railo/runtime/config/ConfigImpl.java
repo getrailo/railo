@@ -160,6 +160,10 @@ public abstract class ConfigImpl implements Config {
 	public static final int CFML_WRITER_REFULAR=1;
 	public static final int CFML_WRITER_WS=2;
 	public static final int CFML_WRITER_WS_PREF=3;
+
+
+	public static final String DEFAULT_STORAGE_SESSION = "memory";
+	public static final String DEFAULT_STORAGE_CLIENT = "cookie";
 	
 	
 	private int mode=MODE_CUSTOM;
@@ -210,6 +214,9 @@ public abstract class ConfigImpl implements Config {
 
     private Resource configFile;
     private Resource configDir;
+	private String sessionStorage=DEFAULT_STORAGE_SESSION;
+	private String clientStorage=DEFAULT_STORAGE_CLIENT;
+	
 
     private long loadTime;
 
@@ -3319,6 +3326,8 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	private final Map compressResources= new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+
+
 	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) compressResources.get(zipFile.getPath());
 		if(compress==null) {
@@ -3335,6 +3344,24 @@ public abstract class ConfigImpl implements Config {
 	public boolean getClientCluster() {
 		return false;
 	}
+	
+	public String getClientStorage() {
+		return clientStorage;
+	}
+	
+	public String getSessionStorage() {
+		return sessionStorage;
+	}
+	
+	protected void setClientStorage(String clientStorage) {
+		this.clientStorage = clientStorage;
+	}
+	
+	protected void setSessionStorage(String sessionStorage) {
+		this.sessionStorage = sessionStorage;
+	}
+	
+	
 	
 	private Map<String,ComponentMetaData> componentMetaData=null;
 	public ComponentMetaData getComponentMetadata(String key) {
