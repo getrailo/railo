@@ -514,8 +514,7 @@ Error Output --->
 						<cfif ( contexts.clientElements GT filesThreshold ) || ( contexts.sessionElements GT filesThreshold )>
 
 							<tr>
-								<td></td>
-								<td colspan="3" style="background-color:##FCC;">
+								<td colspan="4" style="background-color:##FCC;" align="center">
 									Warning:
 									<cfif ( contexts.clientElements GT filesThreshold )>
 										<b>#numberFormat( contexts.clientElements, "," )#</b> Client files
