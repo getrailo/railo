@@ -65,7 +65,7 @@
 	<jar version="2.4.0-beta-1" path="metadata-extractor.jar" comment="retired"/>
 	<jar version="4.0" path="microsoft-mssqlserver.jar" comment="only links to the driver in microsoft-sqljdbc.jar"/>
 	<jar version="4.0" path="microsoft-sqljdbc.jar" comment=""/>
-	<jar version="5.1.25" path="mysql-connector-java-bin.jar" comment=""/>
+	<jar version="5.1.20" path="mysql-connector-java-bin.jar" comment=""/>
 	<jar version="4.0" path="objectweb-asm-all.jar" comment=""/>
 	<jar version="" path="ojdbc14.jar" comment=""/>
 	<jar version="1.5.8" path="openamf-astranslator.jar" comment="only used for backward compatibility"/>
