@@ -1454,6 +1454,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 				if ( !Decision.isInteger( value ) )
 					throw new ExpressionException( "The value [" + value + "] is not a valid integer" );
+
+                setVariable( name, value );
 			}
 			else {
 				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
