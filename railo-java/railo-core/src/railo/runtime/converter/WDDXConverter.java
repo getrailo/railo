@@ -38,7 +38,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -224,7 +224,7 @@ public final class WDDXConverter extends ConverterSupport {
             	if(p!=null) {
             		remotingFetch=Caster.toBoolean(p.getDynamicAttributes().get(REMOTING_FETCH,null),null);
 	            	if(remotingFetch==null){
-    					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+    					if(isPeristent  && ORMUtil.isRelated(p)) continue;
 	    			}
 	    			else if(!remotingFetch.booleanValue()) continue;
             	}

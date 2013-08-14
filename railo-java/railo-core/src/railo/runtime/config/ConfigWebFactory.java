@@ -120,7 +120,6 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.search.SearchEngine;
@@ -3384,14 +3383,14 @@ public final class ConfigWebFactory {
 		config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, hasAccess, logLevel));
 
 		// engine
-		String defaulrEngineClass = HibernateORMEngine.class.getName();// "railo.runtime.orm.hibernate.HibernateORMEngine";
+		String defaultEngineClass = "railo.runtime.orm.hibernate.HibernateORMEngine";
 
 		// print.o("orm:"+defaulrEngineClass);
 		String strEngine = null;
 		if (orm != null)
 			strEngine = orm.getAttribute("engine-class");
 		if (StringUtil.isEmpty(strEngine, true))
-			strEngine = defaulrEngineClass;
+			strEngine = defaultEngineClass;
 
 		// load class
 		Class<ORMEngine> clazz;
@@ -3401,7 +3400,7 @@ public final class ConfigWebFactory {
 		}
 		catch (ClassException ce) {
 			ce.printStackTrace();
-			clazz = ClassUtil.loadClass(defaulrEngineClass, null);
+			clazz = ClassUtil.loadClass(defaultEngineClass, null);
 		}
 		config.setORMEngineClass(clazz);
 

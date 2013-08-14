@@ -18,7 +18,7 @@ public interface ORMEngine {
 
 	
 	/**
-	 * @return returns the label of the Engine, like "Hibernate" or "Transfer"
+	 * @return returns the label of the ORM Engine
 	 */
 	public String getLabel();
 

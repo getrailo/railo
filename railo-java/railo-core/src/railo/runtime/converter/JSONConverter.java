@@ -28,7 +28,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
@@ -263,7 +263,7 @@ public final class JSONConverter extends ConverterSupport {
         		if(!ignoreRemotingFetch) {
         			remotingFetch=Caster.toBoolean(props[i].getDynamicAttributes().get(REMOTING_FETCH,null),null);
         			if(remotingFetch==null){
-        				if(isPeristent  && HBMCreator.isRelated(props[i])) continue;
+        				if(isPeristent  && ORMUtil.isRelated(props[i])) continue;
         			}
         			else if(!remotingFetch.booleanValue()) continue;
             		

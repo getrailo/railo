@@ -11,11 +11,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.ProxyFactory;
 import org.hibernate.type.AbstractComponentType;
 
-import railo.runtime.CFCProxy;
 
-/**
- * @author Gavin King
- */
 public class CFCProxyFactory implements ProxyFactory {
 	private String entityName;
 	private String nodeName;

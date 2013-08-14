@@ -3140,7 +3140,7 @@ public abstract class ConfigImpl implements Config {
 			}
 			
 			if(hasError) {
-				// try to load hibernate jars
+				// try to load orm jars
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
 						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",

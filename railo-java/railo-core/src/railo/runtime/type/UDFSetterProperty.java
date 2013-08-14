@@ -9,7 +9,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -44,7 +44,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 				else {
 					String str=Caster.toString(o);
 					if(!StringUtil.isEmpty(str,true)) {
-						validateParams=HBMCreator.convertToSimpleMap(str);
+						validateParams=ORMUtil.convertToSimpleMap(str);
 						if(validateParams==null)
 							throw new ExpressionException("cannot parse string ["+str+"] as struct");
 					}
