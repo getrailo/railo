@@ -3,43 +3,30 @@
 	<cfset more.port=form.port>
 </cfif>
 
+<cfset form.name = trim( form.name )>
 
-<cfadmin 
+<cfadmin action="schedule" type="#request.adminType#" password="#session["password"&request.adminType]#"
 
 	attributeCollection="#more#"
-
-	action="schedule" 
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
 	
 	scheduleAction="update" 
 	operation="httprequest"
-	task="#trim(form.name)#"
+	task="#form.name#"
 	url="#form.url#"
 	interval="#form.interval#" 
 	startdate="#nullIfNoDate('start')#" 
 	starttime="#nullIfNoTime('start')#"
 	remoteClients="#request.getRemoteClients()#">
-    
-    <cfif StructKeyExists(form,"paused") and form.paused>
-    	<cfadmin 
-                    action="schedule" 
-                    type="#request.adminType#"
-                    password="#session["password"&request.adminType]#"
-                    
-                    scheduleAction="pause" 
-                    task="#trim(form.name)#"
-                    remoteClients="#request.getRemoteClients()#">
-    </cfif>
-    
-		
-			<!---
-<cfschedule action="update" operation="httprequest"
-		 	task="#trim(form.name)#"
-			url="#form.url#"
-			interval="#form.interval#" 
-			startdate="#nullIfNoDate('start')#" 
-			starttime="#nullIfNoTime('start')#" port="#form.port#">
-			--->
+
+
+<cfif StructKeyExists(form,"paused") && form.paused>
+
+	<cfadmin action="schedule" type="#request.adminType#" password="#session["password"&request.adminType]#"
+
+        scheduleAction="pause"
+        task="#form.name#"
+        remoteClients="#request.getRemoteClients()#">
+</cfif>
+
 			
 <cflocation url="#request.self#?action=#url.action#&action2=edit&task=#hash(form.name)#" addtoken="no">
