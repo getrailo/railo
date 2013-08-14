@@ -66,6 +66,10 @@ public class SimpleQueryColumn implements QueryColumn {
 			case Types.ARRAY:
 				cast=Cast.ARRAY;
 			break;
+			case Types.BIGINT:
+				cast=Cast.BIGINT;
+			break;
+			
 			case CFTypes.OPAQUE:
 				if(SQLUtil.isOracle(res.getStatement().getConnection()))
 	        		cast=Cast.ORACLE_OPAQUE;

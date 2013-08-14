@@ -16,6 +16,7 @@ public interface Cast {
 	public static final Cast OTHER=new OtherCast();
 	public static final Cast TIME=new TimeCast();
 	public static final Cast TIMESTAMP=new TimestampCast();
+	public static final Cast BIGINT=new BigIntCast();
 	
 	public Object toCFType(TimeZone tz,int type,ResultSet rst, int columnIndex) throws SQLException, IOException;
 }

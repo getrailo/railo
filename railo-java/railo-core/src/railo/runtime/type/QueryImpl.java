@@ -398,6 +398,7 @@ public class QueryImpl implements Query,Objects {
 	            else if(types[i]==Types.BLOB)	casts[i]=Cast.BLOB;
 	            else if(types[i]==Types.BIT)	casts[i]=Cast.BIT;
 	            else if(types[i]==Types.ARRAY)	casts[i]=Cast.ARRAY;
+	            else if(types[i]==Types.BIGINT)	casts[i]=Cast.BIGINT;
 	            //else if(types[i]==Types.TINYINT)	casts[i]=Cast.ARRAY;
 	            
 	            else if(types[i]==CFTypes.OPAQUE){

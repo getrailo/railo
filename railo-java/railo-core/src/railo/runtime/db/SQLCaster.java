@@ -1,6 +1,7 @@
 package railo.runtime.db;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -126,7 +127,12 @@ public final class SQLCaster {
         return;*/
         case Types.BIGINT:     				
     		try {
-    			stat.setLong(parameterIndex,(long)Caster.toDoubleValue(value));
+    			try {
+    				stat.setBigDecimal(parameterIndex, new BigDecimal(new BigInteger(Caster.toString(value))));
+    			}
+    			catch(Throwable t){
+    				stat.setLong(parameterIndex,(long)Caster.toDoubleValue(value));
+    			}
     		}
     		catch(PageException pe) {
     			if(!NullSupportHelper.full() && value instanceof String && StringUtil.isEmpty((String)value))
