@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.sql.Blob;
@@ -59,6 +60,7 @@ import railo.runtime.config.Config;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
@@ -431,6 +433,7 @@ public final class Caster {
     public static double toDoubleValue(String str) throws CasterException { 
     	return toDoubleValue(str,true);
     }
+    
     public static double toDoubleValue(String str, boolean alsoFromDate) throws CasterException { 
         if(str==null) return 0;//throw new CasterException("can't cast empty string to a number value");
         str=str.trim();
@@ -1366,7 +1369,41 @@ public final class Caster {
      * @throws PageException
      */
     public static long toLongValue(String str) throws PageException {
-        return (long)toDoubleValue(str); 
+    	BigInteger bi=null;
+    	try {
+    		bi = new BigInteger(str);
+    		
+    	}
+    	catch(Throwable t){}
+    	if(bi!=null) {
+    		if(bi.bitLength()<64) return bi.longValue();
+    		throw new ApplicationException("number ["+str+"] cannot be casted to a long value, number is to long ("+(bi.bitLength()+1)+" bit)");
+    	}
+    	return (long)toDoubleValue(str); 
+    }
+    
+    /**
+     * returns a number Object, this can be a BigDecimal,BigInteger,Long, Double, depending on the input.
+     * @param str
+     * @return
+     * @throws PageException
+     */
+    public static Number toNumber(String str, Number defaultValue) {
+    	try{
+	    	// float
+	    	if(str.indexOf('.')!=-1) {
+	    		return new BigDecimal(str);
+	    	}
+	    	// integer
+	    	BigInteger bi = new BigInteger(str);
+	    	int l = bi.bitLength();
+	    	if(l<32) return new Integer(bi.intValue());
+	    	if(l<64) return new Long(bi.longValue());
+	    	return bi;
+    	}
+    	catch(Throwable t) {
+    		return defaultValue;
+    	}
     }
     
     /**
