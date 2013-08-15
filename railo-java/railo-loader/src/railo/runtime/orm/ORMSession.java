@@ -36,7 +36,7 @@ public interface ORMSession {
 	/**
 	 * Reloads data for an entity that is already loaded. This method refetches data from the database and repopulates the entity with the refreshed data.
 	 * @param obj 
-	 * @throws ORMException
+	 * @throws PageException
 	 */
 	public void reload(PageContext pc, Object obj) throws PageException;
 
@@ -44,7 +44,7 @@ public interface ORMSession {
 	 * creates a entity matching the given name
 	 * @param entityName
 	 * @return
-	 * @throws ORMException
+	 * @throws PageException
 	 */
 	public Component create(PageContext pc, String entityName) throws PageException;
 	

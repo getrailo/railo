@@ -595,19 +595,58 @@ public final class ComponentUtil {
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
 		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly);
 		return c.getProperties(onlyPeristent);
 	}
 	
 	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
 		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties,false,false);
-		java.util.List<Property> tmp=new ArrayList<Property>();
-		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))
-				tmp.add(props[i]);
-		}
-		return tmp.toArray(new Property[tmp.size()]);
+		return getIDProperties(props);
 	}
+	
+	
+	public static Property[] getIDProperties(Property[] props) {
+		ArrayList<Property> ids=new ArrayList<Property>();
+        for(int y=0;y<props.length;y++){
+        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
+				ids.add(props[y]);
+		}
+        
+        // no id field defined
+        if(ids.size()==0) {
+        	String fieldType;
+        	for(int y=0;y<props.length;y++){
+        		fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
+    				ids.add(props[y]);
+    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
+    			}
+    		}
+        } 
+        
+        // still no id field defined
+        if(ids.size()==0 && props.length>0) {
+        	String owner = props[0].getOwnerName();
+			if(!StringUtil.isEmpty(owner)) owner=ListUtil.last(owner, '.').trim();
+        	
+        	String fieldType;
+        	if(!StringUtil.isEmpty(owner)){
+        		String id=owner+"id";
+        		for(int y=0;y<props.length;y++){
+        			fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+	    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase(id)){
+	    				ids.add(props[y]);
+	    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
+	    			}
+	    		}
+        	}
+        } 
+        return ids.toArray(new Property[ids.size()]);
+	}
+	
+	
+	
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {
 		ComponentAccess ca = toComponentAccess(comp, null);

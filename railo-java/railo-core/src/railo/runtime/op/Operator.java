@@ -10,17 +10,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
+import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;
 
@@ -351,7 +357,7 @@ public final class Operator {
 	 * @return difference as int
 	 * @throws PageException
 	 */ 
-	public static int compare(String left, Date right) throws PageException { 
+	public static int compare(String left, Date right) { 
 		return -compare(right,left);
 	} 
 
@@ -445,8 +451,8 @@ public final class Operator {
 	 * @return difference as int
 	 * @throws PageException
 	 */ 
-	public static int compare(Date left, String right) throws PageException { 
-		if(Decision.isNumeric(right)) return compare(left.getTime()/1000,Caster.toDoubleValue(right));
+	public static int compare(Date left, String right) { 
+		if(Decision.isNumeric(right)) return compare(left.getTime()/1000,Caster.toDoubleValue(right,0));
 		DateTime dt=DateCaster.toDateAdvanced(right,true,null,null);
 		if(dt!=null) {
 			return compare(left.getTime()/1000,dt.getTime()/1000);  	
@@ -516,22 +522,23 @@ public final class Operator {
 				return false;
 			}
 		}
-		return equalsComplexEL(left, right, caseSensitive,false);
+		return equalsComplex(left, right, caseSensitive,false);
 	}
 	
-	public static boolean equalsComplexEL(Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
-		return _equalsComplexEL(null,left, right, caseSensitive,checkOnlyPublicAppearance);
+	public static boolean equalsComplex(Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+		return _equalsComplex(null,left, right, caseSensitive,checkOnlyPublicAppearance);
 	}
 	
-	public static boolean _equalsComplexEL(Set<Object> done,Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+	public static boolean _equalsComplex(Set<Object> done,Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
 		if(left==right) return true;
 		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
 			try {
 				return equals(left, right, caseSensitive);
 			} catch (PageException e) {
-				return false;
+				//return false;
 			}
 		}
+		
 		if(left==null) return right==null;
 		
 		if(done==null)done=new HashSet<Object>();
@@ -540,37 +547,51 @@ public final class Operator {
 		done.add(right);
 		
 		if(left instanceof Component && right instanceof Component)
-			return __equalsComplexEL(done,(Component)left, (Component)right,caseSensitive,checkOnlyPublicAppearance);
+			return __equalsComplex(done,(Component)left, (Component)right,caseSensitive,checkOnlyPublicAppearance);
 		
 		if(left instanceof Collection && right instanceof Collection)
-			return __equalsComplexEL(done,(Collection)left, (Collection)right,caseSensitive,checkOnlyPublicAppearance);
+			return __equalsComplex(done,(Collection)left, (Collection)right,caseSensitive,checkOnlyPublicAppearance);
 		
 		if(left instanceof List && right instanceof List)
-			return __equalsComplexEL(done,ListAsArray.toArray((List)left), ListAsArray.toArray((List)right),caseSensitive,checkOnlyPublicAppearance);
+			return __equalsComplex(done,ListAsArray.toArray((List)left), ListAsArray.toArray((List)right),caseSensitive,checkOnlyPublicAppearance);
 		
 		if(left instanceof Map && right instanceof Map)
-			return __equalsComplexEL(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive,checkOnlyPublicAppearance);
-		return left.equals(right);
+			return __equalsComplex(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive,checkOnlyPublicAppearance);
+		
+		try {
+			return Operator.equals(left,right,false);
+		} catch (PageException e) {
+			return left.equals(right);
+		}
 	}
 	
-	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+	private static boolean __equalsComplex(Set<Object> done,Component left, Component right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+		// one is null or both
 		if(left==null || right==null) {
 			if(left==right) return true;
 			return false;
 		}
-	
-		/*ComponentImpl lefti=(ComponentImpl) left;
-		ComponentImpl righti=(ComponentImpl) right;
-		print.e(lefti.getName()+"="+lefti._getName());
-		print.e(righti.getName()+"="+righti._getName());*/
-		
+		// check if same PageSource
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
-		if(!checkOnlyPublicAppearance && !__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive,checkOnlyPublicAppearance)) return false;
-		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive,checkOnlyPublicAppearance)) return false;
+		if(checkOnlyPublicAppearance) {
+			Property[] props = ComponentUtil.getIDProperties(left,true,true);
+			Object l,r;
+			for(int i=0;i<props.length;i++){
+				l=left.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+				r=right.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+				if(!_equalsComplex(done,l, r,caseSensitive,checkOnlyPublicAppearance)) return false;
+			}
+			return true;
+		}
+		else if(!__equalsComplex(done,left.getComponentScope(),right.getComponentScope(), caseSensitive,checkOnlyPublicAppearance)) return false;
+		if(!__equalsComplex(done,(Collection)left,(Collection)right, caseSensitive,checkOnlyPublicAppearance)) return false;
 		return true;
 	}
 	
-	private static boolean __equalsComplexEL(Set<Object> done,Collection left, Collection right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+	
+	
+	private static boolean __equalsComplex(Set<Object> done,Collection left, Collection right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+		
 		if(left.size()!=right.size()) return false;
 		Iterator<Key> it = left.keyIterator();
 		Key k;
@@ -584,7 +605,7 @@ public final class Operator {
 				return false;
 			}
 			
-			if(!_equalsComplexEL(done,r, l, caseSensitive,checkOnlyPublicAppearance)) {
+			if(!_equalsComplex(done,r, l, caseSensitive,checkOnlyPublicAppearance)) {
 				return false;
 			}
 		}
@@ -595,15 +616,14 @@ public final class Operator {
 	public static boolean equals(Object left, Object right, boolean caseSensitive, boolean allowComplexValues) throws PageException {
 		if(!allowComplexValues || (Decision.isSimpleValue(left) && Decision.isSimpleValue(right)))
 			return equals(left, right, caseSensitive);
-		return equalsComplex(left, right, caseSensitive);
+		return equalsComplex(left, right, caseSensitive,false);
 	}
 
-	public static boolean equalsComplex(Object left, Object right, boolean caseSensitive) throws PageException {
+	/*public static boolean equalsComplex(Object left, Object right, boolean caseSensitive) {
 		return _equalsComplex(null,left, right, caseSensitive);
-	}
-	
+	}*/
 
-	public static boolean _equalsComplex(Set<Object> done,Object left, Object right, boolean caseSensitive) throws PageException {
+	/*public static boolean _equalsComplex(Set<Object> done,Object left, Object right, boolean caseSensitive) {
 		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
 			return equals(left, right, caseSensitive);
 		}
@@ -612,7 +632,6 @@ public final class Operator {
 		else if(done.contains(left) && done.contains(right)) return true;
 		done.add(left);
 		done.add(right);
-		
 		if(left instanceof Collection && right instanceof Collection)
 			return __equalsComplex(done,(Collection)left, (Collection)right,caseSensitive);
 		
@@ -623,9 +642,9 @@ public final class Operator {
 			return __equalsComplex(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive);
 		
 		return left.equals(right);
-	}
+	}*/
 	
-	private static boolean __equalsComplex(Set<Object> done,Collection left, Collection right,boolean caseSensitive) throws PageException {
+	/*private static boolean __equalsComplex(Set<Object> done,Collection left, Collection right,boolean caseSensitive) {
 		if(left.size()!=right.size()) return false;
 		Iterator<Key> it = left.keyIterator();
 		Key k;
@@ -638,7 +657,7 @@ public final class Operator {
 			if(!_equalsComplex(done,r, l, caseSensitive)) return false;
 		}
 		return true;
-	}
+	}*/
 	
 	/**
 	 * check if left is inside right (String-> ignore case)

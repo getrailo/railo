@@ -1,26 +1,17 @@
 package railo.runtime.orm;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
-import railo.runtime.op.Operator;
-import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.KeyImpl;
@@ -65,12 +56,12 @@ public class ORMUtil {
 		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
 	}
 
-	public static boolean equals(Object left, Object right) {
+	/*public static boolean equals(Object left, Object right) {
 		HashSet<Object> done=new HashSet<Object>();
 		return _equals(done, left, right);
-	}
+	}*/
 	
-	private static boolean _equals(HashSet<Object> done,Object left, Object right) {
+	/*private static boolean _equals(HashSet<Object> done,Object left, Object right) {
 		
 		if(left==right) return true;
 		if(left==null || right==null) return false;
@@ -95,15 +86,14 @@ public class ORMUtil {
 		} catch (PageException e) {
 			return false;
 		}
-	}
+	}*/
 	
-	private static boolean _equals(HashSet<Object> done,Collection left, Collection right) {
+	/*private static boolean _equals(HashSet<Object> done,Collection left, Collection right) {
 		if(done.contains(left)) return done.contains(right);
 		done.add(left);
 		done.add(right);
 		
 		if(left.size()!=right.size()) return false;
-		//Key[] keys = left.keys();
 		Iterator<Entry<Key, Object>> it = left.entryIterator();
 		Entry<Key, Object> e;
 		Object l,r;
@@ -114,74 +104,31 @@ public class ORMUtil {
 			if(r==null || !_equals(done,l, r)) return false;
 		}
 		return true;
-	}
+	}*/
 	
-	private static boolean _equals(HashSet<Object> done,Component left, Component right) {
+	/*private static boolean _equals(HashSet<Object> done,Component left, Component right) {
 		if(done.contains(left)) return done.contains(right);
 		done.add(left);
 		done.add(right);
-	 
-		/*ComponentImpl lefti=(ComponentImpl) left;
-		ComponentImpl righti=(ComponentImpl) right;
-		print.e(lefti.getName()+"="+lefti._getName());
-		print.e(righti.getName()+"="+righti._getName());*/
-		
-		
+	 	
 		if(left==null || right==null) return false;
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
-		Property[] props = getProperties(left);
+		Property[] props = ComponentUtil.getProperties(left,true,true,false,false);
 		Object l,r;
-		props=getIds(props);
+		props=ComponentUtil.getIDProperties(props);
 		for(int i=0;i<props.length;i++){
 			l=left.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			r=right.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;
-	}
+	}*/
 	
-	public static Property[] getIds(Property[] props) {
-		ArrayList<Property> ids=new ArrayList<Property>();
-        for(int y=0;y<props.length;y++){
-        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
-			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
-				ids.add(props[y]);
-		}
-        
-        // no id field defined
-        if(ids.size()==0) {
-        	String fieldType;
-        	for(int y=0;y<props.length;y++){
-        		fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
-    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
-    				ids.add(props[y]);
-    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
-    			}
-    		}
-        } 
-        
-        // still no id field defined
-        if(ids.size()==0 && props.length>0) {
-        	String owner = props[0].getOwnerName();
-			if(!StringUtil.isEmpty(owner)) owner=ListUtil.last(owner, '.').trim();
-        	
-        	String fieldType;
-        	if(!StringUtil.isEmpty(owner)){
-        		String id=owner+"id";
-        		for(int y=0;y<props.length;y++){
-        			fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
-	    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase(id)){
-	    				ids.add(props[y]);
-	    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
-	    			}
-	    		}
-        	}
-        } 
-        return ids.toArray(new Property[ids.size()]);
-	}
+	
+	
 	
 	public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
-		Property[] props=getProperties(cfc);
+		Property[] props=ComponentUtil.getProperties(cfc,true,true,false,false);
 		
 		for(int i=0;i<props.length;i++){
 			if(!props[i].getName().equalsIgnoreCase(name)) continue;
@@ -189,42 +136,7 @@ public class ORMUtil {
 		}
 		return defaultValue;
 	}
-	/* jira2049
-	public static Object getPropertyValue(ORMSession session,Component cfc, String name, Object defaultValue) {
-		Property[] props=getProperties(cfc);
-		Object raw=null;
-		SessionImpl sess=null;
-		if(session!=null){
-			raw=session.getRawSession();
-			if(raw instanceof SessionImpl)
-				sess=(SessionImpl) raw;
-		}
-		Object val;
-		for(int i=0;i<props.length;i++){
-			if(!props[i].getName().equalsIgnoreCase(name)) continue;
-			val = cfc.getComponentScope().get(KeyImpl.getInstance(name),null);
-			if(sess!=null && !(val instanceof PersistentCollection)){
-				if(val instanceof List)
-					return new PersistentList(sess,(List)val);
-				if(val instanceof Map && !(val instanceof Component))
-					return new PersistentMap(sess,(Map)val);
-				if(val instanceof Set)
-					return new PersistentSet(sess,(Set)val);
-				if(val instanceof Array)
-					return new PersistentList(sess,Caster.toList(val,null));
-					
-			}
-			return val;
-		}
-		return defaultValue;
-	}*/
 
-	private static Property[] getProperties(Component cfc) {
-		if(cfc instanceof ComponentPro)
-			return ((ComponentPro)cfc).getProperties(true,true,false,false);
-		return cfc.getProperties(true);
-	}
-	
 	public static boolean isRelated(Property prop) {
 		String fieldType = Caster.toString(prop.getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 		if(StringUtil.isEmpty(fieldType,true)) return false;

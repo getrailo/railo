@@ -1824,10 +1824,7 @@ public final class Caster {
         else if(o instanceof Number) return toString(((Number)o).doubleValue());
         else if(o instanceof Boolean) return toString(((Boolean)o).booleanValue());
         else if(o instanceof Castable) return ((Castable)o).castToString();
-        else if(o instanceof Date) {
-            if(o instanceof DateTime) return ((DateTime)o).castToString();
-            return new DateTimeImpl((Date)o).castToString();
-        }
+        else if(o instanceof Date) return toString((Date)o);
         else if(o instanceof Clob) return toString((Clob)o);
         else if(o instanceof Node) return XMLCaster.toString((Node)o);
         else if(o instanceof Reader) {
@@ -1881,6 +1878,11 @@ public final class Caster {
         
         
         return o.toString();
+    }
+    
+    public static String toString(Date date) {
+    	if(date instanceof DateTimeImpl) return ((DateTimeImpl)date).castToString();
+        return new DateTimeImpl(date).castToString();
     }
     
     /**

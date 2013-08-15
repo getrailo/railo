@@ -11,6 +11,7 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Operator;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
@@ -127,14 +128,14 @@ public final class UDFHasProperty extends UDFGSProperty {
 				Array arr = ((Array)propValue);
 				Iterator<Object> it = arr.valueIterator();
 				while(it.hasNext()){
-					if(ORMUtil.equals(value,it.next()))return true;
+					if(Operator.equalsComplex(value,it.next(), false))return true;
 				}
 			}
 			else if(propValue instanceof java.util.List) {
 				Iterator it=((java.util.List)propValue).iterator();
 				while(it.hasNext()){
 					o = it.next();
-					if(ORMUtil.equals(value,o))return true;
+					if(Operator.equalsComplex(value,o,false))return true;
 				}
 			}
 			return false;

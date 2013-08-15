@@ -65,6 +65,7 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
@@ -86,7 +87,6 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMException;
 import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.rest.RestSettings;
 import railo.runtime.schedule.Scheduler;
@@ -3142,10 +3142,10 @@ public abstract class ConfigImpl implements Config {
 			if(hasError) {
 				// try to load orm jars
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
-					throw new ORMException(
+					throw new ApplicationException(
 						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
 						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
-				throw new ORMException(
+				throw new ApplicationException(
 							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
 							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
 			
