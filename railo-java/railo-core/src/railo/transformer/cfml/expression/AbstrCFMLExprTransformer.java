@@ -1215,7 +1215,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Position line = data.cfml.getPosition();
 		BIF bif=new BIF(flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
-		bif.setClassName(flf.getCls());
+		bif.setClass(flf.getClazz());
 		bif.setReturnType(flf.getReturnTypeAsString());
 		
 		do {
@@ -1585,7 +1585,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if(checkLibrary) {
 			BIF bif=new BIF(name,flf);
 			bif.setArgType(flf.getArgType());
-			bif.setClassName(flf.getCls());
+			bif.setClass(flf.getClazz());
 			bif.setReturnType(flf.getReturnTypeAsString());
 			fm=bif;
 			

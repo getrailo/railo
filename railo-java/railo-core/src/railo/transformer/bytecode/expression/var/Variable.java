@@ -414,7 +414,8 @@ public class Variable extends ExpressionBase implements Invoker {
     	GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		// class
-		Type bifClass = Types.toType(bif.getClassName());
+		Class bifClass = bif.getClazz();
+		Type bifType = Type.getType(bifClass);//Types.toType(bif.getClassName());
 		Type rtnType=Types.toType(bif.getReturnType());
 		if(rtnType==Types.VOID)rtnType=Types.STRING;
 		
@@ -505,7 +506,7 @@ public class Variable extends ExpressionBase implements Invoker {
 			argTypes[1]=Types.OBJECT_ARRAY;
 			ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, args);	
 		}
-		adapter.invokeStatic(bifClass,new Method("call",rtnType,argTypes));
+		adapter.invokeStatic(bifType,new Method("call",rtnType,argTypes));
 		if(mode==MODE_REF || !last) {
 			if(Types.isPrimitiveType(rtnType)) {
 				adapter.invokeStatic(Types.CASTER,new Method("toRef",Types.toRefType(rtnType),new Type[]{rtnType}));
@@ -528,17 +529,18 @@ public class Variable extends ExpressionBase implements Invoker {
 	 * @param returnType
 	 * @return returns null when checking fi
 	 */
-	private static Boolean methodExists(Type clazz, String methodName, Type[] args, Type returnType)  {
+
+	private static Boolean methodExists(Class clazz, String methodName, Type[] args, Type returnType)  {
 		try {
-			Class _clazz=ASMUtil.toClass(clazz);
+			//Class _clazz=Types.toClass(clazz);
 			Class[] _args=new Class[args.length];
 			for(int i=0;i<_args.length;i++){
-				_args[i]=ASMUtil.toClass(args[i]);
+				_args[i]=Types.toClass(args[i]);
 			}
-			Class rtn = ASMUtil.toClass(returnType);
+			Class rtn = Types.toClass(returnType);
 		
 			try {
-				java.lang.reflect.Method m = _clazz.getMethod(methodName, _args);
+				java.lang.reflect.Method m = clazz.getMethod(methodName, _args);
 				return m.getReturnType()==rtn;
 			}
 			catch (Exception e) {

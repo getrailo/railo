@@ -12,6 +12,9 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
+import org.objectweb.asm.Type;
+
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -108,7 +111,7 @@ public final class ClassUtil {
 		if(clazz!=null) return clazz;
 		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
-
+	
 	/**
 	 * loads a class from a specified Classloader with given classname
 	 * @param className
@@ -116,7 +119,6 @@ public final class ClassUtil {
 	 * @return matching Class
 	 */
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
-		
 		if(cl==null){
 			PageContextImpl pci = (PageContextImpl) ThreadLocalPageContext.get();
 			if(pci!=null){
@@ -139,12 +141,13 @@ public final class ClassUtil {
 			
 		}
 		catch (ClassNotFoundException e) {
+		
 			try {
 				return Class.forName(className, false, cl);
 			} 
 			catch (ClassNotFoundException e1) {
 				// array in the format boolean[] or java.lang.String[]
-				if(className.endsWith("[]")) {
+				if(!StringUtil.isEmpty(className) && className.endsWith("[]")) {
 					StringBuilder pureCN=new StringBuilder(className);
 					int dimensions=0;
 					do{
@@ -158,6 +161,27 @@ public final class ClassUtil {
 						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
 						return clazz;
 					}
+				}
+				// array in the format [C or [Ljava.lang.String;
+				else if(!StringUtil.isEmpty(className) && className.charAt(0)=='[') {
+					StringBuilder pureCN=new StringBuilder(className);
+					int dimensions=0;
+					do{
+						pureCN.delete(0, 1);
+						dimensions++;
+					}
+					while(pureCN.charAt(0)=='[');
+					
+					Class clazz = loadClass(cl,pureCN.toString(),null);
+					if(clazz!=null) {
+						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
+						return clazz;
+					}
+				}
+				// class in format Ljava.lang.String;
+				else if(!StringUtil.isEmpty(className) && className.charAt(0)=='L' && className.endsWith(";")) {
+					className=className.substring(1,className.length()-1).replace('/', '.');
+					return loadClass(cl, className,defaultValue);
 				}
 				
 				if("boolean".equals(className)) return boolean.class;

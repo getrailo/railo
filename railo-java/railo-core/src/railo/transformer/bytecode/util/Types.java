@@ -36,10 +36,13 @@ import railo.runtime.op.Operator;
 import railo.runtime.poi.Excel;
 import railo.runtime.poi.ExcelUtil;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.Query;
+import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
@@ -392,6 +395,22 @@ public final class Types {
 		return type;
 	}
 
+	public static Class toClass(Type type) throws ClassException {
+		if(Types.STRING==type) return String.class;
+		if(Types.BOOLEAN_VALUE==type) return boolean.class;
+		if(Types.DOUBLE_VALUE==type) return double.class;
+		if(Types.PAGE_CONTEXT==type) return PageContext.class;
+		if(Types.OBJECT==type) return Object.class;
+		if(Types.STRUCT==type) return Struct.class;
+		if(Types.ARRAY==type) return Array.class;
+		if(Types.COLLECTION_KEY==type) return Collection.Key.class;
+		if(Types.COLLECTION_KEY_ARRAY==type) return Collection.Key[].class;
+		if(Types.QUERY==type) return Query.class;
+		if(Types.DATE_TIME==type) return railo.runtime.type.dt.DateTime.class;
+		
+		
+		return ClassUtil.toClass(type.getClassName());
+	}
 	
 
 }
