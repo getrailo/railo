@@ -143,6 +143,23 @@ public final class ClassUtil {
 				return Class.forName(className, false, cl);
 			} 
 			catch (ClassNotFoundException e1) {
+				// array in the format boolean[] or java.lang.String[]
+				if(className.endsWith("[]")) {
+					StringBuilder pureCN=new StringBuilder(className);
+					int dimensions=0;
+					do{
+						pureCN.delete(pureCN.length()-2, pureCN.length());
+						dimensions++;
+					}
+					while(pureCN.lastIndexOf("[]")==pureCN.length()-2);
+					
+					Class clazz = loadClass(cl,pureCN.toString(),null);
+					if(clazz!=null) {
+						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
+						return clazz;
+					}
+				}
+				
 				if("boolean".equals(className)) return boolean.class;
 				if("char".equals(className)) return char.class;
 				if("float".equals(className)) return float.class;
