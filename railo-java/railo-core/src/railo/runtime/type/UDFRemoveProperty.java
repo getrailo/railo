@@ -109,7 +109,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 				Key[] keys = CollectionUtil.keys(arr);
 				for(int i=0;i<keys.length;i++){
 					o=arr.get(keys[i],null);
-					if(Operator.equalsComplex(value,o,false)){
+					if(Operator.equalsComplex(value,o,false,true)){
 						arr.removeEL(keys[i]);
 						has=true;
 					}
@@ -119,7 +119,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 				Iterator it=((java.util.List)propValue).iterator();
 				while(it.hasNext()){
 					o = it.next();
-					if(Operator.equalsComplex(value,o,false)){
+					if(Operator.equalsComplex(value,o,false,true)){
 						it.remove();
 						has=true;
 					}

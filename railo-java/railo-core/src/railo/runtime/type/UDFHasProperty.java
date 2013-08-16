@@ -128,14 +128,14 @@ public final class UDFHasProperty extends UDFGSProperty {
 				Array arr = ((Array)propValue);
 				Iterator<Object> it = arr.valueIterator();
 				while(it.hasNext()){
-					if(Operator.equalsComplex(value,it.next(), false))return true;
+					if(Operator.equalsComplex(value,it.next(), false,true))return true;
 				}
 			}
 			else if(propValue instanceof java.util.List) {
 				Iterator it=((java.util.List)propValue).iterator();
 				while(it.hasNext()){
 					o = it.next();
-					if(Operator.equalsComplex(value,o,false))return true;
+					if(Operator.equalsComplex(value,o,false,true))return true;
 				}
 			}
 			return false;
