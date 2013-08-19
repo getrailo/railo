@@ -3,7 +3,31 @@ package railo.runtime.type;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 
+// FUTURE add to interface UDF
+
 public interface UDFPlus extends UDF {
+	
+
+    /**
+     * call user defined Funcion with a struct
+     * @param pageContext
+     * @param values named values
+     * @param doIncludePath 
+     * @return return value of the function
+     * @throws PageException
+     */
+    public abstract Object callWithNamedValues(PageContext pageContext,Collection.Key calledName,Struct values, boolean doIncludePath) throws PageException;
+
+    /**
+     * call user defined Funcion with parameters as Object Array
+     * @param pageContext
+     * @param args parameters for the function
+     * @param doIncludePath 
+     * @return return value of the function
+     * @throws PageException
+     */
+    public abstract Object call(PageContext pageContext, Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException;
+	
 	 public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException;
 	 public int getIndex();
 }

@@ -68,6 +68,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFGSProperty;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
@@ -486,8 +487,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     Object _call(PageContext pc, Collection.Key key, Struct namedArgs, Object[] args,boolean superAccess) throws PageException {
     	
     	Member member=getMember(pc,key,false, superAccess);
-    	if(member instanceof UDF) {
-        	return _call(pc,(UDF)member,namedArgs,args);
+    	if(member instanceof UDFPlus) {
+        	return _call(pc,key,(UDFPlus)member,namedArgs,args);
         }
         return onMissingMethod(pc, -1, member, key.getString(), args, namedArgs, superAccess);
     }
@@ -495,7 +496,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     Object _call(PageContext pc, int access, Collection.Key key, Struct namedArgs, Object[] args,boolean superAccess) throws PageException {
         Member member=getMember(access,key,false,superAccess);
         if(member instanceof UDF) {
-            return _call(pc,(UDF)member,namedArgs,args);
+            return _call(pc,key,(UDFPlus)member,namedArgs,args);
         }
         return onMissingMethod(pc, access, member, key.getString(), args, namedArgs, superAccess);
     }
@@ -528,13 +529,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	//newArgs.setEL(MISSING_METHOD_ARGS, args); 
         	Object[] newArgs=new Object[]{name,args};
         	
-        	return _call(pc,(UDF)ommm,null,newArgs);
+        	return _call(pc,KeyConstants._onmissingmethod,(UDFPlus)ommm,null,newArgs);
         }
         if(member==null)throw ComponentUtil.notFunction(this, KeyImpl.init(name), null,access);
         throw ComponentUtil.notFunction(this, KeyImpl.init(name), member.getValue(),access);
     }
 	
-	Object _call(PageContext pc, UDF udf, Struct namedArgs, Object[] args) throws PageException {
+	Object _call(PageContext pc, Collection.Key calledName,UDFPlus udf, Struct namedArgs, Object[] args) throws PageException {
 			
 		Object rtn=null;
 		Variables parent=null;
@@ -553,8 +554,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				synchronized (this) {
 					try {
 						parent=beforeCall(pc);
-						if(args!=null)rtn=udf.call(pc,args,true);
-						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+						if(args!=null)rtn=udf.call(pc,calledName,args,true);
+						else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 					}		
 					finally {
 						pc.setVariablesScope(parent);
@@ -569,8 +570,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			else {
 				try {
 					parent=beforeCall(pc);
-					if(args!=null)rtn=udf.call(pc,args,true);
-					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+					if(args!=null)rtn=udf.call(pc,calledName,args,true);
+					else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 				}		
 				finally {
 					pc.setVariablesScope(parent);
@@ -591,8 +592,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				synchronized (this) {
 				    try {
 		            	parent=beforeCall(pc); 
-		            	if(args!=null)rtn=udf.call(pc,args,true);
-						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+		            	if(args!=null)rtn=udf.call(pc,calledName,args,true);
+						else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 					}		
 					finally {
 						pc.setVariablesScope(parent);
@@ -604,8 +605,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			else {
 			    try {
 	            	parent=beforeCall(pc);
-	            	if(args!=null)rtn=udf.call(pc,args,true);
-					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+	            	if(args!=null)rtn=udf.call(pc,calledName,args,true);
+					else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 				}		
 				finally {
 					pc.setVariablesScope(parent);
@@ -1137,10 +1138,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toString,true,superAccess);
 			//Object o = get(pc,"_toString",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
-					return Caster.toString(_call(pc, udf, null, new Object[0]));
+					return Caster.toString(_call(pc, KeyConstants.__toString,udf, null, new Object[0]));
 				}
 			}
 		}
@@ -1159,11 +1160,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toString,true,superAccess);
 			//Object o = get(pc,"_toString",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toString(_call(pc, udf, null, new Object[0]),defaultValue);
+						return Caster.toString(_call(pc,KeyConstants.__toString, udf, null, new Object[0]),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1189,10 +1190,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toBoolean,true,superAccess);
 			//Object o = get(pc,"_toBoolean",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_BOOLEAN && udf.getFunctionArguments().length==0) {
-					return Caster.toBooleanValue(_call(pc, udf, null, new Object[0]));
+					return Caster.toBooleanValue(_call(pc, KeyConstants.__toBoolean,udf, null, new Object[0]));
 				}
 			}
 		}
@@ -1207,11 +1208,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toBoolean,true,superAccess);
 			//Object o = get(pc,"_toBoolean",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_BOOLEAN && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toBoolean(_call(pc, udf, null, new Object[0]),defaultValue);
+						return Caster.toBoolean(_call(pc,KeyConstants.__toBoolean, udf, null, new Object[0]),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1238,10 +1239,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toNumeric,true,superAccess);
 			//Object o = get(pc,"_toNumeric",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_NUMERIC && udf.getFunctionArguments().length==0) {
-					return Caster.toDoubleValue(_call(pc, udf, null, new Object[0]));
+					return Caster.toDoubleValue(_call(pc, KeyConstants.__toNumeric,udf, null, new Object[0]));
 				}
 			}
 		}
@@ -1255,11 +1256,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toNumeric,true,superAccess);
 			//Object o = get(pc,"_toNumeric",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_NUMERIC && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toDoubleValue(_call(pc, udf, null, new Object[0]),defaultValue);
+						return Caster.toDoubleValue(_call(pc, KeyConstants.__toNumeric,udf, null, new Object[0]),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1285,10 +1286,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toDateTime,true,superAccess);
 			//Object o = get(pc,"_toDateTime",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_DATETIME && udf.getFunctionArguments().length==0) {
-					return Caster.toDate(_call(pc, udf, null, new Object[0]),pc.getTimeZone());
+					return Caster.toDate(_call(pc, KeyConstants.__toDateTime,udf, null, new Object[0]),pc.getTimeZone());
 				}
 			}
 		}
@@ -1302,12 +1303,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toDateTime,true,superAccess);
 			//Object o = get(pc,"_toDateTime",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_DATETIME && udf.getFunctionArguments().length==0) {
 					
 					try {
-						return DateCaster.toDateAdvanced(_call(pc, udf, null, new Object[0]),true,pc.getTimeZone(),defaultValue);
+						return DateCaster.toDateAdvanced(_call(pc, KeyConstants.__toDateTime,udf, null, new Object[0]),true,pc.getTimeZone(),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1578,23 +1579,23 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     private Object callGetter(PageContext pc,Collection.Key key) throws PageException {
-    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
-        if(member instanceof UDF) {
-            UDF udf = (UDF)member;
+    	Member member=getMember(pc,key=KeyImpl.getInstance("get"+key.getLowerString()),false,false);
+        if(member instanceof UDFPlus) {
+            UDFPlus udf = (UDFPlus)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
-                return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
+                return _call(pc,key,udf,null,ArrayUtil.OBJECT_EMPTY);
             }
         } 
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
     
     private Object callGetter(PageContext pc,Collection.Key key, Object defaultValue) {
-    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
-        if(member instanceof UDF) {
-            UDF udf = (UDF)member;
+    	Member member=getMember(pc,key=KeyImpl.getInstance("get"+key.getLowerString()),false,false);
+        if(member instanceof UDFPlus) {
+            UDFPlus udf = (UDFPlus)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
                 try {
-					return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
+					return _call(pc,key,udf,null,ArrayUtil.OBJECT_EMPTY);
 				} catch (PageException e) {
 					return defaultValue;
 				}
@@ -1604,11 +1605,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
     
     private Object callSetter(PageContext pc,Collection.Key key, Object value) throws PageException {
-    	Member member=getMember(pc,KeyImpl.getInstance("set"+key.getLowerString()),false,false);
-    	if(member instanceof UDF) {
-        	UDF udf = (UDF)member;
+    	Member member=getMember(pc,key=KeyImpl.getInstance("set"+key.getLowerString()),false,false);
+    	if(member instanceof UDFPlus) {
+        	UDFPlus udf = (UDFPlus)member;
         	if(udf.getFunctionArguments().length==1 && (udf.getReturnType()==CFTypes.TYPE_VOID) || udf.getReturnType()==CFTypes.TYPE_ANY   ) {// TDOO support int return type
-                return _call(pc,udf,null,new Object[]{value});
+                return _call(pc,key,udf,null,new Object[]{value});
             }    
         }
         return _set(pc,key,value);

@@ -268,21 +268,32 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	@Override
 	public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
     	return this.properties.cachedWithin>0?
-    			_callCachedWithin(pc, null, values, doIncludePath):
-    			_call(pc, null, values, doIncludePath);
+    			_callCachedWithin(pc,null, null, values, doIncludePath):
+    			_call(pc,null, null, values, doIncludePath);
+    }
+	public Object callWithNamedValues(PageContext pc,Collection.Key calledName, Struct values,boolean doIncludePath) throws PageException {
+    	return this.properties.cachedWithin>0?
+    			_callCachedWithin(pc,calledName, null, values, doIncludePath):
+    			_call(pc,calledName, null, values, doIncludePath);
     }
 
     @Override
 	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
     	return  this.properties.cachedWithin>0?
-    			_callCachedWithin(pc, args,null, doIncludePath):
-    			_call(pc, args,null, doIncludePath);
+    			_callCachedWithin(pc,null, args,null, doIncludePath):
+    			_call(pc,null, args,null, doIncludePath);
+    }
+
+	public Object call(PageContext pc,Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException {
+    	return  this.properties.cachedWithin>0?
+    			_callCachedWithin(pc,calledName, args,null, doIncludePath):
+    			_call(pc,calledName, args,null, doIncludePath);
     }
    // private static int count=0;
     
     
 
-    private Object _callCachedWithin(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
+    private Object _callCachedWithin(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id = UDFUtil.callerHash(this,args,values);
     	
@@ -308,7 +319,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 		BodyContent bc =  pci.pushBody();
 	    
 	    try {
-	    	Object rtn = _call(pci, args, values, doIncludePath);
+	    	Object rtn = _call(pci,calledName, args, values, doIncludePath);
 	    	String out = bc.getString();
 	    	cache.put(id, new UDFCacheEntry(out, rtn),properties.cachedWithin,properties.cachedWithin);
 	    	return rtn;
@@ -318,7 +329,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
         }
     }
     
-    private Object _call(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
+    private Object _call(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	
     	//print.out(count++);
     	PageContextImpl pci=(PageContextImpl) pc;
@@ -329,8 +340,10 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 		Undefined 	undefined=pc.undefinedScope();
 		Argument	oldArgs=pc.argumentsScope();
         Local		oldLocal=pc.localScope();
+        Collection.Key oldCalledName=pci.getActiveUDFCalledName();
         
 		pc.setFunctionScopes(newLocal,newArgs);
+		pci.setActiveUDFCalledName(calledName);
 		
 		int oldCheckArgs=undefined.setMode(properties.localMode==null?pc.getApplicationContext().getLocalMode():properties.localMode.intValue());
 		PageSource psInc=null;
@@ -402,6 +415,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 			pc.removeLastPageSource(psInc!=null);
 			pci.removeUDF();
             pci.setFunctionScopes(oldLocal,oldArgs);
+            pci.setActiveUDFCalledName(oldCalledName);
 		    undefined.setMode(oldCheckArgs);
             pci.getScopeFactory().recycle(newArgs);
             pci.getScopeFactory().recycle(newLocal);

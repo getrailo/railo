@@ -254,6 +254,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	private Component activeComponent;
 	private UDF activeUDF;
+	private Collection.Key activeUDFCalledName;
     //private ComponentScope componentScope=new ComponentScope(this);
 	
 	private Credential remoteUser;
@@ -2811,6 +2812,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public UDF getActiveUDF() {
 		return activeUDF;
+	}
+	public Collection.Key getActiveUDFCalledName() {
+		return activeUDFCalledName;
+	}
+	public void setActiveUDFCalledName(Collection.Key activeUDFCalledName) {
+		this.activeUDFCalledName=activeUDFCalledName;
 	}
 
 	/**
