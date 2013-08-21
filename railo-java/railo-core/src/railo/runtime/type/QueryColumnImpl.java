@@ -38,7 +38,7 @@ import railo.runtime.util.ArrayIterator;
 /**
  * implementation of the query column
  */
-public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects,Array {
+public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	private static final long serialVersionUID = -5544446523204021493L;
 	private static final int CAPACITY=32;
