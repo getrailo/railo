@@ -62,6 +62,11 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 		this.hasBracked=b;
 	}
 
+    public String getColumnName() {
+
+        return column;
+    }
+
 	/**
 	 * @return the columnIndex
 	 */

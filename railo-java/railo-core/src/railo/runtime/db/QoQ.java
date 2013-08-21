@@ -1,5 +1,6 @@
 package railo.runtime.db;
 
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,6 +18,7 @@ import railo.runtime.sql.SelectParser;
 import railo.runtime.sql.Selects;
 import railo.runtime.sql.exp.BracketExpression;
 import railo.runtime.sql.exp.Column;
+import railo.runtime.sql.exp.ColumnExpression;
 import railo.runtime.sql.exp.Expression;
 import railo.runtime.sql.exp.op.Operation;
 import railo.runtime.sql.exp.op.Operation1;
@@ -139,15 +141,20 @@ public final class QoQ {
 				while(it.hasNext()){
 					k = it.next();
 					selects.put(k,k);
-					queryAddColumn(target,k);
+					queryAddColumn( target, k, qr.getColumn( k ).getType() );
 				}
 			}
 			else {
 				Key alias = Caster.toKey(expSelect.getAlias());
-				//alias=alias.toLowerCase();
-				
+
 				selects.put(alias,expSelect);
-				queryAddColumn(target,alias);
+
+                int type = Types.OTHER;
+
+                if ( expSelect instanceof ColumnExpression )
+                    type = qr.getColumn( Caster.toKey( ((ColumnExpression)expSelect).getColumnName() ) ).getType();
+
+				queryAddColumn( target, alias, type );
 			}
 		}
 		
@@ -197,9 +204,9 @@ public final class QoQ {
 		
 	}
 
-	private void queryAddColumn(QueryImpl query, Collection.Key column) throws PageException {
+	private void queryAddColumn(QueryImpl query, Collection.Key column, int type) throws PageException {
 		if(!query.containsKey(column)) {
-			query.addColumn(column, new ArrayImpl());
+			query.addColumn( column, new ArrayImpl(), type );
 		}
 	}
 
@@ -321,7 +328,7 @@ public final class QoQ {
 
 	/**
 	 * @param pc Page Context of the Request
-	 * @param query ZQLQuery
+	 * @param table ZQLQuery
 	 * @return Railo Query
 	 * @throws PageException
 	 */
@@ -741,12 +748,12 @@ public final class QoQ {
 	 * execute a equal operation
 	 * @param sql
 	 * @param qr QueryResult to execute on it
-	 * @param expression
+	 * @param op
 	 * @param row row of resultset to execute
 	 * @return result
 	 * @throws PageException
 	 */
-	private int executeCompare(PageContext pc,SQL sql,Query qr, Operation2 op, int row) throws PageException {
+	private int executeCompare(PageContext pc, SQL sql, Query qr, Operation2 op, int row) throws PageException {
 		//print.e(op.getLeft().getClass().getName());
 		return 
 			Operator.compare(executeExp(pc,sql,qr,op.getLeft(),row),executeExp(pc,sql,qr,op.getRight(),row));
@@ -920,12 +927,12 @@ public final class QoQ {
 	 * Executes a constant value
 	 * @param sql 
 	 * @param qr
-	 * @param constant
+	 * @param column
 	 * @param row
 	 * @return result
 	 * @throws PageException
 	 */
-	private Object executeColumn(SQL sql,Query qr, Column column, int row) throws PageException {
+	private Object executeColumn(SQL sql, Query qr, Column column, int row) throws PageException {
 		if(column.getColumn().equals("?")) {
 		    int pos=column.getColumnIndex();
 		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
