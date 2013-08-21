@@ -924,6 +924,7 @@ sort direction:
 		<name>arrayToList</name>
 		<class>railo.runtime.functions.list.ArrayToList</class>
 		<member-name>toList</member-name>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.ArrayToList</tte-class>
 		<description>Transform the array to a list of elements delimiter by the given string</description>
 		<argument>
 			<name>array</name>

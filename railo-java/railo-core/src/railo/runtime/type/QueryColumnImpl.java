@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +38,7 @@ import railo.runtime.util.ArrayIterator;
 /**
  * implementation of the query column
  */
-public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
+public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects,Array {
 
 	private static final long serialVersionUID = -5544446523204021493L;
 	private static final int CAPACITY=32;
@@ -754,6 +755,91 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
+	}
+
+	@Override
+	public int getDimension() {
+		return 1;
+	}
+
+	@Override
+	public Object getE(int row) throws PageException {
+		return get(row);
+	}
+
+	@Override
+	public Object setE(int key, Object value) throws PageException {
+		return set(key, value);
+	}
+
+	@Override
+	public int[] intKeys() {
+		int[] keys=new int[size()];
+        int len=keys.length;
+		for(int i=1;i<=len;i++) {
+			keys[i-1]=i;
+		}
+		return keys;
+	}
+
+	@Override
+	public boolean insert(int key, Object value) throws PageException {
+		throwNotAllowedToAlter();
+		return false;
+	}
+
+	@Override
+	public Object append(Object o) throws PageException {
+		throwNotAllowedToAlter();
+		return o;
+	}
+
+	@Override
+	public Object appendEL(Object o) {
+		throwNotAllowedToAlter();
+		return o;
+	}
+
+	@Override
+	public Object prepend(Object o) throws PageException {
+		throwNotAllowedToAlter();
+		return o;
+	}
+
+	@Override
+	public void resize(int to) throws PageException {
+		throwNotAllowedToAlter();
+	}
+
+	@Override
+	public void sort(String sortType, String sortOrder) throws PageException {
+		throwNotAllowedToAlter();
+	}
+
+	@Override
+	public void sort(Comparator comp) throws PageException {
+		throwNotAllowedToAlter();
+	}
+
+	@Override
+	public List toList() {
+		Iterator<Object> it = valueIterator();
+		ArrayList list=new ArrayList();
+        while(it.hasNext()){
+        	list.add(it.next());
+        }
+        return list;
+	}
+
+	@Override
+	public Object removeE(int key) throws PageException {
+		throwNotAllowedToAlter();
+		return null;
+	}
+
+	@Override
+	public boolean containsKey(int key) {
+		return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 	
 	/*@Override

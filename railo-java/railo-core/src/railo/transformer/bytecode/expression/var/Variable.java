@@ -157,6 +157,7 @@ public class Variable extends ExpressionBase implements Invoker {
 
 	private boolean fromHash=false;
 	private Expression defaultValue;
+	private Boolean asCollection;
 
 	public Variable(Position start,Position end) {
 		super(start,end);
@@ -167,7 +168,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		this.scope=scope;
 	}
 	
-	
+
 	
 	public Expression getDefaultValue() {
 		return defaultValue;
@@ -175,6 +176,14 @@ public class Variable extends ExpressionBase implements Invoker {
 
 	public void setDefaultValue(Expression defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+	
+	public Boolean getAsCollection() {
+		return asCollection;
+	}
+
+	public void setAsCollection(Boolean asCollection) {
+		this.asCollection = asCollection;
 	}
 
 	/**
@@ -207,7 +216,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 		if(defaultValue!=null && countFM==0 && countDM!=0)
 			return _writeOutCallerUtil(bc, mode);
-		return _writeOut(bc, mode, null);
+		return _writeOut(bc, mode, asCollection);
 	}
 	private Type _writeOut(BytecodeContext bc, int mode,Boolean asCollection) throws BytecodeException {
 		
