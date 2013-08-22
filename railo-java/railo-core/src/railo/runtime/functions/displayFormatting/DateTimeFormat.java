@@ -1,10 +1,12 @@
 package railo.runtime.functions.displayFormatting;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -20,6 +22,7 @@ public final class DateTimeFormat extends BIF {
 
 	private static final long serialVersionUID = 134840879454373440L;
 	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:mm:ss";
+	private static final String[] AP = new String[]{"A","P"};
 
 	/**
 	 * @param pc
@@ -28,7 +31,7 @@ public final class DateTimeFormat extends BIF {
 	 * @throws ExpressionException
 	 */
 	public static String call(PageContext pc , Object object) throws ExpressionException {
-		return invoke(pc,object, DEFAULT_MASK,Locale.US,ThreadLocalPageContext.getTimeZone(pc));
+		return invoke(pc,object, null,Locale.US,ThreadLocalPageContext.getTimeZone(pc));
 	}
 	
 	/**
@@ -47,15 +50,31 @@ public final class DateTimeFormat extends BIF {
 	}
 	
 	public static String invoke(PageContext pc , Object object, String mask,Locale locale,TimeZone tz) throws ExpressionException {
-		if(mask==null) mask=DEFAULT_MASK;
 		if(locale==null) locale=Locale.US;
 		DateTime datetime = Caster.toDate(object,true,tz,null);
 		if(datetime==null) {
 		    if(object.toString().trim().length()==0) return "";
 		    throw new ExpressionException("can't convert value "+object+" to a datetime value");
 		}
+		java.text.DateFormat format=null;
 		
-		SimpleDateFormat format = new SimpleDateFormat(mask, locale);
+		if("short".equalsIgnoreCase(mask)) 
+			format=java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.SHORT, locale);
+		else if("medium".equalsIgnoreCase(mask)) 
+			format=java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.MEDIUM, locale);
+		else if("long".equalsIgnoreCase(mask)) 
+			format=java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.LONG, java.text.DateFormat.LONG, locale);
+		else if("full".equalsIgnoreCase(mask)) 
+			format=java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.FULL, java.text.DateFormat.FULL, locale);
+		else {
+			SimpleDateFormat sdf;
+			format = sdf= new SimpleDateFormat(convertMask(mask), locale);
+			if(mask!=null &&  StringUtil.indexOfIgnoreCase(mask, "tt")==-1 && StringUtil.indexOfIgnoreCase(mask, "t")!=-1) {
+				DateFormatSymbols dfs = new DateFormatSymbols(locale);
+				dfs.setAmPmStrings(AP);
+				sdf.setDateFormatSymbols(dfs);
+			}
+		}
 		format.setTimeZone(tz);
         return format.format(datetime);
 	}
@@ -65,5 +84,61 @@ public final class DateTimeFormat extends BIF {
 		if(args.length==1)return call(pc,args[0]);
 		if(args.length==2)return call(pc,args[0],Caster.toString(args[1]));
 		return call(pc,args[0],Caster.toString(args[1]),Caster.toString(args[2]));
+	}
+	
+
+
+	private static String convertMask(String mask) {
+		if(mask==null) return DEFAULT_MASK;
+		
+		char[] carr = mask.toCharArray();
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<carr.length;i++){
+			switch(carr[i]){
+			case 'm': sb.append('M');break;
+			case 'S': sb.append('s');break;
+			case 't': sb.append('a');break;
+			case 'T': sb.append('a');break;
+			case 'n': sb.append('m');break;
+			case 'N': sb.append('m');break;
+			case 'l': sb.append('S');break;
+			case 'L': sb.append('S');break;
+			case 'f': sb.append("'f'");break;
+			case 'e': sb.append("'e'");break;
+			case 'G': 
+			case 'y': 
+			case 'M': 
+			case 'W': 
+			case 'w': 
+			case 'D': 
+			case 'd': 
+			case 'F': 
+			case 'E': 
+			case 'a': 
+			case 'H': 
+			case 'h': 
+			case 'K': 
+			case 'k': 
+			case 'Z': 
+			case 'z': 
+			case 's': 
+					sb.append(carr[i]);
+			break;
+			case '\'':
+				if(carr.length-1>i) {
+					if(carr[i+1]=='\'') {
+						i++;
+						sb.append("''");
+						break;
+					}
+				}
+				sb.append("''");
+			break;
+			default:
+				sb.append('\'').append(carr[i]).append('\'');
+			}
+		}
+		
+		return sb.toString();
 	}
 }
