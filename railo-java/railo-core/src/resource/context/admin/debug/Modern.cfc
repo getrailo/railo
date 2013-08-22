@@ -905,9 +905,9 @@
 
 		function unitFormat( string unit, numeric time, boolean prettify=false ) {
 
-			var result = LsNumberFormat( time / 1000000, ",0.000" );
+			var result = NumberFormat( arguments.time / 1000000, ",0.000" );
 
-			if ( prettify )
+			if ( arguments.prettify )
 				result = listFirst( result, '.' ) & "<span class='num-lsv'>." & listGetAt( result, 2, '.' ) & "</span>";
 
 			return result;
