@@ -9980,6 +9980,14 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>hidden</status>
+			<description>The SQL type that the parameter (any type) will be bound to.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>CFSQLType</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
