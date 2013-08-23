@@ -52,7 +52,7 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 			
 	        try {
 	        	page = cfmlTransformer.transform(config,source,tld,fld);
-	        	barr = page.execute(classFile);
+	        	barr = page.execute(source,classFile);
 				IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		        return barr;
 			} 

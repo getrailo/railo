@@ -116,6 +116,7 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
@@ -4481,6 +4482,17 @@ public final class ConfigWebFactory {
 			NullSupportHelper.fullNullSupport = fns;
 			((ConfigServerImpl) config).setFullNullSupport(fns);
 		}
+		
+		// supress WS between cffunction and cfargument
+		
+		String str = compiler.getAttribute("externalize-string-gte");
+		if (Decision.isNumeric(str)) {
+			config.setExternalizeStringGTE(Caster.toIntValue(str,-1));
+		}
+		else if (hasCS) {
+			config.setExternalizeStringGTE(configServer.getExternalizeStringGTE());
+		}
+		
 	}
 
 	/**
