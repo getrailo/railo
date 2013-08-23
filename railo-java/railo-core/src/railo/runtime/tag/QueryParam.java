@@ -112,7 +112,7 @@ public final class QueryParam extends TagImpl {
 		item.setType(SQLCaster.toIntType(type));
 		
 	}
-	public void setType(String type) throws DatabaseException	{
+	public void setSqltype(String type) throws DatabaseException	{
 		item.setType(SQLCaster.toIntType(type));
 		
 	}
