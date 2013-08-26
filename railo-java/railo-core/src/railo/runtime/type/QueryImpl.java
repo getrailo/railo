@@ -597,7 +597,7 @@ public class QueryImpl implements Query,Objects {
 			//	throw new DatabaseException("invalid column name ["+columnNames[i]+"] for query", "column names must start with a letter and can be followed by letters numbers and underscores [_]. RegExp:[a-zA-Z][a-zA-Z0-9_]*",null,null,null);
 			
 			if(testMap.contains(columnNames[i].getLowerString()))
-				throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+ListUtil.arrayToListTrim( _toStringKeys(columnNames),","),null,null,null);
+				throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+ListUtil.arrayToListTrim( _toStringKeys(columnNames),","),null,null);
 			testMap.add(columnNames[i].getLowerString());
 		}
 	}
@@ -634,7 +634,7 @@ public class QueryImpl implements Query,Objects {
         this.name=name;
         
         if(columnNames.length!=arrColumns.length)
-			throw new DatabaseException("invalid parameter for query, not the same count from names and columns","names:"+columnNames.length+";columns:"+arrColumns.length,null,null,null);
+			throw new DatabaseException("invalid parameter for query, not the same count from names and columns","names:"+columnNames.length+";columns:"+arrColumns.length,null,null);
 		int len=0;
 		columns=new QueryColumnImpl[arrColumns.length];
 		if(arrColumns.length>0) {
@@ -642,7 +642,7 @@ public class QueryImpl implements Query,Objects {
 			len=arrColumns[0].size();
 			for(int i=0;i<arrColumns.length;i++) {
 				if(arrColumns[i].size()!=len)
-					throw new DatabaseException("invalid parameter for query, all columns must have the same size","column[1]:"+len+"<>column["+(i+1)+"]:"+arrColumns[i].size(),null,null,null);
+					throw new DatabaseException("invalid parameter for query, all columns must have the same size","column[1]:"+len+"<>column["+(i+1)+"]:"+arrColumns[i].size(),null,null);
 				//columns[i]=new QueryColumnTypeFlex(arrColumns[i]);
 				columns[i]=new QueryColumnImpl(this,columnNames[i],arrColumns[i],Types.OTHER);
 			}
@@ -823,9 +823,9 @@ public class QueryImpl implements Query,Objects {
             if(key.equals(KeyConstants._RECORDCOUNT) || 
             		key.equals(KeyConstants._CURRENTROW) || 
             		key.equals(KeyConstants._COLUMNLIST))
-                throw new DatabaseException("can't remove "+key+" this is not a row","existing rows are ["+getColumnlist(false)+"]",null,null,null);
+                throw new DatabaseException("can't remove "+key+" this is not a row","existing rows are ["+getColumnlist(false)+"]",null,null);
             throw new DatabaseException("can't remove row ["+key+"], this row doesn't exist",
-                    "existing rows are ["+getColumnlist(false)+"]",null,null,null);
+                    "existing rows are ["+getColumnlist(false)+"]",null,null);
         }
         return removed;
 	}
@@ -895,7 +895,7 @@ public class QueryImpl implements Query,Objects {
         if(index!=-1) {
             return columns[index].set(row,value);
         }
-        throw new DatabaseException("column ["+key+"] does not exist","columns are ["+getColumnlist(false)+"]",null,sql,null);
+        throw new DatabaseException("column ["+key+"] does not exist","columns are ["+getColumnlist(false)+"]",sql,null);
 	}
     
     @Override

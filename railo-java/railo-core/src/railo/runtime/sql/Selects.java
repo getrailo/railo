@@ -173,6 +173,6 @@ public class Selects {
 			}
 			return columns.toArray(new Column[columns.size()]);
 		}
-		throw new DatabaseException("not supported for Union distinct",null,null,null,null);
+		throw new DatabaseException("not supported for Union distinct",null,null,null);
 	}
 }
