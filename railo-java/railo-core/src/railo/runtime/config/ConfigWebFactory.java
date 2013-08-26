@@ -2119,10 +2119,10 @@ public final class ConfigWebFactory {
 
 				}
 				catch (ClassException ce) {
-					SystemOut.print(config.getErrWriter(), ce.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(ce, true));
 				}
 				catch (IOException e) {
-					SystemOut.print(config.getErrWriter(), e.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(e, true));
 				}
 			}
 		// }
@@ -3782,8 +3782,10 @@ public final class ConfigWebFactory {
 		Element parent = getChildByName(doc.getDocumentElement(), "monitoring");
 		boolean enabled = Caster.toBooleanValue(parent.getAttribute("enabled"), false);
 		configServer.setMonitoringEnabled(enabled);
-
+		SystemOut.printDate(config.getOutWriter(), "monitoring is "+(enabled?"enabled":"disabled"));
+		
 		Element[] children = getChildren(parent, "monitor");
+		
 		java.util.List<IntervallMonitor> intervalls = new ArrayList<IntervallMonitor>();
 		java.util.List<RequestMonitor> requests = new ArrayList<RequestMonitor>();
 		java.util.List<MonitorTemp> actions = new ArrayList<MonitorTemp>();
@@ -3796,7 +3798,7 @@ public final class ConfigWebFactory {
 			strType = el.getAttribute("type");
 			name = el.getAttribute("name");
 			log = Caster.toBooleanValue(el.getAttribute("log"), true);
-
+			
 			if ("request".equalsIgnoreCase(strType))
 				type = IntervallMonitor.TYPE_REQUEST;
 			else if ("action".equalsIgnoreCase(strType))
@@ -3804,6 +3806,7 @@ public final class ConfigWebFactory {
 			else
 				type = IntervallMonitor.TYPE_INTERVALL;
 
+			
 			if (!StringUtil.isEmpty(className) && !StringUtil.isEmpty(name)) {
 				name = name.trim();
 				try {
@@ -3814,7 +3817,7 @@ public final class ConfigWebFactory {
 						obj = constr.invoke();
 					else
 						obj = clazz.newInstance();
-
+					SystemOut.printDate(config.getOutWriter(), "loaded "+(strType)+" monitor ["+clazz.getName()+"]");
 					if (type == IntervallMonitor.TYPE_INTERVALL) {
 						IntervallMonitor m = obj instanceof IntervallMonitor ? (IntervallMonitor) obj : new IntervallMonitorWrap(obj);
 						m.init(configServer, name, log);
@@ -3826,11 +3829,13 @@ public final class ConfigWebFactory {
 					else {
 						RequestMonitor m = obj instanceof RequestMonitor ? (RequestMonitor) obj : new RequestMonitorWrap(obj);
 						m.init(configServer, name, log);
+						SystemOut.printDate(config.getOutWriter(), "initialize "+(strType)+" monitor ["+clazz.getName()+"]");
+						
 						requests.add(m);
 					}
 				}
 				catch (Throwable t) {
-					SystemOut.printDate(config.getErrWriter(), t.getMessage());
+					SystemOut.printDate(config.getErrWriter(), ExceptionUtil.getStacktrace(t, true));
 				}
 			}
 
