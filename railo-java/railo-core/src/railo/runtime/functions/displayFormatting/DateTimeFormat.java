@@ -90,21 +90,24 @@ public final class DateTimeFormat extends BIF {
 
 	private static String convertMask(String mask) {
 		if(mask==null) return DEFAULT_MASK;
-		
+		boolean inside=false;
 		char[] carr = mask.toCharArray();
 		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<carr.length;i++){
+			
 			switch(carr[i]){
-			case 'm': sb.append('M');break;
-			case 'S': sb.append('s');break;
-			case 't': sb.append('a');break;
-			case 'T': sb.append('a');break;
-			case 'n': sb.append('m');break;
-			case 'N': sb.append('m');break;
-			case 'l': sb.append('S');break;
-			case 'L': sb.append('S');break;
-			case 'f': sb.append("'f'");break;
-			case 'e': sb.append("'e'");break;
+			case 'm': if(!inside){sb.append('M');}else{sb.append(carr[i]);} break;
+			case 'S': if(!inside){sb.append('s');}else{sb.append(carr[i]);} break;
+			case 't': if(!inside){sb.append('a');}else{sb.append(carr[i]);} break;
+			case 'T': if(!inside){sb.append('a');}else{sb.append(carr[i]);} break;
+			case 'n': if(!inside){sb.append('m');}else{sb.append(carr[i]);} break;
+			case 'N': if(!inside){sb.append('m');}else{sb.append(carr[i]);} break;
+			case 'l': if(!inside){sb.append('S');}else{sb.append(carr[i]);} break;
+			case 'L': if(!inside){sb.append('S');}else{sb.append(carr[i]);} break;
+			
+			case 'f': if(!inside){sb.append("'f'");}else{sb.append(carr[i]);} break;
+			case 'e': if(!inside){sb.append("'e'");}else{sb.append(carr[i]);} break;
+			
 			case 'G': 
 			case 'y': 
 			case 'M': 
@@ -122,8 +125,11 @@ public final class DateTimeFormat extends BIF {
 			case 'Z': 
 			case 'z': 
 			case 's': 
+			//case '.': 
 					sb.append(carr[i]);
 			break;
+			
+
 			case '\'':
 				if(carr.length-1>i) {
 					if(carr[i+1]=='\'') {
@@ -132,13 +138,29 @@ public final class DateTimeFormat extends BIF {
 						break;
 					}
 				}
-				sb.append("''");
+				
+				
+				inside=!inside;
+				sb.append(carr[i]);
 			break;
+			/*case '\'':
+				if(carr.length-1>i) {
+					if(carr[i+1]=='\'') {
+						i++;
+						sb.append("''");
+						break;
+					}
+				}
+				sb.append("''");
+			break;*/
 			default:
-				sb.append('\'').append(carr[i]).append('\'');
+				char c=carr[i];
+				if(!inside && ((c>='a' && c<='z') || (c>='A' && c<='Z')))
+					sb.append('\'').append(c).append('\'');
+				else
+					sb.append(c);
 			}
 		}
-		
 		return sb.toString();
 	}
 }
