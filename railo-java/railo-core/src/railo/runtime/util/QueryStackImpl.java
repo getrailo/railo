@@ -7,12 +7,8 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
-import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryColumnImpl;
-import railo.runtime.type.QueryImpl;
 
 /**
  * Stack for Query Objects

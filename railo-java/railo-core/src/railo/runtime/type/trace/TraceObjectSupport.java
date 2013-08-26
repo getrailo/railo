@@ -7,7 +7,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 

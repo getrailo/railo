@@ -27,7 +27,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.MemberUtil;

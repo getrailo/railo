@@ -21,7 +21,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
