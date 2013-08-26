@@ -68,7 +68,6 @@ public final class UDFSetterProperty extends UDFGSProperty {
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
-		print.e("set:"+args);
 		validate(validate,validateParams,args[0]);
 		component.getComponentScope().set(propName, cast(this.arguments[0],args[0],1));
 		return component;

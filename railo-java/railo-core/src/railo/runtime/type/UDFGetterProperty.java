@@ -28,8 +28,6 @@ public final class UDFGetterProperty extends UDFGSProperty {
 	
 	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
-		print.e(component.hashCode()+">"+prop.getName()+":"+propName+"->"+component.getComponentScope().get(pageContext, propName,"*"));
-		print.e(component.getComponentScope().keys());
 		return component.getComponentScope().get(pageContext, propName,null);
 	}
 

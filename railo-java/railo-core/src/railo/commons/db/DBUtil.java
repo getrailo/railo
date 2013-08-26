@@ -82,7 +82,6 @@ public final class DBUtil {
 	}
 
 	public static Connection getConnection(String connStr, String user, String pass) throws SQLException {
-		print.e(connStr);
 		try {
 			//return DriverManager.getConnection(dsn, user, pass);
 			return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(connStr, user, pass));
