@@ -17,12 +17,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.KeyConstants;
@@ -698,10 +696,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	@Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
 		Object obj = get(methodName,null); // every none UDF value is fine as default argument
-		if(obj instanceof UDFImpl) {
-			return ((UDFImpl)obj).call(pc,methodName,args,false);
-		}
-		else if(obj instanceof UDFPlus) {
+		if(obj instanceof UDFPlus) {
 			return ((UDFPlus)obj).call(pc,methodName,args,false);
 		}
 		throw new ExpressionException("No matching function ["+methodName+"] found");

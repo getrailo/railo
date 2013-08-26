@@ -1,5 +1,6 @@
 package railo.runtime.type;
 
+import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 
@@ -30,4 +31,9 @@ public interface UDFPlus extends UDF {
 	
 	 public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException;
 	 public int getIndex();
+	 
+	 
+	 // !!!!!! do not move to public interface, make for example a interface calle UDFMod
+	 public void setOwnerComponent(ComponentImpl component);
+	 public void setAccess(int access);
 }

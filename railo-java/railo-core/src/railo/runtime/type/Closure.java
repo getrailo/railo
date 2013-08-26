@@ -13,6 +13,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
 public class Closure extends UDFImpl {
 	
@@ -73,7 +74,7 @@ public class Closure extends UDFImpl {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties dp) {
-		return toDumpData(pageContext, maxlevel, dp,this,true);
+		return UDFUtil.toDumpData(pageContext, maxlevel, dp,this,true);
 	}
 
 	@Override

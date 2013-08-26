@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.print;
 import railo.commons.collection.HashMapPro;
 import railo.commons.collection.MapFactory;
 import railo.commons.collection.MapPro;
@@ -88,6 +89,7 @@ import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
+import railo.runtime.type.util.UDFUtil;
 
 /**
  * %**%
@@ -332,8 +334,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             udf=entry.getValue();
         	
             if(udf.getOwnerComponent()==src) {
-        		udf=((UDFImpl)entry.getValue()).duplicate(trg);
-        		trgMap.put(entry.getKey(),udf);	
+            	UDFPlus clone=(UDFPlus) entry.getValue().duplicate();
+        		clone.setOwnerComponent(trg);
+        		clone.setAccess(udf.getAccess());
+        		trgMap.put(entry.getKey(),clone);	
             }
         	
         }
@@ -397,13 +401,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	
 	    Iterator it = interfaceCollection.getUdfs().entrySet().iterator();
 	    Map.Entry entry;
-	    UDFImpl iUdf,cUdf;
+	    UDFPlus iUdf,cUdf;
 	    FunctionArgument[] iFA,cFA;
     	while(it.hasNext()){
     		
     		entry=(Entry) it.next();
-    		iUdf=(UDFImpl) entry.getValue();
-    		cUdf=(UDFImpl) _udfs.get(entry.getKey());
+    		iUdf=(UDFPlus) entry.getValue();
+    		cUdf=(UDFPlus) _udfs.get(entry.getKey());
     		
     		// UDF does not exist
     		if(cUdf==null ) {
@@ -469,7 +473,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    componentPage.ckecked();
     }
 
-	private String _getErrorMessage(UDFImpl cUdf,UDFImpl iUdf) {
+	private String _getErrorMessage(UDFPlus cUdf,UDFPlus iUdf) {
 		return "function ["+cUdf.toString().toLowerCase()+"] of component " +
 			 "["+pageSource.getDisplayPath()+"]" +
 			 " does not match the function declaration ["+iUdf.toString().toLowerCase()+"] of the interface " +
@@ -487,8 +491,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     Object _call(PageContext pc, Collection.Key key, Struct namedArgs, Object[] args,boolean superAccess) throws PageException {
     	
     	Member member=getMember(pc,key,false, superAccess);
+    	
     	if(member instanceof UDFPlus) {
-        	return _call(pc,key,(UDFPlus)member,namedArgs,args);
+    		return _call(pc,key,(UDFPlus)member,namedArgs,args);
         }
         return onMissingMethod(pc, -1, member, key.getString(), args, namedArgs, superAccess);
     }
@@ -513,7 +518,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		}
         	}
         	else if(_namedArgs!=null) {
-        		UDFImpl.argumentCollection(_namedArgs, new FunctionArgument[]{});
+        		UDFUtil.argumentCollection(_namedArgs, new FunctionArgument[]{});
         		
         		Iterator<Entry<Key, Object>> it = _namedArgs.entryIterator();
         		Entry<Key, Object> e;
@@ -640,11 +645,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     		Iterator<Entry<Key, UDF>> it = constructorUDFs.entrySet().iterator();
     		Map.Entry<Key, UDF> entry;
     		Key key;
-    		UDFImpl udf;
+    		UDFPlus udf;
     		while(it.hasNext()){
     			entry=it.next();
     			key=entry.getKey();
-    			udf=(UDFImpl) entry.getValue();
+    			udf=(UDFPlus) entry.getValue();
     			registerUDF(key, udf,false,true);
     		}
     	}
@@ -1464,8 +1469,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      */
     private synchronized Object _set(PageContext pc,Collection.Key key, Object value) throws ExpressionException {
     	//print.out("set:"+key);
-        if(value instanceof UDFImpl) {
-        	UDFImpl udf = (UDFImpl)((UDF)value).duplicate();
+        if(value instanceof UDFPlus) {
+        	UDFPlus udf = (UDFPlus)((UDFPlus)value).duplicate();
         	//udf.isComponentMember(true);///+++
         	udf.setOwnerComponent(this);
         	if(udf.getAccess()>Component.ACCESS_PUBLIC)
@@ -1485,22 +1490,22 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
     
 
-    public void reg(Collection.Key key, UDFImpl udf) {
+    public void reg(Collection.Key key, UDFPlus udf) {
     	registerUDF(key, udf,useShadow,false);
     }
-    public void reg(String key, UDFImpl udf) {
+    public void reg(String key, UDFPlus udf) {
     	registerUDF(KeyImpl.init(key), udf,useShadow,false);
     }
 
     public void registerUDF(String key, UDF udf) {
-    	registerUDF(KeyImpl.init(key), (UDFImpl) udf,useShadow,false);
+    	registerUDF(KeyImpl.init(key), (UDFPlus) udf,useShadow,false);
     }
     public void registerUDF(String key, UDFProperties prop) {
     	registerUDF(KeyImpl.init(key), new UDFImpl( prop),useShadow,false);
     }
 
     public void registerUDF(Collection.Key key, UDF udf) {
-    	registerUDF(key, (UDFImpl) udf,useShadow,false);
+    	registerUDF(key, (UDFPlus) udf,useShadow,false);
     }
     public void registerUDF(Collection.Key key, UDFProperties prop) {
     	registerUDF(key, new UDFImpl( prop),useShadow,false);
@@ -1509,7 +1514,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     /*
      *  @deprecated injected is not used
      */
-    public void registerUDF(Collection.Key key, UDFImpl udf,boolean useShadow,boolean injected) {
+    public void registerUDF(Collection.Key key, UDFPlus udf,boolean useShadow,boolean injected) {
     	udf.setOwnerComponent(this);//+++
     	_udfs.put(key,udf);
     	_data.put(key,udf);
@@ -1950,8 +1955,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		Iterator<? extends Member> it = data.values().iterator();
 		while(it.hasNext()){
 			m=it.next();
-			if(m instanceof UDFImpl) {
-				((UDFImpl)m).setOwnerComponent(this);
+			if(m instanceof UDFPlus) {
+				((UDFPlus)m).setOwnerComponent(this);
 			}
 		}
 	}

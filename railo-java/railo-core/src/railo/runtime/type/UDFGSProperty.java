@@ -1,12 +1,15 @@
 package railo.runtime.type;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.component.MemberSupport;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.DeprecatedException;
@@ -17,20 +20,24 @@ import railo.runtime.exp.UDFCasterException;
 import railo.runtime.functions.decision.IsValid;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
-public abstract class UDFGSProperty extends UDFImpl {
+public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 
 	private static final Collection.Key MIN_LENGTH = KeyImpl.intern("minLength");
 	private static final Collection.Key MAX_LENGTH = KeyImpl.intern("maxLength");
 	
 	protected final FunctionArgument[] arguments;
 	protected final String name;
-	protected final ComponentImpl component;
+	protected ComponentImpl component;
+	private UDFPropertiesImpl properties;
 
 	public UDFGSProperty(ComponentImpl component,String name,FunctionArgument[] arguments,short rtnType,String rtnFormat) {
-		super(UDFProperties(
+		super(Component.ACCESS_PUBLIC);
+		properties=UDFProperties(
 				component.getPageSource(),
 				arguments,
 				-1,
@@ -39,7 +46,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 				rtnFormat,
 				false,
 				true,
-				"public",
+				Component.ACCESS_PUBLIC,
 				"",
 				"",
 				"",
@@ -49,7 +56,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 				null,
 				new StructImpl()
 				
-		));
+		);
 		
 		this.name=name;
 		this.arguments=arguments;
@@ -64,7 +71,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	        String strReturnFormat, 
 	        boolean output, 
 	        Boolean bufferOutput, 
-	        String strAccess, 
+	        int access, 
 	        String displayName, 
 	        String description, 
 	        String hint, 
@@ -81,7 +88,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 			         returnType, 
 			         strReturnFormat, 
 			         output,
-			         ComponentUtil.toIntAccess(strAccess), 
+			         access, 
 			         bufferOutput,
 			         displayName, 
 			         description, 
@@ -107,8 +114,22 @@ public abstract class UDFGSProperty extends UDFImpl {
 	}
 
 	@Override
+	public PageSource getPageSource() {
+		return component.getPageSource();
+	}
+
+	@Override
+	public int getIndex() {
+		return -1;
+	}
+
+	@Override
 	public Component getOwnerComponent() {
 		return component;
+	}
+
+	public void setOwnerComponent(ComponentImpl component) {
+		this.component = component;
 	}
 	
 	public Page getPage() {
@@ -119,10 +140,9 @@ public abstract class UDFGSProperty extends UDFImpl {
 	public boolean getOutput() {
 		return false;
 	}
-
-	@Override
-	public int getAccess() {
-		return Component.ACCESS_PUBLIC;
+ 
+	public UDF duplicate(boolean deep) {
+		return duplicate(); // deep has no influence here, because a UDF is not a collection
 	}
 
 	@Override
@@ -142,7 +162,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 
 	@Override
 	public int getReturnFormat() {
-		return UDFImpl.RETURN_FORMAT_WDDX;
+		return UDF.RETURN_FORMAT_WDDX;
 	}
 
 	@Override
@@ -167,13 +187,12 @@ public abstract class UDFGSProperty extends UDFImpl {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this,false);
+		return UDFUtil.toDumpData(pageContext, maxlevel, properties, this,false);
 	}
 	
 	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
-		return super.getMetaData(pc);
-		//return UDFImpl.getMetaData(pc, this);
+		return ComponentUtil.getMetaData(pc, properties);
 	}
 	
 	
@@ -223,6 +242,32 @@ public abstract class UDFGSProperty extends UDFImpl {
 	}
 
 	
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key calledName, Struct values, boolean doIncludePath) throws PageException {
+		PageContextImpl pci = ((PageContextImpl)pc);
+		Key old =pci.getActiveUDFCalledName();
+		pci.setActiveUDFCalledName(calledName);
+		try{
+			return callWithNamedValues(pci, values, doIncludePath);
+		}
+		finally{
+			pci.setActiveUDFCalledName(old);
+		}
+	}
+
+	@Override
+	public Object call(PageContext pc, Key calledName, Object[] args, boolean doIncludePath) throws PageException {
+		PageContextImpl pci = ((PageContextImpl)pc);
+		Key old =pci.getActiveUDFCalledName();
+		pci.setActiveUDFCalledName(calledName);
+		try{
+			return call(pci, args, doIncludePath);
+		}
+		finally{
+			pci.setActiveUDFCalledName(old);
+		}
+	}
+
 	private static String createMessage(String format, Object value) {
     	if(Decision.isSimpleValue(value)) return "the value ["+Caster.toString(value,null)+"] is not in  ["+format+"] format";
     	return "cannot convert object from type ["+Caster.toTypeName(value)+"] to a ["+format+"] format";

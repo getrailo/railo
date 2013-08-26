@@ -1,5 +1,6 @@
 package railo.runtime.type;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.ComponentImpl;
@@ -18,20 +19,17 @@ public final class UDFGetterProperty extends UDFGSProperty {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());
+		
 	} 
 
-	@Override
-	public UDF duplicate(ComponentImpl c) {
-		return new UDFGetterProperty(c,prop);
-	}
-	
-
 	public UDF duplicate() {
-		return duplicate(component);
+		return new UDFGetterProperty(component,prop);
 	}
 	
 	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
+		print.e(component.hashCode()+">"+prop.getName()+":"+propName+"->"+component.getComponentScope().get(pageContext, propName,"*"));
+		print.e(component.getComponentScope().keys());
 		return component.getComponentScope().get(pageContext, propName,null);
 	}
 

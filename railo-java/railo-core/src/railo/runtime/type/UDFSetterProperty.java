@@ -1,5 +1,6 @@
  package railo.runtime.type;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.ComponentImpl;
@@ -13,6 +14,7 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
 public final class UDFSetterProperty extends UDFGSProperty {
 
@@ -54,23 +56,19 @@ public final class UDFSetterProperty extends UDFGSProperty {
 	} 
 
 	@Override
-	public UDF duplicate(ComponentImpl c) {
+	public UDF duplicate() {
 		try {
-			return new UDFSetterProperty(c,prop);
+			return new UDFSetterProperty(component,prop);
 		} catch (PageException e) {
 			return null;
 		}
 	}
-
 	
-
-	public UDF duplicate() {
-		return duplicate(component);
-	}
 	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
+		print.e("set:"+args);
 		validate(validate,validateParams,args[0]);
 		component.getComponentScope().set(propName, cast(this.arguments[0],args[0],1));
 		return component;
@@ -78,7 +76,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 
 	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
-		UDFImpl.argumentCollection(values,getFunctionArguments());
+		UDFUtil.argumentCollection(values,getFunctionArguments());
 		Object value = values.get(propName,null);
 		
 		if(value==null){

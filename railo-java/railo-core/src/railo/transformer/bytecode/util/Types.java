@@ -198,7 +198,7 @@ public final class Types {
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
 	public static final Type CLOSURE = Type.getType(Closure.class);
 	public static final Type UDF_PROPERTIES_ARRAY = Type.getType(UDFProperties[].class);
-	public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
+	//public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
 	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
