@@ -4,7 +4,7 @@ import railo.commons.lang.StringUtil;
 
 public final class CFMXCompat {
 
-    public static final String ALGORITHM_NAME = "CFMX_COMPAT";
+    public static final String ALGORITHM_NAME = "cfmx_compat";
 
 
     private String m_Key;
