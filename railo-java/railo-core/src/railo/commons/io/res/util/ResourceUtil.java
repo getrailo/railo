@@ -1403,4 +1403,93 @@ public final class ResourceUtil {
     	return list.toArray(new Resource[list.size()]);
 	}
 
+
+    /**
+     * this internal class holds information about a snippet from text with its start and end line numbers
+     */
+    public static class Snippet implements java.io.Serializable {
+
+        private String text = null;
+        private int startLine = 0, endLine =0;
+
+        public final static Snippet Empty = new Snippet( "", 0, 0 );
+
+        public Snippet( String text, int startLine, int endLine ) {
+
+            this.text = text;
+            this.startLine = startLine;
+            this.endLine = endLine;
+        }
+
+        /** returns the actual text of the snippet */
+        public String getContent() {
+
+            return text;
+        }
+
+        /** returns the start line number */
+        public int getStartLine() {
+
+            return startLine;
+        }
+
+        /** returns the end line number */
+        public int getEndLine() {
+
+            return endLine;
+        }
+
+        /** extract a Snippet from InputStream at the given char positions */
+        public static Snippet fromInputStream( InputStream is, int startChar, int endChar ) {
+
+            String contents;
+            int startLine = 0, endLine =0;
+
+            java.util.Scanner scanner = new java.util.Scanner( is, "UTF-8" ).useDelimiter( "\\A" );     // TODO: use server encoding
+            contents  = scanner.hasNext() ? scanner.next() : "";
+
+            startLine = getLineNumber( contents, startChar );
+            endLine   = getLineNumber( contents, endChar );
+
+            String text = "";
+            if ( endChar > startChar )
+                text = contents.substring( startChar, endChar );
+
+            if ( is != null ) try {
+
+                is.close();
+            }
+            catch ( IOException ex ) {}
+
+            return new Snippet( text, startLine, endLine );
+        }
+
+        /** extract a Snippet from a Resource at the given char positions */
+        public static Snippet fromResource( Resource res, int startChar, int endChar ) {
+
+            try {
+
+                return fromInputStream( res.getInputStream(), startChar, endChar );
+            }
+            catch ( IOException ex ) {
+
+                return Snippet.Empty;
+            }
+        }
+
+        /** returns the line number of the given char in the text */
+        public static int getLineNumber( String text, int posChar ) {
+
+            int len = Math.min( posChar, text.length() );
+            int result = 1;
+
+            for ( int i=0; i<len; i++ ) {
+
+                if ( text.charAt( i ) == '\n' )
+                    result++;
+            }
+
+            return result;
+        }
+    }
 }
