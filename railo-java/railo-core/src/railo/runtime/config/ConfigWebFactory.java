@@ -31,6 +31,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -44,6 +45,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.cfml.CFMLResourceProvider;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -59,6 +61,7 @@ import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -640,19 +643,21 @@ public final class ConfigWebFactory {
 		lib.mkdir();
 		Resource classes = config.getConfigDir().getRealResource("classes");
 		classes.mkdir();
-		Resource[] libs = lib.listResources();
+		Resource[] libs = lib.listResources(new ExtensionResourceFilter(".jar", false));
 
 		// merge resources
-		if (libs.length > 0 || !ResourceUtil.isEmptyDirectory(classes)) {
-			Resource[] tmp = new Resource[libs.length + 1];
-			for (int i = 0; i < libs.length; i++) {
-				tmp[i] = libs[i];
+		if (!ResourceUtil.isEmptyDirectory(classes,new ExtensionResourceFilter(".class", true))) {
+			if(ArrayUtil.isEmpty(libs)) {
+				libs=new Resource[]{classes};
 			}
-			tmp[libs.length] = classes;
-			libs = tmp;
-		}
-		else {
-			libs = new Resource[0];
+			else {
+				Resource[] tmp = new Resource[libs.length + 1];
+				for (int i = 0; i < libs.length; i++) {
+					tmp[i] = libs[i];
+				}
+				tmp[libs.length] = classes;
+				libs = tmp;
+			}
 		}
 
 		// get resources from server config and merge
