@@ -173,26 +173,25 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
     	if(lastNonce>timeNonce)
         	throw new ApplicationException("last access was with a newer nonce");
-    	long now = System.currentTimeMillis();
+    	long now = System.currentTimeMillis()+getTimeServerOffset();
     	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
     		throw new ApplicationException("nonce is outdated");
     	
     	lastNonce=timeNonce;
     	
     	String[] keys=configServer.getAuthenticationKeys();
-    	
     	// check if one of the keys matching
     	String hash;
     	for(int i=0;i<keys.length;i++){
     		try {
-				hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
-				if(hash.equals(key)) return configServer;
+    			hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
+    			if(hash.equals(key)) return configServer;
 			}
 			catch (NoSuchAlgorithmException e) {
 				throw Caster.toPageException(e);
 			}
     	}
-    	throw new ApplicationException("No access, no matching key found");
+    	throw new ApplicationException("No access, no matching authentication key found");
     }
     
     public String getServerId() {
