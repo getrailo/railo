@@ -20,6 +20,7 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.scope.Undefined;
@@ -42,10 +43,11 @@ public final class VariableUtilImpl implements VariableUtil {
         return get(pc,coll,key,defaultValue);
     }
     
-    public Object getCollection(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {
+    public Object getCollection(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {// FUTURE add to interface
         if(coll instanceof Query) {
-        	// TODO sollte nicht null sein
-            return ((Query)coll).getColumn(key,null);
+        	QueryColumn qc = ((Query)coll).getColumn(key,null);
+        	if(qc==null) return defaultValue;
+        	return qc;
         }
         return get(pc,coll,key,defaultValue);
     }
@@ -94,6 +96,7 @@ public final class VariableUtilImpl implements VariableUtil {
 		
 	}
 	
+    
     @Override
 	public Object get(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {
         // Objects
