@@ -1394,7 +1394,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"component");
             
-        Class skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
+        Class<?> skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
@@ -1411,7 +1411,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
         	while(pit.hasNext()){
         		p=pit.next().getValue();
-        		parr.add(p.getMetaData());
+        		parr.append(p.getMetaData());
         	}
         	parr.sort(new ArrayOfStructComparator(KeyConstants._name));
         	sct.set(KeyConstants._properties,parr);
@@ -1428,7 +1428,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	if(page!=null && page.udfs!=null){
     		for(int i=0;i<page.udfs.length;i++){
     			if(page.udfs[i].getAccess()>access) continue;
-        		arr.add(ComponentUtil.getMetaData(pc,(UDFPropertiesImpl) page.udfs[i]));
+        		arr.append(ComponentUtil.getMetaData(pc,(UDFPropertiesImpl) page.udfs[i]));
     		}
     	}
     	
@@ -1467,8 +1467,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @throws ExpressionException 
      */
     private synchronized Object _set(PageContext pc,Collection.Key key, Object value) throws ExpressionException {
-    	//print.out("set:"+key);
-        if(value instanceof UDFPlus) {
+    	if(value instanceof UDFPlus) {
         	UDFPlus udf = (UDFPlus)((UDFPlus)value).duplicate();
         	//udf.isComponentMember(true);///+++
         	udf.setOwnerComponent(this);
@@ -1583,23 +1582,25 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     private Object callGetter(PageContext pc,Collection.Key key) throws PageException {
-    	Member member=getMember(pc,key=KeyImpl.getInstance("get"+key.getLowerString()),false,false);
+    	Key getterName = KeyImpl.getInstance("get"+key.getLowerString());
+    	Member member=getMember(pc,getterName,false,false);
         if(member instanceof UDFPlus) {
             UDFPlus udf = (UDFPlus)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
-                return _call(pc,key,udf,null,ArrayUtil.OBJECT_EMPTY);
+                return _call(pc,getterName,udf,null,ArrayUtil.OBJECT_EMPTY);
             }
         } 
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
     
     private Object callGetter(PageContext pc,Collection.Key key, Object defaultValue) {
-    	Member member=getMember(pc,key=KeyImpl.getInstance("get"+key.getLowerString()),false,false);
+    	Key getterName = KeyImpl.getInstance("get"+key.getLowerString());
+    	Member member=getMember(pc,getterName,false,false);
         if(member instanceof UDFPlus) {
             UDFPlus udf = (UDFPlus)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
                 try {
-					return _call(pc,key,udf,null,ArrayUtil.OBJECT_EMPTY);
+					return _call(pc,getterName,udf,null,ArrayUtil.OBJECT_EMPTY);
 				} catch (PageException e) {
 					return defaultValue;
 				}
@@ -1609,11 +1610,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
     
     private Object callSetter(PageContext pc,Collection.Key key, Object value) throws PageException {
-    	Member member=getMember(pc,key=KeyImpl.getInstance("set"+key.getLowerString()),false,false);
+    	Collection.Key setterName = KeyImpl.getInstance("set"+key.getLowerString());
+    	Member member=getMember(pc,setterName,false,false);
     	if(member instanceof UDFPlus) {
         	UDFPlus udf = (UDFPlus)member;
         	if(udf.getFunctionArguments().length==1 && (udf.getReturnType()==CFTypes.TYPE_VOID) || udf.getReturnType()==CFTypes.TYPE_ANY   ) {// TDOO support int return type
-                return _call(pc,key,udf,null,new Object[]{value});
+                return _call(pc,setterName,udf,null,new Object[]{value});
             }    
         }
         return _set(pc,key,value);
