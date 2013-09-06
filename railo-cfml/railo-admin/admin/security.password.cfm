@@ -30,9 +30,7 @@ Defaults --->
 		</cfcase>
 	<!--- CHANGE --->
 		<cfcase value="#stText.Buttons.Change#">
-			<cfif len(form._old_password) LT 6>
-				<cfset error.message="#stText.Login.OldTooShort#">
-			<cfelseif len(form._new_password) LT 6>
+			<cfif len(form._new_password) LT 6>
 				<cfset error.message="#stText.Login.NewTooShort#">
 			<cfelseif form._new_password NEQ form._new_password_re>
 				<cfset error.message="#stText.Login.UnequalPasswords#">
