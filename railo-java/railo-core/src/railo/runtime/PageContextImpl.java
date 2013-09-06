@@ -535,13 +535,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	catch (Throwable t) {
         		//print.printST(t);
         	}
-        	
-			
-        	// release connection
-			DatasourceConnectionPool pool = this.config.getDatasourceConnectionPool();
-			DatasourceConnection dc=ormSession.getDatasourceConnection();
-			if(dc!=null)pool.releaseDatasourceConnection(dc);
-	       
         	ormSession=null;
         }
         
