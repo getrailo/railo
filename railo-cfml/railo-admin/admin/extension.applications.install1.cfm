@@ -11,7 +11,7 @@
     	<cfset detail=getDetailByUid(url.uid)>
 		<cfset appendURL = "" />
 	</cfif>
-
+	
 	<cfadmin 
 		action="getExtensionInfo"
 		type="#request.adminType#"
@@ -23,7 +23,7 @@
 	<cfset dest=manager.createUIDFolder(url.uid)>
 
 	<!--- copy railo extension package to destination directory --->
-	<cfset app=manager.copyAppFile(detail.data,dest)>
+	<cfset app=manager.copyAppFile(detail.data,dest,isDefined('url.trial') and url.trial)>
 </cfsilent>
 
 <cfif (not isDefined('app.url') or not len(app.url)) and not FileExists(app.destFile)>

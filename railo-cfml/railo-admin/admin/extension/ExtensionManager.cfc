@@ -126,6 +126,7 @@
     	hint="create a new step cfc">
     	<cfargument name="app" type="any">
     	<cfargument name="dest" type="string">
+    	<cfargument name="trial" type="boolean" default="#false#">
         
         <cfsetting requesttimeout="1000000">
         <cfset var rtn=struct()>
@@ -150,9 +151,26 @@
             <cfif isDefined('app.download') and len(trim(app.download))>
                 <cffile action="copy" source="#app.download#" destination="#destFile#" mode="777">
             <cfelse>
-            	<cfset var rtn=request.getDownloadDetails(hash(app.provider),request.admintype,getRailoId()['server'].id,getRailoId()['web'].id,app.id,serialNumber)>
-                <cfif isDefined('rtn.url') and len(rtn.url)>
+				<cfset var ids=getRailoId()>
+				<cfset var rtn=request.getDownloadDetails(
+											hash(app.provider),
+											request.admintype,
+											ids['server'].id,
+											ids['web'].id,
+											app.id,
+											{trial:trial,
+												idPro:ids['server'].idPro,
+												serialNumber:serialNumber,
+												paymentCancelURL:cgi.request_url&"&paymentResult=cancel",
+												paymentReturnURL:cgi.request_url&"&paymentResult=return",
+												clientVersion:server.railo.version
+											})>
+                <!--- url to download --->
+				<cfif isDefined('rtn.url') and len(rtn.url)>
                 	<cffile action="copy" source="#rtn.url#" destination="#destFile#" mode="777">
+                    <cfset rtn.message="">
+				<cfelseif isDefined('rtn.data') and len(rtn.data)>
+					<cffile action="write" output="#rtn.data#" file="#destFile#" mode="777">
                     <cfset rtn.message="">
 				</cfif>
             </cfif>
