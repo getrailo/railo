@@ -4,8 +4,8 @@ import railo.runtime.PageSource;
 
 public class DebugEntryTemplatePartImpl extends DebugEntrySupport implements DebugEntryTemplatePart {
 
-	private int startPos;
-	private int endPos;
+	private int startPos, startLine;
+	private int endPos, endLine;
 
 	protected DebugEntryTemplatePartImpl(PageSource source,int startPos, int endPos) {
 		super(source);
@@ -32,4 +32,19 @@ public class DebugEntryTemplatePartImpl extends DebugEntrySupport implements Deb
         return path+":"+startPos+" - "+endPos;
     }
 
+    public int getStartLine() {
+        return startLine;
+    }
+
+    public int getEndLine() {
+        return endLine;
+    }
+
+    public void setStartLine(int value) {
+        startLine = value;
+    }
+
+    public void setEndLine(int value) {
+        endLine = value;
+    }
 }
