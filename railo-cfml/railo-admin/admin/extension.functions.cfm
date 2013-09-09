@@ -336,14 +336,13 @@
 		
 	
     <cfloop query="providers">
-        <!---  ---><cftry>
-            
+        <cftry>
 			<cfset var _data=datas[providers.url]>
 			<cfif isSimpleValue(_data)>
 				<cfif len(err.message)>
-					<cfset err.message&="<br>was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+					<cfset err.message&="<br>Failed to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
                 <cfelse>
-					<cfset err.message="was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+					<cfset err.message="Failed to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
                 </cfif>
 				<cfcontinue>
 			</cfif>
@@ -371,14 +370,14 @@
             </cfloop>
             
             
-            <cfcatch><cfrethrow>
+            <cfcatch>
                 <cfif len(err.message)>
-                    <cfset err.message&="<br>can't load provider [#providers.url#]">
+                    <cfset err.message&="<br>Couldn't load provider [#providers.url#]: #cfcatch.message#">
                 <cfelse>
-                    <cfset err.message="can't load provider [#providers.url#]">
+                    <cfset err.message="Couldn't load provider [#providers.url#]: #cfcatch.message#">
                 </cfif>
             </cfcatch>
-        </cftry><!------>
+        </cftry>
     </cfloop>
     <cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
     <cfreturn data>

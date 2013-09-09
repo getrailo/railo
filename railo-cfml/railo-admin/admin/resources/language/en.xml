@@ -265,7 +265,7 @@
 	<data key="ext.documentation">Documentation</data>
 	<data key="ext.installeddesc">These applications are already installed on the system.</data>
 	<data key="ext.licenseagreement">License agreement</data>
-	<data key="ext.uploadextension">Upload new extension</data>
+	<data key="ext.uploadextension">Upload new extension (experimental)</data>
 	<data key="ext.uploadextensiondesc">If you downloaded an extension, you can add the extension here.</data>
 	<data key="ext.upload">upload</data>
 	<data key="ext.nofileuploaded">You have not uploaded a file!&lt;br&gt;Please first choose a file.</data>
