@@ -50,7 +50,9 @@
 
 	<cfcatch>
     	<cfset display=false>
-        <cfset deleteExtension(destFile)>
+		<cfif structKeyExists(variables, "destFile")>
+			<cfset deleteExtension(destFile)>
+		</cfif>
     	<cfset printError(cfcatch,true)>
     </cfcatch>
 </cftry>

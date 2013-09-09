@@ -14,7 +14,7 @@
 
 <!--- upload own extension --->
 <cfoutput>
-	<h2>#stText.ext.uploadExtension# (experimentell)</h2>
+	<h2>#stText.ext.uploadExtension#</h2>
 	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
 	<cfif structKeyExists(url, 'noextfile')>
 		<div class="error">
