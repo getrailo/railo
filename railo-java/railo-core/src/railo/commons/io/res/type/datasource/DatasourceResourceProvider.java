@@ -393,9 +393,6 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 			attr = getAttr(data, fullPathHash,path, name);
 		}
 		
-			
-		//InputStream is = new ByteArrayInputStream("susi".getBytes());
-		
 		PipedInputStream  pis = new PipedInputStream();
 	    PipedOutputStream pos = new PipedOutputStream();
 		pis.connect(pos);

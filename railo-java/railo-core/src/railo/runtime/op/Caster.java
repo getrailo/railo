@@ -13,7 +13,9 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
@@ -41,6 +43,7 @@ import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
@@ -57,6 +60,7 @@ import railo.runtime.config.Config;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
@@ -319,7 +323,7 @@ public final class Caster {
 
     /**
      * cast a Object to a Double Object (reference Type)
-     * @param o Object to cast
+     * @param f Object to cast
      * @return casted Double Object
      * @throws PageException
      */
@@ -429,6 +433,7 @@ public final class Caster {
     public static double toDoubleValue(String str) throws CasterException { 
     	return toDoubleValue(str,true);
     }
+    
     public static double toDoubleValue(String str, boolean alsoFromDate) throws CasterException { 
         if(str==null) return 0;//throw new CasterException("can't cast empty string to a number value");
         str=str.trim();
@@ -1068,7 +1073,7 @@ public final class Caster {
 
     /**
      * cast a Object to a char value (primitive value type)
-     * @param o Object to cast
+     * @param str Object to cast
      * @return casted char value
      * @throws PageException
      */
@@ -1364,7 +1369,41 @@ public final class Caster {
      * @throws PageException
      */
     public static long toLongValue(String str) throws PageException {
-        return (long)toDoubleValue(str); 
+    	BigInteger bi=null;
+    	try {
+    		bi = new BigInteger(str);
+    		
+    	}
+    	catch(Throwable t){}
+    	if(bi!=null) {
+    		if(bi.bitLength()<64) return bi.longValue();
+    		throw new ApplicationException("number ["+str+"] cannot be casted to a long value, number is to long ("+(bi.bitLength()+1)+" bit)");
+    	}
+    	return (long)toDoubleValue(str); 
+    }
+    
+    /**
+     * returns a number Object, this can be a BigDecimal,BigInteger,Long, Double, depending on the input.
+     * @param str
+     * @return
+     * @throws PageException
+     */
+    public static Number toNumber(String str, Number defaultValue) {
+    	try{
+	    	// float
+	    	if(str.indexOf('.')!=-1) {
+	    		return new BigDecimal(str);
+	    	}
+	    	// integer
+	    	BigInteger bi = new BigInteger(str);
+	    	int l = bi.bitLength();
+	    	if(l<32) return new Integer(bi.intValue());
+	    	if(l<64) return new Long(bi.longValue());
+	    	return bi;
+    	}
+    	catch(Throwable t) {
+    		return defaultValue;
+    	}
     }
     
     /**
@@ -1420,7 +1459,7 @@ public final class Caster {
      * @throws PageException
      */
     public static Long toLong(Object o) throws PageException {
-        if(o instanceof Long) return (Long)o;
+        if(o instanceof Long) return (Long)o; 
         return Long.valueOf(toLongValue(o));
         
     }
@@ -1846,7 +1885,7 @@ public final class Caster {
     
     /**
      * cast a String to a String (do Nothing)
-     * @param o Object to cast
+     * @param str
      * @return casted String
      * @throws PageException
      */
@@ -2074,6 +2113,14 @@ public final class Caster {
         	ArrayList list=new ArrayList();
             Array arr=(Array)o;
             for(int i=0;i<arr.size();i++)list.add(i,arr.get(i+1,null));
+            return list;
+        }
+        else if(o instanceof Iterator) {
+        	Iterator it=(Iterator) o;
+            ArrayList list=new ArrayList();
+            while(it.hasNext()){
+            	list.add(it.next());
+            }
             return list;
         }
         else if(o instanceof XMLStruct) {
@@ -2399,6 +2446,10 @@ public final class Caster {
         if(Decision.isSimpleValue(o) || Decision.isArray(o))
         	throw new CasterException(o,"Struct");
         if(o instanceof Collection) return new CollectionStruct((Collection)o);
+
+        if ( o == null )
+            throw new CasterException( "null can not be casted to a Struct" );
+
         return new ObjectStruct(o);
     }
     
@@ -2674,7 +2725,7 @@ public final class Caster {
     	if(o instanceof ObjectWrap) {
             return toQuery(((ObjectWrap)o).getEmbededObject());
         }
-        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
+        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query", ThreadLocalPageContext.getTimeZone());
         throw new CasterException(o,"query");
     }
     
@@ -4104,13 +4155,13 @@ public final class Caster {
 		return defaultValue;
 	}
 
-	public static byte[] toBytes(Object obj) throws PageException {
+	public static byte[] toBytes(Object obj,Charset charset) throws PageException {
 		try {
 			if(obj instanceof byte[]) return (byte[]) obj;
 			if(obj instanceof InputStream)return IOUtil.toBytes((InputStream)obj);
 			if(obj instanceof Resource)return IOUtil.toBytes((Resource)obj);
 			if(obj instanceof File)return IOUtil.toBytes((File)obj);
-			if(obj instanceof String) return ((String)obj).getBytes();
+			if(obj instanceof String) return ((String)obj).getBytes(charset==null?SystemUtil.getCharset():charset);
 			if(obj instanceof Blob) {
 				InputStream is=null;
 				try {
@@ -4131,13 +4182,13 @@ public final class Caster {
 		throw new CasterException(obj,byte[].class);
 	}
 
-	public static InputStream toInputStream(Object obj) throws PageException {
+	public static InputStream toInputStream(Object obj,Charset charset) throws PageException {
 		try {
 			if(obj instanceof InputStream)return (InputStream)obj;
 			if(obj instanceof byte[]) return new ByteArrayInputStream((byte[]) obj);
 			if(obj instanceof Resource)return ((Resource)obj).getInputStream();
 			if(obj instanceof File)return new FileInputStream((File)obj);
-			if(obj instanceof String) return new ByteArrayInputStream(((String)obj).getBytes());
+			if(obj instanceof String) return new ByteArrayInputStream(((String)obj).getBytes(charset==null?SystemUtil.getCharset():charset));
 			if(obj instanceof Blob) return ((Blob)obj).getBinaryStream();
 		}
 		catch(IOException ioe) {

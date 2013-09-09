@@ -72,7 +72,7 @@ public class DatasourceConnectionPool {
         	conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
-        	throw new DatabaseException("can't connect to datasource ["+ds.getName()+"]",e,null,null);
+        	throw new DatabaseException(e,null);
         }
 		//print.err("create connection");
         return new DatasourceConnectionImpl(conn,ds,user,pass);
@@ -154,13 +154,14 @@ public class DatasourceConnectionPool {
 
 	private DCStack getDCStack(DataSource datasource, String user, String pass) {
 		String id = createId(datasource,user,pass);
+		synchronized(id) {
+			DCStack stack=dcs.get(id);
 		
-		DCStack stack=dcs.get(id);
-		
-		if(stack==null){
-			dcs.put(id, stack=new DCStack());
+			if(stack==null){
+				dcs.put(id, stack=new DCStack());
+			}
+			return stack;
 		}
-		return stack;
 	}
 	
 	public int openConnections() {

@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +23,6 @@ import javax.servlet.ServletConfig;
 import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,8 +32,9 @@ import org.xml.sax.SAXException;
 
 import railo.aprint;
 import railo.print;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.digest.Hash;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
@@ -43,6 +45,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.cfml.CFMLResourceProvider;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -51,12 +54,14 @@ import railo.commons.lang.ByteSizeParser;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassLoaderHelper;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -95,16 +100,13 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
-import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
-import railo.runtime.listener.NoneAppListener;
 import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.ActionMonitorFatory;
 import railo.runtime.monitor.IntervallMonitor;
@@ -117,11 +119,11 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.search.SearchEngine;
@@ -165,10 +167,11 @@ public final class ConfigWebFactory {
 	 * @throws IOException
 	 * @throws TagLibException
 	 * @throws FunctionLibException
+	 * @throws NoSuchAlgorithmException 
 	 */
 
 	public static ConfigWebImpl newInstance(CFMLFactoryImpl factory, ConfigServerImpl configServer, Resource configDir, boolean isConfigDirACustomSetting,
-			ServletConfig servletConfig) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
+			ServletConfig servletConfig) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException, NoSuchAlgorithmException {
 		// DO NOT REMOVE!!!!
 		try {
 			new LabelBlockImpl("aa");
@@ -192,7 +195,7 @@ public final class ConfigWebFactory {
 				+ "===================================================================\n"
 
 		);
-
+		
 		boolean doNew = doNew(configDir);
 
 		Resource configFile = configDir.getRealResource("railo-web.xml.cfm");
@@ -266,7 +269,7 @@ public final class ConfigWebFactory {
 	/**
 	 * reloads the Config Object
 	 * 
-	 * @param config
+	 * @param cs
 	 * @param force
 	 * @throws SAXException
 	 * @throws ClassNotFoundException
@@ -274,6 +277,7 @@ public final class ConfigWebFactory {
 	 * @throws IOException
 	 * @throws TagLibException
 	 * @throws FunctionLibException
+	 * @throws NoSuchAlgorithmException 
 	 */
 	public static void reloadInstance(ConfigServerImpl cs, ConfigWebImpl cw, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException,
 			FunctionLibException {
@@ -301,7 +305,7 @@ public final class ConfigWebFactory {
 	}
 
 	/**
-	 * @param configServer
+	 * @param cs
 	 * @param config
 	 * @param doc
 	 * @throws ClassNotFoundException
@@ -374,14 +378,6 @@ public final class ConfigWebFactory {
 		loadMonitors(cs, config, doc);
 		loadLogin(cs, config, doc);
 		config.setLoadTime(System.currentTimeMillis());
-
-		// this call is needed to make sure the railo StaticLoggerBinder is
-		// loaded
-		try {
-			StaticLoggerBinder.getSingleton();
-		}
-		catch (Throwable t) {
-		}
 
 		if (config instanceof ConfigWebImpl)
 			TagUtil.addTagMetaData((ConfigWebImpl) config);
@@ -647,19 +643,21 @@ public final class ConfigWebFactory {
 		lib.mkdir();
 		Resource classes = config.getConfigDir().getRealResource("classes");
 		classes.mkdir();
-		Resource[] libs = lib.listResources();
+		Resource[] libs = lib.listResources(new ExtensionResourceFilter(".jar", false));
 
 		// merge resources
-		if (libs.length > 0 || !ResourceUtil.isEmptyDirectory(classes)) {
-			Resource[] tmp = new Resource[libs.length + 1];
-			for (int i = 0; i < libs.length; i++) {
-				tmp[i] = libs[i];
+		if (!ResourceUtil.isEmptyDirectory(classes,new ExtensionResourceFilter(".class", true))) {
+			if(ArrayUtil.isEmpty(libs)) {
+				libs=new Resource[]{classes};
 			}
-			tmp[libs.length] = classes;
-			libs = tmp;
-		}
-		else {
-			libs = new Resource[0];
+			else {
+				Resource[] tmp = new Resource[libs.length + 1];
+				for (int i = 0; i < libs.length; i++) {
+					tmp[i] = libs[i];
+				}
+				tmp[libs.length] = classes;
+				libs = tmp;
+			}
 		}
 
 		// get resources from server config and merge
@@ -918,7 +916,7 @@ public final class ConfigWebFactory {
 	}
 
 	static String createContentFromResource(Resource resource) throws IOException {
-		return IOUtil.toString(resource, null);
+		return IOUtil.toString(resource, (Charset)null);
 	}
 
 	static void createFileFromResourceCheckSizeDiffEL(String resource, Resource file) {
@@ -1576,7 +1574,7 @@ public final class ConfigWebFactory {
 
 		Element[] _mappings = getChildren(el, "mapping");
 
-		HashTable mappings = new HashTable();
+		Map<String,Mapping> mappings = MapFactory.<String,Mapping>getConcurrentMap();
 		Mapping tmp;
 
 		if (configServer != null && config instanceof ConfigWeb) {
@@ -1675,7 +1673,7 @@ public final class ConfigWebFactory {
 		int index = 0;
 		Iterator it = mappings.keySet().iterator();
 		while (it.hasNext()) {
-			arrMapping[index++] = (Mapping) mappings.get(it.next());
+			arrMapping[index++] = mappings.get(it.next());
 		}
 		config.setMappings(arrMapping);
 		// config.setMappings((Mapping[]) mappings.toArray(new
@@ -2126,10 +2124,10 @@ public final class ConfigWebFactory {
 
 				}
 				catch (ClassException ce) {
-					SystemOut.print(config.getErrWriter(), ce.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(ce, true));
 				}
 				catch (IOException e) {
-					SystemOut.print(config.getErrWriter(), e.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(e, true));
 				}
 			}
 		// }
@@ -2316,6 +2314,21 @@ public final class ConfigWebFactory {
 		if (StringUtil.startsWithIgnoreCase(str, "encrypted:"))
 			return str;
 		return "encrypted:" + new BlowfishEasy("sdfsdfs").encryptString(str);
+	}
+	public static String hash(String str) throws IOException {
+		if (StringUtil.isEmpty(str))
+			return "";
+		
+		// decrypt encrypted password first
+		if (StringUtil.startsWithIgnoreCase(str, "encrypted:")) {
+			str=decrypt(str);
+		}
+		try {
+			return Hash.hash(str,Hash.ALGORITHM_SHA_256,5,Hash.ENCODING_HEX);
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw ExceptionUtil.toIOException(e);
+		}
 	}
 
 	private static Struct toStruct(String str) {
@@ -2513,22 +2526,63 @@ public final class ConfigWebFactory {
 	 * @param configServer
 	 * @param config
 	 * @param doc
+	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
-		// password
+	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		Element railoConfiguration = doc.getDocumentElement();
-		String password = railoConfiguration.getAttribute("password");
-		if (!StringUtil.isEmpty(password)) {
-			config.setPassword(new BlowfishEasy("tpwisgh").decryptString(password));
+		
+		
+		
+		// password
+		String hpw=railoConfiguration.getAttribute("pw");
+		if(StringUtil.isEmpty(hpw)) {
+			// old password type
+			String pwEnc = railoConfiguration.getAttribute("password"); // encrypted password (reversable)
+			if (!StringUtil.isEmpty(pwEnc)) {
+				String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
+				hpw=hash(pwDec);
+			}
 		}
+		if(!StringUtil.isEmpty(hpw))
+			config.setPassword(hpw);
 		else if (configServer != null) {
 			config.setPassword(configServer.getDefaultPassword());
 		}
-
+		
+		if(config instanceof ConfigServerImpl) {
+			ConfigServerImpl csi=(ConfigServerImpl)config;
+			String keyList=railoConfiguration.getAttribute("auth-keys");
+			if(!StringUtil.isEmpty(keyList)) {
+				String[] keys = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.toListRemoveEmpty(keyList, ',')));
+				for(int i=0;i<keys.length;i++){
+					keys[i]=URLDecoder.decode(keys[i], "UTF-8", true);
+				}
+				
+				csi.setAuthenticationKeys(keys);
+			}
+		}
+		
+		// api key
+		String apiKey = railoConfiguration.getAttribute("api-key");
+		if(!StringUtil.isEmpty(apiKey))config.setApiKey(apiKey);
+		
+		
+		
+		// default password
 		if (config instanceof ConfigServerImpl) {
-			password = railoConfiguration.getAttribute("default-password");
-			if (!StringUtil.isEmpty(password))
-				((ConfigServerImpl) config).setDefaultPassword(new BlowfishEasy("tpwisgh").decryptString(password));
+			hpw=railoConfiguration.getAttribute("default-pw");
+			if(StringUtil.isEmpty(hpw)) {
+				// old password type
+				String pwEnc = railoConfiguration.getAttribute("default-password"); // encrypted password (reversable)
+				if (!StringUtil.isEmpty(pwEnc)) {
+					String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
+					hpw=hash(pwDec);
+				}
+			}
+			
+			if(!StringUtil.isEmpty(hpw))
+				((ConfigServerImpl) config).setDefaultPassword(hpw);
 		}
 
 		// mode
@@ -3335,14 +3389,14 @@ public final class ConfigWebFactory {
 		config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, hasAccess, logLevel));
 
 		// engine
-		String defaulrEngineClass = HibernateORMEngine.class.getName();// "railo.runtime.orm.hibernate.HibernateORMEngine";
+		String defaultEngineClass = "railo.runtime.orm.hibernate.HibernateORMEngine";
 
 		// print.o("orm:"+defaulrEngineClass);
 		String strEngine = null;
 		if (orm != null)
 			strEngine = orm.getAttribute("engine-class");
 		if (StringUtil.isEmpty(strEngine, true))
-			strEngine = defaulrEngineClass;
+			strEngine = defaultEngineClass;
 
 		// load class
 		Class<ORMEngine> clazz;
@@ -3352,7 +3406,7 @@ public final class ConfigWebFactory {
 		}
 		catch (ClassException ce) {
 			ce.printStackTrace();
-			clazz = ClassUtil.loadClass(defaulrEngineClass, null);
+			clazz = ClassUtil.loadClass(defaultEngineClass, null);
 		}
 		config.setORMEngineClass(clazz);
 
@@ -3455,8 +3509,35 @@ public final class ConfigWebFactory {
 		else if (hasCS)
 			config.setMergeFormAndURL(configServer.mergeFormAndURL());
 
+		// Client-Storage
+		{
+			String clientStorage = scope.getAttribute("clientstorage");
+			if (StringUtil.isEmpty(clientStorage, true)) 
+				clientStorage = scope.getAttribute("client-storage");
+			
+			if (hasAccess && !StringUtil.isEmpty(clientStorage)) {
+				config.setClientStorage(clientStorage);
+			}
+			else if (hasCS)
+				config.setClientStorage(configServer.getClientStorage());
+		}
+		
+		// Session-Storage
+		{
+			String sessionStorage = scope.getAttribute("sessionstorage");
+			if (StringUtil.isEmpty(sessionStorage, true)) 
+				sessionStorage = scope.getAttribute("session-storage");
+			
+			if (hasAccess && !StringUtil.isEmpty(sessionStorage)) {
+				config.setSessionStorage(sessionStorage);
+			}
+			else if (hasCS)
+				config.setSessionStorage(configServer.getSessionStorage());
+		}
+		
 		// Client Timeout
 		String clientTimeout = scope.getAttribute("clienttimeout");
+		if(StringUtil.isEmpty(clientTimeout, true)) clientTimeout = scope.getAttribute("client-timeout");
 		if (StringUtil.isEmpty(clientTimeout, true)) {
 			// deprecated
 			clientTimeout = scope.getAttribute("client-max-age");
@@ -3706,8 +3787,10 @@ public final class ConfigWebFactory {
 		Element parent = getChildByName(doc.getDocumentElement(), "monitoring");
 		boolean enabled = Caster.toBooleanValue(parent.getAttribute("enabled"), false);
 		configServer.setMonitoringEnabled(enabled);
-
+		SystemOut.printDate(config.getOutWriter(), "monitoring is "+(enabled?"enabled":"disabled"));
+		
 		Element[] children = getChildren(parent, "monitor");
+		
 		java.util.List<IntervallMonitor> intervalls = new ArrayList<IntervallMonitor>();
 		java.util.List<RequestMonitor> requests = new ArrayList<RequestMonitor>();
 		java.util.List<MonitorTemp> actions = new ArrayList<MonitorTemp>();
@@ -3720,7 +3803,7 @@ public final class ConfigWebFactory {
 			strType = el.getAttribute("type");
 			name = el.getAttribute("name");
 			log = Caster.toBooleanValue(el.getAttribute("log"), true);
-
+			
 			if ("request".equalsIgnoreCase(strType))
 				type = IntervallMonitor.TYPE_REQUEST;
 			else if ("action".equalsIgnoreCase(strType))
@@ -3728,6 +3811,7 @@ public final class ConfigWebFactory {
 			else
 				type = IntervallMonitor.TYPE_INTERVALL;
 
+			
 			if (!StringUtil.isEmpty(className) && !StringUtil.isEmpty(name)) {
 				name = name.trim();
 				try {
@@ -3738,7 +3822,7 @@ public final class ConfigWebFactory {
 						obj = constr.invoke();
 					else
 						obj = clazz.newInstance();
-
+					SystemOut.printDate(config.getOutWriter(), "loaded "+(strType)+" monitor ["+clazz.getName()+"]");
 					if (type == IntervallMonitor.TYPE_INTERVALL) {
 						IntervallMonitor m = obj instanceof IntervallMonitor ? (IntervallMonitor) obj : new IntervallMonitorWrap(obj);
 						m.init(configServer, name, log);
@@ -3750,11 +3834,13 @@ public final class ConfigWebFactory {
 					else {
 						RequestMonitor m = obj instanceof RequestMonitor ? (RequestMonitor) obj : new RequestMonitorWrap(obj);
 						m.init(configServer, name, log);
+						SystemOut.printDate(config.getOutWriter(), "initialize "+(strType)+" monitor ["+clazz.getName()+"]");
+						
 						requests.add(m);
 					}
 				}
 				catch (Throwable t) {
-					SystemOut.printDate(config.getErrWriter(), t.getMessage());
+					SystemOut.printDate(config.getErrWriter(), ExceptionUtil.getStacktrace(t, true));
 				}
 			}
 
@@ -3953,15 +4039,16 @@ public final class ConfigWebFactory {
 
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CFX_SETTING);
 
-		HashTable map = new HashTable();
+		Map<String,CFXTagClass> map = MapFactory.<String,CFXTagClass>getConcurrentMap();
 		if (configServer != null) {
 			try {
 				if (configServer.getCFXTagPool() != null) {
-					Map classes = configServer.getCFXTagPool().getClasses();
-					Iterator it = classes.keySet().iterator();
+					Map<String,CFXTagClass> classes = configServer.getCFXTagPool().getClasses();
+					Iterator<Entry<String, CFXTagClass>> it = classes.entrySet().iterator();
+					Entry<String, CFXTagClass> e;
 					while (it.hasNext()) {
-						Object key = it.next();
-						map.put(key, ((CFXTagClass) classes.get(key)).cloneReadOnly());
+						e = it.next();
+						map.put(e.getKey(), e.getValue().cloneReadOnly());
 					}
 				}
 			}
@@ -4405,6 +4492,17 @@ public final class ConfigWebFactory {
 			NullSupportHelper.fullNullSupport = fns;
 			((ConfigServerImpl) config).setFullNullSupport(fns);
 		}
+		
+		// supress WS between cffunction and cfargument
+		
+		String str = compiler.getAttribute("externalize-string-gte");
+		if (Decision.isNumeric(str)) {
+			config.setExternalizeStringGTE(Caster.toIntValue(str,-1));
+		}
+		else if (hasCS) {
+			config.setExternalizeStringGTE(configServer.getExternalizeStringGTE());
+		}
+		
 	}
 
 	/**

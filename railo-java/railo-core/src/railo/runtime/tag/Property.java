@@ -2,10 +2,8 @@ package railo.runtime.tag;
 
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.type.Collection;
@@ -110,113 +108,6 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 		setDynamicAttribute(null, "getter", setter?"yes":"no");
     }
     
-    /*public void setBatchsize(double batchsize) {
-    	notSupported();
-    	int ibs=Caster.toIntValue(batchsize);
-		property.setBatchsize(ibs);
-		setDynamicAttribute(null, "batchsize", Caster.toDouble(ibs));
-    }
-
-	public void setCascade(String cascade) throws ORMException {
-		notSupported();
-    	int cas=HibernateCaster.cascade(cascade);
-		property.setCascade(cas);
-		setDynamicAttribute(null, "cascade", cascade);
-    }
-	public void setCatalog(String catalog)  {
-		notSupported();
-    	property.setCatalog(catalog);
-		setDynamicAttribute(null, "catalog", catalog);
-    }
-	public void setCfc(String cfcPath) throws PageException {
-		notSupported();
-		Component cfc = CreateObject.doComponent(pageContext, cfcPath);
-		property.setCfc(cfc);
-		setDynamicAttribute(null, "cfc", cfcPath);
-    }
-	
-	public void setCollectiontype(String strCollectionType) throws ORMException  {
-		strCollectionType=strCollectionType.trim().toLowerCase();
-		notSupported();
-		int collectionType=HibernateCaster.collectionType(strCollectionType);
-    	property.setCollectionType(collectionType);
-		setDynamicAttribute(null, "collectiontype", strCollectionType);
-    }
-	public void setConstrained(boolean constrained)  {
-		notSupported();
-    	property.setConstrained(constrained);
-		setDynamicAttribute(null, "constrained", constrained?"yes":"no");
-    }
-
-	public void setDatatype(String dataType)  {
-		notSupported();
-    	property.setDataType(dataType);
-		setDynamicAttribute(null, "datatype", dataType);
-    }
-	public void setDynamicinsert(boolean dynamicInsert)  {
-		notSupported();
-    	property.setDynamicInsert(dynamicInsert);
-		setDynamicAttribute(null, "dynamicinsert", dynamicInsert?"yes":"no");
-    }
-	public void setDynamicupdate(boolean dynamicUpdate)  {
-		notSupported();
-    	property.setDynamicUpdate(dynamicUpdate);
-		setDynamicAttribute(null, "dynamicupdate", dynamicUpdate?"yes":"no");
-    }
-	public void setElementcolumn(String elementColumn)  {
-		notSupported();
-    	property.setElementColumn(elementColumn);
-		setDynamicAttribute(null, "elementcolumn", elementColumn);
-    }
-	public void setElementtype(String elementType)  {
-		notSupported();
-    	property.setElementType(elementType);
-		setDynamicAttribute(null, "elementtype", elementType);
-    }
-	public void setEntityname(String entityName)  {
-		notSupported();
-    	property.setEntityName(entityName);
-		setDynamicAttribute(null, "entityname", entityName);
-    }
-	public void setFetchbatchsize(double fetchBatchSize)  {
-		int ifbs=Caster.toIntValue(fetchBatchSize);
-		notSupported();
-    	property.setFetchBatchSize(ifbs);
-		setDynamicAttribute(null, "fetchbatchsize", Caster.toString(ifbs));
-    }
-	public void setFieldtype(String fieldType)  {
-		notSupported();
-    	property.setFieldType(fieldType);
-		setDynamicAttribute(null, "fieldtype", fieldType);
-    }
-	public void setFkcolumn(String fkColumn)  {
-		notSupported();
-    	property.setFkColumn(fkColumn);
-		setDynamicAttribute(null, "fkcolumn", fkColumn);
-    }
-	public void setFormula(String formula)  {
-		notSupported();
-    	property.setFormula(formula);
-		setDynamicAttribute(null, "formula", formula);
-    }
-	public void setGenerator(String generator)  {
-		notSupported();
-    	property.setGenerator(generator);
-		setDynamicAttribute(null, "generator", generator);
-    }
-	public void setGenerator(boolean getter)  {
-		notSupported();
-    	property.setGetter(getter);
-		setDynamicAttribute(null, "getter", getter?"yes":"no");
-    }*/
-	
-	
-    
-    private void notSupported() {
-		throw new PageRuntimeException(new ApplicationException("this attribute is not supported yet"));
-		
-	}
-
 	@Override
 	public int doStartTag() throws PageException	{
 		if(pageContext.variablesScope() instanceof ComponentScope) {

@@ -3,7 +3,7 @@ package railo.runtime.cfx.customtag;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.config.Config;
@@ -18,21 +18,22 @@ import com.allaire.cfx.CustomTag;
 public final class CFXTagPoolImpl implements CFXTagPool {
 	
 	Config config;
-	Map classes;
-	Map objects=new HashTable();
+	Map<String,CFXTagClass> classes;
+	Map<String,CFXTagClass> objects=MapFactory.<String,CFXTagClass>getConcurrentMap();
 	
 	/**
 	 * constructor of the class
 	 * @param classes
 	 */
-	public CFXTagPoolImpl(Map classes) {
+	public CFXTagPoolImpl(Map<String,CFXTagClass> classes) {
 		this.classes=classes;
 	}
 
     @Override
-    public Map getClasses() {
+    public Map<String,CFXTagClass> getClasses() {// FUTURE add generic type to interface
         return classes;
     }
+    
 	@Override
 	public synchronized CustomTag getCustomTag(String name) throws CFXTagException {
 		name=name.toLowerCase();
@@ -53,7 +54,7 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 	@Override
 	public synchronized CFXTagClass getCFXTagClass(String name) throws CFXTagException {
 		name=name.toLowerCase();
-		CFXTagClass ctc=(CFXTagClass) classes.get(name);
+		CFXTagClass ctc = classes.get(name);
 		if(ctc==null) throw new CFXTagException("there is not Custom Tag (CFX) with name ["+name+"]");
 		return ctc;
 	}

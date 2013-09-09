@@ -17,6 +17,7 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.type.util.UDFUtil;
 
 public final class UDFPropertiesImpl implements UDFProperties {
 	public  String functionName;
@@ -97,7 +98,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.strReturnType=strReturnType;
 		this.returnType=CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW);
 		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFImpl.toReturnFormat(strReturnFormat);
+		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
@@ -153,7 +154,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.strReturnType=CFTypes.toString(returnType,"any");
 		this.returnType=returnType;
 		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFImpl.toReturnFormat(strReturnFormat);
+		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;

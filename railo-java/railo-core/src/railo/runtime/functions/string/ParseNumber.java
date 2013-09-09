@@ -4,6 +4,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 
 public class ParseNumber {
 	private static final int BIN=2;
@@ -63,10 +64,12 @@ public class ParseNumber {
 			throw new ExpressionException("digit [9] is out of range for a octal number");
 		
 		
-		if(strNumber.indexOf('.')!=-1){
-			if(radix!=DEC)
-				throw new ExpressionException("the radix con only be [dec] for floating point numbers");
-			return Double.parseDouble(strNumber);
+		if(strNumber.indexOf('.')!=-1 && radix!=DEC)
+			throw new ExpressionException("the radix con only be [dec] for floating point numbers");
+			
+		
+		if(radix==DEC) {
+			return Caster.toDoubleValue(strNumber);
 		}
 		return Integer.parseInt(strNumber,radix);	
 	}

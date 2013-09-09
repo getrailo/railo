@@ -28,21 +28,12 @@ import railo.commons.lang.ExtendableClassLoader;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWeb;
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ExpressionException;
-import railo.runtime.functions.arrays.ArrayAppend;
 import railo.runtime.functions.arrays.ArrayNew;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Array;
 import railo.runtime.type.util.ArrayUtil;
-import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
-import railo.transformer.bytecode.visitor.ArrayVisitor;
-import railo.transformer.bytecode.visitor.OnFinally;
-import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 public class ASMProxyFactory {
 

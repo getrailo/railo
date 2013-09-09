@@ -7,11 +7,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -1110,6 +1112,26 @@ public final class ResourceUtil {
 		return 0;
 	}
 
+	public static int getChildCount(Resource res) {
+		return getChildCount(res, null);
+	}
+	
+	public static int getChildCount(Resource res, ResourceFilter filter) {
+		if(res.isFile()) {
+			return 1;
+		}
+		else if(res.isDirectory()) {
+			int size=0;
+			Resource[] children = filter==null?res.listResources():res.listResources(filter);
+			for(int i=0;i<children.length;i++) {
+				size+=getChildCount(children[i]);
+			}
+			return size;
+		}
+		
+		return 0;
+	}
+
 
 	/**
 	 * return if Resource is empty, means is directory and has no children or a empty file,
@@ -1118,15 +1140,26 @@ public final class ResourceUtil {
 	 * @return
 	 */
 	public static boolean isEmpty(Resource res) {
-		return isEmptyDirectory(res) || isEmptyFile(res);
+		return isEmptyDirectory(res,null) || isEmptyFile(res);
 	}
 
-	public static boolean isEmptyDirectory(Resource res) {
+	/**
+	 * return Boolean.True when directory is empty, Boolean.FALSE when directory s not empty and null if directory does not exists
+	 * @param res
+	 * @return
+	 */
+	public static boolean isEmptyDirectory(Resource res, ResourceFilter filter) {
 		if(res.isDirectory()) {
-			String[] children = res.list();
-			return children==null || children.length==0;
+			Resource[] children = filter==null? res.listResources(): res.listResources(filter);
+			if(children==null || children.length==0) return true;
+			
+			for(int i=0;i<children.length;i++){
+				if(children[i].isFile()) return false;
+				if(children[i].isDirectory() &&  !isEmptyDirectory(children[i], filter)) return false;
+			}
+			
 		}
-		return false;
+		return true;
 	}
 	
 	public static boolean isEmptyFile(Resource res) {

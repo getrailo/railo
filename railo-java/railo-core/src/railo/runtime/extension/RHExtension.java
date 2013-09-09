@@ -1,6 +1,5 @@
 package railo.runtime.extension;
 
-import java.util.List;
 
 /**
  * Extension completely handled by Railo and not by the Install.cfc/config.xml 

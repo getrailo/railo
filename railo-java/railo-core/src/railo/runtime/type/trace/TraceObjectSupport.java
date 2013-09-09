@@ -7,7 +7,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 
 public class TraceObjectSupport implements TraceObject {
@@ -92,7 +92,7 @@ public class TraceObjectSupport implements TraceObject {
 		qry.setAtEL(PARAMS, row, addional);
 		*/
 		String action=type(traces[2].getMethodName());
-		debugger.addTrace(type, category, text, template,line,action, varName, varValue);
+		if(debugger!=null)debugger.addTrace(type, category, text, template,line,action, varName, varValue);
 			
 	}	
 	
@@ -117,8 +117,8 @@ public class TraceObjectSupport implements TraceObject {
 	public static TraceObject toTraceObject(Debugger debugger,Object obj, int type, String category, String text) {
 		if(obj instanceof TraceObject)
 			return (TraceObject) obj;
-		else if(obj instanceof UDF)
-			return new TOUDF(debugger,(UDF) obj,type,category,text);
+		else if(obj instanceof UDFPlus)
+			return new TOUDF(debugger,(UDFPlus) obj,type,category,text);
 		else if(obj instanceof Query)
 			return new TOQuery(debugger,(Query) obj,type,category,text);
 		else if(obj instanceof Array)

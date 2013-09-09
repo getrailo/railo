@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -52,7 +52,7 @@ public final class StructImplKey extends StructSupport implements Struct {
     public StructImplKey(int type) {
     	if(type==TYPE_LINKED)		_map=new LinkedHashMap<Collection.Key,Object>();
     	else if(type==TYPE_WEAKED)	_map=new java.util.WeakHashMap<Collection.Key,Object>();
-        else if(type==TYPE_SYNC)	_map=new HashTable();
+        else if(type==TYPE_SYNC)	_map=MapFactory.<Collection.Key,Object>getConcurrentMap();
         else 						_map=new HashMap<Collection.Key,Object>();
     }
     

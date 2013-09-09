@@ -159,10 +159,10 @@
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">#stText.Mappings.addNoneCFMLFiles#</th>
+					<th scope="row">#stText.Mappings.addNonCFMLFiles#</th>
 					<td>
-						<input type="checkbox" class="checkbox" name="addNoneCFMLFiles_#mapping.id#" value="yes" checked>
-						<div class="comment">#stText.Mappings.addNoneCFMLFilesDesc#</div>
+						<input type="checkbox" class="checkbox" name="addNonCFMLFiles_#mapping.id#" value="yes" checked>
+						<div class="comment">#stText.Mappings.addNonCFMLFilesDesc#</div>
 					</td>
 				</tr>
 				<cfif hasAccess>

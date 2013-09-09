@@ -1,5 +1,6 @@
 package railo.commons.i18n;
 
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class FormatUtil {
 			Resource file = dir.getRealResource(locale.getLanguage()+"-"+locale.getCountry()+appendix+".df");
 			if(file.isFile()) {
 				try {
-					String content=IOUtil.toString(file, null);
+					String content=IOUtil.toString(file, (Charset)null);
 					String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(content, '\n');
 					String line;
 					SimpleDateFormat sdf;
@@ -205,8 +206,9 @@ public class FormatUtil {
 				     ,new SimpleDateFormat("EEEE, MMMM dd, yyyy H:mm:ss a zzz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMM-yy HH:mm a",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMMM-yy HH:mm a",Locale.ENGLISH)
-					 ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
-					 ,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
+					  ,new SimpleDateFormat("EE, dd-MMM-yyyy HH:mm:ss zz",Locale.ENGLISH)
+					  ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
+					,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM, dd yyyy HH:mm:ssZ",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM, dd yyyy HH:mm:ss",Locale.ENGLISH)

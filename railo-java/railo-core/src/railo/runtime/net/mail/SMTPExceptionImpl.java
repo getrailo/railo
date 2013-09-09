@@ -1,10 +1,12 @@
 package railo.runtime.net.mail;
 
-import railo.commons.collections.HashTable;
+import java.util.Map;
+
+import railo.commons.collection.MapFactory;
 
 public final class SMTPExceptionImpl extends SMTPException {
     
-    private static HashTable codes=new HashTable();
+    private static Map<String, String> codes=MapFactory.<String,String>getConcurrentMap();
     
     static {
         codes.put("211","System status, or system help reply");
@@ -38,7 +40,7 @@ public final class SMTPExceptionImpl extends SMTPException {
         this(doMessage(code));
     }
     private static String doMessage(int code) {
-        String message=(String) codes.get(String.valueOf(code));
+        String message=codes.get(String.valueOf(code));
         if(message==null) message="SMTP Code "+code;
         else message=code+" - "+message;
         return message;

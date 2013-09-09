@@ -1,7 +1,6 @@
 package railo.runtime.config;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.compress.ZipUtil;
@@ -27,7 +25,6 @@ import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Info;
-import railo.runtime.config.Config;
 import railo.runtime.extension.RHExtension;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;

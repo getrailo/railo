@@ -3,6 +3,7 @@ package railo.runtime.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.exp.SecurityException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -54,6 +57,10 @@ public final class Reflector {
 
 	
     private static final Object NULL = new Object();
+
+
+    private static final Collection.Key SET_ACCESSIBLE = KeyImpl.intern("setAccessible");
+    private static final Collection.Key EXIT = KeyImpl.intern("exit");
     
     
 	private static WeakConstructorStorage cStorage=new WeakConstructorStorage();
@@ -433,14 +440,16 @@ public final class Reflector {
 
 	/**
 	 * gets the MethodInstance matching given Parameter
+	 * @param objMaybeNull maybe null
 	 * @param clazz Class Of the Method to get
 	 * @param methodName Name of the Method to get
 	 * @param args Arguments of the Method to get
 	 * @return return Matching Method
      * @throws  
 	 */
-	public static MethodInstance getMethodInstanceEL(Class clazz, Collection.Key methodName, Object[] args) {
-	    args=cleanArgs(args);
+	public static MethodInstance getMethodInstanceEL(Object objMaybeNull,Class clazz, Collection.Key methodName, Object[] args) {
+	    checkAccesibility(objMaybeNull,clazz, methodName);
+		args=cleanArgs(args);
 		
 		Method[] methods = mStorage.getMethods(clazz,methodName,args.length);//getDeclaredMethods(clazz);
 		
@@ -500,37 +509,45 @@ public final class Reflector {
 
 
     private static Object[] cleanArgs(Object[] args) {
+    	Set<Object> done=new HashSet<Object>();
     	if(args==null) return args;
     	
     	for(int i=0;i<args.length;i++){
-    		args[i]=_clean(args[i]);
+    		args[i]=_clean(done,args[i]);
     	}
     	return args;
     }
 	
 	
-    private static Object _clean(Object obj)  {
-		if(obj instanceof ObjectWrap) {
-			try {
-				return ((ObjectWrap)obj).getEmbededObject();
-			} catch (PageException e) {
-				return obj;
+    private static Object _clean(Set<Object> done,Object obj)  {
+    	if(done.contains(obj)) return obj;
+    	done.add(obj);
+    	try {
+			if(obj instanceof ObjectWrap) {
+				try {
+					return ((ObjectWrap)obj).getEmbededObject();
+				} catch (PageException e) {
+					return obj;
+				}
 			}
-		}
-		if(obj instanceof Collection) return  _clean((Collection)obj);
-		if(obj instanceof Map) return  _clean((Map)obj);
-		if(obj instanceof List) return  _clean((List)obj);
-		if(obj instanceof Object[]) return  _clean((Object[])obj);
+			if(obj instanceof Collection) return  _clean(done,(Collection)obj);
+			if(obj instanceof Map) return  _clean(done,(Map)obj);
+			if(obj instanceof List) return  _clean(done,(List)obj);
+			if(obj instanceof Object[]) return  _clean(done,(Object[])obj);
+    	}
+    	finally {
+    		done.remove(obj);
+    	}
 		return obj;
 	}
     
-    private static Object _clean(Collection coll) {
+    private static Object _clean(Set<Object> done,Collection coll) {
     	Iterator<Object> vit = coll.valueIterator();
     	Object v;
     	boolean change=false;
     	while(vit.hasNext()){
     		v=vit.next();
-    		if(v!=_clean(v)) {
+    		if(v!=_clean(done,v)) {
     			change=true;
     			break;
     		}
@@ -542,19 +559,19 @@ public final class Reflector {
     	Entry<Key, Object> e;
     	while(eit.hasNext()){
     		e=eit.next();
-    		coll.setEL(e.getKey(), _clean(e.getValue()));
+    		coll.setEL(e.getKey(), _clean(done,e.getValue()));
     	}
     	
     	return coll;
     }
     
-    private static Object _clean(Map map) {
+    private static Object _clean(Set<Object> done,Map map) {
     	Iterator vit = map.values().iterator();
     	Object v;
     	boolean change=false;
     	while(vit.hasNext()){
     		v=vit.next();
-    		if(v!=_clean(v)) {
+    		if(v!=_clean(done,v)) {
     			change=true;
     			break;
     		}
@@ -566,19 +583,19 @@ public final class Reflector {
     	Entry e;
     	while(eit.hasNext()){
     		e=eit.next();
-    		map.put(e.getKey(), _clean(e.getValue()));
+    		map.put(e.getKey(), _clean(done,e.getValue()));
     	}
     	
     	return map;
     }
     
-    private static Object _clean(List list) {
+    private static Object _clean(Set<Object> done,List list) {
     	Iterator it = list.iterator();
     	Object v;
     	boolean change=false;
     	while(it.hasNext()){
     		v=it.next();
-    		if(v!=_clean(v)) {
+    		if(v!=_clean(done,v)) {
     			change=true;
     			break;
     		}
@@ -588,16 +605,16 @@ public final class Reflector {
     	list=Duplicator.duplicateList(list, false);
     	it = list.iterator();
     	while(it.hasNext()){
-    		list.add(_clean(it.next()));
+    		list.add(_clean(done,it.next()));
     	}
     	
     	return list;
     }
     
-    private static Object _clean(Object[] src) {
+    private static Object _clean(Set<Object> done,Object[] src) {
     	boolean change=false;
     	for(int i=0;i<src.length;i++){
-    		if(src[i]!=_clean(src[i])) {
+    		if(src[i]!=_clean(done,src[i])) {
     			change=true;
     			break;
     		}
@@ -606,7 +623,7 @@ public final class Reflector {
     	
     	Object[] trg=new Object[src.length];
 		for(int i=0;i<trg.length;i++) {
-			trg[i]=_clean(src[i]);
+			trg[i]=_clean(done,src[i]);
 		}
     	
     	return trg;
@@ -621,9 +638,9 @@ public final class Reflector {
      * @throws NoSuchMethodException
      * @throws PageException
      */
-    public static MethodInstance getMethodInstance(Class clazz, String methodName, Object[] args) 
+    public static MethodInstance getMethodInstance(Object obj,Class clazz, String methodName, Object[] args) 
         throws NoSuchMethodException {
-        MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.getInstance(methodName), args);
+        MethodInstance mi=getMethodInstanceEL(obj,clazz, KeyImpl.getInstance(methodName), args);
         if(mi!=null) return mi;
         
         Class[] classes = getClasses(args);
@@ -792,8 +809,11 @@ public final class Reflector {
 		if(obj==null) {
 			throw new ExpressionException("can't call method ["+methodName+"] on object, object is null");
 		}
+		
+		//checkAccesibility(obj,methodName);
         
-		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
+        
+		MethodInstance mi=getMethodInstanceEL(obj,obj.getClass(), methodName, args);
 		if(mi==null)
 		    throw throwCall(obj,methodName,args);
 	    try {
@@ -809,12 +829,41 @@ public final class Reflector {
 		}
 	}
 	
+	private static void checkAccesibility(Object objMaybeNull,Class clazz, Key methodName) {
+		if(methodName.equals(EXIT) && clazz==System.class) { // TODO better implementation
+			throw new PageRuntimeException(new SecurityException("Calling the method java.lang.System.exit is not allowed"));      	
+        }
+		else if(methodName.equals(SET_ACCESSIBLE)) {
+			if(objMaybeNull instanceof JavaObject)
+				objMaybeNull=((JavaObject)objMaybeNull).getEmbededObject(null);
+			if(objMaybeNull instanceof Member) {
+				Member member=(Member) objMaybeNull;
+	        	Class<?> cls = member.getDeclaringClass();
+	        	if(cls.getPackage().getName().startsWith("railo.")) {
+	        		throw new PageRuntimeException(new SecurityException("Changing the accesibility of an object's members in the railo.* package is not allowed"));
+	        	}   
+			}     	
+        }
+	}
+	
+	/*private static void checkAccesibilityx(Object obj, Key methodName) {
+		if(methodName.equals(SET_ACCESSIBLE) && obj instanceof Member) {
+			if(true) return;
+			Member member=(Member) obj;
+        	Class<?> cls = member.getDeclaringClass();
+        	if(cls.getPackage().getName().startsWith("railo.")) {
+        		throw new PageRuntimeException(new SecurityException("Changing the accesibility of an object's members in the railo.* package is not allowed"));
+        	}        	
+        }
+	}*/
 
 	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args, Object defaultValue) {
 		if(obj==null) {
 			return defaultValue;
 		}
-		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
+		//checkAccesibility(obj,methodName);
+        
+		MethodInstance mi=getMethodInstanceEL(obj,obj.getClass(), methodName, args);
 		if(mi==null)
 		    return defaultValue;
 	    try {
@@ -842,7 +891,7 @@ public final class Reflector {
 	 */
 	public static Object callStaticMethod(Class clazz, String methodName, Object[] args) throws PageException {
 		try {
-            return getMethodInstance(clazz,methodName,args).invoke(null);
+            return getMethodInstance(null,clazz,methodName,args).invoke(null);
         }
 		catch (InvocationTargetException e) {
 			Throwable target = e.getTargetException();
@@ -864,11 +913,11 @@ public final class Reflector {
      */
     public static MethodInstance getGetter(Class clazz, String prop) throws PageException, NoSuchMethodException {
         String getterName = "get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(getterName),ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(null,clazz,KeyImpl.getInstance(getterName),ArrayUtil.OBJECT_EMPTY);
         
         if(mi==null){
         	String isName = "is"+StringUtil.ucFirst(prop);
-            mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(isName),ArrayUtil.OBJECT_EMPTY);
+            mi = getMethodInstanceEL(null,clazz,KeyImpl.getInstance(isName),ArrayUtil.OBJECT_EMPTY);
             if(mi!=null){
             	Method m = mi.getMethod();
             	Class rtn = m.getReturnType();
@@ -895,7 +944,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetterEL(Class clazz, String prop) {
         prop="get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(prop),ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(null,clazz,KeyImpl.getInstance(prop),ArrayUtil.OBJECT_EMPTY);
         if(mi==null) return null;
         if(mi.getMethod().getReturnType()==void.class) return null;
         return mi;
@@ -933,7 +982,7 @@ public final class Reflector {
      */
     public static MethodInstance getSetter(Object obj, String prop,Object value) throws NoSuchMethodException {
             prop="set"+StringUtil.ucFirst(prop);
-            MethodInstance mi = getMethodInstance(obj.getClass(),prop,new Object[]{value});
+            MethodInstance mi = getMethodInstance(obj,obj.getClass(),prop,new Object[]{value});
             Method m=mi.getMethod();
             
             if(m.getReturnType()!=void.class)
@@ -971,7 +1020,7 @@ public final class Reflector {
      */
     public static MethodInstance getSetter(Object obj, String prop,Object value, MethodInstance defaultValue)  {
         prop="set"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
+        MethodInstance mi = getMethodInstanceEL(obj,obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
         if(mi==null) return defaultValue;
         Method m=mi.getMethod();
         

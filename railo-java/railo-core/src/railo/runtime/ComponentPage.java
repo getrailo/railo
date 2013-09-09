@@ -51,7 +51,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
@@ -59,6 +58,7 @@ import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
+import railo.runtime.type.util.UDFUtil;
 
 /**
  * A Page that can produce Components
@@ -130,7 +130,7 @@ public abstract class ComponentPage extends PagePlus  {
             
             // METHOD INVOCATION
 			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
-            if(pc.getBasePageSource()==this.getPageSource())
+            if(pc.getBasePageSource()==this.getPageSource() && pc.getConfig().debug())
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
@@ -254,7 +254,7 @@ public abstract class ComponentPage extends PagePlus  {
 		Object value;
 		UDF udf;
 		Struct meta;
-		int status=405;
+		int status=404;
 		MimeType bestP,bestC;
 		while(it.hasNext()){
 			e = it.next();
@@ -652,7 +652,7 @@ public abstract class ComponentPage extends PagePlus  {
 			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
 		}
 		if(!StringUtil.isEmpty(returnFormat)){
-			props.format=UDFImpl.toReturnFormat(Caster.toString(returnFormat));
+			props.format=UDFUtil.toReturnFormat(Caster.toString(returnFormat));
 		}
     	
 		// return type XML ignore WDDX

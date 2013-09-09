@@ -23,6 +23,7 @@ import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -39,7 +40,6 @@ public class HBMCreator {
 	
 	
 	private static final Collection.Key PROPERTY = KeyConstants._property;
-	private static final Collection.Key FIELD_TYPE = KeyConstants._fieldtype;
 	private static final Collection.Key LINK_TABLE = KeyImpl.intern("linktable");
 	private static final Collection.Key CFC = KeyConstants._cfc;
 	private static final Collection.Key GENERATOR = KeyImpl.intern("generator");
@@ -236,7 +236,7 @@ public class HBMCreator {
 				isJoin=true;
 				// wrong field type
 				try {
-					fieldType = toString(engine, cfc, prop, sct, FIELD_TYPE,false);
+					fieldType = toString(engine, cfc, prop, sct, KeyConstants._fieldtype,false);
 					
 					if("collection".equalsIgnoreCase(fieldType)) isJoin=false;
 					else if("primary".equals(fieldType)) isJoin=false;
@@ -248,7 +248,7 @@ public class HBMCreator {
 				// missing column
 				String columns=null;
 				try {
-					if(isRelated(props[i])){
+					if(ORMUtil.isRelated(props[i])){
 			        	columns=toString(engine,cfc,props[i], prop.getDynamicAttributes(), "fkcolumn");
 			        }
 			        else {
@@ -300,7 +300,7 @@ public class HBMCreator {
         	if(!ignoreTableName && !hasTable(engine,cfc,props[y], tableName)) continue;
         	
         	
-        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
+        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
 			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
 				ids.add(props[y]);
 		}
@@ -310,10 +310,10 @@ public class HBMCreator {
         	String fieldType;
         	for(int y=0;y<props.length;y++){
         		if(!ignoreTableName && !hasTable(engine,cfc,props[y], tableName)) continue;
-            	fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
+            	fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
     			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
     				ids.add(props[y]);
-    				props[y].getDynamicAttributes().setEL(FIELD_TYPE, "id");
+    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
     			}
     		}
         } 
@@ -328,10 +328,10 @@ public class HBMCreator {
         		String id=owner+"id";
         		for(int y=0;y<props.length;y++){
         			if(!ignoreTableName && !hasTable(engine,cfc,props[y], tableName)) continue;
-                	fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
+                	fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
 	    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase(id)){
 	    				ids.add(props[y]);
-	    				props[y].getDynamicAttributes().setEL(FIELD_TYPE, "id");
+	    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
 	    			}
 	    		}
         	}
@@ -347,7 +347,7 @@ public class HBMCreator {
 	private static void addVersion(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine) throws PageException {
     	Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
 			if("version".equalsIgnoreCase(fieldType))
 				createXMLMappingVersion(engine,clazz,pc, cfc,props[y]);
 			else if("timestamp".equalsIgnoreCase(fieldType))
@@ -360,7 +360,7 @@ public class HBMCreator {
 	private static void addCollection(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 			if("collection".equalsIgnoreCase(fieldType))
 				createXMLMappingCollection(clazz,pc, cfc,props[y],ormConf,engine);
 		}
@@ -395,7 +395,7 @@ public class HBMCreator {
         
         Property first = properties[0];
         String schema = null, catalog=null, mappedBy=null, columns=null;
-        if(isRelated(first)){
+        if(ORMUtil.isRelated(first)){
         	catalog=toString(engine,cfc,first, first.getDynamicAttributes(), "linkcatalog");
         	schema=toString(engine,cfc,first, first.getDynamicAttributes(), "linkschema");
         	columns=toString(engine,cfc,first, first.getDynamicAttributes(), "fkcolumn");
@@ -438,7 +438,7 @@ public class HBMCreator {
     	Property[] props = propColl.getProperties();
 		int count=0;
     	for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 			if("one-to-one".equalsIgnoreCase(fieldType)){
 				createXMLMappingOneToOne(clazz,pc, cfc,props[y],engine);
 				count++;
@@ -458,25 +458,13 @@ public class HBMCreator {
 		}
     	return count;
 	}
-	
-	public static boolean isRelated(Property prop) {
-		String fieldType = Caster.toString(prop.getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
-		if(StringUtil.isEmpty(fieldType,true)) return false;
-		fieldType=fieldType.toLowerCase().trim();
-		
-		if("one-to-one".equals(fieldType)) 		return true;
-		if("many-to-one".equals(fieldType)) 	return true;
-		if("one-to-many".equals(fieldType)) 	return true;
-		if("many-to-many".equals(fieldType)) 	return true;
-		return false;
-	}
 
 
 
 	private static void addProperty(Component cfc,Element clazz, PageContext pc, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws ORMException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 			if("column".equalsIgnoreCase(fieldType))
 				createXMLMappingProperty(clazz,pc,cfc, props[y],columnsInfo,tableName,engine);
 		}
@@ -864,7 +852,7 @@ public class HBMCreator {
 		//if(obj!=null){
 			Struct sct=null;
 			if(obj==null) obj=new StructImpl();
-			else if(obj instanceof String) obj=convertToSimpleMap((String)obj);
+			else if(obj instanceof String) obj=ORMUtil.convertToSimpleMap((String)obj);
 			
 			if(Decision.isStruct(obj)) sct=Caster.toStruct(obj);
 			else throw new HibernateException(engine,cfc,"invalid value for attribute [params] of tag [property]");
@@ -1338,7 +1326,7 @@ public class HBMCreator {
 				for(int i=0;i<_props.length;i++){
 					m = _props[i].getDynamicAttributes();
 					// fieldtype
-					String fieldtype = Caster.toString(m.get(FIELD_TYPE,null),null);
+					String fieldtype = Caster.toString(m.get(KeyConstants._fieldtype,null),null);
 					if("many-to-many".equalsIgnoreCase(fieldtype)) {
 						// linktable
 						String currLinkTable=Caster.toString(meta.get(LINK_TABLE,null),null);
@@ -1971,40 +1959,6 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			//throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, negative, undefined]");
 		}
 	}   
-	
-	
-	public static Struct convertToSimpleMap(String paramsStr) {
-		paramsStr=paramsStr.trim();
-        if(!StringUtil.startsWith(paramsStr, '{') || !StringUtil.endsWith(paramsStr, '}'))
-        	return null;
-        	
-		paramsStr = paramsStr.substring(1, paramsStr.length() - 1);
-		String items[] = ListUtil.listToStringArray(paramsStr, ','); 
-		
-		Struct params=new StructImpl();
-		String arr$[] = items;
-		int index;
-        for(int i = 0; i < arr$.length; i++)	{
-            String pair = arr$[i];
-            index = pair.indexOf('=');
-            if(index == -1) return null;
-            
-            params.setEL(
-            		KeyImpl.init(deleteQuotes(pair.substring(0, index).trim()).trim()), 
-            		deleteQuotes(pair.substring(index + 1).trim()));
-        }
-
-        return params;
-    }
-	
-	private static String deleteQuotes(String str)	{
-        if(StringUtil.isEmpty(str,true))return "";
-        char first=str.charAt(0);
-        if((first=='\'' || first=='"') && StringUtil.endsWith(str, first))
-        	return str.substring(1, str.length() - 1);
-        return str;
-    }
-	
 	
 	private static String toString(HibernateORMEngine engine,Component cfc,Property prop,Struct sct, String key) throws ORMException {
 		return toString(engine,cfc,prop,sct, key, false);

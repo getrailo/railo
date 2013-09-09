@@ -25,7 +25,7 @@ class LikeCompareJRE  {
         char esc=0;
         if(!StringUtil.isEmpty(escape)){
         	esc=escape.charAt(0);
-        	if(escape.length()>1)throw new DatabaseException("Invalid escape character ["+escape+"] has been specified in a LIKE conditional",null,null,sql,null);
+        	if(escape.length()>1)throw new DatabaseException("Invalid escape character ["+escape+"] has been specified in a LIKE conditional",null,sql,null);
         }
         
     	StringBuffer sb = new StringBuffer(wildcard.length());
@@ -35,11 +35,11 @@ class LikeCompareJRE  {
         for(int i=0;i<len;i++) {
             c = wildcard.charAt(i);
             if(c == esc){
-            	if(i+1==len)throw new DatabaseException("Invalid Escape Sequence. Valid sequence pairs for this escape character are: ["+esc+"%] or ["+esc+"_]",null,null,sql,null);
+            	if(i+1==len)throw new DatabaseException("Invalid Escape Sequence. Valid sequence pairs for this escape character are: ["+esc+"%] or ["+esc+"_]",null,sql,null);
             	c = wildcard.charAt(++i);
             	if(c == '%')sb.append(c);
             	else if(c == '_') sb.append(c);
-            	else throw new DatabaseException("Invalid Escape Sequence ["+esc+""+c+"]. Valid sequence pairs for this escape character are: ["+esc+"%] or ["+esc+"_]",null,null,sql,null);
+            	else throw new DatabaseException("Invalid Escape Sequence ["+esc+""+c+"]. Valid sequence pairs for this escape character are: ["+esc+"%] or ["+esc+"_]",null,sql,null);
             }
             else {
             	if(c == '%')sb.append(".*");

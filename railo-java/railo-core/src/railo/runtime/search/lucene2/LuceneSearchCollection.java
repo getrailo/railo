@@ -745,7 +745,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      */
     private void _index(IndexWriter writer, Resource file,String url) throws IOException {
         if(!file.exists()) return;
-        writer.addDocument(DocumentUtil.toDocument(file,url,SystemUtil.getCharset()));
+        writer.addDocument(DocumentUtil.toDocument(file,url,SystemUtil.getCharset().name()));
     }
     
 

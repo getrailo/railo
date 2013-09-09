@@ -46,6 +46,8 @@ Defaults --->
 					clientManagement="#isDefined("form.clientManagement") and form.clientManagement#"
 					clientCookies="#isDefined("form.clientCookies") and form.clientCookies#"
 					domaincookies="#isDefined("form.domaincookies") and form.domaincookies#"
+					sessionStorage="#form.sessionStorage#"
+					clientStorage="#form.clientStorage#"
 					remoteClients="#request.getRemoteClients()#">
 				
 			</cfcase>
@@ -68,6 +70,8 @@ Defaults --->
 					clientCookies=""
 					domaincookies=""
 					clientTimeout=""
+					sessionStorage=""
+					clientStorage=""
 					remoteClients="#request.getRemoteClients()#">
 				
 			</cfcase>
@@ -352,6 +356,46 @@ Error Output --->
 						<div class="comment">#stText.Scopes.ClientTimeoutDescription#</div>
 					</td>
 				</tr>
+				
+				<cfset stText.Scopes.SessionStorage="Session Storage">
+				<cfset stText.Scopes.ClientStorage="Client Storage">
+				<cfset stText.Scopes.SessionStorageDesc="Default Storage for Session, possible values are:<br>
+						- memory: the data are only in the memory, so in fact no persistent storage<br>
+						- file: the data are stored in the local filesystem<br>
+						- cookie: the data are stored in the users cookie<br>
+						- &lt;cache-name&gt;: name of a cache instane that has ""Storage"" enabled<br>
+						- &lt;datasource-name&gt;: name of a datasource instane that has ""Storage"" enabled">
+				<cfset stText.Scopes.ClientStorageDesc="Default Storage for Session, possible values are:<br>
+						- memory: the data are only in the memory, so in fact no persistent storage<br>
+						- file: the data are stored in the local filesystem<br>
+						- cookie: the data are stored in the users cookie<br>
+						- &lt;cache-name&gt;: name of a cache instane that has ""Storage"" enabled<br>
+						- &lt;datasource-name&gt;: name of a datasource instane that has ""Storage"" enabled">
+				
+				
+				
+				
+				<!--- session storage --->
+				<tr>
+					<th scope="row">#stText.Scopes.sessionStorage#</th>
+					<td>
+						<cfinput type="text" name="sessionStorage" value="#scope.sessionStorage#">
+						<div class="comment">#stText.Scopes.sessionStorageDesc#</div>
+					</td>
+				</tr>
+				
+				<!--- client storage --->
+				<tr>
+					<th scope="row">#stText.Scopes.clientStorage#</th>
+					<td>
+						<cfinput type="text" name="clientStorage" value="#scope.clientStorage#">
+						<div class="comment">#stText.Scopes.clientStorageDesc#</div>
+					</td>
+				</tr>
+				
+				
+				
+				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">
 				</cfif>

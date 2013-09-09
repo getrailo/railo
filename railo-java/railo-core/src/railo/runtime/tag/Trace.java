@@ -176,7 +176,6 @@ public final class Trace extends BodyTagImpl {
 			
 			
 		}
-		
 		DebugTrace trace = pageContext.getDebugger().addTrace(type,category,text,page,var,varValue);
 		DebugTrace[] traces = ((DebuggerPro)pageContext.getDebugger()).getTraces(pageContext);
 		

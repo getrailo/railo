@@ -11,7 +11,7 @@ public final class BIF extends FunctionMember {
 	
 		private ExprString name;
 		private int argType;
-		private String className;
+		private Class clazz;
 		private String returnType=ANY;
 		private FunctionLibFunction flf;
 
@@ -30,8 +30,8 @@ public final class BIF extends FunctionMember {
 			this.argType=argType;
 		}
 
-		public void setClassName(String className) {
-			this.className=className;
+		public void setClass(Class clazz) {
+			this.clazz=clazz;
 		}
 
 		public void setReturnType(String returnType) {
@@ -46,10 +46,10 @@ public final class BIF extends FunctionMember {
 		}
 
 		/**
-		 * @return the className
+		 * @return the class
 		 */
-		public String getClassName() {
-			return className;
+		public Class getClazz() {
+			return clazz;
 		}
 
 		/**

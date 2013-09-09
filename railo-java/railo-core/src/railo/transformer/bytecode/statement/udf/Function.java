@@ -173,11 +173,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 
 
 	// FunctionArgumentImpl(String name,String type,boolean required,int defaultType,String dspName,String hint,StructImpl meta)
-	private static final Method INIT_FAI_STRING = new Method(
-			"<init>",
-			Types.VOID,
-			new Type[]{Types.STRING,        Types.STRING,Types.SHORT_VALUE,Types.BOOLEAN_VALUE,Types.INT_VALUE,Types.BOOLEAN_VALUE,Types.STRING,Types.STRING,Page.STRUCT_IMPL}
-    		);	
 	private static final Method INIT_FAI_KEY1 = new Method(
 			"<init>",
 			Types.VOID,
@@ -580,7 +575,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
             // new FunctionArgument(...)
             ga.newInstance(canHaveKey && functionIndex<INIT_FAI_KEY_LIGHT.length?FUNCTION_ARGUMENT_LIGHT:FUNCTION_ARGUMENT_IMPL);
     		ga.dup();
-    		boolean hasKey = Variable.registerKey(bc,arg.getName(),false);
+    		Variable.registerKey(bc,arg.getName(),false);
     		
     		// type
     		if(functionIndex>=INIT_FAI_KEY.length-7) {
@@ -600,10 +595,10 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
     		//meta
     		if(functionIndex==INIT_FAI_KEY.length-1)Page.createMetaDataStruct(bc,_meta,null);
     		
-    		if(hasKey && functionIndex<INIT_FAI_KEY_LIGHT.length)
+    		if(functionIndex<INIT_FAI_KEY_LIGHT.length)
         		ga.invokeConstructor(FUNCTION_ARGUMENT_LIGHT, INIT_FAI_KEY[functionIndex]);
     		else 
-    			ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, hasKey?INIT_FAI_KEY[functionIndex]:INIT_FAI_STRING);
+    			ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, INIT_FAI_KEY[functionIndex]);
 
             ga.visitInsn(Opcodes.AASTORE);
         }

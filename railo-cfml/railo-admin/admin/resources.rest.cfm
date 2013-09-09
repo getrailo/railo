@@ -113,10 +113,10 @@ Error Output --->
 <cfset stText.rest.changes="Allow Change Mappings">
 <cfset stText.rest.changesDesc="Allow to add or remove Mappings in the Application with help of the function restInitApplication/restDeleteApplication.">
 <cfset stText.rest.mapping="Mappings">
-<cfset stText.rest.mappingDesc="Mappings ...">
+<cfset stText.rest.mappingDesc="">
 
 
-<cfset stText.rest.desc="Rest is ...">
+<cfset stText.rest.desc="">
 <cfset stText.rest.VirtualHead="Virtual">
 <cfset stText.rest.PhysicalHead="Physical">
 <cfset stText.rest.DefaultHead="Default">
@@ -207,21 +207,22 @@ list all mappings and display necessary edit fields --->
 									<input type="checkbox" class="checkbox" name="row_#rest.currentrow#" value="#rest.currentrow#">
 								</cfif>
 							</td>
+							<cfset css=iif(len(rest.physical) EQ 0 and len(rest.strPhysical) NEQ 0,de('Red'),de(''))>
 							<!--- virtual --->
-							<td>
+							<td class="tblContent#css#">
 								<input type="hidden" name="virtual_#rest.currentrow#" value="#rest.virtual#">
 								#rest.virtual#
 							</td>
 							<!--- physical --->
-							<cfset css=iif(len(rest.physical) EQ 0 and len(rest.strPhysical) NEQ 0,de('Red'),de(''))>
 							<td class="tblContent#css#">
-								<cfif rest.readOnly>
+								<cfset abs=expandPath(rest.strPhysical)>
+								<cfif !len(css) && abs NEQ rest.strPhysical><abbr title="#abs#"></cfif><cfif rest.readOnly>
 									#rest.strPhysical#
 								<cfelse>
 									<cfinput  onKeyDown="checkTheBox(this)" type="text" 
 									name="physical_#rest.currentrow#" value="#rest.strPhysical#" required="no"  
 									class="xlarge" message="#stText.rest.PhysicalMissing##rest.currentrow#)">
-								</cfif>
+								</cfif><cfif !len(css) &&  abs NEQ rest.strPhysical></abbr></cfif>
 							</td>
 							<!--- default --->
 							<td>

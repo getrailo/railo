@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
@@ -283,8 +284,10 @@ public final class DBInfo extends TagImpl {
 		}
 		checkTable(metaData);
 		
-        ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
-        Query qry = new QueryImpl(columns,"query");
+        Query qry = new QueryImpl(
+        		metaData.getColumns(dbname, schema, table, pattern),
+        		"query",
+        		pageContext.getTimeZone());
         
 		int len=qry.getRecordcount();
 
@@ -318,7 +321,7 @@ public final class DBInfo extends TagImpl {
 			
 			set=(Set) primaries.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(set==null) {
-				set=toSet(metaData.getPrimaryKeys(dbname, null, tblName),"COLUMN_NAME");
+				set=toSet(metaData.getPrimaryKeys(dbname, null, tblName),true,"COLUMN_NAME");
 				primaries.put(tblName,set);
 			}
 			isPrimary.append(set.contains(qry.getAt(COLUMN_NAME, i))?"YES":"NO"); 
@@ -336,7 +339,11 @@ public final class DBInfo extends TagImpl {
 		for(int i=1;i<=len;i++) {
 			map=(Map) foreigns.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(map==null) {
-				map=toMap(metaData.getImportedKeys(dbname, schema, table),"FKCOLUMN_NAME",new String[]{"PKCOLUMN_NAME","PKTABLE_NAME"});
+				map=toMap(
+						metaData.getImportedKeys(dbname, schema, table),
+						true,
+						"FKCOLUMN_NAME",
+						new String[]{"PKCOLUMN_NAME","PKTABLE_NAME"});
 				foreigns.put(tblName, map);
 			}
 			inner = map.get(qry.getAt(COLUMN_NAME, i));
@@ -362,40 +369,54 @@ public final class DBInfo extends TagImpl {
 		pageContext.setVariable(name, qry);
 	}
 
-	private Map<String,Map<String, SVArray>> toMap(ResultSet result,String columnName,String[] additional) throws SQLException {
+	private Map<String,Map<String, SVArray>> toMap(ResultSet result,boolean closeResult, String columnName,String[] additional) throws SQLException {
 		Map<String,Map<String, SVArray>> map=new HashMap<String,Map<String, SVArray>>();
 		Map<String, SVArray> inner;
 		String col;
 		SVArray item;
-		while(result.next()){
-			col=result.getString(columnName);
-			inner=map.get(col);
-			if(inner!=null) {
-				for(int i=0;i<additional.length;i++) {
-					item=inner.get(additional[i]);
-					item.add(result.getString(additional[i]));
-					item.setPosition(item.size());
+		if(result==null) return map;
+		try {
+			while(result.next()){
+				col=result.getString(columnName);
+				inner=map.get(col);
+				if(inner!=null) {
+					for(int i=0;i<additional.length;i++) {
+						item=inner.get(additional[i]);
+						item.add(result.getString(additional[i]));
+						item.setPosition(item.size());
+					}
+				}
+				else {
+					inner=new HashMap<String, SVArray>();
+					map.put(col, inner);
+					for(int i=0;i<additional.length;i++) {
+						item=new SVArray();
+						item.add(result.getString(additional[i]));
+						inner.put(additional[i], item);
+					}
 				}
 			}
-			else {
-				inner=new HashMap<String, SVArray>();
-				map.put(col, inner);
-				for(int i=0;i<additional.length;i++) {
-					item=new SVArray();
-					item.add(result.getString(additional[i]));
-					inner.put(additional[i], item);
-				}
-			}
+		}
+		finally {
+			if(closeResult)IOUtil.closeEL(result);
 		}
 		return map;
 	}
 	
-	private Set<String> toSet(ResultSet result,String columnName) throws SQLException {
+	private Set<String> toSet(ResultSet result, boolean closeResult, String columnName) throws SQLException {
 		Set<String> set = new HashSet<String>();
-		while(result.next()){
-			set.add(result.getString(columnName)); 
+		if(result==null) return set;
+		
+		try{
+			while(result.next()){
+				set.add(result.getString(columnName)); 
+			}
+			return set;
 		}
-		return set;
+		finally {
+			if(closeResult)IOUtil.closeEL(result);
+		}
+		
 	}
 
 	private void typeDBNames(DatabaseMetaData metaData) throws PageException, SQLException {
@@ -403,8 +424,8 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
-        railo.runtime.type.Query catalogs = new QueryImpl(metaData.getCatalogs(),"query");
-        railo.runtime.type.Query scheme = new QueryImpl(metaData.getSchemas(),"query");
+        railo.runtime.type.Query catalogs = new QueryImpl(metaData.getCatalogs(),"query",pageContext.getTimeZone());
+        railo.runtime.type.Query scheme = new QueryImpl(metaData.getSchemas(),"query",pageContext.getTimeZone());
         
         Pattern p=null;
         if(pattern!=null && !"%".equals(pattern)) 
@@ -458,10 +479,11 @@ public final class DBInfo extends TagImpl {
 		
 		checkTable(metaData);
 		
-		ResultSet columns = metaData.getExportedKeys(dbname, schema, table);
-		railo.runtime.type.Query qry = new QueryImpl(columns,"query");		
-		
-        qry.setExecutionTime(stopwatch.time());        
+		railo.runtime.type.Query qry = new QueryImpl(
+				metaData.getExportedKeys(dbname, schema, table),
+				"query",
+				pageContext.getTimeZone());		
+		qry.setExecutionTime(stopwatch.time());        
         
 		pageContext.setVariable(name, qry);
 	}
@@ -503,7 +525,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet tables = metaData.getIndexInfo(dbname, schema, table, false, true);
-        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query",pageContext.getTimeZone());
         
         // type int 2 string
         int rows = qry.getRecordcount();
@@ -551,8 +573,10 @@ public final class DBInfo extends TagImpl {
 			pattern=null;
 		}
 		
-        ResultSet tables = metaData.getProcedures(dbname, schema, pattern);
-        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(
+        		metaData.getProcedures(dbname, schema, pattern),
+        		"query",
+        		pageContext.getTimeZone());
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -576,10 +600,11 @@ public final class DBInfo extends TagImpl {
 		}
 		
 		
-		ResultSet tables = metaData.getProcedureColumns(dbname, schema, procedure, pattern);
-		
-		railo.runtime.type.Query qry = new QueryImpl(tables,"query");
-        qry.setExecutionTime(stopwatch.time());
+		railo.runtime.type.Query qry = new QueryImpl(
+				metaData.getProcedureColumns(dbname, schema, procedure, pattern),
+				"query",
+				pageContext.getTimeZone());
+		qry.setExecutionTime(stopwatch.time());
         
         
 		pageContext.setVariable(name, qry);
@@ -603,9 +628,10 @@ public final class DBInfo extends TagImpl {
         
 		pattern=setCase(metaData, pattern);
 		
-        ResultSet tables = metaData.getTables(dbname, null, pattern, null);
-        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
-        
+        railo.runtime.type.Query qry = new QueryImpl(
+        		metaData.getTables(dbname, null, pattern, null),
+        		"query",
+        		pageContext.getTimeZone());
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -643,7 +669,7 @@ public final class DBInfo extends TagImpl {
         
 		checkTable(metaData);
 		ResultSet result = metaData.getSchemas();
-		Query qry = new QueryImpl(result,"query");
+		Query qry = new QueryImpl(result,"query",pageContext.getTimeZone());
 		
 		
 		qry.rename(TABLE_SCHEM,USER);

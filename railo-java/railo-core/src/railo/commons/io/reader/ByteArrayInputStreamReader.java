@@ -5,7 +5,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 
 /**
@@ -14,20 +16,51 @@ import railo.commons.io.IOUtil;
 public final class ByteArrayInputStreamReader extends InputStreamReader {
 
 	private final BufferedReader br;
-	private final String charsetName;
+	private final Charset charset;
 
-	public ByteArrayInputStreamReader(ByteArrayInputStream bais, String charsetName) throws IOException {
-		super(bais, charsetName);
-		this.br=IOUtil.toBufferedReader(IOUtil.getReader(bais, charsetName));
-		this.charsetName=charsetName;
+	
+	public ByteArrayInputStreamReader(ByteArrayInputStream bais, Charset charset) throws IOException {
+		super(bais, charset);
+		this.br=IOUtil.toBufferedReader(IOUtil.getReader(bais, charset));
+		this.charset=charset;
 	}
 	
-	public ByteArrayInputStreamReader(byte[] barr, String charsetName) throws IOException {
-		this(new ByteArrayInputStream(barr), charsetName);
+	public ByteArrayInputStreamReader(byte[] barr, Charset charset) throws IOException {
+		this(new ByteArrayInputStream(barr), charset);
 	}
 
+	public ByteArrayInputStreamReader(String str, Charset charset) throws IOException {
+		this(new ByteArrayInputStream(str.getBytes(charset)), charset);
+	}
+	
+	/**
+	 * @deprecated use instead <code>{@link #ByteArrayInputStreamReader(ByteArrayInputStream, Charset)}</code>
+	 * @param bais
+	 * @param charsetName
+	 * @throws IOException
+	 */
+	public ByteArrayInputStreamReader(ByteArrayInputStream bais, String charsetName) throws IOException {
+		this(bais, CharsetUtil.toCharset(charsetName));
+	}
+	
+	/**
+	 * @deprecated use instead <code>{@link #ByteArrayInputStreamReader(byte[], Charset)}</code>
+	 * @param barr
+	 * @param charsetName
+	 * @throws IOException
+	 */
+	public ByteArrayInputStreamReader(byte[] barr, String charsetName) throws IOException {
+		this(new ByteArrayInputStream(barr), CharsetUtil.toCharset(charsetName));
+	}
+
+	/**
+	 * @deprecated use instead <code>{@link #ByteArrayInputStreamReader(String, Charset)}</code>
+	 * @param str
+	 * @param charsetName
+	 * @throws IOException
+	 */
 	public ByteArrayInputStreamReader(String str, String charsetName) throws IOException {
-		this(new ByteArrayInputStream(str.getBytes(charsetName)), charsetName);
+		this(str, CharsetUtil.toCharset(charsetName));
 	}
 
 	@Override
@@ -37,7 +70,10 @@ public final class ByteArrayInputStreamReader extends InputStreamReader {
 
 	@Override
 	public String getEncoding() {
-		return charsetName;
+		return charset.name();
+	}
+	public Charset getCharset() {
+		return charset;
 	}
 
 	@Override

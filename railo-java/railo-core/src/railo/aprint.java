@@ -1,6 +1,5 @@
 package railo;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -26,7 +25,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
-import railo.commons.io.res.type.file.FileResource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -412,7 +410,7 @@ public class aprint {
     
     private static void _(PrintStream ps,ResultSet res) {
     	try {
-			_(ps, new QueryImpl(res,"query").toString());
+			_(ps, new QueryImpl(res,"query",null).toString());
 		} catch (PageException e) {
 			_(ps, res.toString());
 		}

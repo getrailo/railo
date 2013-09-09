@@ -449,7 +449,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    	param.setIndex(index);
 		    	_sql.addItems(new SQLItemImpl(param.getValue()));
 	    		if(param.getDirection()!=ProcParamBean.DIRECTION_OUT) {
-	    			SQLCaster.setValue(callStat, index, param);
+	    			SQLCaster.setValue(pageContext.getTimeZone(),callStat, index, param);
 		    	}
 		    	if(param.getDirection()!=ProcParamBean.DIRECTION_IN) {
 		    		registerOutParameter(callStat,param);
@@ -487,7 +487,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 							try{
 								result=(ProcResultBean) results.get(index++,null);
 								if(result!=null) {
-									railo.runtime.type.Query q = new QueryImpl(rs,result.getMaxrows(),result.getName());	
+									railo.runtime.type.Query q = new QueryImpl(rs,result.getMaxrows(),result.getName(),pageContext.getTimeZone());	
 									count+=q.getRecordcount();
 									setVariable(result.getName(), q);
 									if(hasCached)cache.set(KeyImpl.getInstance(result.getName()), q);

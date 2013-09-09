@@ -25,6 +25,7 @@ public class DebugExecutionLog extends ExecutionLogSupport {
 	
 	@Override
 	protected void _log(int startPos, int endPos, long startTime, long endTime) {
+		if(!pc.getConfig().debug()) return;
 		long diff=endTime-startTime;
 		if(unit==UNIT_MICRO)diff/=1000;
 		else if(unit==UNIT_MILLI)diff/=1000000;
@@ -36,7 +37,6 @@ public class DebugExecutionLog extends ExecutionLogSupport {
 		else entry.add(diff);
 		
 		PageSource ps = pc.getCurrentPageSource();
-		
 		
 		Debugger debugger = pc.getDebugger();
 		DebugEntry e = debugger.getEntry(pc, ps, startPos,endPos);

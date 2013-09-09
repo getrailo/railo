@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.commons.collections.LongKeyList;
+import railo.commons.collection.LongKeyList;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.ConfigImpl;

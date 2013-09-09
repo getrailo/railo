@@ -2,6 +2,7 @@ package railo.runtime.functions.component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -181,11 +182,14 @@ public class ComponentListPackage implements Function {
 					catch (Throwable t) {}
 					
 					if(StringUtil.isEmpty(sourceName)) {
-						c=IOUtil.toString(children[i],null);
-						c=c.substring(0,c.indexOf("<clinit>"));
-						c = ListUtil.last(c, "/\\",true).trim();
-						if(StringUtil.endsWithIgnoreCase(c, ".cfc"))
-							list.add(c);
+						c=IOUtil.toString(children[i],(Charset)null);
+						int loc = c.indexOf("<clinit>");
+						if(loc !=-1) {
+							c=c.substring(0,loc);
+							c = ListUtil.last(c, "/\\",true).trim();
+							if(StringUtil.endsWithIgnoreCase(c, ".cfc"))
+								list.add(c);
+						}
 					}
 					else list.add(sourceName);
 					

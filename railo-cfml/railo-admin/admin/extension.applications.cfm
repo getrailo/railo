@@ -1,6 +1,10 @@
 <cfsetting enablecfoutputonly="yes">
 <cfinclude template="extension.functions.cfm">
 
+<cfset stText.ext.free="Free">
+<cfset stText.ext.price="Price">
+<cfset stText.Buttons.installTrial="Install Trial">
+<cfset stText.Buttons.installFull="Install Full Version">
 
 <cfif StructKeyExists(form,'action2')>
 	<cfset url.action2="install3">
@@ -59,8 +63,11 @@
                 <cfset session.extFilter2.provider=trim(form.providerFilter2)>
             </cfif>
 		</cfcase>
-        <cfcase value="#stText.Buttons.install#">
+        <cfcase value="#stText.Buttons.install#,#stText.Buttons.installFull#">
         	<cflocation url="#request.self#?action=#url.action#&action2=install1&uid=#form.uid#" addtoken="no">
+		</cfcase>
+        <cfcase value="#stText.Buttons.installTrial#">
+        	<cflocation url="#request.self#?action=#url.action#&action2=install1&uid=#form.uid#&trial=true" addtoken="no">
 		</cfcase>
         <cfcase value="#stText.Buttons.uninstall#">
         	<cflocation url="#request.self#?action=#url.action#&action2=uninstall&uid=#form.uid#" addtoken="no">

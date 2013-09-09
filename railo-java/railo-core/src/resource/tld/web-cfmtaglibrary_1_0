@@ -9445,12 +9445,23 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<rtexprvalue>true</rtexprvalue>
 			<description>Corresponds to the actual value that Railo passes to the stored procedure.</description>
 		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>sqltype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The SQL type that the parameter (any type) will be bound to.</description>
+		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>CFSQLType</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The SQL type that the parameter of any type is bound to.</description>
+			<status>deprecated</status>
+			<description>
+			This attribute has been deprecated, use instead the attribute "sqltype" that has exact the same functionality.
+			</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -9772,7 +9783,7 @@ Manipulates existing PDF documents. The following list describes some of the tas
             - ExecutionTime: Execution time for the SQL request. (numeric)</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>any</type>
 			<name>dataSource</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -9980,10 +9991,20 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		</attribute>
 		<attribute>
 			<type>string</type>
-			<name>CFSQLType</name>
+			<name>sqltype</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The SQL type that the parameter (any type) will be bound to.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>CFSQLType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
+			<description>
+			This attribute has been deprecated, use instead the attribute "sqltype" that has exact the same functionality.
+			</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -12574,6 +12595,16 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>a native java exception Object, if this attribute is defined all other will be ignored</description>
 		</attribute>
+		<attribute>
+			<type>numeric</type>
+			<name>contextlevel</name>
+			<status>hidden</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>entry context level</description>
+		</attribute>
+		
+		
 	</tag>
 	<!-- Timer -->
 	<tag>

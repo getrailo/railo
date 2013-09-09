@@ -5,8 +5,9 @@ package railo.runtime.functions.string;
 
 import java.security.MessageDigest;
 
-import railo.commons.lang.Md5;
+import railo.commons.digest.HashUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
@@ -54,29 +55,28 @@ public final class Hash implements Function {
 		
     	if(StringUtil.isEmpty(algorithm))algorithm="md5";
 		else algorithm=algorithm.trim().toLowerCase();
-		if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset();
+    	if("cfmx_compat".equals(algorithm)) algorithm="md5";
+    	else if("quick".equals(algorithm)) {
+    		if(numIterations>1) 
+    			SystemOut.printDate("for algorithm [quick], argument numIterations makes no sense, because this algorithm has no security in mind");
+    		return HashUtil.create64BitHashAsString(Caster.toString(input), 16);
+    	}
+    	
+    	
 		
-		boolean isDefaultAlgo = numIterations == 1 && ("md5".equals(algorithm) || "cfmx_compat".equals(algorithm));
-		byte[] arrBytes = null;
+    	if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset();
+		byte[] data = null;
 		
 		try {			
-			if(input instanceof byte[]) {
-				arrBytes = (byte[])input;
-				if(isDefaultAlgo) return Md5.getDigestAsString( arrBytes ).toUpperCase();
-			} 
-			else {
-				String string = Caster.toString(input);
-				if (isDefaultAlgo) return Md5.getDigestAsString( string ).toUpperCase();
-				arrBytes = string.getBytes( encoding );
-			}
+			if(input instanceof byte[]) data = (byte[])input;
+			else data = Caster.toString(input).getBytes( encoding );
 			
 			MessageDigest md=MessageDigest.getInstance(algorithm);
 		    md.reset();
-		    
-			for(int i=0; i<numIterations; i++)
-				md.update(arrBytes);
-		    
-			return Md5.stringify( md.digest() ).toUpperCase();
+		    for(int i=0; i<numIterations; i++) {
+		    	data=md.digest(data);
+			}
+		    return railo.commons.digest.Hash.toHexString(data,true);
 		} 
 		catch (Throwable t) {
 			throw Caster.toPageException(t);

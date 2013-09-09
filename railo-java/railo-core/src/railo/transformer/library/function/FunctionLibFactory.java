@@ -3,6 +3,7 @@ package railo.transformer.library.function;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,7 +78,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 		super();
 		Reader r=null;
 		try {
-			init(saxParser,new InputSource(r=IOUtil.getReader(file.getInputStream(), null)));
+			init(saxParser,new InputSource(r=IOUtil.getReader(file.getInputStream(), (Charset)null)));
 		} catch (IOException e) {
 			throw new FunctionLibException("File not found: "+e.getMessage());
 		}

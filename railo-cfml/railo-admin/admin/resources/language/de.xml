@@ -44,8 +44,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="services.certificate.subject">Subject</data>
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">Der angewählte Host stellt keine Zertifikate zu Verfügung.</data>
-	<data key="mappings.addNoneCFMLFiles">Füge nicht CFML Source Templates hinzu</data>
-	<data key="mappings.addNoneCFMLFilesDesc">Füge alle nicht CFML Templates zu Archiv hinzu (.js,css,gif,png ...).</data>
+	<data key="mappings.addNonCFMLFiles">Füge nicht CFML Source Templates hinzu</data>
+	<data key="mappings.addNonCFMLFilesDesc">Füge alle nicht CFML Templates zu Archiv hinzu (.js,css,gif,png ...).</data>
 	<data key="mappings.addCFMLFiles">Füge CFML Source Templates hinzu</data>
 	<data key="mappings.addCFMLFilesDesc">Füge alle CFML Source Templates hinzu (.cfm,.cfc,.cfml).</data>
 	<data key="mappings.addCFCFiles">Füge Component Source Templates hinzu</data>
@@ -64,7 +64,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="mappings.compiledesc">Kompilieren Sie alle cfm und cfc-Dateien innerhalb des Mappings</data>
 	<data key="mappings.physicalmissing">Bitte geben Sie einen Wert für die Ressource an. (Zeile </data>
 	<data key="mappings.archive">Archiv</data>
-	<data key="mappings.toplevelhead">Top Level</data>
+	<data key="mappings.toplevelhead">Web Zugänglich</data>
 	<data key="mappings.virtualhead">Virtuell</data>
 	<data key="mappings.compiletitle">kompilieren</data>
 	<data key="mappings.primaryhead">Primär</data>
@@ -467,7 +467,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
     sucht Railo nach einer entsprechenden CFC-Funktion (Methode) mit dem Namen &quot;getPropertyName&quot;. Für Schreiboperationen auf eine solche Eigenschaft wird nach einer Methode &quot;setPropertyName&quot; in der Komponente gesucht.</data>
 	<data key="components.physical">Ressource</data>
 	<data key="components.trusted">Trusted</data>
-	<data key="components.componentdumptemplatedescription">Wenn Sie ein Komponente direkt über den Browser aufrufen, wird dieses Template für die Darstellung verwendet. (Beispiel: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
+	<data key="components.componentdumptemplatedescription">Wenn Sie ein Komponente direkt über den Browser aufrufen, wird dieses Template für die Darstellung verwendet. (Beispiel: {url})</data>
 	<data key="components.basecomponentmissing">Bitte geben Sie einen Wert für die Basis/Root Komponente ein.</data>
 	<data key="components.component">Komponente</data>
 	<data key="components.componentmappingsearchdesc">Die Komponente wird auch innerhalb der Mappings gesucht, damit wird auch das implizite Mapping &quot;/&quot; einbezogen, welches aufs webroot zeigt</data>

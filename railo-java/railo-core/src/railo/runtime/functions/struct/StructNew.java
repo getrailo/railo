@@ -5,12 +5,17 @@ package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
-public final class StructNew implements Function {
-    public static Struct call(PageContext pc ) {
+public final class StructNew extends BIF {
+
+	private static final long serialVersionUID = 2439168907287957648L;
+
+	public static Struct call(PageContext pc ) {
         return new StructImpl();
     }
     public static Struct call(PageContext pc ,String type) throws FunctionException {
@@ -25,4 +30,10 @@ public final class StructNew implements Function {
         
         else throw new FunctionException(pc,"structNew",1,"type","valid values are [normal, weak, linked, soft, synchronized]");
     }
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1) return call(pc,Caster.toString(args[0]));
+		return call(pc);
+		
+	}
 }

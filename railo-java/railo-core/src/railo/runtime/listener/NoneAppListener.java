@@ -46,7 +46,7 @@ public final class NoneAppListener  extends AppListenerSupport {
 	@Override
 	public void onDebug(PageContext pc) throws PageException {
 		try {
-			pc.getDebugger().writeOut(pc);
+			if(pc.getConfig().debug())pc.getDebugger().writeOut(pc);
 		} 
 		catch (IOException e) {
 			throw Caster.toPageException(e);

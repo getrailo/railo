@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
@@ -78,7 +78,7 @@ public final class Executer {
 		Vector vSelects=query.getSelect();
 		int selCount=vSelects.size();
 		
-		Map selects=new HashTable();
+		Map<String,Object> selects=MapFactory.<String,Object>getConcurrentMap();
 		boolean isSMS=false;
 	// headers
 		for(int i=0;i<selCount;i++) {
@@ -109,7 +109,7 @@ public final class Executer {
 				selects.put(alias,select);
 			}
 		}
-		String[] headers = (String[])selects.keySet().toArray(new String[selects.size()]);
+		String[] headers = selects.keySet().toArray(new String[selects.size()]);
 		
 		// aHeaders.toArray(new String[aHeaders.size()]);
 		QueryImpl rtn=new QueryImpl(headers,0,"query");

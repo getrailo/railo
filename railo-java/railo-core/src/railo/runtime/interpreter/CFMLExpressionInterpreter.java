@@ -291,10 +291,10 @@ public class CFMLExpressionInterpreter {
             if(cfml.forwardIfCurrent(':')){
             	cfml.removeSpace();
             	Ref right = assignOp();    
-            	if(!(ref instanceof Variable))
-        			throw new ExpressionException("left operant of the Elvis operator has to be a variable declaration "+ref.getClass().getName());
+            	//if(!(ref instanceof Variable))
+        		//	throw new ExpressionException("left operant of the Elvis operator has to be a variable declaration "+ref.getClass().getName());
         		
-        		ref=new Elvis((Variable)ref,right);
+        		ref=new Elvis(ref,right);
             	
             }
             else {

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -21,7 +21,9 @@ import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
 import railo.runtime.type.util.CollectionUtil;
 
-public final class StructSort implements Function {
+public final class StructSort extends BIF {
+	private static final long serialVersionUID = -7945612992641626477L;
+	
 	public static Array call(PageContext pc , Struct base) throws PageException {
 		return call(pc,base,"text","asc",null);
 	}
@@ -80,8 +82,11 @@ public final class StructSort implements Function {
 		return rtn;
 			
 	}
-	
-	
-	
-	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==4) return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]),Caster.toString(args[2]),Caster.toString(args[3]));
+		if(args.length==3) return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]),Caster.toString(args[2]));
+		if(args.length==2) return call(pc,Caster.toStruct(args[0]),Caster.toString(args[1]));
+		return call(pc,Caster.toStruct(args[0]));
+	}	
 }

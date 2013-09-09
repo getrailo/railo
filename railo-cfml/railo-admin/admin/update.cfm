@@ -1,6 +1,7 @@
-<cfsetting showdebugoutput="no" enablecfoutputonly="yes">
+<cfsetting showdebugoutput="false" enablecfoutputonly="true">
 
 <cfparam name="session.alwaysNew" default="false" type="boolean">
+
 
 <cffunction name="getAviableVersion" output="false">
 	<cfargument name="update">
@@ -18,22 +19,26 @@
 	</cftry>
 </cffunction>
 
-<cfset adminType=url.adminType>
-<cfset password=session["password"&adminType]>
-<cfset id="rai:"&hash(adminType&":"&password)>
-<cfif not structKeyExists(session,id)>
-	<cfset session[id]={}>
-</cfif>
 <cftry>
-	<cfif not structKeyExists(session[id],"content") or not structKeyExists(session[id],"last") or DateDiff("m",session[id].last,now()) GT 5
-	or session.alwaysNew>
+
+	<cfset adminType=url.adminType>
+	<cfset password=session["password"&adminType]>
+	<cfset id="rai:"&hash(adminType&":"&password)>
+	<cfif not structKeyExists(session,id)>
+		<cfset session[id]={}>
+	</cfif>
+
+	<cfif !structKeyExists(session[id],"content") 
+		|| !structKeyExists(session[id],"last") 
+		|| DateDiff("m",session[id].last,now()) GT 5
+		|| session.alwaysNew>
 		<cfinclude template="web_functions.cfm">
 		
 		<cfset self = adminType & ".cfm">
-		<cfset stText.services.update.update="A patch {avaiable} is available for your current version {current}.">
+		<cfset stText.services.update.update="A patch <b>({available})</b> is available for your current version <b>({current})</b>.">
 
 		<!--- Core --->
-		<cfif adminType eq "server">
+		<cfif adminType == "server">
 			<cfadmin 
 				action="getUpdate"
 				type="#adminType#"
@@ -70,7 +75,7 @@
 					<cfset dn="">
 					<cfset link="#self#?action=extension.applications&action2=detail&uid=#uid#">
 					<cfoutput>
-						<a href="#link#" style="text-decoration:none;">- #extensions.label#</a><br />
+						<a href="#link#" style="text-decoration:none;">- #extensions.label#</a><br>
 					</cfoutput>
 				</cfloop>
 			</cfsavecontent>
@@ -78,13 +83,13 @@
 
 		<cfsavecontent variable="content" trim="true">
 			<cfoutput>
-				<cfif adminType eq "server">
+				<cfif adminType == "server">
 					<h3>
 						<a href="server.cfm?action=services.update" style="text-decoration:none;">Core</a>
 					</h3>
 					<div class="comment">
 						<cfif hasUpdate>
-							#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#<br />
+							#replace( stText.services.update.update, { '{available}': avi, '{current}': curr } )#<br>
 						<cfelse>
 							Your core is up to date!
 						</cfif>
@@ -98,7 +103,7 @@
 					<cfif not extensions.recordcount>
 						You have no extensions installed yet.
 					<cfelseif len(ext)>
-					   There are some updates available for your installed Extensions.<br />
+					   There are some updates available for your installed Extensions.<br>
 					   #ext#
 					<cfelse>
 						All your Extensions are up to date!
@@ -115,9 +120,11 @@
 	<cfoutput>#content#</cfoutput>
 	
 	<cfcatch>
-		<div class="error">
-			An error occured while retrieving update information:
-			<cfoutput>#cfcatch.message# #cfcatch.detail#</cfoutput>
-		</div>
+		<cfoutput>
+			<div class="error">
+				Failed to retrieve update information:
+				#cfcatch.message# #cfcatch.detail#
+			</div>
+		</cfoutput>
 	</cfcatch>
 </cftry>

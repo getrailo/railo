@@ -4,15 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 
@@ -23,7 +24,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -32,7 +32,6 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
-import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
@@ -54,7 +53,6 @@ import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.WDDXConverter;
-import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -137,17 +135,22 @@ public final class ConfigWebAdmin {
     
     /**
      * @param password
+     * @throws IOException 
+     * @throws DOMException 
      * @throws ExpressionException 
      */
-    public void setPassword(String password) throws SecurityException {
+    public void setPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        if(password==null || password.length()==0) {
-            if(root.getAttribute("password")!=null)
-                root.removeAttribute("password");
+        
+        if(root.hasAttribute("password")) root.removeAttribute("password");
+        
+        
+        if(StringUtil.isEmpty(password)) {
+            if(root.hasAttribute("pw")) root.removeAttribute("pw");
         }
         else {
-            root.setAttribute("password",new BlowfishEasy("tpwisgh").encryptString(password));
+            root.setAttribute("pw",password);
         }
     }
 
@@ -1966,7 +1969,86 @@ public final class ConfigWebAdmin {
         else scope.removeAttribute("sessiontimeout");
     }
     
-    /**
+    
+
+
+	public void updateClientStorage(String storage) throws SecurityException, ApplicationException {
+		updateStorage("client", storage);
+	}
+
+
+	public void updateSessionStorage(String storage) throws SecurityException, ApplicationException {
+		updateStorage("session", storage);
+	}
+	
+
+	private void updateStorage(String storageName,String storage) throws SecurityException, ApplicationException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        storage=validateStorage(storage);
+        
+        
+        Element scope=_getRootElement("scope");
+        if(!StringUtil.isEmpty(storage,true))scope.setAttribute(storageName+"storage",storage);
+        else scope.removeAttribute(storageName+"storage");
+	}
+    
+    
+    
+    private String validateStorage(String storage) throws ApplicationException {
+    	storage=storage.trim().toLowerCase();
+        
+    	// empty
+    	if(StringUtil.isEmpty(storage,true)) return "";
+    	
+    	// standard storages
+    	if("cookie".equals(storage) || "memory".equals(storage) || "file".equals(storage)) 
+    		return storage;
+    	
+    	// aliases
+    	if("ram".equals(storage)) return "memory";
+    	if("registry".equals(storage)) return "file";
+    	
+    	// datasource
+    	DataSource  ds = config.getDataSource(storage,null);
+    	if(ds!=null) {
+    		if(ds.isStorage())return storage;
+    		throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage");
+    	}
+		
+    	// cache
+    	CacheConnection cc = Util.getCacheConnection(config, storage,null);
+    	if(cc!=null) {
+    		if(cc.isStorage())return storage;
+    		throw new ApplicationException("cache ["+storage+"] is not enabled to be used as session/client storage");
+    	}
+    	
+    	String sdx=StringUtil.soundex(storage);
+    	
+    	// check if a datasource has a similar name 
+    	DataSource[] sources = config.getDataSources();
+    	for(int i=0;i<sources.length;i++){
+    		if(StringUtil.soundex(sources[i].getName()).equals(sdx))
+    			throw new ApplicationException("no matching storage for ["+storage+"] found, did you mean ["+sources[i].getName()+"]");
+    	}
+    	
+    	// check if a cache has a similar name 
+    	Iterator<String> it = config.getCacheConnections().keySet().iterator();
+    	String name;
+    	while(it.hasNext()){
+    		name=it.next();
+    		if(StringUtil.soundex(name).equals(sdx))
+    			throw new ApplicationException( "no matching storage for ["+storage+"] found, did you mean ["+name+"]");
+    	}
+    	
+		
+    	throw new ApplicationException("no matching storage for ["+storage+"] found");
+	}
+
+
+	/**
      * updates session timeout value
      * @param span
      * @throws SecurityException
@@ -2716,12 +2798,16 @@ public final class ConfigWebAdmin {
     /**
      * @param password
      * @throws SecurityException 
+     * @throws IOException 
+     * @throws DOMException 
      */
-    public void updateDefaultPassword(String password) throws SecurityException {
+    public void updateDefaultPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.setAttribute("default-password",new BlowfishEasy("tpwisgh").encryptString(password));
-        ((ConfigServerImpl)config).setDefaultPassword(password);
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password"); // remove old PW type
+        String hpw=ConfigWebFactory.hash(password);
+        root.setAttribute("default-pw",hpw);
+        ((ConfigServerImpl)config).setDefaultPassword(hpw);
     }
 
 	public void removeDefaultPassword() throws SecurityException {
@@ -3047,11 +3133,11 @@ public final class ConfigWebAdmin {
 	private String checkCharset(String charset)  throws PageException{
 		charset=charset.trim();
 		if("system".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("jre".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("os".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		
 		// check access
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_SETTING);
@@ -4238,5 +4324,59 @@ public final class ConfigWebAdmin {
 	private void setAttr(Element el, String name, String value) {
 		if(value==null) value="";
 		el.setAttribute(name, value);
+	}
+
+
+	public void updateAuthKey(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// merge new key and existing
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			set.add(keys[i]);
+		}
+		set.add(key);
+		
+		
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+		
+		
+	}
+
+	public void removeAuthKeys(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// remove key
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			if(!key.equals(keys[i]))set.add(keys[i]);
+		}
+
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+	}
+
+	private String authKeysAsList(Set<String> set) throws PageException {
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = set.iterator();
+		String key;
+		while(it.hasNext()){
+			key=it.next().trim();
+			if(sb.length()>0)sb.append(',');
+			try {
+				sb.append(URLEncoder.encode(key, "UTF-8"));
+			}
+			catch (UnsupportedEncodingException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return sb.toString();
 	}
 }

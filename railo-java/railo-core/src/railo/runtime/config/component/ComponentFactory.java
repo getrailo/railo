@@ -24,11 +24,24 @@ public class ComponentFactory {
 		deploy(dir,path,doNew,"Administrator");
 		
 		// orm
-		dir = dir.getRealResource("orm");
-		path+="orm/";
-		if(!dir.exists())dir.mkdirs();
-		deploy(dir,path,doNew,"IEventHandler");
-		deploy(dir,path,doNew,"INamingStrategy");
+		{
+		Resource ormDir = dir.getRealResource("orm");
+		String ormPath = path+"orm/";
+		if(!ormDir.exists())ormDir.mkdirs();
+		deploy(ormDir,ormPath,doNew,"IEventHandler");
+		deploy(ormDir,ormPath,doNew,"INamingStrategy");
+		}
+		// test
+		{
+		Resource testDir = dir.getRealResource("test");
+		String testPath = path+"test/";
+		if(!testDir.exists())testDir.mkdirs();
+		deploy(testDir,testPath,doNew,"AdministratorTest");
+		deploy(testDir,testPath,doNew,"RailoTestSuite");
+		deploy(testDir,testPath,doNew,"RailoTestSuiteRunner");
+		deploy(testDir,testPath,doNew,"RailoTestCase");
+		}
+		
 	}
 
 	private static void deploy(Resource dir, String path,boolean doNew, String name) {

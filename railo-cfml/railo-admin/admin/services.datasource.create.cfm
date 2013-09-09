@@ -422,13 +422,14 @@
 								</select>
 							<!--- @todo type checkbox --->
 							<cfelseif type EQ "radio">
-								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
+								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listGetAt(default,field.getDefaultValueIndex())></cfif>
 								<cfloop index="item" list="#field.getDefaultValue()#">
 									<cfinput type="radio" class="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 									#item#
 								</cfloop>
 							<!--- @todo type checkbox,radio --->
 							</cfif>
+								<cfif len(trim(field.getDescription()))><br><div class="comment">#field.getDescription()#</div></cfif>
 						</td>
 					</tr>
 				</cfloop>

@@ -71,14 +71,9 @@
         <cfargument name="serverId" required="yes" type="string">
         <cfargument name="webId" required="yes" type="string">
         <cfargument name="appId" required="yes" type="string">
-    	<cfargument name="serialNumber" required="no" type="string">
-    
+    	<cfargument name="addional" required="no" type="struct">
+    	
     	<cfset cfc = createObject('webservice',this.cfcName&"?wsdl")>
-        <cftry>
-        <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId,serialNumber)>
-        	<cfcatch>
-            <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId)>
-            </cfcatch>
-        </cftry>
+        <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId,serialize(arguments.addional))>
     </cffunction>
 </cfcomponent>

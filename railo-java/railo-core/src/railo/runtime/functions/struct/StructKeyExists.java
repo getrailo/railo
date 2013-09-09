@@ -5,14 +5,16 @@ package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
 import railo.runtime.functions.query.QueryColumnExists;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.CollectionStruct;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 
-public final class StructKeyExists implements Function {
+public final class StructKeyExists extends BIF {
 
 	private static final long serialVersionUID = 7659087310641834209L;
 
@@ -30,5 +32,10 @@ public final class StructKeyExists implements Function {
 		if(NullSupportHelper.full()) return struct.containsKey(key);
 		
 		return struct.containsKey(key) && struct.get(key,null)!=null;// do not change, this has do be this way
+	}
+
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,Caster.toStruct(args[0]),Caster.toKey(args[1]));
 	}
 }

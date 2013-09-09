@@ -2,8 +2,6 @@ package railo.runtime.functions.gateway;
 
 import java.io.IOException;
 
-import railo.runtime.gateway.GatewayException;
-
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;

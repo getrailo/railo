@@ -2,9 +2,8 @@ package railo.runtime.db;
 
 import java.sql.SQLException;
 
+import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
 
 class DCStack {
 
@@ -14,6 +13,16 @@ class DCStack {
 	}
 
 	public synchronized void add(DatasourceConnection dc){
+		// make sure the connection is not already in stack, this can happen when the conn is released twice
+		Item test = item;
+		while(test!=null){
+			if(test.dc==dc) {
+				SystemOut.print("a datasource connection was released twice!");
+				return;
+			}
+			test=test.prev;
+		}
+		
 		item=new Item(item,dc);
 	}
 
@@ -24,23 +33,9 @@ class DCStack {
 		try {
 			
 			if(!rtn.getConnection().isClosed()){
-				if(rtn.getDatasource().getConnectionTimeout()==0){
-					int dcid = ((DatasourceConnectionImpl)rtn).getRequestId();
-					int pcid = ((PageContextImpl)ThreadLocalPageContext.get(pc)).getRequestId();
-					if(dcid==-1){
-						((DatasourceConnectionImpl)rtn).setRequestId(pcid);
-						return rtn;
-					}
-					if(dcid!=pcid) {
-						try {
-				    		 if(rtn.getConnection()!=null)rtn.getConnection().close();
-				    	 } 
-				    	 catch (Throwable t) {}
-						return null;
-					}
-				}
 				return rtn;
 			}
+			return get(pc);
 		} 
 		catch (SQLException e) {}
 		return null;
@@ -59,7 +54,7 @@ class DCStack {
 		}
 		return count;
 	}
-	public synchronized int openConnections(){
+	public int openConnections(){
 		int count=0;
 		Item i = item;
 		while(i!=null){

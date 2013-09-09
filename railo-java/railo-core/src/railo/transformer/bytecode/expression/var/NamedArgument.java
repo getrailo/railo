@@ -50,7 +50,7 @@ public final class NamedArgument extends Argument {
 		
 		int form=VALUE;
 		int type=STRING;
-		if(name instanceof Variable) {
+		if(name instanceof Variable && !((Variable)name).fromHash()) {
 			GeneratorAdapter adapter = bc.getAdapter();
 			String[] arr = VariableString.variableToStringArray((Variable) name,true);
 			if(arr.length>1){

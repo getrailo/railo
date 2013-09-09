@@ -10,8 +10,8 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -99,10 +99,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    finally {
 	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
 	    }
-	    boolean debugUsage=DebuggerImpl.debugQueryUsage(pc,query);
 	    
-	    if(query!=null)
+	    if(query!=null && pc.getConfig().debug()) {
+	    	boolean debugUsage=DebuggerUtil.debugQueryUsage(pc,query);
 	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),pc.getCurrentPageSource(),query.getExecutionTime());
+	    }
 	    boolean _isNew = query.getRecordcount()==0;
 	    
 	    if(_isNew) {

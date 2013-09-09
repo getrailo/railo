@@ -1,6 +1,5 @@
 package railo.commons.io.res.type.cfml;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -168,7 +167,7 @@ public class CFMLResource extends ResourceSupport {
 			else
 				obj = provider.call(null, cfc, "getBinary", ZERO_ARGS);
 			if(obj==null) obj=new byte[0];
-			return Caster.toInputStream(obj);
+			return Caster.toInputStream(obj,null);
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);

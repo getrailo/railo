@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
@@ -47,7 +47,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 	private DateTime lastUpdate;
     private SearchEngineSupport searchEngine;
 	//TODO change visibility to private
-    protected Map<String,SearchIndex> indexes=new HashTable();
+    protected Map<String,SearchIndex> indexes=MapFactory.<String,SearchIndex>getConcurrentMap();
 
     private DateTime created;
 

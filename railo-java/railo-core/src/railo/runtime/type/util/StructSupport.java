@@ -15,7 +15,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 
@@ -229,8 +229,8 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     @Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).call(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).call(pc,methodName,args,false);
 		}
 		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_STRUCT, "struct");
 	}
@@ -238,8 +238,8 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     @Override
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
 		}
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_STRUCT, "struct");
 	}
@@ -254,8 +254,8 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
 
-	@Override
+    /*@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
-	}
+	}*/
 }

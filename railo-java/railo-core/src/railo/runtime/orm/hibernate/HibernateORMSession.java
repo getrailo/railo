@@ -52,7 +52,7 @@ import railo.runtime.type.util.CollectionUtil;
 
 public class HibernateORMSession implements ORMSession{
 
-	private HibernateORMEngine engine;
+	private final HibernateORMEngine engine;
 	private Session _session;
 	private DatasourceConnection dc;
 
@@ -80,14 +80,6 @@ public class HibernateORMSession implements ORMSession{
 		_session = factory.openSession(dc.getConnection());
 		_session.setFlushMode(FlushMode.MANUAL);
 	}
-
-	
-
-	@Override
-	public DatasourceConnection getDatasourceConnection() {
-		return dc;
-	}
-	
 
 	@Override
 	public ORMEngine getEngine() {
@@ -412,6 +404,7 @@ public class HibernateORMSession implements ORMSession{
 	public void close(PageContext pc) throws PageException {
 		session().close();
 		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc);
+		dc=null;
 	}
 	
 	@Override

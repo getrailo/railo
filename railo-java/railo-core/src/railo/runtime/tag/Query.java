@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -17,13 +18,14 @@ import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -210,9 +212,20 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	/** set the value datasource
 	*  The name of the data source from which this query should retrieve data.
 	* @param datasource value to set
+	 * @throws ClassException 
 	**/
-	public void setDatasource(String datasource) throws PageException	{
-		this.datasource=((PageContextImpl)pageContext).getDataSource(datasource);
+
+	public void setDatasource(Object datasource) throws PageException, ClassException	{
+		if (Decision.isStruct(datasource)) {
+			this.datasource=AppListenerUtil.toDataSource("__temp__", Caster.toStruct(datasource));
+		} 
+		else if (Decision.isString(datasource)) {
+			this.datasource=((PageContextImpl)pageContext).getDataSource(Caster.toString(datasource));
+		} 
+		else {
+			throw new ApplicationException("attribute [datasource] must be datasource name or a datasource definition(struct)");
+			
+		}
 	}
 
 	/** set the value timeout
@@ -464,7 +477,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					return EVAL_PAGE;
 				}
 			}
-			else query=executeDatasoure(sql,result!=null);
+			else query=executeDatasoure(sql,result!=null,pageContext.getTimeZone());
 			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
 			
 			if(cachedWithin!=null) {
@@ -482,7 +495,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(pageContext.getConfig().debug() && debug) {
 			boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 			if(logdb){
-				boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+				boolean debugUsage=DebuggerUtil.debugQueryUsage(pageContext,query);
 				((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 			}
 		}
@@ -610,13 +623,13 @@ cachename: Name of the cache in secondary cache.
 		} 
 	}
 	
-	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
+	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData,TimeZone tz) throws PageException {
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		
 		try {
 			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
-				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
+				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),tz);
 			
 			
 			return new QueryImpl(pageContext,dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData,true);

@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
@@ -54,7 +54,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private Map<String,CFMLFactory> initContextes;
     //private Map contextes;
     private SecurityManager defaultSecurityManager;
-    private Map managers=new HashTable();
+    private Map<String,SecurityManager> managers=MapFactory.<String,SecurityManager>getConcurrentMap();
     private String defaultPassword;
     private Resource rootDir;
     private URL updateLocation;
@@ -69,6 +69,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private int delay=0;
 	private boolean captcha=false;
 	private static ConfigServerImpl instance;
+
+	private String[] authKeys;
+	private String idPro;
 	
 	/**
      * @param engine 
@@ -148,6 +151,13 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return null;
     }
     
+    public String getIdPro() {
+    	if(idPro==null){
+    		idPro = getId(getSecurityKey(),getSecurityToken(),true,null);
+    	}
+    	return idPro;
+    }
+    
     /**
      * @return JspFactoryImpl array
      */
@@ -212,6 +222,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     protected String getDefaultPassword() {
         return defaultPassword;
     }
+    
+    
     /**
      * @param defaultPassword The defaultPassword to set.
      */
@@ -588,4 +600,16 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	public boolean getFullNullSupport() {
 		return fullNullSupport;
 	}
+
+	public String[] getAuthenticationKeys() {
+		return authKeys==null?new String[0]:authKeys;
+	}
+
+	protected void setAuthenticationKeys(String[] authKeys) {
+		this.authKeys = authKeys;
+	}
+	
+	public ConfigServer getConfigServer(String key,String nonce) {
+        return this;
+    }
 }

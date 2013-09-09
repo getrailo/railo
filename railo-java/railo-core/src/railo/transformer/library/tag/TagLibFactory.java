@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,7 +16,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -50,7 +51,7 @@ public final class TagLibFactory extends DefaultHandler {
 	
 	private XMLReader xmlReader;
 	
-	private static Map hashLib=new HashTable();
+	private static Map<String,TagLib> hashLib=MapFactory.<String,TagLib>getConcurrentMap();
 	private static TagLib systemTLD;
 	private TagLib lib=new TagLib();
 	
@@ -78,7 +79,7 @@ public final class TagLibFactory extends DefaultHandler {
 	private TagLibFactory(String saxParser,Resource res) throws TagLibException {
 		Reader r=null;
 		try {
-			InputSource is=new InputSource(r=IOUtil.getReader(res.getInputStream(), null));
+			InputSource is=new InputSource(r=IOUtil.getReader(res.getInputStream(), (Charset)null));
 			is.setSystemId(res.getPath());
 			init(saxParser,is);
 		} catch (IOException e) {
@@ -400,7 +401,7 @@ public final class TagLibFactory extends DefaultHandler {
 	 * @return TagLib
 	 */
 	private static TagLib getHashLib(String key) {
-		return (TagLib)hashLib.get(key);
+		return hashLib.get(key);
 	}
 	
 	/**

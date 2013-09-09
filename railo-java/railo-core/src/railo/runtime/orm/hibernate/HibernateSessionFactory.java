@@ -2,6 +2,7 @@ package railo.runtime.orm.hibernate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.hibernate.MappingException;
+import org.hibernate.cache.RegionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
@@ -42,6 +44,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
@@ -90,8 +93,13 @@ public class HibernateSessionFactory {
 		
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
-		if(StringUtil.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) 			
-																cacheProvider="org.hibernate.cache.EhCacheProvider";
+		Class<? extends RegionFactory> regionFactory=null;
+		
+		if(StringUtil.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
+			regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
+			cacheProvider=regionFactory.getName();//"org.hibernate.cache.EhCacheProvider";
+					
+		}
 		else if("JBossCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.TreeCacheProvider";
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
@@ -155,12 +163,18 @@ public class HibernateSessionFactory {
 		if(!StringUtil.isEmpty(ormConf.getSchema()))
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
 		
+		
 		if(ormConf.secondaryCacheEnabled()){
 			if(cacheConfig!=null && cacheConfig.isFile())
 				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
-			configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
+			if(regionFactory!=null || Reflector.isInstaneOf(cacheProvider, RegionFactory.class))
+				configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
+			else
+				configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
+			
+			configuration.setProperty("hibernate.cache.use_query_cache", "true");
 	    	
-	    	configuration.setProperty("hibernate.cache.use_query_cache", "true");
+	    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 		}
 		
 		/*
@@ -213,7 +227,7 @@ public class HibernateSessionFactory {
 	private static void executeSQLScript(ORMConfiguration ormConf,DatasourceConnection dc) throws SQLException, IOException {
         Resource sqlScript = ormConf.getSqlScript();
         if(sqlScript!=null && sqlScript.isFile()) {
-            BufferedReader br = IOUtil.toBufferedReader(IOUtil.getReader(sqlScript,null));
+            BufferedReader br = IOUtil.toBufferedReader(IOUtil.getReader(sqlScript,(Charset)null));
             String line;
             StringBuilder sql=new StringBuilder();
             String str;

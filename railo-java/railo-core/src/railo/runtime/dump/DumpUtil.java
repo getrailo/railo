@@ -27,6 +27,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.coder.Base64Coder;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -158,20 +159,33 @@ public class DumpUtil {
 		// byte[]
 		if(o instanceof byte[]) {
 			byte[] bytes=(byte[]) o;
-			
+			int max=5000;
 			DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 			table.setTitle("Native Array  ("+Caster.toClassName(o)+")");
-			
-			StringBuffer sb=new StringBuffer();
+			StringBuilder sb=new StringBuilder("[");
 			for(int i=0;i<bytes.length;i++) {
-				if(i!=0)sb.append("-");
+				if(i!=0)sb.append(",");
 				sb.append(bytes[i]);
-				if(i==1000) {
-					sb.append("  [truncated]  ");
+				if(i==max) {
+					sb.append(", ...truncated");
 					break;
 				}
 			}
-			table.appendRow(0,new SimpleDumpData(sb.toString()));
+			sb.append("]");
+			table.appendRow(1,new SimpleDumpData("Raw"+(bytes.length<max?"":" (truncated)")),new SimpleDumpData(sb.toString()));
+			
+			
+			if(bytes.length<max) {
+				// base64
+				table.appendRow(1,new SimpleDumpData("Base64 Encoded"),new SimpleDumpData(Base64Coder.encode(bytes)));
+				/*try {
+					table.appendRow(1,new SimpleDumpData("CFML expression"),new SimpleDumpData("evaluateJava('"+JavaConverter.serialize(bytes)+"')"));
+					
+				}
+				catch (IOException e) {}*/
+			}
+			
+			
 			return table;	
 		}
 		// Collection.Key
@@ -244,7 +258,7 @@ public class DumpUtil {
 			// Resultset
 			if(o instanceof ResultSet) {
 				try {
-					DumpData dd = new QueryImpl((ResultSet)o,"query").toDumpData(pageContext,maxlevel,props);
+					DumpData dd = new QueryImpl((ResultSet)o,"query",pageContext.getTimeZone()).toDumpData(pageContext,maxlevel,props);
 					if(dd instanceof DumpTable)
 						((DumpTable)dd).setTitle(Caster.toClassName(o));
 					return setId(id,dd);

@@ -19,7 +19,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ByteNameValuePair;
@@ -49,7 +49,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	private byte AMP=38;
 	
 	
-	private HashTable fileItems=new HashTable();
+	private Map<String,Item> fileItems=MapFactory.<String,Item>getConcurrentMap();
 	private Exception initException=null;
 
     private String encoding=null;
@@ -108,7 +108,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			headerType=HEADER_TEXT_PLAIN;
 			initializeUrlEncodedOrTextPlain(pc,'\n',isScriptProtected());
 		}
-		else {
+		else if(contentType.startsWith("application/x-www-form-urlencoded")) {
 			headerType=HEADER_APP_URL_ENC;
 			initializeUrlEncodedOrTextPlain(pc,'&',isScriptProtected());
 		}
@@ -299,13 +299,13 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		String lcKey = StringUtil.toLowerCase(key);
 		
 		// x
-		Item item = (Item) fileItems.get(lcKey);
+		Item item = fileItems.get(lcKey);
 		if(item!=null)return item;
 		
 		// form.x
 		if(lcKey.startsWith("form.")) {
 			lcKey=lcKey.substring(5).trim();
-			item = (Item) fileItems.get(lcKey);
+			item = fileItems.get(lcKey);
 			if(item!=null)return item;
 		}
 		
@@ -315,7 +315,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			if(array.size()>1 && array.getE(1).toString().trim().equals("form")) {
 				array.removeE(1);
 				lcKey=ListUtil.arrayToList(array, ".").trim();
-				item = (Item) fileItems.get(lcKey);
+				item = fileItems.get(lcKey);
 				if(item!=null)return item;
 			}
 		} 

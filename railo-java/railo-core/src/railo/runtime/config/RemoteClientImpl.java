@@ -1,6 +1,7 @@
 package railo.runtime.config;
 
 
+import railo.runtime.crypt.CFMXCompat;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.other.Encrypt;
 import railo.runtime.net.proxy.ProxyData;
@@ -88,7 +89,7 @@ public class RemoteClientImpl implements RemoteClient {
 
 	public String getAdminPasswordEncrypted() {
 		try {
-			return Encrypt.invoke(getAdminPassword(), getSecurityKey(),"cfmx_compat","uu");
+			return Encrypt.invoke( getAdminPassword(), getSecurityKey(), CFMXCompat.ALGORITHM_NAME, "uu", null, 0 );
 		} 
 		catch (PageException e) {
 			return null;
@@ -125,7 +126,7 @@ public class RemoteClientImpl implements RemoteClient {
 		try {
 			RPCClient rpc = RemoteClientTask.getRPCClient(this);
 			Object result = rpc.callWithNamedValues(config, "invoke", args);
-			return id=ConfigImpl.getId(securityKey, Caster.toString(result,null), null);
+			return id=ConfigImpl.getId(securityKey, Caster.toString(result,null),false, null);
 			
 		} 
 		catch (Throwable t) {t.printStackTrace();

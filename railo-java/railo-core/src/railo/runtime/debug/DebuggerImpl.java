@@ -22,7 +22,6 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
@@ -640,16 +639,6 @@ public final class DebuggerImpl implements DebuggerPro {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}
 
-	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
-		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
-			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
-				((QueryImpl)query).enableShowQueryUsage();
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void init(Config config) {
 		this.starttime=new DateTimeImpl(config);
 	}
@@ -702,6 +691,10 @@ public final class DebuggerImpl implements DebuggerPro {
         }
         return qryOutputLog;
         
+	}
+
+	public void resetTraces() {
+		traces.clear();
 	}
 }
 

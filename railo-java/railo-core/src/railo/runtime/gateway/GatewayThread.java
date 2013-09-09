@@ -1,7 +1,5 @@
 package railo.runtime.gateway;
 
-import railo.runtime.gateway.GatewayPro;
-import railo.runtime.gateway.GatewayEnginePro;
 
 public class GatewayThread extends Thread {
 

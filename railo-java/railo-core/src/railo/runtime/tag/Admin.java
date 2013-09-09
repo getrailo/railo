@@ -22,8 +22,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
-import railo.print;
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
@@ -45,7 +44,6 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
@@ -192,6 +190,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Key PROCEDURE = KeyImpl.intern("procedure");
 	private static final Key SERVER_LIBRARY = KeyImpl.intern("serverlibrary");
 	private static final Key KEEP_ALIVE = KeyImpl.intern("keepalive");
+	private static final Key CLIENT_SIZE = KeyImpl.intern("clientSize");
+	private static final Key SESSION_SIZE = KeyImpl.intern("sessionSize");
+	private static final Key CLIENT_ELEMENTS = KeyImpl.intern("clientElements");
+	private static final Key SESSION_ELEMENTS = KeyImpl.intern("sessionElements");
 
 	private static final short MAPPING_REGULAR = 1;
 	private static final short MAPPING_CT = 2;
@@ -293,6 +295,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         // update Password
         else if(action.equals("updatepassword")) {
+        	
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
                         getString("oldPassword",null),getString("admin",action,"newPassword",true));
@@ -306,7 +309,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         try {
             // Password
-            password = getString("password","");
+            password = ConfigWebFactory.hash(getString("password",""));
             // Config
             config=(ConfigImpl)pageContext.getConfig();
             if(type==TYPE_SERVER)
@@ -687,6 +690,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("hasindividualsecurity",  ACCESS_FREE) && check2(ACCESS_READ            )) doHasIndividualSecurity();
         else if(check("resetpassword",          ACCESS_FREE) && check2(ACCESS_WRITE            )) doResetPassword();
         else if(check("stopThread", 			ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doStopThread();
+
+        else if(check("updateAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doUpdateAuthKey();
+        else if(check("removeAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doRemoveAuthKey();
+        else if(check("listAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doListAuthKey();
         
         else if(check("createsecuritymanager",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE            )) doCreateSecurityManager();
         else if(check("getsecuritymanager",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ            )) doGetSecurityManager();
@@ -959,7 +966,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         for(int i=0;i<mappings.length;i++) {
             Mapping mapping = mappings[i];
             if(mapping.getVirtualLowerCaseWithSlash().equals(virtual)) {
-            	Map<String,String> errors = stoponerror?null:new HashTable();
+            	Map<String,String> errors = stoponerror?null:MapFactory.<String,String>getConcurrentMap();
                 doCompileFile(mapping,mapping.getPhysical(),"",errors);
                 if(errors!=null && errors.size()>0) {
                 	StringBuilder sb=new StringBuilder();
@@ -1038,6 +1045,26 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         store();
     }
 
+    private void doUpdateAuthKey() throws PageException {  
+        try {
+            admin.updateAuthKey(getString("key",null));
+        }catch (Exception e) {} 
+        store();
+    }
+    private void doRemoveAuthKey() throws PageException {  
+        try {
+            admin.removeAuthKeys(getString("key",null));
+        }catch (Exception e) {} 
+        store();
+    }
+    
+    private void doListAuthKey() throws PageException {
+    	ConfigServerImpl cs=(ConfigServerImpl) config;
+    	pageContext.setVariable(
+                 getString("admin",action,"returnVariable"),
+                 Caster.toArray(cs.getAuthenticationKeys()));
+    }
+
     /**
      * @throws PageException
      */
@@ -1060,7 +1087,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         					KeyConstants._label,
         					HAS_OWN_SEC_CONTEXT,
         					KeyConstants._url,
-        					CONFIG_FILE},
+        					CONFIG_FILE,
+        					CLIENT_SIZE,CLIENT_ELEMENTS,SESSION_SIZE,SESSION_ELEMENTS},
         			factories.length,getString("admin",action,"returnVariable"));
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
         ConfigWebImpl cw;
@@ -1078,10 +1106,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
             qry.setAtEL(KeyConstants._label,row,factory.getLabel());
             qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cw.hasIndividualSecurityManager()));
+
+            setScopeDirInfo(qry,row,CLIENT_SIZE,CLIENT_ELEMENTS,cw.getClientScopeDir());
+            setScopeDirInfo(qry,row,SESSION_SIZE,SESSION_ELEMENTS,cw.getSessionScopeDir());
         }
     }
 
-    private void doHasIndividualSecurity() throws PageException {
+    private void setScopeDirInfo(Query qry, int row, Key sizeName,Key elName, Resource dir) { 
+    	qry.setAtEL(sizeName,row,Caster.toDouble(ResourceUtil.getRealSize(dir)));
+    	qry.setAtEL(elName,row,Caster.toDouble(ResourceUtil.getChildCount(dir)));	
+	}
+
+	private void doHasIndividualSecurity() throws PageException {
         pageContext.setVariable(
                  getString("admin",action,"returnVariable"),
                  Caster.toBoolean(
@@ -1259,7 +1295,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
                 password);
-        
     }
     
     /**
@@ -1267,7 +1302,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
     private void doUpdateDefaultPassword() throws PageException {
-        admin.updateDefaultPassword(getString("admin",action,"newPassword"));
+        try {
+			admin.updateDefaultPassword(getString("admin",action,"newPassword"));
+		}
+		catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
         store();
     }
     private void doRemoveDefaultPassword() throws PageException {
@@ -1354,7 +1394,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetDebugData() throws PageException {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
-                pageContext.getDebugger().getDebuggingData(pageContext));
+                pageContext.getConfig().debug()?pageContext.getDebugger().getDebuggingData(pageContext):null);
     }
     private void doGetLoggedDebugData() throws PageException {
     	
@@ -2553,7 +2593,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		try {
 			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
 		} catch (ClassException e) {
-			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
+			throw new DatabaseException(
+					"can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder ("+e.getMessage()+")",null,null,null);
 		}
         
         if(verify)_doVerifyDatasource(classname,ds.getDsnTranslated(),username,password);
@@ -2811,7 +2852,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void _doVerifyDatasource(Class clazz, String dsn, String username, String password) throws PageException {
             if(!Reflector.isInstaneOf(clazz,Driver.class))
-                throw new DatabaseException("class ["+clazz.getName()+"] is not a JDBC Driver","class must implement interface [java.sql.Driver]",null,null,null);
+                throw new DatabaseException("class ["+clazz.getName()+"] is not a JDBC Driver","class must implement interface [java.sql.Driver]",null,null);
         getConnection(dsn, username, password);
     }
 
@@ -3742,6 +3783,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         //admin.updateRequestTimeout(getTimespan("admin",action,"requestTimeout"));
         admin.updateClientTimeout(getTimespan("admin",action,"clientTimeout"));
         admin.updateSessionTimeout(getTimespan("admin",action,"sessionTimeout"));
+        admin.updateClientStorage(getString("admin",action,"clientStorage"));
+        admin.updateSessionStorage(getString("admin",action,"sessionStorage"));
         admin.updateApplicationTimeout(getTimespan("admin",action,"applicationTimeout"));
         admin.updateSessionType(getString("admin",action,"sessionType"));
         admin.updateLocalMode(getString("admin",action,"localMode"));
@@ -3977,7 +4020,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("clientManagement",Caster.toBoolean(config.isClientManagement()));
         sct.set("domainCookies",Caster.toBoolean(config.isDomainCookies()));
         sct.set("clientCookies",Caster.toBoolean(config.isClientCookies()));
+        sct.set("clientStorage",config.getClientStorage());
+        sct.set("sessionStorage",config.getSessionStorage());
 
+        
         TimeSpan ts=config.getSessionTimeout();
         sct.set("sessionTimeout",ts);
         sct.set("sessionTimeout_day",Caster.toInteger(ts.getDay()));

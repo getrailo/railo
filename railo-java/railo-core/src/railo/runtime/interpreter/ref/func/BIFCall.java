@@ -17,7 +17,6 @@ import railo.runtime.interpreter.ref.literal.LFunctionValue;
 import railo.runtime.interpreter.ref.util.RefUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.util.ArrayUtil;

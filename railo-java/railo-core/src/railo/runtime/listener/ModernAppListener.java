@@ -28,6 +28,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PostContentAbort;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
@@ -100,16 +101,23 @@ public class ModernAppListener extends AppListenerSupport {
 			}
 			
 			String targetPage=requestedPage.getFullRealpath();
-			boolean doOnRequestEnd=true;
+			RefBoolean goon=new RefBooleanImpl(true);
 			
 			// onRequestStart
 			if(app.contains(pc,ON_REQUEST_START)) {
-				Object rtn=call(app,pci, ON_REQUEST_START, new Object[]{targetPage},true);
-				if(!Caster.toBooleanValue(rtn,true))
-					return;
+				try {
+					Object rtn=call(app,pci, ON_REQUEST_START, new Object[]{targetPage},false);
+					if(!Caster.toBooleanValue(rtn,true))
+						return;
+				}
+				catch(PageException pe){
+					pe=handlePageException(pci,app,pe,requestedPage,targetPage,goon);
+					if(pe!=null) throw pe;
+				}
 			}
 	    	
 			// onRequest
+			if(goon.toBooleanValue()) {
 			boolean isCFC=ResourceUtil.getExtension(targetPage,"").equalsIgnoreCase(pc.getConfig().getCFCExtension());
 			Object method;
 			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) { 
@@ -183,31 +191,20 @@ public class ModernAppListener extends AppListenerSupport {
 						pci.doInclude(requestedPage);
 				}
 				catch(PageException pe){
-					if(!Abort.isSilentAbort(pe)) {
-						if(pe instanceof MissingIncludeException){
-							if(((MissingIncludeException) pe).getPageSource().equals(requestedPage)){
-								if(app.contains(pc,ON_MISSING_TEMPLATE)) {
-									if(!Caster.toBooleanValue(call(app,pci, ON_MISSING_TEMPLATE, new Object[]{targetPage},true),true))
-										throw pe;
-								}
-								else throw pe;
-							}
-							else throw pe;
-						}
-						else throw pe;
-					}
-					else {
-						doOnRequestEnd=false;
-						if(app.contains(pc,ON_ABORT)) {
-							call(app,pci, ON_ABORT, new Object[]{targetPage},true);
-						}
-					}
+					pe=handlePageException(pci,app,pe,requestedPage,targetPage,goon);
+					if(pe!=null) throw pe;
 				}
 			}
-			
+			}
 			// onRequestEnd
-			if(doOnRequestEnd && app.contains(pc,ON_REQUEST_END)) {
-				call(app,pci, ON_REQUEST_END, new Object[]{targetPage},true);
+			if(goon.toBooleanValue() && app.contains(pc,ON_REQUEST_END)) {
+				try {
+					call(app,pci, ON_REQUEST_END, new Object[]{targetPage},false);
+				}
+				catch(PageException pe){
+					pe=handlePageException(pci,app,pe,requestedPage,targetPage,goon);
+					if(pe!=null) throw pe;
+				}
 			}
 		}
 		else {
@@ -216,6 +213,36 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 	
+
+	private PageException handlePageException(PageContextImpl pci, ComponentAccess app, PageException pe, PageSource requestedPage, String targetPage, RefBoolean goon) throws PageException {
+		PageException _pe=pe;
+		if(pe instanceof ModernAppListenerException) {
+			_pe=((ModernAppListenerException) pe).getPageException();
+		}
+		
+		if(!Abort.isSilentAbort(_pe)) {
+			if(_pe instanceof MissingIncludeException){
+				if(((MissingIncludeException) _pe).getPageSource().equals(requestedPage)){
+					
+					if(app.contains(pci,ON_MISSING_TEMPLATE)) {
+						goon.setValue(false);
+						if(!Caster.toBooleanValue(call(app,pci, ON_MISSING_TEMPLATE, new Object[]{targetPage},true),true))
+							return pe;
+					}
+					else return pe;
+				}
+				else return pe;
+			}
+			else return pe;
+		}
+		else {
+			goon.setValue(false);
+			if(app.contains(pci,ON_ABORT)) {
+				call(app,pci, ON_ABORT, new Object[]{targetPage},true);
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public boolean onApplicationStart(PageContext pc) throws PageException {
@@ -307,7 +334,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public void onDebug(PageContext pc) throws PageException {
-		if(((PageContextImpl)pc).isGatewayContext()) return;
+		if(((PageContextImpl)pc).isGatewayContext() || !pc.getConfig().debug()) return;
 		ComponentAccess app = apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
 			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)},true);
@@ -347,7 +374,9 @@ public class ModernAppListener extends AppListenerSupport {
 		} 
 		catch (PageException pe) {
 			if(Abort.isSilentAbort(pe)) {
-				if(catchAbort)return Boolean.FALSE;
+				if(catchAbort)
+					return ( pe instanceof PostContentAbort) ? Boolean.TRUE : Boolean.FALSE;
+
 				throw pe;
 			}
 			throw new ModernAppListenerException(pe,eventName.getString());

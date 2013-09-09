@@ -1,13 +1,5 @@
 package railo.runtime.net.mail;
 
-import railo.commons.lang.StringUtil;
-import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
-import railo.runtime.type.Array;
-import railo.runtime.type.Struct;
-import railo.runtime.type.util.ListUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.net.IDN;
 import java.util.ArrayList;
@@ -16,6 +8,14 @@ import java.util.Iterator;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeUtility;
+
+import railo.commons.lang.StringUtil;
+import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.type.Array;
+import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public final class MailUtil {
 
@@ -133,7 +133,31 @@ public final class MailUtil {
      */
     public static boolean isValidEmail( Object value ) {
 
-        return ( parseEmail( value ) != null );
+        InternetAddress addr = parseEmail( value );
+
+        if ( addr != null ) {
+
+            String domain = ListUtil.last( addr.getAddress(), '@' );
+
+            if ( domain.indexOf( '.' ) > 0 ) {                          // make sure we have a dot and that it's not the first char
+
+                String tld = ListUtil.last( domain, ".", false );
+                int len = tld.length();
+
+                if ( len > 1 ) {
+
+                    for ( int i=0; i<len; i++ ) {
+
+                        if ( !Character.isLetter( tld.charAt( i ) ) )
+                            return false;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 

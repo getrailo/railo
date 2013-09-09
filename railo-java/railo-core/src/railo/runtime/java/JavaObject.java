@@ -210,7 +210,7 @@ public class JavaObject implements Objects,ObjectWrap {
         
 	    try {
 		    // get method
-		    MethodInstance mi = Reflector.getMethodInstance(clazz,methodName,arguments);
+		    MethodInstance mi = Reflector.getMethodInstance(this,clazz,methodName,arguments);
 			// call static method if exist
 		    if(Modifier.isStatic(mi.getMethod().getModifiers())) {
 				return mi.invoke(null);

@@ -368,7 +368,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
                 data.setEL("urlToken", pc.getURLToken());
                 try {
-					data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
+					if(pc.getConfig().debug())data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
 				} catch (PageException e2) {}
 
                 try {

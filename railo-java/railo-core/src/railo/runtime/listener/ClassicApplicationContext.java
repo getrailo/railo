@@ -100,10 +100,14 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
+        this.clientstorage=((ConfigImpl)config).getClientStorage();
+        this.sessionstorage=((ConfigImpl)config).getSessionStorage();
+        
         this.source=source;
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSettings=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
+        
     }
     
     /**
@@ -272,9 +276,11 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
      * @param clientstorage The clientstorage to set.
      */
     public void setClientstorage(String clientstorage) {
+    	if(StringUtil.isEmpty(clientstorage,true)) return;
         this.clientstorage = clientstorage;
     }
     public void setSessionstorage(String sessionstorage) {
+    	if(StringUtil.isEmpty(sessionstorage,true)) return;
         this.sessionstorage = sessionstorage;
     }
 

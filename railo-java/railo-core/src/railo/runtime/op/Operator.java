@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.Component;
 import railo.runtime.exp.ExpressionException;
@@ -19,6 +20,9 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFImpl;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.wrap.ListAsArray;
@@ -542,6 +546,9 @@ public final class Operator {
 		if(left instanceof Component && right instanceof Component)
 			return __equalsComplexEL(done,(Component)left, (Component)right,caseSensitive,checkOnlyPublicAppearance);
 		
+		if(left instanceof UDFPlus && right instanceof UDFPlus)
+			return __equalsComplexEL(done,(UDFPlus)left, (UDFPlus)right,caseSensitive,checkOnlyPublicAppearance);
+		
 		if(left instanceof Collection && right instanceof Collection)
 			return __equalsComplexEL(done,(Collection)left, (Collection)right,caseSensitive,checkOnlyPublicAppearance);
 		
@@ -551,6 +558,17 @@ public final class Operator {
 		if(left instanceof Map && right instanceof Map)
 			return __equalsComplexEL(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive,checkOnlyPublicAppearance);
 		return left.equals(right);
+	}
+	
+	private static boolean __equalsComplexEL(Set<Object> done,UDFPlus left, UDFPlus right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+		if(left==null || right==null) {
+			if(left==right) return true;
+			return false;
+		}
+		if(!left.getPageSource().equals(right.getPageSource())) return false;
+		if(left.getIndex()!=right.getIndex()) return false;
+		
+		return true;
 	}
 	
 	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {

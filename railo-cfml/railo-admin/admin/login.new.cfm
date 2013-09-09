@@ -8,7 +8,7 @@
 			<tbody> 
 				<tr>
 					<th scope="row" class="right" nowrap="nowrap">#stText.Login.Password#</th>
-					<td><cfinput type="password" name="new_password" value="" passthrough='autocomplete="off"'
+					<td><cfinput type="password" name="new_password" id="new_password" value="" passthrough='autocomplete="off"'
 						class="xlarge" required="yes" message="#stText.Login.PasswordMissing#" />
 					</td>
 				</tr>
@@ -53,3 +53,9 @@
 		</table>
 	</cfform>
 </cfoutput>
+
+<script type="text/javascript">
+	$( function() {
+		$( '#new_password' ).focus();
+	});
+</script>

@@ -335,6 +335,12 @@ Error Output --->
 							<th scope="row">#stText.overview.railoID#</th>
 							<td>#getRailoId().server.id#</td>
 						</tr>
+						<!---
+						<tr>
+							<th scope="row">#stText.overview.railoID#</th>
+							<td>#getRailoId().server.ioid#</td>
+						</tr>
+						--->
 						<cfif request.adminType EQ "web">
 							<tr>
 								<th scope="row">#stText.Overview.InstalledTLs#</th>
@@ -400,17 +406,19 @@ Error Output --->
 			</td>
 			<td width="2%"></td>
 			<td valign="top" width="33%">
-				<script type="text/javascript">
-					function updateBindError()
-					{
-						//console.log(arguments);
-						$('##updateinfo').after('<div class=""error"">Update info could not be retrieved</div>');
-					}
-				</script>
-				<h2 id="updateinfo">Update Info</h2>
-				<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
-				<cfdiv onBindError="updateBindError"
-				bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
+
+				<h2>Update Info</h2>
+				<div id="updateInfoDesc"><div style="text-align: center;"><img src="../res/img/spinner16.gif.cfm"></div></div>
+
+				<cfsavecontent variable="Request.htmlBody" append="true">
+					<script type="text/javascript">
+
+						$( function() {
+
+							$('##updateInfoDesc').load('update.cfm?#session.urltoken#&adminType=#request.admintype#');
+						} );
+					</script>
+				</cfsavecontent>
 
 				<!--- Memory Usage --->
 				<cftry>
@@ -453,13 +461,13 @@ Error Output --->
 					<h3>
 						<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">#stText.Overview.issueTracker#</a>
 					</h3>
-					<div class="comment">#stText.Overview.bookDesc#</div>
+					<div class="comment">#stText.Overview.issuetrackerDesc#</div>
 					
 					<!--- Blog --->
 					<h3>
 						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
-					<div class="comment">#stText.Overview.bookDesc#</div>
+					<div class="comment">#stText.Overview.blogDesc#</div>
 					
 					
 					
@@ -501,6 +509,22 @@ Error Output --->
 							<td><input type="text" class="xlarge" name="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
 							<td><input type="text" class="xlarge" style="width:99%" name="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
 						</tr>
+
+						<cfset filesThreshold = 100000>
+						<cfif ( contexts.clientElements GT filesThreshold ) || ( contexts.sessionElements GT filesThreshold )>
+
+							<tr>
+								<td colspan="4" style="background-color:##FCC;" align="center">
+									Warning:
+									<cfif ( contexts.clientElements GT filesThreshold )>
+										<b>#numberFormat( contexts.clientElements, "," )#</b> Client files
+									</cfif>
+									<cfif ( contexts.sessionElements GT filesThreshold )>
+										<b>#numberFormat( contexts.sessionElements, "," )#</b> Session files
+									</cfif>
+								</td>
+							</tr>
+						</cfif>
 					</cfloop>
 				</tbody>
 				<tfoot>

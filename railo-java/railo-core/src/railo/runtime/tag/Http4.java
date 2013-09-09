@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
@@ -38,7 +39,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -75,8 +75,10 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
@@ -970,15 +972,19 @@ public final class Http4 extends BodyTagImpl implements Http {
 			railo.commons.net.http.Header[] headers = rsp.getAllHeaders();
 			StringBuffer raw=new StringBuffer(rsp.getStatusLine()+" ");
 			Struct responseHeader = new StructImpl();
+			Struct cookie;
 			Array setCookie = new ArrayImpl();
+			Query cookies=new QueryImpl(new String[]{"name","value","path","domain","expires","secure","httpOnly"},0,"cookies");
 			
 	        for(int i=0;i<headers.length;i++) {
 	        	railo.commons.net.http.Header header=headers[i];
 	        	//print.ln(header);
 		        
 	        	raw.append(header.toString()+" ");
-	        	if(header.getName().equalsIgnoreCase("Set-Cookie"))
+	        	if(header.getName().equalsIgnoreCase("Set-Cookie")) {
 	        		setCookie.append(header.getValue());
+	        		parseCookie(cookies,header.getValue());
+	        	}
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
 	        		Object value=responseHeader.get(KeyImpl.getInstance(header.getName()),null);
@@ -1010,6 +1016,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	
 	        }
 	        cfhttp.set(RESPONSEHEADER,responseHeader);
+	        cfhttp.set(KeyConstants._cookies,cookies);
 	        responseHeader.set(STATUS_CODE,new Double(rsp.getStatusCode()));
 	        responseHeader.set(EXPLANATION,(rsp.getStatusText()));
 	        if(setCookie.size()>0)responseHeader.set(SET_COOKIE,setCookie);
@@ -1081,7 +1088,7 @@ public final class Http4 extends BodyTagImpl implements Http {
                     	}
                     }
                     catch (UnsupportedEncodingException uee) {
-                    	str = IOUtil.toString(is,null);
+                    	str = IOUtil.toString(is,(Charset)null);
                     }
                 }
                 catch (IOException ioe) {
@@ -1171,6 +1178,54 @@ public final class Http4 extends BodyTagImpl implements Http {
 			//rsp.release();
 		}
 	    
+	}
+
+	private void parseCookie(Query cookies,String raw) {
+		String[] arr =ListUtil.trimItems(ListUtil.trim(ListUtil.listToStringArray(raw, ';')));
+		if(arr.length==0) return;
+		int row = cookies.addRow();
+		String item;
+		
+		int index;
+		// name/value
+		if(arr.length>0) {
+			item=arr[0];
+			index=item.indexOf('=');
+			if(index==-1)  // only name
+				cookies.setAtEL(KeyConstants._name,row, dec(item));
+			else { // name and value
+				cookies.setAtEL(KeyConstants._name,row, dec(item.substring(0,index)));
+				cookies.setAtEL(KeyConstants._value,row, dec(item.substring(index+1)));
+			}
+			
+		}
+		String n,v;
+		cookies.setAtEL("secure",row, Boolean.FALSE);
+		cookies.setAtEL("httpOnly",row, Boolean.FALSE);
+		for(int i=1;i<arr.length;i++){
+			item=arr[i];
+			index=item.indexOf('=');
+			if(index==-1)  // only name
+				cookies.setAtEL(dec(item),row, Boolean.TRUE);
+			else { // name and value
+				n=dec(item.substring(0,index));
+				v=dec(item.substring(index+1));
+				if(n.equalsIgnoreCase("expires")) {
+					DateTime d = Caster.toDate(v, false, null,null);
+					
+					if(d!=null) {
+						cookies.setAtEL(n,row, d);
+						continue;
+					}
+				}
+				cookies.setAtEL(n,row, v);
+			}
+			
+		}
+	}
+	
+	public String dec(String str) {
+    	return ReqRspUtil.decode(str, charset, false);
 	}
 
 	public static boolean isStatusOK(int statusCode) {
@@ -1546,12 +1601,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static String headerValue(String value) {
 		if(value==null) return null;
 		value=value.trim();
-		int len=value.length();
+		value=value.replace('\n', ' ');
+		value=value.replace('\r', ' ');
+		/*int len=value.length();
 		char c;
 		for(int i=0;i<len;i++){
 			c=value.charAt(i);
 			if(c=='\n' || c=='\r') return value.substring(0,i);
-		}
+		}*/
 		return value;
 	}
 

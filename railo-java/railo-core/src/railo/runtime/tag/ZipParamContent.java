@@ -1,6 +1,6 @@
 package railo.runtime.tag;
 
-public class ZipParamContent {
+public class ZipParamContent implements ZipParamAbstr {
 
 	private Object content;
 	private String entryPath;

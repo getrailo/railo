@@ -39,7 +39,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -61,7 +60,6 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.db.DataSource;
@@ -75,6 +73,7 @@ import railo.runtime.debug.DebugCFMLWriter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
@@ -94,16 +93,12 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
-import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
-import railo.runtime.listener.JavaSettings;
 import railo.runtime.listener.JavaSettingsImpl;
-import railo.runtime.listener.ModernAppListener;
 import railo.runtime.listener.ModernAppListenerException;
-import railo.runtime.listener.NoneAppListener;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
@@ -195,7 +190,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/**
 	 * Field <code>executionTime</code>
 	 */
-	protected int executionTime=0;
+	protected long executionTime=0;
 	
 	private HTTPServletRequestWrap req;
 	private HttpServletResponse rsp;
@@ -236,7 +231,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Client client;
 	private Application application;
 
-    private DebuggerImpl debugger=new DebuggerImpl();
+    private DebuggerPro debugger=new DebuggerImpl();
 	private long requestTimeout=-1;
 	private short enablecfoutputonly=0;
 	private int outputState;
@@ -259,6 +254,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	private Component activeComponent;
 	private UDF activeUDF;
+	private Collection.Key activeUDFCalledName;
     //private ComponentScope componentScope=new ComponentScope(this);
 	
 	private Credential remoteUser;
@@ -348,12 +344,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	/** 
 	 * default Constructor
-	 * @param factoryImpl 
 	 * @param scopeContext
 	 * @param config Configuration of the CFML Container
-	 * @param compiler CFML Compiler
 	 * @param queryCache Query Cache Object
 	 * @param id identity of the pageContext
+	 * @param servlet
 	 */
 	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id,HttpServlet servlet) {
 		// must be first because is used after
@@ -508,7 +503,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
     		debugger.reset();
     	}
-	
+		else ((DebuggerImpl)debugger).resetTraces(); // traces can alo be used when debugging is off
+		
 		this.serverPassword=null;
 
 		boolean isChild=parent!=null;
@@ -539,13 +535,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	catch (Throwable t) {
         		//print.printST(t);
         	}
-        	
-			
-        	// release connection
-			DatasourceConnectionPool pool = this.config.getDatasourceConnectionPool();
-			DatasourceConnection dc=ormSession.getDatasourceConnection();
-			if(dc!=null)pool.releaseDatasourceConnection(dc);
-	       
         	ormSession=null;
         }
         
@@ -704,10 +693,41 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return pathList.getLast().getRealPage(realPath);
 	}
     
-    public PageSource getRelativePageSourceExisting(String realPath) {
+   public PageSource getRelativePageSourceExisting(String realPath) {
     	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
     	if(pathList.size()==0) return null;
 		PageSource ps = pathList.getLast().getRealPage(realPath);
+		if(PageSourceImpl.pageExist(ps)) return ps;
+		return null;
+	}
+    
+     /**
+     * 
+     * @param realPath
+     * @param previous relative not to the caller, relative to the callers caller
+     * @return
+     */
+    public PageSource getRelativePageSourceExisting(String realPath, boolean previous ) {
+    	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
+    	if(pathList.size()==0) return null;
+    	
+    	PageSource ps=null,tmp=null;
+    	if(previous) {
+    		boolean valid=false;
+    		ps=pathList.getLast();
+    		for(int i=pathList.size()-2;i>=0;i--){
+    			tmp=pathList.get(i);
+    			if(tmp!=ps) {
+    				ps=tmp;
+    				valid=true;
+    				break;
+    			}
+    		}
+    		if(!valid) return null;
+    	}
+    	else ps=pathList.getLast();
+    	
+    	ps = ps.getRealPage(realPath);
 		if(PageSourceImpl.pageExist(ps)) return ps;
 		return null;
 	}
@@ -769,7 +789,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void doInclude(PageSource[] sources, boolean runOnce) throws PageException {
     	// debug
 		if(!gatewayContext && config.debug()) {
-			int currTime=executionTime;
+			long currTime=executionTime;
             long exeTime=0;
             long time=System.nanoTime();
             
@@ -778,7 +798,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             DebugEntryTemplate debugEntry=debugger.getEntry(this,currentPage.getPageSource());
             try {
                 addPageSource(currentPage.getPageSource(),true);
-                debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
+                debugEntry.updateFileLoadTime((System.nanoTime()-time));
                 exeTime=System.nanoTime();
 
                 currentPage.call(this);
@@ -798,8 +818,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 			finally {
 				includeOnce.add(currentPage.getPageSource());
-				int diff= ((int)(System.nanoTime()-exeTime)-(executionTime-currTime));
-			    executionTime+=(int)(System.nanoTime()-time);
+				long diff= ((System.nanoTime()-exeTime)-(executionTime-currTime));
+			    executionTime+=(System.nanoTime()-time);
 				debugEntry.updateExeTime(diff);
 				removeLastPageSource(true);
 			}	
@@ -1118,9 +1138,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	return local; 
     }
 
-    
+
     public Object localGet() throws PageException { 
     	return localGet(false);
+    }
+    
+    public Object localGet(boolean bind, Object defaultValue) { 
+    	if(undefined.getCheckArguments()){
+    		return localScope(bind);
+    	}
+    	return undefinedScope().get(KeyConstants._local,defaultValue);
     }
     
     public Object localGet(boolean bind) throws PageException { 
@@ -1154,6 +1181,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		return ((ComponentScope)undefined.variablesScope()).getComponent();
     	}
     	return undefinedScope().get(KeyConstants._THIS);
+    }
+    
+    public Object thisGet(Object defaultValue) { 
+    	return thisTouch(defaultValue);
+    }
+
+    public Object thisTouch(Object defaultValue) {
+    	// inside a component
+    	if(undefined.variablesScope() instanceof ComponentScope){
+    		return ((ComponentScope)undefined.variablesScope()).getComponent();
+    	}
+    	return undefinedScope().get(KeyConstants._THIS,defaultValue);
     }
     
 	
@@ -1356,8 +1395,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 	
     private void param(String type, String name, Object defaultValue, double min,double max, String strPattern, int maxLength) throws PageException {
-		
-    	
+
     	// check attributes type
     	if(type==null)type="any";
 		else type=type.trim().toLowerCase();
@@ -1406,6 +1444,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				}
 				setVariable(name,str);
 			}
+			else if ( type.equals( "int" ) || type.equals( "integer" ) ) {
+
+				if ( !Decision.isInteger( value ) )
+					throw new ExpressionException( "The value [" + value + "] is not a valid integer" );
+
+                setVariable( name, value );
+			}
 			else {
 				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
 					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
@@ -1416,26 +1461,20 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					throw new CasterException(value,type);	
 				}
 				
-				
-				
 				setVariable(name,value);
 				//REALCAST setVariable(name,Caster.castTo(this,type,value,true));
 			}
 		}
 	    else if(isNew) setVariable(name,value);
 	}
-    
-    
-    
-    
-	
+
+
     @Override
     public Object removeVariable(String var) throws PageException {
 		return VariableInterpreter.removeVariable(this,var);
 	}
 
     /**
-     * 
      * a variable reference, references to variable, to modifed it, with global effect.
      * @param var variable name to get
      * @return return a variable reference by string syntax ("scopename.key.key" -> "url.name")
@@ -1713,6 +1752,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			
 			ExceptionHandler.printStackTrace(this,pe);
 			ExceptionHandler.log(getConfig(),pe);
+
 			// error page exception
 			if(ep!=null) {
 				try {
@@ -1726,11 +1766,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					if(Abort.isSilentAbort(t)) return;
 					pe=Caster.toPageException(t);
 				}
-				
 			}
 			
 			// error page request
-			
 			ep=errorPagePool.getErrorPage(pe,ErrorPageImpl.TYPE_REQUEST);
 			if(ep!=null) {
 				PageSource ps = ep.getTemplate();
@@ -1752,18 +1790,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						return;
 					} catch (Throwable t) {
 						pe=Caster.toPageException(t);
-						
 					}
-					
 				}
-				else pe=new ApplicationException("The error page template for type request only works if the actual source file also exists . If the exception file is in an Railo archive (.rc/.rcs), you need to use type exception instead.");
+				else pe=new ApplicationException("The error page template for type request only works if the actual source file also exists. If the exception file is in an Railo archive (.rc/.rcs), you need to use type exception instead.");
 			}
 			
-			
 			try {
-				if(statusCode!=404)
-					forceWrite("<!-- Railo ["+Info.getVersionAsString()+"] Error -->");
-				
+
 				String template=getConfig().getErrorTemplate(statusCode);
 				if(!StringUtil.isEmpty(template)) {
 					try {
@@ -1779,8 +1812,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				}
 				if(!Abort.isSilentAbort(pe))forceWrite(getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
-			catch (Exception e) { 
-			}
+			catch (Exception e) {}
 		}
 	}
 
@@ -1927,11 +1959,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    		try {
 					HttpServletRequest _req = getHttpServletRequest();
 	    			write("Available sevice mappings are:<ul>");
-					railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+	    			railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+	    			railo.runtime.rest.Mapping _mapping;
 					String path;
 					for(int i=0;i<mappings.length;i++){
-						path=_req.getContextPath()+ReqRspUtil.getScriptName(_req)+mappings[i].getVirtual();
-						write("<li>"+path+"</li>");
+						_mapping=mappings[i];
+						Resource p = _mapping.getPhysical();
+						path=_req.getContextPath()+ReqRspUtil.getScriptName(_req)+_mapping.getVirtual();
+						write("<li "+(p==null || !p.isDirectory()?" style=\"color:red\"":"")+">"+path+"</li>");
 						
 						
 					}
@@ -2107,7 +2142,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    }
 	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
-	    ApplicationListener listener=gatewayContext?new NoneAppListener():((MappingImpl)base.getMapping()).getApplicationListener();
+	    ApplicationListener listener=gatewayContext?config.getApplicationListener():((MappingImpl)base.getMapping()).getApplicationListener();
+	    
 	    
 	    try {
 	    	listener.onRequest(this,base,null);
@@ -2684,9 +2720,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		this.thread=thread;
 	}
 
+	// FUTURE add as long
     @Override
     public int getExecutionTime() {
-        return executionTime;
+        return (int)executionTime;
     }
 
     @Override
@@ -2768,6 +2805,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public UDF getActiveUDF() {
 		return activeUDF;
+	}
+	public Collection.Key getActiveUDFCalledName() {
+		return activeUDFCalledName;
+	}
+	public void setActiveUDFCalledName(Collection.Key activeUDFCalledName) {
+		this.activeUDFCalledName=activeUDFCalledName;
 	}
 
 	/**
@@ -2993,6 +3036,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public DataSource getDataSource(String datasource) throws PageException {
 		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
 		if(ds==null) ds=getConfig().getDataSource(datasource);
+		return ds;
+	}
+		
+// FUTURE add to PageContext
+	public DataSource getDataSource(String datasource, DataSource defaultValue) {
+		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		if(ds==null) ds=getConfig().getDataSource(datasource,defaultValue);
 		return ds;
 	}
 

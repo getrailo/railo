@@ -19,6 +19,7 @@ import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
@@ -46,15 +47,54 @@ public final class OpElvis extends ExpressionBase {
      * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
     public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    	if(ASMUtil.hasOnlyDataMembers(left))return _writeOutPureDataMember(bc, mode);
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	Label notNull = new Label();
+    	Label end = new Label();
+    	
+    	GeneratorAdapter ga = bc.getAdapter();
+    	
+    	int l = ga.newLocal(Types.OBJECT);
+    	ExpressionUtil.visitLine(bc, left.getStart());
+    	left.writeOut(bc, MODE_REF);
+    	ExpressionUtil.visitLine(bc, left.getEnd());
+    	ga.dup();
+    	ga.storeLocal(l);
+    	
+    	ga.visitJumpInsn(Opcodes.IFNONNULL, notNull);
+    	ExpressionUtil.visitLine(bc, right.getStart());
+    	right.writeOut(bc, MODE_REF);
+    	ExpressionUtil.visitLine(bc, right.getEnd());
+    	ga.visitJumpInsn(Opcodes.GOTO, end);
+    	ga.visitLabel(notNull);
+    	ga.loadLocal(l);
+    	ga.visitLabel(end);
+    	
+    	return Types.OBJECT;
+    }
+    
+    
+    public Type _writeOutPureDataMember(BytecodeContext bc, int mode) throws BytecodeException {
+    	// TODO use function isNull for this
     	GeneratorAdapter adapter = bc.getAdapter();
     	
     	Label yes = new Label();
     	Label end = new Label();
     	
     	List<Member> members = left.getMembers();
-    	Iterator<Member> it = members.iterator();
+    	
+    	
     	
     	// to array
+    	Iterator<Member> it = members.iterator();
     	List<DataMember> list=new ArrayList<DataMember>();
     	while(it.hasNext()){
     		list.add((DataMember) it.next());

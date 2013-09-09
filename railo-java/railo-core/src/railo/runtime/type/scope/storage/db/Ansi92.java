@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.TimeZone;
 
 import railo.commons.io.log.Log;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
@@ -44,30 +46,32 @@ public class Ansi92 extends SQLExecutorSupport {
 			new SQLItemImpl(applicationName,Types.VARCHAR),
 			new SQLItemImpl(now(config),Types.VARCHAR)
 		});
+	    
+	    PageContext pc = ThreadLocalPageContext.get();
 		
 		try {
-			query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
+			query = new QueryImpl(pc,dc,sqlSelect,-1,-1,-1,"query");
 		}
 	    catch (DatabaseException de) {
 	    	if(dc==null || !createTableIfNotExist) throw de;
 	    	try {
 	    		SQL sql = createSQL(dc,"text",strType);
 	    		ScopeContext.info(log,sql.toString());
-				new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
+				new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
 	    	}
 		    catch (DatabaseException _de) {
 		    	try {
 		    		SQL sql = createSQL(dc,"memo",strType);
 		    		ScopeContext.info(log,sql.toString());
-					new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
+					new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
 		    	}
 			    catch (DatabaseException __de) {
 			    	SQL sql = createSQL(dc,"clob",strType);
 		    		ScopeContext.info(log,sql.toString());
-			    	new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
+			    	new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
 			    }
 		    }
-	    	query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
+	    	query = new QueryImpl(pc,dc,sqlSelect,-1,-1,-1,"query");
 		}
 	    ScopeContext.info(log,sqlSelect.toString());
 		return query;
@@ -76,18 +80,19 @@ public class Ansi92 extends SQLExecutorSupport {
 	@Override
 	public void update(Config config, String cfid, String applicationName, DatasourceConnection dc, int type, Struct data, long timeSpan, Log log) throws PageException, SQLException {
 		String strType = VariableInterpreter.scopeInt2String(type);
-		int recordsAffected = _update(config,dc.getConnection(),cfid,applicationName,"update "+PREFIX+"_"+strType+"_data set expires=?,data=? where cfid=? and name=?",data,timeSpan,log);
+		TimeZone tz = ThreadLocalPageContext.getTimeZone();
+		int recordsAffected = _update(config,dc.getConnection(),cfid,applicationName,"update "+PREFIX+"_"+strType+"_data set expires=?,data=? where cfid=? and name=?",data,timeSpan,log,tz);
 		
 		if(recordsAffected>1) {
 	    	delete(config, cfid, applicationName, dc, type, log);
 	    	recordsAffected=0;
 	    }
 		if(recordsAffected==0) {
-	    	_update(config,dc.getConnection(),cfid,applicationName,"insert into "+PREFIX+"_"+strType+"_data (expires,data,cfid,name) values(?,?,?,?)",data,timeSpan,log);
+	    	_update(config,dc.getConnection(),cfid,applicationName,"insert into "+PREFIX+"_"+strType+"_data (expires,data,cfid,name) values(?,?,?,?)",data,timeSpan,log,tz);
 	    }
 	}
 	
-	private static int _update(Config config,Connection conn,String cfid, String applicationName, String strSQL,Struct data, long timeSpan, Log log) throws SQLException, PageException {
+	private static int _update(Config config,Connection conn,String cfid, String applicationName, String strSQL,Struct data, long timeSpan, Log log, TimeZone tz) throws SQLException, PageException {
 		//String appName = pc.getApplicationContext().getName();
 		try{
 			SQLImpl sql = new SQLImpl(strSQL,new SQLItem[]{
@@ -98,7 +103,7 @@ public class Ansi92 extends SQLExecutorSupport {
 			});
 			ScopeContext.info(log,sql.toString());
 			
-			return execute(conn, sql);
+			return execute(conn, sql,tz);
 		}
 		catch(ConverterException ce){
 			throw Caster.toPageException(ce);
@@ -113,7 +118,7 @@ public class Ansi92 extends SQLExecutorSupport {
 				new SQLItemImpl(cfid,Types.VARCHAR),
 				new SQLItemImpl(applicationName,Types.VARCHAR)
 			});
-		execute(dc.getConnection(), sql);
+		execute(dc.getConnection(), sql,ThreadLocalPageContext.getTimeZone());
 		ScopeContext.info(log,sql.toString());
 		
 	}
@@ -129,7 +134,7 @@ public class Ansi92 extends SQLExecutorSupport {
 				});
 	    QueryImpl query;
 	    try{
-			query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
+	    	query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
 		}
 		catch(Throwable t){
 			// possible that the table not exist, if not there is nothing to clean
@@ -160,13 +165,13 @@ public class Ansi92 extends SQLExecutorSupport {
 	}
 
 
-	private static int execute(Connection conn, SQLImpl sql) throws SQLException, PageException {
+	private static int execute(Connection conn, SQLImpl sql, TimeZone tz) throws SQLException, PageException {
 		PreparedStatement preStat = conn.prepareStatement(sql.getSQLString());
 		int count=0;
 		try {
 			SQLItem[] items=sql.getItems();
 		    for(int i=0;i<items.length;i++) {
-	            SQLCaster.setValue(preStat,i+1,items[i]);
+	            SQLCaster.setValue(tz,preStat,i+1,items[i]);
 	        }
 		    count= preStat.executeUpdate();
 		}

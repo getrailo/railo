@@ -9,9 +9,12 @@ import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -83,7 +86,7 @@ public final class SystemUtil {
     private static Resource tempFile;
     private static Resource homeFile;
     private static Resource[] classPathes;
-    private static String charset=System.getProperty("file.encoding");
+    private static Charset charset;
     private static String lineSeparator=System.getProperty("line.separator","\n");
     private static MemoryPoolMXBean permGenSpaceBean;
 
@@ -91,8 +94,13 @@ public final class SystemUtil {
 	public static int jreArch=-1;
 	
 	static {
-		if(charset==null || charset.equalsIgnoreCase("MacRoman"))
-			charset="cp1252";
+		String strCharset=System.getProperty("file.encoding");
+		if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
+			strCharset="cp1252";
+
+		if(strCharset.equalsIgnoreCase("utf-8")) charset=CharsetUtil.UTF8;
+		else if(strCharset.equalsIgnoreCase("iso-8859-1")) charset=CharsetUtil.ISO88591;
+		else charset=CharsetUtil.toCharset(strCharset,null);
 		
 		// Perm Gen
 		permGenSpaceBean=getPermGenSpaceBean();
@@ -149,7 +157,8 @@ public final class SystemUtil {
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
 	private static Boolean isCLI;
-	private static double loaderVersion=0D; 
+	private static double loaderVersion=0D;
+	private static String macAddress; 
 
     /**
      * returns if the file system case sensitive or not
@@ -526,11 +535,14 @@ public final class SystemUtil {
 		return id;
     }
 
-    public static String getCharset() {
+    public static Charset getCharset() {
     	return charset;
     }
 
 	public static void setCharset(String charset) {
+		SystemUtil.charset = CharsetUtil.toCharset(charset);
+	}
+	public static void setCharset(Charset charset) {
 		SystemUtil.charset = charset;
 	}
 
@@ -910,5 +922,23 @@ public final class SystemUtil {
 			}
 		}
 		return loaderVersion;
+	}
+	public static String getMacAddress() {
+		if(macAddress==null) {
+			try{
+				InetAddress ip = InetAddress.getLocalHost();
+				NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+				byte[] mac = network.getHardwareAddress();
+		  
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < mac.length; i++) {
+					sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));		
+				}
+				macAddress= sb.toString();
+			}
+			catch(Throwable t){}
+			
+		}
+		return macAddress;
 	}
 }

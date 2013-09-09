@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.safehaus.uuid.UUIDGenerator;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.lang.ExceptionUtil;
@@ -32,7 +32,6 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -66,9 +65,9 @@ public final class ScopeContext {
 	private static final long SESSION_MEMORY_TIMESPAN =  5*MINUTE;
 	
 	private static UUIDGenerator generator = UUIDGenerator.getInstance();
-	private Map<String,Map<String,Scope>> cfSessionContextes=new HashTable();
-	private Map<String,Map<String,Scope>> cfClientContextes=new HashTable();
-	private Map<String,Application> applicationContextes=new HashTable();
+	private Map<String,Map<String,Scope>> cfSessionContextes=MapFactory.<String,Map<String,Scope>>getConcurrentMap();
+	private Map<String,Map<String,Scope>> cfClientContextes=MapFactory.<String,Map<String,Scope>>getConcurrentMap();
+	private Map<String,Application> applicationContextes=MapFactory.<String,Application>getConcurrentMap();
 
 	private int maxSessionTimeout=0;
 
@@ -127,7 +126,7 @@ public final class ScopeContext {
 		Map<String,Scope> context=parent.get(key);
 		if(context!=null) return context;
 		
-		context = new HashTable();
+		context = MapFactory.<String,Scope>getConcurrentMap();
 		parent.put(key,context);
 		return context;
 		
@@ -187,7 +186,7 @@ public final class ScopeContext {
 			boolean isMemory=false;
 			String storage = appContext.getClientstorage();
 			if(StringUtil.isEmpty(storage,true)){
-				storage="file";
+				storage=ConfigImpl.DEFAULT_STORAGE_CLIENT;
 			}
 			else if("ram".equalsIgnoreCase(storage)) {
 				storage="memory";
@@ -213,7 +212,7 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc,getLog());
 				}
 				else{
-					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					DataSource ds = ((PageContextImpl)pc).getDataSource(storage,null);
 					if(ds!=null)client=ClientDatasource.getInstance(storage,pc,getLog());
 					else client=ClientCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					
@@ -486,7 +485,7 @@ public final class ScopeContext {
 			boolean isMemory=false;
 			String storage = appContext.getSessionstorage();
 			if(StringUtil.isEmpty(storage,true)){
-				storage="memory";
+				storage=ConfigImpl.DEFAULT_STORAGE_SESSION;
 				isMemory=true;
 			}
 			else if("ram".equalsIgnoreCase(storage)) {
@@ -514,7 +513,7 @@ public final class ScopeContext {
 				else if("cookie".equals(storage))
 					session=SessionCookie.getInstance(appContext.getName(),pc,getLog());
 				else{
-					DataSource ds = ((PageContextImpl)pc).getDataSource(storage);
+					DataSource ds = ((PageContextImpl)pc).getDataSource(storage,null);
 					if(ds!=null && ds.isStorage())session=SessionDatasource.getInstance(storage,pc,getLog(),null);
 					else session=SessionCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					

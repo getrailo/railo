@@ -312,9 +312,15 @@ public final class XMLCaster {
 		return node;
 	}
 	
-	public static Node toNode(Document doc,Object o) throws PageException {
-		if(o instanceof XMLStruct)return ((XMLStruct)o).toNode();
-		if(o instanceof Node)return (Node)o;
+	public static Node toNode(Document doc,Object o, boolean clone) throws PageException {
+		Node n=null;
+		if(o instanceof XMLStruct) 
+			n = ((XMLStruct)o).toNode();
+		else if(o instanceof Node)
+			n = ((Node)o);
+		
+		if(n!=null)return clone?n.cloneNode(true):n;
+		
 		String nodeName=Caster.toString(o);
 		if(nodeName.length()==0)nodeName="Empty";
 		return doc.createElement(nodeName);
@@ -340,7 +346,7 @@ public final class XMLCaster {
 			Iterator<Object> it = coll.valueIterator();
 			List<Node> nodes=new ArrayList<Node>();
 			while(it.hasNext()) {
-				nodes.add(toNode(doc,it.next()));
+				nodes.add(toNode(doc,it.next(),false));
 			}
 			return nodes.toArray(new Node[nodes.size()]);
 		}
@@ -349,7 +355,7 @@ public final class XMLCaster {
 		if(nodes!=null) return nodes;
 	// Single Text Node
 		try {
-			return new Node[]{toNode(doc,o)};
+			return new Node[]{toNode(doc,o,false)};
 		} catch (ExpressionException e) {
 			throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Node Array");
 		}

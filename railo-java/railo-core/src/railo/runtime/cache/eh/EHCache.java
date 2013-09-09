@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.io.res.Resource;
@@ -104,7 +105,7 @@ public class EHCache extends EHCacheSupport {
 			
 			moveData(dir,hashArg,cacheNames,arguments);
 			
-			CacheManagerAndHash m = new CacheManagerAndHash(new CacheManager(new ByteArrayInputStream(xml.getBytes())),hash);
+			CacheManagerAndHash m = new CacheManagerAndHash(new CacheManager(new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8))),hash);
 			newManagers.put(hashDir.getAbsolutePath(), m);
 		}
 		
@@ -208,7 +209,7 @@ public class EHCache extends EHCacheSupport {
 	}
 
 	private static void writeEHCacheXML(Resource hashDir, String xml) {
-		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8));
 		OutputStream os=null;
 		try{
 			os = hashDir.getRealResource("ehcache.xml").getOutputStream();
