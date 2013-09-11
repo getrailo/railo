@@ -10,6 +10,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.scope.ClosureScope;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -29,7 +30,7 @@ public class Closure extends UDFImpl {
 		super(properties);
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc.undefinedScope().getCheckArguments())
-			this.variables=new railo.runtime.type.scope.Closure(pc,pc.argumentsScope(),pc.localScope(),pc.variablesScope());
+			this.variables=new ClosureScope(pc,pc.argumentsScope(),pc.localScope(),pc.variablesScope());
 		else{
 			this.variables=pc.variablesScope();
 			variables.setBind(true);
@@ -44,10 +45,24 @@ public class Closure extends UDFImpl {
 
 	@Override
 	public UDF duplicate(ComponentImpl c) {
-		// TODO Auto-generated method stub
-		return super.duplicate(c);
+		Closure clo = new Closure(properties,variables);// TODO duplicate variables as well?
+		clo.ownerComponent=c;
+		clo.setAccess(getAccess());
+		return clo;
 	}
 
+	@Override
+	public Object callWithNamedValues(PageContext pc,Collection.Key calledName, Struct values, boolean doIncludePath) throws PageException {
+		Variables parent=pc.variablesScope();
+        try{
+        	pc.setVariablesScope(variables);
+        	return super.callWithNamedValues(pc, calledName,values, doIncludePath);
+		}
+		finally {
+			pc.setVariablesScope(parent);
+		}
+	}
+	
 	@Override
 	public Object callWithNamedValues(PageContext pc, Struct values, boolean doIncludePath) throws PageException {
 		Variables parent=pc.variablesScope();
@@ -61,9 +76,21 @@ public class Closure extends UDFImpl {
 	}
 
 	@Override
+	public Object call(PageContext pc,Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException {
+		Variables parent=pc.variablesScope();
+		try{
+        	pc.setVariablesScope(variables);
+			return super.call(pc, calledName, args, doIncludePath);
+		}
+		finally {
+			pc.setVariablesScope(parent);
+		}
+	}
+
+	@Override
 	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
 		Variables parent=pc.variablesScope();
-        try{
+		try{
         	pc.setVariablesScope(variables);
 			return super.call(pc, args, doIncludePath);
 		}
