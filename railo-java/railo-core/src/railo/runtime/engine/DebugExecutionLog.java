@@ -44,7 +44,7 @@ public class DebugExecutionLog extends ExecutionLogSupport {
             String src = sources.get( ps.getDisplayPath() );
 
             if ( src == null ) {
-                src = ResourceSnippet.getContents( res, "UTF-8" );
+                src = ResourceSnippet.getContents( res, pc.getConfig().getResourceCharset() );
                 sources.put( ps.getDisplayPath(), src );
             }
 
