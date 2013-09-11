@@ -6,8 +6,10 @@ railo-java/railo-core/build
 railo-java/railo-loader/bin
 railo-java/railo-loader/bin/*
 railo-java/railo-debug/bin
+railo-java/railo-instrumentation/bin
 railo-java/railo-debug/web/tests/*
 railo-java/railo-debug/bin/*
+railo-java/railo-instrumentation/bin/*
 railo-java/libs/bin
 railo-java/railo-loader/build
 railo-cfml/WEB-INF/
