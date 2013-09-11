@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.collection.LinkedHashMapMaxSize;
 import railo.commons.collection.QueueMaxSize;
 import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
@@ -80,7 +81,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
-	private QueueMaxSize<Long> previousNonces=new QueueMaxSize(100);
+	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
 	
     
 
@@ -174,13 +175,13 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
     	
     	
-    	if(previousNonces.contains(timeNonce))
+    	if(previousNonces.containsKey(timeNonce))
         	throw new ApplicationException("nonce was already used, same nonce can only be used once");
     	
     	long now = System.currentTimeMillis()+getTimeServerOffset();
     	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
     		throw new ApplicationException("nonce is outdated");
-    	previousNonces.add(timeNonce);
+    	previousNonces.put(timeNonce,"");
     	
     	String[] keys=configServer.getAuthenticationKeys();
     	// check if one of the keys matching
