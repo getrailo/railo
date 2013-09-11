@@ -1,0 +1,5 @@
+Main-Class: railo.runtime.instrumentation.Agent
+Premain-Class: railo.runtime.instrumentation.Agent
+Agent-Class: railo.runtime.instrumentation.Agent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
