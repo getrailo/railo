@@ -104,7 +104,11 @@
 	, download: zipfile
 } />
 <cfloop collection="#configXml.config.info#" item="key">
-	<cfset qData[key] = configXml.config.info[key].xmlText />
+	<cfif isDefined("configXml.config.info[key].xmlText")>
+		<cfset qData[key] = configXml.config.info[key].xmlText />
+	<cfelse>
+		<cfset qData[key] = "" />
+	</cfif>
 </cfloop>
 
 
