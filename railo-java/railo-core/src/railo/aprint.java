@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -239,6 +240,7 @@ public class aprint {
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
+    	else if(o instanceof Collection) _(ps,(Collection)o);
     	else if(o instanceof Iterator) _(ps,(Iterator)o);
     	else if(o instanceof NamedNodeMap) _(ps,(NamedNodeMap)o);
     	else if(o instanceof ResultSet) _(ps,(ResultSet)o);
@@ -383,6 +385,15 @@ public class aprint {
             ps.print(":");
             ps.print(list.get(index));
             ps.println(";");
+        }
+        _(ps,"}");
+    }
+    
+    private static void _(PrintStream ps,Collection coll) {
+    	Iterator it = coll.iterator();
+        _(ps,coll.getClass().getName()+" {");
+        while(it.hasNext()) {
+        	_(ps, it.next());
         }
         _(ps,"}");
     }
