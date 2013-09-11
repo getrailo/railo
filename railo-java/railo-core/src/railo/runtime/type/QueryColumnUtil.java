@@ -29,10 +29,11 @@ public final class QueryColumnUtil implements Serializable {
      */
     protected static Object reDefineType(QueryColumnImpl column,Object value) {
         column.typeChecked=false;
-        if(value==null)return value;
-        switch(column.type) {
-        	case Types.OTHER:	return value;
+        if(value==null || column.type==Types.OTHER)return value;
+        if(value instanceof String && ((String)value).isEmpty()) return null;
         
+        switch(column.type) {
+        	
         // Numeric Values
 			case Types.DOUBLE:	return reDefineDouble(column,value);
 			case Types.BIGINT:	return reDefineDecimal(column,value);

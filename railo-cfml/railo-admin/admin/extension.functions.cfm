@@ -79,7 +79,7 @@
 	        <cfset datas[cfcName]=false>
 	        <cfset cfcNames=listAppend(cfcNames,cfcName)>
 		</cfloop>
-	
+		        	
 		<cfif len(cfcNames) EQ 0> <cfreturn datas></cfif>
         <cfset var names="">
 		<cfloop list="#cfcnames#" item="local.cfcName">
@@ -120,7 +120,6 @@
 		<cfif arguments.timeout GT 0>
 			<cfthread action="join" names="#names#" timeout="#arguments.timeout#"/>
 		</cfif>
-		
 		<cfloop list="#cfcNames#" item="local.cfcName">
 			<cfif 
 				StructKeyExists(request,"cfcs") and 
@@ -180,10 +179,9 @@
 		<cfset var detail={}>
 		<cfset detail.all=[]>
 		<cfset var tmp="">
-		<cfif not isDefined('data')>
-			<cfset data=getData(providers,{message:''},1000)>
+		<cfif not isDefined('data') or not isQuery(data)>
+			<cfset data=getData(providers,{message:''},30000)>
 		</cfif>
-		
 		<cfif isQuery(data)><cfloop query="data">
 			<cfif data.uid EQ uid>
 				<cfset tmp=querySlice(data,data.currentrow,1)>
@@ -211,13 +209,12 @@
 		<cfargument name="serverId" required="yes" type="string">
 		<cfargument name="webId" required="yes" type="string">
 		<cfargument name="appId" required="yes" type="string">
-		<cfargument name="serialNumber" required="no" type="string">
-		
-	   <cfset providers=request.providers>
+		<cfargument name="addional" required="no" type="struct">
+		<cfset providers=request.providers>
 		<cfloop query="providers">
 			<cfif hash(providers.url) EQ arguments.hashProvider>
 				<cfset detail.provider= request.loadCFC(providers.url)>
-				<cfreturn detail.provider.getDownloadDetails(type,serverId,webId,appId,serialNumber)>
+				<cfreturn detail.provider.getDownloadDetails(type,serverId,webId,appId,addional)>
 			</cfif>
 		</cfloop>
 		<cfreturn struct()>
@@ -333,17 +330,15 @@
 	
 	<cfset var datas=loadProvidersData(queryColumnData(providers,'url'),arguments.timeout)>
 	<cfset var data="">
-		
-	
+			
     <cfloop query="providers">
-        <!---  ---><cftry>
-            
+        <cftry>
 			<cfset var _data=datas[providers.url]>
 			<cfif isSimpleValue(_data)>
 				<cfif len(err.message)>
-					<cfset err.message&="<br>was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+					<cfset err.message&="<br>Failed to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
                 <cfelse>
-					<cfset err.message="was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+					<cfset err.message="Failed to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
                 </cfif>
 				<cfcontinue>
 			</cfif>
@@ -371,14 +366,14 @@
             </cfloop>
             
             
-            <cfcatch><cfrethrow>
+            <cfcatch>
                 <cfif len(err.message)>
-                    <cfset err.message&="<br>can't load provider [#providers.url#]">
+                    <cfset err.message&="<br>Couldn't load provider [#providers.url#]: #cfcatch.message#">
                 <cfelse>
-                    <cfset err.message="can't load provider [#providers.url#]">
+                    <cfset err.message="Couldn't load provider [#providers.url#]: #cfcatch.message#">
                 </cfif>
             </cfcatch>
-        </cftry><!------>
+        </cftry>
     </cfloop>
     <cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
     <cfreturn data>

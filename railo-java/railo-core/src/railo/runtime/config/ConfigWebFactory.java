@@ -31,6 +31,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -44,6 +45,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.cfml.CFMLResourceProvider;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -59,6 +61,7 @@ import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -116,6 +119,7 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
@@ -639,19 +643,21 @@ public final class ConfigWebFactory {
 		lib.mkdir();
 		Resource classes = config.getConfigDir().getRealResource("classes");
 		classes.mkdir();
-		Resource[] libs = lib.listResources();
+		Resource[] libs = lib.listResources(new ExtensionResourceFilter(".jar", false));
 
 		// merge resources
-		if (libs.length > 0 || !ResourceUtil.isEmptyDirectory(classes)) {
-			Resource[] tmp = new Resource[libs.length + 1];
-			for (int i = 0; i < libs.length; i++) {
-				tmp[i] = libs[i];
+		if (!ResourceUtil.isEmptyDirectory(classes,new ExtensionResourceFilter(".class", true))) {
+			if(ArrayUtil.isEmpty(libs)) {
+				libs=new Resource[]{classes};
 			}
-			tmp[libs.length] = classes;
-			libs = tmp;
-		}
-		else {
-			libs = new Resource[0];
+			else {
+				Resource[] tmp = new Resource[libs.length + 1];
+				for (int i = 0; i < libs.length; i++) {
+					tmp[i] = libs[i];
+				}
+				tmp[libs.length] = classes;
+				libs = tmp;
+			}
 		}
 
 		// get resources from server config and merge
@@ -2118,10 +2124,10 @@ public final class ConfigWebFactory {
 
 				}
 				catch (ClassException ce) {
-					SystemOut.print(config.getErrWriter(), ce.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(ce, true));
 				}
 				catch (IOException e) {
-					SystemOut.print(config.getErrWriter(), e.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(e, true));
 				}
 			}
 		// }
@@ -3781,8 +3787,10 @@ public final class ConfigWebFactory {
 		Element parent = getChildByName(doc.getDocumentElement(), "monitoring");
 		boolean enabled = Caster.toBooleanValue(parent.getAttribute("enabled"), false);
 		configServer.setMonitoringEnabled(enabled);
-
+		SystemOut.printDate(config.getOutWriter(), "monitoring is "+(enabled?"enabled":"disabled"));
+		
 		Element[] children = getChildren(parent, "monitor");
+		
 		java.util.List<IntervallMonitor> intervalls = new ArrayList<IntervallMonitor>();
 		java.util.List<RequestMonitor> requests = new ArrayList<RequestMonitor>();
 		java.util.List<MonitorTemp> actions = new ArrayList<MonitorTemp>();
@@ -3795,7 +3803,7 @@ public final class ConfigWebFactory {
 			strType = el.getAttribute("type");
 			name = el.getAttribute("name");
 			log = Caster.toBooleanValue(el.getAttribute("log"), true);
-
+			
 			if ("request".equalsIgnoreCase(strType))
 				type = IntervallMonitor.TYPE_REQUEST;
 			else if ("action".equalsIgnoreCase(strType))
@@ -3803,6 +3811,7 @@ public final class ConfigWebFactory {
 			else
 				type = IntervallMonitor.TYPE_INTERVALL;
 
+			
 			if (!StringUtil.isEmpty(className) && !StringUtil.isEmpty(name)) {
 				name = name.trim();
 				try {
@@ -3813,7 +3822,7 @@ public final class ConfigWebFactory {
 						obj = constr.invoke();
 					else
 						obj = clazz.newInstance();
-
+					SystemOut.printDate(config.getOutWriter(), "loaded "+(strType)+" monitor ["+clazz.getName()+"]");
 					if (type == IntervallMonitor.TYPE_INTERVALL) {
 						IntervallMonitor m = obj instanceof IntervallMonitor ? (IntervallMonitor) obj : new IntervallMonitorWrap(obj);
 						m.init(configServer, name, log);
@@ -3825,11 +3834,13 @@ public final class ConfigWebFactory {
 					else {
 						RequestMonitor m = obj instanceof RequestMonitor ? (RequestMonitor) obj : new RequestMonitorWrap(obj);
 						m.init(configServer, name, log);
+						SystemOut.printDate(config.getOutWriter(), "initialize "+(strType)+" monitor ["+clazz.getName()+"]");
+						
 						requests.add(m);
 					}
 				}
 				catch (Throwable t) {
-					SystemOut.printDate(config.getErrWriter(), t.getMessage());
+					SystemOut.printDate(config.getErrWriter(), ExceptionUtil.getStacktrace(t, true));
 				}
 			}
 
@@ -4481,6 +4492,17 @@ public final class ConfigWebFactory {
 			NullSupportHelper.fullNullSupport = fns;
 			((ConfigServerImpl) config).setFullNullSupport(fns);
 		}
+		
+		// supress WS between cffunction and cfargument
+		
+		String str = compiler.getAttribute("externalize-string-gte");
+		if (Decision.isNumeric(str)) {
+			config.setExternalizeStringGTE(Caster.toIntValue(str,-1));
+		}
+		else if (hasCS) {
+			config.setExternalizeStringGTE(configServer.getExternalizeStringGTE());
+		}
+		
 	}
 
 	/**

@@ -20,7 +20,7 @@
 		 field('TinyInt(1) is bit','tinyInt1isBit','true,false',false,'this defines the data type returned for tinyInt(1), if set to "true" (default) tinyInt(1) is converted to a bit value otherwise as integer.',"radio"),
 		 field('Legacy Datetime Code','useLegacyDatetimeCode','true,false',true,
 		 	'Use code for DATE/TIME/DATETIME/TIMESTAMP handling in result sets and statements that consistently handles timezone conversions from client to server and back again, or use the legacy code for these datatypes that has been in the driver for backwards-compatibility?'
-		 		,"radio",2)
+		 		,"radio",1)
 		 //field('Transformed Bit Is Boolean','transformedBitIsBoolean','true,false',false,'',"radio")
 		
 		

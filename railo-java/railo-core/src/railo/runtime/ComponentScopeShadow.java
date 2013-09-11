@@ -16,6 +16,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
@@ -263,14 +264,14 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Object call(PageContext pc, Collection.Key key, Object[] arguments) throws PageException {
 		// first check variables
 		Object o=shadow.get(key);
-		if(o instanceof UDF) {
-			return ((UDF)o).call(pc, arguments, false);
+		if(o instanceof UDFPlus) {
+			return ((UDFPlus)o).call(pc,key, arguments, false);
 		}
 		
 		// then check in component
 		Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
-			if(m instanceof UDF) return ((UDF)m).call(pc, arguments, false);
+			if(m instanceof UDFPlus) return ((UDFPlus)m).call(pc,key, arguments, false);
 		}
 		throw ComponentUtil.notFunction(component, key, m!=null?m.getValue():null,access);
 	}
@@ -282,13 +283,13 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Object callWithNamedValues(PageContext pc, Key key, Struct args) throws PageException {
 		// first check variables
 		Object o=shadow.get(key);
-		if(o instanceof UDF) {
-			return ((UDF)o).callWithNamedValues(pc, args, false);
+		if(o instanceof UDFPlus) {
+			return ((UDFPlus)o).callWithNamedValues(pc,key, args, false);
 		}
 		
 		Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
-			if(m instanceof UDF) return ((UDF)m).callWithNamedValues(pc, args, false);
+			if(m instanceof UDFPlus) return ((UDFPlus)m).callWithNamedValues(pc,key, args, false);
 	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
 		throw ComponentUtil.notFunction(component, key, null,access);

@@ -10,7 +10,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -264,7 +264,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	public Object call(PageContext pc, Collection.Key key, Object[] arguments) throws PageException {
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
-			if(m instanceof UDF) return ((UDF)m).call(pc, arguments, false);
+			if(m instanceof UDFPlus) return ((UDFPlus)m).call(pc,key, arguments, false);
 	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
 		throw ComponentUtil.notFunction(component, key, null,access);
@@ -277,7 +277,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	public Object callWithNamedValues(PageContext pc, Collection.Key key, Struct args) throws PageException {
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
-			if(m instanceof UDF) return ((UDF)m).callWithNamedValues(pc, args, false);
+			if(m instanceof UDFPlus) return ((UDFPlus)m).callWithNamedValues(pc,key, args, false);
 	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
 		throw ComponentUtil.notFunction(component, key, null,access);

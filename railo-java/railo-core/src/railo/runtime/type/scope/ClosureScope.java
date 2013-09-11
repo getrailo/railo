@@ -13,7 +13,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
-public class Closure extends ScopeSupport implements Variables {
+public class ClosureScope extends ScopeSupport implements Variables {
 	
 	private static final Object NULL = new Object();
 	private Argument arg;
@@ -22,7 +22,7 @@ public class Closure extends ScopeSupport implements Variables {
 	private boolean debug;
 	private Undefined und; 
 
-	public Closure(PageContext pc,Argument arg, Local local,Variables var ){
+	public ClosureScope(PageContext pc,Argument arg, Local local,Variables var ){
 		super("variables",SCOPE_VARIABLES,Struct.TYPE_REGULAR);
 		arg.setBind(true);
 		local.setBind(true);
@@ -147,7 +147,7 @@ public class Closure extends ScopeSupport implements Variables {
 
 	@Override
 	public Collection duplicate(boolean deepCopy) {
-		return new Closure(ThreadLocalPageContext.get(),(Argument)Duplicator.duplicate(arg,deepCopy), (Local)Duplicator.duplicate(local,deepCopy), (Variables)Duplicator.duplicate(var,deepCopy));
+		return new ClosureScope(ThreadLocalPageContext.get(),(Argument)Duplicator.duplicate(arg,deepCopy), (Local)Duplicator.duplicate(local,deepCopy), (Variables)Duplicator.duplicate(var,deepCopy));
 	}
 
 	@Override

@@ -15,10 +15,9 @@ import railo.runtime.i18n.LocaleFactory;
 public final class LSDateTimeFormat implements Function {
 
 	private static final long serialVersionUID = -1677384484943178492L;
-	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:mm:ss";
 
 	public static String call(PageContext pc , Object object) throws ExpressionException {
-		return DateTimeFormat.invoke(pc,object, DEFAULT_MASK,pc.getLocale(),ThreadLocalPageContext.getTimeZone(pc));
+		return DateTimeFormat.invoke(pc,object, null,pc.getLocale(),ThreadLocalPageContext.getTimeZone(pc));
 	}
 	
 	public static String call(PageContext pc , Object object, String mask) throws ExpressionException {

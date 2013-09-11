@@ -133,7 +133,31 @@ public final class MailUtil {
      */
     public static boolean isValidEmail( Object value ) {
 
-        return ( parseEmail( value ) != null );
+        InternetAddress addr = parseEmail( value );
+
+        if ( addr != null ) {
+
+            String domain = ListUtil.last( addr.getAddress(), '@' );
+
+            if ( domain.indexOf( '.' ) > 0 ) {                          // make sure we have a dot and that it's not the first char
+
+                String tld = ListUtil.last( domain, ".", false );
+                int len = tld.length();
+
+                if ( len > 1 ) {
+
+                    for ( int i=0; i<len; i++ ) {
+
+                        if ( !Character.isLetter( tld.charAt( i ) ) )
+                            return false;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 

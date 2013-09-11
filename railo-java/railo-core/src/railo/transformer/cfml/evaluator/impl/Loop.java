@@ -39,7 +39,6 @@ public final class Loop extends EvaluatorSupport {
 	 */
 	public void evaluate(Tag tag,TagLibTag tagLibTag,FunctionLib[] flibs) throws EvaluatorException {
 		TagLoop loop=(TagLoop) tag;
-		
 		// label
 		if(ASMUtil.isLiteralAttribute(tag, "label", ASMUtil.TYPE_STRING, false, true)) {
 			LitString ls=(LitString) CastString.toExprString(tag.getAttribute("label").getValue());
@@ -91,6 +90,9 @@ public final class Loop extends EvaluatorSupport {
 		}
 		// condition loop
 		if(tag.containsAttribute("condition")){
+			if(tag.isScriptBase())
+				throw new EvaluatorException("tag loop-condition is not supported within cfscrip, use instead a while statement.");
+			
 			TagLib tagLib=tagLibTag.getTagLib();
 			ExprTransformer transformer;
 			String text=ASMUtil.getAttributeString(tag, "condition");

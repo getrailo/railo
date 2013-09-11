@@ -2117,6 +2117,14 @@ public final class Caster {
             for(int i=0;i<arr.size();i++)list.add(i,arr.get(i+1,null));
             return list;
         }
+        else if(o instanceof Iterator) {
+        	Iterator it=(Iterator) o;
+            ArrayList list=new ArrayList();
+            while(it.hasNext()){
+            	list.add(it.next());
+            }
+            return list;
+        }
         else if(o instanceof XMLStruct) {
             XMLStruct sct=((XMLStruct)o);
             if(sct instanceof XMLMultiElementStruct) return toList(new XMLMultiElementArray((XMLMultiElementStruct) o));

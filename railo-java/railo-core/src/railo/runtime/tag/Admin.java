@@ -2593,7 +2593,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		try {
 			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
 		} catch (ClassException e) {
-			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
+			throw new DatabaseException(
+					"can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder ("+e.getMessage()+")",null,null,null);
 		}
         
         if(verify)_doVerifyDatasource(classname,ds.getDsnTranslated(),username,password);
@@ -2851,7 +2852,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void _doVerifyDatasource(Class clazz, String dsn, String username, String password) throws PageException {
             if(!Reflector.isInstaneOf(clazz,Driver.class))
-                throw new DatabaseException("class ["+clazz.getName()+"] is not a JDBC Driver","class must implement interface [java.sql.Driver]",null,null,null);
+                throw new DatabaseException("class ["+clazz.getName()+"] is not a JDBC Driver","class must implement interface [java.sql.Driver]",null,null);
         getConnection(dsn, username, password);
     }
 

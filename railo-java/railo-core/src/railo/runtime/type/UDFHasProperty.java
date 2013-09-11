@@ -17,6 +17,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.PropertyFactory;
+import railo.runtime.type.util.UDFUtil;
 
 public final class UDFHasProperty extends UDFGSProperty {
 
@@ -48,15 +49,10 @@ public final class UDFHasProperty extends UDFGSProperty {
 		String t = PropertyFactory.getType(prop);
 		return "struct".equalsIgnoreCase(t);
 	}
-
-	@Override
-	public UDF duplicate(ComponentImpl c) {
-		return new UDFHasProperty(c,prop);
-	}
-	
  
+	@Override
 	public UDF duplicate() {
-		return duplicate(component);
+		return new UDFHasProperty(component,prop);
 	}
 	
 	@Override
@@ -67,7 +63,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 
 	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
-		UDFImpl.argumentCollection(values,getFunctionArguments());
+		UDFUtil.argumentCollection(values,getFunctionArguments());
 		Key key = arguments[0].getName();
 		Object value = values.get(key,null);
 		if(value==null){

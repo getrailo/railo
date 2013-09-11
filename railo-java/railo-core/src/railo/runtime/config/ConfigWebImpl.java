@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.collection.LinkedHashMapMaxSize;
+import railo.commons.collection.QueueMaxSize;
 import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -79,7 +81,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
-	private long lastNonce;
+	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
 	
     
 
@@ -171,28 +173,29 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     }
     
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
-    	if(lastNonce>timeNonce)
-        	throw new ApplicationException("last access was with a newer nonce");
-    	long now = System.currentTimeMillis();
+    	
+    	
+    	if(previousNonces.containsKey(timeNonce))
+        	throw new ApplicationException("nonce was already used, same nonce can only be used once");
+    	
+    	long now = System.currentTimeMillis()+getTimeServerOffset();
     	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
     		throw new ApplicationException("nonce is outdated");
-    	
-    	lastNonce=timeNonce;
+    	previousNonces.put(timeNonce,"");
     	
     	String[] keys=configServer.getAuthenticationKeys();
-    	
     	// check if one of the keys matching
     	String hash;
     	for(int i=0;i<keys.length;i++){
     		try {
-				hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
-				if(hash.equals(key)) return configServer;
+    			hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
+    			if(hash.equals(key)) return configServer;
 			}
 			catch (NoSuchAlgorithmException e) {
 				throw Caster.toPageException(e);
 			}
     	}
-    	throw new ApplicationException("No access, no matching key found");
+    	throw new ApplicationException("No access, no matching authentication key found");
     }
     
     public String getServerId() {

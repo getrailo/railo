@@ -46,6 +46,8 @@
 					</cfif>
 				</td>
 				<td valign="top">
+				
+		
 					<table class="maintbl">
 						<tbody>
 							<cfif isInstalled>
@@ -57,6 +59,13 @@
 								<tr>
 									<th scope="row">#stText.ext.availableVersion#</th>
 									<td>#app.version#<cfif app.codename neq ""> (#stText.ext.codename#: <em>#app.codename#</em>)</cfif></td>
+								</tr>
+							</cfif>
+							<!--- price --->
+							<cfif isDefined('app.price') and len(trim(app.price))>
+								<tr>
+									<th scope="row">#stText.ext.price#</th>
+									<td><cfif app.price GT 0>#app.price# <cfif structKeyExists(app,"currency")>#app.currency#<cfelse>USD</cfif><cfelse>#stText.ext.free#</cfif></td>
 								</tr>
 							</cfif>
 							<!--- category --->
@@ -165,10 +174,16 @@
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
 		</cfform>
 	<cfelse>
+	
+
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<input type="hidden" name="uid" value="#url.uid#">
-			
+			<cfif isDefined('app.trial') and app.trial>
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installTrial#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installFull#">
+			<cfelse>
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.install#">
+			</cfif>
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
 		</cfform>
 	</cfif>

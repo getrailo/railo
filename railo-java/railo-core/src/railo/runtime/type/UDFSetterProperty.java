@@ -13,6 +13,7 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
 public final class UDFSetterProperty extends UDFGSProperty {
 
@@ -54,19 +55,14 @@ public final class UDFSetterProperty extends UDFGSProperty {
 	} 
 
 	@Override
-	public UDF duplicate(ComponentImpl c) {
+	public UDF duplicate() {
 		try {
-			return new UDFSetterProperty(c,prop);
+			return new UDFSetterProperty(component,prop);
 		} catch (PageException e) {
 			return null;
 		}
 	}
-
 	
-
-	public UDF duplicate() {
-		return duplicate(component);
-	}
 	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
@@ -78,7 +74,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 
 	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
-		UDFImpl.argumentCollection(values,getFunctionArguments());
+		UDFUtil.argumentCollection(values,getFunctionArguments());
 		Object value = values.get(propName,null);
 		
 		if(value==null){

@@ -1,6 +1,5 @@
 <cfset hasAccess=true />
 <cfset data=getData(providers,err)>
-
 <cfset existing=struct() />
 
 <!--- if user declined the agreement, show a msg --->
@@ -15,7 +14,7 @@
 
 <!--- upload own extension --->
 <cfoutput>
-	<h2>#stText.ext.uploadExtension# (experimentell)</h2>
+	<h2>#stText.ext.uploadExtension#</h2>
 	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
 	<cfif structKeyExists(url, 'noextfile')>
 		<div class="error">
@@ -100,7 +99,7 @@
 								</cfif>
 							</div>
 							<b title="#extensions.label#">#cut(extensions.label,30)#</b><br />
-							#cut(extensions.category,30)#
+							<!---#cut(data.category,30)#<br />--->
 							<cfif hasUpdate>
 								<br /><span class="CheckError">#stText.ext.updateavailable#</span>
 							</cfif>
@@ -112,7 +111,6 @@
 		</div>
 	</cfoutput>
 </cfif>
-
 <!---  Not Installed Applications --->
 <cfoutput>
 	<h2>#stText.ext.notInstalled#</h2>
@@ -133,7 +131,6 @@
 		</cfform>
 	</div>
 </cfoutput>
-
 <cfif isQuery(data)>
 	<div class="extensionlist">
 		<cfoutput query="data" group="uid">
@@ -157,7 +154,8 @@
 							</cfif>
 						</div>
 						<b title="#data.label#">#cut(data.label,30)#</b><br />
-						#cut(data.category,30)#
+						<!---#cut(data.category,30)#<br />--->
+						<cfif data.price GT 0>#data.price# <cfif structKeyExists(data,"currency")>#data.currency#<cfelse>USD</cfif><cfelse>#stText.ext.free#</cfif>
 					</a>
 				</div>
 			</cfif>

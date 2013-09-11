@@ -3471,6 +3471,9 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	private boolean bufferOutput=true;
+
+
+	private int externalizeStringGTE=-1;
 	public boolean getBufferOutput() {
 		return bufferOutput;
 	}
@@ -3537,6 +3540,13 @@ public abstract class ConfigImpl implements Config {
 	
 	public String getApiKey() {
 		return apiKey;
+	}
+
+	protected void setExternalizeStringGTE(int externalizeStringGTE) {
+		this.externalizeStringGTE=externalizeStringGTE;
+	}
+	public int getExternalizeStringGTE() {
+		return externalizeStringGTE;
 	}
 	
 }

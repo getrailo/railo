@@ -8,6 +8,7 @@
 		<cfargument name="required" required="false" type="boolean" default="no">
 		<cfargument name="description" required="false" type="string" default="">
 		<cfargument name="type" required="false" type="string" default="text">
+		<cfargument name="defaultValueIndex" required="false" type="number" default="1">
 		
 		<cfset this.data.displayName=arguments.displayName>
 		<cfset this.data.name=trim(arguments.name)>
@@ -15,6 +16,7 @@
 		<cfset this.data.defaultValue=arguments.defaultValue>
 		<cfset this.data.description=arguments.description>
 		<cfset this.data.type=arguments.type>
+		<cfset this.data.defaultValueIndex=arguments.defaultValueIndex>
 		
 		<cfreturn this>
 	</cffunction>
@@ -52,5 +54,10 @@
 	<cffunction name="getType" returntype="string" output="no"
 		hint="returns the type of the field, types are [text,password,radio,chckbox,select]">
 		<cfreturn this.data.type>
+	</cffunction>
+	
+	<cffunction name="getDefaultValueIndex" returntype="numeric" output="no"
+		hint="returns the the index of the default value, when we have a list">
+		<cfreturn this.data.defaultValueIndex>
 	</cffunction>
 </cfcomponent>

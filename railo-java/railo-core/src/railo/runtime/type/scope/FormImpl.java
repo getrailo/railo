@@ -108,7 +108,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			headerType=HEADER_TEXT_PLAIN;
 			initializeUrlEncodedOrTextPlain(pc,'\n',isScriptProtected());
 		}
-		else {
+		else if(contentType.startsWith("application/x-www-form-urlencoded")) {
 			headerType=HEADER_APP_URL_ENC;
 			initializeUrlEncodedOrTextPlain(pc,'&',isScriptProtected());
 		}

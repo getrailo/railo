@@ -91,8 +91,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return return value of the function
      * @throws PageException
      */
-    public abstract Object callWithNamedValues(PageContext pageContext,
-            Struct values, boolean doIncludePath) throws PageException;
+    public abstract Object callWithNamedValues(PageContext pageContext, Struct values, boolean doIncludePath) throws PageException;
 
     /**
      * call user defined Funcion with parameters as Object Array
@@ -102,8 +101,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return return value of the function
      * @throws PageException
      */
-    public abstract Object call(PageContext pageContext, Object[] args,
-            boolean doIncludePath) throws PageException;
+    public abstract Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException;
 
     /**
      * @return Returns the displayName.

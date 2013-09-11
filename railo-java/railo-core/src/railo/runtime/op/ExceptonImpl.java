@@ -96,7 +96,7 @@ public final class ExceptonImpl implements Excepton {
     
     @Override
     public PageException createDatabaseException(String message, String detail) {
-        return new DatabaseException(message,detail,null,null,null);
+        return new DatabaseException(message,detail,null,null);
     }
     
     @Override

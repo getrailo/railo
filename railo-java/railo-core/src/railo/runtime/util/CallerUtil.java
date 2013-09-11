@@ -9,7 +9,7 @@ public class CallerUtil {
 		if(coll==null) return defaultValue;
 		int to=keys.length-1;
 		for(int i=0;i<=to;i++){
-			coll=pc.getVariableUtil().get(pc, coll, keys[i], Null.NULL);
+			coll=((VariableUtilImpl)pc.getVariableUtil()).getCollection(pc, coll, keys[i], Null.NULL);
 			if(coll==Null.NULL || (coll==null && i<to)) return defaultValue;
 		}
 		return coll;
