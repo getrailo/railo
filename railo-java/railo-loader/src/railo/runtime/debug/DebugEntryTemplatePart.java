@@ -16,4 +16,9 @@ public interface DebugEntryTemplatePart extends DebugEntry {
 	 * @return
 	 */
 	public int getEndPosition();
+
+    /*/ FUTURE
+    public int getStartLine();
+    public int getEndLine();
+    //*/
 }
