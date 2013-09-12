@@ -41,6 +41,47 @@ public class ResourceSnippet implements java.io.Serializable {
         return endLine;
     }
 
+
+    public static String getContents( InputStream is, String charset ) {
+
+        String result;
+
+        java.util.Scanner scanner = new java.util.Scanner( is, charset ).useDelimiter( "\\A" );
+        result  = scanner.hasNext() ? scanner.next() : "";
+
+        if ( is != null ) try {
+
+            is.close();
+        }
+        catch ( IOException ex ) {}
+
+        return result;
+    }
+
+
+    public static String getContents( Resource res, String charset ) {
+
+        try {
+
+            return getContents( res.getInputStream(), charset );
+        }
+        catch (IOException ex) {
+
+            return "";
+        }
+    }
+
+
+    public static ResourceSnippet createResourceSnippet( String src, int startChar, int endChar ) {
+
+        String text = "";
+        if ( endChar > startChar )
+            text = src.substring( startChar, endChar );
+
+        return new ResourceSnippet( text, getLineNumber( src, startChar ), getLineNumber( src, endChar ) );
+    }
+
+
     /** extract a ResourceSnippet from InputStream at the given char positions
      *
      * @param is - InputStream of the Resource
@@ -51,26 +92,7 @@ public class ResourceSnippet implements java.io.Serializable {
      */
     public static ResourceSnippet createResourceSnippet( InputStream is, int startChar, int endChar, String charset ) {
 
-        String contents;
-        int startLine = 0, endLine =0;
-
-        java.util.Scanner scanner = new java.util.Scanner( is, charset ).useDelimiter( "\\A" );
-        contents  = scanner.hasNext() ? scanner.next() : "";
-
-        startLine = getLineNumber( contents, startChar );
-        endLine   = getLineNumber( contents, endChar );
-
-        String text = "";
-        if ( endChar > startChar )
-            text = contents.substring( startChar, endChar );
-
-        if ( is != null ) try {
-
-            is.close();
-        }
-        catch ( IOException ex ) {}
-
-        return new ResourceSnippet( text, startLine, endLine );
+        return createResourceSnippet( getContents( is, charset ), startChar, endChar );
     }
 
     /** extract a ResourceSnippet from a Resource at the given char positions
