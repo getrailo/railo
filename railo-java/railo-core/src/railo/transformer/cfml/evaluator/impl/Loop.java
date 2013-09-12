@@ -55,8 +55,8 @@ public final class Loop extends EvaluatorSupport {
         
 		// file loop      
         if(tag.containsAttribute("file")) {
-            if(!tag.containsAttribute("index"))
-                throw new EvaluatorException("Wrong Context, when you use attribute file you must also use attribute index");
+            if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+                throw new EvaluatorException("Wrong Context, when you use attribute file you must also use attribute index and/or item");
             loop.setType(TagLoop.TYPE_FILE);
             return;
         }
