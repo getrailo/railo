@@ -841,7 +841,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     				}
     			}
     			if(doIt) {
-    				MultipartEntity mpe = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,null,CharsetUtil.toCharset(charset));
+    				MultipartEntity mpe = new MultipartEntity(HttpMultipartMode.STRICT);
     				Iterator<FormBodyPart> it = parts.iterator();
     				while(it.hasNext()) {
     					FormBodyPart part = it.next();
