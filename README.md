@@ -9,7 +9,7 @@ Building from source
 Before you start building Railo from source, you are going to need a few things installed on your machine:
 
 1. Eclipse for JEE - this is the easiest Eclipse bundle to work with when building Java projects <http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/heliosr>
-1. Java 5 JDK - not just the JRE (because you're going to be compiling Java code) - and not Java 6! Railo requires Java 5 to build correctly! (CHECK)
+1. Java JDK - not just the JRE (because you're going to be compiling Java code) - Railo requires JDK 6 or later to build correctly!
 1. A Git client, any client will do. The demo here will be using the command line client to keep it simple <http://git-scm.com/>. There is also the EGit plugin for Eclipse for you to commit your changes locally and create patch files for submission <http://www.eclipse.org/egit/>
 1. A running Railo installation in which to test your new patch file <http://www.getrailo.org/index.cfm/download/>
 
