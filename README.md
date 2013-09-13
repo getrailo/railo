@@ -14,7 +14,7 @@ Building from source
 
 Before you can start building Railo from source, you will need a few things installed on your machine:
 
-1. **Java 6 JDK** - since you're going to compile Java code you need the JDK and not just the JRE.  Railo (versions 3.3 through 4) requires JDK 6 in order to compile; JDK 7 will not work.  http://www.oracle.com/technetwork/java/javase/downloads/
+1. **Java JDK** - since you're going to compile Java code you need the JDK and not just the JRE.  Railo requires JDK 6 or later in order to compile.  http://www.oracle.com/technetwork/java/javase/downloads/
 
 1. **Apache ANT** - the source code contains several build scripts that will automate the build process for you. you will need ANT installed in order to run these build scripts. http://ant.apache.org/bindownload.cgi
 
