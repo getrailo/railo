@@ -343,20 +343,22 @@ public final class DebuggerImpl implements DebuggerPro {
 			qrySize=partEntries.size()<MAX_PARTS?partEntries.size():MAX_PARTS;
 		}
 		
-		Query qryPart=new QueryImpl(
-                new Collection.Key[]{
-                		KeyConstants._id
-                		,KeyConstants._count,
-                		KeyConstants._min,
-                		KeyConstants._max,
-                		KeyConstants._avg,
-                		KeyConstants._total,
-                		KeyConstants._path,
-                		KeyConstants._start,
-                		KeyConstants._end,
-                        KeyConstants._startLine,
-                        KeyConstants._endLine},
-                qrySize,"query");
+		Query qryPart = new QueryImpl(
+            new Collection.Key[]{
+                 KeyConstants._id
+                ,KeyConstants._count
+                ,KeyConstants._min
+                ,KeyConstants._max
+                ,KeyConstants._avg
+                ,KeyConstants._total
+                ,KeyConstants._path
+                ,KeyConstants._start
+                ,KeyConstants._end
+                ,KeyConstants._startLine
+                ,KeyConstants._endLine
+                ,KeyConstants._snippet
+            }, qrySize, "query" );
+
 		if(hasParts) {
 			row=0;
 			DebugEntryTemplatePart[] tmp = partEntries.values().toArray(new DebugEntryTemplatePart[partEntries.size()]);
@@ -367,7 +369,6 @@ public final class DebuggerImpl implements DebuggerPro {
 	        for(int i=0;i<len;i++) {
 	        	parts[i]=tmp[i];
 	        }
-	        
 	
 			try {
 	            DebugEntryTemplatePart de;
@@ -388,8 +389,9 @@ public final class DebuggerImpl implements DebuggerPro {
 
                     if ( de instanceof DebugEntryTemplatePartImpl ) {
 
-                        qryPart.setAt(KeyConstants._startLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getStartLine() ) );
-                        qryPart.setAt(KeyConstants._endLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getEndLine() ));
+                        qryPart.setAt( KeyConstants._startLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getStartLine() ) );
+                        qryPart.setAt( KeyConstants._endLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getEndLine() ));
+                        qryPart.setAt( KeyConstants._snippet, row, ((DebugEntryTemplatePartImpl)de).getSnippet() );
                     }
 				}
 			}

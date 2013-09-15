@@ -32,34 +32,38 @@ public class DebugExecutionLog extends ExecutionLogSupport {
         PageSource ps = pc.getCurrentPageSource();
         Resource res = ps.getResource();
 
-        String key= ps.getDisplayPath() + ":" + startPos + ":" + endPos;
+		String keyRes = res.getAbsolutePath() + "@" + res.lastModified();
+        String keySnp = ps.getDisplayPath()   + "@" + ps.getLastAccessTime() + ":" + startPos + "-" + endPos;
 
-        DebugEntry e = pc.getDebugger().getEntry(pc, ps, startPos, endPos);
-        e.updateExeTime((int)diff);
+        DebugEntry de = pc.getDebugger().getEntry(pc, ps, startPos, endPos);
+        de.updateExeTime((int) diff);
 
-        ResourceSnippet snippet = snippets.get( key );
+        ResourceSnippet snippet = snippets.get( keySnp );
 
         if ( snippet == null ) {
 
-            String src = sources.get( ps.getDisplayPath() );
+            String src = sources.get( keyRes );
 
             if ( src == null ) {
                 src = ResourceSnippet.getContents( res, pc.getConfig().getResourceCharset() );
-                sources.put( ps.getDisplayPath(), src );
+                sources.put( keyRes, src );
             }
 
             snippet = ResourceSnippet.createResourceSnippet( src, startPos, endPos );
-            snippets.put( key, snippet );
+            snippets.put( keySnp, snippet );
 
-            if ( e instanceof DebugEntryTemplatePartImpl ) {
-                ((DebugEntryTemplatePartImpl)e).setStartLine( snippet.getStartLine() );
-                ((DebugEntryTemplatePartImpl)e).setEndLine( snippet.getEndLine() );
+            if ( de instanceof DebugEntryTemplatePartImpl ) {
+                ( (DebugEntryTemplatePartImpl)de).setStartLine( snippet.getStartLine() );
+                ( (DebugEntryTemplatePartImpl)de).setEndLine( snippet.getEndLine() );
+                ( (DebugEntryTemplatePartImpl)de).setSnippet( snippet.getContent() );
             }
         }
 	}
 
 
 	@Override
-	protected void _release() {}
+	protected void _release() {
+
+	}
 
 }

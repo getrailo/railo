@@ -6,6 +6,7 @@ public class DebugEntryTemplatePartImpl extends DebugEntrySupport implements Deb
 
 	private int startPos, startLine;
 	private int endPos, endLine;
+	private String snippet = "";
 
 	protected DebugEntryTemplatePartImpl(PageSource source,int startPos, int endPos) {
 		super(source);
@@ -40,11 +41,19 @@ public class DebugEntryTemplatePartImpl extends DebugEntrySupport implements Deb
         return endLine;
     }
 
+    public String getSnippet() {
+        return snippet;
+    }
+
     public void setStartLine(int value) {
         startLine = value;
     }
 
     public void setEndLine(int value) {
         endLine = value;
+    }
+
+    public void setSnippet(String value) {
+        snippet = value;
     }
 }

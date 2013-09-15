@@ -911,33 +911,6 @@
 
 			return arguments.size & 'B';
 		}
-
-
-		function getSnippet( filename, start=0, end=0 ) {
-
-			if ( !isDefined( "variables.cache.sources" ) )
-				variables.cache.sources = {};
-
-			try {
-
-				if ( variables.cache.sources.keyExists( filename ) ) {
-
-					local.src = variables.cache.sources[ filename ];
-				} else {
-
-					local.src = fileRead( filename );
-					variables.cache.sources[ filename ] = src;
-				}
-
-				if ( end == 0 )
-					end = len( src );
-
-				return src.substring( start, end );
-			} catch ( ex ) {
-
-				return "Failed to retrieve snippet: #ex.message#";
-			}
-		}
 	</cfscript>
 
 

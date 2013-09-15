@@ -20,5 +20,6 @@ public interface DebugEntryTemplatePart extends DebugEntry {
     /*/ FUTURE
     public int getStartLine();
     public int getEndLine();
+    public String getSnippet();
     //*/
 }
