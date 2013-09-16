@@ -178,7 +178,7 @@
 
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<input type="hidden" name="uid" value="#url.uid#">
-			<cfif isDefined('app.trial') and app.trial>
+			<cfif isDefined('app.trial') and isBoolean(app.trial) and app.trial>
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installTrial#">
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installFull#">
 			<cfelse>
