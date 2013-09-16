@@ -554,7 +554,10 @@ public class KeyConstants {
 	public static final Key _sql=KeyImpl._const("sql");
 	public static final Key _src=KeyImpl._const("src");
 	public static final Key _start=KeyImpl._const("start");
-	public static final Key _end=KeyImpl._const("end");
+    public static final Key _end=KeyImpl._const("end");
+    public static final Key _startLine=KeyImpl._const("startLine");
+    public static final Key _endLine=KeyImpl._const("endLine");
+	public static final Key _snippet=KeyImpl._const("snippet");
 	public static final Key _startwith=KeyImpl._const("startwith");
 	public static final Key _state=KeyImpl._const("state");
 	public static final Key _status=KeyImpl._const("status");
