@@ -1,24 +1,23 @@
 package railo.runtime.engine;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceSnippet;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.debug.DebugEntry;
-import railo.runtime.debug.Debugger;
+import railo.runtime.debug.DebugEntryTemplatePartImpl;
 
 public class DebugExecutionLog extends ExecutionLogSupport {
 	
 	private PageContext pc;
-	private ArrayList<Resource> pathes=new ArrayList<Resource>();
-	
-	private Map<String,Entry> entries=Collections.synchronizedMap(new HashMap<String,Entry>());
-	
-	
+
+    private Map<String, String> sources           = Collections.synchronizedMap(new HashMap());
+    private Map<String, ResourceSnippet> snippets = Collections.synchronizedMap(new HashMap());
+
 	protected void _init(PageContext pc, Map<String, String> arguments) {
 		this.pc=pc;
 	}
@@ -26,64 +25,45 @@ public class DebugExecutionLog extends ExecutionLogSupport {
 	@Override
 	protected void _log(int startPos, int endPos, long startTime, long endTime) {
 		if(!pc.getConfig().debug()) return;
+
 		long diff=endTime-startTime;
 		if(unit==UNIT_MICRO)diff/=1000;
 		else if(unit==UNIT_MILLI)diff/=1000000;
-		Resource res = pc.getCurrentPageSource().getResource();
-		int index = path(res);
-		String key=index+":"+startPos+":"+endPos;
-		Entry entry=entries.get(key);
-		if(entry==null) entries.put(key, new Entry(res,startPos,endPos,diff));
-		else entry.add(diff);
-		
-		PageSource ps = pc.getCurrentPageSource();
-		
-		Debugger debugger = pc.getDebugger();
-		DebugEntry e = debugger.getEntry(pc, ps, startPos,endPos);
-		e.updateExeTime((int)diff);
-	}
-	
+        PageSource ps = pc.getCurrentPageSource();
+        Resource res = ps.getResource();
 
-	private int path(Resource res) {
-		int index= pathes.indexOf(res);
-		if(index==-1){
-			pathes.add(res);
-			return pathes.size()-1;
-		}
-		return index;
+		String keyRes = res.getAbsolutePath() + "@" + res.lastModified();
+        String keySnp = ps.getDisplayPath()   + "@" + ps.getLastAccessTime() + ":" + startPos + "-" + endPos;
+
+        DebugEntry de = pc.getDebugger().getEntry(pc, ps, startPos, endPos);
+        de.updateExeTime((int) diff);
+
+        ResourceSnippet snippet = snippets.get( keySnp );
+
+        if ( snippet == null ) {
+
+            String src = sources.get( keyRes );
+
+            if ( src == null ) {
+                src = ResourceSnippet.getContents( res, pc.getConfig().getResourceCharset() );
+                sources.put( keyRes, src );
+            }
+
+            snippet = ResourceSnippet.createResourceSnippet( src, startPos, endPos );
+            snippets.put( keySnp, snippet );
+
+            if ( de instanceof DebugEntryTemplatePartImpl ) {
+                ( (DebugEntryTemplatePartImpl)de).setStartLine( snippet.getStartLine() );
+                ( (DebugEntryTemplatePartImpl)de).setEndLine( snippet.getEndLine() );
+                ( (DebugEntryTemplatePartImpl)de).setSnippet( snippet.getContent() );
+            }
+        }
 	}
+
 
 	@Override
 	protected void _release() {
-		
+
 	}
 
-	
-	
-	
-	class Entry{
-
-		private final Resource res;
-		private final int startPos;
-		private final int endPos;
-		private long time;
-		private int count=1;
-
-		public Entry(Resource res, int startPos, int endPos, long time) { 
-			this.res=res;
-			this.startPos=startPos;
-			this.endPos=endPos;
-			this.time=time;
-		}
-
-		public void add(long time) { 
-			this.time+=time;
-			this.count++;
-		}
-		
-		public String toString(){
-			return "res:"+res+";time:"+time+";count:"+count+";start-pos:"+startPos+";end-pos:"+endPos;
-		}
-		
-	}
 }
