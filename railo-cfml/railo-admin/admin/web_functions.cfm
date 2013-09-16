@@ -17,12 +17,15 @@ function printError(error,boolean longversion=false) {
 		
 		if(longversion) {
 			if(StructKeyExists(error,"TagContext")){
-				if(arrayLen(error.TagContext)){
-					writeOutput('<br>');
-					writeOutput('<b>error occured in '&listLast(error.TagContext[1].template,'/\')&':'&error.TagContext[1].line&'</b>');
-					writeOutput('<br>');
-					writeOutput(error.TagContext[1].codePrintHTML);
-					//dump(error.TagContext[1]);
+				loop array="#error.TagContext#" index="local.i" item="local.tc" {
+					writeOutput('<br><span class="comment">');
+					
+					if(i==1) writeOutput('error occured in ');
+					else writeOutput('called by ');
+					writeOutput(error.TagContext[i].template&':'&error.TagContext[i].line&"</span>");
+					//writeOutput('<br>');
+					//writeOutput(error.TagContext[i].codePrintHTML);
+					//dump(error.TagContext[i]);
 				}
 			}
 		}
