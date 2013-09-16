@@ -353,7 +353,9 @@ public final class DebuggerImpl implements DebuggerPro {
                 		KeyConstants._total,
                 		KeyConstants._path,
                 		KeyConstants._start,
-                		KeyConstants._end},
+                		KeyConstants._end,
+                        KeyConstants._startLine,
+                        KeyConstants._endLine},
                 qrySize,"query");
 		if(hasParts) {
 			row=0;
@@ -382,7 +384,13 @@ public final class DebuggerImpl implements DebuggerPro {
 			        qryPart.setAt(KeyConstants._start,row,_toString(de.getStartPosition()));
 			        qryPart.setAt(KeyConstants._end,row,_toString(de.getEndPosition()));
 			        qryPart.setAt(KeyConstants._total,row,_toString(de.getExeTime()));
-			        qryPart.setAt(KeyConstants._path,row,de.getPath());    
+			        qryPart.setAt(KeyConstants._path,row,de.getPath());
+
+                    if ( de instanceof DebugEntryTemplatePartImpl ) {
+
+                        qryPart.setAt(KeyConstants._startLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getStartLine() ) );
+                        qryPart.setAt(KeyConstants._endLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getEndLine() ));
+                    }
 				}
 			}
 			catch(PageException dbe) {}
