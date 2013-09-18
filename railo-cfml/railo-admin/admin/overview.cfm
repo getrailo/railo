@@ -4,6 +4,14 @@ Defaults --->
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
 
+<!--- load asynchron all extension providers  --->
+<cfparam name="application[request.admintype].preloadedExtensionProviders" default="false" type="boolean">
+<cfif !application[request.admintype].preloadedExtensionProviders>
+	<cfinclude template="extension.functions.cfm">
+	<cfset loadAllProvidersData(0,false)>
+	<cfset application[request.admintype].preloadedExtensionProviders=true>
+</cfif>
+
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
