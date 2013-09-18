@@ -13,6 +13,8 @@ import java.util.Map;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.res.util.ResourceSnippet;
+import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.Page;
@@ -52,14 +54,13 @@ public final class DebuggerImpl implements DebuggerPro {
 	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
 	private static final Collection.Key PAGE_PARTS= KeyImpl.intern("pageParts");
 	//private static final Collection.Key OUTPUT_LOG= KeyImpl.intern("outputLog");
-	
-	
-
 
 	private static final int MAX_PARTS = 100;
 
 	private Map<String,DebugEntryTemplateImpl> entries=new HashMap<String,DebugEntryTemplateImpl>();
 	private Map<String,DebugEntryTemplatePartImpl> partEntries;
+	private ResourceSnippetsMap snippetsMap = new ResourceSnippetsMap( 1024, 128 );
+
 	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
@@ -73,7 +74,6 @@ public final class DebuggerImpl implements DebuggerPro {
 	private Array historyLevel=new ArrayImpl();
 
 	private DateTimeImpl starttime;
-
 
 	private DebugOutputLog outputLog;
 
@@ -118,11 +118,10 @@ public final class DebuggerImpl implements DebuggerPro {
 		historyLevel.appendEL(Caster.toInteger(pc.getCurrentLevel()));
         return de;
     }
-	
 
 
 	@Override
-	public DebugEntryTemplatePart getEntry(PageContext pc,PageSource source, int startPos, int endPos) {
+	public DebugEntryTemplatePart getEntry(PageContext pc, PageSource source, int startPos, int endPos) {
     	String src=DebugEntryTemplatePartImpl.getSrc(source==null?"":source.getDisplayPath(),startPos,endPos);
     	DebugEntryTemplatePartImpl de=null;
     	if(partEntries!=null){
@@ -135,7 +134,9 @@ public final class DebuggerImpl implements DebuggerPro {
     	else {
     		partEntries=new HashMap<String, DebugEntryTemplatePartImpl>();
     	}
-        de=new DebugEntryTemplatePartImpl(source,startPos,endPos);
+
+		ResourceSnippet snippet = snippetsMap.getSnippet( source, startPos, endPos, pc.getConfig().getResourceCharset() );
+        de=new DebugEntryTemplatePartImpl(source, startPos, endPos, snippet.getStartLine(), snippet.getEndLine(), snippet.getContent());
         partEntries.put(src,de);
         return de;
     }
@@ -343,18 +344,22 @@ public final class DebuggerImpl implements DebuggerPro {
 			qrySize=partEntries.size()<MAX_PARTS?partEntries.size():MAX_PARTS;
 		}
 		
-		Query qryPart=new QueryImpl(
-                new Collection.Key[]{
-                		KeyConstants._id
-                		,KeyConstants._count,
-                		KeyConstants._min,
-                		KeyConstants._max,
-                		KeyConstants._avg,
-                		KeyConstants._total,
-                		KeyConstants._path,
-                		KeyConstants._start,
-                		KeyConstants._end},
-                qrySize,"query");
+		Query qryPart = new QueryImpl(
+            new Collection.Key[]{
+                 KeyConstants._id
+                ,KeyConstants._count
+                ,KeyConstants._min
+                ,KeyConstants._max
+                ,KeyConstants._avg
+                ,KeyConstants._total
+                ,KeyConstants._path
+                ,KeyConstants._start
+                ,KeyConstants._end
+                ,KeyConstants._startLine
+                ,KeyConstants._endLine
+                ,KeyConstants._snippet
+            }, qrySize, "query" );
+
 		if(hasParts) {
 			row=0;
 			DebugEntryTemplatePart[] tmp = partEntries.values().toArray(new DebugEntryTemplatePart[partEntries.size()]);
@@ -365,7 +370,6 @@ public final class DebuggerImpl implements DebuggerPro {
 	        for(int i=0;i<len;i++) {
 	        	parts[i]=tmp[i];
 	        }
-	        
 	
 			try {
 	            DebugEntryTemplatePart de;
@@ -382,7 +386,14 @@ public final class DebuggerImpl implements DebuggerPro {
 			        qryPart.setAt(KeyConstants._start,row,_toString(de.getStartPosition()));
 			        qryPart.setAt(KeyConstants._end,row,_toString(de.getEndPosition()));
 			        qryPart.setAt(KeyConstants._total,row,_toString(de.getExeTime()));
-			        qryPart.setAt(KeyConstants._path,row,de.getPath());    
+			        qryPart.setAt(KeyConstants._path,row,de.getPath());
+
+                    if ( de instanceof DebugEntryTemplatePartImpl ) {
+
+                        qryPart.setAt( KeyConstants._startLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getStartLine() ) );
+                        qryPart.setAt( KeyConstants._endLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getEndLine() ));
+                        qryPart.setAt( KeyConstants._snippet, row, ((DebugEntryTemplatePartImpl)de).getSnippet() );
+                    }
 				}
 			}
 			catch(PageException dbe) {}
