@@ -45,17 +45,17 @@
 			return !len(arrayToList(queryColumnData(qry,columnName),""));
 		}
 
-		private function isSectionOpen( string name ) {
+		function isSectionOpen( string name ) {
 
 			if ( name == "ALL" && !structKeyExists( Cookie, variables.cookieName ) )
 				return true;
 
 			var cookieValue = structKeyExists( Cookie, variables.cookieName ) ? Cookie[ variables.cookieName ] : 0;
 
-			return cookieValue && ( bitAnd( cookieValue, variables.allSections[ name ] ) );
+			return cookieValue && ( bitAnd( cookieValue, this.allSections[ name ] ) );
 		}
 
-		private function isEnabled( custom, key ) {
+		function isEnabled( custom, key ) {
 
 			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
 		}
@@ -65,11 +65,9 @@
 
 		variables.scopeNames = [ "Application", "CGI", "Client", "Cookie", "Form", "Request", "Server", "Session", "URL" ];
 
-		variables.allSections = buildSectionStruct();
+		function buildSectionStruct() {
 
-		private function buildSectionStruct() {
-
-			var otherSections = [ "ALL", "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Profiler", "Query", "Timer", "Trace" ];
+			var otherSections = [ "ALL", "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Query", "Timer", "Trace", "More" ];
 			var i = 0;
 
 			var result = {};
@@ -107,7 +105,8 @@
 		<cfset var timers=arguments.debugging.timers />
 		<cfset var traces=arguments.debugging.traces />
 
-		<cfset var isExecOrder = isSectionOpen( "ExecOrder" )>
+		<cfset this.allSections = this.buildSectionStruct()>
+		<cfset var isExecOrder  = this.isSectionOpen( "ExecOrder" )>
 
 		<cfif isExecOrder>
 
@@ -138,6 +137,7 @@
 			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; background-color: #FFF; color: #222; border: 1px solid #CCC; border-radius: 5px; text-shadow: none; }
 			#-railo-debug.collapsed	{ padding: 0; border-width: 0; }
 			#-railo-debug legend 	{ padding: 0 1em; background-color: #FFF; color: #222; }
+			#-railo-debug legend span { font-weight: normal; }
 
 			#-railo-debug, #-railo-debug td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; }
 			#-railo-debug.large, #-railo-debug.large td	{ font-size: 10pt; }
@@ -177,13 +177,13 @@
 		<cfoutput>
 
 			<cfset sectionId = "ALL">
-			<cfset isOpen = isSectionOpen( sectionId )>
+			<cfset isOpen = this.isSectionOpen( sectionId )>
 
 			<!-- Railo Debug Output !-->
 			<fieldset id="-railo-debug" class="#arguments.custom.size# #isOpen ? '' : 'collapsed'#">
 
 				<legend><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" onclick="__RAILO.debug.toggleSection( '#sectionId#' ) ? __RAILO.util.removeClass('-railo-debug', 'collapsed') : __RAILO.util.addClass('-railo-debug', 'collapsed');">
-				 Railo Debug Output</a></legend>
+				 Railo Debug Output</a> <span>(#this.getLabel()#)</span></legend>
 
 				<div id="-railo-debug-ALL" class="#isOpen ? '' : 'collapsed'#">
 
@@ -193,7 +193,7 @@
 						<div class="section-title">Debugging Information</div>
 
 						<cfset sectionId = "Info">
-						<cfset isOpen = isSectionOpen( sectionId )>
+						<cfset isOpen = this.isSectionOpen( sectionId )>
 						<table>
 
 							<cfset renderSectionHeadTR( sectionId, "Template:", "#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)" )>
@@ -253,7 +253,7 @@
 
 					<!--- Execution Time --->
 					<cfset sectionId = "ExecTime">
-					<cfset isOpen = isSectionOpen( sectionId )>
+					<cfset isOpen = this.isSectionOpen( sectionId )>
 
 					<div class="section-title">Execution Time</div>
 					<cfset local.loa=0>
@@ -331,51 +331,14 @@
 					</table>
 
 
-					<cfif structKeyExists( arguments.debugging, "pageParts" ) && arguments.debugging.pageParts.recordCount GT 0>
-
-						<cfset sectionId = "Profiler">
-						<cfset isOpen = isSectionOpen( sectionId )>
-
-						<div class="section-title">Profiler Information</div>
-
-						<cfset var multiplier = 1>
-						<cfset var configArgs = getPageContext().getConfig().getExecutionLogFactory().getArgumentsAsStruct()>
-						<cfif configArgs.keyExists( "unit" ) && configArgs.unit == "micro">
-							<cfset multiplier = 1000>
-						</cfif>
-
-						<table>
-							<cfset renderSectionHeadTR( sectionId, "#arguments.debugging.pageParts.recordCount# Data Points" )>
-							<tr>
-								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
-
-									<cfset var qPageParts = arguments.debugging.pageParts>
-									<table class="details">
-										<tr><th>Total Time (ms)</th><th>Count</th><!---th>Min</th><th>Max</th!---><th>Avg Time (ms)</th><th>Source</th></tr>
-										<cfloop query="#qPageParts#">
-
-											<tr><td class="txt-r">#unitFormat( '', qPageParts.total * multiplier )#</td><td class="txt-r">#qPageParts.count#</td>
-												<cfif qPageParts.count GT 1>
-													<td class="txt-r">#unitFormat( '', qPageParts.avg * multiplier )#</td>
-												<cfelse>
-													<td class="txt-r">-</td>
-												</cfif>
-												<td><a id="-railo-debug-btn-#sectionId#-#qPageParts.currentRow#-details" class="-railo-icon-plus" onclick="__RAILO.util.toggleClass( '-railo-debug-Profiler-#qPageParts.currentRow#-details', 'collapsed' ) ? ( __RAILO.util.removeClass( this, '-railo-icon-minus'), __RAILO.util.addClass( this, '-railo-icon-plus') ) : ( __RAILO.util.removeClass( this, '-railo-icon-plus'), __RAILO.util.addClass( this, '-railo-icon-minus') )">#qPageParts.path#</a> <span class="faded">(#qPageParts.start# - #qPageParts.end#)</span></td></tr>
-											<tr id="-railo-debug-#sectionId#-#qPageParts.currentRow#-details" class="collapsed"><td colspan="8">#htmlCodeFormat( rtrim( getSnippet( qPageParts.path, qPageParts.start, qPageParts.end ) ) )#</td></tr>
-										</cfloop>
-									</table>
-
-								</td>
-							</tr>
-						</table>
-					</cfif>
+					<cfset this.doMore( arguments.custom, arguments.debugging, arguments.context )>
 
 
 					<!--- Exceptions --->
 					<cfif structKeyExists( arguments.debugging, "exceptions" ) && arrayLen( arguments.debugging.exceptions )>
 
 						<cfset sectionId = "Exceptions">
-						<cfset isOpen = isSectionOpen( sectionId )>
+						<cfset isOpen = this.isSectionOpen( sectionId )>
 
 						<div class="section-title">Caught Exceptions</div>
 						<table>
@@ -413,7 +376,7 @@
 					<cfif implicitAccess.recordcount>
 
 						<cfset sectionId = "ImpAccess">
-						<cfset isOpen = isSectionOpen( sectionId )>
+						<cfset isOpen = this.isSectionOpen( sectionId )>
 
 						<div class="section-title">Implicit Variable Access</div>
 
@@ -452,7 +415,7 @@
 					<cfif timers.recordcount>
 
 						<cfset sectionId = "Timer">
-						<cfset isOpen = isSectionOpen( sectionId )>
+						<cfset isOpen = this.isSectionOpen( sectionId )>
 
 						<div class="section-title">CFTimer Times</div>
 
@@ -487,7 +450,7 @@
 					<cfif traces.recordcount>
 
 						<cfset sectionId = "Trace">
-						<cfset isOpen = isSectionOpen( sectionId )>
+						<cfset isOpen = this.isSectionOpen( sectionId )>
 
 						<div class="section-title">Trace Points</div>
 
@@ -557,7 +520,7 @@
 					<cfif queries.recordcount>
 
 						<cfset sectionId = "Query">
-						<cfset isOpen = isSectionOpen( sectionId )>
+						<cfset isOpen = this.isSectionOpen( sectionId )>
 						<cfset local.total  =0>
 						<cfset local.records=0>
 						<cfloop query="queries">
@@ -690,7 +653,7 @@
 
 								<cfif isScopeEnabled>
 
-									<cfset isOpen = isSectionOpen( sectionId )>
+									<cfset isOpen = this.isSectionOpen( sectionId )>
 									<cfset local.v = evaluate( k )>
 									<cfset local.sc = structCount( v )>
 
@@ -731,6 +694,7 @@
 				</div>	<!--- #-railo-debug-ALL !--->
 			</fieldset>	<!--- #-railo-debug !--->
 		</cfoutput>
+
 
 		<script>
 			var __RAILO = __RAILO || {};
@@ -828,7 +792,7 @@
 				<cfoutput>
 				  cookieName: 	"#variables.cookieName#"
 				, bitmaskAll: 	Math.pow( 2, 31 ) - 1
-				, allSections: 	#serializeJSON( variables.allSections )#
+				, allSections: 	#serializeJSON( this.allSections )#
 				</cfoutput>
 
 				, setFlag: 		function( name ) {
@@ -888,6 +852,14 @@
 	</cffunction>	<!--- output() !--->
 
 
+	<cffunction name="doMore" returntype="void">
+		<cfargument name="custom"    type="struct" required="#true#">
+		<cfargument name="debugging" type="struct" required="#true#">
+		<cfargument name="context"   type="string" default="web">
+
+	</cffunction>
+
+
 	<cffunction name="renderSectionHeadTR" output="#true#">
 
 		<cfargument name="sectionId">
@@ -938,33 +910,6 @@
 			}
 
 			return arguments.size & 'B';
-		}
-
-
-		function getSnippet( filename, start=0, end=0 ) {
-
-			if ( !isDefined( "variables.cache.sources" ) )
-				variables.cache.sources = {};
-
-			try {
-
-				if ( variables.cache.sources.keyExists( filename ) ) {
-
-					local.src = variables.cache.sources[ filename ];
-				} else {
-
-					local.src = fileRead( filename );
-					variables.cache.sources[ filename ] = src;
-				}
-
-				if ( end == 0 )
-					end = len( src );
-
-				return src.substring( start, end );
-			} catch ( ex ) {
-
-				return "Failed to retrieve snippet: #ex.message#";
-			}
 		}
 	</cfscript>
 
