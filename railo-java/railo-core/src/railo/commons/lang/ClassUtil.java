@@ -12,6 +12,7 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -35,41 +36,45 @@ public final class ClassUtil {
 	 * @throws PageException
 	 */
 	public static Class toClass(String className) throws ClassException {
-		className = className.trim();
+		return ClassUtil.loadClass(className);
+	}
+	
+	private static Class checkPrimaryTypes(String className, Class defaultValue) {
 		String lcClassName=className.toLowerCase();
 		boolean isRef=false;
+		
 		if(lcClassName.startsWith("java.lang.")){
 			lcClassName=lcClassName.substring(10);
 			isRef=true;
 		}
 
-		if(lcClassName.equals("boolean"))	{
+		if(lcClassName.equals("boolean") || className.equals("[Z"))	{ 
 			if(isRef) return Boolean.class;
 			return boolean.class; 
 		}
-		if(lcClassName.equals("byte"))	{
+		if(lcClassName.equals("byte") || className.equals("[B"))	{
 			if(isRef) return Byte.class;
 			return byte.class; 
 		}
-		if(lcClassName.equals("int"))	{
+		if(lcClassName.equals("int") || className.equals("[I"))	{
 			return int.class; 
 		}
-		if(lcClassName.equals("long"))	{
+		if(lcClassName.equals("long") || className.equals("[J"))	{
 			if(isRef) return Long.class;
 			return long.class; 
 		}
-		if(lcClassName.equals("float"))	{
+		if(lcClassName.equals("float") || className.equals("[F"))	{
 			if(isRef) return Float.class;
 			return float.class; 
 		}
-		if(lcClassName.equals("double"))	{
+		if(lcClassName.equals("double") || className.equals("[D"))	{
 			if(isRef) return Double.class;
 			return double.class; 
 		}
-		if(lcClassName.equals("char"))	{
+		if(lcClassName.equals("char") || className.equals("[C"))	{
 			return char.class; 
 		}
-		if(lcClassName.equals("short"))	{
+		if(lcClassName.equals("short") || className.equals("[S"))	{
 			if(isRef) return Short.class;
 			return short.class; 
 		}
@@ -81,7 +86,7 @@ public final class ClassUtil {
 		if(lcClassName.equals("null"))		return Object.class; 
 		if(lcClassName.equals("numeric"))	return Double.class; 
 		
-		return ClassUtil.loadClass(className);
+		return defaultValue;
 	}
 	
 	
@@ -116,6 +121,11 @@ public final class ClassUtil {
 	 * @return matching Class
 	 */
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
+		className=className.trim();
+		
+		Class clazz = checkPrimaryTypes(className, null);
+		if(clazz!=null) return clazz;
+		
 		if(cl==null){
 			PageContextImpl pci = (PageContextImpl) ThreadLocalPageContext.get();
 			if(pci!=null){
@@ -138,7 +148,6 @@ public final class ClassUtil {
 			
 		}
 		catch (ClassNotFoundException e) {
-		
 			try {
 				return Class.forName(className, false, cl);
 			} 
@@ -153,7 +162,7 @@ public final class ClassUtil {
 					}
 					while(pureCN.lastIndexOf("[]")==pureCN.length()-2);
 					
-					Class clazz = loadClass(cl,pureCN.toString(),null);
+					clazz = loadClass(cl,pureCN.toString(),null);
 					if(clazz!=null) {
 						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
 						return clazz;
@@ -169,7 +178,7 @@ public final class ClassUtil {
 					}
 					while(pureCN.charAt(0)=='[');
 					
-					Class clazz = loadClass(cl,pureCN.toString(),null);
+					clazz = loadClass(cl,pureCN.toString(),null);
 					if(clazz!=null) {
 						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
 						return clazz;
@@ -180,15 +189,6 @@ public final class ClassUtil {
 					className=className.substring(1,className.length()-1).replace('/', '.');
 					return loadClass(cl, className,defaultValue);
 				}
-				
-				if("boolean".equals(className)) return boolean.class;
-				if("char".equals(className)) return char.class;
-				if("float".equals(className)) return float.class;
-				if("short".equals(className)) return short.class;
-				if("int".equals(className)) return int.class;
-				if("long".equals(className)) return long.class;
-				if("double".equals(className)) return double.class;
-				
 				
 				return defaultValue;
 			}
