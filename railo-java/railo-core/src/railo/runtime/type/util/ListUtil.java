@@ -1397,32 +1397,39 @@ public final class ListUtil {
 	 * @param position
 	 * @return Array Object
 	 */
-	public static String getAt(String list, String delimiter, int position, boolean ignoreEmpty) {
-	    if(delimiter.length()==1)return getAt(list, delimiter.charAt(0), position,ignoreEmpty);
+	public static String getAt(String list, String delimiter, int position, boolean ignoreEmpty, String defaultValue) {
+	    if(delimiter.length()==1)return getAt(list, delimiter.charAt(0), position,ignoreEmpty,defaultValue);
 		int len=list.length();
 		
-		if(len==0) return null;
-		int last=0;
-		int count=0;
+		if(len==0) return defaultValue;
+		int last=-1;
+		int count=-1;
+		
 		
 		char[] del = delimiter.toCharArray();
 		char c;
 		for(int i=0;i<len;i++) {
-		    c=list.charAt(i);
+			c=list.charAt(i);
 		    for(int y=0;y<del.length;y++) {
 				if(c==del[y]) {
-					if(!ignoreEmpty || last<i) {
-					    if(count++==position) {
-					        return list.substring(last,i);
-					    }
+					if(ignoreEmpty && (last+1)==i) {
+						last=i;
+						continue; 
 					}
-					last=i+1;
+					
+					count++;
+					if(count==position) {
+						return list.substring(last+1,i);
+					}
+					last=i;
 				}
 		    }
 		}
-		if(last<len && position==count) return (list.substring(last));
 
-		return null;
+		if(position==count+1){
+			if(!ignoreEmpty || last+1<len) return list.substring(last+1);
+		}
+		return defaultValue;
 	}
 	
 	/**
@@ -1432,25 +1439,32 @@ public final class ListUtil {
 	 * @param position
 	 * @return Array Object
 	 */
-	public static String getAt(String list, char delimiter, int position, boolean ignoreEmpty) {
+	public static String getAt(String list, char delimiter, int position, boolean ignoreEmpty, String defaultValue) {
 		int len=list.length();
-		if(len==0) return null;
-		int last=0;
-		int count=0;
+		if(len==0) return defaultValue;
+		int last=-1;
+		int count=-1;
 		
 		for(int i=0;i<len;i++) {
+			// char == delimiter
 			if(list.charAt(i)==delimiter) {
-				if(!ignoreEmpty || last<i) {
-				    if(count++==position) {
-				        return list.substring(last,i);
-				    }
+				if(ignoreEmpty && (last+1)==i) {
+					last=i;
+					continue; 
 				}
-				last=i+1;
+				
+				count++;
+				if(count==position) {
+					return list.substring(last+1,i);
+				}
+				last=i;
 			}
 		}
-		if(last<len && position==count) return (list.substring(last));
 
-		return null;
+		if(position==count+1){
+			if(!ignoreEmpty || last+1<len) return list.substring(last+1);
+		}
+		return defaultValue;
 	}
 
 	public static String[] listToStringArray(String list, char delimiter) {
