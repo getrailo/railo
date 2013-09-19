@@ -21,6 +21,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 	private string function createURL(string calledName){
 		var baseURL="http://#cgi.HTTP_HOST##getDirectoryFromPath(contractPath(getCurrenttemplatepath()))#";
+		return baseURL&""&calledName;
 	}
 	
 } 
