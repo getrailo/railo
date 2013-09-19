@@ -557,7 +557,7 @@ public final class FileTag extends BodyTagImpl {
 	 * @throws PageException 
 	 */
 	private void actionDelete() throws PageException {
-		checkFile(false,false,false);
+		checkFile(false,false,false,false);
 		setACL(file,acl);
 		try {
 			if(!file.delete()) throw new ApplicationException("can't delete file ["+file+"]");
@@ -574,7 +574,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionRead() throws PageException {
 		if(variable==null)
 			throw new ApplicationException("attribute variable is not defined for tag file");
-		checkFile(false,true,false);
+		checkFile(false,false,true,false);
 		//print.ln(charset);
 		//TextFile tf=new TextFile(file.getAbsolutePath());
 			
@@ -595,7 +595,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionReadBinary() throws PageException {
 		if(variable==null)
 			throw new ApplicationException("attribute variable is not defined for tag file");
-		checkFile(false,true,false);
+		checkFile(false,false,true,false);
 		
 		//TextFile tf=new TextFile(file.getAbsolutePath());
 		
@@ -613,7 +613,7 @@ public final class FileTag extends BodyTagImpl {
     private void actionWrite() throws PageException {
         if(output==null)
             throw new ApplicationException("attribute output is not defined for tag file");
-        checkFile(true,false,true);
+        checkFile(!strict,true,false,true);
         
         try {
         	if(output instanceof InputStream)	{
@@ -655,7 +655,7 @@ public final class FileTag extends BodyTagImpl {
      * @throws PageException
      */
     private void actionTouch() throws PageException {
-        checkFile(true,true,true);
+        checkFile(!strict,true,true,true);
         
         try {
             ResourceUtil.touch(file);
@@ -679,7 +679,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionAppend() throws PageException {
 		if(output==null)
 			throw new ApplicationException("attribute output is not defined for tag file");
-		checkFile(true,false,true);
+		checkFile(!strict,true,false,true);
 		
         try {
 
@@ -714,7 +714,7 @@ public final class FileTag extends BodyTagImpl {
 		
 		if(variable==null)
 			throw new ApplicationException("attribute variable is not defined for tag file");
-		checkFile(false,false,false);
+		checkFile(false,false,false,false);
 		
 		Struct sct =new StructImpl();
 		pageContext.setVariable(variable,sct);
@@ -846,20 +846,33 @@ public final class FileTag extends BodyTagImpl {
 	    
 	    Resource destination=toDestination(pageContext,strDestination,null);
 	    
-	    
 		securityManager.checkFileLocation(pageContext.getConfig(),destination,serverPassword);
 		
-	   // destination.getCanonicalPath()
 	    if(destination.isDirectory()) 
 	    	destination=destination.getRealResource(clientFileName);
-	    else if(!clientFileName.equalsIgnoreCase(destination.getName()))
-	    	fileWasRenamed=true;
+	    else if(!destination.exists() && (strDestination.endsWith("/") || strDestination.endsWith("\\"))) 
+	    	destination=destination.getRealResource(clientFileName);
+	    else if(!clientFileName.equalsIgnoreCase(destination.getName())) {
+	    	if(ResourceUtil.getExtension(destination, null)==null)
+	    		destination=destination.getRealResource(clientFileName);
+	    	else 
+	    		fileWasRenamed=true;
+	    }
 	    
 	    // check parent destination -> directory of the desinatrion
 	    Resource parentDestination=destination.getParentResource();
 	    
-	    if(!parentDestination.exists())
-	    	throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    if(!parentDestination.exists()) {
+	    	Resource pp = parentDestination.getParentResource();
+	    	if(pp==null || !pp.exists()) 
+	    		throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    	try {
+				parentDestination.createDirectory(true);
+			}
+			catch (IOException e) {
+				throw Caster.toPageException(e);
+			} 
+	    }
 	    else if(!parentDestination.canWrite())
 	    	throw new ApplicationException("can't write to destination directory ["+parentDestination+"], no access to write");
 	    
@@ -913,7 +926,7 @@ public final class FileTag extends BodyTagImpl {
 				IOUtil.copy(formItem.getResource(),destination);
 			}
 			catch(Throwable t) {
-				throw new ApplicationException(t.getMessage());
+				throw Caster.toPageException(t);
 			}
 			
 			// Set cffile/file struct
@@ -1066,7 +1079,7 @@ public final class FileTag extends BodyTagImpl {
 	}
 	
 
-	private void checkFile(boolean create, boolean canRead, boolean canWrite) throws PageException {
+	private void checkFile(boolean createParent, boolean create, boolean canRead, boolean canWrite) throws PageException {
 		if(file==null)
 			throw new ApplicationException("attribute file is not defined for tag file");
 
@@ -1074,8 +1087,17 @@ public final class FileTag extends BodyTagImpl {
 		if(!file.exists()) {
 			if(create) {
 				Resource parent=file.getParentResource();
-				if(parent!=null && !parent.exists())
-					throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
+				if(parent!=null && !parent.exists()) {
+					if(createParent) {
+						try {
+							parent.createDirectory(true);
+						}
+						catch (IOException e) {
+							throw Caster.toPageException(e);
+						}
+					}
+					else throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
+				}
 				try {
 					file.createFile(false);
 				} catch (IOException e) {
