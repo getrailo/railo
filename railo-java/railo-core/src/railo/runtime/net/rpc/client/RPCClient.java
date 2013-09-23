@@ -650,10 +650,10 @@ public final class RPCClient implements Objects, Iteratorable{
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable box = new DumpTable("webservice","#ccccff","#cccc00","#000000");
-        box.setTitle("Web Service");
-        if(dp.getMetainfo())box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
-        DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
+    	DumpTable functions = new DumpTable("webservice","#ccccff","#cccc00","#000000");
+    	functions.setTitle("Web Service (WSDL/Soap)");
+        if(dp.getMetainfo())functions.setComment(wsdlUrl);
+        //DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
         
         
         javax.wsdl.Service service = getWSDLService();
@@ -687,8 +687,8 @@ public final class RPCClient implements Objects, Iteratorable{
             		_toHTMLOperation(doc.toString(),(Parameters)bEntry.getParameters().get(tmpOp)));
         }
         
-        box.appendRow(1,new SimpleDumpData(""),functions);
-        return box;
+        //box.appendRow(1,new SimpleDumpData(""),functions);
+        return functions;
     }
 
     private DumpData _toHTMLOperation(String doc, Parameters parameters) {
