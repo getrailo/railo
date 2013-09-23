@@ -1,14 +1,18 @@
 <cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' 
 				applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
-			
+	
 	<cfsetting showdebugoutput="no">
 	<cfparam name="url.width" default="80">
 	<cfparam name="url.height" default="40">
 	<cfset url.img=trim(url.img)>
 	<cfset id=hash(url.img&"-"&url.width&"-"&url.height)>
 	<cfset mimetypes={png:'png',gif:'gif',jpg:'jpeg'}>
-	<cfset ext=listLast(url.img,'.')>
 	
+	<cfif len(url.img) ==0>
+		<cfset ext="gif"><!--- using tp.gif in that case --->
+	<cfelse>
+	    <cfset ext=listLast(url.img,'.')>
+	</cfif>
 		
 	<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
 	<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>	
@@ -21,11 +25,13 @@
 		<cfcontent reset='#true#' type='#mimetypes[ext]#'><cfabort>
 	</cfif>
 
-
 	<!--- copy and shrink to local dir --->
 	<cfset tmpfile=expandPath("{temp-directory}/admin-ext-thumbnails/"&id&"."&ext)>	
 	<cfif fileExists(tmpfile)>
 		<cffile action="readbinary" file="#tmpfile#" variable="data">
+	<cfelseif len(url.img) ==0>
+		<cfset data=toBinary("R0lGODlhMQApAIAAAGZmZgAAACH5BAEAAAAALAAAAAAxACkAAAIshI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKeQUAOw==")>
+		
 	<cfelse>
 		<cffile action="readbinary" file="#url.img#" variable="data">
 		<cfimage action="read" source="#data#" name="img">
@@ -43,7 +49,7 @@
 		
 		<cftry>
 			<cffile action="write" file="#tmpfile#" output="#data#" strict="false">
-			<cfcatch></cfcatch><!--- if it fails because there is no permission --->
+			<cfcatch><cfrethrow></cfcatch><!--- if it fails because there is no permission --->
 		</cftry>
 	</cfif>
 	
