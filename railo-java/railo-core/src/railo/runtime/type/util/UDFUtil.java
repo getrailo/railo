@@ -231,7 +231,7 @@ public class UDFUtil {
 	}
 	
 
-	public static int toReturnFormat(String returnFormat) throws ExpressionException {
+	public static int toReturnFormat(String returnFormat, int defaultValue) {
 		if(StringUtil.isEmpty(returnFormat,true))
 			return UDF.RETURN_FORMAT_WDDX;
 			
@@ -244,7 +244,15 @@ public class UDFUtil {
 		else if("serialize".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
 		else if("cfml".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
 		else if("cfm".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
-		else throw new ExpressionException("invalid returnFormat definition ["+returnFormat+"], valid values are [wddx,plain,json,cfml]");
+		else if("xml".equals(returnFormat))	return UDF.RETURN_FORMAT_XML;
+		return defaultValue;
+	}
+	
+
+	public static int toReturnFormat(String returnFormat) throws ExpressionException {
+		int rf = toReturnFormat(returnFormat,-1);
+		if(rf!=-1) return rf;
+		throw new ExpressionException("invalid returnFormat definition ["+returnFormat+"], valid values are [wddx,plain,json,cfml]");
 	}
 
 	public static String toReturnFormat(int returnFormat) throws ExpressionException {
