@@ -120,12 +120,12 @@ public class ModernAppListener extends AppListenerSupport {
 			if(goon.toBooleanValue()) {
 			boolean isCFC=ResourceUtil.getExtension(targetPage,"").equalsIgnoreCase(pc.getConfig().getCFCExtension());
 			Object method;
-			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) { 
+			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(KeyConstants._method,null))!=null) { 
 				
 				Struct url = (Struct)Duplicator.duplicate(pc.urlFormScope(),true);
 		        
 		        url.removeEL(KeyConstants._fieldnames);
-		        url.removeEL(ComponentPage.METHOD);
+		        url.removeEL(KeyConstants._method);
 		        Object args=url.get(KeyConstants._argumentCollection,null);
 		        Object returnFormat=url.removeEL(KeyConstants._returnFormat);
 		        Object queryFormat=url.removeEL(KeyConstants._queryFormat);
