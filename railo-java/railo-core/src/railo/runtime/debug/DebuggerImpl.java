@@ -77,6 +77,9 @@ public final class DebuggerImpl implements DebuggerPro {
 
 	private DebugOutputLog outputLog;
 
+	final static Comparator DEBUG_ENTRY_TEMPLATE_COMPARATOR = new DebugEntryTemplateComparator();
+	final static Comparator DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR = new DebugEntryTemplatePartComparator();
+
 	@Override
 	public void reset() {
 		entries.clear();
@@ -150,7 +153,7 @@ public final class DebuggerImpl implements DebuggerPro {
             arrPages.add(page);
             
         }
-        Collections.sort(arrPages,new DebugEntryTemplateComparator());
+        Collections.sort(arrPages, DEBUG_ENTRY_TEMPLATE_COMPARATOR);
         
 
         // Queries
@@ -283,9 +286,7 @@ public final class DebuggerImpl implements DebuggerPro {
                 
                 Struct usage = getUsage(qe);
                 if(usage!=null) qryQueries.setAt(KeyConstants._usage,row,usage);
-                
-                
-                
+
 		        Object o=qryExe.get(KeyImpl.init(qe.getSrc()),null);
 		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(qe.getExecutionTime()));
 		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(((Long)o).longValue()+qe.getExecutionTime()));
@@ -334,16 +335,29 @@ public final class DebuggerImpl implements DebuggerPro {
 			}
 		}
 		catch(PageException dbe) {}
-		
 
-		
+
 	    // Pages Parts
+		List<DebugEntryTemplatePart> filteredPartEntries = null;
 		boolean hasParts=partEntries!=null && !partEntries.isEmpty();
 		int qrySize=0;
+
 		if(hasParts) {
-			qrySize=partEntries.size()<MAX_PARTS?partEntries.size():MAX_PARTS;
+
+			String slowestTemplate = arrPages.get( 0 ).getPath();
+
+			filteredPartEntries = new ArrayList();
+
+			java.util.Collection<DebugEntryTemplatePartImpl> col = partEntries.values();
+			for ( DebugEntryTemplatePart detp : col ) {
+
+				if ( detp.getPath().equals( slowestTemplate ) )
+					filteredPartEntries.add( detp );
+			}
+
+			qrySize = Math.min( filteredPartEntries.size(), MAX_PARTS );
 		}
-		
+
 		Query qryPart = new QueryImpl(
             new Collection.Key[]{
                  KeyConstants._id
@@ -362,15 +376,15 @@ public final class DebuggerImpl implements DebuggerPro {
 
 		if(hasParts) {
 			row=0;
-			DebugEntryTemplatePart[] tmp = partEntries.values().toArray(new DebugEntryTemplatePart[partEntries.size()]);
-	        Arrays.sort(tmp,new DebugEntryTemplatePartComparator());
-	       
-	        len=tmp.length<MAX_PARTS?tmp.length:MAX_PARTS;
-	        DebugEntryTemplatePart[] parts=new DebugEntryTemplatePart[len];
-	        for(int i=0;i<len;i++) {
-	        	parts[i]=tmp[i];
-	        }
-	
+	        Collections.sort( filteredPartEntries, DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR );
+
+			DebugEntryTemplatePart[] parts = new DebugEntryTemplatePart[ qrySize ];
+
+			if ( filteredPartEntries.size() > MAX_PARTS )
+				parts = filteredPartEntries.subList(0, MAX_PARTS).toArray( parts );
+			else
+				parts = filteredPartEntries.toArray( parts );
+
 			try {
 	            DebugEntryTemplatePart de;
 	            //PageSource ps;
@@ -707,13 +721,14 @@ public final class DebuggerImpl implements DebuggerPro {
 	public void resetTraces() {
 		traces.clear();
 	}
+
 }
 
 final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
     
 	public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
 		long result = ((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
-        // we do this addional step to try to avoid ticket RAILO-2076
+        // we do this additional step to try to avoid ticket RAILO-2076
         return result>0L?1:(result<0L?-1:0);
     }
 }
@@ -723,7 +738,7 @@ final class DebugEntryTemplatePartComparator implements Comparator<DebugEntryTem
 	@Override
 	public int compare(DebugEntryTemplatePart de1,DebugEntryTemplatePart de2) {
 		long result=de2.getExeTime()-de1.getExeTime();
-		// we do this addional step to try to avoid ticket RAILO-2076
+		// we do this additional step to try to avoid ticket RAILO-2076
         return result>0L?1:(result<0L?-1:0);
     }
 }
