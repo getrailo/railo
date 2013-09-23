@@ -338,7 +338,7 @@ public final class DebuggerImpl implements DebuggerPro {
 
 
 	    // Pages Parts
-		List<DebugEntryTemplatePartImpl> filteredPartEntries = null;
+		List<DebugEntryTemplatePart> filteredPartEntries = null;
 		boolean hasParts=partEntries!=null && !partEntries.isEmpty();
 		int qrySize=0;
 
@@ -349,7 +349,7 @@ public final class DebuggerImpl implements DebuggerPro {
 			filteredPartEntries = new ArrayList();
 
 			java.util.Collection<DebugEntryTemplatePartImpl> col = partEntries.values();
-			for ( DebugEntryTemplatePartImpl detp : col ) {
+			for ( DebugEntryTemplatePart detp : col ) {
 
 				if ( detp.getPath().equals( slowestTemplate ) )
 					filteredPartEntries.add( detp );
