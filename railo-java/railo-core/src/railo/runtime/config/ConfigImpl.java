@@ -758,8 +758,9 @@ public abstract class ConfigImpl implements Config {
         return password;
     }
     
-    protected boolean isPasswordEqual(String password) {
+    protected boolean isPasswordEqual(String password, boolean hashIfNecessary) {
     	if(this.password.equals(password)) return true;
+    	if(!hashIfNecessary) return false;
     	try {
     		return this.password.equals(ConfigWebFactory.hash(password));
 		}
@@ -776,7 +777,7 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public boolean passwordEqual(String password) {
-        return this.password.equals(password);
+        return isPasswordEqual(password,true);
     }
 
     @Override
