@@ -2,6 +2,7 @@ package railo.commons.net.http;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 import railo.commons.io.TemporaryStream;
 import railo.commons.io.res.Resource;
@@ -55,7 +56,7 @@ public class HTTPEngine {
     
     public static HTTPResponse post(URL url) throws IOException {
     	if(use4) return HTTPEngine4Impl.post(url, null, null, -1,MAX_REDIRECT, null, null, null, null);
-    	return HTTPEngine3Impl.post(url, null, null, -1,MAX_REDIRECT, null, null, null, null);
+    	return HTTPEngine3Impl.post(url, null, null, -1,MAX_REDIRECT, null, null, null, null,null);
     }
 	
 	public static HTTPResponse get(URL url, String username, String password, long timeout, int maxRedirect,
@@ -65,9 +66,9 @@ public class HTTPEngine {
     }
     
     public static HTTPResponse post(URL url, String username, String password, long timeout, int maxRedirect,
-        String charset, String useragent, ProxyData proxy, Header[] headers) throws IOException {
-    	if(use4) return HTTPEngine4Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
-    	return HTTPEngine3Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
+        String charset, String useragent, ProxyData proxy, Header[] headers, Map<String,String> params) throws IOException {
+    	if(use4) return HTTPEngine4Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,params);
+    	return HTTPEngine3Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,params);
     }
     
     public static HTTPResponse head(URL url, String username, String password, int timeout, int maxRedirect,

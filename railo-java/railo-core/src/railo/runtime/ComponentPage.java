@@ -1,8 +1,10 @@
 package railo.runtime;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -10,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -44,6 +47,7 @@ import railo.runtime.rest.RestUtil;
 import railo.runtime.rest.Result;
 import railo.runtime.rest.path.Path;
 import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
@@ -51,6 +55,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
@@ -66,8 +71,7 @@ import railo.runtime.type.util.UDFUtil;
 public abstract class ComponentPage extends PagePlus  {
 	
 	private static final long serialVersionUID = -3483642653131058030L;
-	
-	public static final railo.runtime.type.Collection.Key METHOD = KeyConstants._method;
+
 	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.intern("Id16hohohh");
 
 	private long lastCheck=-1;
@@ -156,7 +160,7 @@ public abstract class ComponentPage extends PagePlus  {
             	}
     			// WDDX
                 else if((method=getURLorForm(pc, KeyConstants._method, null))!=null) {
-                    callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
+                	callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
             		//close(pc);
                     return;
                 }
@@ -175,6 +179,13 @@ public abstract class ComponentPage extends PagePlus  {
                 else if((method=getURLorForm(pc, KeyConstants._method, null))!=null) {
                     callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
                     //close(pc); 
+                    return;
+                }
+                
+                if(qs!=null) {
+                	int rf = UDFUtil.toReturnFormat(qs.trim(),-1);
+                	if(rf!=-1) callCFCMetaData(pc,component,rf);
+            		//close(pc);
                     return;
                 } 
             }
@@ -455,9 +466,9 @@ public abstract class ComponentPage extends PagePlus  {
 		if(rtn!=null && !hasContent){
 			Props props = new Props();
         	props.format=result.getFormat();
-        	
+        	Charset cs = getCharset(pc);
         	if(result.hasFormatExtension()){
-        		setFormat(pc.getHttpServletResponse(), props.format);
+        		setFormat(pc.getHttpServletResponse(), props.format,cs);
     			pc.forceWrite(convertResult(pc, props, null, rtn));
         	}
         	else {
@@ -465,7 +476,7 @@ public abstract class ComponentPage extends PagePlus  {
             		int f = MimeType.toFormat(best, -1);
             		if(f!=-1) {
             			props.format=f;
-            			setFormat(pc.getHttpServletResponse(), f);
+            			setFormat(pc.getHttpServletResponse(), f,cs);
             			pc.forceWrite(convertResult(pc, props, null, rtn));
             		}
             		else {
@@ -552,7 +563,7 @@ public abstract class ComponentPage extends PagePlus  {
     	Struct url=StructUtil.merge(new Struct[]{pc.formScope(),pc.urlScope()});
         // define args
         url.removeEL(KeyConstants._fieldnames);
-        url.removeEL(METHOD);
+        url.removeEL(KeyConstants._method);
         Object args=url.get(KeyConstants._argumentCollection,null);
         Object returnFormat=url.get(KeyConstants._returnFormat,null);
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
@@ -562,9 +573,10 @@ public abstract class ComponentPage extends PagePlus  {
         }
         
       //content-type
+        Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
         Props props = getProps(pc, o, returnFormat);
-        if(!props.output) setFormat(pc.getHttpServletResponse(),props.format);
+        if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
         	
         
         Object rtn=null;
@@ -607,32 +619,36 @@ public abstract class ComponentPage extends PagePlus  {
         		pc.variablesScope().setEL("AMF-Forward", rtn);
         	}
         	else {
-        		pc.forceWrite(convertResult(pc, props, queryFormat, rtn));
+        		((PageContextImpl)pc).forceWrite(convertResult(pc, props, queryFormat, rtn));
         	}
         }
         
     }
     
-	private void setFormat(HttpServletResponse rsp, int format) {
-    	switch(format){
+	private void setFormat(HttpServletResponse rsp, int format, Charset charset) {
+    	String strCS;
+		if(charset==null) strCS="";
+    	else strCS="; charset="+charset.displayName();
+		
+		switch(format){
         case UDF.RETURN_FORMAT_WDDX:
-        	rsp.setContentType("text/xml; charset=UTF-8");
+        	rsp.setContentType("text/xml"+strCS);
         	rsp.setHeader("Return-Format", "wddx");
         break;
         case UDF.RETURN_FORMAT_JSON:
-        	rsp.setContentType("application/json");
+        	rsp.setContentType("application/json"+strCS);
         	rsp.setHeader("Return-Format", "json");
         break;
         case UDF.RETURN_FORMAT_PLAIN:
-        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setContentType("text/plain"+strCS);
         	rsp.setHeader("Return-Format", "plain");
         break;
         case UDF.RETURN_FORMAT_XML:
-        	rsp.setContentType("text/xml; charset=UTF-8");
+        	rsp.setContentType("text/xml"+strCS);
         	rsp.setHeader("Return-Format", "xml");
         break;
         case UDF.RETURN_FORMAT_SERIALIZE:
-        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setContentType("text/plain"+strCS);
         	rsp.setHeader("Return-Format", "cfml");
         break;
         }
@@ -704,7 +720,7 @@ public abstract class ComponentPage extends PagePlus  {
     		}
             return prefix+converter.serialize(pc,rtn,byColumn);
 		}
-		// Serialize
+		// CFML
 		else if(UDF.RETURN_FORMAT_SERIALIZE==props.format) {
 			ScriptConverter converter = new ScriptConverter(false);
 			return converter.serialize(rtn);
@@ -746,6 +762,96 @@ public abstract class ComponentPage extends PagePlus  {
 		Object o=c.get(methodName,null);
 		if(o instanceof UDF) return ((UDF) o).getFunctionArguments();
 		return null;
+	}
+	
+	private void callCFCMetaData(PageContext pc, Component cfc, int format) throws IOException, PageException, ConverterException {
+		ComponentAccess ca = ComponentUtil.toComponentAccess(cfc);
+		ComponentWrap cw = new ComponentWrap(Component.ACCESS_REMOTE,ca);  
+		ComponentScope scope = cw.getComponentScope();
+		Struct rtn=new StructImpl(),sctUDF,sctArg;
+		Array arrArg;
+		Iterator<Object> it = scope.valueIterator();
+		Object v;
+		UDF udf;
+		FunctionArgument[] args;
+		while(it.hasNext()){
+				v=it.next();
+					// UDF
+				if(v instanceof UDF) {
+					udf=(UDF) v; 
+        		sctUDF=new StructImpl();
+        		arrArg=new ArrayImpl();
+        		rtn.setEL(udf.getFunctionName(), sctUDF);
+        		args = udf.getFunctionArguments();
+        		for(int i=0;i<args.length;i++){
+        			sctArg=new StructImpl();
+        			arrArg.appendEL(sctArg);
+        			sctArg.setEL(KeyConstants._name, args[i].getName().getString());
+        			sctArg.setEL(KeyConstants._type, args[i].getTypeAsString());
+        			sctArg.setEL(KeyConstants._required, args[i].isRequired());
+        			if(!StringUtil.isEmpty(args[i].getHint()))sctArg.setEL(KeyConstants._hint, args[i].getHint());
+        		} 
+        		sctUDF.set(KeyConstants._arguments, arrArg);
+        		sctUDF.set(KeyConstants._returntype, udf.getReturnTypeAsString());
+        		
+        	}
+		}
+        
+        String serialized=null;
+        // WDDX
+		if(UDF.RETURN_FORMAT_WDDX==format) {
+			WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false,false);
+            converter.setTimeZone(pc.getTimeZone());
+            serialized=  converter.serialize(rtn);
+		}
+		
+        // JSON
+		else if(UDF.RETURN_FORMAT_JSON==format) {
+        	boolean byColumn = false;
+    		JSONConverter converter = new JSONConverter(false);
+    		serialized= converter.serialize(pc,rtn,byColumn);
+    		
+        }
+        // CFML
+		else if(UDF.RETURN_FORMAT_SERIALIZE==format) {
+			ScriptConverter converter = new ScriptConverter(false);
+			serialized=converter.serialize(rtn);
+		}
+    	// XML
+		else if(UDF.RETURN_FORMAT_XML==format) {
+			XMLConverter converter = new XMLConverter(pc.getTimeZone(),false);
+            converter.setTimeZone(pc.getTimeZone());
+            serialized=converter.serialize(rtn);
+		}
+		// Plain
+		else if(UDF.RETURN_FORMAT_PLAIN==format) {
+			serialized= Caster.toString(rtn);
+		}
+        
+        
+        
+        Charset cs = getCharset(pc);
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(serialized.getBytes(cs));
+		OutputStream os=null;
+		try {
+			os=pc.getResponseStream();
+			setFormat(pc.getHttpServletResponse(), format, cs);
+			IOUtil.copy(bais, os, false,false);
+			
+		}
+		finally {
+			IOUtil.flushEL(os);
+            IOUtil.closeEL(os);
+            ((PageContextImpl)pc).getRootOut().setClosed(true);
+		}
+	}
+
+	private Charset getCharset(PageContext pc) {
+		HttpServletResponse rsp = pc.getHttpServletResponse();
+        String str = rsp.getCharacterEncoding();
+        if(StringUtil.isEmpty(str)) str=pc.getConfig().getWebCharset();
+        return CharsetUtil.toCharset(str, CharsetUtil.UTF8);
 	}
 
 	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {

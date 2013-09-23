@@ -20,6 +20,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.http.HTTPClient;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
@@ -52,7 +53,7 @@ public final class CreateObject implements Function {
 				return doCOM(pc,className);
 			}
         // Component
-            if(type.equals("component")) {
+            if(type.equals("component") || type.equals("cfc")) {
                 return doComponent(pc,className);
             }
         // Webservice
@@ -80,6 +81,30 @@ public final class CreateObject implements Function {
             	}
                 return doWebService(pc,className,user,pass,proxy);
             }
+            /*if(type.equals("http")) {
+            	String user=null;
+            	String pass=null;
+            	ProxyDataImpl proxy=null;
+            	if(context!=null){
+            		Struct args=(serverName!=null)?Caster.toStruct(serverName):Caster.toStruct(context);
+            		// basic security
+            		user=Caster.toString(args.get("username",null));
+            		pass=Caster.toString(args.get("password",null));
+            		
+            		// proxy
+            		String proxyServer=Caster.toString(args.get("proxyServer",null));
+            		String proxyPort=Caster.toString(args.get("proxyPort",null));
+            		String proxyUser=Caster.toString(args.get("proxyUser",null));
+            		if(StringUtil.isEmpty(proxyUser)) proxyUser=Caster.toString(args.get("proxyUsername",null));
+            		String proxyPassword=Caster.toString(args.get("proxyPassword",null));
+            		
+            		if(!StringUtil.isEmpty(proxyServer)){
+            			proxy=new ProxyDataImpl(proxyServer,Caster.toIntValue(proxyPort,-1),proxyUser,proxyPassword);
+            		}            		
+            		
+            	}
+                return doHTTP(pc,className,user,pass,proxy);
+            }*/
         // .net
             if(type.equals(".net") || type.equals("dotnet")) {
                 return doDotNet(pc,className);
@@ -157,9 +182,15 @@ public final class CreateObject implements Function {
     	// TODO CF8 impl. alle neuen attribute für wsdl
     	return new RPCClient(wsdlUrl);
     } 
-    
+
     public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
     	// TODO CF8 impl. alle neuen attribute für wsdl
     	return new RPCClient(wsdlUrl,username,password,proxy);
+    } 
+    public static Object doHTTP(PageContext pc,String httpUrl) throws PageException {
+    	return new HTTPClient(httpUrl,null,null,null);
+    } 
+    public static Object doHTTP(PageContext pc,String httpUrl,String username,String password, ProxyData proxy) throws PageException {
+    	return new HTTPClient(httpUrl,username,password,proxy);
     } 
 }

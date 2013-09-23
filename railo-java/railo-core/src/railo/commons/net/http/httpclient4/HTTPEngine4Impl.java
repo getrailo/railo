@@ -124,13 +124,10 @@ public class HTTPEngine4Impl {
     			e = it.next();
     			list.add(new BasicNameValuePair(e.getKey(),e.getValue()));
     		}
-    		if(StringUtil.isEmpty(charset))
-    			charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    		if(StringUtil.isEmpty(charset)) charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    		
     		post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(list,charset));
     	}
-    	
-    	
-    	
     	return _invoke(url,post, username, password, timeout,maxRedirect, charset, useragent, proxy, headers);
     }
     
@@ -236,7 +233,6 @@ public class HTTPEngine4Impl {
         HttpContext context=setCredentials(client,hh, username, password,false);  
         setProxy(client,request,proxy);
         if(context==null)context = new BasicHttpContext();
-		
         return new HTTPResponse4Impl(url,context,request,client.execute(request,context));
     }
 	
