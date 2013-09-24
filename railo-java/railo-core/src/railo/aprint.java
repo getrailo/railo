@@ -439,9 +439,9 @@ public class aprint {
             while(it.hasNext()) {
                 Object key = it.next();
 
-                ps.print(key);
+                _(ps,key);
                 ps.print(":");
-                ps.print(map.get(key));
+                _(ps,map.get(key));
             }
             ps.println("}");
         } 
@@ -450,9 +450,9 @@ public class aprint {
 	        while(it.hasNext()) {
 	            Object key = it.next();
 	            ps.print("	");
-	            ps.print(key);
+	            _(ps,key);
 	            ps.print(":");
-	            ps.print(map.get(key));
+	            _(ps,map.get(key));
 	            ps.println(";");
 	        }
 	        ps.println("}");
