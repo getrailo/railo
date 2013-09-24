@@ -205,7 +205,11 @@ public final class ScriptConverter extends ConverterSupport {
      * @throws ConverterException
      */
     private void _serializeMap(Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
-        sb.append(goIn());
+        if(map instanceof Serializable) {
+        	_serializeSerializable((Serializable)map,sb);
+        	return;
+        }
+    	sb.append(goIn());
         sb.append("{");
         
         Iterator it=map.keySet().iterator();

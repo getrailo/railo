@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -14,8 +16,12 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.URLImpl;
+import railo.runtime.type.scope.util.ScopeUtil;
 import railo.runtime.util.EnumerationWrapper;
 
 /**
@@ -194,6 +200,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			}
 			
 			firstRead=false;
+			
 			if(isToBig(getContentLength())) {
 				return super.getInputStream();
 			}
@@ -217,6 +224,33 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return new ServletInputStreamDummy(barr);	
 	}
 	
+	@Override
+	public Map<String,String[]> getParameterMap() {
+		PageContext pc = ThreadLocalPageContext.get();
+		FormImpl form = (FormImpl) pc.formScope();
+		URLImpl url= (URLImpl) pc.urlScope();
+		
+		return ScopeUtil.getParameterMap(
+				new URLItem[][]{form.getRaw(),url.getRaw()}, 
+				new String[]{form.getEncoding(),url.getEncoding()});
+	}
+
+	@Override
+	public Enumeration<String> getParameterNames() {
+		return new ItasEnum<String>(getParameterMap().keySet().iterator());
+	}
+
+	@Override
+	public String[] getParameterValues(String name) {
+		PageContext pc = ThreadLocalPageContext.get();
+		FormImpl form = (FormImpl) pc.formScope();
+		URLImpl url= (URLImpl) pc.urlScope();
+		
+		return ScopeUtil.getParameterValues(
+				new URLItem[][]{form.getRaw(),url.getRaw()}, 
+				new String[]{form.getEncoding(),url.getEncoding()},name);
+	}
+
 	private boolean isToBig(int contentLength) {
 		if(contentLength<MIN_STORAGE_SIZE) return false;
 		if(contentLength>MAX_STORAGE_SIZE) return true;
@@ -264,5 +298,24 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		}
 		disconnected=true;
 		req=null;
+	}
+	
+	static class ItasEnum<E> implements Enumeration<E> {
+
+		private Iterator<E> it;
+
+		public ItasEnum(Iterator<E> it){
+			this.it=it;
+		}
+		@Override
+		public boolean hasMoreElements() {
+			return it.hasNext();
+		}
+
+		@Override
+		public E nextElement() {
+			return it.next();
+		}
+		
 	}
 }
