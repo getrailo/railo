@@ -228,7 +228,7 @@ public final class FileWrapper extends File implements Resource {
 		try {
 			if(res instanceof File) return ((File)res).renameTo(dest);
 			if(dest instanceof Resource) return res.renameTo((Resource)dest);
-			ResourceUtil.moveTo(this, ResourceUtil.toResource(dest));
+			ResourceUtil.moveTo(this, ResourceUtil.toResource(dest),true);
 			return true;
 		}
 		catch(IOException ioe) {

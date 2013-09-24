@@ -24,10 +24,9 @@ public class DirectoryCopy implements Function {
 	}
 	
 	public static String call(PageContext pc , String source, String destination,boolean recurse, Object filter) throws PageException {
-
 		Resource src = ResourceUtil.toResourceNotExisting(pc ,source);
 		ResourceAndResourceNameFilter fi = filter==null?null:UDFFilter.createResourceAndResourceNameFilter(filter);
-		Directory.actionCopy(pc, src, destination, null, null, S3Constants.STORAGE_UNKNOW, fi, recurse, Directory.NAMECONFLICT_UNDEFINED);
+		Directory.actionCopy(pc, src, destination, null,true, null, S3Constants.STORAGE_UNKNOW, fi, recurse, Directory.NAMECONFLICT_UNDEFINED);
 		return null;
 	}
 	

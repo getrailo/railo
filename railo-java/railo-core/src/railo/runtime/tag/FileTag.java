@@ -112,8 +112,9 @@ public final class FileTag extends BodyTagImpl {
 	** accept = "image/jpg, application/msword"
 	** The browser uses file extension to determine file type. */
 	private String accept;
-	
+
 	private boolean strict=true;
+	private boolean createPath=false;
     
     private String result=null;
 	
@@ -141,6 +142,7 @@ public final class FileTag extends BodyTagImpl {
 		nameconflict=NAMECONFLICT_UNDEFINED;
 		accept=null;
 		strict=true;
+		createPath=false;
 		securityManager=null;
         result=null;
         serverPassword=null;
@@ -321,6 +323,9 @@ public final class FileTag extends BodyTagImpl {
 
 	public void setStrict(boolean strict)	{
 		this.strict=strict;
+	}
+	public void setCreatepath(boolean createPath)	{
+		this.createPath=createPath;
 	}
     
     /**
@@ -613,7 +618,7 @@ public final class FileTag extends BodyTagImpl {
     private void actionWrite() throws PageException {
         if(output==null)
             throw new ApplicationException("attribute output is not defined for tag file");
-        checkFile(!strict,true,false,true);
+        checkFile(createPath,true,false,true);
         
         try {
         	if(output instanceof InputStream)	{
@@ -655,7 +660,7 @@ public final class FileTag extends BodyTagImpl {
      * @throws PageException
      */
     private void actionTouch() throws PageException {
-        checkFile(!strict,true,true,true);
+        checkFile(createPath,true,true,true);
         
         try {
             ResourceUtil.touch(file);
@@ -679,7 +684,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionAppend() throws PageException {
 		if(output==null)
 			throw new ApplicationException("attribute output is not defined for tag file");
-		checkFile(!strict,true,false,true);
+		checkFile(createPath,true,false,true);
 		
         try {
 

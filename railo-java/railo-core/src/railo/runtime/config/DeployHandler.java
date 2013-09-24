@@ -131,7 +131,7 @@ public class DeployHandler {
 		
 		try {
 			ResourceUtil.deleteContent(trgDir, null);
-			ResourceUtil.moveTo(archive, trgFile);
+			ResourceUtil.moveTo(archive, trgFile,true);
 			
 			log.info("archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
 			if("regular".equalsIgnoreCase(type))
@@ -243,7 +243,7 @@ public class DeployHandler {
 			Resource trgDir = config.getConfigDir().getRealResource("extensions").getRealResource(type).getRealResource(name);
 			trgFile = trgDir.getRealResource(ext.getName());
 			trgDir.mkdirs();
-			ResourceUtil.moveTo(ext, trgFile);
+			ResourceUtil.moveTo(ext, trgFile,true);
 		}
 	    catch(Throwable t){
 	    	log.error("extension", ExceptionUtil.getStacktrace(t, true));
@@ -358,7 +358,7 @@ public class DeployHandler {
 		
 		try {
 			if(dst.exists()) dst.remove(true);
-			ResourceUtil.moveTo(archive, dst);
+			ResourceUtil.moveTo(archive, dst,true);
 		}
 		catch (Throwable t) {}
 		

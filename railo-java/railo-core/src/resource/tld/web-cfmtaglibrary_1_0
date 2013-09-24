@@ -2274,6 +2274,15 @@ Example:
 			<rtexprvalue>true</rtexprvalue>
 			<description>Used with action = "copy". Ignored by all other actions. Optional values are: [Overwrite]|Error.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>createPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+	   			if set to false, expects all parent directories to exist, true (default) will generate necessary directories
+	   		</description>
+		</attribute>
 	</tag>
 	<!-- Div -->
 	<tag>
@@ -3221,8 +3230,22 @@ If omitted, the file's attributes are maintained.</description>
 			<name>strict</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>if set to true (default), only mimetypes are supported.</description>
+			<description>
+   for action "upload" and "uploadAll":
+   if set to true (default), only mimetypes are supported.
+   </description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>createPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+   for action "append", "touch" and "write":
+   if set to false (default), expects all parent directories to exist, true will generate necessary directories
+   </description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>file</name>

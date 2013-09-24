@@ -115,6 +115,8 @@ public final class Directory extends TagImpl  {
 	private String destination; 
 
 	private int nameconflict = NAMECONFLICT_UNDEFINED;
+	
+	private boolean createPath=true;
 
 
 	@Override
@@ -139,6 +141,7 @@ public final class Directory extends TagImpl  {
         listInfo=LIST_INFO_QUERY_ALL;
         
         nameconflict = NAMECONFLICT_UNDEFINED;
+        createPath=true;
 	}
 
 	
@@ -152,7 +155,10 @@ public final class Directory extends TagImpl  {
 	
 
 	
-	
+
+	public void setCreatepath(boolean createPath) throws PageException	{
+		this.createPath=createPath;
+	}
 	
 
 	public void setFilter(Object filter) throws PageException	{
@@ -325,7 +331,6 @@ public final class Directory extends TagImpl  {
 			"valid values are [error,merge,overwrite]");
 	}
 	
-
 	@Override
 	public int doStartTag() throws PageException	{
 
@@ -334,15 +339,15 @@ public final class Directory extends TagImpl  {
 			Object res=actionList(pageContext,directory,serverPassword,type,filter,nameFilter,listInfo,recurse,sort);
 			if(!StringUtil.isEmpty(name) && res!=null)pageContext.setVariable(name,res);
 		}
-		else if(action.equals("create")) actionCreate(pageContext,directory,serverPassword,true,mode,acl,storage);
+		else if(action.equals("create")) actionCreate(pageContext,directory,serverPassword,createPath,mode,acl,storage);
 		else if(action.equals("delete")) actionDelete(pageContext,directory,recurse,serverPassword);
 		else if(action.equals("forcedelete")) actionDelete(pageContext,directory,true,serverPassword);
-		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
+		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,createPath,acl,storage);
 		else if(action.equals("copy")) {
 			if(StringUtil.isEmpty(destination,true) && !StringUtil.isEmpty(strNewdirectory,true)) {
 				destination=strNewdirectory.trim();
 			}
-			actionCopy(pageContext,directory,destination,serverPassword,acl,storage,filter,recurse, nameconflict);
+			actionCopy(pageContext,directory,destination,serverPassword,createPath,acl,storage,filter,recurse, nameconflict);
 		}
 		else throw new ApplicationException("invalid action ["+action+"] for the tag directory");
 			
@@ -557,7 +562,7 @@ public final class Directory extends TagImpl  {
 	 * create a directory
 	 * @throws PageException 
 	 */
-    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean doParent,int mode,Object acl,int storage) throws PageException {
+    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean createPath,int mode,Object acl,int storage) throws PageException {
 
     	SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -570,7 +575,7 @@ public final class Directory extends TagImpl  {
 		}
 		//if(!directory.mkdirs())	throw new ApplicationException("can't create directory ["+directory.toString()+"]");
 		try {
-			directory.createDirectory(doParent);
+			directory.createDirectory(createPath);
 		} catch (IOException ioe) {
 			throw Caster.toPageException(ioe);
 		}
@@ -650,7 +655,7 @@ public final class Directory extends TagImpl  {
 	 * rename a directory to a new Name
 	 * @throws PageException 
 	 */
-	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, Object acl,int storage) throws PageException {
+	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, boolean createPath, Object acl,int storage) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -672,6 +677,15 @@ public final class Directory extends TagImpl  {
 	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
 		if(newdirectory.exists())
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exists");
+		if(createPath) {
+			try {
+				newdirectory.getParentResource().createDirectory(true);
+			}
+			catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+			
+		}
 		try {
 			directory.moveTo(newdirectory);
 		}
@@ -685,7 +699,7 @@ public final class Directory extends TagImpl  {
 	}
 	
 	
-	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword, Object acl,int storage, ResourceFilter filter, boolean recurse, int nameconflict) throws PageException {
+	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword,boolean createPath, Object acl,int storage, ResourceFilter filter, boolean recurse, int nameconflict) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -718,6 +732,11 @@ public final class Directory extends TagImpl  {
 			}
 			else {
 				if(!recurse)filter=new NotResourceFilter(DirectoryResourceFilter.FILTER);
+			}
+			if(!createPath) {
+				Resource p = newdirectory.getParentResource();
+				if(p!=null && !p.exists())
+					throw new ApplicationException("parent directory for ["+newdirectory+"] doesn't exist");
 			}
 			ResourceUtil.copyRecursive(directory, newdirectory,filter);
 		}

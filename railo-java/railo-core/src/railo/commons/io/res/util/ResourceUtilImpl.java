@@ -132,7 +132,7 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 
 	@Override
 	public void moveTo(Resource src, Resource dest) throws IOException {
-		ResourceUtil.moveTo(src, dest);
+		ResourceUtil.moveTo(src, dest,true);
 	}
 
 	@Override

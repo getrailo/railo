@@ -1058,14 +1058,17 @@ public final class ResourceUtil {
 		}
 	}
 	
-	public static void moveTo(Resource src, Resource dest) throws IOException {
+	public static void moveTo(Resource src, Resource dest, boolean useResourceMethod) throws IOException {
 		ResourceUtil.checkMoveToOK(src, dest);
 		
 		if(src.isFile()){
 			try{
-				src.moveTo(dest);
+				if(useResourceMethod)src.moveTo(dest);
 			}
 			catch(IOException e){
+				useResourceMethod=false;
+			}
+			if(!useResourceMethod) {
 				if(!dest.exists()) dest.createFile(false);
 				IOUtil.copy(src,dest);
 				src.remove(false);
@@ -1075,7 +1078,7 @@ public final class ResourceUtil {
 			if(!dest.exists()) dest.createDirectory(false);
 			Resource[] children = src.listResources();
 			for(int i=0;i<children.length;i++){
-				moveTo(children[i],dest.getRealResource(children[i].getName()));
+				moveTo(children[i],dest.getRealResource(children[i].getName()),useResourceMethod);
 			}
 			src.remove(false);
 		}
@@ -1240,7 +1243,7 @@ public final class ResourceUtil {
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
-				else throw new IOException("can't create file ["+resource.getPath()+"], missng parent directory");
+				else throw new IOException("can't create file ["+resource.getPath()+"], missing parent directory");
 			}
 			else if(parent.isFile()) {
 				throw new IOException("can't create directory ["+resource.getPath()+"], parent is a file");
@@ -1268,7 +1271,7 @@ public final class ResourceUtil {
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
-				else throw new IOException("can't create file ["+resource.getPath()+"], missng parent directory");
+				else throw new IOException("can't create file ["+resource.getPath()+"], missing parent directory");
 			}
 			else if(parent.isFile()) {
 				throw new IOException("can't create file ["+resource.getPath()+"], parent is a file");
