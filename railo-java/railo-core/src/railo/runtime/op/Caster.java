@@ -2986,6 +2986,9 @@ public final class Caster {
             return toPageException(((ExecutionException)t).getCause());
         }
         else {
+        	if(t instanceof OutOfMemoryError) {
+        		ThreadLocalPageContext.getConfig().checkPermGenSpace(true);
+        	}
         	//Throwable cause = t.getCause();
         	//if(cause!=null && cause!=t) return toPageException(cause);
         	return new NativeException(t);
