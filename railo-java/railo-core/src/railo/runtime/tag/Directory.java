@@ -678,12 +678,7 @@ public final class Directory extends TagImpl  {
 		if(newdirectory.exists())
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exists");
 		if(createPath) {
-			try {
-				newdirectory.getParentResource().createDirectory(true);
-			}
-			catch (IOException e) {
-				throw Caster.toPageException(e);
-			}
+			newdirectory.getParentResource().mkdirs();
 			
 		}
 		try {
