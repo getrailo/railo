@@ -1093,14 +1093,7 @@ public final class FileTag extends BodyTagImpl {
 			if(create) {
 				Resource parent=file.getParentResource();
 				if(parent!=null && !parent.exists()) {
-					if(createParent) {
-						try {
-							parent.createDirectory(true);
-						}
-						catch (IOException e) {
-							throw Caster.toPageException(e);
-						}
-					}
+					if(createParent) parent.mkdirs();
 					else throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
 				}
 				try {
