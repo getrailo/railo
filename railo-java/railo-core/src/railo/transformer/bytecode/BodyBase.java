@@ -26,7 +26,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	private LinkedList<Statement> statements=new LinkedList<Statement>();
     private Statement last=null;
 	//private int count=-1;
-    private final static int MAX_STATEMENTS=206;
+    private final static int MAX_STATEMENTS=256;
 	
 	/**
 	 * Constructor of the class
@@ -140,7 +140,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
-        		String method= ASMUtil.createOverfowMethod();
+        		String method= ASMUtil.createOverfowMethod(bc.getPage().getMethodCount());
         		ExpressionUtil.visitLine(bc, s.getStart());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
