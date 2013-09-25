@@ -832,8 +832,8 @@ public final class ASMUtil {
 	}*/
 
 
-	public static String createOverfowMethod() {
-		return "_call"+ASMUtil.getId();
+	public static String createOverfowMethod(int id) {
+		return "_call"+StringUtil.addZeros(id,6);
 	}
 	
 	public static boolean isOverfowMethod(String name) {

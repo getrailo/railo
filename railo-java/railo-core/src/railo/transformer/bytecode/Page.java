@@ -378,6 +378,7 @@ public final class Page extends BodyBase {
 	private Resource staticTextLocation;
 	private int len;
 	private int off;
+	private int methodCount=0;
     
 	
 	
@@ -1486,6 +1487,10 @@ public final class Page extends BodyBase {
 		Range r = new Range(off,str.length());
 		off+=str.length();
 		return r;
+	}
+
+	public int getMethodCount() {
+		return ++methodCount;
 	}
 	
 
