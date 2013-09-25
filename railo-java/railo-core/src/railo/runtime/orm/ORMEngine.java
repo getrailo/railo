@@ -34,12 +34,6 @@ public interface ORMEngine {
 
 	public ORMConfiguration getConfiguration(PageContext pc);
 
-
-	public DataSource getDataSource();
-
-
-
-	public String[] getEntityNames();
 	
 	public boolean reload(PageContext pc, boolean force) throws PageException;
 

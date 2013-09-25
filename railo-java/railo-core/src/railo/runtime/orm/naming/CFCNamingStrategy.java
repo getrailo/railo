@@ -17,6 +17,11 @@ public class CFCNamingStrategy implements NamingStrategy {
 	}
 	
 	
+	public Component getComponent() {
+		return cfc;
+	}
+
+
 	@Override
 	public String convertTableName(String tableName) {
 		return call("getTableName",tableName);

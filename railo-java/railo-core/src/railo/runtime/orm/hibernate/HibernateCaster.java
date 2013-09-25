@@ -22,6 +22,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
+import railo.runtime.orm.ORMSession;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -119,10 +120,10 @@ public class HibernateCaster {
 		return name;
 	}
 
-	public static int cascade(HibernateORMEngine engine,String cascade) throws ORMException {
+	public static int cascade(ORMSession session,String cascade) throws ORMException {
 		int c=cascade(cascade,-1);
 		if(c!=-1) return c;
-		throw new HibernateException(engine,"invalid cascade defintion ["+cascade+"], valid values are [all,all-delete-orphan,delete,delete-orphan,refresh,save-update]");
+		throw new ORMException(session,null,"invalid cascade defintion ["+cascade+"], valid values are [all,all-delete-orphan,delete,delete-orphan,refresh,save-update]",null);
 	}
 	
 	public static int cascade(String cascade, int defaultValue) {
@@ -148,10 +149,10 @@ public class HibernateCaster {
 		return defaultValue;
 	}
 
-	public static int collectionType(HibernateORMEngine engine,String strCollectionType) throws ORMException {
+	public static int collectionType(ORMSession session,String strCollectionType) throws ORMException {
 		int ct=collectionType(strCollectionType, -1);
 		if(ct!=-1) return ct;
-		throw new ORMException(engine,"invalid collectionType defintion ["+strCollectionType+"], valid values are [array,struct]");
+		throw new ORMException(session,null,"invalid collectionType defintion ["+strCollectionType+"], valid values are [array,struct]",null);
 	}
 	public static int collectionType(String strCollectionType, int defaultValue) {
 		strCollectionType=strCollectionType.trim().toLowerCase();
@@ -258,9 +259,9 @@ public class HibernateCaster {
 		return defaultValue;
 	}
 	
-	public static String toHibernateType(HibernateORMEngine engine,String type) throws ORMException	{
+	public static String toHibernateType(ORMSession session,String type) throws ORMException	{
 		String res=toHibernateType(type, null);
-		if(res==null) throw new ORMException(engine,"the type ["+type+"] is not supported");
+		if(res==null) throw new ORMException(session,null,"the type ["+type+"] is not supported",null);
 		return res;
 	}
 	
@@ -380,8 +381,8 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	public static Object toSQL(HibernateORMEngine engine,ColumnInfo ci, Object value, RefBoolean isArray) throws PageException {
-		return toSQL(engine, ci.getType(), value,isArray);
+	public static Object toSQL(ColumnInfo ci, Object value, RefBoolean isArray) throws PageException {
+		return toSQL(ci.getType(), value,isArray);
 	}
 	
 	/**
@@ -392,10 +393,10 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	public static Object toSQL(HibernateORMEngine engine,Type type, Object value, RefBoolean isArray) throws PageException {
+	public static Object toSQL(Type type, Object value, RefBoolean isArray) throws PageException {
 		int t = toSQLType(type.getName(), Types.OTHER);
 		if(t==Types.OTHER) return value;
-		return toSQL(engine, t, value,isArray);
+		return toSQL(t, value,isArray);
 	}
 
 	/**
@@ -406,7 +407,7 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	private static Object toSQL(HibernateORMEngine engine,int sqlType, Object value, RefBoolean isArray) throws PageException {
+	private static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
 		if(isArray!=null)isArray.setValue(false);
 		SQLItemImpl item = new SQLItemImpl(value,sqlType);
 		try{
@@ -459,8 +460,8 @@ public class HibernateCaster {
 		
 		if(qry==null) {
 			if(!StringUtil.isEmpty(name))
-				throw new ORMException(session.getEngine(),"there is no entity inheritance that match the name ["+name+"]");
-			throw new ORMException(session.getEngine(),"cannot create query");
+				throw new ORMException(session,null,"there is no entity inheritance that match the name ["+name+"]",null);
+			throw new ORMException(session,null,"cannot create query",null);
 		}
 		return qry;
 	}
@@ -526,7 +527,7 @@ public class HibernateCaster {
 		// check
 		else if(engine.getMode() == ORMEngine.MODE_STRICT){
 			if(!qry.getName().equals(getEntityName(cfc)))
-				throw new ORMException(session.getEngine(),"can only merge entities of the same kind to a query");
+				throw new ORMException(session,null,"can only merge entities of the same kind to a query",null);
 		}
 		
 		// populate

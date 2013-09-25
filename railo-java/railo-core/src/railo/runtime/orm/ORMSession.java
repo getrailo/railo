@@ -3,6 +3,7 @@ package railo.runtime.orm;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
@@ -181,4 +182,9 @@ public interface ORMSession {
 	public Object getRawSession();
 
 	public ORMTransaction getTransaction(boolean autoManage);
+	
+
+	public DataSource getDataSource();
+
+	public String[] getEntityNames(); 
 }

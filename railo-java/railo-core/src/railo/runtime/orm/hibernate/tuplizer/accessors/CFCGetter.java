@@ -16,9 +16,9 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.ORMRuntimeException;
 import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -57,10 +57,10 @@ public class CFCGetter implements Getter {
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 
 			Object rtn = cfc.getComponentScope().get(key,null);
-			return HibernateCaster.toSQL(engine, type, rtn,null);
+			return HibernateCaster.toSQL(type, rtn,null);
 		} 
 		catch (PageException e) {
-			throw new HibernateRuntimeException(e);
+			throw new ORMRuntimeException(e);
 		}
 	}
 	

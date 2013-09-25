@@ -3,8 +3,8 @@ import org.hibernate.EntityNameResolver;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
+import railo.runtime.orm.ORMRuntimeException;
 import railo.runtime.orm.hibernate.HibernateCaster;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
 
 
 public  class CFCEntityNameResolver implements EntityNameResolver {
@@ -19,7 +19,7 @@ public  class CFCEntityNameResolver implements EntityNameResolver {
 			return HibernateCaster.getEntityName(cfc);
 		} catch (PageException e) {
 			//print.printST(e);
-			throw new HibernateRuntimeException(e);
+			throw new ORMRuntimeException(e);
 		}
 	}
 

@@ -2,24 +2,35 @@ package railo.runtime.orm.hibernate;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
+import railo.commons.db.DBUtil;
+import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.component.PropertyImpl;
 import railo.runtime.db.DatasourceConnection;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
+import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.CastableStruct;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
@@ -89,7 +100,7 @@ public class HibernateUtil {
 	public static String validateColumnName(ClassMetadata metaData, String name) throws ORMException {
 		String res = validateColumnName(metaData, name,null);
 		if(res!=null) return res;
-		throw new ORMException("invalid name, there is no property with name ["+name+"] in the entity ["+metaData.getEntityName()+"]",
+		throw new ORMException(null,null,"invalid name, there is no property with name ["+name+"] in the entity ["+metaData.getEntityName()+"]",
 				"valid properties names are ["+railo.runtime.type.util.ListUtil.arrayToList(metaData.getPropertyNames(), ", ")+"]");
 		
 	}
@@ -185,6 +196,113 @@ public class HibernateUtil {
 		if("version".equals(fieldType)) return FIELDTYPE_VERSION;
 		if("collection".equals(fieldType)) return FIELDTYPE_COLLECTION;
 		return defaultValue;
+	}
+	
+
+
+	public static String convertTableName(SessionFactoryData data,String tableName) throws PageException {
+		if(tableName==null) return null;
+		return data.getNamingStrategy().convertTableName(tableName);
+	}
+
+	public static String convertColumnName(SessionFactoryData data,String columnName) throws PageException {
+		if(columnName==null) return null;
+		return data.getNamingStrategy().convertColumnName(columnName);
+	}
+	
+	public static boolean isEntity(ORMConfiguration ormConf,Component cfc, String cfcName, String name) {
+		if(!StringUtil.isEmpty(cfcName)) {
+			if(cfc.equalTo(cfcName)) return true;
+
+			if(cfcName.indexOf('.')!=-1) {
+				String path=cfcName.replace('.', '/')+".cfc";
+				Resource[] locations = ormConf.getCfcLocations();
+				for(int i=0;i<locations.length;i++){
+					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getResource()))
+						return true;
+				}
+				return false;
+			}
+		}
+		
+		if(cfc.equalTo(name)) return true;
+		return name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc));
+	}
+	
+	public static String id(String id) {
+		return id.toLowerCase().trim();
+	}
+	
+	public static Struct checkTable(DatasourceConnection dc, String tableName, SessionFactoryData data) throws PageException {
+		String dbName=dc.getDatasource().getDatabase();
+		try {
+			
+			DatabaseMetaData md = dc.getConnection().getMetaData();
+			Struct rows=checkTableFill(md,dbName,tableName);
+			if(rows.size()==0)	{
+				String tableName2 = checkTableValidate(md,dbName,tableName);
+				if(tableName2!=null)rows=checkTableFill(md,dbName,tableName2);
+			}
+			
+			if(rows.size()==0)	{
+				//ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
+				return null;
+			}
+			return rows;
+		} catch (SQLException e) {
+			throw Caster.toPageException(e);
+		}
+	}
+	
+
+
+	private static Struct checkTableFill(DatabaseMetaData md, String dbName, String tableName) throws SQLException, PageException {
+		Struct rows=new CastableStruct(tableName,Struct.TYPE_LINKED);
+		ResultSet columns = md.getColumns(dbName, null, tableName, null);
+		//print.o(new QueryImpl(columns,""));
+		try{
+			String name;
+			Object nullable;
+			while(columns.next()) {
+				name=columns.getString("COLUMN_NAME");
+				
+				nullable=columns.getObject("IS_NULLABLE");
+				rows.setEL(KeyImpl.init(name),new ColumnInfo(
+						name,
+						columns.getInt("DATA_TYPE"),
+						columns.getString("TYPE_NAME"),
+						columns.getInt("COLUMN_SIZE"),
+						Caster.toBooleanValue(nullable)	
+				));
+			}
+		}
+		finally {
+			DBUtil.closeEL(columns);
+		}// Table susid defined for cfc susid does not exist.
+		
+		return rows;
+	}
+
+	private static String checkTableValidate(DatabaseMetaData md, String dbName,String tableName) {
+
+		ResultSet tables=null;
+        try{
+        	tables = md.getTables(dbName, null, null, null);
+			String name;
+			while(tables.next()) {
+				name=tables.getString("TABLE_NAME");
+				if(name.equalsIgnoreCase(tableName) && StringUtil.indexOfIgnoreCase(tables.getString("TABLE_TYPE"), "SYSTEM")==-1)
+				return name;	
+			}
+		}
+        catch(Throwable t){}
+		finally {
+			DBUtil.closeEL(tables);
+		}
+        return null;
+        
+        
+		
 	}
 	
 }

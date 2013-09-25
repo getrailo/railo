@@ -30,6 +30,7 @@ import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
@@ -52,21 +53,24 @@ import railo.runtime.type.util.CollectionUtil;
 
 public class HibernateORMSession implements ORMSession{
 
-	private final HibernateORMEngine engine;
 	private Session _session;
 	private DatasourceConnection dc;
+	private SessionFactoryData data;
 
-	public HibernateORMSession(HibernateORMEngine engine, SessionFactory factory, DatasourceConnection dc){
-		this.engine=engine;
+	public HibernateORMSession(SessionFactoryData data, DatasourceConnection dc){
+		this.data=data;
 		this.dc=dc;
-		resetSession(factory);
-		//this._session=session;
+		resetSession(data.getFactory());
 	}
 	
 	private Session session(){
 		return _session;
 	}
 
+	public SessionFactoryData getSessionFactoryData(){
+		return data;
+	}
+	
 	private SessionFactory getSessionFactory(PageContext pc){
 		// engine.getSessionFactory(pc);
 		return _session.getSessionFactory();
@@ -83,7 +87,7 @@ public class HibernateORMSession implements ORMSession{
 
 	@Override
 	public ORMEngine getEngine() {
-		return engine;
+		return data.getEngine();
 	}
 	
 	@Override
@@ -92,7 +96,7 @@ public class HibernateORMSession implements ORMSession{
 			session().flush();
 		}
 		catch(ConstraintViolationException cve){
-			PageException pe = HibernateException.toPageException(engine, cve);
+			PageException pe = ORMException.toPageException(this, cve);
 			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
 				//print.o(cve.getConstraintName());
 				((PageExceptionImpl)pe).setAdditional(KeyImpl.init("constraint name"), cve.getConstraintName() );
@@ -125,7 +129,7 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 	public void _delete(PageContext pc, Component cfc) throws PageException {
-		engine.checkExistent(pc,cfc);
+		data.checkExistent(pc,cfc);
 		//Session session = getSession(pc,cfc);
 		
 		try{
@@ -150,14 +154,14 @@ public class HibernateORMSession implements ORMSession{
 					session().saveOrUpdate(name, cfc);
 		}
 		catch(Throwable t){
-			throw HibernateException.toPageException(getEngine(), t);
+			throw ORMException.toPageException(this, t);
 		}
 	}
 	
 	@Override
 	public void reload(PageContext pc,Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
-		engine.checkExistent(pc,cfc);
+		data.checkExistent(pc,cfc);
 		//Session session = getSession(pc,cfc);
 		session().refresh(cfc);
 	}
@@ -165,7 +169,7 @@ public class HibernateORMSession implements ORMSession{
 
 	@Override
 	public Component create(PageContext pc, String entityName)throws PageException {
-		return engine.create(pc,this, entityName,true);
+		return data.getEngine().create(pc,this, entityName,true);
 	}
 	
 	@Override
@@ -264,28 +268,28 @@ public class HibernateORMSession implements ORMSession{
 			Object obj=options.get("maxresults",null);
 			if(obj!=null) {
 				int max=Caster.toIntValue(obj,-1);
-				if(max<0) throw new ORMException(engine,"option [maxresults] has an invalid value ["+obj+"], value should be a number bigger or equal to 0");
+				if(max<0) throw new ORMException(this,null,"option [maxresults] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setMaxResults(max);
 			}
 			// offset
 			obj=options.get("offset",null);
 			if(obj!=null) {
 				int off=Caster.toIntValue(obj,-1);
-				if(off<0) throw new ORMException(engine,"option [offset] has an invalid value ["+obj+"], value should be a number bigger or equal to 0");
+				if(off<0) throw new ORMException(this,null,"option [offset] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setFirstResult(off);
 			}
 			// readonly
 			obj=options.get("readonly",null);
 			if(obj!=null) {
 				Boolean ro=Caster.toBoolean(obj,null);
-				if(ro==null) throw new ORMException(engine,"option [readonly] has an invalid value ["+obj+"], value should be a boolean value");
+				if(ro==null) throw new ORMException(this,null,"option [readonly] has an invalid value ["+obj+"], value should be a boolean value",null);
 				query.setReadOnly(ro.booleanValue());
 			}
 			// timeout
 			obj=options.get("timeout",null);
 			if(obj!=null) {
 				int to=Caster.toIntValue(obj,-1);
-				if(to<0) throw new ORMException(engine,"option [timeout] has an invalid value ["+obj+"], value should be a number bigger or equal to 0");
+				if(to<0) throw new ORMException(this,null,"option [timeout] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setTimeout(to);
 			}
         }
@@ -293,7 +297,7 @@ public class HibernateORMSession implements ORMSession{
 		
 		// params
 		if(params!=null){
-			QueryPlanCache cache=engine.getQueryPlanCache(pc);
+			QueryPlanCache cache=data.getQueryPlanCache();
 			HQLQueryPlan plan = cache.getHQLQueryPlan(hql, false, java.util.Collections.EMPTY_MAP);
 			ParameterMetadata meta = plan.getParameterMetadata();
 			Type type;
@@ -322,7 +326,7 @@ public class HibernateORMSession implements ORMSession{
 						name=(String) names.get(keys[i],null);
 						if(name==null) continue; // param not needed will be ignored
 						type = meta.getNamedParameterExpectedType(name);
-						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						obj=HibernateCaster.toSQL(type, obj,isArray);
 						if(isArray.toBooleanValue())
 							query.setParameterList(name, (Object[])obj,type);
 						else
@@ -352,7 +356,7 @@ public class HibernateORMSession implements ORMSession{
 					}
 					if(meta!=null){
 						type = meta.getOrdinalParameterExpectedType(index+1);
-						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						obj=HibernateCaster.toSQL(type, obj,isArray);
 						// TOOD can the following be done somehow
 						//if(isArray.toBooleanValue())
 						//	query.setParameterList(index, (Object[])obj,type);
@@ -364,7 +368,7 @@ public class HibernateORMSession implements ORMSession{
 					index++;
 				}
 				if(meta.getOrdinalParameterCount()>index)
-					throw new ORMException(engine,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
+					throw new ORMException(this,null,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements",null);
 			}
 		}
 		
@@ -411,17 +415,12 @@ public class HibernateORMSession implements ORMSession{
 	public Component merge(PageContext pc, Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
 		
-		engine.checkExistent(pc,cfc);
+		data.checkExistent(pc,cfc);
 		
 		String name=HibernateCaster.getEntityName(cfc);
 		
 		//Session session = getSession(pc, cfc);
-        try	{
-            return Caster.toComponent(session().merge(name, cfc));
-        }
-        catch(HibernateException e) {
-        	throw new ORMException(e);
-        }
+        return Caster.toComponent(session().merge(name, cfc));
 	}
 	
 
@@ -463,13 +462,13 @@ public class HibernateORMSession implements ORMSession{
 		//Component cfc = create(pc,cfcName);
 		
 		
-		Component cfc=engine.create(pc, this,cfcName,false);
+		Component cfc=data.getEngine().create(pc, this,cfcName,false);
 		
 		String name = HibernateCaster.getEntityName(cfc);
 		Object obj=null;
 		try{
 			ClassMetadata metaData = getSessionFactory(pc).getClassMetadata(name);
-			if(metaData==null) throw new ORMException(engine,"could not load meta information for entity ["+name+"]");
+			if(metaData==null) throw new ORMException(this,null,"could not load meta information for entity ["+name+"]",null);
 			Serializable oId = Caster.toSerializable(
 					Caster.castTo(pc, 
 							metaData
@@ -514,7 +513,7 @@ public class HibernateORMSession implements ORMSession{
 			if(!StringUtil.isEmpty(idName)){
 				Object idValue = scope.get(KeyImpl.init(idName),null);
 				if(idValue!=null){
-					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(engine, idType, idValue,null)));
+					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(idType, idValue,null)));
 				}
 			}
 			criteria.add(Example.create(cfc));
@@ -540,7 +539,7 @@ public class HibernateORMSession implements ORMSession{
 	
 	
 	private Object load(PageContext pc, String cfcName, Struct filter, Struct options, String order, boolean unique) throws PageException {
-		Component cfc=engine.create(pc, this,cfcName,false);
+		Component cfc=data.getEngine().create(pc, this,cfcName,false);
 		
 		String name = HibernateCaster.getEntityName(cfc);
 		ClassMetadata metaData = null;
@@ -566,7 +565,7 @@ public class HibernateORMSession implements ORMSession{
 					entry=(Entry) it.next();
 					colName=HibernateUtil.validateColumnName(metaData, Caster.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData,colName,null);
-					value=HibernateCaster.toSQL(engine,type,entry.getValue(),null);
+					value=HibernateCaster.toSQL(type,entry.getValue(),null);
 					if(value!=null)	criteria.add(Restrictions.eq(colName, value));
 					else 			criteria.add(Restrictions.isNull(colName));
 					
@@ -623,7 +622,7 @@ public class HibernateORMSession implements ORMSession{
 					if(parts.length>1){
 						if(parts[1].equalsIgnoreCase("desc"))isDesc=true;
 						else if(!parts[1].equalsIgnoreCase("asc")){
-							throw new ORMException("invalid order direction defintion ["+parts[1]+"]","valid values are [asc, desc]");
+							throw new ORMException(null,null,"invalid order direction defintion ["+parts[1]+"]","valid values are [asc, desc]");
 						}
 						
 					}
@@ -669,4 +668,17 @@ public class HibernateORMSession implements ORMSession{
 	public ORMTransaction getTransaction(boolean autoManage) {
 		return new HibernateORMTransaction(session(),autoManage);
 	}
+	
+	@Override
+	public DataSource getDataSource(){
+		if(dc==null) {
+			return data.getDataSource();
+		}
+		return dc.getDatasource();
+	}
+
+	@Override
+	public String[] getEntityNames() {
+		return data.getEntityNames();
+	} 
 }

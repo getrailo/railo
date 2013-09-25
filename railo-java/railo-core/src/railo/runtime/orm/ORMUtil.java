@@ -13,7 +13,12 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
+import railo.runtime.db.DataSource;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
@@ -58,9 +63,24 @@ public class ORMUtil {
 	public static void printError(String msg, ORMEngine engine) {
 		printError(null, engine, msg);
 	}
+	
+	public static void printError(Throwable t) {
+		printError(t, null, t.getMessage());
+	}
+
+	public static void printError(String msg) {
+		printError(null, null, msg);
+	}
 
 	private static void printError(Throwable t, ORMEngine engine,String msg) {
-		SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
+		if(engine==null) {
+			try {
+				engine=ORMUtil.getEngine(ThreadLocalPageContext.get());
+			}
+			catch (Throwable tt) {}
+		}
+		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
+		else SystemOut.printDate(msg,SystemOut.ERR);
 		if(t==null)t=new Throwable();
 		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
 	}
@@ -268,4 +288,30 @@ public class ORMUtil {
         	return str.substring(1, str.length() - 1);
         return str;
     }
+	
+	public static DataSource getDataSource(PageContext pc) throws PageException{
+		pc=ThreadLocalPageContext.get(pc);
+		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
+		
+		if(StringUtil.isEmpty(o))
+			throw new ORMException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
+		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+	
+		
+	
+	
+	}
+	
+	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
+		pc=ThreadLocalPageContext.get(pc);
+		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
+		if(StringUtil.isEmpty(o))
+			return defaultValue;
+		try {
+			return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		}
+		catch (PageException e) {
+			return defaultValue;
+		}
+	}
 }

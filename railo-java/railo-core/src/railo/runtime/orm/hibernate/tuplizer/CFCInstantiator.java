@@ -13,10 +13,10 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.ORMRuntimeException;
 import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMSession;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
 
 public class CFCInstantiator implements Instantiator {
 	
@@ -58,7 +58,7 @@ public class CFCInstantiator implements Instantiator {
 			return engine.create(pc, session, entityName, true);
 		} 
 		catch (PageException e) {
-			throw new HibernateRuntimeException(e);
+			throw new ORMRuntimeException(e);
 		}
 	}
 

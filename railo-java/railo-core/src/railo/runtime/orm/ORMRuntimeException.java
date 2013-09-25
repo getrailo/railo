@@ -1,4 +1,4 @@
-package railo.runtime.orm.hibernate;
+package railo.runtime.orm;
 
 import org.hibernate.HibernateException;
 
@@ -13,39 +13,34 @@ import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.IPageException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
-import railo.runtime.orm.ORMException;
+import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.type.Struct;
 
-public class HibernateRuntimeException extends HibernateException  implements IPageException,PageExceptionBox  {
-private PageException pe;
+public class ORMRuntimeException extends HibernateException  implements IPageException,PageExceptionBox  {
+
+	private static final long serialVersionUID = -7745292875775743390L;
+	
+	private PageException pe;
 
 	
 	/**
 	 * constructor of the class
 	 * @param pe page exception to hold
 	 */
-	public HibernateRuntimeException(PageException pe) {
+	public ORMRuntimeException(PageException pe) {
 		super(pe.getMessage());
 		this.pe=pe;
 	}
 	
-	/**
-	 * standart excption constructor
-	 * @param message message of the exception
-	 */
-	public HibernateRuntimeException(HibernateORMEngine engine,String message) {
-		super(message);
-		this.pe=new railo.runtime.orm.hibernate.HibernateException(engine,message);
-	}
 	
 	/**
 	 * standart excption constructor
 	 * @param message message of the exception
 	 * @param detail detailed information to the exception
 	 */
-	public HibernateRuntimeException(String message,String detail) {
+	public ORMRuntimeException(String message,String detail) {
 		super(message);
-		this.pe=new ORMException(message,detail);
+		this.pe=new ORMException(null,null,message,detail);
 	}
 
 	@Override
