@@ -152,14 +152,84 @@
 		<cfset deleteDirectory(variables.basedir)>
 		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
 		
+		<cfdirectory action="rename" directory="#variables.basedir#source/" newDirectory="#variables.basedir#rename/false"  createPath="true">
+		<cfset assertEquals(true,directoryExists("#variables.basedir#rename/false"))>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryRenameNoArg" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
+		
+		<cfset directoryRename("#variables.basedir#source/","#variables.basedir#rename/none")>
+		<cfset assertEquals(true,directoryExists("#variables.basedir#rename/none"))>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryRenameFalse" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
+		
 		<cftry>
-			<cfdirectory action="rename" directory="#variables.basedir#source/" newDirectory="#variables.basedir#rename/false"  createPath="true">
-			<cfcatch>
-				<cfdump var="#cfcatch#" abort>
-			</cfcatch>
+			<cfset directoryRename("#variables.basedir#source/","#variables.basedir#rename/none",false)>
+			<cfset fail("must throw: can't create file [ram:///Jira2620/create/none], missing parent directory ")>
+			<cfcatch></cfcatch>
 		</cftry>
 	</cffunction>
 	
+	<cffunction name="testBIFDirectoryRenameTrue" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
+		
+		<cfset directoryRename("#variables.basedir#source/","#variables.basedir#rename/true",true)>
+		<cfset assertEquals(true,directoryExists("#variables.basedir#rename/true"))>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryCopyNoArg" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
+		<cfset directoryCopy("#variables.basedir#source/", "#variables.basedir#copy/none",true, "")>
+		<cfset assertEquals(true,directoryExists("#variables.basedir#copy/none"))>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryCopyFalse" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
+			
+		<cftry>
+			<cfset directoryCopy("#variables.basedir#source/", "#variables.basedir#copy/false",true, "",false)>
+			<cfset fail("must throw: can't create file [ram:///Jira2620/create/none], missing parent directory ")>
+			<cfcatch></cfcatch>
+		</cftry>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryCopyTrue" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cffile action="write" output="write" file="#variables.basedir#source/test.txt" createPath="true">
+		
+		<cfset directoryCopy("#variables.basedir#source/", "#variables.basedir#copy/true",true, "",true)>
+		<cfset assertEquals(true,directoryExists("#variables.basedir#copy/true"))>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryCreateNoArg" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cfset DirectoryCreate("#variables.basedir#create/none")>
+		<cfset assertEquals(true,directoryExists("#variables.basedir#create/none"))>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryCreateFalse" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		
+		<cftry>
+			<cfset DirectoryCreate("#variables.basedir#create/false")>
+			<cfset fail("must throw: can't create file [ram:///Jira2620/create/false], missing parent directory ")>
+			<cfcatch></cfcatch>
+		</cftry>
+	</cffunction>
+	
+	<cffunction name="testBIFDirectoryCreateTrue" access="public">
+		<cfset deleteDirectory(variables.basedir)>
+		<cfset DirectoryCreate("#variables.basedir#create/none",true)>
+		<cfset assertEquals(true,directoryExists("#variables.basedir#create/none"))>
+	</cffunction>
 	
 <cfscript>
 	public function beforeTests(){
