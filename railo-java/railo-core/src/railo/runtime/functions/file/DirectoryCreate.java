@@ -11,10 +11,9 @@ public class DirectoryCreate {
 	public static String call(PageContext pc , String path) throws PageException {
 		return call(pc, path, true);
 	}
-	public static String call(PageContext pc , String path, boolean doParent) throws PageException {
+	public static String call(PageContext pc , String path, boolean createPath) throws PageException {
 		Resource dir=ResourceUtil.toResourceNotExisting(pc, path,pc.getConfig().allowRealPath());
-		Directory.actionCreate(pc, dir, null, doParent, -1, null, S3Constants.STORAGE_UNKNOW);
-		
-	    return null;
+		Directory.actionCreate(pc, dir, null, createPath, -1, null, S3Constants.STORAGE_UNKNOW);
+		return null;
 	}
 }

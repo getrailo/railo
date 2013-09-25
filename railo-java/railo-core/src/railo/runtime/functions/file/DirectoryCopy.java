@@ -16,17 +16,21 @@ public class DirectoryCopy implements Function {
 	
 
 	public static String call(PageContext pc , String source, String destination) throws PageException {
-		return call(pc, source, destination, false, null);
+		return call(pc, source, destination, false, null, true);
 	}
 
 	public static String call(PageContext pc , String source, String destination,boolean recurse) throws PageException {
-		return call(pc, source, destination, recurse, null);
+		return call(pc, source, destination, recurse, null, true);
 	}
 	
 	public static String call(PageContext pc , String source, String destination,boolean recurse, Object filter) throws PageException {
+		return call(pc, source, destination, recurse, filter, true);
+	}
+	
+	public static String call(PageContext pc , String source, String destination,boolean recurse, Object filter,boolean createPath) throws PageException {
 		Resource src = ResourceUtil.toResourceNotExisting(pc ,source);
 		ResourceAndResourceNameFilter fi = filter==null?null:UDFFilter.createResourceAndResourceNameFilter(filter);
-		Directory.actionCopy(pc, src, destination, null,true, null, S3Constants.STORAGE_UNKNOW, fi, recurse, Directory.NAMECONFLICT_UNDEFINED);
+		Directory.actionCopy(pc, src, destination, null,createPath, null, S3Constants.STORAGE_UNKNOW, fi, recurse, Directory.NAMECONFLICT_UNDEFINED);
 		return null;
 	}
 	

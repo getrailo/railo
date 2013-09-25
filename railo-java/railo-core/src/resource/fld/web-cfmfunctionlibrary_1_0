@@ -3374,6 +3374,12 @@ Filter to be used to filter the data copied:
 - A string that uses "*" as a wildcard, for example, "*.cfm"
 - a UDF (User defined Function) using the following pattern "functioname(String path):boolean", the function is run for every single file, if the function returns true, then the file is will be added to the list otherwise it will be omitted</description>
 		</argument>
+		<argument>
+			<name>createPath</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>if set to false, expects all parent directories to exist, true (default) will generate necessary directories</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3390,7 +3396,8 @@ Filter to be used to filter the data copied:
 			<description>Absolute path of the directory to be created</description>
 		</argument>
 		<argument>
-			<name>doParent</name>
+			<name>createPath</name>
+			<alias>doParent</alias>
 			<type>boolean</type>
 			<required>no</required>
 			<default>true</default>
@@ -3510,6 +3517,12 @@ dec: descending (z to a) sort order.
 			<type>string</type>
 			<required>Yes</required>
 			<description>new name for the directory</description>
+		</argument>
+		<argument>
+			<name>createPath</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>if set to false, expects all parent directories to exist, true (default) will generate necessary directories</description>
 		</argument>
 		<return>
 			<type>void</type>
