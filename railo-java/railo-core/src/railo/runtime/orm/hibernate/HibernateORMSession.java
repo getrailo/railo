@@ -1,6 +1,7 @@
 package railo.runtime.orm.hibernate;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
+import org.hibernate.JDBCException;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.QueryException;
 import org.hibernate.Session;
@@ -117,7 +119,7 @@ public class HibernateORMSession implements ORMSession{
 			}
 			catch(Throwable t){
 				if(trans!=null)trans.rollback();
-				throw Caster.toPageException(t);
+				throw _improveException(t);
 			}
 			if(trans!=null)trans.commit();
 		}
@@ -132,7 +134,7 @@ public class HibernateORMSession implements ORMSession{
 			session().delete(HibernateCaster.getEntityName(cfc), cfc);
 		}
 		catch(Throwable t){
-			throw Caster.toPageException(t);
+			throw _improveException(t);
 		}
 	}
 	
@@ -371,27 +373,34 @@ public class HibernateORMSession implements ORMSession{
 		
 		
 		// select
-		if(StringUtil.startsWithIgnoreCase(hql,"select") || StringUtil.startsWithIgnoreCase(hql,"from")){
-			if(unique){
-				return uniqueResult(query);
+		try {
+			if(StringUtil.startsWithIgnoreCase(hql,"select") || StringUtil.startsWithIgnoreCase(hql,"from")){
+				if(unique){
+					return uniqueResult(query);
+				}
+				return query.list();
 			}
-			
-			return query.list();
+		    // update
+			return Caster.toDouble(query.executeUpdate());
+		} catch (Throwable t) {
+			throw _improveException(t);
 		}
-	    // update
-		return Caster.toDouble(query.executeUpdate());
 	}
 	
 	
 	
-	private Object uniqueResult(org.hibernate.Query query) {
-		try{
-			return query.uniqueResult();
-		}
-		catch(NonUniqueResultException e){
-			List list = query.list();
-			if(list.size()>0) return list.iterator().next();
-			throw e;
+	private Object uniqueResult(org.hibernate.Query query) throws PageException {
+		try {
+			try{
+				return query.uniqueResult();
+			}
+			catch(NonUniqueResultException e){
+				List list = query.list();
+				if(list.size()>0) return list.iterator().next();
+				throw e;
+			}
+		} catch (Throwable t) {
+			throw _improveException(t);
 		}
 	}
 
@@ -479,7 +488,7 @@ public class HibernateORMSession implements ORMSession{
 			obj=session().get(name,oId);
 		}
 		catch(Throwable t){
-			throw Caster.toPageException(t);
+			throw _improveException(t);
 		}
 		
 		return (Component) obj;
@@ -531,7 +540,7 @@ public class HibernateORMSession implements ORMSession{
 		 }
 		 catch(Throwable t){
 			// trans.rollback();
-			throw Caster.toPageException(t);
+			throw _improveException(t); 
 		 }
 		 //trans.commit();
 
@@ -636,11 +645,15 @@ public class HibernateORMSession implements ORMSession{
 			}
 			
 			// execute
-			if(!unique){
-				rtn = HibernateCaster.toCFML(criteria.list());
-			}
-			else {
-				rtn= HibernateCaster.toCFML(criteria.uniqueResult());
+			try {
+				if(!unique){
+					rtn = HibernateCaster.toCFML(criteria.list());
+				}
+				else {
+					rtn= HibernateCaster.toCFML(criteria.uniqueResult());
+				}
+			} catch (Throwable t) {
+				throw _improveException(t);
 			}
 			
 			
@@ -668,5 +681,25 @@ public class HibernateORMSession implements ORMSession{
 	@Override
 	public ORMTransaction getTransaction(boolean autoManage) {
 		return new HibernateORMTransaction(session(),autoManage);
+	}
+
+	
+	private PageException _improveException(Throwable t) {
+		PageException pe;
+		if (t instanceof JDBCException) {
+			JDBCException j = (JDBCException)t;
+			String message = j.getMessage(); 
+			Throwable cause = j.getCause();
+			SQLException sqle;
+			if (cause != null) {
+				message += " [" + cause.getMessage() + "]";
+			}
+			message += " --> SQL: [" + j.getSQL() + "]";			
+			sqle = new SQLException(message,j.getSQLState(),j.getErrorCode(),j);
+			pe = Caster.toPageException(sqle);
+		} else {
+			pe = Caster.toPageException(t);
+		}
+		return pe;
 	}
 }
