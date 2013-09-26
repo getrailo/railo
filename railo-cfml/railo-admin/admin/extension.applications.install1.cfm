@@ -23,7 +23,7 @@
 	<cfset dest=manager.createUIDFolder(url.uid)>
 
 	<!--- copy railo extension package to destination directory --->
-	<cfset app=manager.copyAppFile(detail.data,dest,isDefined('url.trial') and url.trial)>
+	<cfset app=manager.copyAppFile(detail.data,dest,isDefined('url.trial') and isBoolean(app.trial) and url.trial EQ true)>
 </cfsilent>
 
 <cfif (not isDefined('app.url') or not len(app.url)) and not FileExists(app.destFile)>
