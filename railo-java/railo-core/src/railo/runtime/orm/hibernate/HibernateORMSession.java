@@ -386,14 +386,17 @@ public class HibernateORMSession implements ORMSession{
 	
 	
 	
-	private Object uniqueResult(org.hibernate.Query query) {
+	private Object uniqueResult(org.hibernate.Query query) throws PageException {
 		try{
 			return query.uniqueResult();
 		}
 		catch(NonUniqueResultException e){
 			List list = query.list();
 			if(list.size()>0) return list.iterator().next();
-			throw e;
+			throw CommonUtil.toPageException(e);
+		}
+		catch(Throwable t){
+			throw CommonUtil.toPageException(t);
 		}
 	}
 

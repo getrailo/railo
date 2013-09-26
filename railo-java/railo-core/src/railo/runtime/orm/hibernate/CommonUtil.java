@@ -1,12 +1,16 @@
 package railo.runtime.orm.hibernate;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
+import org.hibernate.JDBCException;
 import org.w3c.dom.Node;
 
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.db.SQL;
+import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -97,7 +101,19 @@ public class CommonUtil {
 	}
 	
 	public static PageException toPageException(Throwable t) {
-		return caster().toPageException(t);
+		if (!(t instanceof JDBCException))
+			return caster().toPageException(t);
+		
+		
+		JDBCException j = (JDBCException)t;
+		String message = j.getMessage(); 
+		Throwable cause = j.getCause();
+		SQLException sqle;
+		if(cause != null) {
+			message += " [" + cause.getMessage() + "]";
+		}
+		return CFMLEngineFactory.getInstance().getExceptionUtil().createDatabaseException(message, new SQLImpl(j.getSQL()));
+		
 	}
 	public static Serializable toSerializable(Object obj) throws PageException {
 		return caster().toSerializable(obj);
@@ -146,6 +162,63 @@ public class CommonUtil {
 		if(caster==null)
 			caster=CFMLEngineFactory.getInstance().getCastUtil();
 		return caster;
+	}
+	
+
+	/**
+	 * represents a SQL Statement with his defined arguments for a prepared statement
+	 */
+	static class SQLImpl implements SQL {
+	    
+	    private String strSQL;
+	    
+	    /**
+	     * Constructor only with SQL String
+	     * @param strSQL SQL String
+	     */
+	    public SQLImpl(String strSQL) {
+	        this.strSQL=strSQL;
+	    }
+	    
+	    
+	    public void addItems(SQLItem item) {
+	    	
+	    }
+	    
+	    @Override
+	    public SQLItem[] getItems() {
+	        return new SQLItem[0];
+	    }
+
+	    @Override
+	    public int getPosition() {
+	        return 0;
+	    }
+	    
+	    @Override
+	    public void setPosition(int position) {
+	    }    
+	    
+
+	    @Override
+	    public String getSQLString() {
+	        return strSQL;
+	    }
+	    
+	    @Override
+	    public void setSQLString(String strSQL) {
+	        this.strSQL= strSQL;
+	    }
+
+	    @Override
+	    public String toString() {
+	        return strSQL;
+	    }    
+	    
+	    @Override
+	    public String toHashString() {
+	        return strSQL;
+	    }
 	}
 
 }
