@@ -604,7 +604,6 @@ cachename: Name of the cache in secondary cache.
 	
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		if(Decision.isCastableToArray(params))
 			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))

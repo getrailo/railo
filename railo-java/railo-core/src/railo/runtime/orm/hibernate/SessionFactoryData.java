@@ -98,7 +98,7 @@ public class SessionFactoryData {
 	}
 
 	public void setConfiguration(String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
-		this.configuration=HibernateSessionFactory.createConfiguration(mappings,dc,ormConf);
+		this.configuration=HibernateSessionFactory.createConfiguration(mappings,dc,this);
 	}
 	
 	public NamingStrategy getNamingStrategy() throws PageException {

@@ -8,8 +8,8 @@ import org.hibernate.property.Setter;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.orm.ORMRuntimeException;
+import railo.runtime.orm.hibernate.CommonUtil;
+import railo.runtime.orm.hibernate.HibernatePageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -49,11 +49,11 @@ public final class CFCSetter implements Setter {
 	 */
 	public void set(Object trg, Object value, SessionFactoryImplementor factory) throws HibernateException {
 		try {
-			Component cfc = Caster.toComponent(trg);
+			Component cfc = CommonUtil.toComponent(trg);
 			cfc.getComponentScope().set(key,value);
 		} 
-		catch (PageException e) {
-			throw new ORMRuntimeException(e);
+		catch (PageException pe) {
+			throw new HibernatePageException(pe);
 		}
 	}
 

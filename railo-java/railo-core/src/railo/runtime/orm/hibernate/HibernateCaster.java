@@ -18,8 +18,6 @@ import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
@@ -92,12 +90,12 @@ public class HibernateCaster {
 		String name=null;
 		try {
 			ComponentAccess cfca = ComponentUtil.toComponentAccess(cfc);
-			name=Caster.toString(cfca.getMetaStructItem(ENTITY_NAME),null);
+			name=CommonUtil.toString(cfca.getMetaStructItem(ENTITY_NAME),null);
 		} 
 		catch (Throwable t) {
 			try {
 				Struct md = cfc.getMetaData(ThreadLocalPageContext.get());
-				name = Caster.toString(md.get(ENTITY_NAME),null);
+				name = CommonUtil.toString(md.get(ENTITY_NAME),null);
 				
 			}catch (PageException e) {}
 		}
@@ -415,8 +413,8 @@ public class HibernateCaster {
 		}
 		catch(PageException pe){
 			// pherhaps it is a array of this type 
-			if(isArray!=null && Decision.isArray(value)) {
-				Object[] src = Caster.toNativeArray(value);
+			if(isArray!=null && CommonUtil.isArray(value)) {
+				Object[] src = CommonUtil.toNativeArray(value);
 				ArrayList<Object> trg = new ArrayList<Object>();
 				for(int i=0;i<src.length;i++){
 					try{
@@ -439,13 +437,13 @@ public class HibernateCaster {
 	public static railo.runtime.type.Query toQuery(PageContext pc,HibernateORMSession session, Object obj, String name) throws PageException {
 		Query qry=null;
 		// a single entity
-		if(!Decision.isArray(obj)){
+		if(!CommonUtil.isArray(obj)){
 			qry= toQuery(pc,session,HibernateCaster.toComponent(obj),name,null,1,1);
 		}
 		
 		// a array of entities
 		else {
-			Array arr=Caster.toArray(obj);
+			Array arr=CommonUtil.toArray(obj);
 			int len=arr.size();
 			if(len>0) {
 				Iterator<Object> it = arr.valueIterator();
@@ -499,7 +497,7 @@ public class HibernateCaster {
 				obj = properties[i].getMetaData();
 				if(obj instanceof Struct) {
 					sct=(Struct) obj;
-					fieldType = Caster.toString(sct.get(KeyConstants._fieldtype,null),null);
+					fieldType = CommonUtil.toString(sct.get(KeyConstants._fieldtype,null),null);
 					if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType) || "one-to-one".equalsIgnoreCase(fieldType)) 
 						continue;
 					
@@ -555,8 +553,8 @@ public class HibernateCaster {
 			if(value instanceof Component){
 				qry=inheritance(pc,session,qry,cfc,(Component) value,entityName);
 			}
-			else if(Decision.isArray(value)){
-				arr = Caster.toArray(value);
+			else if(CommonUtil.isArray(value)){
+				arr = CommonUtil.toArray(value);
 				Iterator<Object> it = arr.valueIterator();
 				while(it.hasNext()){
 					value=it.next();
@@ -589,7 +587,7 @@ public class HibernateCaster {
 	}
 	
 	public static Component toComponent(Object obj) throws PageException {
-		return Caster.toComponent(obj);
+		return CommonUtil.toComponent(obj);
 	}
 
 

@@ -15,10 +15,10 @@ import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.orm.ORMRuntimeException;
+import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
+import railo.runtime.orm.hibernate.HibernatePageException;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -51,7 +51,7 @@ public class CFCGetter implements Getter {
 			// MUST cache this, perhaps when building xml
 			HibernateORMEngine engine = getHibernateORMEngine();
 			PageContext pc = ThreadLocalPageContext.get();
-			Component cfc = Caster.toComponent(trg);
+			Component cfc = CommonUtil.toComponent(trg);
 			String name = HibernateCaster.getEntityName(cfc);
 			ClassMetadata metaData = engine.getSessionFactory(pc).getClassMetadata(name);
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
@@ -59,8 +59,8 @@ public class CFCGetter implements Getter {
 			Object rtn = cfc.getComponentScope().get(key,null);
 			return HibernateCaster.toSQL(type, rtn,null);
 		} 
-		catch (PageException e) {
-			throw new ORMRuntimeException(e);
+		catch (PageException pe) {
+			throw new HibernatePageException(pe);
 		}
 	}
 	

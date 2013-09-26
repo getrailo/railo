@@ -36,7 +36,6 @@ public class ORMExecuteQuery {
 	}
 	private static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		if(params==null)
 			return session.executeQuery(pc,hql,new ArrayImpl(),unique,queryOptions);
 		else if(Decision.isStruct(params))

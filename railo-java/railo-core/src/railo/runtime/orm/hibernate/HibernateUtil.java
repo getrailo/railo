@@ -6,9 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
@@ -18,13 +16,10 @@ import railo.commons.db.DBUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.component.PropertyImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
@@ -53,7 +48,7 @@ public class HibernateUtil {
 		Array arr = ListUtil.listToArray(KEYWORDS, ',');
 		Iterator<Object> it = arr.valueIterator();
 		while(it.hasNext()){
-			keywords.add(Caster.toString(it.next(),null));
+			keywords.add(CommonUtil.toString(it.next(),null));
 		}
 	}
 	
@@ -180,7 +175,7 @@ public class HibernateUtil {
 
 
 	private static int getFieldType(Property property, int defaultValue) {
-		return getFieldType(Caster.toString(property.getDynamicAttributes().get(FIELDTYPE, null),null),defaultValue);
+		return getFieldType(CommonUtil.toString(property.getDynamicAttributes().get(FIELDTYPE, null),null),defaultValue);
 			
 	}
 	
@@ -250,7 +245,7 @@ public class HibernateUtil {
 			}
 			return rows;
 		} catch (SQLException e) {
-			throw Caster.toPageException(e);
+			throw CommonUtil.toPageException(e);
 		}
 	}
 	
@@ -272,7 +267,7 @@ public class HibernateUtil {
 						columns.getInt("DATA_TYPE"),
 						columns.getString("TYPE_NAME"),
 						columns.getInt("COLUMN_SIZE"),
-						Caster.toBooleanValue(nullable)	
+						CommonUtil.toBooleanValue(nullable)	
 				));
 			}
 		}

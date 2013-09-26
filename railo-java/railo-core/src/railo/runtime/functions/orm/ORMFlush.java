@@ -8,7 +8,6 @@ import railo.runtime.orm.ORMUtil;
 public class ORMFlush {
 	public static String call(PageContext pc) throws PageException {
 		ORMSession session = ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		session.flush(pc);
 		return null;
 	}

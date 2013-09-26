@@ -13,12 +13,14 @@ public class HibernateORMException extends ORMException {
 		super(null,cfc,msg,detail);
 		if(data!=null)setAddional(data);
 	}
+	public HibernateORMException(SessionFactoryData data, Component cfc, Throwable t) {
+		super(null,cfc,t);
+		if(data!=null)setAddional(data);
+	}
 
 	private void setAddional(SessionFactoryData data) {
 		String[] names = data.getEntityNames();
 		setAdditional(KeyConstants._Entities, ListUtil.arrayToList(names, ", "));
 		setAddional(data.getDataSource(),this);
 	}
-
-
 }

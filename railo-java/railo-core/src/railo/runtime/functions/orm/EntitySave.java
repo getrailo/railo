@@ -12,7 +12,6 @@ public class EntitySave {
 	}
 	public static String call(PageContext pc, Object obj,boolean forceInsert) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		session.save(pc,obj,forceInsert);
 		return null;
 	}

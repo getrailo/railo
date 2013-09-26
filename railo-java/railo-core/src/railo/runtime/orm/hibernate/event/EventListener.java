@@ -8,7 +8,7 @@ import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -69,7 +69,7 @@ public abstract class EventListener {
     protected void invoke(Collection.Key name, Object obj, Struct data) {
     	if(eventType!=null && !eventType.equals(name)) return;
     	//print.e(name);
-    	Component caller = Caster.toComponent(obj,null);
+    	Component caller = CommonUtil.toComponent(obj,null);
     	Component c=allEvents?component:caller;
     	if(c==null) return;
     	

@@ -19,8 +19,6 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
@@ -189,18 +187,18 @@ public class HBMCreator {
 		
 	}
 	
-	private static Property[] getProperties(PageContext pc, Component cfci, DatasourceConnection dc, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass,SessionFactoryData data) throws ORMException, PageException {
+	private static Property[] getProperties(PageContext pc, Component cfc, DatasourceConnection dc, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass,SessionFactoryData data) throws ORMException, PageException {
 		Property[] _props;
-		if (recursivePersistentMappedSuperclass && (cfci instanceof ComponentPro)) {
-			_props = ((ComponentPro)cfci).getProperties(true, true, true, true);
+		if (recursivePersistentMappedSuperclass && (cfc instanceof ComponentPro)) {
+			_props = ((ComponentPro)cfc).getProperties(true, true, true, true);
 		}
 		else {
-			_props = cfci.getProperties(true);
+			_props = cfc.getProperties(true);
 		}
 
 		if(isClass && _props.length==0 && data.getORMConfiguration().useDBForMapping()){
-			if(meta==null)meta = cfci.getMetaData(pc);
-        	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(pc, meta, cfci,data));
+			if(meta==null)meta = cfc.getMetaData(pc);
+        	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(pc, meta, cfc, data));
         }
 		return _props;
 	}
@@ -299,7 +297,7 @@ public class HBMCreator {
         	if(!ignoreTableName && !hasTable(cfc,props[y], tableName,data)) continue;
         	
         	
-        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+        	String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
 			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
 				ids.add(props[y]);
 		}
@@ -309,7 +307,7 @@ public class HBMCreator {
         	String fieldType;
         	for(int y=0;y<props.length;y++){
         		if(!ignoreTableName && !hasTable(cfc,props[y], tableName,data)) continue;
-            	fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+            	fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
     			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
     				ids.add(props[y]);
     				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
@@ -327,7 +325,7 @@ public class HBMCreator {
         		String id=owner+"id";
         		for(int y=0;y<props.length;y++){
         			if(!ignoreTableName && !hasTable(cfc,props[y], tableName,data)) continue;
-                	fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+                	fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
 	    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase(id)){
 	    				ids.add(props[y]);
 	    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
@@ -346,7 +344,7 @@ public class HBMCreator {
 	private static void addVersion(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,SessionFactoryData data) throws PageException {
     	Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+			String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
 			if("version".equalsIgnoreCase(fieldType))
 				createXMLMappingVersion(clazz,pc, cfc,props[y],data);
 			else if("timestamp".equalsIgnoreCase(fieldType))
@@ -359,7 +357,7 @@ public class HBMCreator {
 	private static void addCollection(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,SessionFactoryData data) throws PageException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
+			String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 			if("collection".equalsIgnoreCase(fieldType))
 				createXMLMappingCollection(clazz,pc, cfc,props[y],data);
 		}
@@ -437,7 +435,7 @@ public class HBMCreator {
     	Property[] props = propColl.getProperties();
 		int count=0;
     	for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
+			String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 			if("one-to-one".equalsIgnoreCase(fieldType)){
 				createXMLMappingOneToOne(clazz,pc, cfc,props[y],data);
 				count++;
@@ -463,7 +461,7 @@ public class HBMCreator {
 	private static void addProperty(Component cfc,Element clazz, PageContext pc, PropertyCollection propColl, Struct columnsInfo, String tableName, SessionFactoryData data) throws PageException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
+			String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
 			if("column".equalsIgnoreCase(fieldType))
 				createXMLMappingProperty(clazz,pc,cfc, props[y],columnsInfo,tableName,data);
 		}
@@ -500,7 +498,7 @@ public class HBMCreator {
 
         // batch-size
         Integer i = toInteger(cfc,meta,"batchsize",data);
-        if(i!=null && i.intValue()>0)clazz.setAttribute("batch-size",Caster.toString(i));
+        if(i!=null && i.intValue()>0)clazz.setAttribute("batch-size",CommonUtil.toString(i));
 		
 		// dynamic-insert
         Boolean b = toBoolean(cfc,meta,"dynamicinsert",data);
@@ -513,7 +511,7 @@ public class HBMCreator {
 		// lazy (dtd defintion:<!ATTLIST class lazy (true|false) #IMPLIED>)
         b=toBoolean(cfc,meta,"lazy",data);
         if(b==null) b=Boolean.TRUE;
-        clazz.setAttribute("lazy",Caster.toString(b.booleanValue()));
+        clazz.setAttribute("lazy",CommonUtil.toString(b.booleanValue()));
 		
         // select-before-update
         b=toBoolean(cfc,meta,"selectbeforeupdate",data);
@@ -734,13 +732,13 @@ public class HBMCreator {
 							id.getDynamicAttributes();
 							Struct meta = id.getDynamicAttributes();
 							if(meta!=null){
-								String type=Caster.toString(meta.get(KeyConstants._type,null));
+								String type=CommonUtil.toString(meta.get(KeyConstants._type,null));
 								
 								if(!StringUtil.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))){
 									return type;
 								}
 								
-									String g=Caster.toString(meta.get(GENERATOR,null));
+									String g=CommonUtil.toString(meta.get(GENERATOR,null));
 									if(!StringUtil.isEmpty(g)){
 										return getDefaultTypeForGenerator(g,foreignCFC,data);
 									}
@@ -853,7 +851,7 @@ public class HBMCreator {
 			if(obj==null) obj=new StructImpl();
 			else if(obj instanceof String) obj=ORMUtil.convertToSimpleMap((String)obj);
 			
-			if(Decision.isStruct(obj)) sct=Caster.toStruct(obj);
+			if(CommonUtil.isStruct(obj)) sct=CommonUtil.toStruct(obj);
 			else throw new HibernateORMException(data,cfc,"invalid value for attribute [params] of tag [property]",null);
 			className=className.trim().toLowerCase();
 			
@@ -862,7 +860,7 @@ public class HBMCreator {
 				if(!sct.containsKey(PROPERTY)) sct.setEL(PROPERTY, toString(cfc,prop,meta, PROPERTY,true,data));
 				
 				if(sct.containsKey(PROPERTY)){
-					String p = Caster.toString(sct.get(PROPERTY),null);
+					String p = CommonUtil.toString(sct.get(PROPERTY),null);
 					if(!StringUtil.isEmpty(p))foreignCFC.append(p);
 				}
 				
@@ -886,7 +884,7 @@ public class HBMCreator {
 				generator.appendChild(param);
 				
 				param.setAttribute( "name", e.getKey().getLowerString());
-				param.appendChild(doc.createTextNode(Caster.toString(e.getValue())));
+				param.appendChild(doc.createTextNode(CommonUtil.toString(e.getValue())));
 				
 			}
 		//}
@@ -950,7 +948,7 @@ public class HBMCreator {
         	
         	// length
             Integer i = toInteger(cfc,meta,"length",data);
-            if(i!=null && i>0) column.setAttribute("length",Caster.toString(i.intValue()));
+            if(i!=null && i>0) column.setAttribute("length",CommonUtil.toString(i.intValue()));
             
             // not-null
             b=toBoolean(cfc,meta,"notnull",data);
@@ -958,11 +956,11 @@ public class HBMCreator {
             
             // precision
             i=toInteger(cfc,meta,"precision",data);
-            if(i!=null && i>-1) column.setAttribute("precision",Caster.toString(i.intValue()));
+            if(i!=null && i>-1) column.setAttribute("precision",CommonUtil.toString(i.intValue()));
             
             // scale
             i=toInteger(cfc,meta,"scale",data);
-            if(i!=null && i>-1) column.setAttribute("scale",Caster.toString(i.intValue()));
+            if(i!=null && i>-1) column.setAttribute("scale",CommonUtil.toString(i.intValue()));
             
             // sql-type
             str=toString(cfc,prop,meta,"sqltype",data);
@@ -974,7 +972,7 @@ public class HBMCreator {
 	        
 	        // unique-key
 	        str=toString(cfc,prop,meta,"uniqueKey",data);
-	        if(StringUtil.isEmpty(str))str=Caster.toString(meta.get(UNIQUE_KEY_NAME,null),null);
+	        if(StringUtil.isEmpty(str))str=CommonUtil.toString(meta.get(UNIQUE_KEY_NAME,null),null);
 	        if(!StringUtil.isEmpty(str,true)) column.setAttribute("unique-key",str);
 	        
 	        
@@ -1050,20 +1048,20 @@ public class HBMCreator {
 			
 			// update
 	        b=toBoolean(cfc,meta,"update",data);
-	        if(b!=null)x2o.setAttribute("update",Caster.toString(b.booleanValue()));
+	        if(b!=null)x2o.setAttribute("update",CommonUtil.toString(b.booleanValue()));
 	        
 	        // insert
 	        b=toBoolean(cfc,meta,"insert",data);
-	        if(b!=null)x2o.setAttribute("insert",Caster.toString(b.booleanValue()));
+	        if(b!=null)x2o.setAttribute("insert",CommonUtil.toString(b.booleanValue()));
 	        
 	        // not-null
 	        b=toBoolean(cfc,meta,"notNull",data);
-	        if(b!=null)x2o.setAttribute("not-null",Caster.toString(b.booleanValue()));
+	        if(b!=null)x2o.setAttribute("not-null",CommonUtil.toString(b.booleanValue()));
 	        
 	        
 	        // optimistic-lock
 	        b=toBoolean(cfc,meta,"optimisticLock",data);
-	        if(b!=null)x2o.setAttribute("optimistic-lock",Caster.toString(b.booleanValue()));
+	        if(b!=null)x2o.setAttribute("optimistic-lock",CommonUtil.toString(b.booleanValue()));
 	        
 	        // not-found
 			b=toBoolean(cfc,meta, "missingRowIgnored",data);
@@ -1219,7 +1217,7 @@ public class HBMCreator {
 		
         // batch-size
         Integer i=toInteger(cfc,meta, "batchsize",data);
-        if(i!=null && i.intValue()>1) el.setAttribute("batch-size", Caster.toString(i.intValue()));
+        if(i!=null && i.intValue()>1) el.setAttribute("batch-size", CommonUtil.toString(i.intValue()));
  
 		// column
 		str=toString(cfc,prop,meta,"fkcolumn",data);
@@ -1325,14 +1323,14 @@ public class HBMCreator {
 				for(int i=0;i<_props.length;i++){
 					m = _props[i].getDynamicAttributes();
 					// fieldtype
-					String fieldtype = Caster.toString(m.get(KeyConstants._fieldtype,null),null);
+					String fieldtype = CommonUtil.toString(m.get(KeyConstants._fieldtype,null),null);
 					if("many-to-many".equalsIgnoreCase(fieldtype)) {
 						// linktable
-						String currLinkTable=Caster.toString(meta.get(LINK_TABLE,null),null);
-						String othLinkTable=Caster.toString(m.get(LINK_TABLE,null),null);
+						String currLinkTable=CommonUtil.toString(meta.get(LINK_TABLE,null),null);
+						String othLinkTable=CommonUtil.toString(m.get(LINK_TABLE,null),null);
 						if(currLinkTable.equals(othLinkTable)) {
 							// cfc name
-							String cfcName=Caster.toString(m.get(CFC,null),null);
+							String cfcName=CommonUtil.toString(m.get(CFC,null),null);
 							if(cfc.equalTo(cfcName)){
 								_prop=_props[i];
 							}
@@ -1471,7 +1469,7 @@ public class HBMCreator {
 		// batch-size
         Integer i=toInteger(cfc,meta, "batchsize",data);
         if(i!=null){
-        	if(i.intValue()>1) el.setAttribute("batch-size", Caster.toString(i.intValue()));
+        	if(i.intValue()>1) el.setAttribute("batch-size", CommonUtil.toString(i.intValue()));
         }
  
 		// cacheUse
@@ -1796,7 +1794,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		if(!StringUtil.isEmpty(str,true)){
 			str=str.trim();
 			String name=x2x.getNodeName();
-			Boolean b = Caster.toBoolean(str,null);
+			Boolean b = CommonUtil.toBoolean(str,null);
 			
 			// <!ATTLIST many-to-one lazy (false|proxy|no-proxy) #IMPLIED>
 			// <!ATTLIST one-to-one lazy (false|proxy|no-proxy) #IMPLIED>
@@ -1906,13 +1904,13 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		// generated
 		Object o=meta.get(GENERATED,null);
 		if(o!=null){
-			Boolean b = Caster.toBoolean(o,null); 
+			Boolean b = CommonUtil.toBoolean(o,null); 
 			str=null;
 			if(b!=null) {
 				str=b.booleanValue()?"always":"never";
 			}
 			else {
-				str=Caster.toString(o,null);
+				str=CommonUtil.toString(o,null);
 				if("always".equalsIgnoreCase(str))str="always";
 				else if("never".equalsIgnoreCase(str))str="never";
 				else throw invalidValue(cfc,prop,"generated",o.toString(),"true,false,always,never",data);
@@ -1977,11 +1975,11 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			return null;
 		}
 		
-		String str=Caster.toString(value,null);
+		String str=CommonUtil.toString(value,null);
 		if(str==null) {
 			if(prop==null)
-				throw new HibernateORMException(data,cfc,"invalid type ["+Caster.toTypeName(value)+"] for attribute ["+key+"], value must be a string",null);
-			throw new HibernateORMException(data,cfc,"invalid type ["+Caster.toTypeName(value)+"] for attribute ["+key+"] of property ["+prop.getName()+"] of Component ["+_getCFCName(prop)+"], value must be a string",null);
+				throw new HibernateORMException(data,cfc,"invalid type ["+CommonUtil.toTypeName(value)+"] for attribute ["+key+"], value must be a string",null);
+			throw new HibernateORMException(data,cfc,"invalid type ["+CommonUtil.toTypeName(value)+"] for attribute ["+key+"] of property ["+prop.getName()+"] of Component ["+_getCFCName(prop)+"], value must be a string",null);
 			}
 		return str;
 	}
@@ -1998,8 +1996,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		Object value = sct.get(KeyImpl.init(key),null);
 		if(value==null) return null;
 		
-		Boolean b=Caster.toBoolean(value,null);
-		if(b==null) throw new HibernateORMException(data,cfc,"invalid type ["+Caster.toTypeName(value)+"] for attribute ["+key+"], value must be a boolean",null);
+		Boolean b=CommonUtil.toBoolean(value,null);
+		if(b==null) throw new HibernateORMException(data,cfc,"invalid type ["+CommonUtil.toTypeName(value)+"] for attribute ["+key+"], value must be a boolean",null);
 		return b;
 	}
 
@@ -2007,8 +2005,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		Object value = sct.get(KeyImpl.init(key),null);
 		if(value==null) return null;
 		
-		Integer i=Caster.toInteger(value,null);
-		if(i==null) throw new HibernateORMException(data,cfc,"invalid type ["+Caster.toTypeName(value)+"] for attribute ["+key+"], value must be a numeric value",null);
+		Integer i=CommonUtil.toInteger(value,null);
+		if(i==null) throw new HibernateORMException(data,cfc,"invalid type ["+CommonUtil.toTypeName(value)+"] for attribute ["+key+"], value must be a numeric value",null);
 		return i;
 	}
 	

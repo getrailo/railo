@@ -7,9 +7,9 @@ import org.hibernate.type.Type;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -58,7 +58,7 @@ public class InterceptorImpl extends EmptyInterceptor {
 			Object[] state, Struct data,
 			String[] propertyNames, Type[] types, Collection.Key eventType, boolean hasMethod) {
 		
-		Component cfc = Caster.toComponent(entity,null);
+		Component cfc = CommonUtil.toComponent(entity,null);
 		if(cfc!=null && EventListener.hasEventType(cfc, eventType)){
 			EventListener.invoke(eventType, cfc, data, null);
 		}

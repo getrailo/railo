@@ -37,7 +37,6 @@ import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextPro;
-import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
@@ -83,7 +82,7 @@ public class HibernateORMEngine implements ORMEngine {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
 		
-		DataSource ds=o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		DataSource ds=o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(CommonUtil.toString(o));
 		
 		DatasourceConnection dc = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,ds,null,null);
 		try{
@@ -212,7 +211,7 @@ public class HibernateORMEngine implements ORMEngine {
 			data.setConfiguration(mappings,dc);
 		} 
 		catch (Exception e) {
-			throw Caster.toPageException(e);
+			throw CommonUtil.toPageException(e);
 		}
 		finally {
 			pool.releaseDatasourceConnection(dc);
@@ -328,7 +327,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Object o=appContext.getORMDataSource();
 		DataSource ds;
 		if(o instanceof DataSource) ds=(DataSource) o;
-		else ds=((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		else ds=((PageContextImpl)pc).getDataSource(CommonUtil.toString(o));
 		return hash(appContext.getORMConfiguration(),ds);
 	}
 	
@@ -372,7 +371,7 @@ public class HibernateORMEngine implements ORMEngine {
 			// load
 			else {
 				xml=sb.toString();
-				root=Caster.toXML(xml).getOwnerDocument().getDocumentElement();
+				root=CommonUtil.toXML(xml).getOwnerDocument().getDocumentElement();
 				/*print.o("1+++++++++++++++++++++++++++++++++++++++++");
 				print.o(xml);
 				print.o("2+++++++++++++++++++++++++++++++++++++++++");

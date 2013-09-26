@@ -73,12 +73,6 @@ public class ORMUtil {
 	}
 
 	private static void printError(Throwable t, ORMEngine engine,String msg) {
-		if(engine==null) {
-			try {
-				engine=ORMUtil.getEngine(ThreadLocalPageContext.get());
-			}
-			catch (Throwable tt) {}
-		}
 		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
 		else SystemOut.printDate(msg,SystemOut.ERR);
 		if(t==null)t=new Throwable();

@@ -4,6 +4,7 @@ package railo.runtime.orm;
 import railo.runtime.Component;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.op.Caster;
@@ -14,8 +15,11 @@ public class ORMException extends ApplicationException {
 
 	private static final long serialVersionUID = 9198067367309355433L;
 
-	public ORMException(Throwable t) {
+	public ORMException(ORMSession session,Component cfc,Throwable t) {
 		super(t.getMessage());
+		setStackTrace(t.getStackTrace());
+		if(session!=null)setAddional(session,this);
+		if(cfc!=null)setContext(cfc);
 	}
 	
 
@@ -24,30 +28,10 @@ public class ORMException extends ApplicationException {
 		if(session!=null)setAddional(session,this);
 		if(cfc!=null)setContext(cfc);
 	}
-
-	public ORMException(DataSource ds,String message) {
-		super(message);
-		setAddional(ds,this);
-	}
 	
 
 	private void setContext(Component cfc) {
 		if(cfc!=null && getPageDeep()==0)addContext(cfc.getPageSource(), 1, 1, null);
-	}
-
-	public static PageException toPageException(ORMSession session,Throwable t) {
-		Throwable c = t.getCause();
-		if(c!=null)t=c;
-		PageException pe = Caster.toPageException(t);
-		setAddional(session, pe);
-		return pe;
-	}
-	public static PageException toPageException(DataSource ds,Throwable t) {
-		Throwable c = t.getCause();
-		if(c!=null)t=c;
-		PageException pe = Caster.toPageException(t);
-		setAddional(ds, pe);
-		return pe;
 	}
 	
 	public static void setAddional(ORMSession session,PageException pe) {
@@ -61,7 +45,6 @@ public class ORMException extends ApplicationException {
 	}
 	
 	public static void setAddional(DataSource ds,PageException pe) {
-		
 		if(ds!=null && pe instanceof PageExceptionImpl){
 			PageExceptionImpl pei = (PageExceptionImpl)pe;
 			String dsn=null;
