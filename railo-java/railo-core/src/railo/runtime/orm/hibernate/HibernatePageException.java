@@ -1,4 +1,5 @@
-package railo.runtime.orm;
+package railo.runtime.orm.hibernate;
+
 
 import org.hibernate.HibernateException;
 
@@ -13,10 +14,10 @@ import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.IPageException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
-import railo.runtime.orm.hibernate.HibernateORMEngine;
+import railo.runtime.orm.ORMException;
 import railo.runtime.type.Struct;
 
-public class ORMRuntimeException extends HibernateException  implements IPageException,PageExceptionBox  {
+public class HibernatePageException extends HibernateException implements IPageException,PageExceptionBox  {
 
 	private static final long serialVersionUID = -7745292875775743390L;
 	
@@ -27,21 +28,11 @@ public class ORMRuntimeException extends HibernateException  implements IPageExc
 	 * constructor of the class
 	 * @param pe page exception to hold
 	 */
-	public ORMRuntimeException(PageException pe) {
+	public HibernatePageException(PageException pe) {
 		super(pe.getMessage());
 		this.pe=pe;
 	}
 	
-	
-	/**
-	 * standart excption constructor
-	 * @param message message of the exception
-	 * @param detail detailed information to the exception
-	 */
-	public ORMRuntimeException(String message,String detail) {
-		super(message);
-		this.pe=new ORMException(null,null,message,detail);
-	}
 
 	@Override
 	public String getDetail() {
