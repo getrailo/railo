@@ -108,7 +108,6 @@ public class CommonUtil {
 		JDBCException j = (JDBCException)t;
 		String message = j.getMessage(); 
 		Throwable cause = j.getCause();
-		SQLException sqle;
 		if(cause != null) {
 			message += " [" + cause.getMessage() + "]";
 		}
