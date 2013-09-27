@@ -996,6 +996,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public PageSource getCurrentPageSource() {
     	return pathList.getLast();
     }
+    public PageSource getCurrentPageSource(PageSource defaultvalue) {
+    	try{
+    		return pathList.getLast();
+    	}
+    	catch(Throwable t){
+    		return defaultvalue;
+    	}
+    }
     
     /**
      * @return the current template SourceFile
@@ -2761,7 +2769,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     @Override
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-    	return ComponentLoader.loadComponent(this,compPath,null,null);
+    	return ComponentLoader.loadComponent(this,getCurrentPageSource(null),compPath,null,null);
     }
 
 	/**
