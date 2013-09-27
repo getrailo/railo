@@ -1,4 +1,3 @@
-<cfsetting enablecfoutputonly="yes">
 <cfinclude template="extension.functions.cfm">
 
 <cfset stText.ext.free="Free">
@@ -86,7 +85,6 @@
 
 
 
-<cfsetting enablecfoutputonly="no">
 <!--- 
 Error Output --->
 <cfif len(err.message)>
