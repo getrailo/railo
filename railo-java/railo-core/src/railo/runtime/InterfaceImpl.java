@@ -10,6 +10,8 @@ import java.util.Set;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.ComponentLoader;
+import railo.runtime.component.MetaDataSoftReference;
+import railo.runtime.component.MetadataUtil;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -83,22 +85,21 @@ public class InterfaceImpl implements Interface {
 	    
 
 	private static void init(PageContext pc,InterfaceImpl icfc) throws PageException {
-
 		if(!StringUtil.isEmpty(icfc.extend) && (icfc.superInterfaces==null || icfc.superInterfaces.length==0)) {
-			icfc.superInterfaces=loadImplements(ThreadLocalPageContext.get(pc),icfc.extend,icfc.interfacesUDFs);
+			icfc.superInterfaces=loadImplements(ThreadLocalPageContext.get(pc),icfc.getPageSource(),icfc.extend,icfc.interfacesUDFs);
 		}
 		else icfc.superInterfaces=EMPTY;
 	}
 
 
-    public static InterfaceImpl[] loadImplements(PageContext pc, String lstExtend, Map interfaceUdfs) throws PageException {
+    public static InterfaceImpl[] loadImplements(PageContext pc, PageSource child, String lstExtend, Map interfaceUdfs) throws PageException {
     	List<InterfaceImpl> interfaces=new ArrayList<InterfaceImpl>();
-    	loadImplements(pc, lstExtend, interfaces, interfaceUdfs);
+    	loadImplements(pc,child, lstExtend, interfaces, interfaceUdfs);
     	return interfaces.toArray(new InterfaceImpl[interfaces.size()]);
     	
 	}
 
-    private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
+    private static void loadImplements(PageContext pc,PageSource child, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
     	Array arr = railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(lstExtend, ',');
     	Iterator<Object> it = arr.valueIterator();
@@ -107,11 +108,11 @@ public class InterfaceImpl implements Interface {
 
     	while(it.hasNext()) {
     		extend=((String) it.next()).trim();
-    		ic=ComponentLoader.loadInterface(pc,extend,interfaceUdfs);
+    		ic=ComponentLoader.loadInterface(pc,child,extend,interfaceUdfs);
     		interfaces.add(ic);
     		ic.setUDFListener(interfaceUdfs);
     		if(!StringUtil.isEmpty(ic.extend)) {
-    			loadImplements(pc,ic.extend,interfaces,interfaceUdfs);
+    			loadImplements(pc,ic.getPageSource(),ic.extend,interfaces,interfaceUdfs);
     		}
     	}
 	}
@@ -208,19 +209,30 @@ public class InterfaceImpl implements Interface {
 	public InterfacePage getPage() {
 		return page;
 	}*/
-	
+
 	public PageSource getPageSource() {
 		return pageSource;
+	}
+	public InterfaceImpl[] getExtends() {
+		return superInterfaces;
 	}
 
 
 	public Struct getMetaData(PageContext pc) throws PageException {
-		return _getMetaData(pc,this);
+		return _getMetaData(pc,this,false);
 	}
-	private static Struct _getMetaData(PageContext pc,InterfaceImpl icfc) throws PageException {
+	public Struct getMetaData(PageContext pc, boolean ignoreCache) throws PageException {
+		return _getMetaData(pc,this,ignoreCache);
+	}
+	private static Struct _getMetaData(PageContext pc,InterfaceImpl icfc, boolean ignoreCache) throws PageException {
+		Page page=MetadataUtil.getPageWhenMetaDataStillValid(pc, icfc, ignoreCache);
+    	if(page!=null && page.metaData!=null && page.metaData.get()!=null) return page.metaData.get();
+    	
+		
+		
 		Struct sct=new StructImpl();
 		ArrayImpl arr=new ArrayImpl();
-        {
+		{
 			Iterator<UDF> it = icfc.udfs.values().iterator();
 	        while(it.hasNext()) {
 	        	arr.append(it.next().getMetaData(pc));
@@ -246,7 +258,7 @@ public class InterfaceImpl implements Interface {
         	sct.set(KeyConstants._extends,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
         		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
-        		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i]));
+        		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i],true));
         	}
         	
         }
@@ -258,6 +270,9 @@ public class InterfaceImpl implements Interface {
        
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"interface");
+        
+
+        page.metaData=new MetaDataSoftReference<Struct>(sct);
         return sct;
 	}
 
