@@ -1,3 +1,6 @@
+<cfset stText.ext.minRailoVersion="Railo Version">
+<cfset stText.ext.minRailoVersionDesc="Minimal Railo Version needed for this Extension.">
+<cfset stText.ext.toSmallVersion="You need at least the Railo {version} to install this Extension">
 <cfset detail=getDetailByUid(url.uid)>
 
 <cfset isInstalled=structKeyExists(detail,'installed')>
@@ -46,10 +49,9 @@
 					</cfif>
 				</td>
 				<td valign="top">
-				
-		
 					<table class="maintbl">
 						<tbody>
+							<!--- Extension Version --->
 							<cfif isInstalled>
 								<tr>
 									<th scope="row">#stText.ext.installedVersion#</th>
@@ -61,6 +63,15 @@
 									<td>#app.version#<cfif app.codename neq ""> (#stText.ext.codename#: <em>#app.codename#</em>)</cfif></td>
 								</tr>
 							</cfif>
+							<!--- Railo Version
+							<cfif isDefined('app.minCoreVersion') and len(trim(app.minCoreVersion))>
+							<tr>
+								<th scope="row">
+								#stText.ext.minRailoVersion#<br>
+								<span class="comment">#stText.ext.minRailoVersionDesc#</span></th>
+								<td>#app.minCoreVersion#</td>
+							</tr>
+							</cfif> --->
 							<!--- price --->
 							<cfif isDefined('app.price') and len(trim(app.price))>
 								<tr>
@@ -178,11 +189,15 @@
 
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<input type="hidden" name="uid" value="#url.uid#">
-			<cfif isDefined('app.trial') and isBoolean(app.trial) and app.trial EQ true>
-			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installTrial#">
-			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installFull#">
+			<cfif isDefined('app.minCoreVersion') and (app.minCoreVersion GT server.railo.version)>
+				<div class="error">#replace(stText.ext.toSmallVersion,'{version}',app.minCoreVersion,'all')#</div>
 			<cfelse>
-			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.install#">
+				<cfif isDefined('app.trial') and isBoolean(app.trial) and app.trial EQ true>
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installTrial#">
+				<cfif true or !isDefined('app.disablefull') or app.disablefull NEQ true><input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.installFull#"></cfif>
+				<cfelse>
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.install#">
+				</cfif>
 			</cfif>
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
 		</cfform>
