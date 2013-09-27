@@ -1,10 +1,6 @@
 <cfscript>
 component extends="org.railo.cfml.test.RailoTestCase"	{
 
-	
-	<cffunction name="afterTests">
-		<cffile action="delete" file="#variables.filePath#">
-	</cffunction>
 
 	public function beforeTests(){
 		// variables.filePath=createFile("susi.txt","Susi Sorglos");
