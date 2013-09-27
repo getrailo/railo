@@ -48,7 +48,7 @@
 		</cfif>
 		
 		<cftry>
-			<cffile action="write" file="#tmpfile#" output="#data#" strict="false">
+			<cffile action="write" file="#tmpfile#" output="#data#" createPath="true">
 			<cfcatch><cfrethrow></cfcatch><!--- if it fails because there is no permission --->
 		</cftry>
 	</cfif>
