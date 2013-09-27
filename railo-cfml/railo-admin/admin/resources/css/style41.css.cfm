@@ -10,7 +10,7 @@
 	<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
 	<cfheader name='ETag' value='#etag#'>
 	
-	<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
+	<cfif false and len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
 
 		<!--- etag matches, return 304 !--->
 		<cfheader statuscode='304' statustext='Not Modified'>
@@ -378,11 +378,18 @@ h3 + .comment {
 	padding-top:0px;
 }
 
-div.error, div.warning, div.message {
-	border:2px solid red;
+.normal {
+	border:1px solid #e0e0e0;
 	padding:5px;
 	margin:10px 0px;
-	font-weight:bold;
+	color:#3c3e40;
+}
+
+div.error, div.warning, div.message {
+	border:1px solid red;
+	padding:5px;
+	margin:10px 0px;
+	xfont-weight:bold;
 	color:red;
 }
 div.warning {
@@ -392,6 +399,10 @@ div.warning {
 div.message {
 	border-color: #0C0;
 	color:#000;
+}
+div.ok {
+	border-color: #e0e0e0;
+	color:#e0e0e0;
 }
 
 
@@ -724,8 +735,8 @@ tbody#extproviderlist td {
 	margin-bottom: 20px;
 }
 .extensionthumb {
-	width:140px;
-	height:100px;
+	width:108px;
+	height:108px;
 	overflow: hidden;
 	margin:5px 5px 0px 0px;
 	float:left;
@@ -734,7 +745,7 @@ tbody#extproviderlist td {
 .extensionthumb a {
 	display:block;
 	padding:2px;
-	height: 94px;
+	height: 102px;
 	text-decoration:none !important;
 	border: 1px solid #E0E0E0;
 }
