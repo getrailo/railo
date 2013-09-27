@@ -163,7 +163,8 @@
 												serialNumber:serialNumber,
 												paymentCancelURL:cgi.request_url&"&paymentResult=cancel",
 												paymentReturnURL:cgi.request_url&"&paymentResult=return",
-												clientVersion:server.railo.version
+												clientVersion:server.railo.version,
+												clientLoaderVersion:server.railo.loaderVersion
 											})>
                 <!--- url to download --->
 				<cfif isDefined('rtn.url') and len(rtn.url)>
