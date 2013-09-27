@@ -8,7 +8,5 @@
 </cffunction>
 
 <cffunction name="TestPrivate" access="private" returntype="void" output="false">
-</cffunction>
-
-
+</cffunction> 
 </cfcomponent>
