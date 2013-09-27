@@ -24,17 +24,22 @@ string function toName(string name){
 	<li><a href="index.cfm?action=all">Run all tickets</a></li>
 	<li><a href="index.cfm?action=latest">Run latest 10 tickets</a></li>
 	<ul>
-		
-	<cfloop query="#dir#" endrow="10">
+	<cfset count=0>
+	<cfloop query="#dir#">
 		<cfset package=toPackage(dir.directory)>
 		<cfset n=toName(dir.name)>
+		<cfset meta=GetComponentMetadata("#package#.#n#")>
 		<!---<cfif left(package,len("testcase-templates")) == "testcase-templates">
 			<cfcontinue>
 		</cfif>--->
+		<cfif isDefined('meta.extends.fullname') and (meta.extends.fullname EQ "org.railo.cfml.test.RailoTestCase" or meta.extends.fullname EQ "mxunit.framework.TestCase")>
+			<cfif ++count GT 10><cfbreak></cfif>
+			<li>
+				<a href="index.cfm?action=single&testcase=#package#.#n#">Run #package#.#n#</a>
+				
+			</li>
+		</cfif>
 		
-		<li>
-			<a href="index.cfm?action=single&testcase=#package#.#n#">Run #package#.#n#</a>
-		</li>
 	</cfloop>
 	</ul>
 	<li>
