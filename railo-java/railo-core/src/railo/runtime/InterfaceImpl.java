@@ -228,7 +228,8 @@ public class InterfaceImpl implements Interface {
 		Page page=MetadataUtil.getPageWhenMetaDataStillValid(pc, icfc, ignoreCache);
     	if(page!=null && page.metaData!=null && page.metaData.get()!=null) return page.metaData.get();
     	
-		
+    	long creationTime=System.currentTimeMillis();
+    	
 		
 		Struct sct=new StructImpl();
 		ArrayImpl arr=new ArrayImpl();
@@ -272,7 +273,7 @@ public class InterfaceImpl implements Interface {
         sct.set(KeyConstants._type,"interface");
         
 
-        page.metaData=new MetaDataSoftReference<Struct>(sct);
+        page.metaData=new MetaDataSoftReference<Struct>(sct,creationTime);
         return sct;
 	}
 

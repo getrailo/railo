@@ -1344,7 +1344,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	if(page!=null && page.metaData!=null && page.metaData.get()!=null){
     		return page.metaData.get();
     	}
-    	
+    	long creationTime=System.currentTimeMillis(); 
     	StructImpl sct=new StructImpl();
     	
         // fill udfs
@@ -1417,7 +1417,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	sct.set(KeyConstants._properties,parr);
         }
 
-        page.metaData=new MetaDataSoftReference<Struct>(sct);
+        page.metaData=new MetaDataSoftReference<Struct>(sct,creationTime);
         return sct;
     }    
 
