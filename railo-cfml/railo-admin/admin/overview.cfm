@@ -95,7 +95,7 @@ Error Output --->
         <cfset arguments.usage=qry>
 		<cfset var ret = "" />
 		<cfsavecontent variable="ret"><cfoutput>
-   			<h3>#pool[usage.type]#</h3>
+   			<b>#pool[usage.type]#</b>
 			<cfloop query="usage">
        			<cfset local._used=int(width/arguments.usage.max*arguments.usage.used)>
         		<cfset local._free=width-_used> 
@@ -414,8 +414,7 @@ Error Output --->
 			</td>
 			<td width="2%"></td>
 			<td valign="top" width="33%">
-
-				<h2>Update Info</h2>
+				<br><br>
 				<div id="updateInfoDesc"><div style="text-align: center;"><img src="../res/img/spinner16.gif.cfm"></div></div>
 
 				<cfsavecontent variable="Request.htmlBody" append="true">
@@ -428,22 +427,17 @@ Error Output --->
 					</script>
 				</cfsavecontent>
 
-				<!--- Memory Usage --->
-				<cftry>
-					<cfsavecontent variable="memoryInfo">
-						<h2>Memory Usage</h2>
-						
-						#printMemory(getmemoryUsage("heap"))#
-
-						#printMemory(getmemoryUsage("non_heap"))#
-					</cfsavecontent>
-					#memoryInfo#
-					<cfcatch></cfcatch>
-				</cftry>
+					<!--- Memory Usage --->
+					<cftry>
+						<cfsavecontent variable="memoryInfo">
+							<h3>Memory Usage</h3>
+							#printMemory(getmemoryUsage("heap"))#
+							#printMemory(getmemoryUsage("non_heap"))#
+						</cfsavecontent>
+						#memoryInfo#
+						<cfcatch></cfcatch>
+					</cftry>
 	
-				<!--- Support --->
-				<h2>#stText.Overview.Support#</h2>
-				<div class="txt">
 					<!--- Professional --->
 					<h3>
 						<a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">#stText.Overview.Professional#</a>
@@ -484,7 +478,7 @@ Error Output --->
 						<a href="https://twitter.com/##!/railo" target="_blank">#stText.Overview.twitter#</a>
 					</h3>
 					<div class="comment">#stText.Overview.twitterDesc#</div>
-				</div>
+				
 			</td>
 		</tr>
 	</table>
