@@ -859,6 +859,8 @@ public class KeyConstants {
 	public static final Key _extended_info = KeyImpl._const("extended_info");
 	public static final Key _codePrintHTML = KeyImpl._const("codePrintHTML");
 	public static final Key _codePrintPlain = KeyImpl._const("codePrintPlain");
+	public static final Key _locale = KeyImpl._const("locale");
+	public static final Key _timezone = KeyImpl._const("timezone");
 	
 	private static MapPro<String,Key> _____keys;
 	

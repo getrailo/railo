@@ -578,6 +578,23 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<rtexprvalue>true</rtexprvalue>
 			<description>closure/udf executed when the requested template does not exist</description>
 		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>locale</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Sets the country/language locale for CFML processing. The locale value
+        determines the default format of date, time, number, and
+        currency values, according to language and regional
+        conventions.</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>timeZone</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>change the timezone defintion for the current application context.</description>
+		</attribute>
 		
 	</tag>
 	<!-- Argument -->

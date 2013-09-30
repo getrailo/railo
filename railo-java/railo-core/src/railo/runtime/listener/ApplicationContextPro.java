@@ -1,5 +1,8 @@
 package railo.runtime.listener;
 
+import java.util.Locale;
+import java.util.TimeZone;
+
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 
@@ -32,4 +35,11 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public abstract boolean getBufferOutput();
 	public abstract void setBufferOutput(boolean bufferOutput);
+
+	public Locale getLocale();
+	public void setLocale(Locale locale);
+
+	public TimeZone getTimeZone();
+	public void setTimeZone(TimeZone timeZone);
+	
 }
