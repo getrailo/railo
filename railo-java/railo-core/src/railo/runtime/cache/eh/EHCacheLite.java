@@ -40,7 +40,7 @@ public class EHCacheLite extends EHCacheSupport {
 	private static final boolean REPLICATE_REMOVALS = true;
 	private static final boolean REPLICATE_ASYNC = true;
 	private static final int ASYNC_REP_INTERVAL = 1000; */
-	private static Map managers=new HashMap();
+	private static Map<String,CacheManagerAndHashLite> managers=new HashMap<String,CacheManagerAndHashLite>();
 	
 	//private net.sf.ehcache.Cache cache;
 	private int hits;
@@ -62,7 +62,7 @@ public class EHCacheLite extends EHCacheSupport {
 		
 		// create all xml
 		HashMap<String,String> mapXML = new HashMap<String,String>();
-		HashMap newManagers = new HashMap();
+		HashMap<String,CacheManagerAndHashLite> newManagers = new HashMap<String,CacheManagerAndHashLite>();
 		for(int i=0;i<hashArgs.length;i++){
 			if(mapXML.containsKey(hashArgs[i])) continue;
 			
@@ -70,7 +70,7 @@ public class EHCacheLite extends EHCacheSupport {
 			String xml=createXML(hashDir.getAbsolutePath(), cacheNames,arguments,hashArgs,hashArgs[i]);
 			String hash=MD5.getDigestAsString(xml);
 			
-			CacheManagerAndHashLite manager=(CacheManagerAndHashLite) managers.remove(hashArgs[i]);
+			CacheManagerAndHashLite manager= managers.remove(hashArgs[i]);
 			if(manager!=null && manager.hash.equals(hash)) {
 				newManagers.put(hashArgs[i], manager);
 			}	
@@ -78,14 +78,13 @@ public class EHCacheLite extends EHCacheSupport {
 		}
 		
 		// shutdown all existing managers that have changed
-		Map.Entry entry;
-		Iterator it;
 		synchronized(managers){
-			it = managers.entrySet().iterator();
+			Entry<String, CacheManagerAndHashLite> entry;
+			Iterator<Entry<String, CacheManagerAndHashLite>> it = managers.entrySet().iterator();
 			while(it.hasNext()){
-				entry=(Entry) it.next();
+				entry = it.next();
 				if(entry.getKey().toString().startsWith(dir.getAbsolutePath())){
-					((CacheManagerAndHashLite)entry.getValue()).manager.shutdown();
+					entry.getValue().manager.shutdown();
 				}
 				else newManagers.put(entry.getKey(), entry.getValue());
 				
@@ -93,12 +92,13 @@ public class EHCacheLite extends EHCacheSupport {
 			managers=newManagers;
 		}
 		
-		it = mapXML.entrySet().iterator();
+		Iterator<Entry<String, String>> it = mapXML.entrySet().iterator();
+		Entry<String, String> entry;
 		String xml,hashArg,hash;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			hashArg=(String) entry.getKey();
-			xml=(String) entry.getValue();
+			entry=it.next();
+			hashArg=entry.getKey();
+			xml=entry.getValue();
 			
 			hashDir=dir.getRealResource(hashArg);
 			if(!hashDir.isDirectory())hashDir.createDirectory(true);
@@ -341,7 +341,7 @@ public class EHCacheLite extends EHCacheSupport {
 		
 		setClassLoader();
 		Resource hashDir = config.getConfigDir().getRealResource("ehcache").getRealResource(createHash(arguments));
-		manager =((CacheManagerAndHashLite) managers.get(hashDir.getAbsolutePath())).manager;
+		manager =managers.get(hashDir.getAbsolutePath()).manager;
 	} 
 
 	private void setClassLoader() {
