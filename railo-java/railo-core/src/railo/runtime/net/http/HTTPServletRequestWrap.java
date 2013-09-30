@@ -19,8 +19,11 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLImpl;
+import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.util.ScopeUtil;
 import railo.runtime.util.EnumerationWrapper;
 
@@ -227,12 +230,28 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	@Override
 	public Map<String,String[]> getParameterMap() {
 		PageContext pc = ThreadLocalPageContext.get();
-		FormImpl form = (FormImpl) pc.formScope();
-		URLImpl url= (URLImpl) pc.urlScope();
+		FormImpl form=_form(pc);
+		URLImpl url=_url(pc);
 		
 		return ScopeUtil.getParameterMap(
 				new URLItem[][]{form.getRaw(),url.getRaw()}, 
 				new String[]{form.getEncoding(),url.getEncoding()});
+	}
+
+	private URLImpl _url(PageContext pc) {
+		URL u = pc.urlScope();
+		if(u instanceof UrlFormImpl) {
+			return ((UrlFormImpl) u).getURL();
+		}
+		return (URLImpl) u;
+	}
+
+	private FormImpl _form(PageContext pc) {
+		Form f = pc.formScope();
+		if(f instanceof UrlFormImpl) {
+			return ((UrlFormImpl) f).getForm();
+		}
+		return (FormImpl) f;
 	}
 
 	@Override
@@ -243,8 +262,8 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	@Override
 	public String[] getParameterValues(String name) {
 		PageContext pc = ThreadLocalPageContext.get();
-		FormImpl form = (FormImpl) pc.formScope();
-		URLImpl url= (URLImpl) pc.urlScope();
+		FormImpl form = _form(pc);
+		URLImpl url= _url(pc);
 		
 		return ScopeUtil.getParameterValues(
 				new URLItem[][]{form.getRaw(),url.getRaw()}, 
