@@ -2771,7 +2771,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     @Override
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-    	return ComponentLoader.loadComponent(this,getCurrentPageSource(null),compPath,null,null);
+    	return ComponentLoader.loadComponent(this,null,compPath,null,null);
     }
 
 	/**
