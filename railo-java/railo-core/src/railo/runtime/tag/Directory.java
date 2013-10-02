@@ -568,10 +568,14 @@ public final class Directory extends TagImpl  {
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
 	    
 		if(directory.exists()) {
-			if(directory.isDirectory())
+			if(directory.isDirectory()) {
+				if ( createPath )
+					return;
+
 				throw new ApplicationException("directory ["+directory.toString()+"] already exist");
-			else if(directory.isFile())
-				throw new ApplicationException("can't create directory ["+directory.toString()+"], it exist a file with same name");
+			}
+			if(directory.isFile())
+				throw new ApplicationException("can't create directory ["+directory.toString()+"], a file with that name exists at that location");
 		}
 		//if(!directory.mkdirs())	throw new ApplicationException("can't create directory ["+directory.toString()+"]");
 		try {
