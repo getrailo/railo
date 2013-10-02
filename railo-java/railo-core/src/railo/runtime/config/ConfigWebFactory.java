@@ -2532,8 +2532,6 @@ public final class ConfigWebFactory {
 	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		Element railoConfiguration = doc.getDocumentElement();
 		
-		
-		
 		// password
 		String hpw=railoConfiguration.getAttribute("pw");
 		if(StringUtil.isEmpty(hpw)) {
@@ -2565,9 +2563,12 @@ public final class ConfigWebFactory {
 		
 		// api key
 		String apiKey = railoConfiguration.getAttribute("api-key");
-		if(!StringUtil.isEmpty(apiKey))config.setApiKey(apiKey);
-		
-		
+		if(!StringUtil.isEmpty(apiKey))
+			config.setApiKey(apiKey);
+		else if(configServer != null)
+			config.setApiKey(configServer.getApiKey());
+		else 
+			config.setApiKey(null);
 		
 		// default password
 		if (config instanceof ConfigServerImpl) {

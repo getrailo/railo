@@ -694,6 +694,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doUpdateAuthKey();
         else if(check("removeAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doRemoveAuthKey();
         else if(check("listAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doListAuthKey();
+
+        else if(check("updateAPIKey",          ACCESS_FREE) && check2(ACCESS_WRITE   )) doUpdateAPIKey();
+        else if(check("removeAPIKey",          ACCESS_FREE) && check2(ACCESS_WRITE   )) doRemoveAPIKey();
+        else if(check("getAPIKey",          ACCESS_FREE) && check2(ACCESS_READ   )) doGetAPIKey();
         
         else if(check("createsecuritymanager",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE            )) doCreateSecurityManager();
         else if(check("getsecuritymanager",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ            )) doGetSecurityManager();
@@ -1043,6 +1047,26 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             admin.setPassword(getString("contextPath",null),null);
         }catch (Exception e) {} 
         store();
+    }
+    
+
+    private void doUpdateAPIKey() throws PageException {  
+        try {
+            admin.updateAPIKey(getString("key",null));
+        }catch (Exception e) {} 
+        store();
+    }
+    private void doRemoveAPIKey() throws PageException {  
+        try {
+        	admin.removeAPIKey();
+        }catch (Exception e) {} 
+        store();
+    }
+    
+    private void doGetAPIKey() throws PageException {
+    	pageContext.setVariable(
+                 getString("admin",action,"returnVariable"),
+                 config.getApiKey());
     }
 
     private void doUpdateAuthKey() throws PageException {  
