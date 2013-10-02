@@ -26,7 +26,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	private LinkedList<Statement> statements=new LinkedList<Statement>();
     private Statement last=null;
 	//private int count=-1;
-    private final static int MAX_STATEMENTS=256;
+    private final static int MAX_STATEMENTS=206;
 	
 	/**
 	 * Constructor of the class
