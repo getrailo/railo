@@ -4,17 +4,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.commons.lang.StringUtil;
+import railo.loader.util.Util;
 import railo.runtime.db.DataSource;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ListUtil;
 
 public class Dialect {
-	private static Struct dialects=new StructImpl();
-	private static Struct dialects2=new StructImpl();
+	private static Struct dialects=CommonUtil.createStruct();
+	private static Struct dialects2=CommonUtil.createStruct();
 	
 	static {
 		// if this list change, also update list in web-cfmtaglibrary_1 for "application-ormsettings-dialect" 
@@ -98,8 +96,8 @@ public class Dialect {
 			entry=(Entry) it.next();
 			value=(String) entry.getValue();
 
-			dialects2.setEL(KeyImpl.init(value), value);
-			dialects2.setEL(KeyImpl.init(ListUtil.last(value, ".")), value);
+			dialects2.setEL(CommonUtil.createKey(value), value);
+			dialects2.setEL(CommonUtil.createKey(ListUtil.last(value, ".")), value);
 		}
 		
     }
@@ -113,7 +111,7 @@ public class Dialect {
 		String name=ds.getClazz().getName();
 		if("net.sourceforge.jtds.jdbc.Driver".equalsIgnoreCase(name)){
 			String dsn=ds.getDsnTranslated();
-			if(StringUtil.indexOfIgnoreCase(dsn, "sybase")!=-1)
+			if(dsn.toLowerCase().indexOf("sybase")!=-1)
 				return getDialect("Sybase");
 			return getDialect("SQLServer");
 		}
@@ -121,9 +119,9 @@ public class Dialect {
 	}
 
 	public static String getDialect(String name){
-		if(StringUtil.isEmpty(name))return null;
-		String dialect= (String) dialects.get(KeyImpl.init(name), null);
-		if(dialect==null)dialect= (String) dialects2.get(KeyImpl.init(name), null);
+		if(Util.isEmpty(name))return null;
+		String dialect= (String) dialects.get(CommonUtil.createKey(name), null);
+		if(dialect==null)dialect= (String) dialects2.get(CommonUtil.createKey(name), null);
 		return dialect;
 	}
 	

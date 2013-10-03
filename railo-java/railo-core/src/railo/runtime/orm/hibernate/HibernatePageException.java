@@ -14,7 +14,6 @@ import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.IPageException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
-import railo.runtime.orm.ORMException;
 import railo.runtime.type.Struct;
 
 public class HibernatePageException extends HibernateException implements IPageException,PageExceptionBox  {

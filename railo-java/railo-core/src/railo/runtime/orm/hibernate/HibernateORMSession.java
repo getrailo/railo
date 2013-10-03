@@ -23,31 +23,22 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
-import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
-import railo.commons.lang.types.RefBooleanImpl;
+import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMTransaction;
 import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
-import railo.runtime.type.scope.ArgumentImpl;
-import railo.runtime.type.util.CollectionUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -94,10 +85,9 @@ public class HibernateORMSession implements ORMSession{
 			session().flush();
 		}
 		catch(ConstraintViolationException cve){
-			PageException pe = new ORMException(this,null,cve);
-			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
-				//print.o(cve.getConstraintName());
-				((PageExceptionImpl)pe).setAdditional(KeyImpl.init("constraint name"), cve.getConstraintName() );
+			PageException pe = ExceptionUtil.createException(this,null,cve);
+			if(!Util.isEmpty(cve.getConstraintName())) {
+				ExceptionUtil.setAdditional(pe, CommonUtil.createKey("constraint name"), cve.getConstraintName());
 			}
 			throw pe;
 		}
@@ -152,7 +142,7 @@ public class HibernateORMSession implements ORMSession{
 					session().saveOrUpdate(name, cfc);
 		}
 		catch(Throwable t){
-			throw new ORMException(this,null,t);
+			throw ExceptionUtil.createException(this,null,t);
 		}
 	}
 	
@@ -183,7 +173,7 @@ public class HibernateORMSession implements ORMSession{
 	@Override
 	public void evictQueries(PageContext pc,String cacheName) throws PageException {
 		SessionFactory f = getSessionFactory(pc);
-		if(StringUtil.isEmpty(cacheName))f.evictQueries();
+		if(Util.isEmpty(cacheName))f.evictQueries();
 		else f.evictQueries(cacheName);
 	}
 	
@@ -246,7 +236,7 @@ public class HibernateORMSession implements ORMSession{
 			// argument scope is array and struct at the same time, by default it is handled as struct, if this fails try it as array
 			if(params instanceof Argument) {
 				try{
-					return __executeQuery(pc, hql, ArgumentImpl.toArray((Argument)params), unique, queryOptions);
+					return __executeQuery(pc, hql, CommonUtil.toArray((Argument)params), unique, queryOptions);
 				}
 				catch(Throwable t){t.printStackTrace();}
 			}
@@ -266,28 +256,28 @@ public class HibernateORMSession implements ORMSession{
 			Object obj=options.get("maxresults",null);
 			if(obj!=null) {
 				int max=CommonUtil.toIntValue(obj,-1);
-				if(max<0) throw new ORMException(this,null,"option [maxresults] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
+				if(max<0) throw ExceptionUtil.createException(this,null,"option [maxresults] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setMaxResults(max);
 			}
 			// offset
 			obj=options.get("offset",null);
 			if(obj!=null) {
 				int off=CommonUtil.toIntValue(obj,-1);
-				if(off<0) throw new ORMException(this,null,"option [offset] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
+				if(off<0) throw ExceptionUtil.createException(this,null,"option [offset] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setFirstResult(off);
 			}
 			// readonly
 			obj=options.get("readonly",null);
 			if(obj!=null) {
 				Boolean ro=CommonUtil.toBoolean(obj,null);
-				if(ro==null) throw new ORMException(this,null,"option [readonly] has an invalid value ["+obj+"], value should be a boolean value",null);
+				if(ro==null) throw ExceptionUtil.createException(this,null,"option [readonly] has an invalid value ["+obj+"], value should be a boolean value",null);
 				query.setReadOnly(ro.booleanValue());
 			}
 			// timeout
 			obj=options.get("timeout",null);
 			if(obj!=null) {
 				int to=CommonUtil.toIntValue(obj,-1);
-				if(to<0) throw new ORMException(this,null,"option [timeout] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
+				if(to<0) throw ExceptionUtil.createException(this,null,"option [timeout] has an invalid value ["+obj+"], value should be a number bigger or equal to 0",null);
 				query.setTimeout(to);
 			}
         }
@@ -305,10 +295,10 @@ public class HibernateORMSession implements ORMSession{
 			// struct
 			if(CommonUtil.isStruct(params)) {
 				Struct sct=CommonUtil.toStruct(params);
-				Key[] keys = CollectionUtil.keys(sct);
+				Key[] keys	 = CommonUtil.keys(sct);
 				String name;
 				// fix case-senstive
-				Struct names=new StructImpl();
+				Struct names=CommonUtil.createStruct();
 				if(meta!=null){
 					Iterator<String> it = meta.getNamedParameterNames().iterator();
 					while(it.hasNext()){
@@ -317,7 +307,7 @@ public class HibernateORMSession implements ORMSession{
 					}
 				}
 				
-				RefBoolean isArray=new RefBooleanImpl();
+				RefBoolean isArray=CommonUtil.createRefBoolean();
 				for(int i=0;i<keys.length;i++){
 					obj=sct.get(keys[i],null);
 					if(meta!=null){
@@ -343,7 +333,7 @@ public class HibernateORMSession implements ORMSession{
 				Iterator it = arr.valueIterator();
 				int index=0;
 				SQLItem item;
-				RefBoolean isArray=null;//new RefBooleanImpl();
+				RefBoolean isArray=null;
 				while(it.hasNext()){
 					obj=it.next();
 					if(obj instanceof SQLItem) {
@@ -366,14 +356,15 @@ public class HibernateORMSession implements ORMSession{
 					index++;
 				}
 				if(meta.getOrdinalParameterCount()>index)
-					throw new ORMException(this,null,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements",null);
+					throw ExceptionUtil.createException(this,null,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements",null);
 			}
 		}
 		
 		
 		
 		// select
-		if(StringUtil.startsWithIgnoreCase(hql,"select") || StringUtil.startsWithIgnoreCase(hql,"from")){
+		String lcHQL = hql.toLowerCase();
+		if(lcHQL.startsWith("select") || lcHQL.startsWith("from")){
 			if(unique){
 				return uniqueResult(query);
 			}
@@ -408,7 +399,7 @@ public class HibernateORMSession implements ORMSession{
 	@Override
 	public void close(PageContext pc) throws PageException {
 		session().close();
-		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc);
+		CommonUtil.releaseDatasourceConnection(pc, dc);
 		dc=null;
 	}
 	
@@ -442,7 +433,7 @@ public class HibernateORMSession implements ORMSession{
 	
 	@Override
 	public Array loadAsArray(PageContext pc, String name, String id) throws PageException {
-		Array arr=new ArrayImpl();
+		Array arr=CommonUtil.createArray();
 		Component c = load(pc, name, id);
 		if(c!=null)arr.append(c);
 		return arr;
@@ -469,7 +460,7 @@ public class HibernateORMSession implements ORMSession{
 		Object obj=null;
 		try{
 			ClassMetadata metaData = getSessionFactory(pc).getClassMetadata(name);
-			if(metaData==null) throw new ORMException(this,null,"could not load meta information for entity ["+name+"]",null);
+			if(metaData==null) throw ExceptionUtil.createException(this,null,"could not load meta information for entity ["+name+"]",null);
 			Serializable oId = CommonUtil.toSerializable(
 					CommonUtil.castTo(pc, 
 							metaData
@@ -511,8 +502,8 @@ public class HibernateORMSession implements ORMSession{
 			Type idType = metaData.getIdentifierType();
 		 
 			Criteria criteria=session().createCriteria(name);
-			if(!StringUtil.isEmpty(idName)){
-				Object idValue = scope.get(KeyImpl.init(idName),null);
+			if(!Util.isEmpty(idName)){
+				Object idValue = scope.get(CommonUtil.createKey(idName),null);
 				if(idValue!=null){
 					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(idType, idValue,null)));
 				}
@@ -603,7 +594,7 @@ public class HibernateORMSession implements ORMSession{
 			}
 			
 			// order 
-			if(!StringUtil.isEmpty(order)){
+			if(!Util.isEmpty(order)){
 				if(metaData==null)metaData = getSessionFactory(pc).getClassMetadata(name);
 				
 				String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(order, ',');
@@ -623,7 +614,7 @@ public class HibernateORMSession implements ORMSession{
 					if(parts.length>1){
 						if(parts[1].equalsIgnoreCase("desc"))isDesc=true;
 						else if(!parts[1].equalsIgnoreCase("asc")){
-							throw new ORMException(null,null,"invalid order direction defintion ["+parts[1]+"]","valid values are [asc, desc]");
+							throw ExceptionUtil.createException((ORMSession)null,null,"invalid order direction defintion ["+parts[1]+"]","valid values are [asc, desc]");
 						}
 						
 					}

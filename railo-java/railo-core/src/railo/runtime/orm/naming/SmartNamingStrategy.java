@@ -1,6 +1,6 @@
 package railo.runtime.orm.naming;
 
-import railo.commons.lang.StringUtil;
+import railo.loader.util.Util;
 
 public class SmartNamingStrategy implements NamingStrategy {
 	
@@ -17,7 +17,7 @@ public class SmartNamingStrategy implements NamingStrategy {
     }
 
     private static String translate(String name) {
-    	if(StringUtil.isEmpty(name)) return "";
+    	if(Util.isEmpty(name)) return "";
         
     	int len=name.length();
     	StringBuilder sb = new StringBuilder();

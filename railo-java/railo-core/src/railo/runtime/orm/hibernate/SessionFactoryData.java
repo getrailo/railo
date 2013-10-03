@@ -13,25 +13,21 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.query.QueryPlanCache;
 
-import railo.print;
-import railo.commons.lang.StringUtil;
+import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.other.GetComponentMetaData;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.orm.ORMException;
+import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.naming.CFCNamingStrategy;
 import railo.runtime.orm.naming.DefaultNamingStrategy;
 import railo.runtime.orm.naming.NamingStrategy;
 import railo.runtime.orm.naming.SmartNamingStrategy;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 
 public class SessionFactoryData {
 
@@ -45,7 +41,7 @@ public class SessionFactoryData {
 	private QueryPlanCache queryPlanCache;
 	private NamingStrategy namingStrategy;
 	private final HibernateORMEngine engine;
-	private Struct tableInfo=new StructImpl();
+	private Struct tableInfo=CommonUtil.createStruct();
 	private String cfcNamingStrategy;
 
 	
@@ -89,7 +85,7 @@ public class SessionFactoryData {
 			factory=null;
 		}
 		//namingStrategy=null; because the ormconf not change, this has not to change as well
-		tableInfo=new StructImpl();
+		tableInfo=CommonUtil.createStruct();
 	}
 
 	public void buildSessionFactory() {
@@ -104,7 +100,7 @@ public class SessionFactoryData {
 	public NamingStrategy getNamingStrategy() throws PageException {
 		if(namingStrategy==null) {
 			String strNamingStrategy=ormConf.namingStrategy();
-			if(StringUtil.isEmpty(strNamingStrategy,true)) {
+			if(Util.isEmpty(strNamingStrategy,true)) {
 				namingStrategy=DefaultNamingStrategy.INSTANCE;
 			}
 			else {
@@ -126,7 +122,7 @@ public class SessionFactoryData {
 	}
 	
 	public Struct getTableInfo(DatasourceConnection dc, String tableName) throws PageException {
-		Collection.Key keyTableName=KeyImpl.init(tableName);
+		Collection.Key keyTableName=CommonUtil.createKey(tableName);
 		Struct columnsInfo = (Struct) tableInfo.get(keyTableName,null);
 		if(columnsInfo!=null) return columnsInfo;
 		
@@ -135,9 +131,9 @@ public class SessionFactoryData {
     	return columnsInfo;
 	}
 	
-	public void checkExistent(PageContext pc,Component cfc) throws ORMException {
+	public void checkExistent(PageContext pc,Component cfc) throws PageException {
 		if(!cfcs.containsKey(HibernateUtil.id(HibernateCaster.getEntityName(cfc))))
-            throw new HibernateORMException(this,null,"there is no mapping definition for component ["+cfc.getAbsName()+"]","");
+            throw ExceptionUtil.createException(this,null,"there is no mapping definition for component ["+cfc.getAbsName()+"]","");
 	}
 	
 	public String[] getEntityNames() {
@@ -166,7 +162,7 @@ public class SessionFactoryData {
 					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 			}
 		}
-		throw new ORMException(null,null,"entity ["+entityName+"] does not exist","");
+		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+entityName+"] does not exist","");
 	}
 	
 
@@ -220,7 +216,7 @@ public class SessionFactoryData {
 			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 		}
 		
-		throw new ORMException(null,null,"entity ["+name+"] "+(StringUtil.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.util.ListUtil.arrayToList(names, ", ")+"]","");
+		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+name+"] "+(Util.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.util.ListUtil.arrayToList(names, ", ")+"]","");
 		
 	}
 }

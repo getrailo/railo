@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -24,8 +23,8 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.InterfacePage;
 import railo.runtime.Mapping;
@@ -41,7 +40,6 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLUtil;
@@ -87,16 +85,16 @@ public class HibernateSessionFactory {
 		}
 		if (dialect == null) {
 			dialect = Dialect.getDialect(ormConf.getDialect());
-			if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
+			if(Util.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
 		}
-		if(StringUtil.isEmpty(dialect))
-			throw new HibernateORMException(data,null,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically",null);
+		if(Util.isEmpty(dialect))
+			throw ExceptionUtil.createException(data,null,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically",null);
 		
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
 		Class<? extends RegionFactory> regionFactory=null;
 		
-		if(StringUtil.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
+		if(Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
 			regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
 			cacheProvider=regionFactory.getName();//"org.hibernate.cache.EhCacheProvider";
 					
@@ -126,7 +124,7 @@ public class HibernateSessionFactory {
 			configuration.addXML(mappings);
 		}
 		catch(MappingException me){
-			throw new HibernateORMException(data,null, me);
+			throw ExceptionUtil.createException(data,null, me);
 		}
 		
 		configuration
@@ -159,9 +157,9 @@ public class HibernateSessionFactory {
 		//.setProperty("hibernate.hbm2ddl.auto", "create")
 		.setProperty("hibernate.default_entity_mode", "dynamic-map");
 		
-		if(!StringUtil.isEmpty(ormConf.getCatalog()))
+		if(!Util.isEmpty(ormConf.getCatalog()))
 			configuration.setProperty("hibernate.default_catalog", ormConf.getCatalog());
-		if(!StringUtil.isEmpty(ormConf.getSchema()))
+		if(!Util.isEmpty(ormConf.getSchema()))
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
 		
 		
@@ -189,7 +187,7 @@ public class HibernateSessionFactory {
 		return configuration;
 	}
 
-	private static void schemaExport(Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException,ORMException, SQLException, IOException {
+	private static void schemaExport(Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException, SQLException, IOException {
 		ORMConfiguration ormConf = data.getORMConfiguration();
 		
 		if(ORMConfiguration.DBCREATE_NONE==ormConf.getDbCreate()) {
@@ -223,7 +221,7 @@ public class HibernateSessionFactory {
         
         it = exceptions.iterator();
         while(it.hasNext()) {
-        	throw new HibernateORMException(data,null,it.next());
+        	throw ExceptionUtil.createException(data,null,it.next());
         } 
 	}
 
@@ -283,7 +281,7 @@ public class HibernateSessionFactory {
 		if(done.contains(key)) return;
 		CFCInfo v;
 		String ext = value.getCFC().getExtends();
-		if(!StringUtil.isEmpty(ext)){
+		if(!Util.isEmpty(ext)){
 			try {
 				Component base = data.getEntityByCFCName(ext, false);
 				ext=HibernateCaster.getEntityName(base);
@@ -358,7 +356,7 @@ public class HibernateSessionFactory {
 						PageSource ps2=null;
 						Resource root = cfclocation.getPhysical();
 		                String path = ResourceUtil.getPathToChild(res, root);
-		                if(!StringUtil.isEmpty(path,true)) {
+		                if(!Util.isEmpty(path,true)) {
 		                	ps2=cfclocation.getPageSource(path);
 		                }
 		                if(ps2!=null)ps=ps2;

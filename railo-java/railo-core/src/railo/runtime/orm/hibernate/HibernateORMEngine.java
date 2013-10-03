@@ -24,11 +24,9 @@ import org.w3c.dom.Element;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.StringUtil;
+import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourcePro;
@@ -40,7 +38,6 @@ import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.event.AllEventListener;
@@ -60,10 +57,9 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.type.util.KeyConstants;
 
 public class HibernateORMEngine implements ORMEngine {
-
+	
 	private static final int INIT_NOTHING=1;
 	private static final int INIT_CFCS=2;
 	private static final int INIT_ALL=2;
@@ -82,9 +78,13 @@ public class HibernateORMEngine implements ORMEngine {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
 		
-		DataSource ds=o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(CommonUtil.toString(o));
+		DataSource ds=o instanceof DataSource?
+				(DataSource)o:
+				CommonUtil.getDataSource(pc,CommonUtil.toString(o));
 		
-		DatasourceConnection dc = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,ds,null,null);
+				
+		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,ds);
+			
 		try{
 			SessionFactoryData data = getSessionFactoryData(pc, INIT_NOTHING);
 			return new HibernateORMSession(data,dc);
@@ -123,7 +123,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private SessionFactoryData getSessionFactoryData(PageContext pc,int initType) throws PageException {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
-			throw new ORMException(null,null,"ORM is not enabled in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,"");
+			throw ExceptionUtil.createException((ORMSession)null,null,"ORM is not enabled in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,"");
 		
 		
 		// datasource
@@ -153,16 +153,12 @@ public class HibernateORMEngine implements ORMEngine {
 						data.cfcs.clear();
 					}
 					else 
-						throw new HibernateORMException(data,null,"orm setting autogenmap=false is not supported yet",null);
+						throw ExceptionUtil.createException(data,null,"orm setting autogenmap=false is not supported yet",null);
 				
 					// load entities
 					if(!ArrayUtil.isEmpty(data.tmpList)) {
 						data.getNamingStrategy();// caled here to make sure, it is called in the right context the first one
-						DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
-						DatasourceConnection dc = pool.getDatasourceConnection(pc,ds,null,null);
-						//DataSourceManager manager = pc.getDataSourceManager();
-						//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
-						//this.ds=dc.getDatasource();
+						DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds);
 						try {
 							Iterator<Component> it = data.tmpList.iterator();
 							while(it.hasNext()){
@@ -170,8 +166,7 @@ public class HibernateORMEngine implements ORMEngine {
 							}
 						}
 						finally {
-							pool.releaseDatasourceConnection(dc);
-							//manager.releaseConnection(pc,dc);
+							CommonUtil.releaseDatasourceConnection(pc, dc);
 						}
 						if(data.tmpList.size()!=data.cfcs.size()){
 							Component cfc;
@@ -183,7 +178,7 @@ public class HibernateORMEngine implements ORMEngine {
 								name=HibernateCaster.getEntityName(cfc);
 								lcName=name.toLowerCase();
 								if(names.containsKey(lcName))
-									throw new HibernateORMException(data,null,"Entity Name ["+name+"] is ambigous, ["+names.get(lcName)+"] and ["+cfc.getPageSource().getDisplayPath()+"] use the same entity name.",""); 
+									throw ExceptionUtil.createException(data,null,"Entity Name ["+name+"] is ambigous, ["+names.get(lcName)+"] and ["+cfc.getPageSource().getDisplayPath()+"] use the same entity name.",""); 
 								names.put(lcName,cfc.getPageSource().getDisplayPath());
 							}	
 						}
@@ -205,8 +200,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		String mappings=HibernateSessionFactory.createMappings(ormConf,data);
 		
-		DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
-		DatasourceConnection dc = pool.getDatasourceConnection(pc,ds,null,null);
+		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,ds);
 		try{
 			data.setConfiguration(mappings,dc);
 		} 
@@ -214,7 +208,7 @@ public class HibernateORMEngine implements ORMEngine {
 			throw CommonUtil.toPageException(e);
 		}
 		finally {
-			pool.releaseDatasourceConnection(dc);
+			CommonUtil.releaseDatasourceConnection(pc, dc);
 		}
 		
 		addEventListeners(pc, data);
@@ -239,7 +233,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(!data.getORMConfiguration().eventHandling()) return;
 		String eventHandler = data.getORMConfiguration().eventHandler();
 		AllEventListener listener=null;
-		if(!StringUtil.isEmpty(eventHandler,true)){
+		if(!Util.isEmpty(eventHandler,true)){
 			//try {
 				Component c = pc.loadComponent(eventHandler.trim());
 				
@@ -252,35 +246,35 @@ public class HibernateORMEngine implements ORMEngine {
         
         // post delete
 		List<EventListener> 
-		list=merge(listener,data.cfcs,EventListener.POST_DELETE);
+		list=merge(listener,data.cfcs,CommonUtil.POST_DELETE);
 		listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
 		
         // post insert
-		list=merge(listener,data.cfcs,EventListener.POST_INSERT);
+		list=merge(listener,data.cfcs,CommonUtil.POST_INSERT);
 		listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
 		
 		// post update
-		list=merge(listener,data.cfcs,EventListener.POST_UPDATE);
+		list=merge(listener,data.cfcs,CommonUtil.POST_UPDATE);
 		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
 		
 		// post load
-		list=merge(listener,data.cfcs,EventListener.POST_LOAD);
+		list=merge(listener,data.cfcs,CommonUtil.POST_LOAD);
 		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
 		
 		// pre delete
-		list=merge(listener,data.cfcs,EventListener.PRE_DELETE);
+		list=merge(listener,data.cfcs,CommonUtil.PRE_DELETE);
 		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
 		
 		// pre insert
-		//list=merge(listener,cfcs,EventListener.PRE_INSERT);
+		//list=merge(listener,cfcs,CommonUtil.PRE_INSERT);
 		//listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
 		
 		// pre load
-		list=merge(listener,data.cfcs,EventListener.PRE_LOAD);
+		list=merge(listener,data.cfcs,CommonUtil.PRE_LOAD);
 		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
 		
 		// pre update
-		//list=merge(listener,cfcs,EventListener.PRE_UPDATE);
+		//list=merge(listener,cfcs,CommonUtil.PRE_UPDATE);
 		//listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
 	}
 
@@ -295,22 +289,22 @@ public class HibernateORMEngine implements ORMEngine {
 			entry = it.next();
 			cfc = entry.getValue().getCFC();
 			if(EventListener.hasEventType(cfc,eventType)) {
-				if(EventListener.POST_DELETE.equals(eventType))
+				if(CommonUtil.POST_DELETE.equals(eventType))
 					list.add(new PostDeleteEventListenerImpl(cfc));
-				if(EventListener.POST_INSERT.equals(eventType))
+				if(CommonUtil.POST_INSERT.equals(eventType))
 					list.add(new PostInsertEventListenerImpl(cfc));
-				if(EventListener.POST_LOAD.equals(eventType))
+				if(CommonUtil.POST_LOAD.equals(eventType))
 					list.add(new PostLoadEventListenerImpl(cfc));
-				if(EventListener.POST_UPDATE.equals(eventType))
+				if(CommonUtil.POST_UPDATE.equals(eventType))
 					list.add(new PostUpdateEventListenerImpl(cfc));
 				
-				if(EventListener.PRE_DELETE.equals(eventType))
+				if(CommonUtil.PRE_DELETE.equals(eventType))
 					list.add(new PreDeleteEventListenerImpl(cfc));
-				if(EventListener.PRE_INSERT.equals(eventType))
+				if(CommonUtil.PRE_INSERT.equals(eventType))
 					list.add(new PreInsertEventListenerImpl(cfc));
-				if(EventListener.PRE_LOAD.equals(eventType))
+				if(CommonUtil.PRE_LOAD.equals(eventType))
 					list.add(new PreLoadEventListenerImpl(cfc));
-				if(EventListener.PRE_UPDATE.equals(eventType))
+				if(CommonUtil.PRE_UPDATE.equals(eventType))
 					list.add(new PreUpdateEventListenerImpl(cfc));
 			}
 		}
@@ -327,7 +321,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Object o=appContext.getORMDataSource();
 		DataSource ds;
 		if(o instanceof DataSource) ds=(DataSource) o;
-		else ds=((PageContextImpl)pc).getDataSource(CommonUtil.toString(o));
+		else ds=CommonUtil.getDataSource(pc,CommonUtil.toString(o));
 		return hash(appContext.getORMConfiguration(),ds);
 	}
 	
@@ -467,7 +461,7 @@ public class HibernateORMEngine implements ORMEngine {
 		ORMConfiguration ormConf = pc.getApplicationContext().getORMConfiguration();
 		Resource[] locations = ormConf.getCfcLocations();
 		
-		throw new HibernateORMException(data,null,
+		throw ExceptionUtil.createException(data,null,
 				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.util.ListUtil.arrayToList(data.getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
@@ -490,7 +484,7 @@ public class HibernateORMEngine implements ORMEngine {
 			Component cfc = info.getCFC();
 			if(unique){
 				cfc=(Component)Duplicator.duplicate(cfc,false);
-				if(cfc.contains(pc,KeyConstants._init))cfc.call(pc, "init",new Object[]{});
+				if(cfc.contains(pc,CommonUtil.INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;
 		}

@@ -12,7 +12,6 @@ import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernatePageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 
 public final class CFCSetter implements Setter {
 	
@@ -23,7 +22,7 @@ public final class CFCSetter implements Setter {
 	 * @param key
 	 */
 	public CFCSetter(String key){
-		this(KeyImpl.getInstance(key));
+		this(CommonUtil.createKey(key));
 	}
 	
 	/**

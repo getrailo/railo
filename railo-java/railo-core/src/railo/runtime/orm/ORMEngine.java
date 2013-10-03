@@ -1,7 +1,6 @@
 package railo.runtime.orm;
 
 import railo.runtime.PageContext;
-import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 
 public interface ORMEngine {

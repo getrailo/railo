@@ -9,7 +9,7 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tuple.Instantiator;
 
 import railo.runtime.Component;
-import railo.runtime.PageContextImpl;
+import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.hibernate.CommonUtil;
@@ -17,10 +17,10 @@ import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMSession;
 import railo.runtime.orm.hibernate.HibernatePageException;
+import railo.runtime.orm.hibernate.HibernateUtil;
 
 public class CFCInstantiator implements Instantiator {
 	
-	//private static final Collection.Key INIT = KeyImpl.intern("init");
 	private String entityName;
 	private Set<String> isInstanceEntityNames = new HashSet<String>();
 	
@@ -52,8 +52,8 @@ public class CFCInstantiator implements Instantiator {
 	@Override
 	public final Object instantiate() {
 		try {
-			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
-			HibernateORMSession session=(HibernateORMSession) pc.getORMSession(true);
+			PageContext pc = ThreadLocalPageContext.get();
+			HibernateORMSession session=HibernateUtil.getORMSession(pc,true);
 			HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 			return engine.create(pc, session, entityName, true);
 		} 

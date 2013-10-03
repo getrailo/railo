@@ -12,7 +12,7 @@ import org.hibernate.type.Type;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.hibernate.CommonUtil;
@@ -22,7 +22,6 @@ import railo.runtime.orm.hibernate.HibernatePageException;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 
 public class CFCGetter implements Getter {
 
@@ -33,7 +32,7 @@ public class CFCGetter implements Getter {
 	 * @param key
 	 */
 	public CFCGetter(String key){
-		this(KeyImpl.getInstance(key));
+		this(CommonUtil.createKey(key));
 	}
 	
 	/**
@@ -68,9 +67,7 @@ public class CFCGetter implements Getter {
 	public HibernateORMEngine getHibernateORMEngine(){
 		try {
 			// TODO better impl
-			PageContext pc = ThreadLocalPageContext.get();
-			ConfigImpl config=(ConfigImpl) pc.getConfig();
-			return (HibernateORMEngine) config.getORMEngine(pc);
+			return HibernateUtil.getORMEngine(ThreadLocalPageContext.get());
 		} 
 		catch (PageException e) {}
 			

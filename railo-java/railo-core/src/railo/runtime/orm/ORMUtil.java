@@ -22,6 +22,7 @@ import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
+import railo.runtime.orm.hibernate.ExceptionUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -288,7 +289,7 @@ public class ORMUtil {
 		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
 		
 		if(StringUtil.isEmpty(o))
-			throw new ORMException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
+			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
 		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
 	
 		

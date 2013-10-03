@@ -1,27 +1,58 @@
 package railo.runtime.orm.hibernate;
 
 import java.io.Serializable;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.hibernate.JDBCException;
 import org.w3c.dom.Node;
 
+import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.db.DataSource;
+import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
+import railo.runtime.type.Query;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.QueryImpl;
+import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.scope.Argument;
 import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
+import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 
 public class CommonUtil {
 	
+	public static final Key ENTITY_NAME = CommonUtil.createKey("entityname");
+	public static final Key FIELDTYPE = CommonUtil.createKey("fieldtype");
+	public static final Key POST_INSERT=CommonUtil.createKey("postInsert");
+	public static final Key POST_UPDATE=CommonUtil.createKey("postUpdate");
+	public static final Key PRE_DELETE=CommonUtil.createKey("preDelete");
+	public static final Key POST_DELETE=CommonUtil.createKey("postDelete");
+	public static final Key PRE_LOAD=CommonUtil.createKey("preLoad");
+	public static final Key POST_LOAD=CommonUtil.createKey("postLoad");
+	public static final Key PRE_UPDATE=CommonUtil.createKey("preUpdate");
+	public static final Key PRE_INSERT=CommonUtil.createKey("preInsert");
+	public static final Key INIT=CommonUtil.createKey("init");
+	
+	
+
+	
 	private static Cast caster;
 	private static Decision decision;
+	private static Creation creator;
 
 
 	public static Object castTo(PageContext pc, Class trgClass, Object obj) throws PageException {
@@ -100,6 +131,16 @@ public class CommonUtil {
 		return caster().toIntValue(obj,defaultValue);
 	}
 	
+	public static Array toArray(Argument arg) {
+		Array trg=createArray();
+		int[] keys = arg.intKeys();
+		for(int i=0;i<keys.length;i++){
+			trg.setEL(keys[i],
+					arg.get(keys[i],null));
+		}
+		return trg;
+	}
+	
 	public static PageException toPageException(Throwable t) {
 		if (!(t instanceof JDBCException))
 			return caster().toPageException(t);
@@ -150,8 +191,48 @@ public class CommonUtil {
 		return decision().isStruct(obj);
 	}
 	
+	public static Array createArray(){
+		return creator().createArray();
+	}
+
+	public static DateTime createDateTime(long time) {
+		return creator().createDateTime(time);
+	}
+	public static Struct createStruct(){
+		return creator().createStruct();
+	}
+	public static Collection.Key createKey(String key){
+		return creator().createKey(key);
+	}
+	public static Query createQuery(Collection.Key[] columns, int rows, String name) throws PageException{
+		return creator().createQuery(columns, rows, name);
+	}
+	public static Query createQuery(Array names, Array types, int rows, String name) throws PageException{ 
+		return new QueryImpl(names,types,rows,name);
+	}
+
+	public static RefBoolean createRefBoolean() {
+		return new RefBooleanImpl();
+	}
+	
+	public static Key[] keys(Collection coll) { 
+		if(coll==null) return new Key[0];
+		Iterator<Key> it = coll.keyIterator();
+		List<Key> rtn=new ArrayList<Key>();
+		if(it!=null)while(it.hasNext()){
+			rtn.add(it.next());
+		}
+		return rtn.toArray(new Key[rtn.size()]);
+	}
 	
 	
+	
+	private static Creation creator() {
+		if(creator==null)
+			creator=CFMLEngineFactory.getInstance().getCreationUtil();
+		return creator;
+	}
+
 	private static Decision decision() {
 		if(decision==null)
 			decision=CFMLEngineFactory.getInstance().getDecisionUtil();
@@ -219,5 +300,63 @@ public class CommonUtil {
 	        return strSQL;
 	    }
 	}
+	
+	/**
+	 * Integer Type that can be modified
+	 */
+	public static final class RefBooleanImpl implements RefBoolean {//MUST add interface Castable
+
+	    private boolean value;
+
+
+	    public RefBooleanImpl() {}
+	    
+	    /**
+	     * @param value
+	     */
+	    public RefBooleanImpl(boolean value) {
+	        this.value=value;
+	    }
+	    
+	    /**
+	     * @param value
+	     */
+	    public void setValue(boolean value) {
+	        this.value = value;
+	    }
+	    
+	    /**
+	     * @return returns value as Boolean Object
+	     */
+	    public Boolean toBoolean() {
+	        return value?Boolean.TRUE:Boolean.FALSE;
+	    }
+	    
+	    /**
+	     * @return returns value as boolean value
+	     */
+	    public boolean toBooleanValue() {
+	        return value;
+	    }
+	    
+	    @Override
+	    public String toString() {
+	        return value?"true":"false";
+	    }
+	}
+
+	public static DataSource getDataSource(PageContext pc, String name) throws PageException {
+		return ((PageContextImpl)pc).getDataSource(name); // TODO use reflection
+	}
+
+	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds) throws PageException {
+		return ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,ds,null,null); // TODO use reflection
+	}
+	
+	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
+		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc); // TODO use reflection
+	}
+	
+	
 
 }
