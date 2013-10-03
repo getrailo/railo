@@ -340,7 +340,6 @@
 	
 	<cfset local.start=getTickCount()>
 	<cfset var datas=loadProvidersData(queryColumnData(providers,'url'),arguments.timeout)>
-	<cfdump var="#getTickCount()-start#">
 	<cfset var data="">
 			
     <cfloop query="providers">
