@@ -502,10 +502,14 @@ public final class StringUtil {
      * @return
      */
 	public static String replace( String input, String find, String repl, boolean firstOnly, boolean ignoreCase ) {
-        
-        String scan = input;        
-        int findLen = find.length();        
-        
+
+		int findLen = find.length();
+
+		if ( findLen == 0 )
+			return input;
+
+		String scan = input;
+
         if ( ignoreCase ) {
             
             scan = scan.toLowerCase();
