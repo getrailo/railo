@@ -127,6 +127,7 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.it.ItAsEnum;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
@@ -1751,7 +1752,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	        else {
 	        	rsp.setContentType("text/html; charset=" + charEnc);
 	        }
-			
+	        rsp.setHeader("exception-message", pe.getMessage());
+	        //rsp.setHeader("exception-detail", pe.getDetail());
+	        
 			int statusCode=getStatusCode(pe);
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
@@ -2044,6 +2047,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		format = UDF.RETURN_FORMAT_XML;
     		accept.clear();
     		accept.add(MimeType.APPLICATION_XML);
+    		hasFormatExtension=true;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".java")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    		format = UDFPlus.RETURN_FORMAT_JAVA;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_JAVA);
     		hasFormatExtension=true;
     	}
     	else {
