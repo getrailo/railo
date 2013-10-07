@@ -2132,8 +2132,8 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<rtexprvalue>true</rtexprvalue>
 			<description>User name to connect to the database.</description>
 		</attribute>
-
 	</tag>
+
 	<!-- Defaultcase -->
 	<tag>
 		<name>defaultcase</name>
@@ -2144,6 +2144,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<description>Handles interactions with directories.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
+
 	<!-- Directory -->
 	<tag>
 		<name>directory</name>
@@ -2289,7 +2290,7 @@ Example:
 			<name>nameconflict</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Used with action = "copy". Ignored by all other actions. Optional values are: [Overwrite]|Error.</description>
+			<description>When used with action="copy" the possible values are: [Overwrite]|Error.  When used with action="create" the possible values are: [Error]|Skip. Ignored for all other actions.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -2301,6 +2302,7 @@ Example:
 	   		</description>
 		</attribute>
 	</tag>
+
 	<!-- Div -->
 	<tag>
 		<name>Div</name>
