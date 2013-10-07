@@ -690,7 +690,7 @@ public final class XMLConverter extends ConverterSupport {
 		try {
 			comp = ComponentUtil.toComponentAccess(pc.loadComponent(name));
 			if(!ComponentUtil.md5(comp).equals(md5)){
-				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load");
+				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
 			}
 		} 
 		catch (ConverterException e) {
