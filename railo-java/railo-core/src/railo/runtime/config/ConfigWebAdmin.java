@@ -4363,12 +4363,11 @@ public final class ConfigWebAdmin {
         root.setAttribute("auth-keys",authKeysAsList(set));
 	}
 
-	public void updateAPIKey(String key) throws SecurityException {
+	public void updateAPIKey(String key) throws SecurityException, ApplicationException {
 		checkWriteAccess();
 		key=key.trim();
-		
-		// TODO validate api key
-		
+		if(!Decision.isGUId(key))
+			throw new ApplicationException("passed API Key ["+key+"] is not valid");
 		Element root=doc.getDocumentElement();
         root.setAttribute("api-key",key);
 		
