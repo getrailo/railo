@@ -6,6 +6,7 @@ import java.util.List;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.interpreter.InterpreterException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.Set;
@@ -36,25 +37,6 @@ public final class LFunctionValue extends RefSupport implements Ref {
         this.objValue=value;
     }
     
-
-    /*public String getName(){
-    	if(name instanceof Variable){
-        	return new FunctionValueImpl(toStringArray((Set)name),value.getValue());
-        }
-        if(name instanceof Literal) {
-        	return ((Literal)name).getString();
-        }
-        
-        // TODO no idea if this is ever used
-        if(name instanceof Set){
-        	return new FunctionValueImpl(railo.runtime.type.List.arrayToList(toStringArray((Set)name),"."),value.getValue());
-        }
-        throw new ExpressionException("invalid syntax in named argument");
-    	
-    	
-    	
-    }*/
-    
     @Override
     public Object getValue(PageContext pc) throws PageException {
         
@@ -69,7 +51,7 @@ public final class LFunctionValue extends RefSupport implements Ref {
         if(name instanceof Set){
         	return new FunctionValueImpl(railo.runtime.type.util.ListUtil.arrayToList(toStringArray(pc,(Set)name),"."),refValue==null?objValue:refValue.getValue(pc));
         }
-        throw new ExpressionException("invalid syntax in named argument");
+        throw new InterpreterException("invalid syntax in named argument");
         //return new FunctionValueImpl(key,value.getValue());
     }
 

@@ -192,7 +192,7 @@ public class CFMLExpressionInterpreter {
         	//data.put(str+":"+preciseMath,ref);
             return ref.getValue(pc);
         }
-        throw new ExpressionException("Syntax Error, invalid Expression ["+cfml.toString()+"]");
+        throw new InterpreterException("Syntax Error, invalid Expression ["+cfml.toString()+"]");
     }
 
     
@@ -240,7 +240,7 @@ public class CFMLExpressionInterpreter {
             if(str.length()>0 && cfml.charAt(cfml.getPos()-1)!='.') 
                 return new LString(str.toString());
 
-        throw new ExpressionException("invalid variable name definition");
+        throw new InterpreterException("invalid variable name definition");
     }
 
     /**
@@ -292,7 +292,7 @@ public class CFMLExpressionInterpreter {
             	cfml.removeSpace();
             	Ref right = assignOp();    
             	//if(!(ref instanceof Variable))
-        		//	throw new ExpressionException("left operant of the Elvis operator has to be a variable declaration "+ref.getClass().getName());
+        		//	throw new InterpreterException("left operant of the Elvis operator has to be a variable declaration "+ref.getClass().getName());
         		
         		ref=new Elvis(ref,right);
             	
@@ -300,7 +300,7 @@ public class CFMLExpressionInterpreter {
             else {
 	            Ref left = assignOp();            
 	            if(!cfml.forwardIfCurrent(':'))
-	            	throw new ExpressionException("Syntax Error, invalid conditional operator ["+cfml.toString()+"]");
+	            	throw new InterpreterException("Syntax Error, invalid conditional operator ["+cfml.toString()+"]");
 	            cfml.removeSpace();
 	            Ref right = assignOp();
 	            ref=new Cont(ref,left,right);
@@ -1003,7 +1003,7 @@ public class CFMLExpressionInterpreter {
 					str="... "+str.substring(pos-10,pos+10)+" ...";
 				}
 			}
-			throw new ExpressionException("Syntax Error, Invalid Construct","at position "+(pos+1)+" in ["+str+"]");  
+			throw new InterpreterException("Syntax Error, Invalid Construct","at position "+(pos+1)+" in ["+str+"]");  
     }
     
     
@@ -1014,7 +1014,7 @@ public class CFMLExpressionInterpreter {
 		Ref[] args = functionArg(flf.getName(), false, flf,end);
 		
 		//if (!cfml.forwardIfCurrent(end))
-		//	throw new ExpressionException("Invalid Syntax Closing ["+end+"] not found");
+		//	throw new InterpreterException("Invalid Syntax Closing ["+end+"] not found");
 		
 		return new BIFCall(flf,args);
 	}
@@ -1050,7 +1050,7 @@ public class CFMLExpressionInterpreter {
                     if(!str.isEmpty() || value!=null) str.append(assignOp());
                     else value=assignOp();
                     cfml.removeSpace();
-                    if (!cfml.isCurrent('#')) throw new ExpressionException("Invalid Syntax Closing [#] not found");
+                    if (!cfml.isCurrent('#')) throw new InterpreterException("Invalid Syntax Closing [#] not found");
                 }
             }
             else if(cfml.isCurrent(quoter)) {
@@ -1068,7 +1068,7 @@ public class CFMLExpressionInterpreter {
             }
         }
         if(!cfml.forwardIfCurrent(quoter))
-            throw new ExpressionException("Invalid String Literal Syntax Closing ["+quoter+"] not found");
+            throw new InterpreterException("Invalid String Literal Syntax Closing ["+quoter+"] not found");
         
         cfml.removeSpace();
         mode=STATIC;
@@ -1126,7 +1126,7 @@ public class CFMLExpressionInterpreter {
             
             // read right side of the dot
             if(before==cfml.getPos())
-                throw new ExpressionException("Number can't end with [.]");
+                throw new InterpreterException("Number can't end with [.]");
             //rtn.append(rightSite);
         }
         cfml.removeSpace();
@@ -1175,7 +1175,7 @@ public class CFMLExpressionInterpreter {
             Ref ref = assignOp();
 
             if (!cfml.forwardIfCurrent(')'))
-                throw new ExpressionException("Invalid Syntax Closing [)] not found");
+                throw new InterpreterException("Invalid Syntax Closing [)] not found");
             cfml.removeSpace();
             return subDynamic(ref);
         }
@@ -1229,7 +1229,7 @@ public class CFMLExpressionInterpreter {
                 // Extract next Var String
                 cfml.removeSpace();
                 name = identifier(true);
-                if(name==null) throw new ExpressionException("Invalid identifier");
+                if(name==null) throw new InterpreterException("Invalid identifier");
                 cfml.removeSpace();
                 ref=new Variable(ref,name);
             }
@@ -1239,7 +1239,7 @@ public class CFMLExpressionInterpreter {
                 ref=new Variable(ref,assignOp());
                 cfml.removeSpace();
                 if (!cfml.forwardIfCurrent(']'))
-                    throw new ExpressionException("Invalid Syntax Closing []] not found");
+                    throw new InterpreterException("Invalid Syntax Closing []] not found");
             }
             // finish
             else {
@@ -1249,7 +1249,7 @@ public class CFMLExpressionInterpreter {
             cfml.removeSpace();
             
             if (cfml.isCurrent('(')) {
-                if(!(ref instanceof Set)) throw new ExpressionException("invalid syntax "+ref.getTypeName()+" can't called as function");
+                if(!(ref instanceof Set)) throw new InterpreterException("invalid syntax "+ref.getTypeName()+" can't called as function");
                 Set set=(Set) ref;
                 ref=new UDFCall(set.getParent(pc),set.getKey(pc),functionArg(name,false, null,')'));
             }
@@ -1306,7 +1306,7 @@ public class CFMLExpressionInterpreter {
 				if (cfml.forwardIfCurrent('.')) {
 	                cfml.removeSpace();
 	                name = identifier(true);
-	                if(name==null) throw new ExpressionException("invalid Component declaration");
+	                if(name==null) throw new InterpreterException("invalid Component declaration");
 	                cfml.removeSpace();
 					fullName.append('.');
 					fullName.append(name);
@@ -1339,7 +1339,7 @@ public class CFMLExpressionInterpreter {
 			
 			
 		} 
-        throw new ExpressionException("invalid Component declaration ");
+        throw new InterpreterException("invalid Component declaration ");
 		
 	}
     
@@ -1468,12 +1468,12 @@ public class CFMLExpressionInterpreter {
             // Dynamic
                 if(isDynamic) {
                     if(max!=-1 && max <= count)
-                        throw new ExpressionException("too many Attributes in function [" + name + "]");
+                        throw new InterpreterException("too many Attributes in function [" + name + "]");
                 }
             // Fix
                 else {
                     if(libLen <= count)
-                        throw new ExpressionException("too many Attributes in function [" + name + "]");
+                        throw new InterpreterException("too many Attributes in function [" + name + "]");
                 }
             }
 
@@ -1502,13 +1502,13 @@ public class CFMLExpressionInterpreter {
 
         // end with ) ??        
         if (!cfml.forwardIfCurrent(end)) {
-            if(name.startsWith("_json")) throw new ExpressionException("Invalid Syntax Closing ["+end+"] not found");
-            throw new ExpressionException("Invalid Syntax Closing ["+end+"] for function ["+ name + "] not found");
+            if(name.startsWith("_json")) throw new InterpreterException("Invalid Syntax Closing ["+end+"] not found");
+            throw new InterpreterException("Invalid Syntax Closing ["+end+"] for function ["+ name + "] not found");
         }
 
         // check min attributes
         if (checkLibrary && flf.getArgMin() > count)
-            throw new ExpressionException("to less Attributes in function [" + name + "]");
+            throw new InterpreterException("to less Attributes in function [" + name + "]");
 
         cfml.removeSpace();
         return (Ref[]) arr.toArray(new Ref[arr.size()]);
@@ -1538,7 +1538,7 @@ public class CFMLExpressionInterpreter {
         ref = assignOp();
         cfml.removeSpace();
         if (!cfml.forwardIfCurrent('#'))
-            throw new ExpressionException("Syntax Error, Invalid Construct");
+            throw new InterpreterException("Syntax Error, Invalid Construct");
         cfml.removeSpace();
         return ref;
     }
