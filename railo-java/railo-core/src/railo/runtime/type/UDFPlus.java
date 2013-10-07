@@ -9,6 +9,9 @@ import railo.runtime.exp.PageException;
 public interface UDFPlus extends UDF {
 	
 
+	public static final int RETURN_FORMAT_JAVA=5;
+	
+
     /**
      * call user defined Funcion with a struct
      * @param pageContext
