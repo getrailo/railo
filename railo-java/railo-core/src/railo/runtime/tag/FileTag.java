@@ -27,6 +27,7 @@ import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.tag.util.FileUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Struct;
@@ -39,6 +40,12 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_MAKEUNIQUE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
+
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
 *  For example, if the action = "write", use the attributes associated with writing a text file.
@@ -47,12 +54,6 @@ import railo.runtime.type.util.ListUtil;
 *
 **/
 public final class FileTag extends BodyTagImpl {
-
-	public static final int NAMECONFLICT_UNDEFINED=0;
-	public static final int NAMECONFLICT_ERROR=1;
-	public static final int NAMECONFLICT_SKIP=2;
-	public static final int NAMECONFLICT_OVERWRITE=3;
-	public static final int NAMECONFLICT_MAKEUNIQUE=4;
 
 	private static final int ACTION_UNDEFINED = 0;
 	private static final int ACTION_MOVE = 1;
@@ -150,7 +151,7 @@ public final class FileTag extends BodyTagImpl {
 
 	/** set the value action
 	*  Type of file manipulation that the tag performs.
-	* @param action value to set
+	* @param strAction value to set
 	**/	
 	public void setAction(String strAction) throws ApplicationException	{
 		strAction=strAction.toLowerCase();
@@ -242,7 +243,7 @@ public final class FileTag extends BodyTagImpl {
 	
 	/** set the value acl
 	*  used only for s3 resources, for all others ignored
-	* @param charset value to set
+	* @param acl value to set
 	 * @throws ApplicationException 
 	 * @Deprecated only exists for backward compatibility to old ra files.
 	**/
@@ -289,27 +290,15 @@ public final class FileTag extends BodyTagImpl {
 	}
 
 	/** set the value nameconflict
-	*  Action to take if filename is the same as that of a file in the directory.
+	* Action to take if filename is the same as that of a file in the directory.
 	* @param nameconflict value to set
-	 * @throws ApplicationException 
+	* @throws ApplicationException
 	**/
 	public void setNameconflict(String nameconflict) throws ApplicationException	{
-		this.nameconflict=toNameconflict(nameconflict);
+
+		this.nameconflict = FileUtil.toNameConflict( nameconflict );
 	}
-	
-	public static int toNameconflict(String nameconflict) throws ApplicationException	{
-		if(StringUtil.isEmpty(nameconflict,true)) return NAMECONFLICT_UNDEFINED;
-		
-		nameconflict=nameconflict.toLowerCase().trim();
-		if("error".equals(nameconflict)) 			return NAMECONFLICT_ERROR;
-		else if("skip".equals(nameconflict)) 		return NAMECONFLICT_SKIP;
-		else if("overwrite".equals(nameconflict)) 	return NAMECONFLICT_OVERWRITE;
-		else if("makeunique".equals(nameconflict)) 	return NAMECONFLICT_MAKEUNIQUE;
-		else throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
-				"valid values are [error,skip,overwrite,makeunique]");
-	}
-	
-	
+
 
 	/** set the value accept
 	*  Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
