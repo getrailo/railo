@@ -8,12 +8,18 @@ import railo.runtime.exp.PageException;
 import railo.runtime.tag.Directory;
 
 public class DirectoryCreate {
-	public static String call(PageContext pc , String path) throws PageException {
+
+	public static String call(PageContext pc, String path) throws PageException {
 		return call(pc, path, true);
 	}
+
 	public static String call(PageContext pc , String path, boolean createPath) throws PageException {
+		return call(pc, path, createPath, false);
+	}
+
+	public static String call(PageContext pc , String path, boolean createPath, boolean ignoreExists) throws PageException {
 		Resource dir=ResourceUtil.toResourceNotExisting(pc, path,pc.getConfig().allowRealPath());
-		Directory.actionCreate(pc, dir, null, createPath, -1, null, S3Constants.STORAGE_UNKNOW);
+		Directory.actionCreate( pc, dir, null, createPath, -1, null, S3Constants.STORAGE_UNKNOW, ignoreExists ? Directory.NAMECONFLICT_SKIP : Directory.NAMECONFLICT_ERROR );
 		return null;
 	}
 }
