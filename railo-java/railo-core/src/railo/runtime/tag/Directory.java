@@ -72,12 +72,6 @@ public final class Directory extends TagImpl  {
 	public static final int LIST_INFO_ARRAY_NAME = 4;
 	public static final int LIST_INFO_ARRAY_PATH = 8;
 
-	/*/
-	public static final int NAMECONFLICT_ERROR     = 1;
-	public static final int NAMECONFLICT_SKIP      = 2;
-	public static final int NAMECONFLICT_OVERWRITE = 3;
-//	public static final int NAMECONFLICT_CLOSURE   = 5;	// FUTURE
-	//*/
 	public static final int NAMECONFLICT_DEFAULT = NAMECONFLICT_OVERWRITE;	// default
 	
 	/** Optional for action = "list". Ignored by all other actions. File extension filter applied to
