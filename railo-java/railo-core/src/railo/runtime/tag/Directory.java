@@ -145,7 +145,7 @@ public final class Directory extends TagImpl  {
 	}
 
 
-	public void setCreatepath(boolean createPath) throws PageException	{
+	public void setCreatepath(boolean createPath)	{
 		this.createPath=createPath;
 	}
 
