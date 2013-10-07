@@ -320,6 +320,9 @@ public final class Directory extends TagImpl  {
 				
 		if ( "error".equalsIgnoreCase( nameconflict ) )
 			return NAMECONFLICT_ERROR;
+
+		if ( "skip".equalsIgnoreCase( nameconflict ) )
+			return NAMECONFLICT_SKIP;
 						
 		throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
 			"valid values are [error,merge,overwrite]");
