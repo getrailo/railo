@@ -98,6 +98,6 @@ public final class ExceptionUtil {
 			if(sb.length()!=0)sb.append(',');
 			sb.append(k);
 		}
-		return "existing "+keyName+" are ["+sb+"]";
+		return "available "+keyName+" are ["+sb+"]";
 	}
 }
