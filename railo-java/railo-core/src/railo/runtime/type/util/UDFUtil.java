@@ -227,10 +227,25 @@ public class UDFUtil {
 		else if(UDF.RETURN_FORMAT_JSON==returnFormat)	return "json";
 		else if(UDF.RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
 		else if(UDF.RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
+		else if(UDFPlus.RETURN_FORMAT_JAVA==returnFormat)	return "java";
 		else return defaultValue;
 	}
 	
 
+	public static boolean isValidReturnFormat(int returnFormat) {
+		return toReturnFormat(returnFormat,null)!=null;
+	}
+	
+
+	public static int toReturnFormat(String[] returnFormats, int defaultValue) {
+		if(ArrayUtil.isEmpty(returnFormats)) return defaultValue;
+		int rf;
+		for(int i=0;i<returnFormats.length;i++){
+			rf=toReturnFormat(returnFormats[i].trim(), -1);
+			if(rf!=-1) return rf;
+		}
+		return defaultValue;
+	}
 	public static int toReturnFormat(String returnFormat, int defaultValue) {
 		if(StringUtil.isEmpty(returnFormat,true))
 			return UDF.RETURN_FORMAT_WDDX;
@@ -245,6 +260,7 @@ public class UDFUtil {
 		else if("cfml".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
 		else if("cfm".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
 		else if("xml".equals(returnFormat))	return UDF.RETURN_FORMAT_XML;
+		else if("java".equals(returnFormat))	return UDFPlus.RETURN_FORMAT_JAVA;
 		return defaultValue;
 	}
 	
@@ -260,6 +276,7 @@ public class UDFUtil {
 		else if(UDF.RETURN_FORMAT_JSON==returnFormat)	return "json";
 		else if(UDF.RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
 		else if(UDF.RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
+		else if(UDFPlus.RETURN_FORMAT_JAVA==returnFormat)	return "java";
 		else throw new ExpressionException("invalid returnFormat definition, valid values are [wddx,plain,json,cfml]");
 	}
 	
@@ -332,5 +349,6 @@ public class UDFUtil {
 		}
 		return func;
 	}
+
 
 }
