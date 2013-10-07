@@ -43,6 +43,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * 
@@ -85,7 +86,7 @@ public final class HTTPEngine3Impl {
         HttpState state = client.getState();
         
         setHeader(httpMethod,headers);
-        setContentType(httpMethod,charset);
+        if(CollectionUtil.isEmpty(params))setContentType(httpMethod,charset);
         setUserAgent(httpMethod,useragent);
         setTimeout(client,timeout);
         setParams(httpMethod,params);
