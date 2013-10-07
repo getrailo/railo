@@ -10,12 +10,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.io.IOUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
+import railo.commons.net.http.Header;
+import railo.runtime.ComponentPage;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.converter.ConverterException;
+import railo.runtime.converter.JSONConverter;
+import railo.runtime.converter.ScriptConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -29,12 +36,15 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
@@ -42,6 +52,8 @@ import railo.runtime.type.it.ObjectsEntryIterator;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.UDFUtil;
 
 /**
  * Client to implement http based webservice
@@ -52,12 +64,15 @@ public class HTTPClient implements Objects, Iteratorable {
 
 	private static final String USER_AGENT = "Railo "+Info.getFullVersionInfo();
 
+	
 	private URL metaURL;
 	private String username;
 	private String password;
 	private ProxyData proxyData;
 	private URL url;
 	private Struct meta;
+
+	private int argumentsCollectionFormat=-1;
 
 	public HTTPClient(String httpUrl, String username, String password, ProxyData proxyData) throws PageException {
 		try {
@@ -140,9 +155,24 @@ public class HTTPClient implements Objects, Iteratorable {
 			
 			try{
 				HTTPResponse rsp = HTTPEngine.get(metaURL, username, password, -1, 0, "UTF-8", USER_AGENT, proxyData, null);
+				MimeType mt = getMimeType(rsp,null);
+				int format = MimeType.toFormat(mt, -1);
+				if(format==-1) throw new ApplicationException("cannot convert response with mime type ["+mt+"] to a CFML Object");
 				is = rsp.getContentAsStream();
-				String str = IOUtil.toString(is, rsp.getCharset());
-				meta= Caster.toStruct(pc.evaluate(str));
+				Struct data = Caster.toStruct(ReqRspUtil.toObject(pc,IOUtil.toBytes(is,false),format,mt.getCharset(),null));
+				Object oUDF=data.get(KeyConstants._functions,null);
+				Object oAACF=data.get(ComponentPage.ACCEPT_ARG_COLL_FORMATS,null);
+				
+				if(oUDF!=null && oAACF!=null) {
+					meta=Caster.toStruct(oUDF);
+					String[] strFormats = ListUtil.listToStringArray(Caster.toString(oAACF),',');
+					argumentsCollectionFormat=UDFUtil.toReturnFormat(strFormats,UDF.RETURN_FORMAT_JSON);
+				}
+				else {
+					meta=data;
+				}
+				
+				
 			}
 			catch(Throwable t) {
 				throw new PageRuntimeException(Caster.toPageException(t));
@@ -166,30 +196,160 @@ public class HTTPClient implements Objects, Iteratorable {
 
 	@Override
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
-		// TODO Auto-generated method stub
-		return null;
+		checkFunctionExistence(pc,methodName,false);
+		
+		if(arguments.length==0) return _callWithNamedValues(pc, methodName, new StructImpl());
+		Struct m = checkFunctionExistence(pc,methodName,true);
+		
+		
+		Array args = Caster.toArray(m.get(KeyConstants._arguments,null),null);
+		if(args==null) args=new ArrayImpl();
+		Struct sct=new StructImpl(),el;
+		String name;
+		for(int i=0;i<arguments.length;i++){
+			if(args.size()>i) {
+				el=Caster.toStruct(args.get(i+1, null),null);
+				if(el!=null) {
+					name=Caster.toString(el.get(KeyConstants._name,null),null);
+					if(!StringUtil.isEmpty(name)) {
+						sct.set(name, arguments[i]);
+						continue;
+					}
+				}
+			}
+			sct.set("arg"+(i+1), arguments[i]);
+		}
+		
+		
+		return _callWithNamedValues(pc, methodName, sct);
 	}
 
 	@Override
+
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
-		Map<String,String> params=new HashMap<String, String>();
-		params.put("method", methodName.getString());
-		params.put("returnformat", "cfml");
+		checkFunctionExistence(pc,methodName,false);
+		return _callWithNamedValues(pc, methodName, args);
+		
+	}
+	
+	private Object _callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		
+		// prepare request
+		Map<String,String> formfields=new HashMap<String, String>();
+		formfields.put("method", methodName.getString());
+		formfields.put("returnformat", "cfml");
+		
+		
+		String str;
+		try {
+			if(UDF.RETURN_FORMAT_JSON==argumentsCollectionFormat)	{
+				str = new JSONConverter(true).serialize(pc,args,false);
+				formfields.put("argumentCollectionFormat", "json");
+			}
+			else if(UDF.RETURN_FORMAT_SERIALIZE==argumentsCollectionFormat)	{
+				str = new ScriptConverter().serialize(args);
+				formfields.put("argumentCollectionFormat", "cfml");
+			}
+			else {
+				str = new ScriptConverter().serialize(args); // Json interpreter in Railo also accepts cfscript
+			}
+		}
+		catch (ConverterException e) {
+			throw Caster.toPageException(e);
+		}
+		
+		
+		// add aparams to request
+		formfields.put("argumentCollection", str);
+		/*
+		Iterator<Entry<Key, Object>> it = args.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			formfields.put(e.getKey().getString(), Caster.toString(e.getValue()));
+		}*/
+		
+		Map<String,String> headers=new HashMap<String, String>();
+		headers.put("accept", "application/cfml,application/json"); // application/java disabled for the moment, it is not working when we have different railo versions
 		
 		InputStream is=null;
 		try {
-			HTTPResponse rsp = HTTPEngine.post(url, username, password, -1, 0, "UTF-8", USER_AGENT, proxyData,null, params);
-			is = rsp.getContentAsStream();
-			String str = IOUtil.toString(is, rsp.getCharset());
-			return pc.evaluate(str);
+			// call remote cfc
+			HTTPResponse rsp = HTTPEngine.post(url, username, password, -1, 0, "UTF-8", USER_AGENT, proxyData,headers, formfields);
 			
+			// read result
+			Header[] rspHeaders = rsp.getAllHeaders();
+			MimeType mt = getMimeType(rspHeaders,null);
+			int format = MimeType.toFormat(mt, -1);
+			if(format==-1) {
+				if(rsp.getStatusCode()!=200) {
+					boolean hasMsg=false;
+					String msg=rsp.getStatusText();
+					for(int i=0;i<rspHeaders.length;i++){
+						if(rspHeaders[i].getName().equalsIgnoreCase("exception-message")){
+							msg=rspHeaders[i].getValue();
+							hasMsg=true;
+						}
+					}
+					is = rsp.getContentAsStream();
+					ApplicationException ae = new ApplicationException("remote component throws the following error:"+msg);
+					if(!hasMsg)ae.setAdditional(KeyImpl.init("respone-body"),IOUtil.toString(is, mt.getCharset()));
+					
+					throw ae;
+				}
+				throw new ApplicationException("cannot convert response with mime type ["+mt+"] to a CFML Object");
+			}
+			is = rsp.getContentAsStream();
+			return ReqRspUtil.toObject(pc,IOUtil.toBytes(is,false),format,mt.getCharset(),null);
 		}
-		catch (IOException e) {
-			throw Caster.toPageException(e);
+		catch (IOException ioe) {
+			throw Caster.toPageException(ioe);
 		}
 		finally {
 			IOUtil.closeEL(is);
 		}
+	}
+
+	private Struct checkFunctionExistence(PageContext pc,Key methodName, boolean getDataFromRemoteIfNecessary) throws ApplicationException {
+		if(getDataFromRemoteIfNecessary) getMetaData(pc);
+		if(meta==null) return null;
+		Struct m = Caster.toStruct(meta.get(methodName,null),null);
+		if(m==null) throw new ApplicationException(
+				"the remote component has no function with name ["+methodName+"]",
+				ExceptionUtil.createSoundexDetail(methodName.getString(),meta.keysAsStringIterator(),"functions"));
+		return m;
+	}
+
+
+	private MimeType getMimeType(HTTPResponse rsp, MimeType defaultValue) {
+		return getMimeType(rsp.getAllHeaders(), defaultValue);
+	}
+	private MimeType getMimeType(Header[] headers, MimeType defaultValue) {
+		String returnFormat=null,contentType=null;
+		for(int i=0;i<headers.length;i++){
+			if(headers[i].getName().equalsIgnoreCase("Return-Format"))returnFormat=headers[i].getValue();
+			else if(headers[i].getName().equalsIgnoreCase("Content-Type"))contentType=headers[i].getValue();
+		}
+		MimeType rf=null,ct=null;
+		
+		// return format
+		if(!StringUtil.isEmpty(returnFormat)) {
+			int format=UDFUtil.toReturnFormat(returnFormat,-1);
+			rf=MimeType.toMimetype(format, null);
+		}
+		// ContentType
+		if(!StringUtil.isEmpty(contentType)) {
+			ct= MimeType.getInstance(contentType);
+		}
+		if(rf!=null && ct!=null) {
+			if(rf.same(ct)) return ct; // because this has perhaps a charset definition
+			return rf;
+		}
+		if(rf!=null) return rf;
+		if(ct!=null) return ct;
+		
+		
+		return defaultValue;
 	}
 
 	@Override

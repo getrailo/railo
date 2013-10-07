@@ -81,7 +81,7 @@ public final class CreateObject implements Function {
             	}
                 return doWebService(pc,className,user,pass,proxy);
             }
-            /*if(type.equals("http")) {
+            if(type.equals("http")) {
             	String user=null;
             	String pass=null;
             	ProxyDataImpl proxy=null;
@@ -104,7 +104,7 @@ public final class CreateObject implements Function {
             		
             	}
                 return doHTTP(pc,className,user,pass,proxy);
-            }*/
+            }
         // .net
             if(type.equals(".net") || type.equals("dotnet")) {
                 return doDotNet(pc,className);

@@ -1,9 +1,12 @@
 package railo.runtime.net.http;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.xml.sax.InputSource;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
@@ -26,6 +30,7 @@ import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
@@ -35,11 +40,15 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 
 public final class ReqRspUtil {
 
 	
 	
+	private static final Object NULL = new Object();
+
+
 	public static String get(Pair<String,Object>[] items, String name) {
 		for(int i=0;i<items.length;i++) {
 			if(items[i].getName().equalsIgnoreCase(name)) 
@@ -377,8 +386,8 @@ public final class ReqRspUtil {
     	
 		MimeType contentType = getContentType(pc);
 		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
-        String charEncoding = req.getCharacterEncoding();
-        Object obj = "";
+        String strCS = req.getCharacterEncoding();
+        Charset cs = CharsetUtil.toCharset(strCS);
         
         boolean isBinary =!(
         		strContentType == null || 
@@ -389,49 +398,17 @@ public final class ReqRspUtil {
         	ServletInputStream is=null;
             try {
                 byte[] data = IOUtil.toBytes(is=req.getInputStream());//new byte[req.getContentLength()];
-                
-                if(isBinary) return data;
-                
-                String str;
-                if(charEncoding != null && charEncoding.length() > 0)
-                    obj = str = new String(data, charEncoding);
-                else
-                    obj = str = new String(data);
+                Object obj=NULL;
                 
                 if(deserialized){
                 	int format = MimeType.toFormat(contentType, -1);
-                	switch(format) {
-                	case UDF.RETURN_FORMAT_JSON:
-                		try{
-                			obj=new JSONExpressionInterpreter().interpret(pc, str);
-                		}
-                		catch(PageException pe){}
-                	break;
-                	case UDF.RETURN_FORMAT_SERIALIZE:
-                		try{
-                			obj=new CFMLExpressionInterpreter().interpret(pc, str);
-                		}
-                		catch(PageException pe){}
-                	break;
-                	case UDF.RETURN_FORMAT_WDDX:
-                		try{
-                			WDDXConverter converter =new WDDXConverter(pc.getTimeZone(),false,true);
-                			converter.setTimeZone(pc.getTimeZone());
-                			obj = converter.deserialize(str,false);
-                		}
-                		catch(Exception pe){}
-                	break;
-                	case UDF.RETURN_FORMAT_XML:
-                		try{
-                			InputSource xml = XMLUtil.toInputSource(pc,str.trim());
-                			InputSource validator =null;
-                			obj = XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),true);
-                		}
-                		catch(Exception pe){}
-                	break;
-                	}
+                	obj=toObject(pc, data, format, cs, obj);
                 }
-               
+            	if(obj==NULL) {
+                	if(isBinary) obj=data;
+            		else obj=toString(data, cs);
+                }
+                return obj;
                 
                 
             }
@@ -442,14 +419,17 @@ public final class ReqRspUtil {
             	IOUtil.closeEL(is);
             }
         }
-        else {
-        	return defaultValue;
-        }
-        return obj;
+        return defaultValue;
     }
 
 
-    /**
+    private static String toString(byte[] data, Charset cs) {
+    	if(cs!=null)
+            return  new String(data, cs).trim();
+        return new String(data).trim();
+	}
+
+	/**
      * returns the full request URL
      *
      * @param req - the HttpServletRequest
@@ -484,5 +464,45 @@ public final class ReqRspUtil {
 		String root = sc.getRealPath("/");
 		if(root==null) throw new RuntimeException("cannot determinae webcontext root, the ServletContext from class ["+sc.getClass().getName()+"] is returning null for the method call sc.getRealPath(\"/\"), possibly due to configuration problem.");
 		return root;
+	}
+
+	public static Object toObject(PageContext pc,byte[] data, int format, Charset charset, Object defaultValue) {
+		switch(format) {
+    	case UDF.RETURN_FORMAT_JSON:
+    		try{
+    			return new JSONExpressionInterpreter().interpret(pc, toString(data,charset));
+    		}
+    		catch(PageException pe){}
+    	break;
+    	case UDF.RETURN_FORMAT_SERIALIZE:
+    		try{
+    			return new CFMLExpressionInterpreter().interpret(pc, toString(data,charset));
+    		}
+    		catch(PageException pe){}
+    	break;
+    	case UDF.RETURN_FORMAT_WDDX:
+    		try{
+    			WDDXConverter converter =new WDDXConverter(pc.getTimeZone(),false,true);
+    			converter.setTimeZone(pc.getTimeZone());
+    			return converter.deserialize(toString(data,charset),false);
+    		}
+    		catch(Exception pe){}
+    	break;
+    	case UDF.RETURN_FORMAT_XML:
+    		try{
+    			InputSource xml = XMLUtil.toInputSource(pc,toString(data,charset));
+    			InputSource validator =null;
+    			return XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),true);
+    		}
+    		catch(Exception pe){}
+    	break;
+    	case UDFPlus.RETURN_FORMAT_JAVA:
+    		try{
+    			return JavaConverter.deserialize(new ByteArrayInputStream(data));
+    		}
+    		catch(Exception pe){}
+    	break;
+    	}
+		return defaultValue;
 	}
 }
