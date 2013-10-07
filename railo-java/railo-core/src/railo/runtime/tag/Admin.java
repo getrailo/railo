@@ -780,7 +780,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doRunUpdate() throws PageException {
-    	doUpdateJars();
+    	try{
+    		doUpdateJars();
+    	}
+    	catch(Throwable t){}
     	admin.runUpdate(password);
         adminSync.broadcast(attributes, config);
     }
