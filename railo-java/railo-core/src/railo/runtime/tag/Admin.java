@@ -1054,9 +1054,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doUpdateAPIKey() throws PageException {  
-        try {
-            admin.updateAPIKey(getString("key",null));
-        }catch (Exception e) {} 
+        admin.updateAPIKey(getString("key",null));
         store();
     }
     private void doRemoveAPIKey() throws PageException {  
