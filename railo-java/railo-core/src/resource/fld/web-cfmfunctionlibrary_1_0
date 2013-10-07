@@ -3384,6 +3384,7 @@ Filter to be used to filter the data copied:
 			<type>void</type>
 		</return>
 	</function>
+
 	<!-- DirectoryCreate -->
 	<function>
 		<name>DirectoryCreate</name>
@@ -3401,7 +3402,14 @@ Filter to be used to filter the data copied:
 			<type>boolean</type>
 			<required>no</required>
 			<default>true</default>
-			<description>create parent directory when not exist</description>
+			<description>Create parent directory when not exist</description>
+		</argument>
+		<argument>
+			<name>ignoreExists</name>
+			<type>boolean</type>
+			<required>false</required>
+			<default>false</default>
+			<description>Pass false (default) to throw an error if the directory already exists, or true to skip the create operation without an error</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -4710,8 +4718,7 @@ If you do not specify the mode, Railo opens the file in read mode.</description>
 			<type>void</type>
 		</return>
 	</function>
-	
-	
+
 	<!-- FileUpload -->
 	<function>
 		<name>FileUpload</name>
