@@ -122,6 +122,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
 	private boolean loaded;
+	private boolean hasInjectedFunctions;
 
 
 
@@ -208,6 +209,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	trg.pageSource=pageSource;
 	        trg._triggerDataMember=_triggerDataMember;
 	        trg.useShadow=useShadow;
+	        trg.hasInjectedFunctions=hasInjectedFunctions;
 	        trg.afterConstructor=afterConstructor;
 	        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
 			trg.properties=properties.duplicate();
@@ -1480,7 +1482,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		udf.setAccess(Component.ACCESS_PUBLIC);
         	_data.put(key,udf);
         	_udfs.put(key,udf);
-        	
+        	hasInjectedFunctions=true;
         }
         else {
         	if(loaded && !isAccessible(ThreadLocalPageContext.get(pc), dataMemberDefaultAccess))
@@ -1945,6 +1947,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			this.scope=other.scope;
 			this.top=this;
 			this._triggerDataMember=other._triggerDataMember;
+			this.hasInjectedFunctions=other.hasInjectedFunctions;
 			this.useShadow=other.useShadow;
 			
 			
@@ -1997,5 +2000,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	public void setLoaded(boolean loaded) {
 		this.loaded=loaded;
+	}
+
+	public boolean hasInjectedFunctions() {
+		return hasInjectedFunctions;
 	}
 }
