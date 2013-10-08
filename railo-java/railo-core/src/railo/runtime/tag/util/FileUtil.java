@@ -1,5 +1,6 @@
 package railo.runtime.tag.util;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 
 
@@ -15,22 +16,19 @@ public class FileUtil {
 
 	public static int toNameConflict( String nameConflict ) throws ApplicationException {
 
-		if ( nameConflict == null ) return NAMECONFLICT_UNDEFINED;
-
+		if(StringUtil.isEmpty(nameConflict,true)) return NAMECONFLICT_UNDEFINED;
 		nameConflict = nameConflict.trim().toLowerCase();
 
-		if ( nameConflict.isEmpty() ) return NAMECONFLICT_UNDEFINED;
-
-		if ( "error".equals( nameConflict ) )
+		if("error".equals( nameConflict) )
 			return NAMECONFLICT_ERROR;
 
-		if ( "skip".equals( nameConflict ) || "ignore".equals( nameConflict ) )
+		if("skip".equals(nameConflict) || "ignore".equals(nameConflict))
 			return NAMECONFLICT_SKIP;
 
-		if ( "merge".equals( nameConflict ) || "overwrite".equals( nameConflict ) )
+		if("merge".equals(nameConflict) || "overwrite".equals(nameConflict))
 			return NAMECONFLICT_OVERWRITE;
 
-		if ( "makeunique".equals( nameConflict ) || "unique".equals( nameConflict ) )
+		if("makeunique".equals(nameConflict) || "unique".equals(nameConflict))
 			return NAMECONFLICT_MAKEUNIQUE;
 
 		throw new ApplicationException("Invalid value for attribute nameConflict ["+nameConflict+"]",
