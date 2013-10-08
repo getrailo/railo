@@ -32,6 +32,7 @@ import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.tag.util.FileUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
@@ -39,6 +40,11 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.KeyConstants;
+
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
 
 /**
 * Handles interactions with directories.
@@ -65,12 +71,8 @@ public final class Directory extends TagImpl  {
 	public static final int LIST_INFO_QUERY_NAME = 2;
 	public static final int LIST_INFO_ARRAY_NAME = 4;
 	public static final int LIST_INFO_ARRAY_PATH = 8;
-	
-	public static final int NAMECONFLICT_ERROR     = 1;
-	public static final int NAMECONFLICT_SKIP      = 2;
-	public static final int NAMECONFLICT_OVERWRITE = 3;
-//	public static final int NAMECONFLICT_CLOSURE   = 5;	// FUTURE
-	public static final int NAMECONFLICT_UNDEFINED = NAMECONFLICT_OVERWRITE;	// default
+
+	public static final int NAMECONFLICT_DEFAULT = NAMECONFLICT_OVERWRITE;	// default
 	
 	/** Optional for action = "list". Ignored by all other actions. File extension filter applied to
 	** 		returned names. For example: *m. Only one mask filter can be applied at a time. */
@@ -114,7 +116,7 @@ public final class Directory extends TagImpl  {
 	private int storage=S3Constants.STORAGE_UNKNOW;
 	private String destination; 
 
-	private int nameconflict = NAMECONFLICT_UNDEFINED;
+	private int nameconflict = NAMECONFLICT_DEFAULT;
 	
 	private boolean createPath=true;
 
@@ -140,7 +142,7 @@ public final class Directory extends TagImpl  {
         serverPassword=null;
         listInfo=LIST_INFO_QUERY_ALL;
 
-        nameconflict = NAMECONFLICT_UNDEFINED;
+        nameconflict = NAMECONFLICT_DEFAULT;
         createPath=true;
 	}
 
@@ -231,7 +233,7 @@ public final class Directory extends TagImpl  {
 	**/
 	public void setDirectory(String directory)	{
 		
-        this.directory=ResourceUtil.toResourceNotExisting(pageContext ,directory);
+        this.directory=ResourceUtil.toResourceNotExisting(pageContext, directory);
         //print.ln(this.directory);
 	}
 
@@ -300,34 +302,16 @@ public final class Directory extends TagImpl  {
     }
 
     /** set the value nameconflict
-	*  Action to take if destination directory is the same as that of a file in the directory.
+	* Action to take if destination directory is the same as that of a file in the directory.
 	* @param nameconflict value to set
-	 * @throws ApplicationException 
+	* @throws ApplicationException
 	**/
 	public void setNameconflict(String nameconflict) throws ApplicationException	{
-		this.nameconflict = toNameconflict( nameconflict );
-	}
-	
-	public static int toNameconflict( String nameconflict ) throws ApplicationException	{
-		
-		if ( StringUtil.isEmpty( nameconflict, true ) )
-			return NAMECONFLICT_UNDEFINED;
-		
-		nameconflict = nameconflict.trim();
-		
-		if ( "merge".equalsIgnoreCase( nameconflict ) || "overwrite".equalsIgnoreCase( nameconflict ) )
-			return NAMECONFLICT_OVERWRITE;
-				
-		if ( "error".equalsIgnoreCase( nameconflict ) )
-			return NAMECONFLICT_ERROR;
 
-		if ( "skip".equalsIgnoreCase( nameconflict ) )
-			return NAMECONFLICT_SKIP;
-						
-		throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
-			"valid values are [error,merge,overwrite]");
+		this.nameconflict = FileUtil.toNameConflict( nameconflict, NAMECONFLICT_UNDEFINED | NAMECONFLICT_ERROR | NAMECONFLICT_OVERWRITE, NAMECONFLICT_DEFAULT );
 	}
-	
+
+
 	@Override
 	public int doStartTag() throws PageException	{
 
@@ -521,7 +505,7 @@ public final class Directory extends TagImpl  {
                 
             } 
             if(recurse && list[i].isDirectory())
-                count=_fillQueryNamesRec(parent+list[i].getName()+"/",query,list[i],filter,count,recurse);  
+                count=_fillQueryNamesRec(parent + list[i].getName() + "/", query, list[i], filter, count, recurse);
         }
         return count;
     }

@@ -4,6 +4,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.tag.FileTag;
+import railo.runtime.tag.util.FileUtil;
 import railo.runtime.type.Struct;
 
 public class FileUpload {
@@ -30,7 +31,7 @@ public class FileUpload {
 	public static Struct call(PageContext pc, String destination,String fileField,String accept, String nameConflict,String mode,String attributes,Object acl) throws PageException {
 	    SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    
-	    int nc = FileTag.toNameconflict(nameConflict);
+	    int nc = FileUtil.toNameConflict(nameConflict);
 	    int m=FileTag.toMode(mode);
 	    
 	    return FileTag.actionUpload(pc, securityManager, fileField,  destination, nc, accept,true, m, attributes, acl, null);

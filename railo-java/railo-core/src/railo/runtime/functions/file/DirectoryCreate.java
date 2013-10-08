@@ -6,6 +6,8 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.tag.Directory;
+import railo.runtime.tag.util.FileUtil;
+
 
 public class DirectoryCreate {
 
@@ -19,7 +21,7 @@ public class DirectoryCreate {
 
 	public static String call(PageContext pc , String path, boolean createPath, boolean ignoreExists) throws PageException {
 		Resource dir=ResourceUtil.toResourceNotExisting(pc, path,pc.getConfig().allowRealPath());
-		Directory.actionCreate( pc, dir, null, createPath, -1, null, S3Constants.STORAGE_UNKNOW, ignoreExists ? Directory.NAMECONFLICT_SKIP : Directory.NAMECONFLICT_ERROR );
+		Directory.actionCreate( pc, dir, null, createPath, -1, null, S3Constants.STORAGE_UNKNOW, ignoreExists ? FileUtil.NAMECONFLICT_SKIP : FileUtil.NAMECONFLICT_ERROR );
 		return null;
 	}
 }
