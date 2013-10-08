@@ -14,7 +14,7 @@ Defaults --->
 
 <cftry>
 	<cfswitch expression="#form.mainAction#">
-	<!--- UPDATE --->
+	<!--- UPDATE Label --->
 		<cfcase value="#stText.Buttons.Update#">
 			<cfset data.label=toArrayFromForm("label")>
 			<cfset data.hash=toArrayFromForm("hash")>
@@ -30,6 +30,14 @@ Defaults --->
                     hash="#data.hash[idx]#">
                  </cfif>
             </cfloop>
+		</cfcase>
+	<!--- UPDATE API Key --->
+		<cfcase value="#stText.Buttons.OK#">
+			<cfadmin 
+                    action="updateApiKey"
+                    type="#request.adminType#"
+                    password="#session["password"&request.adminType]#"
+                    key="#trim(form.apiKey)#">
 		</cfcase>
 	</cfswitch>
 	<cfcatch>
@@ -130,6 +138,11 @@ Error Output --->
 		password="#session["password"&request.adminType]#"
 		returnVariable="info">
 		
+	<cfadmin 
+		action="getAPIKey"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		returnVariable="apiKey">
 		
 <cfadmin 
 	action="getCompilerSettings"
@@ -255,6 +268,28 @@ Error Output --->
 								</td>
 							</tr>
 							
+					</tbody>
+				</table>
+				<cfset stText.io.title="Railo IO">
+				<cfset stText.io.desc="Railo.io is your one stop shop to all that is Railo. From managing your Extension Store licenses, to monitoring your servers and keeping all your settings in sync and everything in between.">
+				<cfset stText.io.id="Railo.ID">
+				<cfset stText.io.idDesc="To interact with RailoIO, you need a Railo.ID, you can get this ID from <a target=""top"" href=""http://beta.railo.io/index.cfm/account"">here</a>">
+				<h2>#stText.io.title#</h2>
+				#stText.io.desc#
+				
+				<table class="maintbl">
+					<tbody>
+						<!--- has api key --->
+						<cfif !isNull(apiKey) && len(apiKey)>
+							<tr>
+								<cfform onerror="customError" action="#request.self#" method="post">
+								<th scope="row">#stText.io.id#</th>
+								<td><input type="text" style="width:250px" name="apiKey" value="#apiKey#"/><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.ok#"><br>
+								<span class="comment">#stText.io.idDesc#</span></td>
+								</cfform>
+							</tr>
+						</cfif>
+						
 					</tbody>
 				</table>
 				
