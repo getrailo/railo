@@ -71,7 +71,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private ActionMonitorCollector actionMonitorCollector;
 	
 	private boolean monitoringEnabled=false;
-	private int delay=0;
+	private int delay=1;
 	private boolean captcha=false;
 	private static ConfigServerImpl instance;
 
