@@ -3690,7 +3690,7 @@ public final class ConfigWebFactory {
 		if (config instanceof ConfigServer) {
 			Element login = getChildByName(doc.getDocumentElement(), "login");
 			boolean captcha = Caster.toBooleanValue(login.getAttribute("captcha"), false);
-			int delay = Caster.toIntValue(login.getAttribute("delay"), 0);
+			int delay = Caster.toIntValue(login.getAttribute("delay"), 1);
 			ConfigServerImpl cs = (ConfigServerImpl) config;
 			cs.setLoginDelay(delay);
 			cs.setLoginCaptcha(captcha);
