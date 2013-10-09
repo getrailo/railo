@@ -10007,6 +10007,15 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			lazy is only working when the following attributes are not used: cachewithin,cacheafter,result
 			</description>
 		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>params</name>
+			<required>false</required>
+			<status>hidden</status>
+			<rtexprvalue>true</rtexprvalue>
+			<description>experimentell</description>
+		</attribute>
+		
 	</tag>
 	<!-- QueryParam -->
 	<tag>

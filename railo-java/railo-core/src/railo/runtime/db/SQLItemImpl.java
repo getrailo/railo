@@ -12,7 +12,7 @@ import railo.runtime.type.Sizeable;
 /**
  * 
  */
-public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
+public class SQLItemImpl implements SQLItem,Serializable,Sizeable {
 
 	/** Yes or No. Indicates whether the parameter is passed as a null. If Yes, the tag ignores the 
 	** 	value attribute. The default is No. */

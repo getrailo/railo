@@ -862,6 +862,10 @@ public class KeyConstants {
 	public static final Key _locale = KeyImpl._const("locale");
 	public static final Key _timezone = KeyImpl._const("timezone");
 	public static final Key _mapping = KeyImpl._const("mapping");
+	public static final Key _cfsqltype = KeyImpl._const("cfsqltype");
+	public static final Key _sqltype = KeyImpl._const("sqltype");
+	public static final Key _nulls = KeyImpl._const("nulls");
+	public static final Key _scale = KeyImpl._const("scale");
 	
 	private static MapPro<String,Key> _____keys;
 	
