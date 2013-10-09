@@ -22,6 +22,7 @@ import railo.runtime.type.Collection.Key;
  */
 public final class ListUtil {
 
+	
 	/**
 	 * casts a list to Array object, the list can be have quoted (",') arguments and delimter in this arguments are ignored. quotes are not removed
 	 * example:
@@ -60,6 +61,7 @@ public final class ListUtil {
 					if(inside==0 && c==del[y]) {
 						array._append(list.substring(last,i));
 						last=i+1;
+						break;
 					}
 			    }
 			}
@@ -102,6 +104,7 @@ public final class ListUtil {
 					if(c==del[y]) {
 						array.appendEL(list.substring(last,i));
 						last=i+1;
+						break;
 					}
 			    }
 			}
@@ -182,10 +185,7 @@ public final class ListUtil {
 		return array;
 		
 	}
-	
-	
-	
-	
+
 	public static Array listToArrayRemoveEmpty(String list, String delimiter) {
 	    if(delimiter.length()==1)return listToArrayRemoveEmpty(list, delimiter.charAt(0));
 		int len=list.length();
@@ -207,6 +207,7 @@ public final class ListUtil {
 				if(c==del[y]) {
 					if(last<i)array._append(list.substring(last,i));
 					last=i+1;
+					break;
 				}
 		    }
 		}
@@ -254,7 +255,7 @@ public final class ListUtil {
 
         return array;
     }
-	
+
 	/**
 	 * casts a list to Array object remove Empty Elements
 	 * @param list list to cast
@@ -657,6 +658,7 @@ public final class ListUtil {
 		return -1;
 	}
 	
+
 	/**
 	 * finds a value inside a list, ignore case, ignore empty items
 	 * @param list list to search
@@ -683,7 +685,7 @@ public final class ListUtil {
 						count++;
 					}
 					last=i+1;
-					
+					break;
 				}
 		    }
 		}
@@ -751,7 +753,7 @@ public final class ListUtil {
 
 		return -1;
 	}
-	
+
 	/**
 	 * finds a value inside a list, case sensitive, ignore empty items
 	 * @param list list to search
@@ -778,7 +780,7 @@ public final class ListUtil {
 						count++;
 					}
 					last=i+1;
-					
+					break;
 				}
 		    }
 		}
@@ -1351,7 +1353,7 @@ public final class ListUtil {
 		if(!ignoreEmpty || last<len)count++;
 		return count;
 	}
-
+	
 	/**
 	 * returns count of items in the list
 	 * @param list
@@ -1374,6 +1376,7 @@ public final class ListUtil {
 				if(c==del[y]) {
 				    if(!ignoreEmpty || last<i)count++;
 					last=i+1;
+					break;
 				}
 		    }
 		}
@@ -1414,7 +1417,7 @@ public final class ListUtil {
 				if(c==del[y]) {
 					if(ignoreEmpty && (last+1)==i) {
 						last=i;
-						continue; 
+						break; 
 					}
 					
 					count++;
@@ -1422,6 +1425,7 @@ public final class ListUtil {
 						return list.substring(last+1,i);
 					}
 					last=i;
+					break;
 				}
 		    }
 		}
@@ -1502,7 +1506,7 @@ public final class ListUtil {
 		}
 		return arr;
 	}
-
+	
 	public static Set<String> listToSet(String list, String delimiter,boolean trim) {
 	    if(list.length()==0) return new HashSet<String>();
 		int len=list.length();
@@ -1517,6 +1521,7 @@ public final class ListUtil {
 				if(c==del[y]) {
 					set.add(trim?list.substring(last,i).trim():list.substring(last,i));
 					last=i+1;
+					break;
 				}
 		    }
 		}
