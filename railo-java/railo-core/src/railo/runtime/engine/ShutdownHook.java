@@ -23,12 +23,12 @@ public class ShutdownHook extends Thread {
 		// TODO Server.cfc->onServerEnd
 		
 		// try to update jars, doing this here because on windows the files could be locked
-		try {
+		/*try {
 			JarLoader.download(cs, Admin.UPDATE_JARS);
 		}
 		catch (Throwable t) {
 			SystemOut.printDate(cs.getErrWriter(),ExceptionUtil.getStacktrace(t, true));
-		}
+		}*/
 		
 		
 	}
