@@ -3,6 +3,7 @@ package railo.runtime.type;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection.Key;
 
 // FUTURE add to interface UDF
 
@@ -39,4 +40,8 @@ public interface UDFPlus extends UDF {
 	 // !!!!!! do not move to public interface, make for example a interface calle UDFMod
 	 public void setOwnerComponent(ComponentImpl component);
 	 public void setAccess(int access);
+
+	public abstract Object callMemberFunction(PageContext pc, Key key, Struct args) throws PageException;
+
+	public abstract Object callMemberFunction(PageContext pc, Key key, Object[] args) throws PageException;
 }
