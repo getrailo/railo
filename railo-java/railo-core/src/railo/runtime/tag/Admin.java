@@ -22,6 +22,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -176,8 +177,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key STR = KeyConstants._str;
 	private static final Collection.Key DO_STATUS_CODE = KeyImpl.intern("doStatusCode");
 	private static final Collection.Key LABEL = KeyConstants._label;
-	private static final Collection.Key HASH = KeyConstants._hash;
-	private static final Collection.Key ROOT = KeyConstants._root;
 	private static final Collection.Key FILE_ACCESS = KeyImpl.intern("file_access");
 	private static final Collection.Key IP_RANGE = KeyImpl.intern("ipRange");
 	private static final Collection.Key CUSTOM = KeyConstants._custom;
@@ -1231,31 +1230,32 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource src = ResourceUtil.toResourceExisting(pageContext, strSrc);
         
         ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
-        ConfigWeb[] webs = server.getConfigWebs();
-        ConfigWeb web;
         Resource trg,p;
+        Resource deploy = server.getConfigDir().getRealResource("web-context-deployment");
+        deploy.mkdirs();
         
-        for(int i=0;i<webs.length;i++){
-        	web=webs[i];
-        	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
-        	
-        	if(trg.exists()) trg.remove(true);
-        	p = trg.getParentResource();
-            if(!p.isDirectory())p.createDirectory(true);
-           
-            src.copyTo(trg, false);
-        }
+        // deploy it
+        trg=deploy.getRealResource(strRealpath);
+    	if(trg.exists()) trg.remove(true);
+    	p = trg.getParentResource();
+        if(!p.isDirectory())p.createDirectory(true);
+        src.copyTo(trg, false);
         store();
+        
+        ConfigWeb[] webs = server.getConfigWebs();
+        for(int i=0;i<webs.length;i++){
+        	ConfigWebFactory.deployWebContext(server,webs[i], true);
+        }
+        
     }
     
     
     private void doRemoveContext() throws PageException, IOException {
     	String strRealpath = getString("admin",action,"destination");
     	ConfigServerImpl server = (ConfigServerImpl) config;
-        ConfigWeb[] webs = server.getConfigWebs();
         
     	try {
-    		admin.removeContext(server, strRealpath, true);
+    		admin.removeContext(server, true,strRealpath);
 		}
 		catch (SAXException e) {
 			throw Caster.toPageException(e);
@@ -1443,13 +1443,17 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(config instanceof ConfigWebImpl){
         	ConfigWebImpl cw=(ConfigWebImpl) config;
         	sct.setEL(KeyConstants._label, cw.getLabel());
-        	sct.setEL(HASH, cw.getHash());
-        	sct.setEL(ROOT, cw.getRootDirectory().getAbsolutePath());
+        	sct.setEL(KeyConstants._hash, cw.getHash());
+        	sct.setEL(KeyConstants._root, cw.getRootDirectory().getAbsolutePath());
+            sct.setEL("configServerDir", cw.getConfigServerDir().getAbsolutePath());
+            sct.setEL("configWebDir", cw.getConfigDir().getAbsolutePath());
+        }
+        else {
+            sct.setEL("configServerDir", config.getConfigDir().getAbsolutePath());
+            sct.setEL("configWebDir", pageContext.getConfig().getConfigDir().getAbsolutePath());
         }
         
-        sct.setEL(KeyConstants._config, config
-        		.getConfigFile()
-        		.getAbsolutePath());
+        sct.setEL(KeyConstants._config, config.getConfigFile().getAbsolutePath());
         
         // Servlets
         if(config instanceof ConfigServer) {

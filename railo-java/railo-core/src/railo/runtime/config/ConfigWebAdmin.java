@@ -4105,22 +4105,35 @@ public final class ConfigWebAdmin {
         filesDeployed.add(trg);
         _store((ConfigImpl)config);
     }
-	private boolean removeContexts(Config config,String[] realpathes, boolean store) throws PageException, IOException, SAXException {
+	public boolean removeContext(Config config, boolean store,String... realpathes) throws PageException, IOException, SAXException {
 		if(ArrayUtil.isEmpty(realpathes)) return false;
 		boolean force=false;
 		for(int i=0;i<realpathes.length;i++){
-			if(removeContext(config, realpathes[i],store))
+			if(_removeContext(config, realpathes[i],store))
 				force=true;
 		}
 		return force;
 	}
-	public boolean removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
+	
+	private boolean _removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
     	
 		if(config instanceof ConfigServer) {
-    		boolean store=false;
-			ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+			ConfigServer cs = ((ConfigServer)config);
+    		
+			// remove files from deploy folder
+			Resource deploy = cs.getConfigDir().getRealResource("web-context-deployment");
+    		Resource trg = deploy.getRealResource(realpath);
+    		
+    		if(trg.exists()) {
+    			trg.remove(true);
+    			ResourceUtil.removeEmptyFolders(deploy);
+    		}
+    		
+			// remove files from railo web context
+			boolean store=false;
+			ConfigWeb[] webs = cs.getConfigWebs();
     		for(int i=0;i<webs.length;i++){
-	    		if(removeContext(webs[i], realpath,_store)) {
+	    		if(_removeContext(webs[i], realpath,_store)) {
 	    			store=true;
 	    		}
 	    	}
@@ -4128,10 +4141,12 @@ public final class ConfigWebAdmin {
     	}
 		
     	// ConfigWeb
-    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
-        if(trg.exists()) {
+		Resource context = config.getConfigDir().getRealResource("context");
+    	Resource trg = context.getRealResource(realpath);
+    	if(trg.exists()) {
         	trg.remove(true);
         	if(_store) ConfigWebAdmin._store((ConfigImpl) config);
+        	ResourceUtil.removeEmptyFolders(context);
         	return true;
         }
         return false;
@@ -4239,7 +4254,7 @@ public final class ConfigWebAdmin {
   				removeTLDs(arr);
   				// contexts
   				arr=_removeExtensionCheckOtherUsage(children,el,"contexts");
-  				storeChildren=removeContexts(config, arr,false);
+  				storeChildren=removeContext(config,false, arr);
   				// applications
   				arr=_removeExtensionCheckOtherUsage(children,el,"applications");
   				removeApplications(config, arr);

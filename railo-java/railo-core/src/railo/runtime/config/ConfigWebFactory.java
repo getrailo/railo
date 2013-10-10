@@ -326,9 +326,8 @@ public final class ConfigWebFactory {
 			catch (SAXException e) {
 			}
 		}
-
 		config.setLastModified();
-
+		if(config instanceof ConfigWeb)deployWebContext(cs,(ConfigWeb)config,false);
 		loadRailoConfig(cs, config, doc);
 		int mode = config.getMode();
 		loadConstants(cs, config, doc);
@@ -383,6 +382,48 @@ public final class ConfigWebFactory {
 			TagUtil.addTagMetaData((ConfigWebImpl) config);
 
 		ThreadLocalConfig.release();
+	}
+
+	public static void deployWebContext(ConfigServer cs, ConfigWeb cw, boolean throwError) throws IOException  {
+		Resource deploy = cs.getConfigDir().getRealResource("web-context-deployment"),trg;
+        if(!deploy.isDirectory()) return;
+			trg=cw.getConfigDir().getRealResource("context");
+        	try {
+				_deployWebContext(cw,deploy,trg);	
+			}
+			catch (IOException ioe) {
+				if(throwError) throw ioe;
+				SystemOut.printDate(cw.getErrWriter(), ExceptionUtil.getStacktrace(ioe, true));
+			}
+        
+	}
+
+	private static void _deployWebContext(ConfigWeb cw,Resource src, Resource trg) throws IOException {
+		if(!src.isDirectory())return;
+		if(trg.isFile()) trg.delete();
+		if(!trg.exists()) trg.mkdirs();
+		Resource _src,_trg;
+		Resource[] children = src.listResources();
+		if(ArrayUtil.isEmpty(children)) return;
+		
+		for(int i=0;i<children.length;i++){
+			_src=children[i];
+			_trg=trg.getRealResource(_src.getName());
+			if(_src.isDirectory()) 
+				_deployWebContext(cw,_src,_trg);
+			if(_src.isFile()) {
+				if(_src.length()!=_trg.length()) {
+					_src.copyTo(_trg, false);
+					SystemOut.printDate(cw.getOutWriter(), "write file:" + _trg);
+					
+				}
+			}
+		}
+		
+		
+        //src.copyTo(trg, false);
+		
+		
 	}
 
 	private static void loadResourceProvider(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ClassException {
