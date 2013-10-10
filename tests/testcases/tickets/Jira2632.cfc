@@ -29,8 +29,8 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	//public function setUp(){}
 
 	public void function testGetAPIKey(){
-		local.serverKey=createUUid();
-		local.webKey=createUUid();
+		local.serverKey=createGUid();
+		local.webKey=createGUid();
 		
 		// set and read
 		admin type="server" password="#variables.serverAdminPassword#" action="updateAPIKey" key="#serverKey#";
@@ -41,8 +41,8 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		admin type="web" password="#variables.webAdminPassword#" action="getAPIKey" returnvariable="local.k";
 		assertEquals(webKey,k);
 		
-		local.serverKey=createUUid();
-		local.webKey=createUUid();
+		local.serverKey=createGUid();
+		local.webKey=createGUid();
 		
 		// reset and read
 		admin type="server" password="#variables.serverAdminPassword#" action="updateAPIKey" key="#serverKey#";
