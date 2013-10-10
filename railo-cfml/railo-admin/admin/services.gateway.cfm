@@ -19,7 +19,12 @@
 	returnVariable="access"
 	secType="gateway">
     
-<!--- load available drivers --->
+	
+
+
+<!--- load available drivers
+
+
 	<cfset drivers=struct()>
     <cfdirectory directory="./gdriver" action="list" name="dir" recurse="no" filter="*.cfc">
     <cfloop query="dir">
@@ -28,14 +33,26 @@
         </cfif>
     	<cfset tmp=createObject('component','gdriver/#ReplaceNoCase(dir.name,'.cfc','')#')>
         <cfset drivers[dir.name]=tmp>
-    </cfloop>
+    </cfloop> --->
+	
+<cfset variables.drivers=struct()>
+<cfset driverNames=ComponentListPackage("gdriver")>
+
+<cfloop array="#driverNames#" item="n">
+	
+	<cfif n NEQ "Gateway" and n NEQ "Field" and n NEQ "Group">
+		<cfset tmp = createObject("component","gdriver."&n)>
+		<cfset drivers[n]=tmp>
+	</cfif>
+</cfloop>
+	
+	
+	
 <!--- add driver to query --->
 <cfset QueryAddColumn(entries,"driver",array())>
 <cfloop query="entries">
-    <cfloop collection="#drivers#" item="key">
-    	<cfset d=drivers[key]>
-        
-        <cfif 
+    <cfloop collection="#drivers#" index="key" item="d">
+    	<cfif 
 			(StructKeyExists(d,'getCFCPath')?d.getCFCPath() EQ entries.cfcPath:"" EQ entries.cfcPath)
 			and 
 			(StructKeyExists(d,'getClass')?d.getClass() EQ entries.class:"" EQ entries.class)
