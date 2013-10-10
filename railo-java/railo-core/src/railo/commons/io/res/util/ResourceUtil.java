@@ -16,6 +16,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.IgnoreSystemFiles;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.http.HTTPResource;
@@ -1417,6 +1418,26 @@ public final class ResourceUtil {
     		}
     	}
     	return list.toArray(new Resource[list.size()]);
+	}
+	public static void removeEmptyFolders(Resource dir) throws IOException {
+		if(!dir.isDirectory()) return;
+		
+		Resource[] children = dir.listResources(IgnoreSystemFiles.INSTANCE);
+		
+		if(!ArrayUtil.isEmpty(children)) {
+			boolean hasFiles=false;
+			for(int i=0;i<children.length;i++){
+				if(children[i].isDirectory()) removeEmptyFolders(children[i]);
+				else if(children[i].isFile()) {
+					hasFiles=true;
+				}
+			}
+			if(!hasFiles){
+				children = dir.listResources(IgnoreSystemFiles.INSTANCE);
+			}
+			
+		}
+		if(ArrayUtil.isEmpty(children)) dir.remove(true);
 	}
 
 }
