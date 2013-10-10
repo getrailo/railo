@@ -3263,6 +3263,9 @@ public final class Caster {
                     if(type.equals("float")) {
                     	return toDouble(o);
                     }
+                    else if(type.equals("function")) {
+                    	return toFunction(o);
+                    }
                     break;
                 case 'g':
                     if(type.equals("guid")) {
