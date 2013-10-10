@@ -53,6 +53,7 @@ public final class Controler extends Thread {
         this.run=run;
         this.configServer=configServer;
         
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook(configServer));
         
         // Register Memory Notification Listener
         //MemoryControler.init(configServer);

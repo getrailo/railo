@@ -2348,7 +2348,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doUpdateJars() throws PageException  {
     	try {
-			JarLoader.download(pageContext, UPDATE_JARS);
+			JarLoader.download(pageContext.getConfig(), UPDATE_JARS);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
