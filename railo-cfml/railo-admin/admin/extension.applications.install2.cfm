@@ -25,7 +25,12 @@
     </cfif>
     
     <!--- create app folder --->
-    <cfset dest=manager.createUIDFolder(url.uid)>
+	<cftry>
+		<cfset dest=manager.createUIDFolder(url.uid)>
+		<cfcatch>
+			<cfset dest=createUIDFolder(url.uid)>
+		</cfcatch>
+	</cftry>
     
     <!--- copy railo extension package to destination directory, if it wasn't copied/downloaded yet --->
     <cfset destFile=manager.copyAppFile(detail.data,dest).destFile>

@@ -20,7 +20,13 @@
 	<cfset detail.directory=info.directory>
 
 	<!--- create app folder --->
-	<cfset dest=manager.createUIDFolder(url.uid)>
+	<cftry>
+		<cfset dest=manager.createUIDFolder(url.uid)>
+		<cfcatch>
+			<cfset dest=createUIDFolder(url.uid)>
+		</cfcatch>
+	</cftry>
+	
 
 	<!--- copy railo extension package to destination directory --->
 	<cfset app=manager.copyAppFile(detail.data,dest,isDefined('url.trial') and isBoolean(url.trial) and url.trial EQ true)>
