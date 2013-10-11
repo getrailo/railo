@@ -171,7 +171,20 @@
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<input type="hidden" name="uid" value="#url.uid#">
 			
-			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.update#">
+			<cfset _trial=false>
+			<cfif isDefined('app.trial') and isBoolean(app.trial)>
+				<cfset _trial=isBoolean(app.trial)>
+			<cfelseif app.id EQ detail.data.id and isDefined('detail.data.trial') and isBoolean(detail.data.trial)>
+				<cfset _trial=detail.data.trial>
+			</cfif>
+			
+			<cfif _trial>
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.updateTrial#">
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.updateFull#">
+			<cfelse>
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.update#">
+			</cfif>
+			
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.uninstall#">
 			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
 		</cfform>

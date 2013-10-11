@@ -130,7 +130,7 @@
 						</div>
 						<b title="#data.label#">#cut(data.label,30)#</b><br />
 						<!------>
-						<cfif data.price GT 0>#data.price# <cfif structKeyExists(data,"currency")>#data.currency#<cfelse>USD</cfif><cfelse>#stText.ext.free#</cfif>
+						<cfif isDefined("data.price") and data.price GT 0>#data.price# <cfif structKeyExists(data,"currency")>#data.currency#<cfelse>USD</cfif><cfelse>#stText.ext.free#</cfif>
 					</a>
 				</div>
 			</cfif>
