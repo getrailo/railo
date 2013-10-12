@@ -1,6 +1,6 @@
 component {
 
-    this.logfile    = "GenericGateway";
+    this.logfile    = "TaskGateway";
 
     variables.state = "stopped";
 
@@ -11,10 +11,7 @@ component {
         variables.config   = arguments.config;
         variables.listener = arguments.listener;
 
-        variables.interval = 1000 * arguments.config.sleepSeconds 
-                           + 1000 * 60 * arguments.config.sleepMinutes
-                           + 1000 * 60 * 60 * arguments.config.sleepHours
-                           + 1000 * 60 * 60 * 24 * arguments.config.sleepDays;
+        variables.interval = arguments.config.sleep * 1000;
 
         if ( variables.interval < 1000 )
             variables.interval = 1000;
