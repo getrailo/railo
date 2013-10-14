@@ -3,6 +3,7 @@
 
 <cfset driverNames=structnew("linked")>
 <cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.dbdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.dbdriver",driverNames)>
 <cfset driverNames=ComponentListPackageAsStruct("dbdriver",driverNames)>
 
 <cfset variables.drivers=struct()>

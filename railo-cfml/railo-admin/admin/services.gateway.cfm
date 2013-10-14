@@ -27,9 +27,8 @@
 <cfset variables.drivers={}>
 <cfset driverNames=structnew("linked")>
 <cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.gdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.gdriver",driverNames)>
 <cfset driverNames=ComponentListPackageAsStruct("gdriver",driverNames)>
-
-
 
 <cfloop collection="#driverNames#" index="n" item="fn">
 	

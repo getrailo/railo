@@ -13,8 +13,8 @@
 <!--- load available drivers --->
 <cfset driverNames=structnew("linked")>
 <cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.cdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.cdriver",driverNames)>
 <cfset driverNames=ComponentListPackageAsStruct("cdriver",driverNames)>
-
 
 <cfset drivers={}>
 <cfloop collection="#driverNames#" index="n" item="fn">
