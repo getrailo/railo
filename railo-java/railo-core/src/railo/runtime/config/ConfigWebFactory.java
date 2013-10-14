@@ -1157,46 +1157,21 @@ public final class ConfigWebFactory extends ConfigFactory {
 			createFileFromResourceEL("/resource/context/admin/plugin/Note/Action.cfc", f);
 
 		// gateway
-		Resource gatewayDir = configDir.getRealResource("components");
-		if (!gatewayDir.exists())
-			gatewayDir.mkdirs();
+		Resource componentsDir = configDir.getRealResource("components");
+		if (!componentsDir.exists())
+			componentsDir.mkdirs();
 
-		Resource dir = gatewayDir.getRealResource("railo/extension/gateway/");
-		if (!dir.exists())
-			dir.mkdirs();
-
-		f = dir.getRealResource("DummyGateway.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/DummyGateway.cfc", f);
-
-		f = dir.getRealResource("DirectoryWatcher.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/DirectoryWatcher.cfc", f);
-
-		f = dir.getRealResource("DirectoryWatcherListener.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/DirectoryWatcherListener.cfc", f);
-
-		f = dir.getRealResource("MailWatcher.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/MailWatcher.cfc", f);
-
-		f = dir.getRealResource("MailWatcherListener.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/MailWatcherListener.cfc", f);
+		Resource gwDir = componentsDir.getRealResource("railo/extension/gateway/");
+		create("/resource/context/gateway/",new String[]{
+		"DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
+				},gwDir,doNew);
 
 		// resources/language
 		Resource langDir = adminDir.getRealResource("resources/language");
-		langDir.mkdirs();
-		f = langDir.getRealResource("en.xml");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/resources/language/en.xml", f);
+		create("/resource/context/admin/resources/language/",new String[]{
+				"en.xml","de.xml"
+						},langDir,doNew);
 
-		f = langDir.getRealResource("de.xml");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/resources/language/de.xml", f);
-
-		
 		
 
 		// delete Debug
@@ -2097,14 +2072,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		Element eGateWay = getChildByName(doc.getDocumentElement(), "gateways");
 
-		String strCFCDirectory = ConfigWebUtil.translateOldPath(eGateWay.getAttribute("cfc-directory"));
-		if (StringUtil.isEmpty(strCFCDirectory))
-			strCFCDirectory = "{railo-config}/gateway/";
-
-		// Deploy Dir
-		// Resource cfcDirectory =
-		// ConfigWebUtil.getFile(configDir,strCFCDirectory,
-		// "gateway",configDir,FileUtil.TYPE_DIR,config);
+		//String strCFCDirectory = ConfigWebUtil.translateOldPath(eGateWay.getAttribute("cfc-directory"));
+		//if (StringUtil.isEmpty(strCFCDirectory))
+		//	strCFCDirectory = "{railo-config}/gateway/";
 
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManagerImpl.TYPE_GATEWAY);
 
