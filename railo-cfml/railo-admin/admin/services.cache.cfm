@@ -11,13 +11,16 @@
 	returnVariable="connections">
  
 <!--- load available drivers --->
-<cfset drivers=struct()>
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.cdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("cdriver",driverNames)>
 
-<cfset driverNames=ComponentListPackage("cdriver")>
-<cfloop array="#driverNames#" item="n">
+
+<cfset drivers={}>
+<cfloop collection="#driverNames#" index="n" item="fn">
 	
 	<cfif n NEQ "Cache" and n NEQ "Field" and n NEQ "Group">
-		<cfset tmp = createObject("component","cdriver."&n)>
+		<cfset tmp = createObject("component",fn)>
 		<cfset drivers[tmp.getClass()]=tmp>
 	</cfif>
 </cfloop>

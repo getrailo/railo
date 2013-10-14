@@ -22,31 +22,22 @@
 	
 
 
-<!--- load available drivers
+
+<!--- load available drivers --->
+<cfset variables.drivers={}>
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.gdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("gdriver",driverNames)>
 
 
-	<cfset drivers=struct()>
-    <cfdirectory directory="./gdriver" action="list" name="dir" recurse="no" filter="*.cfc">
-    <cfloop query="dir">
-    	<cfif dir.name EQ "Gateway.cfc" or dir.name EQ "Field.cfc" or dir.name EQ "Group.cfc">
-        	<cfcontinue>
-        </cfif>
-    	<cfset tmp=createObject('component','gdriver/#ReplaceNoCase(dir.name,'.cfc','')#')>
-        <cfset drivers[dir.name]=tmp>
-    </cfloop> --->
-	
-<cfset variables.drivers=struct()>
-<cfset driverNames=ComponentListPackage("gdriver")>
 
-<cfloop array="#driverNames#" item="n">
+<cfloop collection="#driverNames#" index="n" item="fn">
 	
 	<cfif n NEQ "Gateway" and n NEQ "Field" and n NEQ "Group">
-		<cfset tmp = createObject("component","gdriver."&n)>
+		<cfset tmp = createObject("component",fn)>
 		<cfset drivers[n]=tmp>
 	</cfif>
 </cfloop>
-	
-	
 	
 <!--- add driver to query --->
 <cfset QueryAddColumn(entries,"driver",array())>

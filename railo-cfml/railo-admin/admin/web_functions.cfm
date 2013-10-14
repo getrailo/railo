@@ -1,4 +1,16 @@
 <cfscript>
+function ComponentListPackageAsStruct(string package, driverNames=structnew("linked")){
+	try{
+		local._driverNames=ComponentListPackage(package);
+		loop array="#_driverNames#" index="i" item="el" {
+			driverNames[el]=package&"."&el;
+		}
+	}
+	catch(e){}
+	return driverNames;
+	
+}
+	
 /**
 * cast a String to a File Object
 * @param strFile string to cast

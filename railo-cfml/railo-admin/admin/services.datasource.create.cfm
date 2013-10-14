@@ -6,7 +6,7 @@
 		<cfset DatasourceFlushMetaCache(form.name)>
 		
 	<cfelseif StructKeyExists(form,"run") and form.run EQ "create2">
-		<cfset driver=createObject("component","dbdriver."&form.type)>
+		<cfset driver=createObject("component",drivernames[form.type])>
 		<cfset driver.onBeforeUpdate()>
 		<cfset custom=struct()>
 		<cfloop collection="#form#" item="key">
@@ -109,8 +109,7 @@
 		<cfset datasource.password="****************">
 		<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
 	</cfif>
-	
-	<cfset driver=createObject("component","dbdriver."&datasource.type)>
+	<cfset driver=createObject("component",drivernames[datasource.type])>
 
 	<cfif isInsert>
 		<cfset datasource.host=driver.getValue('host')>
