@@ -156,19 +156,23 @@ public final class ConfigServerFactory extends ConfigFactory{
 		
 		Resource contextDir = configDir.getRealResource("context");
 		Resource adminDir = contextDir.getRealResource("admin");
-		Resource dbDir = adminDir.getRealResource("dbdriver");
-		Resource typesDir = dbDir.getRealResource("types");
-		if(!typesDir.exists())typesDir.mkdirs();
-
 		
+		
+
+		// Debug
+		Resource debug = adminDir.getRealResource("debug");
+		create("/resource/context/admin/debug/",new String[]{
+				"Debug.cfc","Field.cfc","Group.cfc","Classic.cfc","Modern.cfc","Comment.cfc"
+				},debug,doNew);
 		
 		
 		// DB Drivers types
+		Resource dbDir = adminDir.getRealResource("dbdriver");
+		Resource typesDir = dbDir.getRealResource("types");
 		create("/resource/context/admin/dbdriver/types/",new String[]{
 		"IDriver.cfc","Driver.cfc","IDatasource.cfc","IDriverSelector.cfc","Field.cfc"
 		},typesDir,doNew);
-			
-		
+
 		// DB Drivers
 		create("/resource/context/admin/dbdriver/",new String[]{
 		"H2.cfc","H2Selector.cfc","H2Server.cfc","HSQLDB.cfc","MSSQL.cfc","MSSQL2.cfc","MSSQLSelector.cfc","DB2.cfc","Oracle.cfc"

@@ -1197,35 +1197,19 @@ public final class ConfigWebFactory extends ConfigFactory {
 			createFileFromResourceEL("/resource/context/admin/resources/language/de.xml", f);
 
 		
-		// DEBUG
+		
+
+		// delete Debug
 		Resource debug = adminDir.getRealResource("debug");
-		if (!debug.exists())
-			debug.mkdirs();
-
-		f = debug.getRealResource("Debug.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Debug.cfc", f);
-
-		f = debug.getRealResource("Field.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Field.cfc", f);
-
-		f = debug.getRealResource("Group.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Group.cfc", f);
-
-		f = debug.getRealResource("Classic.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc", f);
-
-		f = debug.getRealResource("Modern.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc", f);
-
-		f = debug.getRealResource("Comment.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc", f);
-
+		delete(debug,new String[]{
+				"Classic.cfc","Modern.cfc","Comment.cfc"
+				});
+		
+		// add Debug
+		create("/resource/context/admin/debug/",new String[]{
+				"Debug.cfc","Field.cfc","Group.cfc"
+				},debug,doNew);
+		
 		// delete Cache Driver
 		Resource cDir = adminDir.getRealResource("cdriver");
 		delete(cDir,new String[]{
