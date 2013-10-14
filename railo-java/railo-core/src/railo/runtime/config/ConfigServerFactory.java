@@ -9,6 +9,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import flex.messaging.config.ConfigurationFileResolver;
+
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -26,7 +29,7 @@ import railo.transformer.library.tag.TagLibException;
 /**
  * 
  */
-public final class ConfigServerFactory {
+public final class ConfigServerFactory extends ConfigFactory{
     
     /**
      * creates a new ServletConfig Impl Object
@@ -72,20 +75,20 @@ public final class ConfigServerFactory {
     			
     			);
           		
-    	boolean doNew=ConfigWebFactory.doNew(configDir);
+    	boolean doNew=doNew(configDir);
     	
     	Resource configFile=configDir.getRealResource("railo-server.xml");
         if(!configFile.exists()) {
 		    configFile.createFile(true);
 			//InputStream in = new TextFile("").getClass().getResourceAsStream("/resource/config/server.xml");
-			ConfigWebFactory.createFileFromResource(
+			createFileFromResource(
 			     "/resource/config/server.xml",
 			     configFile.getAbsoluteResource(),
 			     "tpiasfap"
 			);
 		}
 		//print.out(configFile);
-        Document doc=ConfigWebFactory.loadDocument(configFile);
+        Document doc=loadDocument(configFile);
        
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);
 		load(config,doc,false,doNew);
@@ -109,8 +112,8 @@ public final class ConfigServerFactory {
         
         if(configFile==null) return ;
         if(second(configServer.getLoadTime())>second(configFile.lastModified())) return ;
-        boolean doNew=ConfigWebFactory.doNew(configServer.getConfigDir());
-        load(configServer,ConfigWebFactory.loadDocument(configFile),true,doNew);
+        boolean doNew=doNew(configServer.getConfigDir());
+        load(configServer,loadDocument(configFile),true,doNew);
     }
     
     private static long second(long ms) {
@@ -133,8 +136,8 @@ public final class ConfigServerFactory {
     
 
 	private static void loadLabel(ConfigServerImpl configServer, Document doc) {
-		Element el= ConfigWebFactory.getChildByName(doc.getDocumentElement(),"labels");
-        Element[] children=ConfigWebFactory.getChildren(el,"label");
+		Element el= getChildByName(doc.getDocumentElement(),"labels");
+        Element[] children=getChildren(el,"label");
         
         Map<String, String> labels=new HashMap<String, String>();
         if(children!=null)for(int i=0;i<children.length;i++) {
@@ -150,18 +153,51 @@ public final class ConfigServerFactory {
 	}
 	
 	public static void createContextFiles(Resource configDir, ConfigServer config, boolean doNew) {
-		// Security certificate
-        Resource secDir = configDir.getRealResource("security");
+		
+		Resource contextDir = configDir.getRealResource("context");
+		Resource adminDir = contextDir.getRealResource("admin");
+		Resource dbDir = adminDir.getRealResource("dbdriver");
+		Resource typesDir = dbDir.getRealResource("types");
+		if(!typesDir.exists())typesDir.mkdirs();
+
+		
+		
+		
+		// DB Drivers types
+		create("/resource/context/admin/dbdriver/types/",new String[]{
+		"IDriver.cfc","Driver.cfc","IDatasource.cfc","IDriverSelector.cfc","Field.cfc"
+		},typesDir,doNew);
+			
+		
+		// DB Drivers
+		create("/resource/context/admin/dbdriver/",new String[]{
+		"H2.cfc","H2Selector.cfc","H2Server.cfc","HSQLDB.cfc","MSSQL.cfc","MSSQL2.cfc","MSSQLSelector.cfc","DB2.cfc","Oracle.cfc"
+		,"MySQL.cfc","ODBC.cfc","Sybase.cfc","PostgreSql.cfc","Other.cfc","Firebird.cfc"}
+		,dbDir,doNew);
+		
+		// Cache Drivers
+		Resource cDir = adminDir.getRealResource("cdriver");
+		create("/resource/context/admin/cdriver/",new String[]{
+		"Cache.cfc","RamCache.cfc","EHCacheLite.cfc","Field.cfc","Group.cfc"}
+		,cDir,doNew);
+		
+		// Gateway Drivers
+		Resource gDir = adminDir.getRealResource("gdriver");
+		create("/resource/context/admin/gdriver/",new String[]{
+		"DirectoryWatcher.cfc","MailWatcher.cfc","Gateway.cfc","Field.cfc","Group.cfc"}
+		,gDir,doNew);
+		
+		// Security
+		Resource secDir = configDir.getRealResource("security");
         if(!secDir.exists())secDir.mkdirs();
-        Resource f = secDir.getRealResource("cacerts");
-        if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/security/cacerts",f);
-        System.setProperty("javax.net.ssl.trustStore",f.toString());
+        Resource res = create("/resource/security/","cacerts",secDir,false);
+		System.setProperty("javax.net.ssl.trustStore",res.toString());
 		
         // ESAPI
         Resource propDir = configDir.getRealResource("properties");
         if(!propDir.exists())propDir.mkdirs();
-        f = propDir.getRealResource("ESAPI.properties");
-        if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/properties/ESAPI.properties",f);
-        System.setProperty("org.owasp.esapi.resources", propDir.toString());
+        create("/resource/properties/","ESAPI.properties",propDir,doNew);
+		System.setProperty("org.owasp.esapi.resources", propDir.toString());
 	}
+	
 }
