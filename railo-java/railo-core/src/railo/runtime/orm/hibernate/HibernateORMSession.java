@@ -99,6 +99,9 @@ public class HibernateORMSession implements ORMSession{
 			}
 			throw pe;
 		}
+		catch(Throwable t) {
+			throw CommonUtil.toPageException(t);
+		}
 		
 	}
 
