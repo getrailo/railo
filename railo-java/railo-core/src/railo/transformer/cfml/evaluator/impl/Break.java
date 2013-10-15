@@ -54,7 +54,16 @@ public final class Break extends EvaluatorSupport {
 			}
 		}
 		
+		// no base tag found
 		if(!ASMUtil.hasAncestorBreakFCStatement(tag,label)) {
+			if(tag.isScriptBase()) {
+				if(StringUtil.isEmpty(label))
+					throw new EvaluatorException("Wrong Context, "+libTag.getName()+" must be inside a looping statement or tag");
+				throw new EvaluatorException("Wrong Context, "+libTag.getName()+" must be inside a looping statement or tag with the label ["+label+"]");
+				
+			}
+			
+			
 			if(StringUtil.isEmpty(label))
 				throw new EvaluatorException("Wrong Context, tag "+libTag.getFullName()+" must be inside a "+loopName+" or "+whileName+" tag");
 			throw new EvaluatorException("Wrong Context, tag "+libTag.getFullName()+" must be inside a "+loopName+" or "+whileName+" tag with the label ["+label+"]");
