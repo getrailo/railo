@@ -3,7 +3,7 @@
 		<cfdirectory action="create" directory="#dataDir#" mode="777" recurse="true" />
 	</cfif>
 
-	<cfdirectory action="list" name="qlangs" directory="/railo-context/admin/resources/language/" filter="*.xml" />
+	<cfdirectory action="list" name="qlangs" directory="#expandPath('{railo-web}/context/admin/resources/language/')#" filter="*.xml" />
 
 	<cfset translations = {} />
 	<cfset pageContents = {} />
