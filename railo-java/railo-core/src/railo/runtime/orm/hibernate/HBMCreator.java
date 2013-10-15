@@ -14,19 +14,14 @@ import org.w3c.dom.NodeList;
 
 import railo.loader.util.Util;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMUtil;
-import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
-import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.type.util.ListUtil;
 
 public class HBMCreator {
 	
@@ -64,11 +59,11 @@ public class HBMCreator {
 		
 		
 		// create class element and attach
-		Document doc = XMLUtil.getDocument(hibernateMapping);
+		Document doc = CommonUtil.getDocument(hibernateMapping);
 		
 		StringBuilder comment=new StringBuilder();
 		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
-		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(ComponentUtil.getCompileTime(pc,cfc.getPageSource()))).append("\n");
+		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(HibernateUtil.getCompileTime(pc,cfc.getPageSource()))).append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
 		
@@ -93,7 +88,7 @@ public class HBMCreator {
 			// MZ: Reinitiate the property collection
 			propColl = splitJoins(cfc,joins, _props,data);
 
-			String ext = ListUtil.last(extend,'.').trim();
+			String ext = CommonUtil.last(extend,'.').trim();
 			try {
 				Component base = data.getEntityByCFCName(ext, false);
 				ext = HibernateCaster.getEntityName(base);
@@ -187,8 +182,8 @@ public class HBMCreator {
 	
 	private static Property[] getProperties(PageContext pc, Component cfc, DatasourceConnection dc, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass,SessionFactoryData data) throws PageException, PageException {
 		Property[] _props;
-		if (recursivePersistentMappedSuperclass && (cfc instanceof ComponentPro)) {
-			_props = ((ComponentPro)cfc).getProperties(true, true, true, true);
+		if (recursivePersistentMappedSuperclass) {
+			_props = CommonUtil.getProperties(cfc,true, true, true, true);
 		}
 		else {
 			_props = cfc.getProperties(true);
@@ -296,7 +291,7 @@ public class HBMCreator {
         	
         	
         	String fieldType = CommonUtil.toString(props[y].getDynamicAttributes().get(FIELDTYPE,null),null);
-			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
+			if("id".equalsIgnoreCase(fieldType) || CommonUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
 				ids.add(props[y]);
 		}
         
@@ -316,7 +311,7 @@ public class HBMCreator {
         // still no id field defined
         if(ids.size()==0 && props.length>0) {
         	String owner = props[0].getOwnerName();
-			if(!Util.isEmpty(owner)) owner=ListUtil.last(owner, '.').trim();
+			if(!Util.isEmpty(owner)) owner=CommonUtil.last(owner, '.').trim();
         	
         	String fieldType;
         	if(!Util.isEmpty(owner)){
@@ -380,7 +375,7 @@ public class HBMCreator {
 		Property[] properties = coll.getProperties();
 		if(properties.length==0) return;
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		
 		Element join = doc.createElement("join");
         clazz.appendChild(join);
@@ -598,7 +593,7 @@ public class HBMCreator {
 	private static void createXMLMappingCompositeId(Component cfc,Element clazz, Property[] props,Struct columnsInfo,String tableName, SessionFactoryData data) throws PageException {
 		Struct meta;
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element cid = doc.createElement("composite-id");
 		clazz.appendChild(cid);
 		
@@ -654,7 +649,7 @@ public class HBMCreator {
 			prop=props[y];
 			meta = prop.getDynamicAttributes();
 			fieldType = toString(cfc,prop,meta,"fieldType",data);
-			if(ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"many-to-one",',')==-1)continue;
+			if(CommonUtil.listFindNoCaseIgnoreEmpty(fieldType,"many-to-one",',')==-1)continue;
 			
 			Element key = doc.createElement("key-many-to-one");
 			cid.appendChild(key);
@@ -679,7 +674,7 @@ public class HBMCreator {
 		Struct meta = prop.getDynamicAttributes();
 		String str;
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element id = doc.createElement("id");
 		clazz.appendChild(id);
 			
@@ -725,7 +720,7 @@ public class HBMCreator {
 					Component cfc = data.getEntityByCFCName(foreignCFC.toString(), false);
 					if(cfc!=null){
 						Property[] ids = getIds(cfc,cfc.getProperties(true),null,true,data);
-						if(!ArrayUtil.isEmpty(ids)){
+						if(ids!=null && ids.length>0){
 							Property id = ids[0];
 							id.getDynamicAttributes();
 							Struct meta = id.getDynamicAttributes();
@@ -834,7 +829,7 @@ public class HBMCreator {
 		if(Util.isEmpty(className,true)) return null;
 		
 
-		Document doc = XMLUtil.getDocument(id);
+		Document doc = CommonUtil.getDocument(id);
 		Element generator = doc.createElement("generator");
 		id.appendChild(generator);
 		
@@ -906,7 +901,7 @@ public class HBMCreator {
     	
     	ColumnInfo info=getColumnInfo(columnsInfo,tableName,columnName,null);
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		final Element property = doc.createElement("property");
 		clazz.appendChild(property);
 		
@@ -1019,7 +1014,7 @@ public class HBMCreator {
 		
 		Boolean b;
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element x2o;
 		
 		// column
@@ -1139,7 +1134,7 @@ public class HBMCreator {
 
 	private static void createXMLMappingCollection(Element clazz, PageContext pc,Component cfc,Property prop,SessionFactoryData data) throws PageException {
 		Struct meta = prop.getDynamicAttributes();
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element el=null;
 		        
 		// collection type
@@ -1222,7 +1217,7 @@ public class HBMCreator {
 		if(Util.isEmpty(str,true)) str=toString(cfc,prop,meta,"column",data);
 		if(!Util.isEmpty(str,true)){
 			Element key = doc.createElement("key");
-			XMLUtil.setFirst(el,key);
+			CommonUtil.setFirst(el,key);
 			//el.appendChild(key);
 			
 			// column
@@ -1290,7 +1285,7 @@ public class HBMCreator {
 	private static void createXMLMappingManyToMany(Component cfc,PropertyCollection propColl,Element clazz, PageContext pc,Property prop,DatasourceConnection dc, SessionFactoryData data) throws PageException {
 		Element el = createXMLMappingXToMany(propColl,clazz, pc, cfc,prop,data);
 		Struct meta = prop.getDynamicAttributes();
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element m2m = doc.createElement("many-to-many");
 		el.appendChild(m2m);
 		
@@ -1387,7 +1382,7 @@ public class HBMCreator {
 	private static void createXMLMappingOneToMany(Component cfc,PropertyCollection propColl,Element clazz, PageContext pc,Property prop, SessionFactoryData data) throws PageException {
 		Element el = createXMLMappingXToMany(propColl,clazz, pc, cfc,prop,data);
 		Struct meta = prop.getDynamicAttributes();
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element x2m;
 		
 		
@@ -1424,7 +1419,7 @@ public class HBMCreator {
 	
 	private static Element createXMLMappingXToMany(PropertyCollection propColl,Element clazz, PageContext pc,Component cfc,Property prop, SessionFactoryData data) throws PageException {
 		final Struct meta = prop.getDynamicAttributes();
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element el=null;
 		
 		
@@ -1614,7 +1609,7 @@ public class HBMCreator {
 			strategy=strategy.trim().toLowerCase();
 			if("read-only".equals(strategy) || "nonstrict-read-write".equals(strategy) || "read-write".equals(strategy) || "transactional".equals(strategy)){
 				Element cache = doc.createElement("cache");
-				XMLUtil.setFirst(el, cache);
+				CommonUtil.setFirst(el, cache);
 				el.appendChild(cache);
 				cache.setAttribute("usage", strategy);
 				String name = toString(cfc,prop,meta,"cacheName",data);
@@ -1637,7 +1632,7 @@ public class HBMCreator {
 	private static void setColumn(Document doc, Element el, String columnValue,SessionFactoryData data) throws PageException {
 		if(Util.isEmpty(columnValue,true)) return;
 		
-		String[] arr = ListUtil.toStringArray(ListUtil.listToArray(columnValue, ','));
+		String[] arr = CommonUtil.toStringArray(columnValue, ',');
 		if(arr.length==1){
 			el.setAttribute("column", formatColumn(arr[0],data));
 		}
@@ -1663,7 +1658,7 @@ public class HBMCreator {
 		Struct meta = prop.getDynamicAttributes();
 		Boolean b;
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		clazz=getJoin(clazz);
 		
 		Element m2o = doc.createElement("many-to-one");
@@ -1827,7 +1822,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		Boolean b;
 		
 
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element timestamp = doc.createElement("timestamp");
 		clazz.appendChild(timestamp);
 		
@@ -1872,7 +1867,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	private static PageException invalidValue(Component cfc,Property prop, String attrName, String invalid, String valid, SessionFactoryData data) {
 		String owner = prop.getOwnerName();
 		if(Util.isEmpty(owner))return ExceptionUtil.createException(data,cfc,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"], valid values are ["+valid+"]",null);
-		return ExceptionUtil.createException(data,cfc,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"] of Component ["+ListUtil.last(owner,'.')+"], valid values are ["+valid+"]",null);
+		return ExceptionUtil.createException(data,cfc,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"] of Component ["+CommonUtil.last(owner,'.')+"], valid values are ["+valid+"]",null);
 	}
 
 
@@ -1883,7 +1878,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	private static void createXMLMappingVersion(Element clazz, PageContext pc,Component cfc,Property prop,SessionFactoryData data) throws PageException {
 		Struct meta = prop.getDynamicAttributes();
 		
-		Document doc = XMLUtil.getDocument(clazz);
+		Document doc = CommonUtil.getDocument(clazz);
 		Element version = doc.createElement("version");
 		clazz.appendChild(version);
 		
@@ -1984,7 +1979,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	
 	private static String _getCFCName(Property prop) {
 		String owner = prop.getOwnerName();
-		return ListUtil.last(owner,'.');
+		return CommonUtil.last(owner,'.');
 	}
 	
 	

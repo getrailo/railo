@@ -21,6 +21,7 @@ import org.hibernate.tuple.entity.EntityMetamodel;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.orm.hibernate.CommonUtil;
+import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
 import railo.runtime.type.cfc.ComponentAccess;
@@ -49,7 +50,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 			HashMap<String, String> map = new HashMap<String, String>();
 			Component cfc=(Component) id;
 			ComponentScope scope = cfc.getComponentScope();
-			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true,true);
+			railo.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true,true);
 			String name,value;
 			for(int i=0;i<props.length;i++){
 				name=props[i].getName();

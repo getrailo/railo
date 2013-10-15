@@ -65,8 +65,6 @@ public final class ComponentUtil {
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
-	private static final Collection.Key FIELD_TYPE = KeyConstants._fieldtype;
-	
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
     /**
@@ -597,16 +595,6 @@ public final class ComponentUtil {
 		if(c instanceof ComponentPro)
 			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
 		return c.getProperties(onlyPeristent);
-	}
-	
-	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
-		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties,false,false);
-		java.util.List<Property> tmp=new ArrayList<Property>();
-		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))
-				tmp.add(props[i]);
-		}
-		return tmp.toArray(new Property[tmp.size()]);
 	}
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {

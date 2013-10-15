@@ -9,7 +9,6 @@ import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.ListUtil;
 
 public class ExceptionUtil {
 
@@ -54,14 +53,14 @@ public class ExceptionUtil {
 
 	private static void setAddional(PageException pe,SessionFactoryData data) {
 		String[] names = data.getEntityNames();
-		setAdditional(pe,CommonUtil.createKey("Entities"), ListUtil.arrayToList(names, ", "));
+		setAdditional(pe,CommonUtil.createKey("Entities"), CommonUtil.toList(names, ", "));
 		setAddional(data.getDataSource(),pe);
 	}
 	
 	private static void setAddional(ORMSession session,PageException pe) {
 		String[] names = session.getEntityNames();
 		
-		setAdditional(pe, CommonUtil.createKey("Entities"), ListUtil.arrayToList(names, ", "));
+		setAdditional(pe, CommonUtil.createKey("Entities"),  CommonUtil.toList(names, ", "));
 		setAddional(session.getDataSource(),pe);
 	}
 	

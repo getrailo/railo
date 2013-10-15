@@ -1,26 +1,43 @@
 package railo.runtime.orm.hibernate;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.JDBCException;
-import org.w3c.dom.Node;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.hibernate.JDBCException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
+import railo.commons.io.IOUtil;
+import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.config.ConfigWeb;
+import railo.runtime.component.Property;
+import railo.runtime.component.PropertyImpl;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLItem;
+import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Operator;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
@@ -28,6 +45,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
@@ -46,8 +64,13 @@ public class CommonUtil {
 	public static final Key PRE_UPDATE=CommonUtil.createKey("preUpdate");
 	public static final Key PRE_INSERT=CommonUtil.createKey("preInsert");
 	public static final Key INIT=CommonUtil.createKey("init");
+	private static final short INSPECT_UNDEFINED = (short)4; /*ConfigImpl.INSPECT_UNDEFINED*/
 	
+	public static final Charset UTF8;
 	
+	static {
+		UTF8=Charset.forName("utf-8");
+	}
 
 	
 	private static Cast caster;
@@ -98,6 +121,10 @@ public class CommonUtil {
 	public static Component toComponent(Object obj, Component defaultValue) {
 		return Caster.toComponent(obj,defaultValue);
 	}
+
+	public static Object toList(String[] arr, String delimiter) { 
+		return ListUtil.arrayToList(arr, delimiter);
+	}
 	
 	public static String toString(Object obj, String defaultValue) {
 		return caster().toString(obj,defaultValue);
@@ -116,6 +143,16 @@ public class CommonUtil {
 	}
 	public static String toString(long l) {
 		return caster().toString(l);
+	}
+	public static String toString(Resource file, Charset charset) throws IOException {
+		return IOUtil.toString(file, charset);
+	}
+
+	public static String[] toStringArray(String list, char delimiter) { 
+		return ListUtil.listToStringArray(list, delimiter);
+	}
+	public static String[] toStringArray(String list, String delimiter) { 
+		return ListUtil.toStringArray(ListUtil.listToArray(list,delimiter),""); //TODO better
 	}
 	
 	public static Integer toInteger(Object obj) throws PageException {
@@ -168,6 +205,10 @@ public class CommonUtil {
 	public static Struct toStruct(Object obj, Struct defaultValue) {
 		return caster().toStruct(obj,defaultValue);
 	}
+
+	public static SQLItem toSQLItem(Object value, int type) {
+		return new SQLItemImpl(value,type);
+	}
 	
 	public static Object[] toNativeArray(Object obj) throws PageException {
 		return Caster.toNativeArray(obj);
@@ -182,6 +223,14 @@ public class CommonUtil {
 	public static Node toXML(Object obj, Node defaultValue) {
 		return caster().toXML(obj,defaultValue);
 	}
+	
+
+	public static Document toDocument(Resource res) throws IOException, SAXException {
+		return XMLUtil.parse(XMLUtil.toInputSource(res), null, false);
+	}
+	
+	
+	
 
 	public static boolean isArray(Object obj) {
 		return decision().isArray(obj);
@@ -198,6 +247,14 @@ public class CommonUtil {
 	public static DateTime createDateTime(long time) {
 		return creator().createDateTime(time);
 	}
+
+	public static Property createProperty(String name, String type) {
+		PropertyImpl pi = new PropertyImpl();
+		pi.setName(name);
+		pi.setType(type);
+		return pi;
+	}
+	
 	public static Struct createStruct(){
 		return creator().createStruct();
 	}
@@ -356,7 +413,59 @@ public class CommonUtil {
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
 		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc); // TODO use reflection
 	}
-	
-	
 
+	public static MappingImpl createMapping(Config config, String virtual, String physical) {
+		return new MappingImpl(config,
+				virtual,
+				physical,
+				null,INSPECT_UNDEFINED,true,false,false,false,true,true,null
+				);
+	}
+	
+	public static String last(String list, char delimiter) {
+		return ListUtil.last(list, delimiter);
+	}
+	
+	public static String last(String list, String delimiter) {
+		return ListUtil.last(list, delimiter,true);
+	}
+	
+	public static int listFindNoCaseIgnoreEmpty(String list, String value, char delimiter) {
+		return ListUtil.listFindNoCaseIgnoreEmpty(list,value,delimiter);
+	}
+	
+	public static String[] trimItems(String[] arr) {
+		for(int i=0;i<arr.length;i++) {
+			arr[i]=arr[i].trim();
+		}
+		return arr;
+	}
+	
+	public static Document getDocument(Node node) {
+		return XMLUtil.getDocument(node);
+	}
+	public static Document newDocument() throws ParserConfigurationException, FactoryConfigurationError {
+		return XMLUtil.newDocument();
+	}
+	public static void setFirst(Node parent, Node node) {
+		XMLUtil.setFirst(parent, node);
+	}
+
+	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
+		if(c instanceof ComponentPro)
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
+		return c.getProperties(onlyPeristent);
+	}
+	
+	public static void write(Resource res, String string, Charset charset, boolean append) throws IOException {
+		IOUtil.write(res, string, charset, append);
+	}
+
+	public static BufferedReader toBufferedReader(Resource res, Charset charset) throws IOException {
+		return IOUtil.toBufferedReader(IOUtil.getReader(res,(Charset)null));
+	}
+	
+	public static boolean equalsComplexEL(Object left, Object right) {
+		return Operator.equalsComplexEL(left, right, false,true);
+	}
 }

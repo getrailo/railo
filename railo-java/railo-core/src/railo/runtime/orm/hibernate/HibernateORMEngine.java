@@ -22,16 +22,13 @@ import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourcePro;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextPro;
@@ -53,10 +50,8 @@ import railo.runtime.orm.hibernate.event.PreLoadEventListenerImpl;
 import railo.runtime.orm.hibernate.event.PreUpdateEventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
-import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentUtil;
 
 public class HibernateORMEngine implements ORMEngine {
 	
@@ -123,7 +118,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private SessionFactoryData getSessionFactoryData(PageContext pc,int initType) throws PageException {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
-			throw ExceptionUtil.createException((ORMSession)null,null,"ORM is not enabled in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,"");
+			throw ExceptionUtil.createException((ORMSession)null,null,"ORM is not enabled","");
 		
 		
 		// datasource
@@ -336,7 +331,7 @@ public class HibernateORMEngine implements ORMEngine {
 		CFCInfo info=data.cfcs.get(id);
 		//Long modified=cfcs.get(id);
 		String xml;
-		long cfcCompTime = ComponentUtil.getCompileTime(pc,cfc.getPageSource());
+		long cfcCompTime = HibernateUtil.getCompileTime(pc,cfc.getPageSource());
 		if(info==null || (ORMUtil.equals(info.getCFC(),cfc) ))	{//&& info.getModified()!=cfcCompTime
 			StringBuilder sb=new StringBuilder();
 			
@@ -347,7 +342,7 @@ public class HibernateORMEngine implements ORMEngine {
 				data.reset();
 				Document doc=null;
 				try {
-					doc=XMLUtil.newDocument();
+					doc=CommonUtil.newDocument();
 				}catch(Throwable t){t.printStackTrace();}
 				
 				root=doc.createElement("hibernate-mapping");
@@ -373,7 +368,7 @@ public class HibernateORMEngine implements ORMEngine {
 				print.o("3+++++++++++++++++++++++++++++++++++++++++");*/
 				
 			}
-			data.cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,cfc.getPageSource()),xml,cfc));
+			data.cfcs.put(id, new CFCInfo(HibernateUtil.getCompileTime(pc,cfc.getPageSource()),xml,cfc));
 		}
 		
 	}
@@ -384,11 +379,11 @@ public class HibernateORMEngine implements ORMEngine {
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
-				IOUtil.write(res, 
+				CommonUtil.write(res, 
 						XMLCaster.toString(hm,false,true,
 								HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID,
 								HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
-								HibernateSessionFactory.HIBERNATE_3_ENCODING), HibernateSessionFactory.HIBERNATE_3_ENCODING, false);
+								HibernateSessionFactory.HIBERNATE_3_CHARSET.name()), HibernateSessionFactory.HIBERNATE_3_CHARSET, false);
 				}
 				catch(Exception e){} 
 			}
@@ -401,7 +396,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(res!=null){
 			res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 			try{
-				sb.append(IOUtil.toString(res, "UTF-8"));
+				sb.append(CommonUtil.toString(res, CommonUtil.UTF8));
 				return res.lastModified();
 			}
 			catch(Exception e){} 
@@ -462,7 +457,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Resource[] locations = ormConf.getCfcLocations();
 		
 		throw ExceptionUtil.createException(data,null,
-				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.util.ListUtil.arrayToList(data.getEntityNames(), ", ")+"] ",
+				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+CommonUtil.toList(data.getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
 	}

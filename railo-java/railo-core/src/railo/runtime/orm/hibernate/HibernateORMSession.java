@@ -597,16 +597,16 @@ public class HibernateORMSession implements ORMSession{
 			if(!Util.isEmpty(order)){
 				if(metaData==null)metaData = getSessionFactory(pc).getClassMetadata(name);
 				
-				String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(order, ',');
-				railo.runtime.type.util.ListUtil.trimItems(arr);
+				String[] arr = CommonUtil.toStringArray(order, ',');
+				CommonUtil.trimItems(arr);
 		        String[] parts;
 		        String col;
 		        boolean isDesc;
 		        Order _order;
 		        //ColumnInfo ci;
 		        for(int i=0;i<arr.length;i++) {
-		        	parts=railo.runtime.type.util.ListUtil.toStringArray(railo.runtime.type.util.ListUtil.listToArray(arr[i],  " \t\n\b\r"));
-		        	railo.runtime.type.util.ListUtil.trimItems(parts);
+		        	parts=CommonUtil.toStringArray(arr[i],  " \t\n\b\r");
+		        	CommonUtil.trimItems(parts);
 		            col=parts[0];
 		            
 		            col=HibernateUtil.validateColumnName(metaData, col);

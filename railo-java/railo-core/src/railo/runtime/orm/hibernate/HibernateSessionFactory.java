@@ -28,12 +28,11 @@ import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.InterfacePage;
 import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
@@ -51,7 +50,7 @@ public class HibernateSessionFactory {
 	
 	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
-	public static final String HIBERNATE_3_ENCODING = "UTF-8";
+	public static final Charset HIBERNATE_3_CHARSET = CommonUtil.UTF8;
 	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""+HIBERNATE_3_PUBLIC_ID+"\" \""+HIBERNATE_3_SYSTEM_ID+"\">";
 	
 
@@ -111,7 +110,7 @@ public class HibernateSessionFactory {
 		Resource conf = ormConf.getOrmConfig();
 		if(conf!=null){
 			try {
-				Document doc = XMLUtil.parse(XMLUtil.toInputSource(conf), null, false);
+				Document doc = CommonUtil.toDocument(conf);
 				configuration.configure(doc);
 			} 
 			catch (Throwable t) {
@@ -228,8 +227,8 @@ public class HibernateSessionFactory {
 	private static void executeSQLScript(ORMConfiguration ormConf,DatasourceConnection dc) throws SQLException, IOException {
         Resource sqlScript = ormConf.getSqlScript();
         if(sqlScript!=null && sqlScript.isFile()) {
-            BufferedReader br = IOUtil.toBufferedReader(IOUtil.getReader(sqlScript,(Charset)null));
-            String line;
+        	BufferedReader br = CommonUtil.toBufferedReader(sqlScript,(Charset)null);
+        	String line;
             StringBuilder sql=new StringBuilder();
             String str;
             Statement stat = dc.getConnection().createStatement();
@@ -288,7 +287,7 @@ public class HibernateSessionFactory {
 			} catch (Throwable t) {}
 			
 			
-			ext=HibernateUtil.id(railo.runtime.type.util.ListUtil.last(ext, '.').trim());
+			ext=HibernateUtil.id(CommonUtil.last(ext, '.').trim());
 			if(!done.contains(ext)) {
 				v = data.cfcs.get(ext);
 				if(v!=null)createMappings(ormConf, ext, v, done, mappings,data);
@@ -385,13 +384,12 @@ public class HibernateSessionFactory {
 	
 	public static Mapping[] createMappings(PageContext pc,Resource[] resources) {
 			
-			MappingImpl[] mappings=new MappingImpl[resources.length];
-			ConfigImpl config=(ConfigImpl) pc.getConfig();
+			Mapping[] mappings=new Mapping[resources.length];
+			Config config=pc.getConfig();
 			for(int i=0;i<mappings.length;i++) {
-				mappings[i]=new MappingImpl(config,
+				mappings[i]=CommonUtil.createMapping(config,
 						"/",
-						resources[i].getAbsolutePath(),
-						null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
+						resources[i].getAbsolutePath()
 						);
 			}
 			return mappings;

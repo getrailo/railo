@@ -98,6 +98,7 @@ public interface Config {
 	public static final short INSPECT_ALWAYS = 0;
 	public static final short INSPECT_ONCE = 1;
 	public static final short INSPECT_NEVER = 2;
+	// Hibernate Extension has hardcoded this 4, do not change!!!!
 
     /*public static final int CUSTOM_TAG_MODE_NONE = 0;
     public static final int CUSTOM_TAG_MODE_CLASSIC = 1;

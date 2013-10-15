@@ -216,7 +216,7 @@ public class SessionFactoryData {
 			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 		}
 		
-		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+name+"] "+(Util.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.util.ListUtil.arrayToList(names, ", ")+"]","");
+		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+name+"] "+(Util.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+CommonUtil.toList(names, ", ")+"]","");
 		
 	}
 }

@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import railo.loader.util.Util;
 import railo.runtime.db.DataSource;
 import railo.runtime.type.Struct;
-import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ListUtil;
 
 public class Dialect {
 	private static Struct dialects=CommonUtil.createStruct();
@@ -97,7 +95,7 @@ public class Dialect {
 			value=(String) entry.getValue();
 
 			dialects2.setEL(CommonUtil.createKey(value), value);
-			dialects2.setEL(CommonUtil.createKey(ListUtil.last(value, ".")), value);
+			dialects2.setEL(CommonUtil.createKey(CommonUtil.last(value, '.')), value);
 		}
 		
     }
@@ -125,7 +123,7 @@ public class Dialect {
 		return dialect;
 	}
 	
-	public static String[] listDialectNames(){
-		return CollectionUtil.keysAsString(dialects);
+	public static Iterator<String> getDialectNames(){
+		return dialects.keysAsStringIterator();
 	}
 }

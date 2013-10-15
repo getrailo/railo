@@ -124,7 +124,7 @@ import flex.messaging.config.ConfigMap;
  */
 public abstract class ConfigImpl implements Config {
 
-	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config
+	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config; Hibernate Extension has hardcoded this 4, do not change!!!!
 
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;

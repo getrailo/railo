@@ -48,7 +48,7 @@ public final class MappingImpl implements Mapping {
     private Resource archive;
     
     private boolean hasArchive;
-    private ConfigImpl config;
+    private Config config;
     private Resource classRootDirectory;
     private PageSourcePool pageSourcePool=new PageSourcePool();
     
@@ -77,7 +77,7 @@ public final class MappingImpl implements Mapping {
 
 	private ApplicationListener appListener;
 
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, short inspect, 
+    public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual,ApplicationListener appListener) {
     	this(config, virtual, strPhysical, strArchive, inspect, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,appListener,5000);
     	
@@ -95,7 +95,7 @@ public final class MappingImpl implements Mapping {
      * @param readonly
      * @throws IOException
      */
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, short inspect, 
+    public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual,ApplicationListener appListener, int classLoaderMaxElements) {
     	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
@@ -339,10 +339,6 @@ public final class MappingImpl implements Mapping {
 
     @Override
     public Config getConfig() {
-        return config;
-    }
-    
-    public ConfigImpl getConfigImpl() {
         return config;
     }
 

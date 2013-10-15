@@ -15,7 +15,7 @@ import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.SQLCaster;
-import railo.runtime.db.SQLItemImpl;
+import railo.runtime.db.SQLItem;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMEngine;
@@ -25,9 +25,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.QueryUtil;
 
 public class HibernateCaster {
@@ -83,8 +81,7 @@ public class HibernateCaster {
 		
 		String name=null;
 		try {
-			ComponentAccess cfca = ComponentUtil.toComponentAccess(cfc);
-			name=CommonUtil.toString(cfca.getMetaStructItem(CommonUtil.ENTITY_NAME),null);
+			name=CommonUtil.toString(HibernateUtil.getMetaStructItem(cfc,CommonUtil.ENTITY_NAME),null);
 		} 
 		catch (Throwable t) {
 			try {
@@ -106,7 +103,7 @@ public class HibernateCaster {
 		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
 		name = cfc.getPageSource().getDisplayPath();
-	    name=railo.runtime.type.util.ListUtil.last(name, "\\/",true);
+	    name=CommonUtil.last(name, "\\/");
 	    int index=name.lastIndexOf('.');
 	    name= name.substring(0,index);
 		return name;
@@ -401,7 +398,7 @@ public class HibernateCaster {
 	 */
 	private static Object toSQL(int sqlType, Object value, RefBoolean isArray) throws PageException {
 		if(isArray!=null)isArray.setValue(false);
-		SQLItemImpl item = new SQLItemImpl(value,sqlType);
+		SQLItem item = CommonUtil.toSQLItem(value,sqlType);
 		try{
 			return SQLCaster.toSqlType(item);
 		}
@@ -412,7 +409,7 @@ public class HibernateCaster {
 				ArrayList<Object> trg = new ArrayList<Object>();
 				for(int i=0;i<src.length;i++){
 					try{
-						trg.add(SQLCaster.toSqlType(new SQLItemImpl(src[i],sqlType)));
+						trg.add(SQLCaster.toSqlType(CommonUtil.toSQLItem(src[i],sqlType)));
 					}
 					catch(PageException inner){
 						throw pe;
@@ -471,7 +468,7 @@ public class HibernateCaster {
 
 
 	private static Query populateQuery(PageContext pc,HibernateORMSession session,Component cfc,Query qry) throws PageException {
-		Property[] properties = ComponentUtil.getProperties(cfc,true,true,false,false);
+		Property[] properties = CommonUtil.getProperties(cfc,true,true,false,false);
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 		
@@ -581,15 +578,4 @@ public class HibernateCaster {
 	public static Component toComponent(Object obj) throws PageException {
 		return CommonUtil.toComponent(obj);
 	}
-
-
-	/*public static Component toComponent(PageContext pc, Object obj) throws PageException {
-		if(obj instanceof String)
-			return toComponent(pc, (String)obj);
-		 return Caster.toComponent(obj);
-	}*/
-	/*public static Component toComponent(PageContext pc, String name) throws PageException {
-		// MUST muss Ÿber cfcs kommen oder neues init machen
-		return CreateObject.doComponent(pc, name);
-	}*/
 }

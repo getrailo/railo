@@ -203,7 +203,7 @@ public final class ConfigWebUtil {
      * @param config 
      * @return existing file
      */
-    public static Resource getExistingResource(ServletContext sc,String strDir, String defaultDir,Resource configDir, short type, ConfigImpl config) {
+    public static Resource getExistingResource(ServletContext sc,String strDir, String defaultDir,Resource configDir, short type, Config config) {
         //ARP
     	
     	strDir=replacePlaceholder(strDir,config);
