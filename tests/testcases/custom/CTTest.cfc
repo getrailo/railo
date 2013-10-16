@@ -58,6 +58,13 @@
 		<cfmodule template="CTTest/cuta.cfm" ErrorOutput="CurrentFile.Error">
 		<cfset assertEquals("from.cuta",variables.CurrentFile.Error)>
 	</cffunction>
+	
+	<cffunction name="testJPLStructure">
+		<CFSET variables.CurrentFile.Error = "">
+	
+		<cfmodule template="CTTest/act_UpdateReviewer.cfm">
+		<cfset assertEquals(true,variables.exists)>
+	</cffunction>
 
 
 </cfcomponent>
