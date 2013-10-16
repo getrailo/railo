@@ -51,6 +51,13 @@
 		<cfset assertEquals("from.6",variables.attr.fromLevel6)>
 		<cfset assertEquals("from_6",variables.attr.fromLevel6Eval)>
 	</cffunction>
+	
+	<cffunction name="test">
+		<CFSET variables.CurrentFile.Error = "">
+	
+		<cfmodule template="CTTest/cuta.cfm" ErrorOutput="CurrentFile.Error">
+		<cfset assertEquals("from.cuta",variables.CurrentFile.Error)>
+	</cffunction>
 
 
 </cfcomponent>
