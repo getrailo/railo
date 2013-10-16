@@ -341,7 +341,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	if("web".equals(strType))return TYPE_WEB;
     	else if("server".equals(strType))return TYPE_SERVER;
     	if(throwError)
-        	throw new ApplicationException("invalid value for attribute type ["+strType+"] of tag admin","valid values are web, server, all");
+        	throw new ApplicationException("invalid value for attribute type ["+strType+"] of tag admin","valid values are web, server");
         return TYPE_WEB;
 	}
 
