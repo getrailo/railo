@@ -23,7 +23,7 @@ import railo.runtime.ComponentScope;
 import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
-import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
+import railo.runtime.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 
@@ -95,7 +95,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	
 	@Override
 	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1,Setter arg2) {
-		CFCProxyFactory pf = new CFCProxyFactory();
+		CFCHibernateProxyFactory pf = new CFCHibernateProxyFactory();
 		pf.postInstantiate(pc);
 		
 		return pf;

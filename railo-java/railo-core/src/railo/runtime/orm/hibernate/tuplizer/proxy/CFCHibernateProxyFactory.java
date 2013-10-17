@@ -12,7 +12,7 @@ import org.hibernate.proxy.ProxyFactory;
 import org.hibernate.type.AbstractComponentType;
 
 
-public class CFCProxyFactory implements ProxyFactory {
+public class CFCHibernateProxyFactory implements ProxyFactory {
 	private String entityName;
 	private String nodeName;
 
@@ -35,10 +35,10 @@ public class CFCProxyFactory implements ProxyFactory {
 
 	public HibernateProxy getProxy(final Serializable id,  final SessionImplementor session) {
 		try {
-			return new CFCProxy(new CFCLazyInitializer(entityName, id, session));
+			return new CFCHibernateProxy(new CFCLazyInitializer(entityName, id, session));
 		}
 		catch(Throwable t){
-			return new CFCProxy(new CFCLazyInitializer(nodeName, id, session));
+			return new CFCHibernateProxy(new CFCLazyInitializer(nodeName, id, session));
 		}
 	}
 }

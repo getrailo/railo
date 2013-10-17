@@ -1,4 +1,4 @@
-package railo.runtime.type.cfc;
+package railo.runtime.orm.hibernate.tuplizer.proxy;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -12,6 +12,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
+import railo.runtime.type.cfc.ComponentAccess;
 
 public abstract class ComponentAccessProxy extends ComponentProxy implements ComponentAccess {
 
@@ -119,5 +120,17 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	public ComponentAccess _base() {
 		return getComponentAccess()._base();
 	}
+	
+	@Override
+	public void setEntity(boolean entity) {
+		getComponentAccess().setEntity(entity);
+	}
+
+	@Override
+	public boolean isEntity() {
+		return getComponentAccess().isEntity();
+	}
+
+
 
 }

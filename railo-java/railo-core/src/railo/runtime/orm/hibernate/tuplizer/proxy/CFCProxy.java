@@ -1,54 +1,25 @@
 package railo.runtime.orm.hibernate.tuplizer.proxy;
 
-import java.io.Serializable;
-
-import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.LazyInitializer;
-
-import railo.runtime.component.Property;
+import railo.runtime.Component;
 import railo.runtime.type.cfc.ComponentAccess;
-import railo.runtime.type.cfc.ComponentAccessProxy;
+import railo.runtime.type.util.ComponentUtil;
 
-/**
- * Proxy for "dynamic-map" entity representations.
- * SLOW
- */
-public class CFCProxy extends ComponentAccessProxy implements HibernateProxy, Serializable {
-
-	private static final long serialVersionUID = 4115236247834562085L;
+public class CFCProxy extends ComponentAccessProxy {
 	
-	private CFCLazyInitializer li;
+	private ComponentAccess ca;
 
+	public CFCProxy(Component cfc){
+		this.ca=ComponentUtil.toComponentAccess(cfc,null); 
+	}
+
+	@Override
 	public ComponentAccess getComponentAccess() {
-		return li.getCFC();
+		return ca;
 	}
 	
-	public CFCProxy(CFCLazyInitializer li) {
-		this.li = li;
+	public Object put(Object key, Object value) {
+		super.put(key,value); // writes to this scope
+		return getComponentScope().put(key, value); // writes to variables scope
 	}
 
-	
-	public Object writeReplace() {
-		return this;
-	}
-
-	public LazyInitializer getHibernateLazyInitializer() {
-		return li;
-	}
-
-	@Override
-	public long sizeOf() {
-		return li.getCFC().sizeOf();
-	}
-	
-	@Override
-	public java.util.Iterator<String> getIterator() {
-    	return keysAsStringIterator();
-    }
-
-
-	@Override
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return li.getCFC().getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
-	}
 }

@@ -1,4 +1,4 @@
-package railo.runtime.type.cfc;
+package railo.runtime.orm.hibernate.tuplizer.proxy;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -402,4 +402,20 @@ public abstract class ComponentProxy implements ComponentPro {
     public void registerUDF(Collection.Key key, UDFProperties props){
     	getComponent().registerUDF(key, props);
     }
+	
+
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
+		return ((ComponentPro)getComponent()).getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
+
+	@Override
+	public long sizeOf() {
+		return getComponent().sizeOf();
+	}
 }
