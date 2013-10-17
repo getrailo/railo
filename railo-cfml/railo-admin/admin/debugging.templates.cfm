@@ -55,7 +55,7 @@ You can define IPv4 or IPv6 IPs, a IPv4 can not be converted to a IPv6 and visa 
 <cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.debug",driverNames)>
 <cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.debug",driverNames)>
 <cfset driverNames=ComponentListPackageAsStruct("debug",driverNames)>
-<cfdump eval="driverNames">
+
 
 <cfset drivers={}>
     <cfloop collection="#driverNames#" index="n" item="fn">
