@@ -547,26 +547,18 @@ public class HibernateORMSession implements ORMSession{
 			
 			// filter
 			if(filter!=null && !filter.isEmpty()){
-				
 				metaData = getSessionFactory(pc).getClassMetadata(name);
-				
-				
-				
 				Object value;
-				Map.Entry entry;
-				Iterator it = filter.entrySet().iterator();
+				Entry<Key, Object> entry;
+				Iterator<Entry<Key, Object>> it = filter.entryIterator();
 				String colName;
 				while(it.hasNext()){
-					entry=(Entry) it.next();
+					entry = it.next();
 					colName=HibernateUtil.validateColumnName(metaData, CommonUtil.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData,colName,null);
 					value=HibernateCaster.toSQL(type,entry.getValue(),null);
 					if(value!=null)	criteria.add(Restrictions.eq(colName, value));
 					else 			criteria.add(Restrictions.isNull(colName));
-					
-					
-					
-					
 				}
 			}
 			
