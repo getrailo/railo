@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!--
+source:/Users/mic/Projects/Railo/Source/railo/tests/testcases/tickets/Jira2644/State.cfc
+compilation-time:{ts '2013-10-16 17:26:58'}
+-->
+<class entity-name="State" lazy="true" node="tests.testcases.tickets.Jira2644.State" table="State2644">
+<composite-id>
+<key-property name="stateCode" type="string">
+<column length="40" name="stateCode"/>
+</key-property>
+<key-property name="countryCode" type="string">
+<column length="2" name="countryCode"/>
+</key-property>
+</composite-id>
+<property name="susi" type="string">
+<column name="susi"/>
+</property>
+</class>
+</hibernate-mapping>
