@@ -71,7 +71,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	}
 
 	@Override
-	public final Object put(Object key, Object value) {
+	public Object put(Object key, Object value) {
 		return setEL(KeyImpl.toKey(key,null), value);
 	}
 

@@ -119,6 +119,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 
 	private boolean useShadow;
+	private boolean entity;
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
 	private boolean loaded;
@@ -136,6 +137,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			SizeOf.size(false)+
 			SizeOf.size(interfaceCollection)+
 			SizeOf.size(useShadow)+
+			SizeOf.size(entity)+
 			SizeOf.size(afterConstructor)+
 			SizeOf.size(base);
 	}
@@ -209,6 +211,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	trg.pageSource=pageSource;
 	        trg._triggerDataMember=_triggerDataMember;
 	        trg.useShadow=useShadow;
+	        trg.entity=entity;
 	        trg.hasInjectedFunctions=hasInjectedFunctions;
 	        trg.afterConstructor=afterConstructor;
 	        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
@@ -1571,6 +1574,16 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	public Object setEL(Key key, Object value) {
     	return setEL(null, key, value);
 	}
+	
+	@Override
+	public final Object put(Object key, Object value) {
+		// TODO find a better solution
+		// when a orm entity the data given by put or also written to the variables scope
+		if(entity) {
+			getComponentScope().put(key, value);
+		}
+		return super.put(key, value);
+	}
     
     /*public Object get(PageContext pc, String name) throws PageException {
         return get(pc, KeyImpl.init(name));
@@ -1949,6 +1962,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			this._triggerDataMember=other._triggerDataMember;
 			this.hasInjectedFunctions=other.hasInjectedFunctions;
 			this.useShadow=other.useShadow;
+			this.entity=other.entity;
 			
 			
 		} catch (PageException e) {
@@ -2004,5 +2018,15 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	public boolean hasInjectedFunctions() {
 		return hasInjectedFunctions;
+	}
+
+	@Override
+	public void setEntity(boolean entity) {
+		this.entity=entity;
+	}
+
+	@Override
+	public boolean isEntity() {
+		return entity;
 	}
 }
