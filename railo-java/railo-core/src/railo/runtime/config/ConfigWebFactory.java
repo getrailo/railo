@@ -2944,8 +2944,13 @@ public final class ConfigWebFactory extends ConfigFactory {
 		config.setRemoteClientUsage(sct);
 
 		// max-threads
-		int maxThreads = Caster.toIntValue(_clients.getAttribute("max-threads"), 20);
-
+		int maxThreads = Caster.toIntValue(_clients.getAttribute("max-threads"), -1);
+		if(maxThreads<1 && configServer!=null) {
+			SpoolerEngineImpl engine = (SpoolerEngineImpl) configServer.getSpoolerEngine();
+			if(engine!=null) maxThreads=engine.getMaxThreads();
+		}
+		if(maxThreads<1)maxThreads=20;
+		
 		// Logger
 		String strLogger = hasAccess ? _clients.getAttribute("log") : null;
 		int logLevel = LogUtil.toIntType(_clients.getAttribute("log-level"), Log.LEVEL_ERROR);
@@ -3019,6 +3024,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			engine.setConfig(config);
 			engine.setLog(config.getRemoteClientLog());
 			engine.setPersisDirectory(dir);
+			engine.setMaxThreads(maxThreads);
 
 		}
 	}

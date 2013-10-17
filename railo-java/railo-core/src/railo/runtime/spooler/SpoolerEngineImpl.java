@@ -84,6 +84,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		openCount=calculateSize(openDirectory);
 	}*/
 
+	public void setMaxThreads(int maxThreads) {
+		this.maxThreads = maxThreads;
+	}
+
 	/**
 	 * @return the maxThreads
 	 */

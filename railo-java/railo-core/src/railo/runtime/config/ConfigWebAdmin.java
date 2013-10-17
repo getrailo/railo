@@ -367,6 +367,16 @@ public final class ConfigWebAdmin {
     	catch(Throwable t) {}
     }
 
+
+	public void setTaskMaxThreads(Integer maxThreads) throws SecurityException {
+		checkWriteAccess();
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        if(!hasAccess)
+            throw new SecurityException("no access to update task settings");
+        Element mail=_getRootElement("remote-clients");
+        mail.setAttribute("max-threads",Caster.toString(maxThreads,""));
+	}
+
 	/**
      * sets Mail Logger to Config
      * @param logFile
@@ -402,12 +412,14 @@ public final class ConfigWebAdmin {
         mail.setAttribute("spool-enable",Caster.toString(spoolEnable,""));
         //config.setMailSpoolEnable(spoolEnable);
     }
+    
+    
 
-    /**
+    /* *
      * sets if er interval is enable or not
      * @param interval
      * @throws SecurityException
-     */
+     * /
     public void setMailSpoolInterval(Integer interval) throws SecurityException {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAIL);
@@ -416,7 +428,7 @@ public final class ConfigWebAdmin {
         Element mail=_getRootElement("mail");
         mail.setAttribute("spool-interval",Caster.toString(interval,""));
         //config.setMailSpoolInterval(interval);
-    }
+    }*/
 
     /**
      * sets the timeout for the spooler for one job
@@ -4411,6 +4423,7 @@ public final class ConfigWebAdmin {
 		}
 		return sb.toString();
 	}
+
 
 
 }
