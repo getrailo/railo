@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
 
 import railo.commons.db.DBUtil;
@@ -101,17 +102,32 @@ public class HibernateUtil {
 	
 
 	public static String validateColumnName(ClassMetadata metaData, String name, String defaultValue) {
-		if(name.equalsIgnoreCase(metaData.getIdentifierPropertyName())) 
+		Type type = metaData.getIdentifierType();
+		// composite id
+		if(type.isComponentType()) {
+			String res=_validateColumnName(((ComponentType) type).getPropertyNames(),name);
+			if(res!=null) return res;
+		}
+		// regular id
+		String id = metaData.getIdentifierPropertyName();
+		if(id!=null && name.equalsIgnoreCase(id)) 
 			return metaData.getIdentifierPropertyName();
 		
-		String[] names = metaData.getPropertyNames();
+		String res=_validateColumnName(metaData.getPropertyNames(),name);
+		if(res!=null) return res;
+		return defaultValue;
+	}
+	
+	private static String _validateColumnName(String[] names, String name) {
+		if(names==null) return null;
 		for(int i=0;i<names.length;i++){
 			if(names[i].equalsIgnoreCase(name))
 				return names[i];
 		}
-		return defaultValue;
+		return null;
 	}
-	
+
+
 	// 
 	
 	public static Property[] createPropertiesFromTable(DatasourceConnection dc, String tableName) {
@@ -147,7 +163,7 @@ public class HibernateUtil {
 			return new Property[0];
 		}
 		
-		Iterator it = properties.valueIterator();
+		Iterator<Object> it = properties.valueIterator();
 		Property[] rtn=new Property[properties.size()];
 		for(int i=0;i<rtn.length;i++){
 			rtn[i]=(Property) it.next();
