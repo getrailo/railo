@@ -135,13 +135,7 @@ public class ORMUtil {
 		if(done.contains(left)) return done.contains(right);
 		done.add(left);
 		done.add(right);
-	 
-		/*ComponentImpl lefti=(ComponentImpl) left;
-		ComponentImpl righti=(ComponentImpl) right;
-		print.e(lefti.getName()+"="+lefti._getName());
-		print.e(righti.getName()+"="+righti._getName());*/
-		
-		
+	 	
 		if(left==null || right==null) return false;
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		Property[] props = getProperties(left);
