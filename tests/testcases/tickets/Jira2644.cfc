@@ -21,6 +21,13 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals('US',res.getCountryCode()&"");	
 	}
 	
+	
+	public void function testCompositeId2(){
+		// first call only initialize the data
+		http method="get" result="local.result" url="#variables.baseURL#bestseller.cfm" addtoken="false";
+		assertEquals(200,result.status_code);
+	}
+	
 	private string function createURL(string calledName){
 		var baseURL="http://#cgi.HTTP_HOST##getDirectoryFromPath(contractPath(getCurrenttemplatepath()))#";
 		return baseURL&""&calledName;
