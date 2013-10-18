@@ -10,7 +10,6 @@ import org.hibernate.tuple.Instantiator;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateCaster;
@@ -52,7 +51,7 @@ public class CFCInstantiator implements Instantiator {
 	@Override
 	public final Object instantiate() {
 		try {
-			PageContext pc = ThreadLocalPageContext.get();
+			PageContext pc = CommonUtil.pc();
 			HibernateORMSession session=HibernateUtil.getORMSession(pc,true);
 			HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 			Component c = engine.create(pc, session, entityName, true);

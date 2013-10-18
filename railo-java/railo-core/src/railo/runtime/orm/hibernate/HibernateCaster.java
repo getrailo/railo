@@ -16,7 +16,6 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
@@ -85,7 +84,7 @@ public class HibernateCaster {
 		} 
 		catch (Throwable t) {
 			try {
-				Struct md = cfc.getMetaData(ThreadLocalPageContext.get());
+				Struct md = cfc.getMetaData(CommonUtil.pc());
 				name = CommonUtil.toString(md.get(CommonUtil.ENTITY_NAME),null);
 				
 			}catch (PageException e) {}

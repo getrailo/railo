@@ -24,7 +24,6 @@ import railo.runtime.PageSource;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
@@ -315,7 +314,7 @@ public class HibernateUtil {
 
 
 	public static HibernateORMEngine getORMEngine(PageContext pc) throws PageException {
-		pc = ThreadLocalPageContext.get(pc);
+		if(pc==null) pc=CommonUtil.pc();
 		ConfigImpl config = (ConfigImpl) pc.getConfig();
 		return (HibernateORMEngine) config.getORMEngine(pc);// TODO add this method to the public interface
 	}
