@@ -17,7 +17,6 @@ import railo.commons.db.DBUtil;
 import railo.commons.io.res.Resource;
 import railo.loader.util.Util;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -338,9 +337,7 @@ public class HibernateUtil {
 	
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
-		return c.getProperties(onlyPeristent);
+		return c.getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
 	}
 	
 	public static long getCompileTime(PageContext pc, PageSource ps) throws PageException {

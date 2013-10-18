@@ -2,6 +2,7 @@
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -23,7 +24,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 	private String validate;
 	private Struct validateParams;
 
-	public UDFSetterProperty(ComponentImpl component,Property prop) throws PageException {
+	public UDFSetterProperty(Component component,Property prop) throws PageException {
 		super(component,"set"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[]{
 			new FunctionArgumentImpl(
 					KeyImpl.init(prop.getName()),

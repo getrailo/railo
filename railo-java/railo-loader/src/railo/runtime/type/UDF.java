@@ -19,6 +19,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 	public static final int RETURN_FORMAT_PLAIN=2;
 	public static final int RETURN_FORMAT_SERIALIZE=3; // FUTURE change to RETURN_FORMAT_CFML
 	public static final int RETURN_FORMAT_XML=4;
+	public static final int RETURN_FORMAT_JAVA=5;
 	
 
     /**
@@ -132,4 +133,27 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 	public Component getOwnerComponent();
 
 	
+
+    /**
+     * call user defined Funcion with a struct
+     * @param pageContext
+     * @param values named values
+     * @param doIncludePath 
+     * @return return value of the function
+     * @throws PageException
+     */
+    public abstract Object callWithNamedValues(PageContext pageContext,Collection.Key calledName,Struct values, boolean doIncludePath) throws PageException;
+
+    /**
+     * call user defined Funcion with parameters as Object Array
+     * @param pageContext
+     * @param args parameters for the function
+     * @param doIncludePath 
+     * @return return value of the function
+     * @throws PageException
+     */
+    public abstract Object call(PageContext pageContext, Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException;
+	
+	 
+	 
 }

@@ -27,7 +27,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 	
 	//private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
 
-	public UDFHasProperty(ComponentImpl component,Property prop)  {
+	public UDFHasProperty(Component component,Property prop)  {
 		super(component,"has"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_BOOLEAN,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());

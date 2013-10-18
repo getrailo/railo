@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -44,7 +45,7 @@ public class Closure extends UDFImpl {
 	}
 
 	@Override
-	public UDF duplicate(ComponentImpl c) {
+	public UDF duplicate(Component c) {
 		Closure clo = new Closure(properties,variables);// TODO duplicate variables as well?
 		clo.ownerComponent=c;
 		clo.setAccess(getAccess());

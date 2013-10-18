@@ -21,7 +21,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -454,9 +453,7 @@ public class CommonUtil {
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
-		return c.getProperties(onlyPeristent);
+		return c.getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
 	}
 	
 	public static void write(Resource res, String string, Charset charset, boolean append) throws IOException {

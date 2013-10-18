@@ -2367,7 +2367,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     @Override
     public Locale getLocale() {
-    	Locale l = ((ApplicationContextPro)getApplicationContext()).getLocale();
+    	Locale l = getApplicationContext().getLocale();
     	if(l!=null) return l;
     	if(locale!=null) return locale;
     	return config.getLocale();
@@ -2376,7 +2376,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     @Override
     public void setLocale(Locale locale) {
 		
-		((ApplicationContextPro)getApplicationContext()).setLocale(locale);
+		getApplicationContext().setLocale(locale);
     	this.locale=locale;
         HttpServletResponse rsp = getHttpServletResponse();
         
@@ -2918,7 +2918,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	@Override
 	public TimeZone getTimeZone() {
-		TimeZone tz = ((ApplicationContextPro)getApplicationContext()).getTimeZone();
+		TimeZone tz = getApplicationContext().getTimeZone();
 		if(tz!=null) return tz;
 		if(timeZone!=null) return timeZone;
 		return config.getTimeZone();
@@ -2926,7 +2926,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	@Override
 	public void setTimeZone(TimeZone timeZone) {
-		((ApplicationContextPro)getApplicationContext()).setTimeZone(timeZone);
+		getApplicationContext().setTimeZone(timeZone);
 		this.timeZone=timeZone;
 	}
 

@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -14,7 +15,7 @@ public final class UDFGetterProperty extends UDFGSProperty {
 	//private ComponentScope scope;
 	private final Key propName;
 
-	public UDFGetterProperty(ComponentImpl component,Property prop)  {
+	public UDFGetterProperty(Component component,Property prop)  {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());

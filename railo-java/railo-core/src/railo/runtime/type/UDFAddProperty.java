@@ -5,6 +5,7 @@ import java.util.Map;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -25,7 +26,7 @@ public final class UDFAddProperty extends UDFGSProperty {
 	
 	private static final Object NULL=new Object();
 
-	public UDFAddProperty(ComponentImpl component,Property prop)  {
+	public UDFAddProperty(Component component,Property prop)  {
 		super(component,"add"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_ANY,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());

@@ -31,10 +31,10 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 	
 	protected final FunctionArgument[] arguments;
 	protected final String name;
-	protected ComponentImpl component;
+	protected Component component;
 	private UDFPropertiesImpl properties;
 
-	public UDFGSProperty(ComponentImpl component,String name,FunctionArgument[] arguments,short rtnType,String rtnFormat) {
+	public UDFGSProperty(Component component,String name,FunctionArgument[] arguments,short rtnType,String rtnFormat) {
 		super(Component.ACCESS_PUBLIC);
 		properties=UDFProperties(
 				component.getPageSource(),
@@ -127,7 +127,7 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 		return component;
 	}
 
-	public void setOwnerComponent(ComponentImpl component) {
+	public void setOwnerComponent(Component component) {
 		this.component = component;
 	}
 	

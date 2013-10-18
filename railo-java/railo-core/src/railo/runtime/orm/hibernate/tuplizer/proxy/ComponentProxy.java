@@ -346,11 +346,6 @@ public abstract class ComponentProxy implements Component {
 	public Property[] getProperties(boolean onlyPeristent) {
 		return getComponent().getProperties(onlyPeristent);
 	}
-	
-	@Override
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		return getComponent().getProperties(onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
-	}
 
 	@Override
 	public void setProperty(Property property) throws PageException {
@@ -415,7 +410,7 @@ public abstract class ComponentProxy implements Component {
 
 	@Override
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return ((ComponentPro)getComponent()).getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+		return getComponent().getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 	
 	@Override

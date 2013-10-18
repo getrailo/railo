@@ -5,6 +5,7 @@ import java.util.Map;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -27,7 +28,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 	
 	private static final Object NULL=new Object();
 
-	public UDFRemoveProperty(ComponentImpl component,Property prop)  {
+	public UDFRemoveProperty(Component component,Property prop)  {
 		super(component,"remove"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_BOOLEAN,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());

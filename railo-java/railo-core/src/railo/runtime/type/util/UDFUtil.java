@@ -141,12 +141,9 @@ public class UDFUtil {
 	}
 	
 
-	public static Object getDefaultValue(PageContext pc, UDFPlus udf, int index, Object defaultValue) throws PageException {
+	public static Object getDefaultValue(PageContext pc, UDF udf, int index, Object defaultValue) throws PageException {
 		Page p=ComponentUtil.getPage(pc,udf.getPageSource());
-		if(p instanceof PagePlus) return ((PagePlus)p).udfDefaultValue(pc,udf.getIndex(),index,defaultValue);
-		Object rtn = p.udfDefaultValue(pc,udf.getIndex(),index);
-    	if(rtn==null) return defaultValue;// in that case it can make no diff between null and not existing, but this only happens with data from old ra files
-    	return rtn;
+		return p.udfDefaultValue(pc,udf.getIndex(),index,defaultValue);
 	}
 
 	public static void argumentCollection(Struct values) {
@@ -298,7 +295,7 @@ public class UDFUtil {
 			try {
 				Object oa=null;
                 try {
-                    oa = UDFUtil.getDefaultValue(pageContext, (UDFPlus)udf, i, null);//udf.getDefaultValue(pageContext,i,null);
+                    oa = UDFUtil.getDefaultValue(pageContext, udf, i, null);//udf.getDefaultValue(pageContext,i,null);
                 } catch (PageException e1) {
                 }
                 if(oa==null)oa="null";

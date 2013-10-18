@@ -1,6 +1,8 @@
 package railo.runtime.listener;
 
 import java.io.Serializable;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import railo.commons.io.res.Resource;
 import railo.runtime.Mapping;
@@ -212,4 +214,12 @@ public interface ApplicationContext extends Serializable {
 
 	public abstract boolean getBufferOutput();
 	public abstract void setBufferOutput(boolean bufferOutput);
+
+	public abstract Locale getLocale();
+
+	public abstract void setLocale(Locale locale);
+
+	public abstract void setTimeZone(TimeZone timeZone);
+
+	public abstract TimeZone getTimeZone();
 }

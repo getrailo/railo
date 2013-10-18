@@ -51,7 +51,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	
 	
 	
-	protected ComponentImpl ownerComponent;
+	protected Component ownerComponent;
 	protected UDFPropertiesImpl properties;
     
 	/**
@@ -72,7 +72,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 		return SizeOf.size(properties);
 	}
 	
-	public UDF duplicate(ComponentImpl cfc) {
+	public UDF duplicate(Component cfc) {
 		UDFImpl udf = new UDFImpl(properties);
 		udf.ownerComponent=cfc;
 		udf.setAccess(getAccess());
@@ -383,7 +383,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	 * @param componentImpl the componentImpl to set
 	 * @param injected 
 	 */
-	public void setOwnerComponent(ComponentImpl component) {
+	public void setOwnerComponent(Component component) {
 		this.ownerComponent = component;
 	}
 	

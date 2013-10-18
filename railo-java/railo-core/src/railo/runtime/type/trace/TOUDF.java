@@ -17,7 +17,7 @@ import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.UDFUtil;
 
-public class TOUDF extends TOObjects implements UDFMember {
+public class TOUDF extends TOObjects implements UDF {
 
 	private UDF udf;
 	
@@ -36,7 +36,7 @@ public class TOUDF extends TOObjects implements UDFMember {
 	
 	public void setAccess(int access) {
 		log(ComponentUtil.toStringAccess(access,null));
-		udf.setAccess(access);
+		((UDFPlus)udf).setAccess(access);
 	}
 
 
@@ -206,7 +206,7 @@ public class TOUDF extends TOObjects implements UDFMember {
 	}
 	public void setOwnerComponent(ComponentImpl cfc) {
 		log(null);
-		udf.setOwnerComponent(cfc);
+		((UDFPlus)udf).setOwnerComponent(cfc);
 	}
 	
 	
