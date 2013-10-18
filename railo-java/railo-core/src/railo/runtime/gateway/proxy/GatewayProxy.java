@@ -3,9 +3,9 @@ package railo.runtime.gateway.proxy;
 import java.io.IOException;
 import java.util.Map;
 
+import railo.runtime.gateway.Gateway;
 import railo.runtime.gateway.GatewayEnginePro;
 import railo.runtime.gateway.GatewayPro;
-import railo.runtime.gateway.Gateway;
 
 public class GatewayProxy implements GatewayPro {
 	

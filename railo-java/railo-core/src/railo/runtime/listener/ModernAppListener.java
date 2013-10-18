@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,6 +14,7 @@ import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactory;
@@ -28,9 +30,11 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PostContentAbort;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -44,6 +48,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
 public class ModernAppListener extends AppListenerSupport {
 
@@ -119,14 +124,25 @@ public class ModernAppListener extends AppListenerSupport {
 			if(goon.toBooleanValue()) {
 			boolean isCFC=ResourceUtil.getExtension(targetPage,"").equalsIgnoreCase(pc.getConfig().getCFCExtension());
 			Object method;
-			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) { 
+			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(KeyConstants._method,null))!=null) { 
 				
 				Struct url = (Struct)Duplicator.duplicate(pc.urlFormScope(),true);
+
+				url.removeEL(KeyConstants._fieldnames);
+				url.removeEL(KeyConstants._method);
+				Object args=url.get(KeyConstants._argumentCollection,null);
+				Object oReturnFormat=url.removeEL(KeyConstants._returnFormat);
+
+				List<MimeType> accept = ReqRspUtil.getAccept(pc);
+				int returnFormat = MimeType.toFormat(accept, -1);
+				if(returnFormat==-1) {
+					if(oReturnFormat!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormat,null));
+				}
 		        
-		        url.removeEL(KeyConstants._fieldnames);
-		        url.removeEL(ComponentPage.METHOD);
-		        Object args=url.get(KeyConstants._argumentCollection,null);
-		        Object returnFormat=url.removeEL(KeyConstants._returnFormat);
+		        
+		        
+		        
+		        
 		        Object queryFormat=url.removeEL(KeyConstants._queryFormat);
 		        
 		        if(args==null){
@@ -170,7 +186,7 @@ public class ModernAppListener extends AppListenerSupport {
 		        	}
 		        	else {
 		        		try {
-							pc.forceWrite(ComponentPage.convertResult(pc,app,method.toString(),returnFormat,queryFormat,rtn));
+							ComponentPage.writeToResponseStream(pc,app,method.toString(),returnFormat,queryFormat,rtn);
 						} catch (Exception e) {
 							throw Caster.toPageException(e);
 						}
@@ -373,7 +389,9 @@ public class ModernAppListener extends AppListenerSupport {
 		} 
 		catch (PageException pe) {
 			if(Abort.isSilentAbort(pe)) {
-				if(catchAbort)return Boolean.FALSE;
+				if(catchAbort)
+					return ( pe instanceof PostContentAbort) ? Boolean.TRUE : Boolean.FALSE;
+
 				throw pe;
 			}
 			throw new ModernAppListenerException(pe,eventName.getString());

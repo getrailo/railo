@@ -117,7 +117,7 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 
 	@Override
 	public boolean isEmptyDirectory(Resource res) {
-		return ResourceUtil.isEmptyDirectory(res);
+		return ResourceUtil.isEmptyDirectory(res,null); // FUTURE add to interface with filter
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 
 	@Override
 	public void moveTo(Resource src, Resource dest) throws IOException {
-		ResourceUtil.moveTo(src, dest);
+		ResourceUtil.moveTo(src, dest,true);
 	}
 
 	@Override

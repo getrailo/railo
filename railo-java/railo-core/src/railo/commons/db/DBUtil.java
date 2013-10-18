@@ -80,16 +80,17 @@ public final class DBUtil {
         }
 	}
 
-	public static Connection getConnection(String dsn, String user, String pass) throws SQLException {
+	public static Connection getConnection(String connStr, String user, String pass) throws SQLException {
 		try {
 			//return DriverManager.getConnection(dsn, user, pass);
-			return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(dsn, user, pass));
+			return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(connStr, user, pass));
         } 
         catch (SQLException e) {
-        	if(dsn.indexOf('?')!=-1) {
-                String connStr=dsn+"&user="+user+"&password="+pass;
+		
+        	if(connStr.indexOf('?')!=-1) {
+                connStr=connStr+"&user="+user+"&password="+pass;
     			//return DriverManager.getConnection(connStr);
-    			return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(connStr));
+                return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(connStr));
             }
         	throw e;
         }

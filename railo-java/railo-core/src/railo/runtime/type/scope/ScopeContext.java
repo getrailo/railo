@@ -32,7 +32,6 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -187,7 +186,7 @@ public final class ScopeContext {
 			boolean isMemory=false;
 			String storage = appContext.getClientstorage();
 			if(StringUtil.isEmpty(storage,true)){
-				storage="file";
+				storage=ConfigImpl.DEFAULT_STORAGE_CLIENT;
 			}
 			else if("ram".equalsIgnoreCase(storage)) {
 				storage="memory";
@@ -486,7 +485,7 @@ public final class ScopeContext {
 			boolean isMemory=false;
 			String storage = appContext.getSessionstorage();
 			if(StringUtil.isEmpty(storage,true)){
-				storage="memory";
+				storage=ConfigImpl.DEFAULT_STORAGE_SESSION;
 				isMemory=true;
 			}
 			else if("ram".equalsIgnoreCase(storage)) {

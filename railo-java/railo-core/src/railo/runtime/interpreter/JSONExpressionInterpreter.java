@@ -8,7 +8,13 @@ import railo.runtime.interpreter.ref.literal.LStringBuffer;
 
 public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
 	public JSONExpressionInterpreter(){
+		this(false);
 		allowNullConstant=true;
+    }
+	
+	public JSONExpressionInterpreter(boolean strict){// strict is set to true, it should not be compatible with CFMLExpressionInterpreter
+		allowNullConstant=true;
+		
     }
         
 	@Override
@@ -99,7 +105,7 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
             }
         }
         if(!cfml.forwardIfCurrent(quoter))
-            throw new ExpressionException("Invalid String Literal Syntax Closing ["+quoter+"] not found");
+            throw new InterpreterException("Invalid String Literal Syntax Closing ["+quoter+"] not found");
         
         cfml.removeSpace();
         mode=STATIC;

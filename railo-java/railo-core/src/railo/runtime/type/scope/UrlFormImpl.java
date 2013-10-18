@@ -1,6 +1,3 @@
-/**
- * 
- */
 package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
@@ -20,15 +17,12 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
-/**
- * 
- */
 public final class UrlFormImpl extends StructSupport implements URLForm {
 
 	private static final long serialVersionUID = -5709431392572723178L;
 
-	private FormImpl form;
-	private URLImpl url;
+	private final FormImpl form;
+	private final URLImpl url;
 	private boolean isInit;
 
 	public UrlFormImpl(FormImpl form, URLImpl url) {
@@ -42,13 +36,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		isInit=true;
 		form.initialize(pc);
 		url.initialize(pc);
-		//print.ln(">>>"+List.arrayToList(url.keys(),","));
 		form.addRaw(pc.getApplicationContext(),url.getRaw());
-		
-		/*String[] keys = url.keys();
-		for(int i=0;i<keys.length;i++) {
-			form.setEL(keys[i], url.get(keys[i],null));
-		}*/
 	}
 	
 	@Override
@@ -256,14 +244,25 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		return form.values();
 	}
 
+	@Override
 	public FormItem getUploadResource(String key) {
 		return form.getUploadResource(key);
 	}
 
+	@Override
 	public FormItem[] getFileItems() {
 		return form.getFileItems();
 	}
 
+	public FormImpl getForm() {
+		return form;
+	}
+
+	public URLImpl getURL() {
+		return url;
+	}
+
+	@Override
 	public ServletInputStream getInputStream() {
 		return form.getInputStream();
 	}

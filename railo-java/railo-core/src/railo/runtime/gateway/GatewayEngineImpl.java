@@ -8,13 +8,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import railo.runtime.gateway.GatewayPro;
-import railo.runtime.gateway.GatewayEnginePro;
-import railo.runtime.gateway.GatewayException;
-
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSourceImpl;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.Md5;
 import railo.commons.lang.Pair;

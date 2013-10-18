@@ -59,9 +59,12 @@
 
 <cfset hasDisplay=fileExists(expandPath(dspFile))>
 <cfif rtnAction NEQ "_none" and hasDisplay>
-	
-	<cfset rtnAction= plugin.component._display(dspFile,lang,app,req)>
-	<!--- cfinclude template="#dspFile#"--->
+	<cftry>
+		<cfset rtnAction= plugin.component._display(dspFile,lang,app,req)>
+		<cfcatch>
+			<cfset printError(cfcatch,!findNoCase("trial",cfcatch.message))>
+		</cfcatch>
+	</cftry>
 </cfif>
 
 <cfif not hasAction and not hasDisplay>

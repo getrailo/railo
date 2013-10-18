@@ -16,7 +16,6 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 
 import railo.commons.lang.ClassException;
@@ -30,8 +29,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.util.ListUtil;
 
-import com.sun.jndi.ldap.ctl.SortControl;
-import com.sun.jndi.ldap.ctl.SortKey;
 import com.sun.net.ssl.internal.ssl.Provider;
 
 
@@ -281,21 +278,6 @@ public final class LDAPClient {
 
         InitialLdapContext context = new InitialLdapContext(env, null);
         
-        
-        // Sort
-        if(sort!=null && sort.length>0) {
-            boolean isSortAsc=sortDirection==SORT_DIRECTION_ASC;
-            
-            SortKey keys[] = new SortKey[sort.length];
-            for(int i=0;i<sort.length;i++) {
-                String item=sort[i].equalsIgnoreCase("dn")?"name":sort[i];
-                if(item.indexOf(' ')!=-1)item=ListUtil.first(item," ",true);
-                keys[i] = new SortKey(item,isSortAsc ,sortType==LDAPClient.SORT_TYPE_CASE?null/*"CASE"*/:null);
-                //keys[i] = new SortKey(item);
-            }
-            context.setRequestControls(new Control[]{new SortControl(keys, Control.CRITICAL)});
-        }        
-        
         // Search
         Query qry=new QueryImpl(attributes,0,"query");
         try {
@@ -362,7 +344,16 @@ public final class LDAPClient {
         finally {
             context.close();
         }
-        
+        // Sort
+        if(sort!=null && sort.length>0) {
+            int order = sortDirection==SORT_DIRECTION_ASC ? Query.ORDER_ASC : Query.ORDER_DESC;
+            for(int i=sort.length-1;i>=0;i--) {
+                String item=sort[i];
+                if(item.indexOf(' ')!=-1)item=ListUtil.first(item," ",true);
+                qry.sort(KeyImpl.getInstance(item),order);
+                //keys[i] = new SortKey(item);
+            }
+        }    
         return qry;
     }
 

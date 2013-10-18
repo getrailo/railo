@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceClassLoader;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.instrumentation.InstrumentationUtil;

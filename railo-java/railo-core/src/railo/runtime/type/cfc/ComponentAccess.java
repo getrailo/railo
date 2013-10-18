@@ -37,6 +37,8 @@ public interface ComponentAccess extends Component {
 	Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess);
 	public ComponentAccess _base();// TODO do better impl
 	//public boolean isRest();
+	public void setEntity(boolean entity);
+	public boolean isEntity();
 	
 	
 	

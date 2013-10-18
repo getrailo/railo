@@ -8,7 +8,6 @@ import railo.runtime.orm.ORMUtil;
 public class EntityDelete {
 	public static String call(PageContext pc, Object obj) throws PageException {
 		ORMSession session = ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		session.delete(pc,obj);
 		return null;
 	}

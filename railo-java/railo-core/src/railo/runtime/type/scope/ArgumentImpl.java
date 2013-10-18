@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
@@ -28,7 +27,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.wrap.ArrayAsList;
@@ -488,8 +487,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	@Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).call(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).call(pc,methodName,args,false);
 		}
 		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
 	}
@@ -497,8 +496,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	@Override
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
 		}
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
 	}

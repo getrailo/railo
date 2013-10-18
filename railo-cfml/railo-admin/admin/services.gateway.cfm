@@ -19,23 +19,30 @@
 	returnVariable="access"
 	secType="gateway">
     
+	
+
+
+
 <!--- load available drivers --->
-	<cfset drivers=struct()>
-    <cfdirectory directory="./gdriver" action="list" name="dir" recurse="no" filter="*.cfc">
-    <cfloop query="dir">
-    	<cfif dir.name EQ "Gateway.cfc" or dir.name EQ "Field.cfc" or dir.name EQ "Group.cfc">
-        	<cfcontinue>
-        </cfif>
-    	<cfset tmp=createObject('component','gdriver/#ReplaceNoCase(dir.name,'.cfc','')#')>
-        <cfset drivers[dir.name]=tmp>
-    </cfloop>
+<cfset variables.drivers={}>
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.gdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.gdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("gdriver",driverNames)>
+
+<cfloop collection="#driverNames#" index="n" item="fn">
+	
+	<cfif n NEQ "Gateway" and n NEQ "Field" and n NEQ "Group">
+		<cfset tmp = createObject("component",fn)>
+		<cfset drivers[n]=tmp>
+	</cfif>
+</cfloop>
+	
 <!--- add driver to query --->
 <cfset QueryAddColumn(entries,"driver",array())>
 <cfloop query="entries">
-    <cfloop collection="#drivers#" item="key">
-    	<cfset d=drivers[key]>
-        
-        <cfif 
+    <cfloop collection="#drivers#" index="key" item="d">
+    	<cfif 
 			(StructKeyExists(d,'getCFCPath')?d.getCFCPath() EQ entries.cfcPath:"" EQ entries.cfcPath)
 			and 
 			(StructKeyExists(d,'getClass')?d.getClass() EQ entries.class:"" EQ entries.class)

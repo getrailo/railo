@@ -1,13 +1,12 @@
 package railo.runtime.util;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
-import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 
@@ -72,12 +71,14 @@ public final class QueryStackImpl implements QueryStack {
 	
 	// FUTURE add to interface and set above to deprecated
 	public Object getDataFromACollection(PageContext pc,Key key, Object defaultValue) {
-		Object rtn;
-		
+		//Object rtn;
+		QueryColumn col;
 		// get data from queries
 		for(int i=start;i<queries.length;i++) {
-			rtn=((Objects)queries[i]).get(pc,key,Null.NULL);
-			if(rtn!=Null.NULL) return rtn;
+			col = queries[i].getColumn(key,null);
+			if(col!=null) return col.get(queries[i].getCurrentrow(pc.getId()),NullSupportHelper.empty());
+			//rtn=((Objects)queries[i]).get(pc,key,Null.NULL);
+			//if(rtn!=Null.NULL) return rtn;
 		}
 		return defaultValue;
 	}

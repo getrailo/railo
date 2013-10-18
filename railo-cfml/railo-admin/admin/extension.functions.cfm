@@ -47,6 +47,23 @@
 	</cffunction>
 	
 	
+	
+	<cffunction name="loadAllProvidersData" output="yes" returntype="struct">
+		<cfargument name="timeout" default="5000" type="numeric">
+    	<cfargument name="forceReload" default="false" type="boolean">
+    	
+		<cfadmin 
+			action="getExtensionProviders"
+			type="#request.adminType#"
+			password="#session["password"&request.adminType]#"
+			returnVariable="local.providers">
+		<cfreturn loadProvidersData(queryColumnData(providers,"url"),arguments.timeout,arguments.forceReload)>
+	</cffunction>
+	
+	
+	
+	
+	
 	<cffunction name="loadProvidersData" output="yes" returntype="struct">
 		<cfargument name="providers" required="yes" type="array">
 		<cfargument name="timeout" default="5000" type="numeric">
@@ -79,7 +96,7 @@
 	        <cfset datas[cfcName]=false>
 	        <cfset cfcNames=listAppend(cfcNames,cfcName)>
 		</cfloop>
-	
+		        	
 		<cfif len(cfcNames) EQ 0> <cfreturn datas></cfif>
         <cfset var names="">
 		<cfloop list="#cfcnames#" item="local.cfcName">
@@ -101,26 +118,47 @@
         	<cfset request.cfcs[cfcName]={}>
 			<cfset var name="t"&createUniqueId()>
 			<cfset listAppend(names,name)>
-			<cfthread name="#name#" wsdl="#cfcName#?wsdl" sess="#session.cfcs[cfcName]#" req="#request.cfcs[cfcName]#">
+			<cfthread name="#name#" provider="#cfcName#" sess="#session.cfcs[cfcName]#" req="#request.cfcs[cfcName]#">
 				<cfsetting requesttimeout="50000">
-				<cfset var cfc= createObject('webservice',attributes.wsdl)>
+				<cftry>
+				<cfset systemOutput("start:"&attributes.provider,true,true)>
+				<cfset var start=getTickCount()>
+				<!--- old soap call
+		        <cfset var cfc= createObject('webservice',attributes.provider&"?wsdl")>
+				<cfset systemOutput("after wsdl call"&(getTickCount()-start),true,true)>--->
 				
 				<!--- list Applications --->
+				<cfhttp url="#attributes.provider#?returnFormat=serialize&method=listApplications" result="local.http">
+				<cfset attributes.req.listApplications=evaluate(http.fileContent)>
+				<cfset attributes.sess.listApplications=attributes.req.listApplications>
+				
+				<!--- old soap call
 		        <cfset attributes.req.listApplications=cfc.listApplications()>
 		        <cfset attributes.sess.listApplications=attributes.req.listApplications>
+				<cfset systemOutput("after list call"&(getTickCount()-start),true,true)> --->
 				
 				<!--- get Info --->
-		        <cfset attributes.req.getInfo=cfc.getInfo()>
+				<cfhttp url="#attributes.provider#?returnFormat=serialize&method=getInfo" result="local.http">
+				<cfset attributes.req.getInfo=evaluate(http.fileContent)>
 		        <cfset attributes.req.getInfo.lastModified=now()>
 		        <cfset attributes.sess.getInfo=attributes.req.getInfo>
 		        
+				<!--- old soap call
+		        <cfset attributes.req.getInfo=cfc.getInfo()>
+		        <cfset attributes.req.getInfo.lastModified=now()>
+		        <cfset attributes.sess.getInfo=attributes.req.getInfo>
+		        <cfset systemOutput("after info call"&(getTickCount()-start),true,true)> --->
+					<cfcatch>
+						<cfset systemOutput(serialize(cfcatch),true,true)>
+						<cfrethrow>
+					</cfcatch>
+		        </cftry>
 			</cfthread>
 		</cfloop>
 		<!--- <cfset systemOutput('<print-stack-trace>',true,true)>--->
 		<cfif arguments.timeout GT 0>
 			<cfthread action="join" names="#names#" timeout="#arguments.timeout#"/>
 		</cfif>
-		
 		<cfloop list="#cfcNames#" item="local.cfcName">
 			<cfif 
 				StructKeyExists(request,"cfcs") and 
@@ -130,6 +168,8 @@
 				<cfset datas[cfcName]=request.cfcs[cfcName]>
 			</cfif>
 		</cfloop>
+		<cfset systemOutput(datas,true,true)>
+				
 		<cfreturn datas>
 		
     </cffunction>
@@ -180,10 +220,9 @@
 		<cfset var detail={}>
 		<cfset detail.all=[]>
 		<cfset var tmp="">
-		<cfif not isDefined('data')>
-			<cfset data=getData(providers,{message:''},1000)>
+		<cfif not isDefined('data') or not isQuery(data)>
+			<cfset data=getData(providers,{message:''},30000)>
 		</cfif>
-		
 		<cfif isQuery(data)><cfloop query="data">
 			<cfif data.uid EQ uid>
 				<cfset tmp=querySlice(data,data.currentrow,1)>
@@ -211,13 +250,12 @@
 		<cfargument name="serverId" required="yes" type="string">
 		<cfargument name="webId" required="yes" type="string">
 		<cfargument name="appId" required="yes" type="string">
-		<cfargument name="serialNumber" required="no" type="string">
-		
-	   <cfset providers=request.providers>
+		<cfargument name="addional" required="no" type="struct">
+		<cfset providers=request.providers>
 		<cfloop query="providers">
 			<cfif hash(providers.url) EQ arguments.hashProvider>
 				<cfset detail.provider= request.loadCFC(providers.url)>
-				<cfreturn detail.provider.getDownloadDetails(type,serverId,webId,appId,serialNumber)>
+				<cfreturn detail.provider.getDownloadDetails(type,serverId,webId,appId,addional)>
 			</cfif>
 		</cfloop>
 		<cfreturn struct()>
@@ -256,39 +294,8 @@
 		<cfargument name="imgUrl" required="yes" type="string">
 		<cfargument name="width" required="yes" type="number" default="80">
 		<cfargument name="height" required="yes" type="number" default="40">
-		<cftry>
-			<cfif not len(trim(arguments.imgURL))><cfreturn ""></cfif>
-			
-			<cfset var id=hash(arguments.imgURL&"-"&width&"-"&height)>
-			<cfparam name="application.railodumps" default="#{}#">
-			<cfif not structKeyExists(application.railodumps,id)>
-				<cfset application.railodumps[id]="">
-				<cfset var data="">
-				<cfset img="">
-				<cffile action="readbinary" file="#arguments.imgURL#" variable="data">
-				<cfimage action="read" source="#data#" name="img">
-				
-				
-				<cfif img.height GT height or img.width GT width>
-					<cfif img.height GT height >
-						<cfimage action="resize" source="#img#" height="#height#" name="img">
-					</cfif>
-					<cfif img.width GT width>
-						<cfimage action="resize" source="#img#" width="#width#" name="img">
-					</cfif>
-					<cfset data=toBase64(img)>
-				<cfelse>
-					<cfset data=toBase64(data)>
-				</cfif>
-				<cfset var mimetypes={png:'png',gif:'gif',jpg:'jpeg'}>
-				<cfset ext=listLast(arguments.imgURL,'.')>
-				<cfset application.railodumps[id]="data:image/#mimetypes[ext]#;base64,#trim(data)#">
-			</cfif>
-			<cfreturn application.railodumps[id]>
-			<cfcatch>
-				<cfreturn "">
-			</cfcatch>
-		</cftry>
+		
+		<cfreturn "thumbnail.cfm?img=#urlEncodedFormat(imgUrl)#&width=#width#&height=#height#">
 	</cffunction>    
 	
 	
@@ -331,19 +338,18 @@
 	<cfargument name="err" type="struct" default="#{}#">
 	<cfargument name="timeout" required="no" type="numeric" default="5000">
 	
+	<cfset local.start=getTickCount()>
 	<cfset var datas=loadProvidersData(queryColumnData(providers,'url'),arguments.timeout)>
 	<cfset var data="">
-		
-	
+			
     <cfloop query="providers">
-        <!---  ---><cftry>
-            
+        <cftry>
 			<cfset var _data=datas[providers.url]>
 			<cfif isSimpleValue(_data)>
 				<cfif len(err.message)>
-					<cfset err.message&="<br>was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+					<cfset err.message&="<br>Failed to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
                 <cfelse>
-					<cfset err.message="was not able to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
+					<cfset err.message="Failed to retrieve data from [#providers.url#] within #arguments.timeout/1000# seconds">
                 </cfif>
 				<cfcontinue>
 			</cfif>
@@ -371,14 +377,14 @@
             </cfloop>
             
             
-            <cfcatch><cfrethrow>
+            <cfcatch>
                 <cfif len(err.message)>
-                    <cfset err.message&="<br>can't load provider [#providers.url#]">
+                    <cfset err.message&="<br>Couldn't load provider [#providers.url#]: #cfcatch.message#">
                 <cfelse>
-                    <cfset err.message="can't load provider [#providers.url#]">
+                    <cfset err.message="Couldn't load provider [#providers.url#]: #cfcatch.message#">
                 </cfif>
             </cfcatch>
-        </cftry><!------>
+        </cftry>
     </cfloop>
     <cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
     <cfreturn data>

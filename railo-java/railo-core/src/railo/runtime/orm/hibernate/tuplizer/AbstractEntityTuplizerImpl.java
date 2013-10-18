@@ -20,10 +20,10 @@ import org.hibernate.tuple.entity.EntityMetamodel;
 
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.CommonUtil;
+import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
-import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 
@@ -50,11 +50,11 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 			HashMap<String, String> map = new HashMap<String, String>();
 			Component cfc=(Component) id;
 			ComponentScope scope = cfc.getComponentScope();
-			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true,true);
+			railo.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true,true);
 			String name,value;
 			for(int i=0;i<props.length;i++){
 				name=props[i].getName();
-				value=Caster.toString(scope.get(KeyImpl.init(name),null),null);
+				value=CommonUtil.toString(scope.get(CommonUtil.createKey(name),null),null);
 				map.put(name, value);
 			}
 			return map;
@@ -95,7 +95,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	
 	@Override
 	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1,Setter arg2) {
-		CFCProxyFactory pf = new CFCProxyFactory();
+		CFCHibernateProxyFactory pf = new CFCHibernateProxyFactory();
 		pf.postInstantiate(pc);
 		
 		return pf;

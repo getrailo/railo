@@ -64,8 +64,6 @@ public final class ComponentUtil {
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
-	private static final Collection.Key FIELD_TYPE = KeyConstants._fieldtype;
-	
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
     /**
@@ -139,7 +137,7 @@ public final class ComponentUtil {
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
 		adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
-        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog,supressWSbeforeArg), _keys);
+        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(null,statConstr,constr,getPage(statConstr,constr),_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog,supressWSbeforeArg), _keys);
         adapter.returnValue();
         adapter.endMethod();
         
@@ -441,7 +439,7 @@ public final class ComponentUtil {
         			types
             		);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,keys,cw,className,adapter,method,writeLog,supressWSbeforeArg);
+            BytecodeContext bc = new BytecodeContext(null,statConstr,constr,getPage(statConstr,constr),keys,cw,className,adapter,method,writeLog,supressWSbeforeArg);
             Label start=adapter.newLabel();
             adapter.visitLabel(start);
             
@@ -594,16 +592,6 @@ public final class ComponentUtil {
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
 		return c.getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
-	}
-	
-	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
-		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties,false,false);
-		java.util.List<Property> tmp=new ArrayList<Property>();
-		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))
-				tmp.add(props[i]);
-		}
-		return tmp.toArray(new Property[tmp.size()]);
 	}
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {

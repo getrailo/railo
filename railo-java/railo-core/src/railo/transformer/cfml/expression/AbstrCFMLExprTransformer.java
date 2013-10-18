@@ -351,8 +351,8 @@ public abstract class AbstrCFMLExprTransformer {
         		comments(data);
             	Expression right = assignOp(data);
         		
-        		if(!(expr instanceof Variable) || !hasOnlyDataMembers((Variable)expr))
-        			throw new TemplateException(data.cfml,"left operant of the Elvis operator has to be a variable declaration");
+        		if(!(expr instanceof Variable) )
+        			throw new TemplateException(data.cfml,"left operant of the Elvis operator has to be a variable or a function call");
         		
         		return OpElvis.toExpr((Variable)expr, right);
         	}
@@ -367,18 +367,6 @@ public abstract class AbstrCFMLExprTransformer {
 		}
 		return expr;
 	}
-
-	private boolean hasOnlyDataMembers(Variable var) {
-		Iterator<Member> it = var.getMembers().iterator();
-		Member m;
-		while(it.hasNext()){
-			m = it.next();
-			if(!(m instanceof DataMember)) return false;
-		}
-		return true;
-	}
-
-
 
 	/**
 	* Transfomiert eine Implication (imp) Operation.
@@ -1227,7 +1215,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Position line = data.cfml.getPosition();
 		BIF bif=new BIF(flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
-		bif.setClassName(flf.getCls());
+		bif.setClass(flf.getClazz());
 		bif.setReturnType(flf.getReturnTypeAsString());
 		
 		do {
@@ -1597,7 +1585,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if(checkLibrary) {
 			BIF bif=new BIF(name,flf);
 			bif.setArgType(flf.getArgType());
-			bif.setClassName(flf.getCls());
+			bif.setClass(flf.getClazz());
 			bif.setReturnType(flf.getReturnTypeAsString());
 			fm=bif;
 			

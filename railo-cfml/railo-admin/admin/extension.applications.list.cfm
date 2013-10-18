@@ -1,8 +1,6 @@
 <cfset hasAccess=true />
 <cfset data=getData(providers,err)>
-
 <cfset existing=struct() />
-
 <!--- if user declined the agreement, show a msg --->
 <cfif structKeyExists(session, "extremoved")>
 	<cfoutput>
@@ -13,40 +11,6 @@
 	<cfset structDelete(session, "extremoved", false) />
 </cfif>
 
-<!--- upload own extension --->
-<cfoutput>
-	<h2>#stText.ext.uploadExtension# (experimentell)</h2>
-	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
-	<cfif structKeyExists(url, 'noextfile')>
-		<div class="error">
-			#stText.ext.nofileuploaded#
-		</div>
-	</cfif>
-	<cfif structKeyExists(url, 'addedRe')>
-		<div class="error">
-			Deployed Railo Extension, see deploy.log for details.
-		</div>
-	</cfif>
-	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=upload" method="post" enctype="multipart/form-data">
-		<input type="hidden" name="mainAction" value="uploadExt" />
-		<table class="tbl maintbl">
-			<tbody>
-				<tr>
-					<th scope="row">#stText.ext.extzipfile#</th>
-					<td><input type="file" class="txt file" name="extfile" id="extfile" /></td>
-				</tr>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td>&nbsp;</td>
-					<td>
-						<input type="submit" class="button submit" value="#stText.ext.upload#" />
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-	</cfform>
-</cfoutput>
 
 <cfif extensions.recordcount>
 	<cfoutput>
@@ -90,7 +54,7 @@
 				or doFilter(session.extFilter.filter,provTitle,false)
 				>
 					<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#uid#">
-					<cfset dn=getDumpNail(extensions.image,130,50)>
+					<cfset dn=getDumpNail(extensions.image,90,50)>
 					<cfset hasUpdate=updateAvailable(extensions)>
 					<div class="extensionthumb">
 						<a href="#link#" title="#stText.ext.viewdetails#">
@@ -100,7 +64,7 @@
 								</cfif>
 							</div>
 							<b title="#extensions.label#">#cut(extensions.label,30)#</b><br />
-							#cut(extensions.category,30)#
+							<!---#cut(data.category,30)#<br />--->
 							<cfif hasUpdate>
 								<br /><span class="CheckError">#stText.ext.updateavailable#</span>
 							</cfif>
@@ -112,6 +76,15 @@
 		</div>
 	</cfoutput>
 </cfif>
+
+
+
+
+
+
+
+
+
 
 <!---  Not Installed Applications --->
 <cfoutput>
@@ -133,7 +106,6 @@
 		</cfform>
 	</div>
 </cfoutput>
-
 <cfif isQuery(data)>
 	<div class="extensionlist">
 		<cfoutput query="data" group="uid">
@@ -148,7 +120,7 @@
 			)
 			>
 				<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#data.uid#">
-				<cfset dn=getDumpNail(data.image,130,50)>
+				<cfset dn=getDumpNail(data.image,90,50)>
 				<div class="extensionthumb">
 					<a href="#link#" title="#stText.ext.viewdetails#">
 						<div class="extimg">
@@ -157,11 +129,50 @@
 							</cfif>
 						</div>
 						<b title="#data.label#">#cut(data.label,30)#</b><br />
-						#cut(data.category,30)#
+						<!------>
+						<cfif isDefined("data.price") and data.price GT 0>#data.price# <cfif structKeyExists(data,"currency")>#data.currency#<cfelse>USD</cfif><cfelse>#stText.ext.free#</cfif>
 					</a>
 				</div>
 			</cfif>
 		</cfoutput>
 		<div class="clear"></div>
 	</div>
+	
 </cfif>
+
+
+
+<!--- upload own extension --->
+<cfoutput>
+	<h2>#stText.ext.uploadExtension#</h2>
+	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
+	<cfif structKeyExists(url, 'noextfile')>
+		<div class="error">
+			#stText.ext.nofileuploaded#
+		</div>
+	</cfif>
+	<cfif structKeyExists(url, 'addedRe')>
+		<div class="error">
+			Deployed Railo Extension, see deploy.log for details.
+		</div>
+	</cfif>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=upload" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="mainAction" value="uploadExt" />
+		<table class="tbl maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.ext.extzipfile#</th>
+					<td><input type="file" class="txt file" name="extfile" id="extfile" /></td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>&nbsp;</td>
+					<td>
+						<input type="submit" class="button submit" value="#stText.ext.upload#" />
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
+</cfoutput>

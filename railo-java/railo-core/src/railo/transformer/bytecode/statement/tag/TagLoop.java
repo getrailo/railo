@@ -220,10 +220,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		boolean old;
-		GeneratorAdapter ga = bc.getAdapter();
 
-
-		
 		switch(type) {
 		case TYPE_COLLECTION:
 			writeOutTypeCollection(bc);
@@ -456,12 +453,27 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 
 		
 		//VariableReference index=VariableInterpreter.getVariableReference(pc,@index);
-		int index = adapter.newLocal(Types.VARIABLE_REFERENCE);
-		adapter.loadArg(0);
+		int index=-1,item=-1;
 		
-		getAttribute("index").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
-		adapter.storeLocal(index);
+		// item
+		Attribute attrItem = getAttribute("item");
+		if(attrItem!=null) {
+			item = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrItem.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(item);
+		}
+
+		// index
+		Attribute attrIndex = getAttribute("index");
+		if(attrIndex!=null) {
+			index = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrIndex.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(index);
+		}
 		
 		//java.io.File file=FileUtil.toResourceExisting(pc,@file);
 		int resource=adapter.newLocal(Types.RESOURCE);
@@ -574,12 +586,48 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 					adapter.visitLabel(end3);
 				adapter.visitLabel(end2);
 				
-				// index.set(pc,line); 
-				adapter.loadLocal(index);
-				adapter.loadArg(0);
-				adapter.loadLocal(line);
-				adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
-				adapter.pop();
+				// index and item
+				if(index!=-1 && item!=-1) {
+					// index.set(pc,line); 
+					adapter.loadLocal(index);
+					adapter.loadArg(0);
+					adapter.loadLocal(count);
+					adapter.cast(Types.INT_VALUE,Types.DOUBLE_VALUE);
+					adapter.invokeStatic(Types.CASTER, Methods.METHOD_TO_DOUBLE_FROM_DOUBLE);
+					
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+					
+					// item.set(pc,line); 
+					adapter.loadLocal(item);
+					adapter.loadArg(0);
+					adapter.loadLocal(line);
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+					
+				}
+				// only index
+				else if(index!=-1) {
+					// index.set(pc,line); 
+					adapter.loadLocal(index);
+					adapter.loadArg(0);
+					adapter.loadLocal(line);
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+					
+				}
+				// only item
+				else {
+					// item.set(pc,line); 
+					adapter.loadLocal(item);
+					adapter.loadArg(0);
+					adapter.loadLocal(line);
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+				}
+				
+				
+				
 				
 				getBody().writeOut(bc);
 				

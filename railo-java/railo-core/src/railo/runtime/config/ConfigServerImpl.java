@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.commons.collection.LinkedHashMapMaxSize;
 import railo.commons.collection.MapFactory;
+import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
@@ -30,6 +33,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
@@ -48,8 +52,9 @@ import railo.runtime.type.util.ArrayUtil;
  * config server impl
  */
 public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
+	
+	private static final long FIVE_SECONDS = 5000;
     
-
 	private final CFMLEngineImpl engine;
     private Map<String,CFMLFactory> initContextes;
     //private Map contextes;
@@ -66,11 +71,15 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private ActionMonitorCollector actionMonitorCollector;
 	
 	private boolean monitoringEnabled=false;
-	private int delay=0;
+	private int delay=1;
 	private boolean captcha=false;
 	private static ConfigServerImpl instance;
 
 	private String[] authKeys;
+	private String idPro;
+	
+	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
+	
 	
 	/**
      * @param engine 
@@ -148,6 +157,13 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
                 return cw;
         }
         return null;
+    }
+    
+    public String getIdPro() {
+    	if(idPro==null){
+    		idPro = getId(getSecurityKey(),getSecurityToken(),true,null);
+    	}
+    	return idPro;
     }
     
     /**
@@ -604,4 +620,41 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	public ConfigServer getConfigServer(String key,String nonce) {
         return this;
     }
+
+	public void checkAccess(String password) throws ExpressionException {
+		if(!hasPassword())
+            throw new ExpressionException("Cannot access, no password is defined");
+        if(!passwordEqual(password))
+            throw new ExpressionException("No access, password is invalid");
+	}
+
+	public void checkAccess(String key, long timeNonce) throws PageException {
+		
+		if(previousNonces.containsKey(timeNonce)) {
+			long now = System.currentTimeMillis();
+			long diff=timeNonce>now?timeNonce-now:now-timeNonce;
+			if(diff>10)
+				throw new ApplicationException("nonce was already used, same nonce can only be used once");
+			
+			
+		}
+    	long now = System.currentTimeMillis()+getTimeServerOffset();
+    	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
+    		throw new ApplicationException("nonce is outdated");
+    	previousNonces.put(timeNonce,"");
+    	
+    	String[] keys=getAuthenticationKeys();
+    	// check if one of the keys matching
+    	String hash;
+    	for(int i=0;i<keys.length;i++){
+    		try {
+    			hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
+    			if(hash.equals(key)) return;
+			}
+			catch (NoSuchAlgorithmException e) {
+				throw Caster.toPageException(e);
+			}
+    	}
+    	throw new ApplicationException("No access, no matching authentication key found");
+	}
 }

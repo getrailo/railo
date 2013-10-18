@@ -12,7 +12,6 @@ public class EntityLoadByExample {
 	
 	public static Object call(PageContext pc, Object sampleEntity,boolean unique) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		if(unique)return session.loadByExample(pc,sampleEntity);
 		return session.loadByExampleAsArray(pc,sampleEntity);
 	}

@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 
 public class Hash {

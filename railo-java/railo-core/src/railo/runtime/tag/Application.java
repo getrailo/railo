@@ -1,14 +1,20 @@
 package railo.runtime.tag;
 
-import railo.commons.lang.ClassException;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ClassicApplicationContext;
@@ -60,6 +66,8 @@ public final class Application extends TagImpl {
     private String name="";
 	private int action=ACTION_CREATE;
 	private int localMode=-1;
+	private Locale locale;
+	private TimeZone timeZone;
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -104,6 +112,8 @@ public final class Application extends TagImpl {
         this.name="";
         action=ACTION_CREATE;
         localMode=-1;
+        locale=null;
+        timeZone=null;
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
@@ -172,6 +182,18 @@ public final class Application extends TagImpl {
 	
 	public void setLocalmode(String strLocalMode) throws ApplicationException {
 		this.localMode = AppListenerUtil.toLocalMode(strLocalMode);
+		
+	}
+	
+	public void setTimezone(String strTimeZone) throws ExpressionException {
+		if(StringUtil.isEmpty(strTimeZone)) return;
+		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
+		
+	}
+	
+	public void setLocale(String strLocale) throws ExpressionException {
+		if(StringUtil.isEmpty(strLocale)) return;
+		this.locale = LocaleFactory.getLocale(strLocale);
 		
 	}
 
@@ -413,6 +435,8 @@ public final class Application extends TagImpl {
 		if(setDomainCookies!=null)				ac.setSetDomainCookies(setDomainCookies.booleanValue());
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
+		if(locale!=null) 						ac.setLocale(locale);
+		if(timeZone!=null) 						ac.setTimeZone(timeZone);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
 		

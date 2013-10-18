@@ -1,14 +1,17 @@
 <cfset error.message="">
 <cfset error.detail="">
-<cfset driverNames=ComponentListPackage("dbdriver")>
 
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.dbdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.dbdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("dbdriver",driverNames)>
 
 <cfset variables.drivers=struct()>
 <cfset variables.selectors	= struct()>
-<cfloop array="#driverNames#" item="n">
+<cfloop collection="#driverNames#" index="n" item="fn">
 	
 	<cfif n NEQ "Driver" and n NEQ "IDriver">
-		<cfset obj = createObject("component","dbdriver."&n)>
+		<cfset obj = createObject("component",fn)>
 		<cfif isInstanceOf( obj, "types.IDriverSelector" )>
 			<cfset variables.selectors[n] = obj>
 		<cfelseif isInstanceOf( obj, "types.IDatasource" )>

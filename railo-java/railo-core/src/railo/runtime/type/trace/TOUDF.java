@@ -1,21 +1,29 @@
 package railo.runtime.type.trace;
 
 import railo.runtime.Component;
+import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.component.Member;
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.UDFUtil;
 
-public class TOUDF extends TOObjects implements UDF {
+import railo.runtime.type.UDFPlus;
+import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.UDFUtil;
+
+public class TOUDF extends TOObjects implements UDFMember {
 
 	private UDF udf;
 	
 	protected TOUDF(Debugger debugger,UDF udf, int type, String category, String text) {
 		super(debugger,udf,type,category,text);
+		this.udf=udf;
 	}
 	
 	
@@ -24,6 +32,11 @@ public class TOUDF extends TOObjects implements UDF {
 	public int getAccess() {
 		log(null);
 		return udf.getAccess();
+	}
+	
+	public void setAccess(int access) {
+		log(ComponentUtil.toStringAccess(access,null));
+		udf.setAccess(access);
 	}
 
 
@@ -124,12 +137,27 @@ public class TOUDF extends TOObjects implements UDF {
 		return udf.callWithNamedValues(pageContext, values, doIncludePath);
 	}
 
+	@Override
+	public Object callWithNamedValues(PageContext pageContext, Collection.Key calledName, Struct values,
+			boolean doIncludePath) throws PageException {
+		log(null);
+		return udf.callWithNamedValues(pageContext, calledName, values, doIncludePath);
+	}
+
 
 	@Override
 	public Object call(PageContext pageContext, Object[] args,
 			boolean doIncludePath) throws PageException {
 		log(null);
 		return udf.call(pageContext, args, doIncludePath);
+	}
+
+
+	@Override
+	public Object call(PageContext pageContext, Collection.Key calledName, Object[] args,
+			boolean doIncludePath) throws PageException {
+		log(null);
+		return udf.call(pageContext,calledName, args, doIncludePath);
 	}
 
 
@@ -175,6 +203,10 @@ public class TOUDF extends TOObjects implements UDF {
 	public Component getOwnerComponent() {
 		log(null);
 		return udf.getOwnerComponent();
+	}
+	public void setOwnerComponent(ComponentImpl cfc) {
+		log(null);
+		udf.setOwnerComponent(cfc);
 	}
 	
 	

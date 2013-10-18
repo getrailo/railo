@@ -31,7 +31,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -188,7 +188,7 @@ public final class XMLConverter extends ConverterSupport {
             	if(p!=null) {
             		remotingFetch=Caster.toBoolean(p.getDynamicAttributes().get(REMOTING_FETCH,null),null);
 	            	if(remotingFetch==null){
-    					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+    					if(isPeristent  && ORMUtil.isRelated(p)) continue;
 	    			}
 	    			else if(!remotingFetch.booleanValue()) continue;
             	}
@@ -690,7 +690,7 @@ public final class XMLConverter extends ConverterSupport {
 		try {
 			comp = ComponentUtil.toComponentAccess(pc.loadComponent(name));
 			if(!ComponentUtil.md5(comp).equals(md5)){
-				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load");
+				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
 			}
 		} 
 		catch (ConverterException e) {

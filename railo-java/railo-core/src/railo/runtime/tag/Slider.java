@@ -15,9 +15,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * slider applet tag

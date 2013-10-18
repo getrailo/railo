@@ -14,7 +14,6 @@ public class EntityToQuery {
 	
 	public static Query call(PageContext pc, Object obj, String name) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		return session.toQuery(pc,obj,name);
 		
 	}

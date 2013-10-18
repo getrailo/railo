@@ -23,7 +23,7 @@ public final class ListGetAt implements Function {
 	
 	public static String call(PageContext pc , String list, double posNumber, String delimiter, boolean includeEmptyFields) throws PageException {
 		int pos=(int) posNumber;
-		String rtn = ListUtil.getAt(list,delimiter,pos-1,!includeEmptyFields);
+		String rtn = ListUtil.getAt(list,delimiter,pos-1,!includeEmptyFields,null);
 		if(rtn==null) throw new FunctionException(pc,"listGetAt",2,"posNumber","invalid string list index ["+pos+"]");
 		return rtn;
 	}

@@ -9,16 +9,20 @@
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="connections">
-    
+ 
 <!--- load available drivers --->
-<cfset drivers=struct()>
-<cfdirectory directory="./cdriver" action="list" name="dir" recurse="no" filter="*.cfc">
-<cfloop query="dir">
-	<cfif dir.name EQ "Cache.cfc" or dir.name EQ "Field.cfc" or dir.name EQ "Group.cfc">
-		<cfcontinue>
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.cdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.cdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("cdriver",driverNames)>
+
+<cfset drivers={}>
+<cfloop collection="#driverNames#" index="n" item="fn">
+	
+	<cfif n NEQ "Cache" and n NEQ "Field" and n NEQ "Group">
+		<cfset tmp = createObject("component",fn)>
+		<cfset drivers[tmp.getClass()]=tmp>
 	</cfif>
-	<cfset tmp=createObject('component','cdriver.#ReplaceNoCase(dir.name,'.cfc','')#')>
-	<cfset drivers[tmp.getClass()]=tmp>
 </cfloop>
 
 <cfadmin 

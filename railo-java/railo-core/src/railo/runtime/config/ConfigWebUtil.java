@@ -203,7 +203,7 @@ public final class ConfigWebUtil {
      * @param config 
      * @return existing file
      */
-    public static Resource getExistingResource(ServletContext sc,String strDir, String defaultDir,Resource configDir, short type, ConfigImpl config) {
+    public static Resource getExistingResource(ServletContext sc,String strDir, String defaultDir,Resource configDir, short type, Config config) {
         //ARP
     	
     	strDir=replacePlaceholder(strDir,config);
@@ -397,7 +397,7 @@ public final class ConfigWebUtil {
     	if(!config.hasPassword())
             throw new SecurityException("can't access, no password is defined");
         //print.ln(config.getPassword()+".equalsIgnoreCase("+password+")");
-        if(!config.isPasswordEqual(password)){
+        if(!config.isPasswordEqual(password,true)){
         	if(StringUtil.isEmpty(password)){
         		if(type==null)
         			throw new SecurityException("Access is protected",

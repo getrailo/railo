@@ -50,7 +50,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return _byteTable;
 	}
 
-	private long createHash64(CharSequence cs) {
+	private static final long createHash64(CharSequence cs) {
 		long h = HSTART;
 		final long hmult = HMULT;
 		final long[] ht = byteTable;

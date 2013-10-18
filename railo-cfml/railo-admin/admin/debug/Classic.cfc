@@ -18,9 +18,6 @@
 		
 		,group("Custom Debugging Output","Define what is outputted",3)
 
-		
-
-
 		,field("General Debug Information ","general",true,false,
 				"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ","checkbox")
 		
@@ -106,7 +103,7 @@ private function isColumnEmpty(query query, string columnName){
 
 <cfset unit={
 millisecond:"ms"
-,microsecond:"µs"
+,microsecond:"ï¿½s"
 ,nanosecond:"ns"
 
 }>

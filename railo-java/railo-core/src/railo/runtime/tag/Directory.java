@@ -32,6 +32,7 @@ import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.tag.util.FileUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
@@ -39,6 +40,11 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.KeyConstants;
+
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
 
 /**
 * Handles interactions with directories.
@@ -65,12 +71,8 @@ public final class Directory extends TagImpl  {
 	public static final int LIST_INFO_QUERY_NAME = 2;
 	public static final int LIST_INFO_ARRAY_NAME = 4;
 	public static final int LIST_INFO_ARRAY_PATH = 8;
-	
-	public static final int NAMECONFLICT_ERROR     = 1;
-//	public static final int NAMECONFLICT_SKIP      = 2;	// FUTURE
-	public static final int NAMECONFLICT_OVERWRITE = 3;
-//	public static final int NAMECONFLICT_CLOSURE   = 5;	// FUTURE
-	public static final int NAMECONFLICT_UNDEFINED = NAMECONFLICT_OVERWRITE;	// default
+
+	public static final int NAMECONFLICT_DEFAULT = NAMECONFLICT_OVERWRITE;	// default
 	
 	/** Optional for action = "list". Ignored by all other actions. File extension filter applied to
 	** 		returned names. For example: *m. Only one mask filter can be applied at a time. */
@@ -114,17 +116,19 @@ public final class Directory extends TagImpl  {
 	private int storage=S3Constants.STORAGE_UNKNOW;
 	private String destination; 
 
-	private int nameconflict = NAMECONFLICT_UNDEFINED;
+	private int nameconflict = NAMECONFLICT_DEFAULT;
+	
+	private boolean createPath=true;
 
 
 	@Override
 	public void release()	{
 		super.release();
 		acl=null;
-		storage=S3Constants.STORAGE_UNKNOW; 
+		storage=S3Constants.STORAGE_UNKNOW;
 
-		
-		type=TYPE_ALL; 
+
+		type=TYPE_ALL;
 		filter=null;
 		nameFilter=null;
 		destination=null;
@@ -137,40 +141,38 @@ public final class Directory extends TagImpl  {
         recurse=false;
         serverPassword=null;
         listInfo=LIST_INFO_QUERY_ALL;
-        
-        nameconflict = NAMECONFLICT_UNDEFINED;
+
+        nameconflict = NAMECONFLICT_DEFAULT;
+        createPath=true;
 	}
 
-	
-	
-	/** 
-	*  sets a filter
-	* @param pattern
-	 * @throws PageException 
-	**/
-	
-	
 
-	
-	
-	
+	public void setCreatepath(boolean createPath)	{
+		this.createPath=createPath;
+	}
 
+
+	/**
+	 *  sets a filter
+	 * @param filter
+	 * @throws PageException
+	 **/
 	public void setFilter(Object filter) throws PageException	{
 		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(filter);
 	}
-	
+
 	public void setFilter(UDF filter) throws PageException	{
 		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(filter);
 	}
-	
+
 	public void setFilter(String pattern) {
-		
+
 		this.filter = nameFilter = UDFFilter.createResourceAndResourceNameFilter( pattern );
 	}
-	
+
 	/** set the value acl
 	*  used only for s3 resources, for all others ignored
-	* @param charset value to set
+	* @param acl value to set
 	 * @throws ApplicationException 
 	 * @Deprecated only exists for backward compatibility to old ra files.
 	**/
@@ -197,7 +199,7 @@ public final class Directory extends TagImpl  {
 	
 	/** set the value storage
 	*  used only for s3 resources, for all others ignored
-	* @param charset value to set
+	* @param storage value to set
 	 * @throws PageException 
 	**/
 	public void setStorage(String storage) throws PageException	{
@@ -231,7 +233,7 @@ public final class Directory extends TagImpl  {
 	**/
 	public void setDirectory(String directory)	{
 		
-        this.directory=ResourceUtil.toResourceNotExisting(pageContext ,directory);
+        this.directory=ResourceUtil.toResourceNotExisting(pageContext, directory);
         //print.ln(this.directory);
 	}
 
@@ -300,31 +302,15 @@ public final class Directory extends TagImpl  {
     }
 
     /** set the value nameconflict
-	*  Action to take if destination directory is the same as that of a file in the directory.
+	* Action to take if destination directory is the same as that of a file in the directory.
 	* @param nameconflict value to set
-	 * @throws ApplicationException 
+	* @throws ApplicationException
 	**/
 	public void setNameconflict(String nameconflict) throws ApplicationException	{
-		this.nameconflict = toNameconflict( nameconflict );
+
+		this.nameconflict = FileUtil.toNameConflict( nameconflict, NAMECONFLICT_UNDEFINED | NAMECONFLICT_ERROR | NAMECONFLICT_OVERWRITE, NAMECONFLICT_DEFAULT );
 	}
-	
-	public static int toNameconflict( String nameconflict ) throws ApplicationException	{
-		
-		if ( StringUtil.isEmpty( nameconflict, true ) )
-			return NAMECONFLICT_UNDEFINED;
-		
-		nameconflict = nameconflict.trim();
-		
-		if ( "merge".equalsIgnoreCase( nameconflict ) || "overwrite".equalsIgnoreCase( nameconflict ) )
-			return NAMECONFLICT_OVERWRITE;
-				
-		if ( "error".equalsIgnoreCase( nameconflict ) )
-			return NAMECONFLICT_ERROR;
-						
-		throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
-			"valid values are [error,merge,overwrite]");
-	}
-	
+
 
 	@Override
 	public int doStartTag() throws PageException	{
@@ -334,15 +320,15 @@ public final class Directory extends TagImpl  {
 			Object res=actionList(pageContext,directory,serverPassword,type,filter,nameFilter,listInfo,recurse,sort);
 			if(!StringUtil.isEmpty(name) && res!=null)pageContext.setVariable(name,res);
 		}
-		else if(action.equals("create")) actionCreate(pageContext,directory,serverPassword,true,mode,acl,storage);
+		else if(action.equals("create")) actionCreate(pageContext,directory,serverPassword,createPath,mode,acl,storage, nameconflict);
 		else if(action.equals("delete")) actionDelete(pageContext,directory,recurse,serverPassword);
 		else if(action.equals("forcedelete")) actionDelete(pageContext,directory,true,serverPassword);
-		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
+		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,createPath,acl,storage);
 		else if(action.equals("copy")) {
 			if(StringUtil.isEmpty(destination,true) && !StringUtil.isEmpty(strNewdirectory,true)) {
 				destination=strNewdirectory.trim();
 			}
-			actionCopy(pageContext,directory,destination,serverPassword,acl,storage,filter,recurse, nameconflict);
+			actionCopy(pageContext,directory,destination,serverPassword,createPath,acl,storage,filter,recurse, nameconflict);
 		}
 		else throw new ApplicationException("invalid action ["+action+"] for the tag directory");
 			
@@ -519,7 +505,7 @@ public final class Directory extends TagImpl  {
                 
             } 
             if(recurse && list[i].isDirectory())
-                count=_fillQueryNamesRec(parent+list[i].getName()+"/",query,list[i],filter,count,recurse);  
+                count=_fillQueryNamesRec(parent + list[i].getName() + "/", query, list[i], filter, count, recurse);
         }
         return count;
     }
@@ -557,20 +543,24 @@ public final class Directory extends TagImpl  {
 	 * create a directory
 	 * @throws PageException 
 	 */
-    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean doParent,int mode,Object acl,int storage) throws PageException {
+    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean createPath, int mode, Object acl, int storage, int nameConflict) throws PageException {
 
     	SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
 	    
 		if(directory.exists()) {
-			if(directory.isDirectory())
+			if(directory.isDirectory()) {
+				if ( nameConflict == NAMECONFLICT_SKIP )
+					return;
+
 				throw new ApplicationException("directory ["+directory.toString()+"] already exist");
+			}
 			else if(directory.isFile())
 				throw new ApplicationException("can't create directory ["+directory.toString()+"], it exist a file with same name");
 		}
 		//if(!directory.mkdirs())	throw new ApplicationException("can't create directory ["+directory.toString()+"]");
 		try {
-			directory.createDirectory(doParent);
+			directory.createDirectory(createPath);
 		} catch (IOException ioe) {
 			throw Caster.toPageException(ioe);
 		}
@@ -650,7 +640,7 @@ public final class Directory extends TagImpl  {
 	 * rename a directory to a new Name
 	 * @throws PageException 
 	 */
-	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, Object acl,int storage) throws PageException {
+	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, boolean createPath, Object acl,int storage) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -672,6 +662,10 @@ public final class Directory extends TagImpl  {
 	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
 		if(newdirectory.exists())
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exists");
+		if(createPath) {
+			newdirectory.getParentResource().mkdirs();
+			
+		}
 		try {
 			directory.moveTo(newdirectory);
 		}
@@ -685,7 +679,7 @@ public final class Directory extends TagImpl  {
 	}
 	
 	
-	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword, Object acl,int storage, ResourceFilter filter, boolean recurse, int nameconflict) throws PageException {
+	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword,boolean createPath, Object acl,int storage, ResourceFilter filter, boolean recurse, int nameconflict) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -719,6 +713,11 @@ public final class Directory extends TagImpl  {
 			else {
 				if(!recurse)filter=new NotResourceFilter(DirectoryResourceFilter.FILTER);
 			}
+			if(!createPath) {
+				Resource p = newdirectory.getParentResource();
+				if(p!=null && !p.exists())
+					throw new ApplicationException("parent directory for ["+newdirectory+"] doesn't exist");
+			}
 			ResourceUtil.copyRecursive(directory, newdirectory,filter);
 		}
 		catch(Throwable t) {
@@ -740,19 +739,16 @@ public final class Directory extends TagImpl  {
 	}
 
 
-
 	private static String getFileAttribute(Resource file, boolean exists){
 		return  exists && !file.isWriteable() ? "R".concat(file.isHidden() ? "H" : "") : file.isHidden() ? "H" : "";
 	}
 
 
-
 	/**
-	 * @param type the type to set
+	 * @param strType the type to set
 	 */
 	public void setType(String strType) throws ApplicationException {
 		strType=strType.trim().toLowerCase();
-		
 		
 		if("all".equals(strType)) type=TYPE_ALL;
 		else if("dir".equals(strType)) type=TYPE_DIR;
@@ -761,7 +757,5 @@ public final class Directory extends TagImpl  {
 		else throw new ApplicationException("invalid type ["+strType+"] for the tag directory");
 			
 	}
-
-
 
 }

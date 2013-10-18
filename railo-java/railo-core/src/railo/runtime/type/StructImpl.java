@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.commons.collection.ConcurrentHashMapPro;
 import railo.commons.collection.HashMapPro;
 import railo.commons.collection.LinkedHashMapPro;
 import railo.commons.collection.MapFactory;
@@ -19,7 +18,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 

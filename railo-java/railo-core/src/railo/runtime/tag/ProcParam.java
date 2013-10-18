@@ -26,6 +26,10 @@ public class ProcParam extends TagSupport {
 		param.setType(SQLCaster.toIntType(cfsqltype));
 	}
 
+	public void setSqltype(String type) throws DatabaseException	{
+		param.setType(SQLCaster.toIntType(type));
+	}
+
 	/**
 	 * @param ignoreNull The ignoreNull to set.
 	 */

@@ -52,7 +52,7 @@ public abstract class ResourceSupport implements Resource {
 
 	@Override
 	public void moveTo(Resource dest) throws IOException {
-		ResourceUtil.moveTo(this,dest);
+		ResourceUtil.moveTo(this, dest,false);
 	}
 	
 	@Override

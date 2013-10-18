@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -39,6 +43,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * 
@@ -49,49 +54,49 @@ public final class HTTPEngine3Impl {
     
     public static HTTPResponse get(URL url, String username, String password, long timeout, int maxRedirect,
         String charset, String useragent,ProxyData proxy, Header[] headers) throws IOException {
-    	return _invoke(new GetMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null);
+    	return _invoke(new GetMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null,null);
     }
     
     public static HTTPResponse head(URL url, String username, String password, int timeout, int maxRedirect,
         String charset, String useragent,ProxyData proxy, Header[] headers) throws IOException {
-		return _invoke(new HeadMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null);
+		return _invoke(new HeadMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null,null);
 	}
     
     public static HTTPResponse post(URL url, String username, String password, long timeout, int maxRedirect,
-        String charset, String useragent, ProxyData proxy, Header[] headers) throws IOException {
-    	return _invoke(new PostMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null);
+        String charset, String useragent, ProxyData proxy, Header[] headers, Map<String,String> params) throws IOException {
+    	return _invoke(new PostMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,params,null);
     }
     
 	public static HTTPResponse put(URL url, String username, String password, int timeout, int maxRedirect,
         String charset, String useragent,ProxyData proxy, Header[] headers, Object body) throws IOException {
-		return _invoke(new PutMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,body);     
+		return _invoke(new PutMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null,body);     
 	}
     
     public static HTTPResponse delete(URL url, String username, String password, int timeout, int maxRedirect,
         String charset, String useragent,ProxyData proxy, Header[] headers) throws IOException {
-    	return _invoke(new DeleteMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null);
+    	return _invoke(new DeleteMethod(url.toExternalForm()), url, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null,null);
 	}
     
 
 	private static HTTPResponse _invoke(HttpMethod httpMethod, URL url, String username, String password, long timeout, int maxRedirect,
-            String charset, String useragent, ProxyData proxy, Header[] headers, Object body) throws IOException {
+            String charset, String useragent, ProxyData proxy, Header[] headers, Map<String,String> params, Object body) throws IOException {
 
         HttpClient client = new HttpClient();
         HostConfiguration config = client.getHostConfiguration();
         HttpState state = client.getState();
         
         setHeader(httpMethod,headers);
-        setContentType(httpMethod,charset);
+        if(CollectionUtil.isEmpty(params))setContentType(httpMethod,charset);
         setUserAgent(httpMethod,useragent);
         setTimeout(client,timeout);
+        setParams(httpMethod,params);
         setCredentials(client,httpMethod,username,password);  
         setProxy(config,state,proxy);
         if(body!=null && httpMethod instanceof EntityEnclosingMethod)setBody((EntityEnclosingMethod)httpMethod,body);
         return new HTTPResponse3Impl(execute(client,httpMethod,maxRedirect),url);
     }
 
-
-    /**
+	/**
      * Execute a HTTTP Client and follow redirect over different hosts
      * @param client
      * @param method
@@ -251,6 +256,17 @@ public final class HTTPEngine3Impl {
         	for(int i=0;i<headers.length;i++)
         		httpMethod.addRequestHeader(headers[i].getName(), headers[i].getValue());
         }
+	}
+	
+    private static void setParams(HttpMethod httpMethod, Map<String, String> params) {
+		if(params==null || !(httpMethod instanceof PostMethod)) return;
+    	PostMethod post=(PostMethod) httpMethod;
+    	Iterator<Entry<String, String>> it = params.entrySet().iterator();
+    	Entry<String, String> e;
+    	while(it.hasNext()){
+    		e = it.next();
+    		post.addParameter(new NameValuePair(e.getKey(),e.getValue()));
+    	}
 	}
 
 	private static RequestEntity toRequestEntity(Object value) throws PageException {

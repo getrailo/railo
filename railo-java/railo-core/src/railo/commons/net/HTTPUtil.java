@@ -775,7 +775,8 @@ public final class HTTPUtil {
     	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  ||  
-    	StringUtil.startsWithIgnoreCase(mimetype,"application/json")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/json")  ||  
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/cfml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
     	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 

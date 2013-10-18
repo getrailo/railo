@@ -18,6 +18,7 @@ import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
 
 import railo.runtime.Component;
+import railo.runtime.orm.hibernate.CommonUtil;
 
 public class AllEventListener extends EventListener implements PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
 PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpdateEventListener {
@@ -32,28 +33,28 @@ PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpd
 	
 
 	public void onPostInsert(PostInsertEvent event) {
-		invoke(POST_INSERT, event.getEntity());
+		invoke(CommonUtil.POST_INSERT, event.getEntity());
     }
 
     public void onPostUpdate(PostUpdateEvent event) {
-    	invoke(POST_UPDATE, event.getEntity());
+    	invoke(CommonUtil.POST_UPDATE, event.getEntity());
     }
 
     public boolean onPreDelete(PreDeleteEvent event) {
-    	invoke(PRE_DELETE, event.getEntity());
+    	invoke(CommonUtil.PRE_DELETE, event.getEntity());
 		return false;
     }
 
     public void onPostDelete(PostDeleteEvent event) {
-    	invoke(POST_DELETE, event.getEntity());
+    	invoke(CommonUtil.POST_DELETE, event.getEntity());
     }
 
     public void onPreLoad(PreLoadEvent event) {
-    	invoke(PRE_LOAD, event.getEntity());
+    	invoke(CommonUtil.PRE_LOAD, event.getEntity());
     }
 
     public void onPostLoad(PostLoadEvent event) {
-    	invoke(POST_LOAD, event.getEntity());
+    	invoke(CommonUtil.POST_LOAD, event.getEntity());
     }
 
 	public boolean onPreUpdate(PreUpdateEvent event) {
@@ -63,7 +64,7 @@ PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpd
 
 
 	public boolean onPreInsert(PreInsertEvent event) {
-		invoke(PRE_INSERT, event.getEntity());
+		invoke(CommonUtil.PRE_INSERT, event.getEntity());
 		return false;
 	}
 }

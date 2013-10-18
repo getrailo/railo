@@ -9,7 +9,6 @@ public class EntityReload {
 
 	public static String call(PageContext pc, Object obj) throws PageException {
 		ORMSession session = ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		session.reload(pc,obj);
 		return null;
 	}

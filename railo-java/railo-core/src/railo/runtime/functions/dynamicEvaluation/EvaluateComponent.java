@@ -29,7 +29,7 @@ public final class EvaluateComponent {
 		try {
 			comp = pc.loadComponent(name);
 			if(!ComponentUtil.md5(comp).equals(md5)){	
-				SystemOut.printDate(pc.getConfig().getErrWriter(),"component ["+name+"] in this enviroment has not the same interface as the component to load");
+				SystemOut.printDate(pc.getConfig().getErrWriter(),"component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
 				//throw new ExpressionException("component ["+name+"] in this enviroment has not the same interface as the component to load");
 			}
 		}

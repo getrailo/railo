@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
 import railo.cli.servlet.HTTPServletImpl;
+import railo.commons.collection.LinkedHashMapMaxSize;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -46,13 +47,16 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerFactory;
 import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
@@ -84,8 +88,8 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
  * The CFMl Engine
  */
 public final class CFMLEngineImpl implements CFMLEngine {
-    
-    
+	
+	
 	private static Map<String,CFMLFactory> initContextes=MapFactory.<String,CFMLFactory>getConcurrentMap();
     private static Map<String,CFMLFactory> contextes=MapFactory.<String,CFMLFactory>getConcurrentMap();
     private static ConfigServerImpl configServer=null;
@@ -98,6 +102,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	private Monitor monitor;
 	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>();
 	private long uptime; 
+	
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
@@ -158,6 +163,18 @@ public final class CFMLEngineImpl implements CFMLEngine {
         }        
     }
     
+    // FUTURE add to public interface
+    public ConfigServer getConfigServer(String password) throws PageException {
+    	getConfigServerImpl().checkAccess(password);
+    	return getConfigServerImpl();
+    }
+
+    // FUTURE add to public interface
+    public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
+    	configServer.checkAccess(key,timeNonce);
+    	return configServer;
+    }
+
     private ConfigServerImpl getConfigServerImpl() {
     	if(configServer==null) {
             try {

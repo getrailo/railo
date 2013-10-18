@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -12,13 +11,10 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.component.ComponentLoader;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.functions.other.CreateDynamicProxy;
-import railo.runtime.functions.other.CreateObject;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 

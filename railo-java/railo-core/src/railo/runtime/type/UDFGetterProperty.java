@@ -18,16 +18,11 @@ public final class UDFGetterProperty extends UDFGSProperty {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());
+		
 	} 
 
-	@Override
-	public UDF duplicate(ComponentImpl c) {
-		return new UDFGetterProperty(c,prop);
-	}
-	
-
 	public UDF duplicate() {
-		return duplicate(component);
+		return new UDFGetterProperty(component,prop);
 	}
 	
 	@Override

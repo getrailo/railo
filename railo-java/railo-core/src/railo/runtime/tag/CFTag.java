@@ -9,11 +9,13 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -322,7 +324,27 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private int cfcStartTag() throws PageException {
     	
     	callerScope.initialize(pageContext);
-        cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+        try {
+			cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+		}
+		catch (PageException e) {
+			Mapping m = source.getPageSource().getMapping();
+			ConfigWebImpl c=(ConfigWebImpl) pageContext.getConfig();
+			if(m==c.getTagMapping()) m=c.getServerTagMapping();
+			else m=null;
+			// is te page source from a tag mapping, so perhaps it was moved from server to web context
+			if(m!=null){
+				PageSource ps = m.getPageSource(source.getFilename());
+				try {
+					cfc = ComponentLoader.loadComponent(pageContext,null,ps, source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+				}
+				catch (PageException e1) {
+					throw e;
+				}
+				
+			}
+		}
+        
         validateAttributes(cfc,attributesScope,StringUtil.ucFirst(ListUtil.last(source.getPageSource().getComponentName(),'.')));
         
         boolean exeBody = false;

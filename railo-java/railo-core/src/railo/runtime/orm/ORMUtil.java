@@ -1,23 +1,34 @@
 package railo.runtime.orm;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
+import railo.runtime.db.DataSource;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.hibernate.ExceptionUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public class ORMUtil {
 
@@ -52,9 +63,18 @@ public class ORMUtil {
 	public static void printError(String msg, ORMEngine engine) {
 		printError(null, engine, msg);
 	}
+	
+	public static void printError(Throwable t) {
+		printError(t, null, t.getMessage());
+	}
+
+	public static void printError(String msg) {
+		printError(null, null, msg);
+	}
 
 	private static void printError(Throwable t, ORMEngine engine,String msg) {
-		SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
+		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
+		else SystemOut.printDate(msg,SystemOut.ERR);
 		if(t==null)t=new Throwable();
 		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
 	}
@@ -114,24 +134,58 @@ public class ORMUtil {
 		if(done.contains(left)) return done.contains(right);
 		done.add(left);
 		done.add(right);
-	 
-		/*ComponentImpl lefti=(ComponentImpl) left;
-		ComponentImpl righti=(ComponentImpl) right;
-		print.e(lefti.getName()+"="+lefti._getName());
-		print.e(righti.getName()+"="+righti._getName());*/
-		
-		
+	 	
 		if(left==null || right==null) return false;
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		Property[] props = getProperties(left);
 		Object l,r;
-		props=HBMCreator.getIds(null,null,props,null,true);
+		props=getIds(props);
 		for(int i=0;i<props.length;i++){
 			l=left.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			r=right.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;
+	}
+	
+	public static Property[] getIds(Property[] props) {
+		ArrayList<Property> ids=new ArrayList<Property>();
+        for(int y=0;y<props.length;y++){
+        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
+				ids.add(props[y]);
+		}
+        
+        // no id field defined
+        if(ids.size()==0) {
+        	String fieldType;
+        	for(int y=0;y<props.length;y++){
+        		fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
+    				ids.add(props[y]);
+    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
+    			}
+    		}
+        } 
+        
+        // still no id field defined
+        if(ids.size()==0 && props.length>0) {
+        	String owner = props[0].getOwnerName();
+			if(!StringUtil.isEmpty(owner)) owner=ListUtil.last(owner, '.').trim();
+        	
+        	String fieldType;
+        	if(!StringUtil.isEmpty(owner)){
+        		String id=owner+"id";
+        		for(int y=0;y<props.length;y++){
+        			fieldType = Caster.toString(props[y].getDynamicAttributes().get(KeyConstants._fieldtype,null),null);
+	    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase(id)){
+	    				ids.add(props[y]);
+	    				props[y].getDynamicAttributes().setEL(KeyConstants._fieldtype, "id");
+	    			}
+	    		}
+        	}
+        } 
+        return ids.toArray(new Property[ids.size()]);
 	}
 	
 	public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
@@ -175,5 +229,75 @@ public class ORMUtil {
 
 	private static Property[] getProperties(Component cfc) {
 		return cfc.getProperties(true,true,false,false);
+	}
+	
+	public static boolean isRelated(Property prop) {
+		String fieldType = Caster.toString(prop.getDynamicAttributes().get(KeyConstants._fieldtype,"column"),"column");
+		if(StringUtil.isEmpty(fieldType,true)) return false;
+		fieldType=fieldType.toLowerCase().trim();
+		
+		if("one-to-one".equals(fieldType)) 		return true;
+		if("many-to-one".equals(fieldType)) 	return true;
+		if("one-to-many".equals(fieldType)) 	return true;
+		if("many-to-many".equals(fieldType)) 	return true;
+		return false;
+	}
+	
+	public static Struct convertToSimpleMap(String paramsStr) {
+		paramsStr=paramsStr.trim();
+        if(!StringUtil.startsWith(paramsStr, '{') || !StringUtil.endsWith(paramsStr, '}'))
+        	return null;
+        	
+		paramsStr = paramsStr.substring(1, paramsStr.length() - 1);
+		String items[] = ListUtil.listToStringArray(paramsStr, ','); 
+		
+		Struct params=new StructImpl();
+		String arr$[] = items;
+		int index;
+        for(int i = 0; i < arr$.length; i++)	{
+            String pair = arr$[i];
+            index = pair.indexOf('=');
+            if(index == -1) return null;
+            
+            params.setEL(
+            		KeyImpl.init(deleteQuotes(pair.substring(0, index).trim()).trim()), 
+            		deleteQuotes(pair.substring(index + 1).trim()));
+        }
+
+        return params;
+    }
+	
+	private static String deleteQuotes(String str)	{
+        if(StringUtil.isEmpty(str,true))return "";
+        char first=str.charAt(0);
+        if((first=='\'' || first=='"') && StringUtil.endsWith(str, first))
+        	return str.substring(1, str.length() - 1);
+        return str;
+    }
+	
+	public static DataSource getDataSource(PageContext pc) throws PageException{
+		pc=ThreadLocalPageContext.get(pc);
+		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
+		
+		if(StringUtil.isEmpty(o))
+			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
+		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+	
+		
+	
+	
+	}
+	
+	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
+		pc=ThreadLocalPageContext.get(pc);
+		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
+		if(StringUtil.isEmpty(o))
+			return defaultValue;
+		try {
+			return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		}
+		catch (PageException e) {
+			return defaultValue;
+		}
 	}
 }

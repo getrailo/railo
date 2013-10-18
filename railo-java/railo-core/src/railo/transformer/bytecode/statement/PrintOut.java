@@ -50,15 +50,8 @@ public final class PrintOut extends StatementBaseNoFinal {
         boolean usedExternalizer=false;
         
         /*if(es instanceof LitString) {
-        	String str=((LitString)es).getString();
-        	if(str.length()>10) {
-        		StringExternalizerWriter writer=bc.getStringExternalizerWriter();
-        		if(writer!=null){
-        			Range range=writer.write(str);
-        			//reader.read(range.from, range.to);
-        			//usedExternalizer=true;
-        		}
-        	}
+        	LitString ls = ((LitString)es);
+        	ls.setExternalize(true);
         }*/
         
         if(!usedExternalizer)es.writeOut(bc,Expression.MODE_REF);

@@ -34,8 +34,6 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	
 	private static final long serialVersionUID = -3680961614605720352L;
 	
-	public static final Key MESSAGE = KeyConstants._Message;
-	public static final Key DETAIL = KeyConstants._Detail;
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
 	public static final Key EXTENDEDINFO = KeyImpl.intern("ExtendedInfo");
 	public static final Key EXTENDED_INFO = KeyImpl.intern("Extended_Info");
@@ -50,8 +48,8 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public CatchBlockImpl(PageExceptionImpl pe) {
 		this.exception=pe;
 
-		setEL(MESSAGE, new SpecialItem(pe, MESSAGE));
-		setEL(DETAIL, new SpecialItem(pe, DETAIL));
+		setEL(KeyConstants._Message, new SpecialItem(pe, KeyConstants._Message));
+		setEL(KeyConstants._Detail, new SpecialItem(pe, KeyConstants._Detail));
 		setEL(ERROR_CODE, new SpecialItem(pe, ERROR_CODE));
 		setEL(EXTENDEDINFO, new SpecialItem(pe, EXTENDEDINFO));
 		setEL(EXTENDED_INFO, new SpecialItem(pe, EXTENDED_INFO));
@@ -91,8 +89,8 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		}
 		
 		public Object get() {
-			if(key==MESSAGE) return StringUtil.emptyIfNull(pe.getMessage());
-			if(key==DETAIL) return StringUtil.emptyIfNull(pe.getDetail());
+			if(key==KeyConstants._Message) return StringUtil.emptyIfNull(pe.getMessage());
+			if(key==KeyConstants._Detail) return StringUtil.emptyIfNull(pe.getDetail());
 			if(key==ERROR_CODE) return StringUtil.emptyIfNull(pe.getErrorCode());
 			if(key==EXTENDEDINFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
 			if(key==EXTENDED_INFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
@@ -106,7 +104,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		public void set(Object o){
 			try {
 				if(!(o instanceof Pair)) {
-					if(key==DETAIL) {
+					if(key==KeyConstants._Detail) {
 						pe.setDetail(Caster.toString(o));
 						return;
 					}
@@ -147,7 +145,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		}
 		public Object remove(){
 			Object rtn=null;
-			if(key==DETAIL) {
+			if(key==KeyConstants._Detail) {
 				rtn=pe.getDetail();
 				pe.setDetail("");
 			}

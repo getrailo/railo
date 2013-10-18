@@ -4,6 +4,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
@@ -214,7 +215,7 @@ public final class Update extends TagImpl {
 		        return new QueryImpl(meta.getBestRowIdentifier(tablequalifier, tableowner, tablename, 0, false),-1,"query",pageContext.getTimeZone());
             } 
 		    catch (SQLException sqle) {
-                throw new DatabaseException("can't find primary keys of table ["+tablename+"]",sqle,null,dc);
+                throw new DatabaseException("can't find primary keys of table ["+tablename+"] ("+ExceptionUtil.getMessage(sqle)+")",null,null,dc);
             }
         }
     }

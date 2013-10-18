@@ -68,11 +68,15 @@ Error Output --->
             type="#request.adminType#"
             password="#session["password"&request.adminType]#">
             
+<!---- 
 <cfadmin 
 			action="needNewJars"
 			returnvariable="needNewJars"
             type="#request.adminType#"
             password="#session["password"&request.adminType]#">
+because this is only about optional updates, we do this only in background from now
+---->
+<cfset needNewJars=false>
 
 
 <cffunction name="getAviableVersion" output="false">

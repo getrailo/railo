@@ -499,7 +499,7 @@ component {
 							 string highLightColor = "#arguments.meta.highLightColor#" ) {
 
 		if(arguments.meta.data.highlight EQ -1) {
-			return highLightColor;
+			return arguments.highLightColor;
 		}
 		else if(arguments.meta.data.highlight EQ 0) {
 			return arguments.meta.normalColor;

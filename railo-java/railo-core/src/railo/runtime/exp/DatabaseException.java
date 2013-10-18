@@ -26,6 +26,24 @@ public final class DatabaseException extends PageExceptionImpl {
 	private int errorcode=-1;
 	private DataSource datasource;
 
+	public DatabaseException(SQLException sqle,DatasourceConnection dc) {
+		super(
+				sqle.getCause() instanceof SQLException?
+						(sqle=(SQLException)sqle.getCause()).getMessage():
+						sqle.getMessage(),"database");
+		
+		set(sqle);
+		set(dc);
+	}
+
+	public DatabaseException(String message,String detail,SQL sql,DatasourceConnection dc) {
+		super(message,"database");
+		
+		set(sql);
+		set(null,detail);
+		set(dc);
+	}
+	
 	/**
 	 * Constructor of the class
 	 * @param message error message
@@ -34,11 +52,24 @@ public final class DatabaseException extends PageExceptionImpl {
 	 * @param sql
 	 * @param dc
 	 */
-	public DatabaseException(String message, String detail, SQLException sqle, SQL sql,DatasourceConnection dc) {
-		super(message,"database");
-		String sqleMessage=sqle!=null?sqle.getMessage():"";
+	private DatabaseException(String message, String detail, SQLException sqle, SQL sql,DatasourceConnection dc) {
+		super(sqle.getCause() instanceof SQLException?message:"","database");
+		
+		set(sql);
+		set(sqle,detail);
+		set(sqle);
+		set(dc);
+	}
+	
+	private void set(SQL sql) {
 		this.sql=sql;
-		if(dc!=null)datasource=dc.getDatasource();
+		if(sql!=null) {
+			setAdditional(KeyConstants._SQL,sql.toString());
+		}
+	}
+
+	private void set(SQLException sqle,String detail) {
+		String sqleMessage=sqle!=null?sqle.getMessage():"";
 		if(detail!=null){
 			if(!StringUtil.isEmpty(sqleMessage))
 				setDetail(detail+"\n"+sqleMessage);
@@ -49,15 +80,20 @@ public final class DatabaseException extends PageExceptionImpl {
 			if(!StringUtil.isEmpty(sqleMessage))
 				setDetail(sqleMessage);
 		}
+	}
+
+	private void set(SQLException sqle) {
 		if(sqle!=null) {
 			sqlstate=sqle.getSQLState();
 			errorcode=sqle.getErrorCode();
+			
 			this.setStackTrace(sqle.getStackTrace());
 		}
-		if(sql!=null) {
-			setAdditional(KeyConstants._SQL,sql.toString());
-		}
+	}
+
+	private void set(DatasourceConnection dc) {
 		if(dc!=null) {
+			datasource=dc.getDatasource();
 			try {
 				DatabaseMetaData md = dc.getConnection().getMetaData();
 				md.getDatabaseProductName();
@@ -72,19 +108,19 @@ public final class DatabaseException extends PageExceptionImpl {
 				
 			} 
 			catch (SQLException e) {}
-			
 		}
 	}
-	
+
 	/**
 	 * Constructor of the class
 	 * @param message
 	 * @param sqle
 	 * @param sql
-	 */
+	
 	public DatabaseException(String message, SQLException sqle, SQL sql,DatasourceConnection dc) {
 		this(message,null,sqle,sql,dc);
-	}
+	} */
+	
 	
 	/**
 	 * Constructor of the class
@@ -99,9 +135,7 @@ public final class DatabaseException extends PageExceptionImpl {
 	 * Constructor of the class
 	 * @param sqle
 	 */
-	public DatabaseException(SQLException sqle,DatasourceConnection dc) {
-		this(sqle!=null?sqle.getMessage():null,null,sqle,null,dc);
-	}
+	
 
 	@Override
 	public CatchBlock getCatchBlock(Config config) {

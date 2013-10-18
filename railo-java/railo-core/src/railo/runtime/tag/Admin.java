@@ -22,6 +22,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -44,7 +45,6 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
@@ -122,6 +122,7 @@ import railo.runtime.rest.RestUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.ExecutionPlan;
+import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.spooler.SpoolerTask;
 import railo.runtime.spooler.remote.RemoteClientTask;
@@ -177,8 +178,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key STR = KeyConstants._str;
 	private static final Collection.Key DO_STATUS_CODE = KeyImpl.intern("doStatusCode");
 	private static final Collection.Key LABEL = KeyConstants._label;
-	private static final Collection.Key HASH = KeyConstants._hash;
-	private static final Collection.Key ROOT = KeyConstants._root;
 	private static final Collection.Key FILE_ACCESS = KeyImpl.intern("file_access");
 	private static final Collection.Key IP_RANGE = KeyImpl.intern("ipRange");
 	private static final Collection.Key CUSTOM = KeyConstants._custom;
@@ -191,6 +190,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Key PROCEDURE = KeyImpl.intern("procedure");
 	private static final Key SERVER_LIBRARY = KeyImpl.intern("serverlibrary");
 	private static final Key KEEP_ALIVE = KeyImpl.intern("keepalive");
+	private static final Key CLIENT_SIZE = KeyImpl.intern("clientSize");
+	private static final Key SESSION_SIZE = KeyImpl.intern("sessionSize");
+	private static final Key CLIENT_ELEMENTS = KeyImpl.intern("clientElements");
+	private static final Key SESSION_ELEMENTS = KeyImpl.intern("sessionElements");
 
 	private static final short MAPPING_REGULAR = 1;
 	private static final short MAPPING_CT = 2;
@@ -339,7 +342,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	if("web".equals(strType))return TYPE_WEB;
     	else if("server".equals(strType))return TYPE_SERVER;
     	if(throwError)
-        	throw new ApplicationException("invalid value for attribute type ["+strType+"] of tag admin","valid values are web, server, all");
+        	throw new ApplicationException("invalid value for attribute type ["+strType+"] of tag admin","valid values are web, server");
         return TYPE_WEB;
 	}
 
@@ -574,6 +577,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getFlds",                ACCESS_FREE) && check2(ACCESS_READ  )) doGetFLDs();
         else if(check("getTlds",                ACCESS_FREE) && check2(ACCESS_READ  )) doGetTLDs();
         else if(check("getMailSetting",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetMailSetting();
+        else if(check("getTaskSetting",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetTaskSetting();
         else if(check("getMailServers",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetMailServers();
         else if(check("getMapping",             ACCESS_FREE) && check2(ACCESS_READ  )) doGetMapping();
         else if(check("getMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetMappings();
@@ -625,6 +629,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateRemoteClientUsage",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRemoteClientUsage();
     	else if(check("updatemailsetting",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMailSetting();
         else if(check("updatemailserver",       ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMailServer();
+        else if(check("updatetasksetting",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateTaskSetting();
         else if(check("updatemapping",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMapping();
         else if(check("updatecustomtag",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTag();
         else if(check("updateComponentMapping", ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateComponentMapping();
@@ -691,6 +696,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doUpdateAuthKey();
         else if(check("removeAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doRemoveAuthKey();
         else if(check("listAuthKey",          ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE   )) doListAuthKey();
+
+        else if(check("updateAPIKey",          ACCESS_FREE) && check2(ACCESS_WRITE   )) doUpdateAPIKey();
+        else if(check("removeAPIKey",          ACCESS_FREE) && check2(ACCESS_WRITE   )) doRemoveAPIKey();
+        else if(check("getAPIKey",          ACCESS_FREE) && check2(ACCESS_READ   )) doGetAPIKey();
         
         else if(check("createsecuritymanager",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE            )) doCreateSecurityManager();
         else if(check("getsecuritymanager",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ            )) doGetSecurityManager();
@@ -773,7 +782,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doRunUpdate() throws PageException {
-    	doUpdateJars();
+    	try{
+    		doUpdateJars();
+    	}
+    	catch(Throwable t){}
     	admin.runUpdate(password);
         adminSync.broadcast(attributes, config);
     }
@@ -1041,6 +1053,24 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }catch (Exception e) {} 
         store();
     }
+    
+
+    private void doUpdateAPIKey() throws PageException {  
+        admin.updateAPIKey(getString("key",null));
+        store();
+    }
+    private void doRemoveAPIKey() throws PageException {  
+        try {
+        	admin.removeAPIKey();
+        }catch (Exception e) {} 
+        store();
+    }
+    
+    private void doGetAPIKey() throws PageException {
+    	pageContext.setVariable(
+                 getString("admin",action,"returnVariable"),
+                 config.getApiKey());
+    }
 
     private void doUpdateAuthKey() throws PageException {  
         try {
@@ -1084,7 +1114,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         					KeyConstants._label,
         					HAS_OWN_SEC_CONTEXT,
         					KeyConstants._url,
-        					CONFIG_FILE},
+        					CONFIG_FILE,
+        					CLIENT_SIZE,CLIENT_ELEMENTS,SESSION_SIZE,SESSION_ELEMENTS},
         			factories.length,getString("admin",action,"returnVariable"));
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
         ConfigWebImpl cw;
@@ -1102,10 +1133,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
             qry.setAtEL(KeyConstants._label,row,factory.getLabel());
             qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cw.hasIndividualSecurityManager()));
+
+            setScopeDirInfo(qry,row,CLIENT_SIZE,CLIENT_ELEMENTS,cw.getClientScopeDir());
+            setScopeDirInfo(qry,row,SESSION_SIZE,SESSION_ELEMENTS,cw.getSessionScopeDir());
         }
     }
 
-    private void doHasIndividualSecurity() throws PageException {
+    private void setScopeDirInfo(Query qry, int row, Key sizeName,Key elName, Resource dir) { 
+    	qry.setAtEL(sizeName,row,Caster.toDouble(ResourceUtil.getRealSize(dir)));
+    	qry.setAtEL(elName,row,Caster.toDouble(ResourceUtil.getChildCount(dir)));	
+	}
+
+	private void doHasIndividualSecurity() throws PageException {
         pageContext.setVariable(
                  getString("admin",action,"returnVariable"),
                  Caster.toBoolean(
@@ -1194,31 +1233,32 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource src = ResourceUtil.toResourceExisting(pageContext, strSrc);
         
         ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
-        ConfigWeb[] webs = server.getConfigWebs();
-        ConfigWeb web;
         Resource trg,p;
+        Resource deploy = server.getConfigDir().getRealResource("web-context-deployment");
+        deploy.mkdirs();
         
-        for(int i=0;i<webs.length;i++){
-        	web=webs[i];
-        	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
-        	
-        	if(trg.exists()) trg.remove(true);
-        	p = trg.getParentResource();
-            if(!p.isDirectory())p.createDirectory(true);
-           
-            src.copyTo(trg, false);
-        }
+        // deploy it
+        trg=deploy.getRealResource(strRealpath);
+    	if(trg.exists()) trg.remove(true);
+    	p = trg.getParentResource();
+        if(!p.isDirectory())p.createDirectory(true);
+        src.copyTo(trg, false);
         store();
+        
+        ConfigWeb[] webs = server.getConfigWebs();
+        for(int i=0;i<webs.length;i++){
+        	ConfigWebFactory.deployWebContext(server,webs[i], true);
+        }
+        
     }
     
     
     private void doRemoveContext() throws PageException, IOException {
     	String strRealpath = getString("admin",action,"destination");
     	ConfigServerImpl server = (ConfigServerImpl) config;
-        ConfigWeb[] webs = server.getConfigWebs();
         
     	try {
-    		admin.removeContext(server, strRealpath, true);
+    		admin.removeContext(server, true,strRealpath);
 		}
 		catch (SAXException e) {
 			throw Caster.toPageException(e);
@@ -1406,13 +1446,17 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(config instanceof ConfigWebImpl){
         	ConfigWebImpl cw=(ConfigWebImpl) config;
         	sct.setEL(KeyConstants._label, cw.getLabel());
-        	sct.setEL(HASH, cw.getHash());
-        	sct.setEL(ROOT, cw.getRootDirectory().getAbsolutePath());
+        	sct.setEL(KeyConstants._hash, cw.getHash());
+        	sct.setEL(KeyConstants._root, cw.getRootDirectory().getAbsolutePath());
+            sct.setEL("configServerDir", cw.getConfigServerDir().getAbsolutePath());
+            sct.setEL("configWebDir", cw.getConfigDir().getAbsolutePath());
+        }
+        else {
+            sct.setEL("configServerDir", config.getConfigDir().getAbsolutePath());
+            sct.setEL("configWebDir", pageContext.getConfig().getConfigDir().getAbsolutePath());
         }
         
-        sct.setEL(KeyConstants._config, config
-        		.getConfigFile()
-        		.getAbsolutePath());
+        sct.setEL(KeyConstants._config, config.getConfigFile().getAbsolutePath());
         
         // Servlets
         if(config instanceof ConfigServer) {
@@ -1570,18 +1614,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("cfx_setting",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_CFX_SETTING)==SecurityManager.VALUE_YES));
         sct.set("cfx_usage",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_CFX_USAGE)==SecurityManager.VALUE_YES));
         sct.set("custom_tag",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_CUSTOM_TAG)==SecurityManager.VALUE_YES));
-        sct.set("datasource",_fillSecDataDS(sm.getAccess(SecurityManager.TYPE_DATASOURCE)));
+        sct.set(KeyConstants._datasource,_fillSecDataDS(sm.getAccess(SecurityManager.TYPE_DATASOURCE)));
         sct.set("debugging",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_DEBUGGING)==SecurityManager.VALUE_YES));
         sct.set("direct_java_access",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES));
         sct.set("mail",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_MAIL)==SecurityManager.VALUE_YES));
-        sct.set("mapping",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_MAPPING)==SecurityManager.VALUE_YES));
+        sct.set(KeyConstants._mapping,Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_MAPPING)==SecurityManager.VALUE_YES));
         sct.set("remote",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_REMOTE)==SecurityManager.VALUE_YES));
         sct.set("setting",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SETTING)==SecurityManager.VALUE_YES));
         sct.set("search",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SEARCH)==SecurityManager.VALUE_YES));
         sct.set("scheduled_task",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SCHEDULED_TASK)==SecurityManager.VALUE_YES));
-        sct.set("cache",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_CACHE)==SecurityManager.VALUE_YES));
+        sct.set(KeyConstants._cache,Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_CACHE)==SecurityManager.VALUE_YES));
         sct.set("gateway",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)==SecurityManager.VALUE_YES));
-        sct.set("orm",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_ORM)==SecurityManager.VALUE_YES));
+        sct.set(KeyConstants._orm,Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_ORM)==SecurityManager.VALUE_YES));
         
         sct.set("tag_execute",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)==SecurityManager.VALUE_YES));
         sct.set("tag_import",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_IMPORT)==SecurityManager.VALUE_YES));
@@ -1592,7 +1636,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         short accessFile = sm.getAccess(SecurityManager.TYPE_FILE);
         String str = SecurityManagerImpl.toStringAccessValue(accessFile);
         if(str.equals("yes"))str="all";
-        sct.set("file",str);
+        sct.set(KeyConstants._file,str);
         
     	Array arr=new ArrayImpl();
     	if(accessFile!=SecurityManager.VALUE_ALL){
@@ -2268,21 +2312,33 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateMailSetting() throws PageException {
         admin.setMailLog(getString("admin",action,"logfile"),getString("loglevel","ERROR"));
         
-        //print.ln("----------------------------------");
         admin.setMailSpoolEnable(getBoolObject("admin",action,"spoolenable"));
-        // spool intervall
-        String str=getString("admin",action,"spoolinterval");
+        
+        /*/ spool interval
+        String str=getString("admin",action,"maxThreads");
         Integer i=null;
-        if(!StringUtil.isEmpty(str))i=Caster.toInteger(str);
-        admin.setMailSpoolInterval(i);
+        if(!StringUtil.isEmpty(str))i=Caster.toInteger(maxThreads);*/
         
      // timeout
-        str=getString("admin",action,"timeout");
-        i=null;
+        String str = getString("admin",action,"timeout");
+        Integer i = null;
         if(!StringUtil.isEmpty(str))i=Caster.toInteger(str);
         admin.setMailTimeout(i);
 		
         admin.setMailDefaultCharset(getString("admin", action, "defaultencoding"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    private void doUpdateTaskSetting() throws PageException {
+        
+        // max Threads
+        String str=getString("admin",action,"maxThreads");
+        Integer i=null;
+        if(!StringUtil.isEmpty(str)){
+        	i=Caster.toInteger(str);
+        	if(i.intValue()<10) throw new ApplicationException("we need at least 10 threads to run tasks properly");
+        }
+        admin.setTaskMaxThreads(i);
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2311,7 +2367,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doUpdateJars() throws PageException  {
     	try {
-			JarLoader.download(pageContext, UPDATE_JARS);
+			JarLoader.download(pageContext.getConfig(), UPDATE_JARS);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
@@ -2428,11 +2484,31 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("strlogfile",ls.getSource());
         sct.set("logfile",logFile);
         sct.set("loglevel",logLevel);
+        int maxThreads=20;
+        SpoolerEngine engine = config.getSpoolerEngine();
+        if(engine instanceof SpoolerEngineImpl) {
+        	maxThreads=((SpoolerEngineImpl)engine).getMaxThreads();
+        }
         
         sct.set("spoolEnable",Caster.toBoolean(config.isMailSpoolEnable()));
         sct.set("spoolInterval",Caster.toInteger(config.getMailSpoolInterval()));
+        sct.set("maxThreads",Caster.toDouble(maxThreads));
         sct.set("timeout",Caster.toInteger(config.getMailTimeout()));
 		sct.set("defaultencoding", config.getMailDefaultEncoding());
+        
+    }
+    
+    private void doGetTaskSetting() throws PageException {
+        Struct sct=new StructImpl();
+        pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        
+        int maxThreads=20;
+        SpoolerEngine engine = config.getSpoolerEngine();
+        if(engine instanceof SpoolerEngineImpl) {
+        	SpoolerEngineImpl ei = ((SpoolerEngineImpl)engine);
+        	maxThreads=ei.getMaxThreads();
+        } 
+        sct.set("maxThreads",Caster.toDouble(maxThreads));
         
     }
 
@@ -2581,7 +2657,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		try {
 			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
 		} catch (ClassException e) {
-			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
+			throw new DatabaseException(
+					"can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder ("+e.getMessage()+")",null,null,null);
 		}
         
         if(verify)_doVerifyDatasource(classname,ds.getDsnTranslated(),username,password);
@@ -2839,7 +2916,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void _doVerifyDatasource(Class clazz, String dsn, String username, String password) throws PageException {
             if(!Reflector.isInstaneOf(clazz,Driver.class))
-                throw new DatabaseException("class ["+clazz.getName()+"] is not a JDBC Driver","class must implement interface [java.sql.Driver]",null,null,null);
+                throw new DatabaseException("class ["+clazz.getName()+"] is not a JDBC Driver","class must implement interface [java.sql.Driver]",null,null);
         getConnection(dsn, username, password);
     }
 
@@ -3770,6 +3847,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         //admin.updateRequestTimeout(getTimespan("admin",action,"requestTimeout"));
         admin.updateClientTimeout(getTimespan("admin",action,"clientTimeout"));
         admin.updateSessionTimeout(getTimespan("admin",action,"sessionTimeout"));
+        admin.updateClientStorage(getString("admin",action,"clientStorage"));
+        admin.updateSessionStorage(getString("admin",action,"sessionStorage"));
         admin.updateApplicationTimeout(getTimespan("admin",action,"applicationTimeout"));
         admin.updateSessionType(getString("admin",action,"sessionType"));
         admin.updateLocalMode(getString("admin",action,"localMode"));
@@ -4005,7 +4084,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("clientManagement",Caster.toBoolean(config.isClientManagement()));
         sct.set("domainCookies",Caster.toBoolean(config.isDomainCookies()));
         sct.set("clientCookies",Caster.toBoolean(config.isClientCookies()));
+        sct.set("clientStorage",config.getClientStorage());
+        sct.set("sessionStorage",config.getSessionStorage());
 
+        
         TimeSpan ts=config.getSessionTimeout();
         sct.set("sessionTimeout",ts);
         sct.set("sessionTimeout_day",Caster.toInteger(ts.getDay()));

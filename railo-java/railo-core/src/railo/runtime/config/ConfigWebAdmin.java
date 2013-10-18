@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 
@@ -25,7 +24,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -34,7 +32,6 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
-import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
@@ -56,7 +53,6 @@ import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.WDDXConverter;
-import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -370,6 +366,16 @@ public final class ConfigWebAdmin {
     	catch(Throwable t) {}
     }
 
+
+	public void setTaskMaxThreads(Integer maxThreads) throws SecurityException {
+		checkWriteAccess();
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        if(!hasAccess)
+            throw new SecurityException("no access to update task settings");
+        Element mail=_getRootElement("remote-clients");
+        mail.setAttribute("max-threads",Caster.toString(maxThreads,""));
+	}
+
 	/**
      * sets Mail Logger to Config
      * @param logFile
@@ -405,12 +411,14 @@ public final class ConfigWebAdmin {
         mail.setAttribute("spool-enable",Caster.toString(spoolEnable,""));
         //config.setMailSpoolEnable(spoolEnable);
     }
+    
+    
 
-    /**
+    /* *
      * sets if er interval is enable or not
      * @param interval
      * @throws SecurityException
-     */
+     * /
     public void setMailSpoolInterval(Integer interval) throws SecurityException {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAIL);
@@ -419,7 +427,7 @@ public final class ConfigWebAdmin {
         Element mail=_getRootElement("mail");
         mail.setAttribute("spool-interval",Caster.toString(interval,""));
         //config.setMailSpoolInterval(interval);
-    }
+    }*/
 
     /**
      * sets the timeout for the spooler for one job
@@ -2001,7 +2009,86 @@ public final class ConfigWebAdmin {
         else scope.removeAttribute("sessiontimeout");
     }
     
-    /**
+    
+
+
+	public void updateClientStorage(String storage) throws SecurityException, ApplicationException {
+		updateStorage("client", storage);
+	}
+
+
+	public void updateSessionStorage(String storage) throws SecurityException, ApplicationException {
+		updateStorage("session", storage);
+	}
+	
+
+	private void updateStorage(String storageName,String storage) throws SecurityException, ApplicationException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        storage=validateStorage(storage);
+        
+        
+        Element scope=_getRootElement("scope");
+        if(!StringUtil.isEmpty(storage,true))scope.setAttribute(storageName+"storage",storage);
+        else scope.removeAttribute(storageName+"storage");
+	}
+    
+    
+    
+    private String validateStorage(String storage) throws ApplicationException {
+    	storage=storage.trim().toLowerCase();
+        
+    	// empty
+    	if(StringUtil.isEmpty(storage,true)) return "";
+    	
+    	// standard storages
+    	if("cookie".equals(storage) || "memory".equals(storage) || "file".equals(storage)) 
+    		return storage;
+    	
+    	// aliases
+    	if("ram".equals(storage)) return "memory";
+    	if("registry".equals(storage)) return "file";
+    	
+    	// datasource
+    	DataSource  ds = config.getDataSource(storage,null);
+    	if(ds!=null) {
+    		if(ds.isStorage())return storage;
+    		throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage");
+    	}
+		
+    	// cache
+    	CacheConnection cc = Util.getCacheConnection(config, storage,null);
+    	if(cc!=null) {
+    		if(cc.isStorage())return storage;
+    		throw new ApplicationException("cache ["+storage+"] is not enabled to be used as session/client storage");
+    	}
+    	
+    	String sdx=StringUtil.soundex(storage);
+    	
+    	// check if a datasource has a similar name 
+    	DataSource[] sources = config.getDataSources();
+    	for(int i=0;i<sources.length;i++){
+    		if(StringUtil.soundex(sources[i].getName()).equals(sdx))
+    			throw new ApplicationException("no matching storage for ["+storage+"] found, did you mean ["+sources[i].getName()+"]");
+    	}
+    	
+    	// check if a cache has a similar name 
+    	Iterator<String> it = config.getCacheConnections().keySet().iterator();
+    	String name;
+    	while(it.hasNext()){
+    		name=it.next();
+    		if(StringUtil.soundex(name).equals(sdx))
+    			throw new ApplicationException( "no matching storage for ["+storage+"] found, did you mean ["+name+"]");
+    	}
+    	
+		
+    	throw new ApplicationException("no matching storage for ["+storage+"] found");
+	}
+
+
+	/**
      * updates session timeout value
      * @param span
      * @throws SecurityException
@@ -4058,22 +4145,35 @@ public final class ConfigWebAdmin {
         filesDeployed.add(trg);
         _store((ConfigImpl)config);
     }
-	private boolean removeContexts(Config config,String[] realpathes, boolean store) throws PageException, IOException, SAXException {
+	public boolean removeContext(Config config, boolean store,String... realpathes) throws PageException, IOException, SAXException {
 		if(ArrayUtil.isEmpty(realpathes)) return false;
 		boolean force=false;
 		for(int i=0;i<realpathes.length;i++){
-			if(removeContext(config, realpathes[i],store))
+			if(_removeContext(config, realpathes[i],store))
 				force=true;
 		}
 		return force;
 	}
-	public boolean removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
+	
+	private boolean _removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
     	
 		if(config instanceof ConfigServer) {
-    		boolean store=false;
-			ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+			ConfigServer cs = ((ConfigServer)config);
+    		
+			// remove files from deploy folder
+			Resource deploy = cs.getConfigDir().getRealResource("web-context-deployment");
+    		Resource trg = deploy.getRealResource(realpath);
+    		
+    		if(trg.exists()) {
+    			trg.remove(true);
+    			ResourceUtil.removeEmptyFolders(deploy);
+    		}
+    		
+			// remove files from railo web context
+			boolean store=false;
+			ConfigWeb[] webs = cs.getConfigWebs();
     		for(int i=0;i<webs.length;i++){
-	    		if(removeContext(webs[i], realpath,_store)) {
+	    		if(_removeContext(webs[i], realpath,_store)) {
 	    			store=true;
 	    		}
 	    	}
@@ -4081,10 +4181,12 @@ public final class ConfigWebAdmin {
     	}
 		
     	// ConfigWeb
-    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
-        if(trg.exists()) {
+		Resource context = config.getConfigDir().getRealResource("context");
+    	Resource trg = context.getRealResource(realpath);
+    	if(trg.exists()) {
         	trg.remove(true);
         	if(_store) ConfigWebAdmin._store((ConfigImpl) config);
+        	ResourceUtil.removeEmptyFolders(context);
         	return true;
         }
         return false;
@@ -4192,7 +4294,7 @@ public final class ConfigWebAdmin {
   				removeTLDs(arr);
   				// contexts
   				arr=_removeExtensionCheckOtherUsage(children,el,"contexts");
-  				storeChildren=removeContexts(config, arr,false);
+  				storeChildren=removeContext(config,false, arr);
   				// applications
   				arr=_removeExtensionCheckOtherUsage(children,el,"applications");
   				removeApplications(config, arr);
@@ -4316,6 +4418,23 @@ public final class ConfigWebAdmin {
         root.setAttribute("auth-keys",authKeysAsList(set));
 	}
 
+	public void updateAPIKey(String key) throws SecurityException, ApplicationException {
+		checkWriteAccess();
+		key=key.trim();
+		if(!Decision.isGUId(key))
+			throw new ApplicationException("passed API Key ["+key+"] is not valid");
+		Element root=doc.getDocumentElement();
+        root.setAttribute("api-key",key);
+		
+	}
+	
+	public void removeAPIKey() throws PageException {
+		checkWriteAccess();
+		Element root=doc.getDocumentElement();
+        if(root.hasAttribute("api-key"))
+        	root.removeAttribute("api-key");
+	}
+
 	private String authKeysAsList(Set<String> set) throws PageException {
 		StringBuilder sb=new StringBuilder();
 		Iterator<String> it = set.iterator();
@@ -4332,4 +4451,7 @@ public final class ConfigWebAdmin {
 		}
 		return sb.toString();
 	}
+
+
+
 }

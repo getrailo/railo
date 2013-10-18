@@ -9,7 +9,6 @@ import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
 import railo.runtime.net.rpc.server.StringDeserializerFactory;
 import railo.runtime.net.rpc.server.StringSerializerFactory;
-
 import coldfusion.xml.rpc.QueryBean;
 
 public class TypeMappingUtil {

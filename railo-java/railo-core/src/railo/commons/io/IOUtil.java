@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.zip.ZipFile;
 
@@ -374,6 +375,13 @@ public final class IOUtil {
          catch (Throwable e) {}
        }
      
+     public static void closeEL(ResultSet rs) {
+         try {
+             if(rs!=null)rs.close();
+       } 
+       catch (Throwable e) {}
+     }
+     
      /**
       * close Reader without a Exception
       * @param r 
@@ -443,6 +451,7 @@ public final class IOUtil {
          else if(obj instanceof Reader)         IOUtil.closeEL((Reader)obj);
          else if(obj instanceof Closeable)         IOUtil.closeEL((Closeable)obj);
          else if(obj instanceof ZipFile)        IOUtil.closeEL((ZipFile)obj);
+         else if(obj instanceof ResultSet)        IOUtil.closeEL((ResultSet)obj);
          else {
              try {
                  Method method = obj.getClass().getMethod("close",new Class[0]);

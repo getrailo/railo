@@ -16,7 +16,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 
 import railo.runtime.type.Sizeable;

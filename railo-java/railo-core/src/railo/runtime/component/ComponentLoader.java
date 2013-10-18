@@ -35,20 +35,20 @@ public class ComponentLoader {
 
     private static final ResourceFilter DIR_OR_EXT=new OrResourceFilter(new ResourceFilter[]{DirectoryResourceFilter.FILTER,new ExtensionResourceFilter(".cfc")});
 
-	public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
-    	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null,false);
+	public static ComponentImpl loadComponent(PageContext pc,PageSource child,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    	return (ComponentImpl)load(pc,child, rawPath, searchLocal, searchRoot,null,false);
     }
 
-    public static InterfaceImpl loadInterface(PageContext pc,String rawPath, Map interfaceUDFs) throws PageException  {
-    	return (InterfaceImpl)load(pc, rawPath, Boolean.TRUE, Boolean.TRUE,interfaceUDFs,false);
+    public static InterfaceImpl loadInterface(PageContext pc,PageSource child,String rawPath, Map interfaceUDFs) throws PageException  {
+    	return (InterfaceImpl)load(pc,child, rawPath, Boolean.TRUE, Boolean.TRUE,interfaceUDFs,false);
     }
 	
-    public static Page loadPage(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
-    	return (Page)load(pc, rawPath, searchLocal, searchRoot,null,true);
+    public static Page loadPage(PageContext pc,PageSource child,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    	return (Page)load(pc, child,rawPath, searchLocal, searchRoot,null,true);
     }
     
     
-    private static Object load(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot, Map interfaceUDFs, boolean returnPage) throws PageException  {
+    private static Object load(PageContext pc,PageSource child,String rawPath, Boolean searchLocal, Boolean searchRoot, Map interfaceUDFs, boolean returnPage) throws PageException  {
     	ConfigImpl config=(ConfigImpl) pc.getConfig();
     	boolean doCache=config.useComponentPathCache();
     	
@@ -245,10 +245,14 @@ public class ComponentLoader {
 
     	// search relative to active cfc (this get not cached because the cache get ambigous if we do)
     	if(searchLocal && isRealPath)	{
-    		Component cfc = pc.getActiveComponent();
-    		if(cfc!=null) {
-	    		PageSource psCFC = cfc.getPageSource();
-		    	ps=psCFC.getRealPage(pathWithCFC);
+    		if(child==null) {
+    			Component cfc = pc.getActiveComponent();
+    			if(cfc!=null) child = cfc.getPageSource();
+    		}
+    		
+    		
+    		if(child!=null) {
+	    		ps=child.getRealPage(pathWithCFC);
 	    		if(ps!=null) {
 					page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
 	
@@ -263,7 +267,7 @@ public class ComponentLoader {
     	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
     		String rpm="org.railo.cfml."+rawPath.substring(6);
     		try{
-    			return load(pc,rpm, searchLocal, searchRoot, interfaceUDFs,returnPage);
+    			return load(pc,child,rpm, searchLocal, searchRoot, interfaceUDFs,returnPage);
         	}
         	catch(ExpressionException ee){
         		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);

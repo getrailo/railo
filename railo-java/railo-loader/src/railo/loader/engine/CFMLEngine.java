@@ -216,4 +216,9 @@ public interface CFMLEngine {
 	public abstract void registerThreadPageContext(PageContext pc);
 
 	
+	// FUTURE add public ConfigServer getConfigServer(String password);
+
+    // FUTURE add public ConfigServer getConfigServer(String key, long timeNonce);
+
+	
 }

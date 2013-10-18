@@ -10,6 +10,8 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
 import railo.runtime.db.SQL;
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 
 public class ORMDatasourceConnection implements DatasourceConnection {
@@ -19,7 +21,16 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 	private Boolean supportsGetGeneratedKeys;
 
 	public ORMDatasourceConnection(PageContext pc, ORMSession session) {
-		datasource=session.getEngine().getDataSource();
+		datasource=session.getDataSource();
+		// this should never happen
+		if(datasource==null) {
+			try {
+				datasource=ORMUtil.getDataSource(pc);
+			}
+			catch (PageException pe) {
+				throw new PageRuntimeException(pe);
+			}
+		}
 		connection=new ORMConnection(pc,session);
 	}
 

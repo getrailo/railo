@@ -3,7 +3,7 @@ package railo.runtime.tag;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.WildcardPatternFilter;
 
-public class ZipParamSource {
+public class ZipParamSource implements ZipParamAbstr {
 
 	private Resource source;
 	private String entryPath;

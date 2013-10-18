@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -64,6 +65,7 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
@@ -76,7 +78,6 @@ import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
@@ -86,7 +87,6 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMException;
 import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.rest.RestSettings;
 import railo.runtime.schedule.Scheduler;
@@ -95,7 +95,6 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
-import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -125,7 +124,7 @@ import flex.messaging.config.ConfigMap;
  */
 public abstract class ConfigImpl implements Config {
 
-	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config
+	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config; Hibernate Extension has hardcoded this 4, do not change!!!!
 
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
@@ -159,6 +158,10 @@ public abstract class ConfigImpl implements Config {
 	public static final int CFML_WRITER_REFULAR=1;
 	public static final int CFML_WRITER_WS=2;
 	public static final int CFML_WRITER_WS_PREF=3;
+
+
+	public static final String DEFAULT_STORAGE_SESSION = "memory";
+	public static final String DEFAULT_STORAGE_CLIENT = "cookie";
 	
 	
 	private int mode=MODE_CUSTOM;
@@ -209,6 +212,9 @@ public abstract class ConfigImpl implements Config {
 
     private Resource configFile;
     private Resource configDir;
+	private String sessionStorage=DEFAULT_STORAGE_SESSION;
+	private String clientStorage=DEFAULT_STORAGE_CLIENT;
+	
 
     private long loadTime;
 
@@ -397,7 +403,7 @@ public abstract class ConfigImpl implements Config {
 	protected int writerType=CFML_WRITER_REFULAR;
 	private long configFileLastModified;
 	private boolean checkForChangesInConfigFile;
-	
+	private String apiKey=null;
 	
 	
 	/**
@@ -725,8 +731,9 @@ public abstract class ConfigImpl implements Config {
         return password;
     }
     
-    protected boolean isPasswordEqual(String password) {
+    protected boolean isPasswordEqual(String password, boolean hashIfNecessary) {
     	if(this.password.equals(password)) return true;
+    	if(!hashIfNecessary) return false;
     	try {
     		return this.password.equals(ConfigWebFactory.hash(password));
 		}
@@ -743,7 +750,7 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public boolean passwordEqual(String password) {
-        return this.password.equals(password);
+        return isPasswordEqual(password,true);
     }
 
     @Override
@@ -1946,17 +1953,20 @@ public abstract class ConfigImpl implements Config {
     @Override
     public String getId() {
     	if(id==null){
-    		id = getId(getSecurityKey(),getSecurityToken(),securityKey);
+    		id = getId(getSecurityKey(),getSecurityToken(),false,securityKey);
     	}
     	return id;
 	}
 
-    public static String getId(String key, String token,String defaultValue) {
+    public static String getId(String key, String token,boolean addMacAddress,String defaultValue) {
     	
 		try {
+			if(addMacAddress){// because this was new we could swutch to a new ecryption // FUTURE cold we get rid of the old one?
+				return Hash.sha256(key+";"+token+":"+SystemUtil.getMacAddress());
+			}
 			return Md5.getDigestAsString(key+token);
 		} 
-    	catch (IOException e) {
+    	catch (Throwable t) {
 			return defaultValue;
 		}
 	}
@@ -3104,12 +3114,12 @@ public abstract class ConfigImpl implements Config {
 			}
 			
 			if(hasError) {
-				// try to load hibernate jars
+				// try to load orm jars
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
-					throw new ORMException(
+					throw new ApplicationException(
 						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
 						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
-				throw new ORMException(
+				throw new ApplicationException(
 							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
 							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
 			
@@ -3288,6 +3298,8 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	private final Map compressResources= new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+
+
 	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) compressResources.get(zipFile.getPath());
 		if(compress==null) {
@@ -3304,6 +3316,24 @@ public abstract class ConfigImpl implements Config {
 	public boolean getClientCluster() {
 		return false;
 	}
+	
+	public String getClientStorage() {
+		return clientStorage;
+	}
+	
+	public String getSessionStorage() {
+		return sessionStorage;
+	}
+	
+	protected void setClientStorage(String clientStorage) {
+		this.clientStorage = clientStorage;
+	}
+	
+	protected void setSessionStorage(String sessionStorage) {
+		this.sessionStorage = sessionStorage;
+	}
+	
+	
 	
 	private Map<String,ComponentMetaData> componentMetaData=null;
 	public ComponentMetaData getComponentMetadata(String key) {
@@ -3415,6 +3445,9 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	private boolean bufferOutput=true;
+
+
+	private int externalizeStringGTE=-1;
 	public boolean getBufferOutput() {
 		return bufferOutput;
 	}
@@ -3474,5 +3507,20 @@ public abstract class ConfigImpl implements Config {
     public abstract boolean getFullNullSupport();
 
     public abstract Cluster createClusterScope() throws PageException;
+
+	protected void setApiKey(String apiKey) {
+		this.apiKey=apiKey;
+	}
+	
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	protected void setExternalizeStringGTE(int externalizeStringGTE) {
+		this.externalizeStringGTE=externalizeStringGTE;
+	}
+	public int getExternalizeStringGTE() {
+		return externalizeStringGTE;
+	}
 	
 }

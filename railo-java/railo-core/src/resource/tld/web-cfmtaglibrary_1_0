@@ -578,6 +578,23 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<rtexprvalue>true</rtexprvalue>
 			<description>closure/udf executed when the requested template does not exist</description>
 		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>locale</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Sets the country/language locale for CFML processing. The locale value
+        determines the default format of date, time, number, and
+        currency values, according to language and regional
+        conventions.</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>timeZone</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>change the timezone defintion for the current application context.</description>
+		</attribute>
 		
 	</tag>
 	<!-- Argument -->
@@ -2115,8 +2132,8 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<rtexprvalue>true</rtexprvalue>
 			<description>User name to connect to the database.</description>
 		</attribute>
-
 	</tag>
+
 	<!-- Defaultcase -->
 	<tag>
 		<name>defaultcase</name>
@@ -2127,6 +2144,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<description>Handles interactions with directories.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
+
 	<!-- Directory -->
 	<tag>
 		<name>directory</name>
@@ -2272,9 +2290,19 @@ Example:
 			<name>nameconflict</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Used with action = "copy". Ignored by all other actions. Optional values are: [Overwrite]|Error.</description>
+			<description>When used with action="copy" the possible values are: [Overwrite]|Error.  When used with action="create" the possible values are: [Error]|Skip. Ignored for all other actions.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>createPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+	   			if set to false, expects all parent directories to exist, true (default) will generate necessary directories
+	   		</description>
 		</attribute>
 	</tag>
+
 	<!-- Div -->
 	<tag>
 		<name>Div</name>
@@ -3221,8 +3249,22 @@ If omitted, the file's attributes are maintained.</description>
 			<name>strict</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>if set to true (default), only mimetypes are supported.</description>
+			<description>
+   for action "upload" and "uploadAll":
+   if set to true (default), only mimetypes are supported.
+   </description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>createPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+   for action "append", "touch" and "write":
+   if set to false (default), expects all parent directories to exist, true will generate necessary directories
+   </description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>file</name>
@@ -9445,12 +9487,23 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<rtexprvalue>true</rtexprvalue>
 			<description>Corresponds to the actual value that Railo passes to the stored procedure.</description>
 		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>sqltype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The SQL type that the parameter (any type) will be bound to.</description>
+		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>CFSQLType</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The SQL type that the parameter of any type is bound to.</description>
+			<status>deprecated</status>
+			<description>
+			This attribute has been deprecated, use instead the attribute "sqltype" that has exact the same functionality.
+			</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -9772,7 +9825,7 @@ Manipulates existing PDF documents. The following list describes some of the tas
             - ExecutionTime: Execution time for the SQL request. (numeric)</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>any</type>
 			<name>dataSource</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -9954,6 +10007,15 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			lazy is only working when the following attributes are not used: cachewithin,cacheafter,result
 			</description>
 		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>params</name>
+			<required>false</required>
+			<status>hidden</status>
+			<rtexprvalue>true</rtexprvalue>
+			<description>experimentell</description>
+		</attribute>
+		
 	</tag>
 	<!-- QueryParam -->
 	<tag>
@@ -9980,10 +10042,20 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		</attribute>
 		<attribute>
 			<type>string</type>
-			<name>CFSQLType</name>
+			<name>sqltype</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The SQL type that the parameter (any type) will be bound to.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>CFSQLType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
+			<description>
+			This attribute has been deprecated, use instead the attribute "sqltype" that has exact the same functionality.
+			</description>
 		</attribute>
 		<attribute>
 			<type>number</type>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -25,11 +26,15 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.AppListenerUtil;
+import railo.runtime.listener.ApplicationContextPro;
+
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.tag.util.QueryParamConverter;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -122,6 +127,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private TimeZone timezone;
 	private TimeZone tmpTZ;
 	private boolean lazy;
+	private Object params;
 	
 	
 	
@@ -153,6 +159,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		timezone=null;
 		tmpTZ=null;
 		lazy=false;
+		params=null;
 	}
 	
 	
@@ -210,9 +217,20 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	/** set the value datasource
 	*  The name of the data source from which this query should retrieve data.
 	* @param datasource value to set
+	 * @throws ClassException 
 	**/
-	public void setDatasource(String datasource) throws PageException	{
-		this.datasource=((PageContextImpl)pageContext).getDataSource(datasource);
+
+	public void setDatasource(Object datasource) throws PageException, ClassException	{
+		if (Decision.isStruct(datasource)) {
+			this.datasource=AppListenerUtil.toDataSource("__temp__", Caster.toStruct(datasource));
+		} 
+		else if (Decision.isString(datasource)) {
+			this.datasource=((PageContextImpl)pageContext).getDataSource(Caster.toString(datasource));
+		} 
+		else {
+			throw new ApplicationException("attribute [datasource] must be datasource name or a datasource definition(struct)");
+			
+		}
 	}
 
 	/** set the value timeout
@@ -377,6 +395,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
     public void setParam(SQLItem item) {
         items.add(item);
     }
+    
+    public void setParams(Object params) {
+        this.params=params;
+    }
 
 
 	@Override
@@ -415,8 +437,23 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	public int doEndTag() throws PageException	{		
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
-		if(strSQL.length()==0) throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
-		SQL sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
+		// no SQL String defined
+		if(strSQL.length()==0) 
+			throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
+		// cannot use attribute params and queryparam tag
+		if(items.size()>0 && params!=null)
+			throw new DatabaseException("you cannot use the attribute params and sub tags queryparam at the same time",null,null,null);
+		// create SQL
+		SQL sql;
+		if(params!=null) {
+			if(Decision.isArray(params))
+				sql=QueryParamConverter.convert(strSQL, Caster.toArray(params));
+			else if(Decision.isStruct(params))
+				sql=QueryParamConverter.convert(strSQL, Caster.toStruct(params));
+			else
+				throw new DatabaseException("value of the attribute [params] has to be a struct or a array",null,null,null);
+		}
+		else sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
 		
 		railo.runtime.type.Query query=null;
 		long exe=0;
@@ -591,7 +628,6 @@ cachename: Name of the cache in secondary cache.
 	
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		if(Decision.isCastableToArray(params))
 			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))

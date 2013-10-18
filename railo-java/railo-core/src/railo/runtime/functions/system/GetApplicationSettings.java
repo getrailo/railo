@@ -1,7 +1,9 @@
 package railo.runtime.functions.system;
 
 import java.util.Iterator;
+import java.util.TimeZone;
 
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
@@ -12,6 +14,8 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.dateTime.GetTimeZone;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.JavaSettings;
@@ -62,6 +66,8 @@ public class GetApplicationSettings {
 		sct.setEL("setDomainCookies", Caster.toBoolean(ac.isSetDomainCookies()));
 		sct.setEL(KeyConstants._name, ac.getName());
 		sct.setEL("localMode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?Boolean.TRUE:Boolean.FALSE);
+		sct.setEL(KeyConstants._locale,LocaleFactory.toString(pc.getLocale()));
+		sct.setEL(KeyConstants._timezone,TimeZoneUtil.toString(pc.getTimeZone()));
 		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 

@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.collection.LinkedHashMapMaxSize;
+import railo.commons.collection.QueueMaxSize;
 import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -69,8 +71,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private ConfigServerImpl configServer;
     private SecurityManager securityManager;
     private static final LockManager lockManager= LockManagerImpl.getInstance(false);
-	private static final long FIVE_SECONDS = 5000;
-    private Resource rootDir;
+	private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;
 	private MappingImpl serverTagMapping;
@@ -79,8 +80,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
-	private long lastNonce;
-	
+    
     
 
     //private File deployDirectory;
@@ -163,40 +163,22 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     
     @Override
     public ConfigServer getConfigServer(String password) throws ExpressionException {
-        if(!configServer.hasPassword())
-            throw new ExpressionException("Cannot access, no password is defined");
-        if(!configServer.isPasswordEqual(password))
-            throw new ExpressionException("No access, password is invalid");
-        return configServer;
+        configServer.checkAccess(password);
+    	return configServer;
     }
     
+    // FUTURE add to public interface
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
-    	if(lastNonce>timeNonce)
-        	throw new ApplicationException("last access was with a newer nonce");
-    	long now = System.currentTimeMillis();
-    	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
-    		throw new ApplicationException("nonce is outdated");
-    	
-    	lastNonce=timeNonce;
-    	
-    	String[] keys=configServer.getAuthenticationKeys();
-    	
-    	// check if one of the keys matching
-    	String hash;
-    	for(int i=0;i<keys.length;i++){
-    		try {
-				hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
-				if(hash.equals(key)) return configServer;
-			}
-			catch (NoSuchAlgorithmException e) {
-				throw Caster.toPageException(e);
-			}
-    	}
-    	throw new ApplicationException("No access, no matching key found");
+    	configServer.checkAccess(key,timeNonce);
+    	return configServer;
     }
     
     public String getServerId() {
         return configServer.getId();
+    }
+    
+    public String getServerIdPro() {
+        return configServer.getIdPro();
     }
 
     public String getServerSecurityKey() {
@@ -483,5 +465,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		}
 		public boolean hasIndividualSecurityManager() {
 			return configServer.hasIndividualSecurityManager(getId());
+	    }
+		public String getServerApiKey() {
+			return configServer.getApiKey();
 	    }
 }

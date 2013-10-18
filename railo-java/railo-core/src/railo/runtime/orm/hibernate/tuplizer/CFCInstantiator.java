@@ -9,18 +9,17 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tuple.Instantiator;
 
 import railo.runtime.Component;
-import railo.runtime.PageContextImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMSession;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
+import railo.runtime.orm.hibernate.HibernatePageException;
+import railo.runtime.orm.hibernate.HibernateUtil;
 
 public class CFCInstantiator implements Instantiator {
 	
-	//private static final Collection.Key INIT = KeyImpl.intern("init");
 	private String entityName;
 	private Set<String> isInstanceEntityNames = new HashSet<String>();
 	
@@ -52,19 +51,21 @@ public class CFCInstantiator implements Instantiator {
 	@Override
 	public final Object instantiate() {
 		try {
-			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
-			HibernateORMSession session=(HibernateORMSession) pc.getORMSession(true);
+			PageContext pc = CommonUtil.pc();
+			HibernateORMSession session=HibernateUtil.getORMSession(pc,true);
 			HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
-			return engine.create(pc, session, entityName, true);
+			Component c = engine.create(pc, session, entityName, true);
+			CommonUtil.setEntity(c,true);
+			return c;//new CFCProxy(c);
 		} 
-		catch (PageException e) {
-			throw new HibernateRuntimeException(e);
+		catch (PageException pe) {
+			throw new HibernatePageException(pe);
 		}
 	}
 
 	@Override
 	public final boolean isInstance(Object object) {
-		Component cfc = Caster.toComponent(object,null);
+		Component cfc = CommonUtil.toComponent(object,null);
 		if(cfc==null) return false;
 		return isInstanceEntityNames.contains( HibernateCaster.getEntityName(cfc));
 	}

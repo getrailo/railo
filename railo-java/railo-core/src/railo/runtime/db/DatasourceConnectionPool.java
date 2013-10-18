@@ -72,7 +72,7 @@ public class DatasourceConnectionPool {
         	conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
-        	throw new DatabaseException("can't connect to datasource ["+ds.getName()+"]",e,null,null);
+        	throw new DatabaseException(e,null);
         }
 		//print.err("create connection");
         return new DatasourceConnectionImpl(conn,ds,user,pass);

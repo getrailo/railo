@@ -7,13 +7,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.IgnoreSystemFiles;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.http.HTTPResource;
@@ -1056,14 +1059,17 @@ public final class ResourceUtil {
 		}
 	}
 	
-	public static void moveTo(Resource src, Resource dest) throws IOException {
+	public static void moveTo(Resource src, Resource dest, boolean useResourceMethod) throws IOException {
 		ResourceUtil.checkMoveToOK(src, dest);
 		
 		if(src.isFile()){
 			try{
-				src.moveTo(dest);
+				if(useResourceMethod)src.moveTo(dest);
 			}
 			catch(IOException e){
+				useResourceMethod=false;
+			}
+			if(!useResourceMethod) {
 				if(!dest.exists()) dest.createFile(false);
 				IOUtil.copy(src,dest);
 				src.remove(false);
@@ -1073,7 +1079,7 @@ public final class ResourceUtil {
 			if(!dest.exists()) dest.createDirectory(false);
 			Resource[] children = src.listResources();
 			for(int i=0;i<children.length;i++){
-				moveTo(children[i],dest.getRealResource(children[i].getName()));
+				moveTo(children[i],dest.getRealResource(children[i].getName()),useResourceMethod);
 			}
 			src.remove(false);
 		}
@@ -1110,6 +1116,26 @@ public final class ResourceUtil {
 		return 0;
 	}
 
+	public static int getChildCount(Resource res) {
+		return getChildCount(res, null);
+	}
+	
+	public static int getChildCount(Resource res, ResourceFilter filter) {
+		if(res.isFile()) {
+			return 1;
+		}
+		else if(res.isDirectory()) {
+			int size=0;
+			Resource[] children = filter==null?res.listResources():res.listResources(filter);
+			for(int i=0;i<children.length;i++) {
+				size+=getChildCount(children[i]);
+			}
+			return size;
+		}
+		
+		return 0;
+	}
+
 
 	/**
 	 * return if Resource is empty, means is directory and has no children or a empty file,
@@ -1118,15 +1144,26 @@ public final class ResourceUtil {
 	 * @return
 	 */
 	public static boolean isEmpty(Resource res) {
-		return isEmptyDirectory(res) || isEmptyFile(res);
+		return isEmptyDirectory(res,null) || isEmptyFile(res);
 	}
 
-	public static boolean isEmptyDirectory(Resource res) {
+	/**
+	 * return Boolean.True when directory is empty, Boolean.FALSE when directory s not empty and null if directory does not exists
+	 * @param res
+	 * @return
+	 */
+	public static boolean isEmptyDirectory(Resource res, ResourceFilter filter) {
 		if(res.isDirectory()) {
-			String[] children = res.list();
-			return children==null || children.length==0;
+			Resource[] children = filter==null? res.listResources(): res.listResources(filter);
+			if(children==null || children.length==0) return true;
+			
+			for(int i=0;i<children.length;i++){
+				if(children[i].isFile()) return false;
+				if(children[i].isDirectory() &&  !isEmptyDirectory(children[i], filter)) return false;
+			}
+			
 		}
-		return false;
+		return true;
 	}
 	
 	public static boolean isEmptyFile(Resource res) {
@@ -1207,7 +1244,7 @@ public final class ResourceUtil {
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
-				else throw new IOException("can't create file ["+resource.getPath()+"], missng parent directory");
+				else throw new IOException("can't create file ["+resource.getPath()+"], missing parent directory");
 			}
 			else if(parent.isFile()) {
 				throw new IOException("can't create directory ["+resource.getPath()+"], parent is a file");
@@ -1235,7 +1272,7 @@ public final class ResourceUtil {
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
-				else throw new IOException("can't create file ["+resource.getPath()+"], missng parent directory");
+				else throw new IOException("can't create file ["+resource.getPath()+"], missing parent directory");
 			}
 			else if(parent.isFile()) {
 				throw new IOException("can't create file ["+resource.getPath()+"], parent is a file");
@@ -1381,6 +1418,26 @@ public final class ResourceUtil {
     		}
     	}
     	return list.toArray(new Resource[list.size()]);
+	}
+	public static void removeEmptyFolders(Resource dir) throws IOException {
+		if(!dir.isDirectory()) return;
+		
+		Resource[] children = dir.listResources(IgnoreSystemFiles.INSTANCE);
+		
+		if(!ArrayUtil.isEmpty(children)) {
+			boolean hasFiles=false;
+			for(int i=0;i<children.length;i++){
+				if(children[i].isDirectory()) removeEmptyFolders(children[i]);
+				else if(children[i].isFile()) {
+					hasFiles=true;
+				}
+			}
+			if(!hasFiles){
+				children = dir.listResources(IgnoreSystemFiles.INSTANCE);
+			}
+			
+		}
+		if(ArrayUtil.isEmpty(children)) dir.remove(true);
 	}
 
 }

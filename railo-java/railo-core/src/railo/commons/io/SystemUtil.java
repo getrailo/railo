@@ -9,7 +9,9 @@ import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
@@ -34,7 +36,6 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
-import railo.runtime.exp.PageException;
 import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
@@ -156,7 +157,8 @@ public final class SystemUtil {
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
 	private static Boolean isCLI;
-	private static double loaderVersion=0D; 
+	private static double loaderVersion=0D;
+	private static String macAddress; 
 
     /**
      * returns if the file system case sensitive or not
@@ -920,5 +922,23 @@ public final class SystemUtil {
 			}
 		}
 		return loaderVersion;
+	}
+	public static String getMacAddress() {
+		if(macAddress==null) {
+			try{
+				InetAddress ip = InetAddress.getLocalHost();
+				NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+				byte[] mac = network.getHardwareAddress();
+		  
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < mac.length; i++) {
+					sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));		
+				}
+				macAddress= sb.toString();
+			}
+			catch(Throwable t){}
+			
+		}
+		return macAddress;
 	}
 }

@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -178,7 +177,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	
     private Page loadArchive(Page page) {
     	if(!mapping.hasArchive()) return null;
-		if(page!=null) return page;
+		if(page!=null && page.getLoadType()==LOAD_ARCHIVE) return page;
         
         try {
             synchronized(this) {
@@ -295,7 +294,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
 	}
 
-	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws IOException, SecurityException, IllegalArgumentException, PageException {
+	private Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws IOException, SecurityException, IllegalArgumentException, PageException {
         ConfigWebImpl cwi=(ConfigWebImpl) config;
         
         
@@ -626,7 +625,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     }
 
     @Override
-    public synchronized boolean exists() {
+    public boolean exists() {
     	if(mapping.isPhysicalFirst())
 	        return physcalExists() || archiveExists();
 	    return archiveExists() || physcalExists();

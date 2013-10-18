@@ -3,7 +3,6 @@ package railo.commons.net.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;

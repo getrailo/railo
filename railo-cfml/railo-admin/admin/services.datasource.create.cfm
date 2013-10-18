@@ -6,7 +6,7 @@
 		<cfset DatasourceFlushMetaCache(form.name)>
 		
 	<cfelseif StructKeyExists(form,"run") and form.run EQ "create2">
-		<cfset driver=createObject("component","dbdriver."&form.type)>
+		<cfset driver=createObject("component",drivernames[form.type])>
 		<cfset driver.onBeforeUpdate()>
 		<cfset custom=struct()>
 		<cfloop collection="#form#" item="key">
@@ -109,8 +109,7 @@
 		<cfset datasource.password="****************">
 		<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
 	</cfif>
-	
-	<cfset driver=createObject("component","dbdriver."&datasource.type)>
+	<cfset driver=createObject("component",drivernames[datasource.type])>
 
 	<cfif isInsert>
 		<cfset datasource.host=driver.getValue('host')>
@@ -422,13 +421,14 @@
 								</select>
 							<!--- @todo type checkbox --->
 							<cfelseif type EQ "radio">
-								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
+								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listGetAt(default,field.getDefaultValueIndex())></cfif>
 								<cfloop index="item" list="#field.getDefaultValue()#">
 									<cfinput type="radio" class="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 									#item#
 								</cfloop>
 							<!--- @todo type checkbox,radio --->
 							</cfif>
+								<cfif len(trim(field.getDescription()))><br><div class="comment">#field.getDescription()#</div></cfif>
 						</td>
 					</tr>
 				</cfloop>

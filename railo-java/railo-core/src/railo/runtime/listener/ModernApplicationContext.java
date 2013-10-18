@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
@@ -22,6 +25,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -93,7 +97,6 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private int loginStorage=Scope.SCOPE_COOKIE;
 	private int scriptProtect;
 	private Object defaultDataSource;
-	private int localMode;
 	private boolean bufferOutput;
 	private short sessionType;
 	private boolean sessionCluster;
@@ -137,6 +140,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSameFieldAsArrays;
 	private boolean initCTMappings;
 	private boolean initCMappings;
+	private int localMode;
 	private boolean initLocalMode;
 	private boolean initBufferOutput;
 	private boolean initS3;
@@ -147,7 +151,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initJavaSettings;
 	private JavaSettings javaSettings;
 	private Object ormDatasource;
-
+	private Locale locale;
+	private boolean initLocale;
+	private TimeZone timeZone;
+	private boolean initTimeZone;
+	
 	private Resource[] restCFCLocations;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
@@ -162,10 +170,15 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         scriptProtect=config.getScriptProtect();
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
+        this.locale=config.getLocale();
+        this.timeZone=config.getTimeZone();
         this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
+        this.sessionStorage=((ConfigImpl)config).getSessionStorage();
+        this.clientStorage=((ConfigImpl)config).getClientStorage();
+        
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSetting=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
@@ -351,8 +364,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	@Override
 	public String getClientstorage() {
 		if(!initClientStorage) {
-			Object o=get(component,CLIENT_STORAGE,null);
-			if(o!=null)clientStorage=Caster.toString(o,clientStorage);
+			String str=Caster.toString(get(component,CLIENT_STORAGE,null),null);
+			if(!StringUtil.isEmpty(str))clientStorage=str;
 			initClientStorage=true;
 		}
 		return clientStorage;
@@ -395,8 +408,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	@Override
 	public String getSessionstorage() {
 		if(!initSessionStorage) {
-			Object o=get(component,SESSION_STORAGE,null);
-			if(o!=null)sessionStorage=Caster.toString(o,sessionStorage);
+			String str=Caster.toString(get(component,SESSION_STORAGE,null),null);
+			if(!StringUtil.isEmpty(str))sessionStorage=str;
 			initSessionStorage=true;
 		}
 		return sessionStorage;
@@ -585,6 +598,32 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			initLocalMode=true; 
 		}
 		return localMode;
+	}
+
+	@Override
+	public Locale getLocale() {
+		if(!initLocale) {
+			Object o = get(component,KeyConstants._locale,null);
+			if(o!=null){
+				String str = Caster.toString(o,null);
+				if(!StringUtil.isEmpty(str))locale=LocaleFactory.getLocale(str,locale);
+			}
+			initLocale=true; 
+		}
+		return locale;
+	}
+
+	@Override
+	public TimeZone getTimeZone() {
+		if(!initTimeZone) {
+			Object o = get(component,KeyConstants._timezone,null);
+			if(o!=null){
+				String str = Caster.toString(o,null);
+				if(!StringUtil.isEmpty(str))timeZone=TimeZoneUtil.toTimeZone(str,timeZone);
+			}
+			initTimeZone=true; 
+		}
+		return timeZone;
 	}
 	
 
@@ -803,6 +842,19 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		initLocalMode=true;
 		this.localMode=localMode;
 	}
+
+	@Override
+	public void setLocale(Locale locale) {
+		initLocale=true;
+		this.locale=locale;
+	}
+
+	@Override
+	public void setTimeZone(TimeZone timeZone) {
+		initTimeZone=true;
+		this.timeZone=timeZone;
+	}
+	
 	public void setBufferOutput(boolean bufferOutput) {
 		initBufferOutput=true;
 		this.bufferOutput=bufferOutput;

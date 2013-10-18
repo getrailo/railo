@@ -35,41 +35,45 @@ public final class ClassUtil {
 	 * @throws PageException
 	 */
 	public static Class toClass(String className) throws ClassException {
-		className = className.trim();
+		return ClassUtil.loadClass(className);
+	}
+	
+	private static Class checkPrimaryTypes(String className, Class defaultValue) {
 		String lcClassName=className.toLowerCase();
 		boolean isRef=false;
+		
 		if(lcClassName.startsWith("java.lang.")){
 			lcClassName=lcClassName.substring(10);
 			isRef=true;
 		}
 
-		if(lcClassName.equals("boolean"))	{
+		if(lcClassName.equals("boolean") || className.equals("[Z"))	{ 
 			if(isRef) return Boolean.class;
 			return boolean.class; 
 		}
-		if(lcClassName.equals("byte"))	{
+		if(lcClassName.equals("byte") || className.equals("[B"))	{
 			if(isRef) return Byte.class;
 			return byte.class; 
 		}
-		if(lcClassName.equals("int"))	{
+		if(lcClassName.equals("int") || className.equals("[I"))	{
 			return int.class; 
 		}
-		if(lcClassName.equals("long"))	{
+		if(lcClassName.equals("long") || className.equals("[J"))	{
 			if(isRef) return Long.class;
 			return long.class; 
 		}
-		if(lcClassName.equals("float"))	{
+		if(lcClassName.equals("float") || className.equals("[F"))	{
 			if(isRef) return Float.class;
 			return float.class; 
 		}
-		if(lcClassName.equals("double"))	{
+		if(lcClassName.equals("double") || className.equals("[D"))	{
 			if(isRef) return Double.class;
 			return double.class; 
 		}
-		if(lcClassName.equals("char"))	{
+		if(lcClassName.equals("char") || className.equals("[C"))	{
 			return char.class; 
 		}
-		if(lcClassName.equals("short"))	{
+		if(lcClassName.equals("short") || className.equals("[S"))	{
 			if(isRef) return Short.class;
 			return short.class; 
 		}
@@ -81,7 +85,7 @@ public final class ClassUtil {
 		if(lcClassName.equals("null"))		return Object.class; 
 		if(lcClassName.equals("numeric"))	return Double.class; 
 		
-		return ClassUtil.loadClass(className);
+		return defaultValue;
 	}
 	
 	
@@ -108,7 +112,7 @@ public final class ClassUtil {
 		if(clazz!=null) return clazz;
 		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
-
+	
 	/**
 	 * loads a class from a specified Classloader with given classname
 	 * @param className
@@ -116,6 +120,10 @@ public final class ClassUtil {
 	 * @return matching Class
 	 */
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
+		className=className.trim();
+		
+		Class clazz = checkPrimaryTypes(className, null);
+		if(clazz!=null) return clazz;
 		
 		if(cl==null){
 			PageContextImpl pci = (PageContextImpl) ThreadLocalPageContext.get();
@@ -143,14 +151,43 @@ public final class ClassUtil {
 				return Class.forName(className, false, cl);
 			} 
 			catch (ClassNotFoundException e1) {
-				if("boolean".equals(className)) return boolean.class;
-				if("char".equals(className)) return char.class;
-				if("float".equals(className)) return float.class;
-				if("short".equals(className)) return short.class;
-				if("int".equals(className)) return int.class;
-				if("long".equals(className)) return long.class;
-				if("double".equals(className)) return double.class;
-				
+				// array in the format boolean[] or java.lang.String[]
+				if(!StringUtil.isEmpty(className) && className.endsWith("[]")) {
+					StringBuilder pureCN=new StringBuilder(className);
+					int dimensions=0;
+					do{
+						pureCN.delete(pureCN.length()-2, pureCN.length());
+						dimensions++;
+					}
+					while(pureCN.lastIndexOf("[]")==pureCN.length()-2);
+					
+					clazz = loadClass(cl,pureCN.toString(),null);
+					if(clazz!=null) {
+						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
+						return clazz;
+					}
+				}
+				// array in the format [C or [Ljava.lang.String;
+				else if(!StringUtil.isEmpty(className) && className.charAt(0)=='[') {
+					StringBuilder pureCN=new StringBuilder(className);
+					int dimensions=0;
+					do{
+						pureCN.delete(0, 1);
+						dimensions++;
+					}
+					while(pureCN.charAt(0)=='[');
+					
+					clazz = loadClass(cl,pureCN.toString(),null);
+					if(clazz!=null) {
+						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
+						return clazz;
+					}
+				}
+				// class in format Ljava.lang.String;
+				else if(!StringUtil.isEmpty(className) && className.charAt(0)=='L' && className.endsWith(";")) {
+					className=className.substring(1,className.length()-1).replace('/', '.');
+					return loadClass(cl, className,defaultValue);
+				}
 				
 				return defaultValue;
 			}

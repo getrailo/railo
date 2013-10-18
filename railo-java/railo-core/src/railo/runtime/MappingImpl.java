@@ -1,6 +1,7 @@
 package railo.runtime;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Map;
 
@@ -8,16 +9,15 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.PCLCollection;
+import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.dump.DumpData;
@@ -48,7 +48,7 @@ public final class MappingImpl implements Mapping {
     private Resource archive;
     
     private boolean hasArchive;
-    private ConfigImpl config;
+    private Config config;
     private Resource classRootDirectory;
     private PageSourcePool pageSourcePool=new PageSourcePool();
     
@@ -77,7 +77,7 @@ public final class MappingImpl implements Mapping {
 
 	private ApplicationListener appListener;
 
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, short inspect, 
+    public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual,ApplicationListener appListener) {
     	this(config, virtual, strPhysical, strArchive, inspect, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,appListener,5000);
     	
@@ -95,7 +95,7 @@ public final class MappingImpl implements Mapping {
      * @param readonly
      * @throws IOException
      */
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, short inspect, 
+    public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual,ApplicationListener appListener, int classLoaderMaxElements) {
     	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
@@ -151,15 +151,15 @@ public final class MappingImpl implements Mapping {
         return archiveClassLoader;
     }
     
-    public synchronized PCLCollection touchPCLCollection() throws IOException {
+    public PCLCollection touchPCLCollection() throws IOException {
     	
     	if(pclCollection==null){
     		pclCollection=new PCLCollection(this,getClassRootDirectory(),getConfig().getClassLoader(),classLoaderMaxElements);
 		}
-    	getConfig().checkPermGenSpace(true);
     	return pclCollection;
     }
-	public synchronized PCLCollection getPCLCollection() {
+    
+	public PCLCollection getPCLCollection() {
 		return pclCollection;
 	}
 
@@ -339,10 +339,6 @@ public final class MappingImpl implements Mapping {
 
     @Override
     public Config getConfig() {
-        return config;
-    }
-    
-    public ConfigImpl getConfigImpl() {
         return config;
     }
 

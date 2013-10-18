@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.hibernate.MappingException;
+import org.hibernate.cache.RegionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
@@ -23,26 +23,24 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.InterfacePage;
 import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
-import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
@@ -52,11 +50,11 @@ public class HibernateSessionFactory {
 	
 	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
 	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
-	public static final String HIBERNATE_3_ENCODING = "UTF-8";
+	public static final Charset HIBERNATE_3_CHARSET = CommonUtil.UTF8;
 	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""+HIBERNATE_3_PUBLIC_ID+"\" \""+HIBERNATE_3_SYSTEM_ID+"\">";
 	
 
-	public static Configuration createConfiguration(HibernateORMEngine engine,String mappings, DatasourceConnection dc, ORMConfiguration ormConf) throws SQLException, IOException, PageException {
+	public static Configuration createConfiguration(String mappings, DatasourceConnection dc, SessionFactoryData data) throws SQLException, IOException, PageException {
 		/*
 		 autogenmap
 		 cacheconfig
@@ -69,7 +67,9 @@ public class HibernateSessionFactory {
 		 ormconfig
 		 sqlscript
 		 useDBForMapping
-		 */
+		 */ 
+		
+		ORMConfiguration ormConf = data.getORMConfiguration();
 		
 		// dialect
 		DataSource ds = dc.getDatasource();
@@ -84,15 +84,20 @@ public class HibernateSessionFactory {
 		}
 		if (dialect == null) {
 			dialect = Dialect.getDialect(ormConf.getDialect());
-			if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
+			if(Util.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
 		}
-		if(StringUtil.isEmpty(dialect))
-			throw new ORMException(engine,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically");
+		if(Util.isEmpty(dialect))
+			throw ExceptionUtil.createException(data,null,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically",null);
 		
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
-		if(StringUtil.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) 			
-																cacheProvider="org.hibernate.cache.EhCacheProvider";
+		Class<? extends RegionFactory> regionFactory=null;
+		
+		if(Util.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) {
+			regionFactory=net.sf.ehcache.hibernate.EhCacheRegionFactory.class;
+			cacheProvider=regionFactory.getName();//"org.hibernate.cache.EhCacheProvider";
+					
+		}
 		else if("JBossCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.TreeCacheProvider";
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
@@ -105,11 +110,11 @@ public class HibernateSessionFactory {
 		Resource conf = ormConf.getOrmConfig();
 		if(conf!=null){
 			try {
-				Document doc = XMLUtil.parse(XMLUtil.toInputSource(conf), null, false);
+				Document doc = CommonUtil.toDocument(conf);
 				configuration.configure(doc);
 			} 
 			catch (Throwable t) {
-				ORMUtil.printError(t, engine);
+				ORMUtil.printError(t);
 				
 			}
 		}
@@ -118,7 +123,7 @@ public class HibernateSessionFactory {
 			configuration.addXML(mappings);
 		}
 		catch(MappingException me){
-			throw HibernateException.toPageException(engine, me);
+			throw ExceptionUtil.createException(data,null, me);
 		}
 		
 		configuration
@@ -142,26 +147,32 @@ public class HibernateSessionFactory {
     	.setProperty("hibernate.current_session_context_class", "thread")
     	
     	// Echo all executed SQL to stdout
-    	.setProperty("hibernate.show_sql", Caster.toString(ormConf.logSQL()))
-    	.setProperty("hibernate.format_sql", Caster.toString(ormConf.logSQL()))
+    	.setProperty("hibernate.show_sql", CommonUtil.toString(ormConf.logSQL()))
+    	.setProperty("hibernate.format_sql", CommonUtil.toString(ormConf.logSQL()))
     	// Specifies whether secondary caching should be enabled
-    	.setProperty("hibernate.cache.use_second_level_cache", Caster.toString(ormConf.secondaryCacheEnabled()))
+    	.setProperty("hibernate.cache.use_second_level_cache", CommonUtil.toString(ormConf.secondaryCacheEnabled()))
 		// Drop and re-create the database schema on startup
     	.setProperty("hibernate.exposeTransactionAwareSessionFactory", "false")
 		//.setProperty("hibernate.hbm2ddl.auto", "create")
 		.setProperty("hibernate.default_entity_mode", "dynamic-map");
 		
-		if(!StringUtil.isEmpty(ormConf.getCatalog()))
+		if(!Util.isEmpty(ormConf.getCatalog()))
 			configuration.setProperty("hibernate.default_catalog", ormConf.getCatalog());
-		if(!StringUtil.isEmpty(ormConf.getSchema()))
+		if(!Util.isEmpty(ormConf.getSchema()))
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
+		
 		
 		if(ormConf.secondaryCacheEnabled()){
 			if(cacheConfig!=null && cacheConfig.isFile())
 				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
-			configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
+			if(regionFactory!=null || Reflector.isInstaneOf(cacheProvider, RegionFactory.class))
+				configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
+			else
+				configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
+			
+			configuration.setProperty("hibernate.cache.use_query_cache", "true");
 	    	
-	    	configuration.setProperty("hibernate.cache.use_query_cache", "true");
+	    	//hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
 		}
 		
 		/*
@@ -170,12 +181,14 @@ public class HibernateSessionFactory {
 	    <!ATTLIST tuplizer class CDATA #REQUIRED>                           <!-- the tuplizer class to use --> 
 		*/
         
-		schemaExport(engine,configuration,ormConf,dc);
+		schemaExport(configuration,dc,data);
 		
 		return configuration;
 	}
 
-	private static void schemaExport(HibernateORMEngine engine,Configuration configuration, ORMConfiguration ormConf,DatasourceConnection dc) throws PageException,ORMException, SQLException, IOException {
+	private static void schemaExport(Configuration configuration, DatasourceConnection dc, SessionFactoryData data) throws PageException, SQLException, IOException {
+		ORMConfiguration ormConf = data.getORMConfiguration();
+		
 		if(ORMConfiguration.DBCREATE_NONE==ormConf.getDbCreate()) {
 			return;
 		}
@@ -184,38 +197,38 @@ public class HibernateSessionFactory {
 			export.setHaltOnError(true);
 	            
 			export.execute(false,true,false,false);
-            printError(engine,export.getExceptions(),false);
+            printError(data,export.getExceptions(),false);
             executeSQLScript(ormConf,dc);
 		}
 		else if(ORMConfiguration.DBCREATE_UPDATE==ormConf.getDbCreate()) {
 			SchemaUpdate update = new SchemaUpdate(configuration);
             update.setHaltOnError(true);
             update.execute(false, true);
-            printError(engine,update.getExceptions(),false);
+            printError(data,update.getExceptions(),false);
         }
 	}
 
-	private static void printError(HibernateORMEngine engine, List<Exception> exceptions,boolean throwException) throws PageException {
+	private static void printError(SessionFactoryData data, List<Exception> exceptions,boolean throwException) throws PageException {
 		if(ArrayUtil.isEmpty(exceptions)) return;
 		Iterator<Exception> it = exceptions.iterator();
         if(!throwException || exceptions.size()>1){
 			while(it.hasNext()) {
-	        	ORMUtil.printError(it.next(), engine);
+	        	ORMUtil.printError(it.next());
 	        } 
         }
         if(!throwException) return;
         
         it = exceptions.iterator();
         while(it.hasNext()) {
-        	throw HibernateException.toPageException(engine, it.next());
+        	throw ExceptionUtil.createException(data,null,it.next());
         } 
 	}
 
 	private static void executeSQLScript(ORMConfiguration ormConf,DatasourceConnection dc) throws SQLException, IOException {
         Resource sqlScript = ormConf.getSqlScript();
         if(sqlScript!=null && sqlScript.isFile()) {
-            BufferedReader br = IOUtil.toBufferedReader(IOUtil.getReader(sqlScript,(Charset)null));
-            String line;
+        	BufferedReader br = CommonUtil.toBufferedReader(sqlScript,(Charset)null);
+        	String line;
             StringBuilder sql=new StringBuilder();
             String str;
             Statement stat = dc.getConnection().createStatement();
@@ -245,39 +258,39 @@ public class HibernateSessionFactory {
     }
 
 
-	public static String createMappings(HibernateORMEngine engine, Map<String, CFCInfo> cfcs) {
+	public static String createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
 		
 		Set<String> done=new HashSet<String>();
 		StringBuffer mappings=new StringBuffer();
 		mappings.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		mappings.append(HIBERNATE_3_DOCTYPE_DEFINITION+"\n");
 		mappings.append("<hibernate-mapping>\n");
-		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
+		Iterator<Entry<String, CFCInfo>> it = data.cfcs.entrySet().iterator();
 		Entry<String, CFCInfo> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			createMappings(engine,cfcs,entry.getKey(),entry.getValue(),done,mappings);
+			createMappings(ormConf,entry.getKey(),entry.getValue(),done,mappings,data);
 			
 		}
 		mappings.append("</hibernate-mapping>");
 		return mappings.toString();
 	}
 
-	private static void createMappings(HibernateORMEngine engine, Map<String, CFCInfo> cfcs,String key, CFCInfo value,Set<String> done,StringBuffer mappings) {
+	private static void createMappings(ORMConfiguration ormConf, String key, CFCInfo value,Set<String> done,StringBuffer mappings, SessionFactoryData data) {
 		if(done.contains(key)) return;
 		CFCInfo v;
 		String ext = value.getCFC().getExtends();
-		if(!StringUtil.isEmpty(ext)){
+		if(!Util.isEmpty(ext)){
 			try {
-				Component base = engine.getEntityByCFCName(ext, false);
+				Component base = data.getEntityByCFCName(ext, false);
 				ext=HibernateCaster.getEntityName(base);
 			} catch (Throwable t) {}
 			
 			
-			ext=HibernateORMEngine.id(railo.runtime.type.util.ListUtil.last(ext, '.').trim());
+			ext=HibernateUtil.id(CommonUtil.last(ext, '.').trim());
 			if(!done.contains(ext)) {
-				v = cfcs.get(ext);
-				if(v!=null)createMappings(engine,cfcs, ext, v, done, mappings);
+				v = data.cfcs.get(ext);
+				if(v!=null)createMappings(ormConf, ext, v, done, mappings,data);
 			}
 		}
 		
@@ -342,7 +355,7 @@ public class HibernateSessionFactory {
 						PageSource ps2=null;
 						Resource root = cfclocation.getPhysical();
 		                String path = ResourceUtil.getPathToChild(res, root);
-		                if(!StringUtil.isEmpty(path,true)) {
+		                if(!Util.isEmpty(path,true)) {
 		                	ps2=cfclocation.getPageSource(path);
 		                }
 		                if(ps2!=null)ps=ps2;
@@ -371,13 +384,12 @@ public class HibernateSessionFactory {
 	
 	public static Mapping[] createMappings(PageContext pc,Resource[] resources) {
 			
-			MappingImpl[] mappings=new MappingImpl[resources.length];
-			ConfigImpl config=(ConfigImpl) pc.getConfig();
+			Mapping[] mappings=new Mapping[resources.length];
+			Config config=pc.getConfig();
 			for(int i=0;i<mappings.length;i++) {
-				mappings[i]=new MappingImpl(config,
+				mappings[i]=CommonUtil.createMapping(config,
 						"/",
-						resources[i].getAbsolutePath(),
-						null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
+						resources[i].getAbsolutePath()
 						);
 			}
 			return mappings;

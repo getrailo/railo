@@ -25,7 +25,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.functions.displayFormatting.TimeFormat;
 import railo.runtime.op.Caster;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -205,7 +205,11 @@ public final class ScriptConverter extends ConverterSupport {
      * @throws ConverterException
      */
     private void _serializeMap(Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
-        sb.append(goIn());
+        if(map instanceof Serializable) {
+        	_serializeSerializable((Serializable)map,sb);
+        	return;
+        }
+    	sb.append(goIn());
         sb.append("{");
         
         Iterator it=map.keySet().iterator();
@@ -295,7 +299,7 @@ public final class ScriptConverter extends ConverterSupport {
                 	if(p!=null) {
                 		remotingFetch=Caster.toBoolean(p.getDynamicAttributes().get(REMOTING_FETCH,null),null);
     	            	if(remotingFetch==null){
-        					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+        					if(isPeristent  && ORMUtil.isRelated(p)) continue;
     	    			}
     	    			else if(!remotingFetch.booleanValue()) continue;
                 	}

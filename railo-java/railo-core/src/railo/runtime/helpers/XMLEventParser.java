@@ -1,7 +1,6 @@
 package railo.runtime.helpers;
 
 import java.io.InputStream;
-import java.util.LinkedList;
 import java.util.Stack;
 
 import org.xml.sax.Attributes;

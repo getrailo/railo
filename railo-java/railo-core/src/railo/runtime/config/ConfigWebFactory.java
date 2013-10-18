@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -47,6 +45,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.cfml.CFMLResourceProvider;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -60,10 +59,9 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
-import railo.commons.net.URLEncoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.CFMLFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -102,16 +100,13 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
-import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
-import railo.runtime.listener.NoneAppListener;
 import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.ActionMonitorFatory;
 import railo.runtime.monitor.IntervallMonitor;
@@ -124,11 +119,11 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.search.SearchEngine;
@@ -158,7 +153,7 @@ import com.jacob.com.LibraryLoader;
 /**
  * 
  */
-public final class ConfigWebFactory {
+public final class ConfigWebFactory extends ConfigFactory {
 	/**
 	 * creates a new ServletConfig Impl Object
 	 * 
@@ -331,9 +326,8 @@ public final class ConfigWebFactory {
 			catch (SAXException e) {
 			}
 		}
-
 		config.setLastModified();
-
+		if(config instanceof ConfigWeb)deployWebContext(cs,(ConfigWeb)config,false);
 		loadRailoConfig(cs, config, doc);
 		int mode = config.getMode();
 		loadConstants(cs, config, doc);
@@ -388,6 +382,48 @@ public final class ConfigWebFactory {
 			TagUtil.addTagMetaData((ConfigWebImpl) config);
 
 		ThreadLocalConfig.release();
+	}
+
+	public static void deployWebContext(ConfigServer cs, ConfigWeb cw, boolean throwError) throws IOException  {
+		Resource deploy = cs.getConfigDir().getRealResource("web-context-deployment"),trg;
+        if(!deploy.isDirectory()) return;
+			trg=cw.getConfigDir().getRealResource("context");
+        	try {
+				_deployWebContext(cw,deploy,trg);	
+			}
+			catch (IOException ioe) {
+				if(throwError) throw ioe;
+				SystemOut.printDate(cw.getErrWriter(), ExceptionUtil.getStacktrace(ioe, true));
+			}
+        
+	}
+
+	private static void _deployWebContext(ConfigWeb cw,Resource src, Resource trg) throws IOException {
+		if(!src.isDirectory())return;
+		if(trg.isFile()) trg.delete();
+		if(!trg.exists()) trg.mkdirs();
+		Resource _src,_trg;
+		Resource[] children = src.listResources();
+		if(ArrayUtil.isEmpty(children)) return;
+		
+		for(int i=0;i<children.length;i++){
+			_src=children[i];
+			_trg=trg.getRealResource(_src.getName());
+			if(_src.isDirectory()) 
+				_deployWebContext(cw,_src,_trg);
+			if(_src.isFile()) {
+				if(_src.length()!=_trg.length()) {
+					_src.copyTo(_trg, false);
+					SystemOut.printDate(cw.getOutWriter(), "write file:" + _trg);
+					
+				}
+			}
+		}
+		
+		
+        //src.copyTo(trg, false);
+		
+		
 	}
 
 	private static void loadResourceProvider(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ClassException {
@@ -648,19 +684,21 @@ public final class ConfigWebFactory {
 		lib.mkdir();
 		Resource classes = config.getConfigDir().getRealResource("classes");
 		classes.mkdir();
-		Resource[] libs = lib.listResources();
+		Resource[] libs = lib.listResources(new ExtensionResourceFilter(".jar", false));
 
 		// merge resources
-		if (libs.length > 0 || !ResourceUtil.isEmptyDirectory(classes)) {
-			Resource[] tmp = new Resource[libs.length + 1];
-			for (int i = 0; i < libs.length; i++) {
-				tmp[i] = libs[i];
+		if (!ResourceUtil.isEmptyDirectory(classes,new ExtensionResourceFilter(".class", true))) {
+			if(ArrayUtil.isEmpty(libs)) {
+				libs=new Resource[]{classes};
 			}
-			tmp[libs.length] = classes;
-			libs = tmp;
-		}
-		else {
-			libs = new Resource[0];
+			else {
+				Resource[] tmp = new Resource[libs.length + 1];
+				for (int i = 0; i < libs.length; i++) {
+					tmp[i] = libs[i];
+				}
+				tmp[libs.length] = classes;
+				libs = tmp;
+			}
 		}
 
 		// get resources from server config and merge
@@ -825,43 +863,6 @@ public final class ConfigWebFactory {
 	}
 
 	/**
-	 * load XML Document from XML File
-	 * 
-	 * @param xmlFile
-	 *            XML File to read
-	 * @return returns the Document
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
-
-		InputStream is = null;
-		try {
-			return _loadDocument(is = IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
-		}
-		finally {
-			IOUtil.closeEL(is);
-		}
-	}
-
-	/**
-	 * load XML Document from XML File
-	 * 
-	 * @param is
-	 *            InoutStream to read
-	 * @return returns the Document
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	private static Document _loadDocument(InputStream is) throws SAXException, IOException {
-		DOMParser parser = new DOMParser();
-		InputSource source = new InputSource(is);
-		parser.parse(source);
-		is.close();
-		return parser.getDocument();
-	}
-
-	/**
 	 * creates the Config File, if File not exist
 	 * 
 	 * @param xmlName
@@ -873,38 +874,7 @@ public final class ConfigWebFactory {
 		createFileFromResource("/resource/config/" + xmlName + ".xml", configFile.getAbsoluteResource());
 	}
 
-	/**
-	 * creates a File and his content froma a resurce
-	 * 
-	 * @param resource
-	 * @param file
-	 * @throws IOException
-	 */
-	static void createFileFromResource(String resource, Resource file) throws IOException {
-		createFileFromResource(resource, file, null);
-	}
 
-	public static void createFileFromResourceEL(String resource, Resource file) {
-		try {
-			createFileFromResource(resource, file, null);
-		}
-		catch (Throwable e) {
-		}
-	}
-
-	/**
-	 * creates a File and his content froma a resurce
-	 * 
-	 * @param resource
-	 * @param file
-	 * @param password
-	 * @throws IOException
-	 */
-	static void createFileFromResource(String resource, Resource file, String password) throws IOException {
-		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT), "write file:" + file);
-		file.createNewFile();
-		IOUtil.copy(new Info().getClass().getResourceAsStream(resource), file, true);
-	}
 
 	static String createMD5FromResource(String resource) throws IOException {
 		InputStream is = null;
@@ -1187,189 +1157,71 @@ public final class ConfigWebFactory {
 			createFileFromResourceEL("/resource/context/admin/plugin/Note/Action.cfc", f);
 
 		// gateway
-		Resource gatewayDir = configDir.getRealResource("components");
-		if (!gatewayDir.exists())
-			gatewayDir.mkdirs();
+		Resource componentsDir = configDir.getRealResource("components");
+		if (!componentsDir.exists())
+			componentsDir.mkdirs();
 
-		Resource dir = gatewayDir.getRealResource("railo/extension/gateway/");
-		if (!dir.exists())
-			dir.mkdirs();
-
-		f = dir.getRealResource("DummyGateway.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/DummyGateway.cfc", f);
-
-		f = dir.getRealResource("DirectoryWatcher.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/DirectoryWatcher.cfc", f);
-
-		f = dir.getRealResource("DirectoryWatcherListener.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/DirectoryWatcherListener.cfc", f);
-
-		f = dir.getRealResource("MailWatcher.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/MailWatcher.cfc", f);
-
-		f = dir.getRealResource("MailWatcherListener.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/gateway/MailWatcherListener.cfc", f);
+		Resource gwDir = componentsDir.getRealResource("railo/extension/gateway/");
+		create("/resource/context/gateway/",new String[]{
+		"DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
+				},gwDir,doNew);
 
 		// resources/language
 		Resource langDir = adminDir.getRealResource("resources/language");
-		langDir.mkdirs();
-		f = langDir.getRealResource("en.xml");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/resources/language/en.xml", f);
+		create("/resource/context/admin/resources/language/",new String[]{
+				"en.xml","de.xml"
+						},langDir,doNew);
 
-		f = langDir.getRealResource("de.xml");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/resources/language/de.xml", f);
+		
 
-		// G DRIVER
-		Resource gDir = adminDir.getRealResource("gdriver");
-		if (!gDir.exists())
-			gDir.mkdirs();
-
-		f = gDir.getRealResource("Gateway.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/gdriver/Gateway.cfc", f);
-
-		f = gDir.getRealResource("DirectoryWatcher.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/gdriver/DirectoryWatcher.cfc", f);
-
-		f = gDir.getRealResource("MailWatcher.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/gdriver/MailWatcher.cfc", f);
-
-		f = gDir.getRealResource("Field.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/gdriver/Field.cfc", f);
-
-		f = gDir.getRealResource("Group.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/gdriver/Group.cfc", f);
-
-		// DEBUG
+		// delete Debug
 		Resource debug = adminDir.getRealResource("debug");
-		if (!debug.exists())
-			debug.mkdirs();
-
-		f = debug.getRealResource("Debug.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Debug.cfc", f);
-
-		f = debug.getRealResource("Field.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Field.cfc", f);
-
-		f = debug.getRealResource("Group.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Group.cfc", f);
-
-		f = debug.getRealResource("Classic.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc", f);
-
-		f = debug.getRealResource("Modern.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc", f);
-
-		f = debug.getRealResource("Comment.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc", f);
-
-		// C DRIVER
+		delete(debug,new String[]{
+				"Classic.cfc","Modern.cfc","Comment.cfc"
+				});
+		
+		// add Debug
+		create("/resource/context/admin/debug/",new String[]{
+				"Debug.cfc","Field.cfc","Group.cfc"
+				},debug,doNew);
+		
+		// delete Cache Driver
 		Resource cDir = adminDir.getRealResource("cdriver");
-		if (!cDir.exists())
-			cDir.mkdirs();
-
-		f = cDir.getRealResource("Cache.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/cdriver/Cache.cfc", f);
-
-		f = cDir.getRealResource("RamCache.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/cdriver/RamCache.cfc", f);
-
-		f = cDir.getRealResource("EHCacheLite.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/cdriver/EHCacheLite.cfc", f);
-
-		f = cDir.getRealResource("Field.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/cdriver/Field.cfc", f);
-
-		f = cDir.getRealResource("Group.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/cdriver/Group.cfc", f);
-
-		// DB DRIVER
+		delete(cDir,new String[]{
+		"RamCache.cfc","EHCacheLite.cfc"
+		});
+		
+		// add Cache Drivers
+		create("/resource/context/admin/cdriver/",new String[]{
+		"Cache.cfc","Field.cfc","Group.cfc"}
+		,cDir,doNew);
+		
+		// delete DB Drivers
 		Resource dbDir = adminDir.getRealResource("dbdriver");
-		if (!dbDir.exists())
-			dbDir.mkdirs();
-
-		f = dbDir.getRealResource("Driver.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/Driver.cfc", f);
-
-		f = dbDir.getRealResource("HSQLDB.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/HSQLDB.cfc", f);
-
-		f = dbDir.getRealResource("H2.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/H2.cfc", f);
-
-		f = dbDir.getRealResource("MSSQL.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/MSSQL.cfc", f);
-
-		f = dbDir.getRealResource("MSSQL2.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/MSSQL2.cfc", f);
-
-		f = dbDir.getRealResource("DB2.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/DB2.cfc", f);
-
-		f = dbDir.getRealResource("Oracle.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/Oracle.cfc", f);
-
-		f = dbDir.getRealResource("MySQL.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/MySQL.cfc", f);
-
-		f = dbDir.getRealResource("ODBC.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/ODBC.cfc", f);
-
-		f = dbDir.getRealResource("Sybase.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/Sybase.cfc", f);
-
-		f = dbDir.getRealResource("PostgreSql.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/PostgreSql.cfc", f);
-
-		f = dbDir.getRealResource("Other.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/Other.cfc", f);
-
-		f = dbDir.getRealResource("Firebird.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/Firebird.cfc", f);
-
+		delete(dbDir,new String[]{
+		"HSQLDB.cfc","H2.cfc","MSSQL.cfc","MSSQL2.cfc","DB2.cfc","Oracle.cfc","MySQL.cfc","ODBC.cfc","Sybase.cfc"
+		,"PostgreSql.cfc","Other.cfc","Firebird.cfc","Driver.cfc"
+		});
+		
+		// add DB Drivers types
 		Resource typesDir = dbDir.getRealResource("types");
-		if (!typesDir.exists())
-			typesDir.mkdirs();
-
-		f = typesDir.getRealResource("Field.cfc");
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/admin/dbdriver/types/Field.cfc", f);
-
+		create("/resource/context/admin/dbdriver/types/",new String[]{
+		"IDriver.cfc","Driver.cfc","IDatasource.cfc","IDriverSelector.cfc","Field.cfc"
+		},typesDir,doNew);
+		
+		// delete Gateway Drivers
+		Resource gDir = adminDir.getRealResource("gdriver");
+		delete(gDir,new String[]{
+		"DirectoryWatcher.cfc","MailWatcher.cfc"
+		});
+		
+		// add Gateway Drivers
+		create("/resource/context/admin/gdriver/",new String[]{
+		"Gateway.cfc","Field.cfc","Group.cfc"}
+		,gDir,doNew);
+		
+		
+		
 		Resource templatesDir = contextDir.getRealResource("templates");
 		if (!templatesDir.exists())
 			templatesDir.mkdirs();
@@ -1408,6 +1260,7 @@ public final class ConfigWebFactory {
 			createFileFromResourceEL("/resource/lib/jfreechart-patch.jar", f);
 
 	}
+
 
 	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig, boolean isEventGatewayContext, boolean doNew) {
 		Resource contextDir = configDir.getRealResource("context");
@@ -1460,30 +1313,7 @@ public final class ConfigWebFactory {
 
 	}
 
-	static boolean doNew(Resource contextDir) {
 
-		final boolean readonly = false;
-		try {
-			Resource version = contextDir.getRealResource("version");
-			String v = Info.getVersionAsString() + "-" + Info.getStateAsString() + "-" + Info.getRealeaseTime();
-			if (!version.exists()) {
-				if (!readonly) {
-					version.createNewFile();
-					IOUtil.write(version, v, SystemUtil.getCharset(), false);
-				}
-				return true;
-			}
-			else if (!IOUtil.toString(version, SystemUtil.getCharset()).equals(v)) {
-				if (!readonly)
-					IOUtil.write(version, v, SystemUtil.getCharset(), false);
-
-				return true;
-			}
-		}
-		catch (Throwable t) {
-		}
-		return false;
-	}
 
 	private static void doCheckChangesInLibraries(ConfigImpl config) {
 		// create current hash from libs
@@ -1583,7 +1413,6 @@ public final class ConfigWebFactory {
 		if (configServer != null && config instanceof ConfigWeb) {
 			Mapping[] sm = configServer.getMappings();
 			for (int i = 0; i < sm.length; i++) {
-
 				if (!sm[i].isHidden()) {
 					if (sm[i] instanceof MappingImpl) {
 						tmp = ((MappingImpl) sm[i]).cloneReadOnly(config);
@@ -1601,6 +1430,7 @@ public final class ConfigWebFactory {
 		boolean finished = false;
 
 		if (hasAccess) {
+			boolean hasRailoServerContext=false;
 			for (int i = 0; i < _mappings.length; i++) {
 				el = _mappings[i];
 
@@ -1619,6 +1449,13 @@ public final class ConfigWebFactory {
 				boolean toplevel = toBoolean(el.getAttribute("toplevel"), true);
 				int clMaxEl = toInt(el.getAttribute("classloader-max-elements"), 100);
 
+				if(config instanceof ConfigServer && virtual.equalsIgnoreCase("/railo-server-context/")) {
+					hasRailoServerContext=true;
+				}
+				
+				
+				
+				// railo-context
 				if (virtual.equalsIgnoreCase("/railo-context/")) {
 					if (StringUtil.isEmpty(listType, true))
 						listType = "modern";
@@ -1665,6 +1502,18 @@ public final class ConfigWebFactory {
 					}
 				}
 			}
+			
+			// set default railo-server-context
+			if(config instanceof ConfigServer && !hasRailoServerContext) {
+				ApplicationListener listener = ConfigWebUtil.loadListener("modern", null);
+				listener.setMode(ApplicationListener.MODE_CURRENT2ROOT);
+				
+				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ALWAYS, true, false, true, true, false, false, listener, 100);
+				mappings.put(tmp.getVirtualLowerCase(), tmp);
+
+			}
+			
+			
 		}
 
 		if (!finished) {
@@ -2127,10 +1976,10 @@ public final class ConfigWebFactory {
 
 				}
 				catch (ClassException ce) {
-					SystemOut.print(config.getErrWriter(), ce.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(ce, true));
 				}
 				catch (IOException e) {
-					SystemOut.print(config.getErrWriter(), e.getMessage());
+					SystemOut.print(config.getErrWriter(), ExceptionUtil.getStacktrace(e, true));
 				}
 			}
 		// }
@@ -2223,14 +2072,9 @@ public final class ConfigWebFactory {
 
 		Element eGateWay = getChildByName(doc.getDocumentElement(), "gateways");
 
-		String strCFCDirectory = ConfigWebUtil.translateOldPath(eGateWay.getAttribute("cfc-directory"));
-		if (StringUtil.isEmpty(strCFCDirectory))
-			strCFCDirectory = "{railo-config}/gateway/";
-
-		// Deploy Dir
-		// Resource cfcDirectory =
-		// ConfigWebUtil.getFile(configDir,strCFCDirectory,
-		// "gateway",configDir,FileUtil.TYPE_DIR,config);
+		//String strCFCDirectory = ConfigWebUtil.translateOldPath(eGateWay.getAttribute("cfc-directory"));
+		//if (StringUtil.isEmpty(strCFCDirectory))
+		//	strCFCDirectory = "{railo-config}/gateway/";
 
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManagerImpl.TYPE_GATEWAY);
 
@@ -2535,8 +2379,6 @@ public final class ConfigWebFactory {
 	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		Element railoConfiguration = doc.getDocumentElement();
 		
-		
-		
 		// password
 		String hpw=railoConfiguration.getAttribute("pw");
 		if(StringUtil.isEmpty(hpw)) {
@@ -2566,6 +2408,14 @@ public final class ConfigWebFactory {
 			}
 		}
 		
+		// api key
+		String apiKey = railoConfiguration.getAttribute("api-key");
+		if(!StringUtil.isEmpty(apiKey))
+			config.setApiKey(apiKey);
+		else if(configServer != null)
+			config.setApiKey(configServer.getApiKey());
+		else 
+			config.setApiKey(null);
 		
 		// default password
 		if (config instanceof ConfigServerImpl) {
@@ -3094,8 +2944,13 @@ public final class ConfigWebFactory {
 		config.setRemoteClientUsage(sct);
 
 		// max-threads
-		int maxThreads = Caster.toIntValue(_clients.getAttribute("max-threads"), 20);
-
+		int maxThreads = Caster.toIntValue(_clients.getAttribute("max-threads"), -1);
+		if(maxThreads<1 && configServer!=null) {
+			SpoolerEngineImpl engine = (SpoolerEngineImpl) configServer.getSpoolerEngine();
+			if(engine!=null) maxThreads=engine.getMaxThreads();
+		}
+		if(maxThreads<1)maxThreads=20;
+		
 		// Logger
 		String strLogger = hasAccess ? _clients.getAttribute("log") : null;
 		int logLevel = LogUtil.toIntType(_clients.getAttribute("log-level"), Log.LEVEL_ERROR);
@@ -3169,6 +3024,7 @@ public final class ConfigWebFactory {
 			engine.setConfig(config);
 			engine.setLog(config.getRemoteClientLog());
 			engine.setPersisDirectory(dir);
+			engine.setMaxThreads(maxThreads);
 
 		}
 	}
@@ -3387,14 +3243,14 @@ public final class ConfigWebFactory {
 		config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, hasAccess, logLevel));
 
 		// engine
-		String defaulrEngineClass = HibernateORMEngine.class.getName();// "railo.runtime.orm.hibernate.HibernateORMEngine";
+		String defaultEngineClass = "railo.runtime.orm.hibernate.HibernateORMEngine";
 
 		// print.o("orm:"+defaulrEngineClass);
 		String strEngine = null;
 		if (orm != null)
 			strEngine = orm.getAttribute("engine-class");
 		if (StringUtil.isEmpty(strEngine, true))
-			strEngine = defaulrEngineClass;
+			strEngine = defaultEngineClass;
 
 		// load class
 		Class<ORMEngine> clazz;
@@ -3404,7 +3260,7 @@ public final class ConfigWebFactory {
 		}
 		catch (ClassException ce) {
 			ce.printStackTrace();
-			clazz = ClassUtil.loadClass(defaulrEngineClass, null);
+			clazz = ClassUtil.loadClass(defaultEngineClass, null);
 		}
 		config.setORMEngineClass(clazz);
 
@@ -3507,8 +3363,35 @@ public final class ConfigWebFactory {
 		else if (hasCS)
 			config.setMergeFormAndURL(configServer.mergeFormAndURL());
 
+		// Client-Storage
+		{
+			String clientStorage = scope.getAttribute("clientstorage");
+			if (StringUtil.isEmpty(clientStorage, true)) 
+				clientStorage = scope.getAttribute("client-storage");
+			
+			if (hasAccess && !StringUtil.isEmpty(clientStorage)) {
+				config.setClientStorage(clientStorage);
+			}
+			else if (hasCS)
+				config.setClientStorage(configServer.getClientStorage());
+		}
+		
+		// Session-Storage
+		{
+			String sessionStorage = scope.getAttribute("sessionstorage");
+			if (StringUtil.isEmpty(sessionStorage, true)) 
+				sessionStorage = scope.getAttribute("session-storage");
+			
+			if (hasAccess && !StringUtil.isEmpty(sessionStorage)) {
+				config.setSessionStorage(sessionStorage);
+			}
+			else if (hasCS)
+				config.setSessionStorage(configServer.getSessionStorage());
+		}
+		
 		// Client Timeout
 		String clientTimeout = scope.getAttribute("clienttimeout");
+		if(StringUtil.isEmpty(clientTimeout, true)) clientTimeout = scope.getAttribute("client-timeout");
 		if (StringUtil.isEmpty(clientTimeout, true)) {
 			// deprecated
 			clientTimeout = scope.getAttribute("client-max-age");
@@ -3660,7 +3543,7 @@ public final class ConfigWebFactory {
 		if (config instanceof ConfigServer) {
 			Element login = getChildByName(doc.getDocumentElement(), "login");
 			boolean captcha = Caster.toBooleanValue(login.getAttribute("captcha"), false);
-			int delay = Caster.toIntValue(login.getAttribute("delay"), 0);
+			int delay = Caster.toIntValue(login.getAttribute("delay"), 1);
 			ConfigServerImpl cs = (ConfigServerImpl) config;
 			cs.setLoginDelay(delay);
 			cs.setLoginCaptcha(captcha);
@@ -3758,8 +3641,10 @@ public final class ConfigWebFactory {
 		Element parent = getChildByName(doc.getDocumentElement(), "monitoring");
 		boolean enabled = Caster.toBooleanValue(parent.getAttribute("enabled"), false);
 		configServer.setMonitoringEnabled(enabled);
-
+		SystemOut.printDate(config.getOutWriter(), "monitoring is "+(enabled?"enabled":"disabled"));
+		
 		Element[] children = getChildren(parent, "monitor");
+		
 		java.util.List<IntervallMonitor> intervalls = new ArrayList<IntervallMonitor>();
 		java.util.List<RequestMonitor> requests = new ArrayList<RequestMonitor>();
 		java.util.List<MonitorTemp> actions = new ArrayList<MonitorTemp>();
@@ -3772,7 +3657,7 @@ public final class ConfigWebFactory {
 			strType = el.getAttribute("type");
 			name = el.getAttribute("name");
 			log = Caster.toBooleanValue(el.getAttribute("log"), true);
-
+			
 			if ("request".equalsIgnoreCase(strType))
 				type = IntervallMonitor.TYPE_REQUEST;
 			else if ("action".equalsIgnoreCase(strType))
@@ -3780,6 +3665,7 @@ public final class ConfigWebFactory {
 			else
 				type = IntervallMonitor.TYPE_INTERVALL;
 
+			
 			if (!StringUtil.isEmpty(className) && !StringUtil.isEmpty(name)) {
 				name = name.trim();
 				try {
@@ -3790,7 +3676,7 @@ public final class ConfigWebFactory {
 						obj = constr.invoke();
 					else
 						obj = clazz.newInstance();
-
+					SystemOut.printDate(config.getOutWriter(), "loaded "+(strType)+" monitor ["+clazz.getName()+"]");
 					if (type == IntervallMonitor.TYPE_INTERVALL) {
 						IntervallMonitor m = obj instanceof IntervallMonitor ? (IntervallMonitor) obj : new IntervallMonitorWrap(obj);
 						m.init(configServer, name, log);
@@ -3802,11 +3688,13 @@ public final class ConfigWebFactory {
 					else {
 						RequestMonitor m = obj instanceof RequestMonitor ? (RequestMonitor) obj : new RequestMonitorWrap(obj);
 						m.init(configServer, name, log);
+						SystemOut.printDate(config.getOutWriter(), "initialize "+(strType)+" monitor ["+clazz.getName()+"]");
+						
 						requests.add(m);
 					}
 				}
 				catch (Throwable t) {
-					SystemOut.printDate(config.getErrWriter(), t.getMessage());
+					SystemOut.printDate(config.getErrWriter(), ExceptionUtil.getStacktrace(t, true));
 				}
 			}
 
@@ -4458,6 +4346,17 @@ public final class ConfigWebFactory {
 			NullSupportHelper.fullNullSupport = fns;
 			((ConfigServerImpl) config).setFullNullSupport(fns);
 		}
+		
+		// supress WS between cffunction and cfargument
+		
+		String str = compiler.getAttribute("externalize-string-gte");
+		if (Decision.isNumeric(str)) {
+			config.setExternalizeStringGTE(Caster.toIntValue(str,-1));
+		}
+		else if (hasCS) {
+			config.setExternalizeStringGTE(configServer.getExternalizeStringGTE());
+		}
+		
 	}
 
 	/**
@@ -4734,68 +4633,7 @@ public final class ConfigWebFactory {
 	 * return el; } } return null; }
 	 */
 
-	/**
-	 * return first direct child Elements of a Element with given Name
-	 * 
-	 * @param parent
-	 * @param nodeName
-	 * @return matching children
-	 */
-	public static Element getChildByName(Node parent, String nodeName) {
-		return getChildByName(parent, nodeName, false);
-	}
 
-	public static Element getChildByName(Node parent, String nodeName, boolean insertBefore) {
-		return getChildByName(parent, nodeName, insertBefore, false);
-	}
-
-	public static Element getChildByName(Node parent, String nodeName, boolean insertBefore, boolean doNotCreate) {
-		if (parent == null)
-			return null;
-		NodeList list = parent.getChildNodes();
-		int len = list.getLength();
-
-		for (int i = 0; i < len; i++) {
-			Node node = list.item(i);
-
-			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase(nodeName)) {
-				return (Element) node;
-			}
-		}
-		if (doNotCreate)
-			return null;
-
-		Element newEl = parent.getOwnerDocument().createElement(nodeName);
-		if (insertBefore)
-			parent.insertBefore(newEl, parent.getFirstChild());
-		else
-			parent.appendChild(newEl);
-
-		return newEl;
-	}
-
-	/**
-	 * return all direct child Elements of a Element with given Name
-	 * 
-	 * @param parent
-	 * @param nodeName
-	 * @return matching children
-	 */
-	public static Element[] getChildren(Node parent, String nodeName) {
-		if (parent == null)
-			return new Element[0];
-		NodeList list = parent.getChildNodes();
-		int len = list.getLength();
-		ArrayList rtn = new ArrayList();
-
-		for (int i = 0; i < len; i++) {
-			Node node = list.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase(nodeName)) {
-				rtn.add(node);
-			}
-		}
-		return (Element[]) rtn.toArray(new Element[rtn.size()]);
-	}
 
 	public static class MonitorTemp {
 

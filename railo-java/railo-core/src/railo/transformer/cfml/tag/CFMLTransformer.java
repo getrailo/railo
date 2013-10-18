@@ -20,6 +20,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
@@ -1016,7 +1017,11 @@ public final class CFMLTransformer {
 						throw createTemplateException(cfml,
 								"Attribute "+id+" is not allowed for tag "+tag.getFullName(),tag);
 					
-						throw createTemplateException(cfml,
+					try{
+						names=ListUtil.sort(names, "textnocase",null, null);
+					}
+					catch(Throwable t){}
+					throw createTemplateException(cfml,
 							"Attribute "+id+" is not allowed for tag "+tag.getFullName(),
 							"valid attribute names are ["+names+"]",tag);
 				}

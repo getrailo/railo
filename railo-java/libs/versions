@@ -35,11 +35,11 @@
 	<jar version="1.3.3" path="concurrent.jar" comment=""/>
 	<jar version="1.6.1" path="dom4j.jar" comment="used by hibernate"/>
 	<jar version="2.5.2" path="ehcache.jar" comment=""/>
-	<jar version="3.0" path="flex-messaging-common.jar" comment=""/>
-	<jar version="3.0" path="flex-messaging-core.jar" comment=""/>
-	<jar version="3.0" path="flex-messaging-opt.jar" comment=""/>
-	<jar version="3.0" path="flex-messaging-proxy.jar" comment=""/>
-	<jar version="3.0" path="flex-messaging-remoting.jar" comment=""/>
+	<jar version="3.3.0.22497" path="flex-messaging-common.jar" comment=""/>
+	<jar version="3.3.0.22497" path="flex-messaging-core.jar" comment=""/>
+	<jar version="3.3.0.22497" path="flex-messaging-opt.jar" comment=""/>
+	<jar version="3.3.0.22497" path="flex-messaging-proxy.jar" comment=""/>
+	<jar version="3.3.0.22497" path="flex-messaging-remoting.jar" comment=""/>
 	<jar version="1.0" path="fonts.jar" comment=""/>
 	<jar version="1.0.20-SNAPSHOT" path="fusiondebug-api-server.jar" comment=""/>
 	<jar version="1.3.170" path="h2.jar" comment=""/>
@@ -65,7 +65,7 @@
 	<jar version="2.4.0-beta-1" path="metadata-extractor.jar" comment="retired"/>
 	<jar version="4.0" path="microsoft-mssqlserver.jar" comment="only links to the driver in microsoft-sqljdbc.jar"/>
 	<jar version="4.0" path="microsoft-sqljdbc.jar" comment=""/>
-	<jar version="5.0.8" path="mysql-connector-java-bin.jar" comment=""/>
+	<jar version="5.1.20" path="mysql-connector-java-bin.jar" comment=""/>
 	<jar version="4.0" path="objectweb-asm-all.jar" comment=""/>
 	<jar version="" path="ojdbc14.jar" comment=""/>
 	<jar version="1.5.8" path="openamf-astranslator.jar" comment="only used for backward compatibility"/>

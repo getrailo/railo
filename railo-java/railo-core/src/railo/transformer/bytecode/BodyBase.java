@@ -140,7 +140,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
-        		String method= ASMUtil.createOverfowMethod();
+        		String method= ASMUtil.createOverfowMethod(bc.getPage().getMethodCount());
         		ExpressionUtil.visitLine(bc, s.getStart());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});

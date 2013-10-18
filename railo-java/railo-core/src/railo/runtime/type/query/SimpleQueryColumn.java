@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
@@ -67,6 +66,10 @@ public class SimpleQueryColumn implements QueryColumn {
 			case Types.ARRAY:
 				cast=Cast.ARRAY;
 			break;
+			case Types.BIGINT:
+				cast=Cast.BIGINT;
+			break;
+			
 			case CFTypes.OPAQUE:
 				if(SQLUtil.isOracle(res.getStatement().getConnection()))
 	        		cast=Cast.ORACLE_OPAQUE;

@@ -1,7 +1,6 @@
 package railo.runtime.config;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.compress.ZipUtil;
@@ -27,7 +25,6 @@ import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Info;
-import railo.runtime.config.Config;
 import railo.runtime.extension.RHExtension;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -134,7 +131,7 @@ public class DeployHandler {
 		
 		try {
 			ResourceUtil.deleteContent(trgDir, null);
-			ResourceUtil.moveTo(archive, trgFile);
+			ResourceUtil.moveTo(archive, trgFile,true);
 			
 			log.info("archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
 			if("regular".equalsIgnoreCase(type))
@@ -246,7 +243,7 @@ public class DeployHandler {
 			Resource trgDir = config.getConfigDir().getRealResource("extensions").getRealResource(type).getRealResource(name);
 			trgFile = trgDir.getRealResource(ext.getName());
 			trgDir.mkdirs();
-			ResourceUtil.moveTo(ext, trgFile);
+			ResourceUtil.moveTo(ext, trgFile,true);
 		}
 	    catch(Throwable t){
 	    	log.error("extension", ExceptionUtil.getStacktrace(t, true));
@@ -361,7 +358,7 @@ public class DeployHandler {
 		
 		try {
 			if(dst.exists()) dst.remove(true);
-			ResourceUtil.moveTo(archive, dst);
+			ResourceUtil.moveTo(archive, dst,true);
 		}
 		catch (Throwable t) {}
 		

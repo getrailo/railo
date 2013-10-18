@@ -37,7 +37,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object getVariable(PageContext pc, Collection collection,String var) throws PageException {			
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new InterpreterException("invalid variable declaration ["+var+"]");
         
         while(list.hasNextNext()) {
             collection=Caster.toCollection(collection.get(KeyImpl.init(list.next())));
@@ -84,7 +84,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object getVariable(PageContext pc,String var) throws PageException {
         StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new InterpreterException("invalid variable declaration ["+var+"]");
         
 		int scope=scopeString2Int(list.next());
 		Object coll =null; 
@@ -105,7 +105,7 @@ public final class VariableInterpreter {
 
 	public static Object getVariableAsCollection(PageContext pc,String var) throws PageException {
         StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new InterpreterException("invalid variable declaration ["+var+"]");
         
 		int scope=scopeString2Int(list.next());
 		Object coll =null; 
@@ -255,7 +255,7 @@ public final class VariableInterpreter {
 	 */
 	public static VariableReference getVariableReference(PageContext pc,String var) throws PageException { 
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new InterpreterException("invalid variable declaration ["+var+"]");
         
 		if(list.size()==1) {
 			return new VariableReference(pc.undefinedScope(),list.next()); 
@@ -277,7 +277,7 @@ public final class VariableInterpreter {
 		}
 
 		if(!(coll instanceof Collection))
-			throw new ExpressionException("invalid variable ["+var+"]");
+			throw new InterpreterException("invalid variable ["+var+"]");
 		return new VariableReference((Collection)coll,list.next());
 	} 
 	
@@ -291,7 +291,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object setVariable(PageContext pc,String var, Object value) throws PageException {			
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable name declaration ["+var+"]");
+        if(list==null) throw new InterpreterException("invalid variable name declaration ["+var+"]");
 
 		if(list.size()==1) {
 			return pc.undefinedScope().set(list.next(),value);
@@ -325,7 +325,7 @@ public final class VariableInterpreter {
 	public static Object removeVariable(PageContext pc,String var) throws PageException {	
 	    //print.ln("var:"+var);
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new InterpreterException("invalid variable declaration ["+var+"]");
         
 		if(list.size()==1) {
 			return pc.undefinedScope().remove(KeyImpl.init(list.next()));
