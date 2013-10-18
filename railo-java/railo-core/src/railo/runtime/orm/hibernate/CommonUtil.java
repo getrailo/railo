@@ -34,6 +34,7 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
@@ -472,5 +473,15 @@ public class CommonUtil {
 
 	public static void setEntity(Component c, boolean entity) { 
 		((ComponentAccess)c).setEntity(entity);
+	}
+
+	public static PageContext pc() {
+		//return CFMLEngineFactory.getInstance().getThreadPageContext();
+		return ThreadLocalPageContext.get();
+	}
+
+	public static Config config() { 
+		//return CFMLEngineFactory.getInstance().getThreadPageContext().getConfig();
+		return ThreadLocalPageContext.getConfig();
 	}
 }
