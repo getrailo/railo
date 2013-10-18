@@ -4,7 +4,6 @@ package railo.runtime.orm;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;

@@ -9,19 +9,11 @@ public interface ORMEngine {
 	public static final int MODE_LAZY = 0;
 	// more strict in input interpretation
 	public static final int MODE_STRICT = 1;
-	
-
-	
-
-
-
-	
+		
 	/**
 	 * @return returns the label of the ORM Engine
 	 */
 	public String getLabel();
-
-
 	
 	public int getMode();
 	
