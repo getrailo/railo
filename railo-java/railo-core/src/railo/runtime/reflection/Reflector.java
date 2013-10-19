@@ -842,7 +842,7 @@ public final class Reflector {
 	        	if(cls!=null) {
 	        		String name=cls.getName();
 	        		if(name!=null && name.startsWith("railo.")) {
-		        		throw new PageRuntimeException(new SecurityException("Changing the accesibility of an object's members in the railo.* package is not allowed"));
+		        		throw new PageRuntimeException(new SecurityException("Changing the accessibility of an object's members in the railo.* package is not allowed"));
 		        	}  
 	        	}
 	        	 
