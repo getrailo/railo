@@ -839,9 +839,13 @@ public final class Reflector {
 			if(objMaybeNull instanceof Member) {
 				Member member=(Member) objMaybeNull;
 	        	Class<?> cls = member.getDeclaringClass();
-	        	if(cls.getPackage().getName().startsWith("railo.")) {
-	        		throw new PageRuntimeException(new SecurityException("Changing the accesibility of an object's members in the railo.* package is not allowed"));
-	        	}   
+	        	if(cls!=null) {
+	        		String name=cls.getName();
+	        		if(name!=null && name.startsWith("railo.")) {
+		        		throw new PageRuntimeException(new SecurityException("Changing the accesibility of an object's members in the railo.* package is not allowed"));
+		        	}  
+	        	}
+	        	 
 			}     	
         }
 	}
