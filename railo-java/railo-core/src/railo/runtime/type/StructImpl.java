@@ -73,15 +73,15 @@ public class StructImpl extends StructSupport {
     
     
     
-    private int getType(){
+    public int getType(){
     	MapPro m = map;
     	if(map instanceof SyncMap)
     		m=((SyncMap)map).getMap();
     	
-    	if(map instanceof LinkedHashMapPro) return TYPE_LINKED;
-    	if(map instanceof WeakHashMapPro) return TYPE_WEAKED;
+    	if(m instanceof LinkedHashMapPro) return TYPE_LINKED;
+    	if(m instanceof WeakHashMapPro) return TYPE_WEAKED;
     	//if(map instanceof SyncMap) return TYPE_SYNC;
-    	if(map instanceof MapProWrapper) return TYPE_SOFT;
+    	if(m instanceof MapProWrapper) return TYPE_SOFT;
     	return TYPE_REGULAR;
     }
     
