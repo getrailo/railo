@@ -551,7 +551,7 @@ public abstract class ComponentPage extends PagePlus  {
 		try {
 			is=req.getInputStream();
 			
-			String input = IOUtil.toString(is,"iso-8859-1");
+			String input = IOUtil.toString(is,CharsetUtil.ISO88591);
 			return 
 			StringUtil.indexOfIgnoreCase(input, "soap:Envelope")!=-1 || 
 			StringUtil.indexOfIgnoreCase(input, "soapenv:Envelope")!=-1 || 
@@ -574,13 +574,18 @@ public abstract class ComponentPage extends PagePlus  {
 		url.removeEL(KeyConstants._method);
 		Object args=url.get(KeyConstants._argumentCollection,null);
 		String strArgCollFormat=Caster.toString(url.get("argumentCollectionFormat",null),null);
-		List<MimeType> accept = ReqRspUtil.getAccept(pc);
-		int returnFormat = MimeType.toFormat(accept, -1);
-		if(returnFormat==-1) {
-			Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
-			if(oReturnFormatFromURL!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null));
-		}
 		
+		
+		// url.returnFormat
+		int returnFormat=-1;
+		Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
+		if(oReturnFormatFromURL!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null),-1);
+		
+		// request header "accept"
+		if(returnFormat==-1) {
+			List<MimeType> accept = ReqRspUtil.getAccept(pc);
+			returnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
+		}
 		
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
@@ -597,6 +602,7 @@ public abstract class ComponentPage extends PagePlus  {
         Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
         Props props = getProps(pc, o, returnFormat);
+        
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
         	
         
@@ -714,10 +720,12 @@ public abstract class ComponentPage extends PagePlus  {
 			props.output=udf.getOutput();
 			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
 		}
-		if(UDFUtil.isValidReturnFormat(returnFormat)){
+		if(returnFormat!=-1 && returnFormat!=UDF.RETURN_FORMAT_XML){ // XML not supported here
 			props.format=returnFormat;
 		}
-    	
+		else if(props.format==-1) props.format=UDF.RETURN_FORMAT_WDDX;
+		
+		
 		// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {
 			if(UDF.RETURN_FORMAT_WDDX==props.format)

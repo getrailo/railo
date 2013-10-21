@@ -45,6 +45,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -134,9 +135,9 @@ public class ModernAppListener extends AppListenerSupport {
 				Object oReturnFormat=url.removeEL(KeyConstants._returnFormat);
 
 				List<MimeType> accept = ReqRspUtil.getAccept(pc);
-				int returnFormat = MimeType.toFormat(accept, -1);
+				int returnFormat = MimeType.toFormat(accept, -1,-1);
 				if(returnFormat==-1) {
-					if(oReturnFormat!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormat,null));
+					if(oReturnFormat!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormat,null),UDF.RETURN_FORMAT_WDDX);
 				}
 		        
 		        

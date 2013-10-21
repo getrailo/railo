@@ -79,7 +79,6 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 	        long cachedWithin,
 	        Integer localMode,
 	        StructImpl meta) {
-		try {
 			return new UDFPropertiesImpl( pageSource,
 			        arguments,
 					 index,
@@ -97,9 +96,6 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 			         cachedWithin,
 			         localMode,
 			         meta);
-		} catch (ExpressionException e) {
-			return new UDFPropertiesImpl();
-		}
 	}
 
 	@Override
