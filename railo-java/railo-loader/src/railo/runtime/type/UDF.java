@@ -60,9 +60,10 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
     /**
      * @return Returns the returnType.
      */
-    public abstract int getReturnType();
+    public int getReturnType();
 
-    public abstract int getReturnFormat();
+    public int getReturnFormat(); // FUTURE mark as deprecated
+    // FUTURE public abstract int getReturnFormat(int defaultFormat);
 
     /**
      * returns null when not defined

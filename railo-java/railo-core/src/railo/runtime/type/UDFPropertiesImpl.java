@@ -98,7 +98,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.strReturnType=strReturnType;
 		this.returnType=CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW);
 		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,UDF.RETURN_FORMAT_WDDX);
+		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,-1);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
@@ -154,7 +154,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.strReturnType=CFTypes.toString(returnType,"any");
 		this.returnType=returnType;
 		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,UDF.RETURN_FORMAT_WDDX);
+		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,-1);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;

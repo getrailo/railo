@@ -161,6 +161,11 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 	}
 
 	@Override
+	public int getReturnFormat(int defaultValue) {
+		return defaultValue;
+	}
+
+	@Override
 	public int getReturnType() {
 		return CFTypes.toShortStrict(getReturnTypeAsString(),CFTypes.TYPE_UNKNOW);
 	}

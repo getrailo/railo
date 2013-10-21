@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -57,6 +58,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.scope.Scope;
@@ -577,15 +579,14 @@ public abstract class ComponentPage extends PagePlus  {
 		
 		
 		// url.returnFormat
-		int returnFormat=-1;
+		int urlReturnFormat=-1;
 		Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
-		if(oReturnFormatFromURL!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null),-1);
+		if(oReturnFormatFromURL!=null)urlReturnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null),-1);
 		
 		// request header "accept"
-		if(returnFormat==-1) {
-			List<MimeType> accept = ReqRspUtil.getAccept(pc);
-			returnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
-		}
+		List<MimeType> accept = ReqRspUtil.getAccept(pc);
+		int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
+		
 		
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
@@ -601,7 +602,7 @@ public abstract class ComponentPage extends PagePlus  {
       //content-type
         Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
-        Props props = getProps(pc, o, returnFormat);
+        Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
         
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
         	
@@ -707,24 +708,26 @@ public abstract class ComponentPage extends PagePlus  {
         }
 	}
 
-	private static Props getProps(PageContext pc, Object o,int returnFormat) {
+	private static Props getProps(PageContext pc, Object o,int urlReturnFormat,int headerReturnFormat) {
     	Props props = new Props();
     	
 		props.strType="any";
 		props.secureJson=pc.getApplicationContext().getSecureJson();
-		if(o instanceof UDF) {
-			UDF udf = ((UDF)o);
-			props.format=udf.getReturnFormat();
+		int udfReturnFormat=-1;
+		if(o instanceof UDFPlus) {
+			UDFPlus udf = ((UDFPlus)o);
+			udfReturnFormat=udf.getReturnFormat(-1);
 			props.type=udf.getReturnType();
 			props.strType=udf.getReturnTypeAsString();
 			props.output=udf.getOutput();
 			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
 		}
-		if(returnFormat!=-1 && returnFormat!=UDF.RETURN_FORMAT_XML){ // XML not supported here
-			props.format=returnFormat;
-		}
-		else if(props.format==-1) props.format=UDF.RETURN_FORMAT_WDDX;
-		
+
+		// format
+		if(isValid(urlReturnFormat)) props.format=urlReturnFormat;
+		else if(isValid(udfReturnFormat)) props.format=udfReturnFormat;
+		else if(isValid(headerReturnFormat)) props.format=headerReturnFormat;
+		else props.format=UDF.RETURN_FORMAT_WDDX;
 		
 		// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {
@@ -737,9 +740,13 @@ public abstract class ComponentPage extends PagePlus  {
     	return props;
     }
     
-    public static void writeToResponseStream(PageContext pc,Component component, String methodName,int returnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException, IOException {
+    private static boolean isValid(int returnFormat) {
+		return returnFormat!=-1 && returnFormat!=UDF.RETURN_FORMAT_XML;
+	}
+
+	public static void writeToResponseStream(PageContext pc,Component component, String methodName,int urlReturnFormat,int headerReturnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException, IOException {
     	Object o = component.get(KeyImpl.init(methodName),null);
-    	Props p = getProps(pc, o, returnFormat);
+    	Props p = getProps(pc, o, urlReturnFormat,headerReturnFormat);
     	_writeOut(pc, p, queryFormat, rtn,null);
     }
     

@@ -482,6 +482,13 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	
 	@Override
 	public int getReturnFormat() {
+		if(properties.returnFormat<0) return UDF.RETURN_FORMAT_WDDX;
+		return properties.returnFormat;
+	}
+	
+	@Override
+	public int getReturnFormat(int defaultValue) {
+		if(properties.returnFormat<0) return defaultValue;
 		return properties.returnFormat;
 	}
 	
