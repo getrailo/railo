@@ -448,7 +448,7 @@ public final class Reflector {
      * @throws  
 	 */
 	public static MethodInstance getMethodInstanceEL(Object objMaybeNull,Class clazz, Collection.Key methodName, Object[] args) {
-	    checkAccesibility(objMaybeNull,clazz, methodName);
+	    checkAccessibility(objMaybeNull,clazz, methodName);
 		args=cleanArgs(args);
 		
 		Method[] methods = mStorage.getMethods(clazz,methodName,args.length);//getDeclaredMethods(clazz);
@@ -829,10 +829,12 @@ public final class Reflector {
 		}
 	}
 	
-	private static void checkAccesibility(Object objMaybeNull,Class clazz, Key methodName) {
+	private static void checkAccessibility(Object objMaybeNull,Class clazz, Key methodName) {
+		// do not allow java.lang.System.exit()
 		if(methodName.equals(EXIT) && clazz==System.class) { // TODO better implementation
 			throw new PageRuntimeException(new SecurityException("Calling the method java.lang.System.exit is not allowed"));      	
         }
+		// change the accessibility of Railo methods is not allowed
 		else if(methodName.equals(SET_ACCESSIBLE)) {
 			if(objMaybeNull instanceof JavaObject)
 				objMaybeNull=((JavaObject)objMaybeNull).getEmbededObject(null);
