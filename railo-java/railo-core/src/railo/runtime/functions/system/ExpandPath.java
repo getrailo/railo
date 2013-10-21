@@ -24,20 +24,22 @@ public final class ExpandPath implements Function {
 	private static final long serialVersionUID = 6192659914120397912L;
 
 	public static String call(PageContext pc , String realPath) throws PageException {
-		
 		ConfigWeb config=pc.getConfig();
 		realPath=realPath.replace('\\','/');
 
         String contextPath = pc.getHttpServletRequest().getContextPath();
-        if ( !StringUtil.isEmpty( contextPath ) && realPath.startsWith( contextPath ) )
-            realPath = realPath.substring( contextPath.length() );
+        if ( !StringUtil.isEmpty( contextPath ) && realPath.startsWith( contextPath ) ) {
+            boolean sws=StringUtil.startsWith(realPath, '/');
+        	realPath = realPath.substring( contextPath.length() );
+            if(sws && !StringUtil.startsWith(realPath, '/'))
+            	realPath="/"+realPath;
+        }
 
         Resource res;
         
         if(StringUtil.startsWith(realPath,'/')) {
         	PageContextImpl pci=(PageContextImpl) pc;
         	ConfigWebImpl cwi=(ConfigWebImpl) config;
-        	
         	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), realPath, 
         			false, pci.useSpecialMappings(), true);
         	
