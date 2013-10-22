@@ -42,14 +42,12 @@ import railo.runtime.type.scope.CookieImpl;
 
 public class DumpUtil {
 
-	public static final DumpData MAX_LEVEL_REACHED; // = new SimpleDumpData("Max Dump Level Reached");
+	public static final DumpData MAX_LEVEL_REACHED;
 
 	static {
 
 		MAX_LEVEL_REACHED = new DumpTable("Max Level Reached","#e0e0e0","#ffcc99","#888888");
 		((DumpTable)MAX_LEVEL_REACHED).appendRow( new DumpRow(1, new SimpleDumpData("[Max Dump Level Reached]") ) );
-
-//		MAX_LEVEL_REACHED = new SimpleDumpData("[Max Dump Level Reached]");
 	}
 
 	public static DumpData toDumpData(Object o, PageContext pageContext, int maxlevel, DumpProperties props) {
