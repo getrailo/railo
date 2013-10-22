@@ -163,7 +163,7 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.runtime.type.util.ListUtil;
+import railo.runtime.util.PageContextUtil;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -2297,39 +2297,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 
-	private String getCookieDomain() {
-
-		String result = (String) cgiScope().get(KeyConstants._server_name, null);
-
-		if ( result != null && applicationContext.isSetDomainCookies()) {
-
-			String listLast = ListUtil.last( result, '.' );
-
-			if ( !Decision.isNumeric( listLast ) ) {    // if it's numeric then must be IP address
-
-				int numparts = 2;
-				int listLen = ListUtil.len( result, '.', true );
-
-				if ( listLen > 2 ) {
-					if ( listLast.length() == 2 || !StringUtil.isAscii( listLast ) ) {      // country TLD
-
-						int tldMinus1 = ListUtil.getAt( result, '.', listLen - 1, true, "" ).length();
-
-						if ( tldMinus1 == 2 || tldMinus1 == 3 )                             // domain is in country like, example.co.uk or example.org.il
-							numparts++;
-					}
-				}
-
-				if ( listLen > numparts )
-					result = result.substring( result.indexOf( '.' ) );
-				else if ( listLen == numparts )
-					result = "." + result;
-			}
-		}
-
-		return result;
-	}
-
     /**
      * initialize the cfid and the cftoken
      */
@@ -2360,7 +2327,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         if(setCookie && applicationContext.isSetClientCookies()) {
 
-	        String domain = this.getCookieDomain();
+	        String domain = PageContextUtil.getCookieDomain( this );
             cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain );
             cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain );
         }
@@ -2373,7 +2340,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
         if(applicationContext.isSetClientCookies()) {
 
-	        String domain = this.getCookieDomain();
+	        String domain = PageContextUtil.getCookieDomain( this );
             cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain);
             cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain);
         }
