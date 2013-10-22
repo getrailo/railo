@@ -89,7 +89,7 @@ public class QueryUtil {
 
 	/**
      * check if there is a sql restriction
-	 * @param ds
+	 * @param dc
 	 * @param sql
 	 * @throws PageException 
 	 */
@@ -97,9 +97,7 @@ public class QueryUtil {
         Array sqlparts = ListUtil.listToArrayRemoveEmpty(
         		SQLUtil.removeLiterals(sql.getSQLString())
         		," \t"+System.getProperty("line.separator"));
-        
-        
-        
+
         //print.ln(List.toStringArray(sqlparts));
         DataSource ds = dc.getDatasource();
         if(!ds.hasAllow(DataSource.ALLOW_ALTER))    checkSQLRestriction(dc,"alter",sqlparts,sql);
@@ -110,9 +108,9 @@ public class QueryUtil {
         if(!ds.hasAllow(DataSource.ALLOW_INSERT))   checkSQLRestriction(dc,"insert",sqlparts,sql);
         if(!ds.hasAllow(DataSource.ALLOW_REVOKE))   checkSQLRestriction(dc,"revoke",sqlparts,sql);
         if(!ds.hasAllow(DataSource.ALLOW_SELECT))   checkSQLRestriction(dc,"select",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_UPDATE))   checkSQLRestriction(dc,"update",sqlparts,sql);        
-        
+        if(!ds.hasAllow(DataSource.ALLOW_UPDATE))   checkSQLRestriction(dc,"update",sqlparts,sql);
     }
+
 	
 	private static void checkSQLRestriction(DatasourceConnection dc, String keyword, Array sqlparts, SQL sql) throws PageException {
         if(ArrayFind.find(sqlparts,keyword,false)>0) {
@@ -135,24 +133,27 @@ public class QueryUtil {
 		//table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
 		String template=query.getTemplate();
 		if(!StringUtil.isEmpty(template))
-			comment.append("Template:").append(template).append("\n");
+			comment.append("Template: ").append(template).append("\n");
 		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
-		
-		comment.append("Execution Time (ms):").append(Caster.toString(FormatUtil.formatNSAsMSDouble(query.getExecutionTime()))).append("\n");
-		comment.append("Recordcount:").append(Caster.toString(query.getRecordcount())).append("\n");
-		comment.append("Cached:").append(query.isCached()?"Yes\n":"No\n");
-		comment.append("Lazy:").append(query instanceof SimpleQuery?"Yes\n":"No\n");
+
+		int top = dp.getMaxlevel();        // in Query dump maxlevel is used as Top
+
+		comment.append("Execution Time: ").append(Caster.toString(FormatUtil.formatNSAsMSDouble(query.getExecutionTime()))).append(" ms \n");
+		comment.append("Record Count: ").append(Caster.toString(query.getRecordcount()));
+		if ( query.getRecordcount() > top )
+			comment.append( " (showing top " ).append( Caster.toString( top ) ).append( ")" );
+		comment.append("\n");
+		comment.append("Cached: ").append(query.isCached()?"Yes\n":"No\n");
+		comment.append("Lazy: ").append(query instanceof SimpleQuery?"Yes\n":"No\n");
 		
 		SQL sql=query.getSql();
 		if(sql!=null)
-			comment.append("SQL:").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
+			comment.append("SQL: ").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
 		
 		//table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
 		//table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
 		//table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
-		
-		
-		
+
 		DumpTable recs=new DumpTable("query","#cc99cc","#ffccff","#000000");
 		recs.setTitle("Query");
 		if(dp.getMetainfo())recs.setComment(comment.toString());
@@ -179,6 +180,9 @@ public class QueryUtil {
 				}
 			}
 			recs.appendRow(new DumpRow(1,items));
+
+			if ( i == top - 1 )
+				break;
 		}
 		if(!dp.getMetainfo()) return recs;
 		

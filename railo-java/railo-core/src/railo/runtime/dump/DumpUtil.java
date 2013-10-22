@@ -42,11 +42,21 @@ import railo.runtime.type.scope.CookieImpl;
 
 public class DumpUtil {
 
-	
-	public static DumpData toDumpData(Object o,PageContext pageContext, int maxlevel, DumpProperties props) {
-		if(maxlevel<=0) {
-			return new SimpleDumpData("maximum dump level reached");
-		}
+	public static final DumpData MAX_LEVEL_REACHED; // = new SimpleDumpData("Max Dump Level Reached");
+
+	static {
+
+		MAX_LEVEL_REACHED = new DumpTable("Max Level Reached","#e0e0e0","#ffcc99","#888888");
+		((DumpTable)MAX_LEVEL_REACHED).appendRow( new DumpRow(1, new SimpleDumpData("[Max Dump Level Reached]") ) );
+
+//		MAX_LEVEL_REACHED = new SimpleDumpData("[Max Dump Level Reached]");
+	}
+
+	public static DumpData toDumpData(Object o, PageContext pageContext, int maxlevel, DumpProperties props) {
+
+		if(maxlevel<0)
+			return MAX_LEVEL_REACHED;
+
 		// null
 		if(o == null) {
 			DumpTable table=new DumpTable("null","#ff6600","#ffcc99","#000000");
@@ -208,6 +218,9 @@ public class DumpUtil {
 		
 		ThreadLocalDump.set(o,id);
 		try{
+
+			int top = props.getMaxlevel();
+
 			// Printable
 			if(o instanceof Dumpable) {
 				return setId(id,((Dumpable)o).toDumpData(pageContext,maxlevel,props));
@@ -216,17 +229,17 @@ public class DumpUtil {
 			if(o instanceof Map) {
 				Map map=(Map) o;
 				Iterator it=map.keySet().iterator();
-	
+
 				DumpTable table = new DumpTable("struct","#ff9900","#ffcc00","#000000");
 				table.setTitle("Map ("+Caster.toClassName(o)+")");
-				
+
 				while(it.hasNext()) {
 					Object next=it.next();
 					table.appendRow(1,toDumpData(next,pageContext,maxlevel,props),toDumpData(map.get(next),pageContext,maxlevel,props));
 				}
 				return setId(id,table);
 			}
-		
+
 			// List
 			if(o instanceof List) {
 				List list=(List) o;
@@ -234,8 +247,11 @@ public class DumpUtil {
 				
 				DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 				table.setTitle("Array (List)");
-				
-				while(it.hasNext()) {
+				if ( list.size() > top )
+					table.setComment("Rows: " + list.size() + " (showing top " + top + ")");
+
+				int i = 0;
+				while(it.hasNext() && i++ < top) {
 					table.appendRow(1,new SimpleDumpData(it.nextIndex()+1),toDumpData(it.next(),pageContext,maxlevel,props));
 				}
 				return setId(id,table);
@@ -248,8 +264,9 @@ public class DumpUtil {
 				
 				DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 				table.setTitle("Set ("+set.getClass().getName()+")");
-				
-				while(it.hasNext()) {
+
+				int i = 0;
+				while(it.hasNext() && i++ < top) {
 					table.appendRow(1,toDumpData(it.next(),pageContext,maxlevel,props));
 				}
 				return setId(id,table);
@@ -273,8 +290,9 @@ public class DumpUtil {
 				
 				DumpTable table = new DumpTable("enumeration","#ff9900","#ffcc00","#000000");
 				table.setTitle("Enumeration");
-				
-				while(e.hasMoreElements()) {
+
+				int i = 0;
+				while(e.hasMoreElements() && i++ < top) {
 					table.appendRow(0,toDumpData(e.nextElement(),pageContext,maxlevel,props));
 				}
 				return setId(id,table);
