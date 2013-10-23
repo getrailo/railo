@@ -119,7 +119,7 @@ public class DumpUtil {
 		// Number
 		if(o instanceof Number) {
 			DumpTable table = new DumpTable("numeric","#ff6600","#ffcc99","#000000");
-			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
+			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o))));
 			return table;
 		}
 		// Boolean

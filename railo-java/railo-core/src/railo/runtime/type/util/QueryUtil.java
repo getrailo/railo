@@ -169,7 +169,7 @@ public class QueryUtil {
 				try {
 					Object o=query.getAt(keys[y],i+1);
 					if(o instanceof String)items[y+1]=new SimpleDumpData(o.toString());
-                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o).doubleValue()));
+                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o)));
                     else if(o instanceof Boolean) items[y+1]=new SimpleDumpData(((Boolean)o).booleanValue());
                     else if(o instanceof Date) items[y+1]=new SimpleDumpData(Caster.toString(o));
                     else if(o instanceof Clob) items[y+1]=new SimpleDumpData(Caster.toString(o));								
