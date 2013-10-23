@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
@@ -146,7 +147,23 @@ public final class CreateObject implements Function {
         	// load class
         	try	{
         		ClassLoader cl = resources.size()==0?pci.getClassLoader():pci.getClassLoader(resources.toArray(new Resource[resources.size()]));
-    			Class clazz = ClassUtil.loadClass(cl,className);
+        		Class clazz=null;
+        		try{
+    				clazz = ClassUtil.loadClass(cl,className);
+    			}
+    			catch(ClassException ce) {
+    				// no package defintion, then try java.lang
+    				if(className.indexOf('.')==-1) {
+    					try{
+    	    				clazz = ClassUtil.loadClass(cl,"java.lang."+className);
+    	    			}
+    	    			catch(ClassException e) {
+    	    				throw ce;
+    	    			}
+    				}
+    			}
+    			
+    			
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 
 			catch (Exception e) {
