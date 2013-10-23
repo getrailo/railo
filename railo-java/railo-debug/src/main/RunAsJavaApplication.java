@@ -152,5 +152,7 @@ public class RunAsJavaApplication {
         //    addContext(server,"/","context"+i+".example.local","/context"+i+"/",null,null);
 
         server.start();
+
+	    DesktopUtil.LaunchBrowser( "http://" + domain + ":" + port + "/" );
     }
 }
