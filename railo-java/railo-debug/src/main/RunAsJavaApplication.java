@@ -130,12 +130,14 @@ public class RunAsJavaApplication {
         listener.setPort(port);
         server.addListener(listener);
 
+	    String domain = "localhost";
+
         // Create a context
         File webxml = new File(appDir + "/WEB-INF/web.xml");
         if (webxml.exists()) {
-            addWebXmlContext(server, "/", "localhost", "/", appDir, webContextDir, serverContextDir);
+            addWebXmlContext(server, "/", domain, "/", appDir, webContextDir, serverContextDir);
         } else {
-            addContext(server, "/", "localhost", "/", appDir, webContextDir, serverContextDir);
+            addContext(server, "/", domain, "/", appDir, webContextDir, serverContextDir);
         }
 
         //addContext(server,"/susi/","localhost","/jm/",null,null);
