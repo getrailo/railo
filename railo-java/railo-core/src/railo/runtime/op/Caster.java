@@ -20,6 +20,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1981,18 +1982,17 @@ public final class Caster {
         }
         return str;
     }
-    //private static DecimalFormat df=(DecimalFormat) DecimalFormat.getInstance(Locale.US);//("#.###########");
-	//public static int count;
-    //static { df.applyLocalizedPattern("#.############");}
-    
+    private static DecimalFormat df=(DecimalFormat) DecimalFormat.getInstance(Locale.US);//("#.###########");
+	static { df.applyLocalizedPattern("#.############");}
+
     public static String toString(double d) {
     	long l = (long)d;
     	if(l == d) return toString(l);
     	
         if(d>l && (d-l)<0.000000000001)  return toString(l);
         if(l>d && (l-d)<0.000000000001)  return toString(l);
-        return Double.toString(d);
-    	//return df.format(d);
+        
+        return df.format(d);
     }
     
     public static String toString(Number n) {
@@ -2002,6 +2002,8 @@ public final class Caster {
     	
         if(d>l && (d-l)<0.000000000001)  return toString(l);
         if(l>d && (l-d)<0.000000000001)  return toString(l);
+        
+        if(n instanceof Double) return toString(n.doubleValue());
         return n.toString();
     	//return df.format(d);
     }
