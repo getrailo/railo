@@ -3233,12 +3233,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
     }
 
-    /*private String getContextPath() {
-		String cp = pageContext. getHttpServletRequest().getContextPath();
-		if(cp==null)return "";
-		return cp;
-	}*/
-
 	private void doGetDebuggingList() throws PageException {
     	Resource railoContext = ResourceUtil.toResourceExisting(pageContext ,"/railo-context/templates/debugging/");
     	Resource[] children = railoContext.listResources(new ExtensionResourceFilter("cfm"));

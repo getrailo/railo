@@ -391,13 +391,13 @@ public class MimeType {
 	
 	
 
-	public static int toFormat(List<MimeType> mimeTypes, int defaultValue) {
+	public static int toFormat(List<MimeType> mimeTypes,int ignore, int defaultValue) {
 		if(mimeTypes==null || mimeTypes.size()==0) return defaultValue;
 		Iterator<MimeType> it = mimeTypes.iterator();
 		int res;
 		while(it.hasNext()){
 			res=toFormat(it.next(), -1);
-			if(res!=-1) return res;
+			if(res!=-1 && res!=ignore) return res;
 		}
 		return defaultValue;
 	}

@@ -39,4 +39,7 @@ public interface UDFPlus extends UDF {
 	 // !!!!!! do not move to public interface, make for example a interface calle UDFMod
 	 public void setOwnerComponent(ComponentImpl component);
 	 public void setAccess(int access);
+	 
+	 public abstract int getReturnFormat(int defaultFormat);
+	    
 }

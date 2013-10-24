@@ -1821,7 +1821,7 @@ public final class Caster {
      */
     public static String toString(Object o) throws PageException {
     	if(o instanceof String) return (String)o;
-        else if(o instanceof Number) return toString(((Number)o).doubleValue());
+        else if(o instanceof Number) return toString(((Number)o));
         else if(o instanceof Boolean) return toString(((Boolean)o).booleanValue());
         else if(o instanceof Castable) return ((Castable)o).castToString();
         else if(o instanceof Date) {
@@ -1915,7 +1915,7 @@ public final class Caster {
     public static String toString(Object o,String defaultValue) {
         if(o instanceof String) return (String)o;
         else if(o instanceof Boolean) return toString(((Boolean)o).booleanValue());
-        else if(o instanceof Number) return toString(((Number)o).doubleValue());
+        else if(o instanceof Number) return toString(((Number)o));
         else if(o instanceof Castable) return ((Castable)o).castToString(defaultValue);
         else if(o instanceof Date) {
             if(o instanceof DateTime) {
@@ -1983,17 +1983,29 @@ public final class Caster {
         return str;
     }
     private static DecimalFormat df=(DecimalFormat) DecimalFormat.getInstance(Locale.US);//("#.###########");
-	//public static int count;
-    static {
-    	df.applyLocalizedPattern("#.############");
-    }
+	static { df.applyLocalizedPattern("#.############");}
+
     public static String toString(double d) {
     	long l = (long)d;
     	if(l == d) return toString(l);
     	
         if(d>l && (d-l)<0.000000000001)  return toString(l);
         if(l>d && (l-d)<0.000000000001)  return toString(l);
-    	return df.format(d);
+        
+        return df.format(d);
+    }
+    
+    public static String toString(Number n) {
+    	double d = n.doubleValue();
+    	long l = (long)d;
+    	if(l == d) return toString(l);
+    	
+        if(d>l && (d-l)<0.000000000001)  return toString(l);
+        if(l>d && (l-d)<0.000000000001)  return toString(l);
+        
+        if(n instanceof Double) return toString(n.doubleValue());
+        return n.toString();
+    	//return df.format(d);
     }
     
     /**
@@ -4249,7 +4261,11 @@ public final class Caster {
 
 	public static BigDecimal toBigDecimal(Object o) throws PageException {
 		if(o instanceof BigDecimal) return (BigDecimal) o;
-		if(o instanceof Number) return new BigDecimal(((Number)o).doubleValue());
+		if(o instanceof Number) {
+			if(o instanceof Integer) return new BigDecimal(((Integer)o).intValue());
+			if(o instanceof Long) return new BigDecimal(((Long)o).longValue());
+			return new BigDecimal(((Number)o).doubleValue());
+		}
         else if(o instanceof Boolean) return new BigDecimal(((Boolean)o).booleanValue()?1:0);
         else if(o instanceof String) return new BigDecimal(o.toString());
         else if(o instanceof Castable) return new BigDecimal(((Castable)o).castToDoubleValue());

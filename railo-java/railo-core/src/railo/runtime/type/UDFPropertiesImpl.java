@@ -67,7 +67,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean verifyClient,
 	        long cachedWithin,
 	        Integer localMode,
-	        StructImpl meta) throws ExpressionException {
+	        StructImpl meta) {
 		
 		// this happens when a arcive is based on older source code
 		if(pageSource==null){
@@ -98,7 +98,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.strReturnType=strReturnType;
 		this.returnType=CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW);
 		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat);
+		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,-1);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
@@ -124,7 +124,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean verifyClient,
 	        long cachedWithin,
 	        Integer localMode,
-	        StructImpl meta) throws ExpressionException {
+	        StructImpl meta) {
 		
 		// this happens when a arcive is based on older source code
 		if(pageSource==null){
@@ -154,7 +154,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.strReturnType=CFTypes.toString(returnType,"any");
 		this.returnType=returnType;
 		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat);
+		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,-1);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
@@ -181,7 +181,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        long cachedWithin,
-	        StructImpl meta) throws ExpressionException {
+	        StructImpl meta) {
 		this(pageSource, arguments, index, functionName, strReturnType, strReturnFormat, 
 				output,  access, null,displayName, description, hint, secureJson, verifyClient, cachedWithin,null, meta);
 	}
@@ -204,7 +204,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        long cachedWithin,
-	        StructImpl meta) throws ExpressionException {
+	        StructImpl meta) {
 		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, 
 				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, null, meta);
 	}
@@ -220,7 +220,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        short returnType, 
 	        String strReturnFormat, 
 	        boolean output, 
-	        int access) throws ExpressionException {
+	        int access) {
 		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, null,
 				"","", "", null, null, 0L, null, null);
 	}

@@ -453,7 +453,7 @@ component {
 						var test = asc(right(rtn, 1));
 
 						if( test EQ 10 || test EQ 13) {
-							rtn &= arguments.parentIndent & node & " ";
+							rtn &= node & " ";
 						}
 						else {
 							rtn &= node & " ";

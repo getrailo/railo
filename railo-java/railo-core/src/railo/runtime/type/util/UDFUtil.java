@@ -228,6 +228,7 @@ public class UDFUtil {
 		else if(UDF.RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
 		else if(UDF.RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
 		else if(UDFPlus.RETURN_FORMAT_JAVA==returnFormat)	return "java";
+		// NO XML else if(UDFPlus.RETURN_FORMAT_XML==returnFormat)	return "xml";
 		else return defaultValue;
 	}
 	
@@ -247,10 +248,8 @@ public class UDFUtil {
 		return defaultValue;
 	}
 	public static int toReturnFormat(String returnFormat, int defaultValue) {
-		if(StringUtil.isEmpty(returnFormat,true))
-			return UDF.RETURN_FORMAT_WDDX;
-			
-			
+		if(StringUtil.isEmpty(returnFormat,true)) return defaultValue;
+		
 		returnFormat=returnFormat.trim().toLowerCase();
 		if("wddx".equals(returnFormat))				return UDF.RETURN_FORMAT_WDDX;
 		else if("json".equals(returnFormat))		return UDF.RETURN_FORMAT_JSON;

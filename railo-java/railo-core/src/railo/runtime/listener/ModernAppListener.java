@@ -45,6 +45,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -130,19 +131,18 @@ public class ModernAppListener extends AppListenerSupport {
 
 				url.removeEL(KeyConstants._fieldnames);
 				url.removeEL(KeyConstants._method);
+				
 				Object args=url.get(KeyConstants._argumentCollection,null);
+				
+				// url returnFormat
 				Object oReturnFormat=url.removeEL(KeyConstants._returnFormat);
-
+				int urlReturnFormat=-1;
+				if(oReturnFormat!=null) urlReturnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormat,null),-1);
+				
+				// request header accept
 				List<MimeType> accept = ReqRspUtil.getAccept(pc);
-				int returnFormat = MimeType.toFormat(accept, -1);
-				if(returnFormat==-1) {
-					if(oReturnFormat!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormat,null));
-				}
-		        
-		        
-		        
-		        
-		        
+				int headerReturnFormat = MimeType.toFormat(accept, -1,-1);
+
 		        Object queryFormat=url.removeEL(KeyConstants._queryFormat);
 		        
 		        if(args==null){
@@ -186,7 +186,7 @@ public class ModernAppListener extends AppListenerSupport {
 		        	}
 		        	else {
 		        		try {
-							ComponentPage.writeToResponseStream(pc,app,method.toString(),returnFormat,queryFormat,rtn);
+							ComponentPage.writeToResponseStream(pc,app,method.toString(),urlReturnFormat,headerReturnFormat,queryFormat,rtn);
 						} catch (Exception e) {
 							throw Caster.toPageException(e);
 						}

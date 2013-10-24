@@ -401,7 +401,7 @@ public final class ScriptConverter extends ConverterSupport {
 			// Number
 			if(object instanceof Number) {
 			    sb.append(goIn());
-			    sb.append(Caster.toString(((Number)object).doubleValue()));
+			    sb.append(Caster.toString(((Number)object)));
 			    deep--;
 			    return;
 			}
