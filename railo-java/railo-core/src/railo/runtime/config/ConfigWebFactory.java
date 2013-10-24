@@ -1163,7 +1163,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		Resource gwDir = componentsDir.getRealResource("railo/extension/gateway/");
 		create("/resource/context/gateway/",new String[]{
-		"DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
+		"TaskGateway.cfc","DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
 				},gwDir,doNew);
 
 		// resources/language
