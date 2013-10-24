@@ -130,14 +130,14 @@ public class RunAsJavaApplication {
         listener.setPort(port);
         server.addListener(listener);
 
-	    String domain = "localhost";
+	    String host = "localhost";
 
         // Create a context
         File webxml = new File(appDir + "/WEB-INF/web.xml");
         if (webxml.exists()) {
-            addWebXmlContext(server, "/", domain, "/", appDir, webContextDir, serverContextDir);
+            addWebXmlContext(server, "/", host, "/", appDir, webContextDir, serverContextDir);
         } else {
-            addContext(server, "/", domain, "/", appDir, webContextDir, serverContextDir);
+            addContext(server, "/", host, "/", appDir, webContextDir, serverContextDir);
         }
 
         //addContext(server,"/susi/","localhost","/jm/",null,null);
@@ -151,6 +151,9 @@ public class RunAsJavaApplication {
         //for(int i=1;i<10;i++)
         //    addContext(server,"/","context"+i+".example.local","/context"+i+"/",null,null);
 
+
         server.start();
+
+	    DesktopUtil.launchBrowser( host, port, false );
     }
 }
