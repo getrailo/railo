@@ -179,7 +179,7 @@ Error Output --->
 		</cfif>	
 	</cfif>
 	
-	<cfif server.java.javaAgentSupported>
+	<cfif !server.java.javaAgentSupported>
 		
 		<div class="warning nofocus">
 			There is no Java Agent defined in this enviroment. 
