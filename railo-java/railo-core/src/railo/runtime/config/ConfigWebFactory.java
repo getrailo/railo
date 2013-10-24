@@ -1212,7 +1212,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// delete Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");
 		delete(gDir,new String[]{
-		"DirectoryWatcher.cfc","MailWatcher.cfc"
+		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc"
 		});
 		
 		// add Gateway Drivers
