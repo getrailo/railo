@@ -5343,6 +5343,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- GetCanonicalPath -->
+	<function>
+		<name>GetCanonicalPath</name>
+		<class>railo.runtime.functions.file.GetCanonicalPath</class>
+		<description>Returns the canonical pathname string based on the given string.</description>
+		<argument>
+			<name>path</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>path to a component or component itself</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- getClassPath -->
 	<function>
 		<name>getClassPath</name>
