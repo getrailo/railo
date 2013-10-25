@@ -238,7 +238,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 				new String[]{form.getEncoding(),url.getEncoding()});
 	}
 
-	private URLImpl _url(PageContext pc) {
+	private static URLImpl _url(PageContext pc) {
 		URL u = pc.urlScope();
 		if(u instanceof UrlFormImpl) {
 			return ((UrlFormImpl) u).getURL();
@@ -246,7 +246,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return (URLImpl) u;
 	}
 
-	private FormImpl _form(PageContext pc) {
+	private static FormImpl _form(PageContext pc) {
 		Form f = pc.formScope();
 		if(f instanceof UrlFormImpl) {
 			return ((UrlFormImpl) f).getForm();
@@ -261,7 +261,11 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 
 	@Override
 	public String[] getParameterValues(String name) {
-		PageContext pc = ThreadLocalPageContext.get();
+		return getParameterValues(ThreadLocalPageContext.get(), name); 
+	}
+	
+	public static String[] getParameterValues(PageContext pc, String name) {
+		pc = ThreadLocalPageContext.get(pc);
 		FormImpl form = _form(pc);
 		URLImpl url= _url(pc);
 		
