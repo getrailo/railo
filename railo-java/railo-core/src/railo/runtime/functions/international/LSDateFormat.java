@@ -20,7 +20,6 @@ public final class LSDateFormat implements Function {
 
 	private static final long serialVersionUID = 4720003854756942610L;
 	
-	//private static Calendar calendar;
 	public static String call(PageContext pc , Object object) throws PageException {
 		return _call(pc, object, "medium", pc.getLocale(),pc.getTimeZone());
 	}

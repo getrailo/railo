@@ -178,7 +178,7 @@ public final class DateCaster {
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=JREDateTimeUtil.getCalendar(locale);
+        Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
         //synchronized(c){
         	
 	        // datetime

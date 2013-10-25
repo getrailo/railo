@@ -191,8 +191,4 @@ public class TimeZoneUtil {
 		if(tz!=null) return tz;
 		throw new ExpressionException("can't cast value ("+strTimezone+") to a TimeZone","supported TimeZones are:"+getSupportedTimeZonesAsString());
 	}
-
-	public static Calendar getCalendar(TimeZone tz) {
-		return Calendar.getInstance(ThreadLocalPageContext.getTimeZone(tz));
-	}
 }

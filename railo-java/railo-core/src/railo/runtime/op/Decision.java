@@ -1349,16 +1349,14 @@ public final class Decision {
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=JREDateTimeUtil.getCalendar(locale);
+        Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
         //synchronized(c){
 	        // datetime
 	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
-	            	synchronized(c) {
-		            	df[i].parse(str);
-		            	return true;
-	            	}
+	            	df[i].parse(str);
+		            return true;
 	            }
 	            catch (ParseException e) {}
 	        }
@@ -1367,11 +1365,9 @@ public final class Decision {
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	df[i].parse(str);
-		            	return true;
-	            	}
-	        }
+	            	df[i].parse(str);
+		            return true;
+	            }
 	            catch (ParseException e) {}
 	        }
 	    	
@@ -1380,10 +1376,8 @@ public final class Decision {
 	        for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	df[i].parse(str);
-		            	return true;
-	            	}
+	            	df[i].parse(str);
+		            return true;
 	            } 
 	            catch (ParseException e) {}
 	        }

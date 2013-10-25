@@ -33,7 +33,7 @@ public final class DateAdd implements Function {
 		else if(first=='h')		return new DateTimeImpl(pc,date.getTime()+(l*3600000),false);
 		
 		
-		Calendar c=JREDateTimeUtil.getCalendar();
+		Calendar c=JREDateTimeUtil.getThreadCalendar();
 		//if (c == null)c=JREDateTimeUtil.newInstance();
         //synchronized (c) {
         	//c.clear();
