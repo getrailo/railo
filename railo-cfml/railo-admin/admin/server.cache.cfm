@@ -155,6 +155,12 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearTemplateCache#">
 						<div class="comment">#stText.setting.templateCacheClearDesc#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.codetip#:</p>
+							<pre>pagePoolClear();</pre></div>
+						
 					</td>
 				</tr>
 				
@@ -164,6 +170,11 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearQueryCache#">
 						<div class="comment">#stText.setting.queryCacheClearDesc#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.codetip#:</p>
+							<pre>&lt;cfobjectcache action="clear"></pre></div>
 					</td>
 				</tr>
 				
@@ -173,6 +184,11 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearComponentCache#">
 						<div class="comment">#stText.setting.componentCacheClearDesc#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.codetip#:</p>
+							<pre>componentCacheClear();</pre></div>
 					</td>
 				</tr>
 				
@@ -182,6 +198,11 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearCTCache#">
 						<div class="comment">#stText.setting.ctCacheClearDesc#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.codetip#:</p>
+							<pre>ctCacheClear();</pre></div>
 					</td>
 				</tr>
 				<cfif hasAccess>

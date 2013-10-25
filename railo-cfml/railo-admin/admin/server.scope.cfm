@@ -137,7 +137,8 @@ Error Output --->
 						<div class="comment">#stText.Scopes.CascadeToResultSetDescription#</div>
 					</td>
 				</tr>
-				
+				<!---
+				Session Type---->
 				<tr>
 					<th scope="row">#stText.Scopes.SessionType#</th>
 					<td>
@@ -150,7 +151,13 @@ Error Output --->
 							<b>#scope.sessionType#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.SessionTypeDescription#</div>
-					</td>
+						
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.sessionType="#scope.sessionType#"; // or "#scope.sessionType=="cfml"?"j2ee":"cfml"#"</pre></div>
+					 </td>
 				</tr>
 				
 				
@@ -168,6 +175,7 @@ Error Output --->
 						<div class="comment">#stText.Scopes.mergeUrlFormDescription#</div>
 					</td>
 				</tr>
+				<!--- Session Management --->
 				<tr>
 					<th scope="row">#stText.Scopes.SessionManagement#</th>
 					<td>
@@ -178,6 +186,11 @@ Error Output --->
 							<b>#iif(scope.sessionManagement,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.SessionManagementDescription#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.sessionManagement=#scope.sessionManagement#;</pre></div>
 					</td>
 				</tr>
 				<tr>
@@ -190,8 +203,14 @@ Error Output --->
 							<b>#iif(scope.clientManagement,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.ClientManagementDescription#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.clientManagement=#scope.clientManagement#;</pre></div>
 					</td>
 				</tr>
+				<!--- Domain Cookies --->
 				<tr>
 					<th scope="row">#stText.Scopes.DomainCookies#</th>
 					<td>
@@ -202,8 +221,15 @@ Error Output --->
 							<b>#iif(scope.domainCookies,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.DomainCookiesDescription#</div>
+						
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.setDomainCookies=#scope.domainCookies#;</pre></div>
 					</td>
 				</tr>
+				<!--- Client Cookies --->
 				<tr>
 					<th scope="row">#stText.Scopes.ClientCookies#</th>
 					<td>
@@ -214,6 +240,12 @@ Error Output --->
 							<b>#iif(scope.clientCookies,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.ClientCookiesDescription#</div>
+						
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.setClientCookies=#scope.clientCookies#;</pre></div>
 					</td>
 				</tr>
 				
@@ -248,12 +280,16 @@ Error Output --->
 							<b>#stText.Scopes["LocalMode"& scope.LocalMode]#</b><br />
 							<div class="comment">#stText.Scopes["LocalMode"& scope.LocalMode&"desc"]#</div>
 						</cfif>
+						
+						
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.localMode="#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"</pre></div>
 					</td>
 				</tr>
-				
-				
-				
-				
+				<!--- Session Timeout --->
 				<tr>
 					<th scope="row">#stText.Scopes.SessionTimeout#</th>
 					<td>
@@ -286,8 +322,14 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.SessionTimeoutDescription#</div>
+						<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.sessionTimeout=createTimeSpan(#scope.sessionTimeout_day#,#scope.sessionTimeout_hour#,#scope.sessionTimeout_minute#,#scope.sessionTimeout_second#);</pre></div>
 					</td>
 				</tr>
+				<!--- Application Timeout --->
 				<tr>
 					<th scope="row">#stText.Scopes.ApplicationTimeout#</th>
 					<td>
@@ -320,8 +362,14 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.ApplicationTimeoutDescription#</div>
+					<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.applicationTimeout=createTimeSpan(#scope.applicationTimeout_day#,#scope.applicationTimeout_hour#,#scope.applicationTimeout_minute#,#scope.applicationTimeout_second#);</pre></div>
 					</td>
 				</tr>
+				<!--- Client Timeout --->
 				<tr>
 					<th scope="row">#stText.Scopes.ClientTimeout#</th>
 					<td>
@@ -354,6 +402,11 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.ClientTimeoutDescription#</div>
+					<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.clientTimeout=createTimeSpan(#scope.clientTimeout_day#,#scope.clientTimeout_hour#,#scope.clientTimeout_minute#,#scope.clientTimeout_second#);</pre></div>
 					</td>
 				</tr>
 				
@@ -381,6 +434,11 @@ Error Output --->
 					<td>
 						<cfinput type="text" name="sessionStorage" value="#scope.sessionStorage#">
 						<div class="comment">#stText.Scopes.sessionStorageDesc#</div>
+					<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.sessionStorage="#scope.sessionStorage#";</pre></div>
 					</td>
 				</tr>
 				
@@ -390,6 +448,11 @@ Error Output --->
 					<td>
 						<cfinput type="text" name="clientStorage" value="#scope.clientStorage#">
 						<div class="comment">#stText.Scopes.clientStorageDesc#</div>
+					<!--- Tip --->
+						<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.sessionStorage="#scope.sessionStorage#";</pre></div>
 					</td>
 				</tr>
 				
@@ -415,4 +478,19 @@ Error Output --->
 			</cfif>
 		</table>
 	</cfform>
+	
+<!--- Tip
+<div class="tip">
+	#stText.settings.appcfcdesc#:
+	<pre>	this.sessionType="#scope.sessionType#"; // or "#scope.sessionType=="cfml"?"j2ee":"cfml"#"
+	this.SessionManagement=#scope.sessionManagement#; // or #scope.sessionManagement?false:true#
+	this.clientManagement=#scope.clientManagement#; // or #scope.clientManagement?false:true#
+	this.setDomainCookies=#scope.domainCookies#; // or #scope.domainCookies?false:true#
+	this.setClientCookies=#scope.clientCookies#; // or #scope.clientCookies?false:true#
+	this.localMode="#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"
+	this.sessionTimeout=createTimeSpan(#scope.sessionTimeout_day#,#scope.sessionTimeout_hour#,#scope.sessionTimeout_minute#,#scope.sessionTimeout_second#);
+	this.applicationTimeout=createTimeSpan(#scope.applicationTimeout_day#,#scope.applicationTimeout_hour#,#scope.applicationTimeout_minute#,#scope.applicationTimeout_second#);
+	this.clientTimeout=createTimeSpan(#scope.clientTimeout_day#,#scope.clientTimeout_hour#,#scope.clientTimeout_minute#,#scope.clientTimeout_second#);
+	this.sessionStorage="#scope.sessionStorage#";
+	this.clientStorage="#scope.clientStorage#";</pre></div> --->
 </cfoutput>

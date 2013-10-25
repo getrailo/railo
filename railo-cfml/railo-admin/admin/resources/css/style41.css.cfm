@@ -389,7 +389,6 @@ div.error, div.warning, div.message {
 	border:1px solid red;
 	padding:5px;
 	margin:10px 0px;
-	xfont-weight:bold;
 	color:red;
 }
 div.warning {
@@ -404,6 +403,30 @@ div.ok {
 	border-color: #e0e0e0;
 	color:#e0e0e0;
 }
+
+
+div.tip {
+	border-color: #666;
+	background-color: #669900;
+	color:#fff;
+	padding:2px;
+	margin:4px;
+	font-size:10px;
+	opacity: 0.5;
+  transition: 0.5s ease-in-out;
+}
+div.tip span { display:block;text-align: center;font-size:10px; }
+div.tip p { display:none;font-size:12px; }
+div.tip pre { display:none;  font-family:"Courier New";padding:5px;font-size:12px;}
+
+div.tip:active {
+	opacity: 1;
+}
+div.tip:active span { display:none; }
+div.tip:active p { display:inline; }
+div.tip:active pre { display:block;}
+
+
 
 
 

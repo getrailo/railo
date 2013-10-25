@@ -84,7 +84,12 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.trusted">Trusted</data>
 	<data key="customtags.customTagPathCache">Cache</data>
 	<data key="customtags.customTagPathCacheDesc">Customtag Pfade werden gecached und nicht wieder geprüft</data>
+	<data key="settings.codetip">Dies kann im Code wiefolgt gemacht werden</data>
+	<data key="settings.tip">Programmiertipp (Klick mich)</data>
 	
+	<data key="settings.appcfc">Application.cfc</data>
+	<data key="settings.appcfcdesc">Dies kann auch im Application.cfc wiefolgt konfiguriert werden</data>
+	<data key="settings.appcfcSomedesc">Einige dieser Settings können auch im Application.cfc vorgenommen werden</data>
 	
 	
 	<data key="customtags.mode.standard">CFML standard</data>

@@ -466,12 +466,10 @@ if(len(datasource.timezone))optional.append("timezone:'#replace(datasource.timez
 if(datasource.storage) optional.append('storage:#datasource.storage# // default: false');
 if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // default: false');
 </cfscript>
-
-		
-		<br>
-			<h3>Application.cfc</h3>
-			You can set this datasource connection in the Application.cfc as follows:
-<pre>
+<div class="tip">
+<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>
 this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif>={
 	class:'#datasource.classname#'
 	,connectionString:'#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
@@ -482,5 +480,6 @@ this.datasources<cfif isValid('variableName',datasource.name) and !find('.',data
 <cfloop array="#optional#" index="i" item="value">	,#value#<cfif i LT optional.len()>
 </cfif></cfloop></cfif>
 };</pre>
+</div>
 		</cfif>
 </cfoutput>

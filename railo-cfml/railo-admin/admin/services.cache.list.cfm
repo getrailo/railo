@@ -226,6 +226,7 @@ Redirtect to entry --->
 				</tfoot>
 			 </table>
 		</cfform>
+		
 	</cfif>
 </cfoutput>
 <script>
@@ -248,6 +249,7 @@ function defaultValue(field) {
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<table class="maintbl">
 				<tbody>
+	<cfset defaults={}>
     <cfloop index="type" list="object,template,query,resource,function"><!---  --->
 						<tr>
 							<th scope="row">#stText.Settings.cache['defaulttype'& type]#</th>
@@ -255,13 +257,24 @@ function defaultValue(field) {
 								<select name="default_#type#" class="small" onchange="defaultValue(this);">
 									<option value="">------</option>
 									<cfloop query="connections">
-										<option value="#connections.name#" <cfif connections.default EQ type>selected="selected"</cfif>>#connections.name#</option>
+										<option value="#connections.name#" <cfif connections.default EQ type><cfset defaults[type]=connections.name>selected="selected"</cfif>>#connections.name#</option>
 									</cfloop>
 								</select>
 								<div class="comment">#stText.Settings.cache['defaulttype' &type& 'Desc']#</div>
 							</td>
 						</tr>
 					</cfloop>
+						<tr>
+						<td colspan="2"><!--- Tip --->
+		<div class="tip">
+							<span>#stText.settings.tip#</span>
+							<p>#stText.settings.appcfcdesc#:</p>
+							<pre>this.cache.object="#isNull(defaults.object) || !len(defaults.object)?"&lt;cache-name>":defaults.object#";
+this.cache.template="#isNull(defaults.template) || !len(defaults.template)?"&lt;cache-name>":defaults.template#";
+this.cache.query"#isNull(defaults.query) || !len(defaults.query)?"&lt;cache-name>":defaults.query#";
+this.cache.resource="#isNull(defaults.resource) || !len(defaults.resource)?"&lt;cache-name>":defaults.resource#";
+this.cache.function="#isNull(defaults.function) || !len(defaults.function)?"&lt;cache-name>":defaults.function#";</pre></div></td>
+						</tr>
 				</tbody>
 				<tfoot>
 					<tr>
@@ -273,8 +286,9 @@ function defaultValue(field) {
 						</td>
 					</tr>
 				</tfoot>
-			</table>   
+			</table>
 		</cfform>
+		
 	</cfoutput>
 </cfif>
 
