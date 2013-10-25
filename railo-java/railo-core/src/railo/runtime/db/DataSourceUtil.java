@@ -3,6 +3,8 @@ package railo.runtime.db;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import railo.commons.lang.StringUtil;
+
 
 public class DataSourceUtil {
 
@@ -41,6 +43,15 @@ public class DataSourceUtil {
 		catch (Throwable t) {
 			return defaultValue;
 		}
+	}
+	public static String getDatabaseName(DatasourceConnection dc) throws SQLException {
+		String dbName=null;
+		try {
+			dbName = dc.getDatasource().getDatabase();
+		} catch(Throwable t) {}
+		if (StringUtil.isEmpty(dbName))
+			dbName = dc.getConnection().getCatalog();  // works on most JDBC drivers (except Oracle )
+		return dbName;
 	}
 
 }
