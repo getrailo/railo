@@ -180,7 +180,6 @@ Error Output --->
 	</cfif>
 	
 	<cfif !server.java.javaAgentSupported>
-		
 		<div class="warning nofocus">
 			There is no Java Agent defined in this enviroment. 
 			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
@@ -188,9 +187,7 @@ Error Output --->
 			<ol>
 				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar in your lib directory
 				<br>
-
-				<cfif len( server.java.javaAgentPath )>
-					
+				<cfif !isNull(server.java.javaAgentPath) && len( server.java.javaAgentPath )>
 					in this environment that would be: <em>-javaagent=#replace( server.java.javaAgentPath, server.java.executionPath, "" )#</em>
 				<cfelse>
 

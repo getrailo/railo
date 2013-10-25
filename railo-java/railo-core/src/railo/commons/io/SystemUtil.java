@@ -197,12 +197,9 @@ public final class SystemUtil {
 	 * @return
 	 */
 	public static String fixWindowsPath(String path) {
-
 		if ( isWindows && path.length() > 3 && path.charAt(0) == '/' && path.charAt(2) == ':' ) {
-
 			path = path.substring(1).replace( '/', '\\' );
 		}
-
 		return path;
 	}
 

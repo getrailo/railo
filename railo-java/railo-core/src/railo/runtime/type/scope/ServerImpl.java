@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -62,6 +63,10 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key JAVA = KeyConstants._java;
 	private static final Key VERSION_NAME = KeyImpl.intern("versionName");
 	private static final Key VERSION_NAME_EXPLANATION = KeyImpl.intern("versionNameExplanation");
+
+	private static String jap;
+
+	private static String jep;
 
 	/*
     Supported CFML Application
@@ -159,13 +164,17 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
 			java.setEL(JAVA_AGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
-			java.setEL(JAVA_AGENT_PATH, JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent"));
-
-			String temp = System.getProperty( "user.dir", "" );
-			if ( !temp.isEmpty() && !temp.endsWith( File.separator ) )
-				temp = temp + File.separator;
-
-			java.setEL( JAVA_EXECUTION_PATH, temp );
+			
+			//if(jap==null) jap=JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent");
+			//java.setEL(JAVA_AGENT_PATH, jap);
+			
+			if(jep==null) {
+				String temp = System.getProperty( "user.dir", "" );
+				if ( !StringUtil.isEmpty(temp) && !temp.endsWith( File.separator ) )
+					temp = temp + File.separator;
+				jep=temp;
+			}
+			java.setEL( JAVA_EXECUTION_PATH, jep );
 
 			java.setReadOnly(true);
 			super.setEL (JAVA,java);
