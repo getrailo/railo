@@ -186,8 +186,16 @@ Error Output --->
 			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
 			To enable the Java Agent follow this instructions:
 			<ol>
-				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar in your lib directory<br>
-				if the railo-inst.jar is not present in your lib folder you can download it from <a href="http://www.getrailo.org/download" target="new">here</a>.
+				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar in your lib directory
+				<br>
+
+				<cfif len( server.java.javaAgentPath )>
+					
+					in this environment that would be: <em>-javaagent=#replace( server.java.javaAgentPath, server.java.executionPath, "" )#</em>
+				<cfelse>
+
+					if the railo-inst.jar is not present in your lib folder you can download it from <a href="http://www.getrailo.org/download" target="new">here</a>.					
+				</cfif>
                 </li>
 			</ol>
 			
