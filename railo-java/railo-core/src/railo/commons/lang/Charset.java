@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.SortedMap;
 
 public final class Charset {
-	
+
+	public static String UTF8 = "UTF-8";
+
 	public static String[] getAvailableCharsets() {
 		 SortedMap map = java.nio.charset.Charset.availableCharsets();
 		 String[] keys=(String[]) map.keySet().toArray(new String[map.size()]);
