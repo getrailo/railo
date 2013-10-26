@@ -152,11 +152,10 @@ Error Output --->
 						</cfif>
 						<div class="comment">#stText.Scopes.SessionTypeDescription#</div>
 						
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.sessionType="#scope.sessionType#"; // or "#scope.sessionType=="cfml"?"j2ee":"cfml"#"</pre></div>
+						<cfsavecontent variable="codeSample">
+							this.sessionType = "#scope.sessionType#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					 </td>
 				</tr>
 				
@@ -186,11 +185,11 @@ Error Output --->
 							<b>#iif(scope.sessionManagement,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.SessionManagementDescription#</div>
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.sessionManagement=#scope.sessionManagement#;</pre></div>
+						
+						<cfsavecontent variable="codeSample">
+							this.sessionManagement = #scope.sessionManagement#;
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<tr>
@@ -203,11 +202,11 @@ Error Output --->
 							<b>#iif(scope.clientManagement,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.ClientManagementDescription#</div>
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.clientManagement=#scope.clientManagement#;</pre></div>
+
+						<cfsavecontent variable="codeSample">
+							this.clientManagement = #scope.clientManagement#;
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<!--- Domain Cookies --->
@@ -222,11 +221,10 @@ Error Output --->
 						</cfif>
 						<div class="comment">#stText.Scopes.DomainCookiesDescription#</div>
 						
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.setDomainCookies=#scope.domainCookies#;</pre></div>
+						<cfsavecontent variable="codeSample">
+							this.setDomainCookies = #scope.domainCookies#;
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<!--- Client Cookies --->
@@ -241,14 +239,12 @@ Error Output --->
 						</cfif>
 						<div class="comment">#stText.Scopes.ClientCookiesDescription#</div>
 						
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.setClientCookies=#scope.clientCookies#;</pre></div>
+						<cfsavecontent variable="codeSample">
+							this.setClientCookies = #scope.clientCookies#;
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
-				</tr>
-				
+				</tr>		
 				
 				
 				<!--- Local Mode --->
@@ -281,12 +277,10 @@ Error Output --->
 							<div class="comment">#stText.Scopes["LocalMode"& scope.LocalMode&"desc"]#</div>
 						</cfif>
 						
-						
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.localMode="#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"</pre></div>
+						<cfsavecontent variable="codeSample">
+							this.localMode = "#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<!--- Session Timeout --->
@@ -322,11 +316,11 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.SessionTimeoutDescription#</div>
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.sessionTimeout=createTimeSpan(#scope.sessionTimeout_day#,#scope.sessionTimeout_hour#,#scope.sessionTimeout_minute#,#scope.sessionTimeout_second#);</pre></div>
+
+						<cfsavecontent variable="codeSample">
+							this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# );
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<!--- Application Timeout --->
@@ -362,11 +356,11 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.ApplicationTimeoutDescription#</div>
-					<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.applicationTimeout=createTimeSpan(#scope.applicationTimeout_day#,#scope.applicationTimeout_hour#,#scope.applicationTimeout_minute#,#scope.applicationTimeout_second#);</pre></div>
+
+						<cfsavecontent variable="codeSample">
+							this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# );
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<!--- Client Timeout --->
@@ -402,11 +396,11 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.ClientTimeoutDescription#</div>
-					<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.clientTimeout=createTimeSpan(#scope.clientTimeout_day#,#scope.clientTimeout_hour#,#scope.clientTimeout_minute#,#scope.clientTimeout_second#);</pre></div>
+					
+						<cfsavecontent variable="codeSample">
+							this.clientTimeout = createTimeSpan( #scope.clientTimeout_day#, #scope.clientTimeout_hour#, #scope.clientTimeout_minute#, #scope.clientTimeout_second# );
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				
@@ -424,9 +418,7 @@ Error Output --->
 						- cookie: the data are stored in the users cookie<br>
 						- &lt;cache-name&gt;: name of a cache instane that has ""Storage"" enabled<br>
 						- &lt;datasource-name&gt;: name of a datasource instane that has ""Storage"" enabled">
-				
-				
-				
+							
 				
 				<!--- session storage --->
 				<tr>
@@ -434,11 +426,11 @@ Error Output --->
 					<td>
 						<cfinput type="text" name="sessionStorage" value="#scope.sessionStorage#">
 						<div class="comment">#stText.Scopes.sessionStorageDesc#</div>
-					<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.sessionStorage="#scope.sessionStorage#";</pre></div>
+
+						<cfsavecontent variable="codeSample">
+							this.sessionStorage = "#scope.sessionStorage#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				
@@ -448,16 +440,13 @@ Error Output --->
 					<td>
 						<cfinput type="text" name="clientStorage" value="#scope.clientStorage#">
 						<div class="comment">#stText.Scopes.clientStorageDesc#</div>
-					<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.sessionStorage="#scope.sessionStorage#";</pre></div>
+
+						<cfsavecontent variable="codeSample">
+							this.sessionStorage = "#scope.sessionStorage#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
-				
-				
-				
 				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">

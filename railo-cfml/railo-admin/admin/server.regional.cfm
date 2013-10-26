@@ -156,11 +156,11 @@ Create Datasource --->
 							<b>#regional.locale#</b>
 						</cfif>
 						<div class="comment">#stText.Regional.LocaleDescription#</div>
-						<!--- Tip --->
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-	<pre>this.locale="#regional.locale#";</pre></div>
+
+						<cfsavecontent variable="codeSample">
+							this.locale = "#regional.locale#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<tr>
@@ -180,11 +180,11 @@ Create Datasource --->
 						</cfif>
 						<!--- <cfinput type="text" name="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
 						<div class="comment">#stText.Regional.TimeZoneDescription#</div>
-						<!--- Tip --->
-						<div class="tip">
-	<span>#stText.settings.tip#</span>
-	<p>#stText.settings.appcfcdesc#:</p>
-	<pre>this.timezone="#regional.timezone#";</pre></div>
+						
+						<cfsavecontent variable="codeSample">
+							this.timezone = "#regional.timezone#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<tr>

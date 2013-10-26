@@ -259,16 +259,20 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.application.RequestTimeoutDescription#</div>
-						<!--- Tip --->
-						<cfset total=
-								appSettings.requestTimeout_second+
-								(appSettings.requestTimeout_minute*60)+
-								(appSettings.requestTimeout_hour*3600)+
-								(appSettings.requestTimeout_day*3600*24)>
-						<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.codetip#:</p>
-							<pre>&lt;cfsetting requesttimeout="#total#">;</pre></div>
+						
+
+<cfsavecontent variable="codeSample">
+	<cfset total=
+		appSettings.requestTimeout_second +
+		(appSettings.requestTimeout_minute*60) +
+		(appSettings.requestTimeout_hour*3600) +
+		(appSettings.requestTimeout_day*3600*24)>
+
+	&lt;cfsetting requesttimeout = "#total#"&gt;
+</cfsavecontent>
+<cf_admin_coding_tip codeSample="#codeSample#">
+
+
 					</td>
 				</tr>
 				<!--- request timeout url --->
