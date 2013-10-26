@@ -18,6 +18,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
@@ -328,7 +329,7 @@ public final class FileTag extends BodyTagImpl {
 	@Override
 	public int doStartTag() throws PageException	{
 		
-		if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
+		if(StringUtil.isEmpty(charset)) charset=((PageContextImpl)pageContext).getResourceCharset().name();
 		securityManager = pageContext.getConfig().getSecurityManager();
 		
 		switch(action){

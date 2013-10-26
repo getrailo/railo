@@ -3966,7 +3966,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateExtension() throws PageException {
     	
     		
-			admin.updateExtension(new ExtensionImpl(
+			admin.updateExtension(pageContext,new ExtensionImpl(
 						getStruct("config", null),
 			    		getString("admin", "UpdateExtensions", "id"),
 			    		getString("admin", "UpdateExtensions","provider"),
@@ -4625,7 +4625,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         sct.set("resourceCharset",config.getResourceCharset());
         sct.set("templateCharset",config.getTemplateCharset());
-        sct.set("webCharset",config.getWebCharset());
+        sct.set("webCharset",((PageContextImpl)pageContext).getWebCharset());
         sct.set("jreCharset",SystemUtil.getCharset());
 	}
 

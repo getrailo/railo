@@ -1,9 +1,11 @@
 package railo.runtime.tag;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -68,6 +70,8 @@ public final class Application extends TagImpl {
 	private int localMode=-1;
 	private Locale locale;
 	private TimeZone timeZone;
+	private Charset webCharset;
+	private Charset resourceCharset;
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -114,6 +118,8 @@ public final class Application extends TagImpl {
         localMode=-1;
         locale=null;
         timeZone=null;
+        webCharset=null;
+        resourceCharset=null;
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
@@ -188,6 +194,18 @@ public final class Application extends TagImpl {
 	public void setTimezone(String strTimeZone) throws ExpressionException {
 		if(StringUtil.isEmpty(strTimeZone)) return;
 		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
+		
+	}
+	
+	public void setWebcharset(String charset) {
+		if(StringUtil.isEmpty(charset)) return;
+		webCharset = CharsetUtil.toCharset(charset);
+		
+	}
+	
+	public void setResourcecharset(String charset) {
+		if(StringUtil.isEmpty(charset)) return;
+		resourceCharset = CharsetUtil.toCharset(charset);
 		
 	}
 	
@@ -437,6 +455,8 @@ public final class Application extends TagImpl {
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(locale!=null) 						ac.setLocale(locale);
 		if(timeZone!=null) 						ac.setTimeZone(timeZone);
+		if(webCharset!=null) 					ac.setWebCharset(webCharset);
+		if(resourceCharset!=null) 				ac.setResourceCharset(resourceCharset);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
 		

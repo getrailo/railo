@@ -5,20 +5,21 @@ import java.io.IOException;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
 public class FileWrite {
 
 	public static String call(PageContext pc, Object obj, Object data) throws PageException {
-		return call(pc,obj,data,pc.getConfig().getResourceCharset());
+		return call(pc,obj,data,((PageContextImpl)pc).getResourceCharset().name());
 	}
 	
 	public static String call(PageContext pc, Object obj, Object data,String charset) throws PageException {
 		FileStreamWrapper fsw=null;
 		boolean close=false;
 		if(StringUtil.isEmpty(charset,true))
-			charset=pc.getConfig().getResourceCharset();
+			charset=((PageContextImpl)pc).getResourceCharset().name();
 		try {
 			try {
 				if(obj instanceof FileStreamWrapper) {

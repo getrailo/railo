@@ -3,6 +3,7 @@ package railo.runtime;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
 import railo.commons.io.BodyContentStack;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -1953,7 +1955,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	// charset
     	try{
     		String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType(),new String[]{"",""})[1];
-    	if(StringUtil.isEmpty(charset))charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    	if(StringUtil.isEmpty(charset))charset=getWebCharset().name();
 	    	java.net.URL reqURL = new java.net.URL(req.getRequestURL().toString());
 	    	String path=ReqRspUtil.decode(reqURL.getPath(),charset,true);
 	    	String srvPath=req.getServletPath();
@@ -3103,5 +3105,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	public PageException getPageException() {
 		return pe;
+	}
+
+	// FUTURE add this methods to the loader
+	public Charset getResourceCharset() {
+		Charset cs = ((ApplicationContextPro)getApplicationContext()).getResourceCharset();
+		if(cs!=null) return cs;
+		return config._getResourceCharset();
+	}
+
+	public Charset getWebCharset() {
+		Charset cs = ((ApplicationContextPro)getApplicationContext()).getWebCharset();
+		if(cs!=null) return cs;
+		return config._getWebCharset();
 	}
 }

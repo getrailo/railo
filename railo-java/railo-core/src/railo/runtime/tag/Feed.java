@@ -14,6 +14,7 @@ import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -304,7 +305,7 @@ public final class Feed extends TagImpl	{
 			
 			
 
-			if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
+			if(StringUtil.isEmpty(charset)) charset=((PageContextImpl)pageContext).getResourceCharset().name();
 			
 			try {
 				IOUtil.write(outputFile, xml.toString(),charset,false);

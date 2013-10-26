@@ -26,6 +26,7 @@ import railo.commons.io.res.util.FileWrapper;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.io.res.util.WildcardPatternFilter;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -362,7 +363,7 @@ public final class Zip extends BodyTagImpl {
 			if(binary)
 				pageContext.setVariable(variable, baos.toByteArray());
 			else {
-				if(charset==null)charset=pageContext.getConfig().getResourceCharset();
+				if(charset==null)charset=((PageContextImpl)pageContext).getResourceCharset().name();
 				pageContext.setVariable(variable, new String(baos.toByteArray(),charset));
 			}
 		}
@@ -508,7 +509,7 @@ public final class Zip extends BodyTagImpl {
 		}
 		else {
 			String charset=zpc.getCharset();
-			if(StringUtil.isEmpty(charset))charset=pageContext.getConfig().getResourceCharset();
+			if(StringUtil.isEmpty(charset))charset=((PageContextImpl)pageContext).getResourceCharset().name();
 			add(zos, new ByteArrayInputStream(content.toString().getBytes(charset)), zpc.getEntryPath(), System.currentTimeMillis(), true);
 		}
 	}

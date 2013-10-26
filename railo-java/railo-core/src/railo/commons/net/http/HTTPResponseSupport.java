@@ -9,6 +9,7 @@ import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 
@@ -61,7 +62,7 @@ public abstract class HTTPResponseSupport implements HTTPResponse {
 		if(!StringUtil.isEmpty(charset)) return charset;
 		
 		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null) return pc.getConfig().getWebCharset();
+		if(pc!=null) return ((PageContextImpl)pc).getWebCharset().name();
 		return "ISO-8859-1";
 	}
 

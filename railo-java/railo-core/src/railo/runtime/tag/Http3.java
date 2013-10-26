@@ -48,6 +48,8 @@ import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.httpclient3.RailoStringPart;
 import railo.commons.net.http.httpclient3.ResourcePart;
 import railo.commons.net.http.httpclient3.ResourcePartSource;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -537,7 +539,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		HttpClient client = new HttpClient(manager);
-		HttpMethod httpMethod=createMethod(pageContext.getConfig(),this,client,url,port);
+		HttpMethod httpMethod=createMethod(pageContext,this,client,url,port);
 		try {
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
@@ -728,7 +730,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 		        cfhttp.set(FILE_CONTENT,str);
 		        try {
 		        	if(file!=null){
-		        		IOUtil.write(file,str,pageContext.getConfig().getWebCharset(),false);
+		        		IOUtil.write(file,str,((PageContextImpl)pageContext).getWebCharset(),false);
                     }
                 } 
 		        catch (IOException e1) {}
@@ -873,9 +875,9 @@ public final class Http3 extends BodyTagImpl implements Http {
     }
 	
 
-	static HttpMethod createMethod(Config cw,Http3 http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+	static HttpMethod createMethod(PageContext pc,Http3 http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
 		String _charset=http.charset;
-		if(StringUtil.isEmpty(_charset,true)) _charset=cw.getWebCharset();
+		if(StringUtil.isEmpty(_charset,true)) _charset=((PageContextImpl)pc).getWebCharset().name();
 		else _charset=_charset.trim();
 		
 		
@@ -948,7 +950,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 			httpMethod=eem=post;
 		}
 		// content type
-		if(StringUtil.isEmpty(http.charset))http.charset=http.pageContext.getConfig().getWebCharset();
+		if(StringUtil.isEmpty(http.charset))http.charset=((PageContextImpl)http.pageContext).getWebCharset().name();
 		
 	
 		boolean hasForm=false;
@@ -1352,16 +1354,11 @@ public final class Http3 extends BodyTagImpl implements Http {
 			// text
 			if(HTTPUtil.isTextMimeType(contentType)) {
 				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType,null);
-				//String mimetype=tmp[0];
-				String charset=tmp[1];
 				
-				if(StringUtil.isEmpty(charset,true)) {
-					Config config = ThreadLocalPageContext.getConfig();
-					if(config!=null)charset=config.getWebCharset();
-				}
+				Charset cs=Http4.getCharset(tmp[1]);
 				
 				try {
-					return IOUtil.toString(is, charset);
+					return IOUtil.toString(is, cs);
 				} catch (IOException e) {}
 			}
 			// Binary
@@ -1451,7 +1448,7 @@ class Executor extends Thread {
         	lu=Http3.locationURL(httpMethod);
         	redirectURL=lu;
         	HttpMethod oldHttpMethod = httpMethod;
-        	httpMethod=Http3.createMethod(ThreadLocalPageContext.getConfig(),http,client,lu.toExternalForm(),-1);
+        	httpMethod=Http3.createMethod(ThreadLocalPageContext.get(),http,client,lu.toExternalForm(),-1);
         	Http3.releaseConnection(oldHttpMethod);
         }
         

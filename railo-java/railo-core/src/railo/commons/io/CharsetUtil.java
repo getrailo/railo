@@ -2,8 +2,15 @@ package railo.commons.io;
 
 import java.nio.charset.Charset;
 
+import javax.servlet.http.HttpServletRequest;
+
 import railo.print;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 
 public class CharsetUtil {
 	public static final Charset UTF8;
@@ -33,6 +40,15 @@ public class CharsetUtil {
 		catch(Throwable t){
 			return defaultValue;
 		}
+	}
+
+	public static Charset getWebCharset() {
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc!=null) return ((PageContextImpl)pc).getWebCharset();
+		Config config = ThreadLocalPageContext.getConfig();
+		if(config!=null) return ((ConfigImpl)config)._getWebCharset();
+		
+		return CharsetUtil.ISO88591;
 	}
 
 }

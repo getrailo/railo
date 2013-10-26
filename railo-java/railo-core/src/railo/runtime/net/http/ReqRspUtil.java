@@ -29,6 +29,7 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
@@ -99,9 +100,8 @@ public final class ReqRspUtil {
 		}
 	}
 
-	public static Cookie[] getCookies(Config config,HttpServletRequest req) {
+	public static Cookie[] getCookies(HttpServletRequest req, Charset charset) {
 		Cookie[] cookies = req.getCookies();
-		String charset = config.getWebCharset();
 		
 		if(cookies!=null) {
 			Cookie cookie;
@@ -111,7 +111,7 @@ public final class ReqRspUtil {
 				// value (is decoded by the servlet engine with iso-8859-1)
 				if(!StringUtil.isAscii(cookie.getValue())) {
 					tmp=encode(cookie.getValue(), "iso-8859-1");
-					cookie.setValue(decode(tmp, charset,false));
+					cookie.setValue(decode(tmp, charset.name(),false));
 				}
 				
 			}
@@ -125,7 +125,7 @@ public final class ReqRspUtil {
 					for(int i=0;i<arr.length;i++){
 						tmp=railo.runtime.type.util.ListUtil.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
-							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
+							list.add(new Cookie(dec(tmp[0],charset.name(),false), tmp.length>1?dec(tmp[1],charset.name(),false):""));
 						}
 					}
 					cookies=list.toArray(new Cookie[list.size()]);
@@ -161,7 +161,7 @@ public final class ReqRspUtil {
 	}
 
 	public static String getHeaderIgnoreCase(PageContext pc, String name,String defaultValue) {
-		String charset = pc.getConfig().getWebCharset();
+		String charset = ((PageContextImpl)pc).getWebCharset().name();
 		HttpServletRequest req = pc.getHttpServletRequest();
 		Enumeration e = req.getHeaderNames();
 		String keyDecoded,key;
@@ -175,7 +175,7 @@ public final class ReqRspUtil {
 	}
 
 	public static List<String> getHeadersIgnoreCase(PageContext pc, String name) {
-		String charset = pc.getConfig().getWebCharset();
+		String charset = ((PageContextImpl)pc).getWebCharset().name();
 		HttpServletRequest req = pc.getHttpServletRequest();
 		Enumeration e = req.getHeaderNames();
 		List<String> rtn=new ArrayList<String>();

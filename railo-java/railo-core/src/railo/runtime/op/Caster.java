@@ -53,6 +53,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
@@ -1843,10 +1844,10 @@ public final class Caster {
 			}
         }
         else if(o instanceof InputStream) {
-        	Config config = ThreadLocalPageContext.getConfig();
+        	PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
         	InputStream r=null;
 			try {
-				return IOUtil.toString(r=(InputStream)o,config.getWebCharset());
+				return IOUtil.toString(r=(InputStream)o,pc.getWebCharset());
 			} 
 			catch (IOException e) {
 				throw Caster.toPageException(e);
@@ -1856,10 +1857,10 @@ public final class Caster {
 			}
         }
         else if(o instanceof byte[]) {
-        	Config config = ThreadLocalPageContext.getConfig();
+        	PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
         	
         	try {
-				return new String((byte[])o,config.getWebCharset());
+				return new String((byte[])o,pc.getWebCharset());
 			} catch (Throwable t) {
 				return new String((byte[])o);
 			}

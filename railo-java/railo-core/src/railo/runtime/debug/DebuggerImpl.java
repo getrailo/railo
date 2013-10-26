@@ -138,7 +138,7 @@ public final class DebuggerImpl implements DebuggerPro {
     		partEntries=new HashMap<String, DebugEntryTemplatePartImpl>();
     	}
 
-		ResourceSnippet snippet = snippetsMap.getSnippet( source, startPos, endPos, pc.getConfig().getResourceCharset() );
+		ResourceSnippet snippet = snippetsMap.getSnippet( source, startPos, endPos, ((PageContextImpl)pc).getResourceCharset().name());
         de=new DebugEntryTemplatePartImpl(source, startPos, endPos, snippet.getStartLine(), snippet.getEndLine(), snippet.getContent());
         partEntries.put(src,de);
         return de;

@@ -6,6 +6,7 @@ import railo.commons.io.log.LogConsole;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -167,7 +168,7 @@ public final class Log extends TagImpl {
 	        
 	    }
 	    else {
-	    	if(charset==null) charset=pageContext.getConfig().getResourceCharset();
+	    	if(charset==null) charset=((PageContextImpl)pageContext).getResourceCharset().name();
 	    	Resource logDir=config.getConfigDir().getRealResource("logs");
 	        if(!logDir.exists())logDir.mkdirs();
 	        try {

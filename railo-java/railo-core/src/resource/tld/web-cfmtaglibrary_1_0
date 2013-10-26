@@ -595,6 +595,20 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<rtexprvalue>true</rtexprvalue>
 			<description>change the timezone defintion for the current application context.</description>
 		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>webcharset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>character set used for output streams, form-, url-, and cgi scope variables and reading/writing the header</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>resourcecharset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>character set used for reading from/writing to various resources</description>
+		</attribute>
 		
 	</tag>
 	<!-- Argument -->

@@ -1,5 +1,6 @@
 package railo.runtime.listener;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -62,6 +63,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private int localMode;
 	private Locale locale; 
 	private TimeZone timeZone; 
+	private Charset webCharset; 
+	private Charset resourceCharset;
 	private short sessionType;
     private boolean sessionCluster;
     private boolean clientCluster;
@@ -102,6 +105,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.locale=config.getLocale();
         this.timeZone=config.getTimeZone();
 
+        this.webCharset=((ConfigImpl)config)._getWebCharset();
+        this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
         this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
@@ -155,6 +160,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.localMode=localMode;
 		dbl.locale=locale;
 		dbl.timeZone=timeZone;
+		dbl.webCharset=webCharset;
+		dbl.resourceCharset=resourceCharset;
 		dbl.sessionType=sessionType;
 		dbl.triggerComponentDataMember=triggerComponentDataMember;
 		dbl.restSettings=restSettings;
@@ -436,7 +443,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		return timeZone;
 	}
 	
-
+	@Override
+	public Charset getWebCharset() {
+		return webCharset;
+	}
+	
+	@Override
+	public Charset getResourceCharset() {
+		return resourceCharset;
+	}
 
 	/**
 	 * @param localMode the localMode to set
@@ -453,6 +468,16 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setTimeZone(TimeZone timeZone) {
 		this.timeZone = timeZone;
+	}
+	
+	@Override
+	public void setWebCharset(Charset webCharset) {
+		this.webCharset= webCharset;
+	}
+	
+	@Override
+	public void setResourceCharset(Charset resourceCharset) {
+		this.resourceCharset = resourceCharset;
 	}
 
 

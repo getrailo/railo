@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.Pair;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -82,7 +83,7 @@ public class HttpUtil {
 	}
 	
 	public static Cookie[] cloneCookies(Config config,HttpServletRequest req) {
-		Cookie[] src=ReqRspUtil.getCookies(config, req);
+		Cookie[] src=ReqRspUtil.getCookies(req,CharsetUtil.getWebCharset());
 		if(src==null)return new Cookie[0];
 		
 		Cookie[] dest=new Cookie[src.length];

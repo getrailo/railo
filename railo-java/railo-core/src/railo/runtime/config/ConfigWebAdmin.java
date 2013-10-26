@@ -48,6 +48,7 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
 import railo.runtime.Info;
+import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
@@ -3418,10 +3419,10 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void updateExtension(Extension extension) throws PageException {
+	public void updateExtension(PageContext pc,Extension extension) throws PageException {
 		checkWriteAccess();
 		
-		String uid = createUid(extension.getProvider(),extension.getId());
+		String uid = createUid(pc,extension.getProvider(),extension.getId());
 		
 		Element extensions=_getRootElement("extensions");
 		Element[] children = ConfigWebFactory.getChildren(extensions,"extension");
@@ -3433,7 +3434,7 @@ public final class ConfigWebAdmin {
       	    el=children[i];
       	    provider=el.getAttribute("provider");
       	    id=el.getAttribute("id");
-  			if(uid.equalsIgnoreCase(createUid(provider, id))) {
+  			if(uid.equalsIgnoreCase(createUid(pc,provider, id))) {
   				setExtensionAttrs(el,extension);
   				return ;
   			}
@@ -3449,11 +3450,11 @@ public final class ConfigWebAdmin {
 	}
 
 
-	private String createUid(String provider, String id) throws PageException {
+	private String createUid(PageContext pc,String provider, String id) throws PageException {
 		if(Decision.isUUId(id)) {
-			return Hash.invoke(config,id,null,null, 1);
+			return Hash.invoke(pc,id,null,null, 1);
 		}
-		return Hash.invoke(config,provider+id,null,null, 1);
+		return Hash.invoke(pc,provider+id,null,null, 1);
 	}
 
 
