@@ -1321,7 +1321,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		FunctionLib[] flds = config.getFLDs();
 
 		// charset
-		StringBuffer sb = new StringBuffer(config.getTemplateCharset());
+		StringBuilder sb = new StringBuilder(config.getTemplateCharset());
 		sb.append(';');
 
 		// dot notation upper case
