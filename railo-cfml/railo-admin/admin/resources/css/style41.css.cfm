@@ -431,11 +431,11 @@ div.tip:active pre { display:block;}
 
 .coding-tip-trigger { 
 	cursor: pointer; 
-	color: #08F;
+	color: #669900;
 }
 
 .coding-tip { 
-	background-color: #08F;
+	background-color: #669900;
 	color: #FFF;
 	margin: 0.25em;
 	padding: 0.5em;
