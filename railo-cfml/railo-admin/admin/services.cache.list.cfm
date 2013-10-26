@@ -265,15 +265,18 @@ function defaultValue(field) {
 						</tr>
 					</cfloop>
 						<tr>
-						<td colspan="2"><!--- Tip --->
-		<div class="tip">
-							<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>this.cache.object="#isNull(defaults.object) || !len(defaults.object)?"&lt;cache-name>":defaults.object#";
-this.cache.template="#isNull(defaults.template) || !len(defaults.template)?"&lt;cache-name>":defaults.template#";
-this.cache.query"#isNull(defaults.query) || !len(defaults.query)?"&lt;cache-name>":defaults.query#";
-this.cache.resource="#isNull(defaults.resource) || !len(defaults.resource)?"&lt;cache-name>":defaults.resource#";
-this.cache.function="#isNull(defaults.function) || !len(defaults.function)?"&lt;cache-name>":defaults.function#";</pre></div></td>
+						<td colspan="2">
+
+<cfsavecontent variable="codeSample">
+	this.cache.object = "#isNull(defaults.object) || !len(defaults.object)?"&lt;cache-name>":defaults.object#";
+this.cache.template = "#isNull(defaults.template) || !len(defaults.template)?"&lt;cache-name>":defaults.template#";
+this.cache.query = "#isNull(defaults.query) || !len(defaults.query)?"&lt;cache-name>":defaults.query#";
+this.cache.resource = "#isNull(defaults.resource) || !len(defaults.resource)?"&lt;cache-name>":defaults.resource#";
+this.cache.function = "#isNull(defaults.function) || !len(defaults.function)?"&lt;cache-name>":defaults.function#";
+</cfsavecontent>
+<cf_admin_coding_tip codeSample="#codeSample#">
+
+						</td>
 						</tr>
 				</tbody>
 				<tfoot>

@@ -466,20 +466,24 @@ if(len(datasource.timezone))optional.append("timezone:'#replace(datasource.timez
 if(datasource.storage) optional.append('storage:#datasource.storage# // default: false');
 if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // default: false');
 </cfscript>
-<div class="tip">
-<span>#stText.settings.tip#</span>
-							<p>#stText.settings.appcfcdesc#:</p>
-							<pre>
-this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif>={
-	class:'#datasource.classname#'
-	,connectionString:'#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
-	,username:'#replace(datasource.username,"'","''","all")#'
-	,password:"#datasource.passwordEncrypted#"</cfif><cfif optional.len()>
+
+
+
+<cfsavecontent variable="codeSample">
+	this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif> = {
+	  class: '#datasource.classname#'
+	, connectionString: '#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
+	, username: '#replace(datasource.username,"'","''","all")#'
+	, password: "#datasource.passwordEncrypted#"</cfif><cfif optional.len()>
 	
-// optional settings
-<cfloop array="#optional#" index="i" item="value">	,#value#<cfif i LT optional.len()>
-</cfif></cfloop></cfif>
-};</pre>
-</div>
+	// optional settings
+	<cfloop array="#optional#" index="i" item="value">, #value#<cfif i LT optional.len()>
+	</cfif></cfloop></cfif>
+};
+</cfsavecontent>
+<cf_admin_coding_tip codeSample="#codeSample#">
+
+
+
 		</cfif>
 </cfoutput>
