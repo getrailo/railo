@@ -259,6 +259,20 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.application.RequestTimeoutDescription#</div>
+						
+
+<cfsavecontent variable="codeSample">
+	<cfset total=
+		appSettings.requestTimeout_second +
+		(appSettings.requestTimeout_minute*60) +
+		(appSettings.requestTimeout_hour*3600) +
+		(appSettings.requestTimeout_day*3600*24)>
+
+	&lt;cfsetting requesttimeout = "#total#"&gt;
+</cfsavecontent>
+<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
+
+
 					</td>
 				</tr>
 				<!--- request timeout url --->

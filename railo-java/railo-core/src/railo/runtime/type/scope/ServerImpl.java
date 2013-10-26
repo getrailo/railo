@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -8,6 +9,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.instrumentation.InstrumentationUtil;
+import railo.runtime.java.JavaUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -15,16 +17,15 @@ import railo.runtime.type.ReadOnlyStruct;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.KeyConstants;
 
+import java.io.File;
+
 
 /**
  * Server Scope
  */
 public final class ServerImpl extends ScopeSupport implements Server,SharedScope {
 
-
-
 	private static final DateTimeImpl expired=new DateTimeImpl(2145913200000L,false);
-
 
 	private static final Key PRODUCT_NAME = KeyImpl.intern("productname");
 	private static final Key PRODUCT_LEVEL = KeyImpl.intern("productlevel");
@@ -41,8 +42,11 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key  ARCH= KeyImpl.intern("arch");
     private static final Key  MAC_ADDRESS= KeyImpl.intern("macAddress");
     private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
-    private static final Key  JAVA_AGGENT_SUPPORTED= KeyImpl.intern("javaAgentSupported");
+//  private static final Key  JAVA_AGENT_PATH = KeyImpl.intern("javaAgentPath");
+    private static final Key  JAVA_EXECUTION_PATH = KeyImpl.intern("executionPath");
+    private static final Key  JAVA_AGENT_SUPPORTED = KeyImpl.intern("javaAgentSupported");
     private static final Key  LOADER_VERSION= KeyImpl.intern("loaderVersion");
+    private static final Key  LOADER_PATH = KeyImpl.intern("loaderPath");
     private static final Key  VERSION= KeyConstants._version;
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.intern("additionalinformation");
     private static final Key BUILD_NUMBER = KeyImpl.intern("buildnumber");
@@ -60,6 +64,10 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 	private static final Key VERSION_NAME = KeyImpl.intern("versionName");
 	private static final Key VERSION_NAME_EXPLANATION = KeyImpl.intern("versionNameExplanation");
 
+	private static String jap;
+
+	private static String jep;
+
 	/*
     Supported CFML Application
     
@@ -71,7 +79,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     */
 	/**
 	 * constructor of the server scope
-	 * @param sn
+	 * @param pc
 	 */
 	public ServerImpl(PageContext pc) {
 		super(true,"server",SCOPE_SERVER);
@@ -105,8 +113,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			}
 			catch(Throwable t){}
 			coldfusion.setEL(ROOT_DIR,rootdir);// 
-			
-			
+
 			
 			coldfusion.setEL(SUPPORTED_LOCALES,LocaleFactory.getLocaleList());// 
 			
@@ -123,8 +130,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			os.setEL(VERSION,System.getProperty("os.version") );
 			os.setEL(ADDITIONAL_INFORMATION,"");
 			os.setEL(BUILD_NUMBER,"");
-			
-			
+
 			
 			os.setReadOnly(true);
 		super.setEL (OS,os);
@@ -136,10 +142,11 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			railo.setEL(STATE,Info.getStateAsString());
 			railo.setEL(RELEASE_DATE,Info.getRealeaseDate());
 			railo.setEL(LOADER_VERSION,Caster.toDouble(SystemUtil.getLoaderVersion()));
-			
+			railo.setEL(LOADER_PATH, JavaUtil.getJarPathForClass( "railo.loader.servlet.CFMLServlet" ));
+
 			railo.setReadOnly(true);
 		super.setEL (RAILO,railo);
-		
+
 		ReadOnlyStruct separator=new ReadOnlyStruct();
 			separator.setEL(KeyConstants._path,System.getProperty("path.separator"));
 			separator.setEL(FILE,System.getProperty("file.separator"));
@@ -156,8 +163,19 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			java.setEL(FREE_MEMORY,new Double(rt.freeMemory()));
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
-			java.setEL(JAVA_AGGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
+			java.setEL(JAVA_AGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
 			
+			//if(jap==null) jap=JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent");
+			//java.setEL(JAVA_AGENT_PATH, jap);
+			
+			if(jep==null) {
+				String temp = System.getProperty( "user.dir", "" );
+				if ( !StringUtil.isEmpty(temp) && !temp.endsWith( File.separator ) )
+					temp = temp + File.separator;
+				jep=temp;
+			}
+			java.setEL( JAVA_EXECUTION_PATH, jep );
+
 			java.setReadOnly(true);
 			super.setEL (JAVA,java);
 		

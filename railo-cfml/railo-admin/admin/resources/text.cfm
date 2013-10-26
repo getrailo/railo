@@ -1,3 +1,5 @@
+<!--- TODO: cleanup! !--->
+
 <cfset sHelpURL = "http://www.getrailo.com/help/stHelp.json">
 <cfparam name="request.stLocalHelp" default="#structNew()#">
 <cfparam name="request.stWebMediaHelp" default="#structNew()#">

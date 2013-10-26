@@ -223,8 +223,7 @@ public abstract class DateTimeUtil {
 	public abstract int getDayOfWeek(Locale locale,TimeZone tz, DateTime dt);
 
 	public abstract int getWeekOfYear(Locale locale,TimeZone tz,DateTime dt);
-
-	public abstract long getDiff(TimeZone tz, int datePart,DateTime left,DateTime right);
+	public abstract int getFirstDayOfMonth(TimeZone tz, DateTime dt);
 
 	public abstract String toString(DateTime dt, TimeZone tz);
 

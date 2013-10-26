@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
@@ -279,7 +280,7 @@ public final class SQLCaster {
     			stat.setDate(
     					parameterIndex,
     					new Date(Caster.toDate(value,tz).getTime()),
-    					TimeZoneUtil.getCalendar(tz));
+    					JREDateTimeUtil.getThreadCalendar(tz));
     			
     			//stat.setDate(parameterIndex,new Date((Caster.toDate(value,null).getTime())));
     		}
@@ -296,7 +297,7 @@ public final class SQLCaster {
     			stat.setTime(
     					parameterIndex,
     					new Time(Caster.toDate(value,tz).getTime()),
-    					TimeZoneUtil.getCalendar(tz));
+    					JREDateTimeUtil.getThreadCalendar(tz));
     		}
     		catch(PageException pe) {
     			if(!NullSupportHelper.full() && value instanceof String && StringUtil.isEmpty((String)value))
@@ -311,7 +312,7 @@ public final class SQLCaster {
     			stat.setTimestamp(
     					parameterIndex,
     					new Timestamp(Caster.toDate(value,tz).getTime()),
-    					TimeZoneUtil.getCalendar(tz));
+    					JREDateTimeUtil.getThreadCalendar(tz));
     		}
     		catch(PageException pe) {
     			if(!NullSupportHelper.full() && value instanceof String && StringUtil.isEmpty((String)value))

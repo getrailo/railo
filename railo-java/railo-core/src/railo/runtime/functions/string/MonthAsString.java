@@ -19,7 +19,7 @@ public final class MonthAsString implements Function {
 	private static final int MONTH=1000*60*60*24*32;
 	private static Date[] dates=new Date[12];
 	static {
-		Calendar cal=JREDateTimeUtil.getCalendar();
+		Calendar cal=JREDateTimeUtil.getThreadCalendar();
 		cal.setTimeInMillis(0);
 		dates[0]=cal.getTime();
 		for(int i=1;i<12;i++) {

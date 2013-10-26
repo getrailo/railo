@@ -23,6 +23,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -133,7 +134,7 @@ public class HibernateUtil {
 		Struct properties = CommonUtil.createStruct();
 		try {
 			DatabaseMetaData md = dc.getConnection().getMetaData();
-			String dbName=dc.getDatasource().getDatabase();
+			String dbName=DataSourceUtil.getDatabaseName(dc);
 			Collection.Key name;
 			
 			
@@ -241,9 +242,9 @@ public class HibernateUtil {
 	}
 	
 	public static Struct checkTable(DatasourceConnection dc, String tableName, SessionFactoryData data) throws PageException {
-		String dbName=dc.getDatasource().getDatabase();
+		
 		try {
-			
+			String dbName=DataSourceUtil.getDatabaseName(dc);
 			DatabaseMetaData md = dc.getConnection().getMetaData();
 			Struct rows=checkTableFill(md,dbName,tableName);
 			if(rows.size()==0)	{

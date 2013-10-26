@@ -124,6 +124,18 @@
 		</table>
 	</div>
 
+	<script>
+		$( function(){
+
+			$( '.coding-tip-trigger' ).click( 
+				function(){ 
+					var $this = $(this);
+					$this.next( '.coding-tip' ).slideDown();
+					$this.hide();
+				});
+		});
+	</script>
+
 	<cfif isDefined( "Request.htmlBody" )>#Request.htmlBody#</cfif>
 </body>
 </html>

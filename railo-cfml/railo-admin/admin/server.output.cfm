@@ -147,6 +147,12 @@ Defaults --->
 							<!---<input type="hidden" name="suppressContent" value="#setting.suppressContent#">--->
 						</cfif>
 						<div class="comment">#stText.setting.bufferOutputDescription#</div>
+
+
+						<cfsavecontent variable="codeSample">
+							this.bufferOutput = "#setting.bufferOutput#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<cfif hasAccess>

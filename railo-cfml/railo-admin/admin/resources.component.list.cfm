@@ -134,6 +134,10 @@
 							<b>#iif(component.triggerDataMember,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Components.triggerDataMemberDescription#</div>
+						<!--- Tip --->
+						<div class="tip">
+							#stText.settings.appcfcDesc#:
+							<pre>this.invokeImplicitAccessor=#component.triggerDataMember#;</pre></div>
 					</td>
 				</tr>
 				<!---

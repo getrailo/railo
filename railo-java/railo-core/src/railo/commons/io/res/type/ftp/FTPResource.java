@@ -360,9 +360,8 @@ public final class FTPResource extends ResourceSupport {
 			client=provider.getClient(data);
 			
 			PageContext pc = ThreadLocalPageContext.get();
-			Calendar c;
-			if(pc==null) c=JREDateTimeUtil.getCalendar();
-			else c=JREDateTimeUtil.getCalendar(pc.getTimeZone());
+			Calendar c=JREDateTimeUtil.getThreadCalendar();
+			if(pc!=null)c.setTimeZone(pc.getTimeZone());
 			c.setTimeInMillis(time);
 			FTPFile file = client.getFTPFile(this);
 			if(file==null) return false;

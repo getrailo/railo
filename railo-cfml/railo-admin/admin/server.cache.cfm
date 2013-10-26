@@ -155,6 +155,12 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearTemplateCache#">
 						<div class="comment">#stText.setting.templateCacheClearDesc#</div>
+
+
+						<cfsavecontent variable="codeSample">
+							pagePoolClear();
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">					
 					</td>
 				</tr>
 				
@@ -164,6 +170,12 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearQueryCache#">
 						<div class="comment">#stText.setting.queryCacheClearDesc#</div>
+
+
+						<cfsavecontent variable="codeSample">
+							&lt;cfobjectcache action="clear"&gt;
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 					</td>
 				</tr>
 				
@@ -173,6 +185,12 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearComponentCache#">
 						<div class="comment">#stText.setting.componentCacheClearDesc#</div>
+
+
+						<cfsavecontent variable="codeSample">
+							componentCacheClear();
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 					</td>
 				</tr>
 				
@@ -182,6 +200,12 @@ Create Datasource --->
 					<td class="fieldPadded">
 						<input class="button submit" type="submit" name="mainAction" value="#btnClearCTCache#">
 						<div class="comment">#stText.setting.ctCacheClearDesc#</div>
+						
+
+						<cfsavecontent variable="codeSample">
+							ctCacheClear();
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 					</td>
 				</tr>
 				<cfif hasAccess>

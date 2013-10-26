@@ -98,6 +98,8 @@ import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.gateway.GatewayUtil;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.instrumentation.InstrumentationUtil;
+import railo.runtime.java.JavaUtil;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.monitor.IntervallMonitor;
@@ -1482,7 +1484,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	        }
 	        sct.set("servlets", srv);
         }
-        
+
+
+	    sct.setEL("javaAgentSupported", Caster.toBoolean(InstrumentationUtil.isSupported()));
+	    sct.setEL("javaAgentPath", JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent"));
+
     }
 
     /**

@@ -505,4 +505,14 @@ public final class ReqRspUtil {
     	}
 		return defaultValue;
 	}
+
+	public static boolean identical(HttpServletRequest left, HttpServletRequest right) { 
+		if(left==right) return true;
+		if(left instanceof HTTPServletRequestWrap) 
+			left=((HTTPServletRequestWrap)left).getOriginalRequest();
+		if(right instanceof HTTPServletRequestWrap) 
+			right=((HTTPServletRequestWrap)right).getOriginalRequest();
+		if(left==right) return true;
+		return false;
+	}
 }

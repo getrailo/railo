@@ -139,6 +139,7 @@ Create Datasource --->
 		--->
 		<table class="maintbl">
 			<tbody>
+				<!--- Locale --->
 				<tr>
 					<th scope="row">#stText.Regional.Locale#</th>
 					<td>
@@ -155,6 +156,11 @@ Create Datasource --->
 							<b>#regional.locale#</b>
 						</cfif>
 						<div class="comment">#stText.Regional.LocaleDescription#</div>
+
+						<cfsavecontent variable="codeSample">
+							this.locale = "#regional.locale#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<tr>
@@ -174,6 +180,11 @@ Create Datasource --->
 						</cfif>
 						<!--- <cfinput type="text" name="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
 						<div class="comment">#stText.Regional.TimeZoneDescription#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.timezone = "#regional.timezone#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				<tr>

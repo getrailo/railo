@@ -86,6 +86,11 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 	}
 
 	@Override
+	public int getFirstDayOfMonth(TimeZone tz, railo.runtime.type.dt.DateTime dt) {
+		return jreUtil.getFirstDayOfMonth(tz, dt);
+	}
+
+	@Override
 	public long getMilliSecondsInDay(TimeZone tz,long time) {
 		return new DateTime(time,getDateTimeZone(tz)).getMillisOfDay();
 	}
@@ -97,11 +102,6 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 			zones.put(tz, dtz);
 		}
 		return dtz;
-	}
-
-	@Override
-	public long getDiff(TimeZone tz, int datePart,railo.runtime.type.dt.DateTime left,railo.runtime.type.dt.DateTime right) {
-		return jreUtil.getDiff(tz, datePart, left, right);
 	}
 
 	@Override

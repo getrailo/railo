@@ -25,12 +25,10 @@ public final class DateCompare extends BIF {
 	public static double call(PageContext pc , DateTime left, DateTime right, String datepart) throws ExpressionException {
 		datepart=datepart.toLowerCase().trim();
 		TimeZone tz=ThreadLocalPageContext.getTimeZone(pc);
-		Calendar cLeft=JREDateTimeUtil.getCalendar();
-		cLeft.setTimeZone(tz);
+		Calendar cLeft=JREDateTimeUtil.getThreadCalendar(tz);
 		cLeft.setTime(left);
 		
-		Calendar cRight=JREDateTimeUtil.newInstance();
-		cRight.setTimeZone(tz);
+		Calendar cRight=JREDateTimeUtil.newInstance(tz);
 		cRight.setTime(right);
 		
 		// TODO WEEEK
