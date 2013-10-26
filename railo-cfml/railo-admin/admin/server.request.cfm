@@ -270,7 +270,7 @@ Error Output --->
 
 	&lt;cfsetting requesttimeout = "#total#"&gt;
 </cfsavecontent>
-<cf_admin_coding_tip codeSample="#codeSample#">
+<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 
 
 					</td>

@@ -442,7 +442,7 @@ Error Output --->
 						<div class="comment">#stText.Scopes.clientStorageDesc#</div>
 
 						<cfsavecontent variable="codeSample">
-							this.sessionStorage = "#scope.sessionStorage#";
+							this.clientStorage = "#scope.clientStorage#";
 						</cfsavecontent>
 						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>

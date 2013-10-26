@@ -160,7 +160,7 @@ Create Datasource --->
 						<cfsavecontent variable="codeSample">
 							pagePoolClear();
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">					
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">					
 					</td>
 				</tr>
 				
@@ -175,7 +175,7 @@ Create Datasource --->
 						<cfsavecontent variable="codeSample">
 							&lt;cfobjectcache action="clear"&gt;
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 					</td>
 				</tr>
 				
@@ -190,7 +190,7 @@ Create Datasource --->
 						<cfsavecontent variable="codeSample">
 							componentCacheClear();
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 					</td>
 				</tr>
 				
@@ -205,7 +205,7 @@ Create Datasource --->
 						<cfsavecontent variable="codeSample">
 							ctCacheClear();
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cf_admin_coding_tip codeSample="#codeSample#" ct="true">
 					</td>
 				</tr>
 				<cfif hasAccess>
