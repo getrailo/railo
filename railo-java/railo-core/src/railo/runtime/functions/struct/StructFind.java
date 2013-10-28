@@ -16,11 +16,11 @@ public final class StructFind extends BIF {
 
 	private static final long serialVersionUID = 6251275814429295997L;
 
-	public static Object call(PageContext pc , Struct struct, String key) throws PageException {
+	public static Object call(PageContext pc, Struct struct, String key) throws PageException {
 		return struct.get(KeyImpl.init(key));
 	}
 	
-	public static Object call(PageContext pc , Struct struct, Collection.Key key) throws PageException {
+	public static Object call(PageContext pc, Struct struct, Collection.Key key) throws PageException {
 		return struct.get(key);
 	}
 
