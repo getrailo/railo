@@ -47,8 +47,10 @@ public final class ProcessingDirective extends BodyTagTryCatchFinallyImpl {
 	    //pageContext. get HttpServletResponse().set ContentType("text/html; charset="+pageencoding);
 		//this.pageencoding=pageencoding;
 	}
-	
+
 	public void setExecutionlog(boolean executionlog)	{
+	}
+	public void setDotnotationuppercase(boolean upper)	{
 	}
 	
 	

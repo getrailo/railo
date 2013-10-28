@@ -14,6 +14,7 @@ import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.Data;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -26,7 +27,7 @@ import railo.transformer.util.CFMLString;
 public final class Loop extends EvaluatorSupport {
 	
 
-	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException {
+	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,Data data) throws TemplateException {
 		TagLoop loop=(TagLoop) tag;
 		// label
 		try {
@@ -103,7 +104,7 @@ public final class Loop extends EvaluatorSupport {
 			try {
 				ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
 				transformer = tagLib.getExprTransfomer();
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig()));
+				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig(),null));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {
