@@ -35,7 +35,7 @@ public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements
 		boolean isCFC= page.isComponent();
 		boolean isInterface= page.isInterface();
 		
-		Data data = init(page,ep,fld,scriptTags,cfml,settings,true);
+		ExprData data = init(page,ep,fld,scriptTags,cfml,settings,true);
 		data.insideFunction=false; 
 		data.tagName=libTag.getFullName();
 		data.isCFC=isCFC;
@@ -48,7 +48,7 @@ public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements
 	/**
 	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#expression()
 	 */
-	public final Expression expression(Data data) throws TemplateException {
+	public final Expression expression(ExprData data) throws TemplateException {
 		Expression expr;
 		expr = super.expression(data);
 		comments(data);

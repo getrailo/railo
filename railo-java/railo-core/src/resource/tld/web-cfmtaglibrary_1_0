@@ -9429,6 +9429,27 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<rtexprvalue>true</rtexprvalue>
 			<description>A string literal; the character encoding to use to read the page. The value may be enclosed in single or double quotation marks, or none.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>dotnotationuppercase</name>
+			<required>false</required>
+			<status>hidden</status>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+declare how variable keys defined by dot notation are handled.
+If set to true converts all struct keys defined with "dot notation" to upper case.
+Example:
+- sct.dotNotation --> keyname: "DOTNOTATION"
+- sct["bracketNotation"] --> keyname: "bracketNotation"
+
+If set to false keep all struct keys defined with "dot notation" in original case (according to the "bracket notation").
+Example:
+sct.dotNotation --> keyname: "dotNotation"
+sct["bracketNotation"] --> keyname: "bracketNotation"
+			</description>
+		</attribute>
+		
+		
 	</tag>
 
 	<!-- pageEncoding -->

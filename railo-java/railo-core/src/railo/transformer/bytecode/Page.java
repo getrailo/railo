@@ -27,6 +27,7 @@ import railo.runtime.Mapping;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.ImportDefintionImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -379,10 +380,11 @@ public final class Page extends BodyBase {
 	private int len;
 	private int off;
 	private int methodCount=0;
+	private final Config config;
     
 	
 	
-    public Page(Resource source,String name,int version, long lastModifed, boolean writeLog, boolean supressWSbeforeArg) {
+    public Page(Config config,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean supressWSbeforeArg) {
     	name=name.replace('.', '/');
     	//body.setParent(this);
         this.name=name;
@@ -393,6 +395,7 @@ public final class Page extends BodyBase {
         
         this._writeLog=writeLog;
         this.supressWSbeforeArg=supressWSbeforeArg;
+        this.config=config;
     }
     
     /**
@@ -1491,6 +1494,10 @@ public final class Page extends BodyBase {
 
 	public int getMethodCount() {
 		return ++methodCount;
+	}
+
+	public Config getConfig() {
+		return config;
 	}
 	
 

@@ -3,6 +3,8 @@ package railo.transformer.cfml.evaluator;
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.cfml.Data;
+import railo.transformer.cfml.tag.TagData;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
@@ -26,8 +28,8 @@ public interface Evaluator {
 	 * @return changed talib
 	 * @throws TemplateException
 	*/
-	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException;
-
+	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,Data data) throws TemplateException;
+	
 	/**
 	 * Die Methode evaluate wird aufgerufen, wenn der Context eines Tags geprueft werden soll,
 	 * nachdem die komplette Seite uebersetzt wurde.
