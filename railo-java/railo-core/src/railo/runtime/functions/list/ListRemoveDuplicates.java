@@ -24,7 +24,7 @@ public final class ListRemoveDuplicates implements Function {
 		return call(pc, list, ",", false);
 	}
 
-	public static String call(PageContext pc, String list, String delimiter) throws PageException{
+	public static String call(PageContext pc, String list, String delimiter) throws PageException {
 
 		return call(pc, list, delimiter, false);
 	}
