@@ -179,6 +179,12 @@ Redirtect to entry --->
 							<b>#stText.setting["dotNotation"& strDotNotationID &"Case"]#</b><br />
 							<div class="comment">#replace(stText.setting["dotNotation"& strDotNotationID &"CaseDesc"], server.separator.line, '<br />', 'all')#</div>
 						</cfif>
+						<cfsavecontent variable="codeSample">
+&lt;cfprocessingdirective preserveCase="#!setting.DotNotationUpperCase#">
+&lt;!--- or --->
+&lt;cfscript>processingdirective preserveCase="#!setting.DotNotationUpperCase#";&lt;/cfscript>
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct=true>
 					</td>
 				</tr>
 				
