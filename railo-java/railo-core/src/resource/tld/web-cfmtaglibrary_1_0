@@ -9433,7 +9433,6 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<type>boolean</type>
 			<name>preserveCase</name>
 			<required>false</required>
-			<status>hidden</status>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
 declare how variable keys defined by dot notation are handled.
