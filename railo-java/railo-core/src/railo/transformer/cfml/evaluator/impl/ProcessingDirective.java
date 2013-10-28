@@ -23,10 +23,12 @@ public final class ProcessingDirective extends EvaluatorSupport {
 
     	// dot notation
     	Boolean dotNotationUpperCase = null;
-    	if(tag.containsAttribute("dotnotationuppercase")) {
-            dotNotationUpperCase = ASMUtil.getAttributeBoolean(tag, "dotnotationuppercase",null);
-            if(dotNotationUpperCase==null)
-            	throw new TemplateException(data.cfml,"attribute [dotnotationuppercase] of the tag [processingdirective] must be a constant boolean value");
+    	if(tag.containsAttribute("preservecase")) {
+    		Boolean preservecase = ASMUtil.getAttributeBoolean(tag, "preservecase",null);
+            if(preservecase==null)
+            	throw new TemplateException(data.cfml,"attribute [preserveCase] of the tag [processingdirective] must be a constant boolean value");
+            dotNotationUpperCase=preservecase.booleanValue()?Boolean.FALSE:Boolean.TRUE;
+            
             if(dotNotationUpperCase==data.settings.dotNotationUpper)
             	dotNotationUpperCase=null;
             

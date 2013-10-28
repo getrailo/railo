@@ -50,7 +50,7 @@ public final class ProcessingDirective extends BodyTagTryCatchFinallyImpl {
 
 	public void setExecutionlog(boolean executionlog)	{
 	}
-	public void setDotnotationuppercase(boolean upper)	{
+	public void setPreservecase(boolean b)	{
 	}
 	
 	
