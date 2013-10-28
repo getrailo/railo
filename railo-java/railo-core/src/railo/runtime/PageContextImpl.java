@@ -3,6 +3,7 @@ package railo.runtime;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -84,6 +86,7 @@ import railo.runtime.err.ErrorPagePool;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
@@ -161,6 +164,7 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.PageContextUtil;
@@ -3066,8 +3070,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 // FUTURE add to PageContext
 	public DataSource getDataSource(String datasource) throws PageException {
 		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
-		if(ds==null) ds=getConfig().getDataSource(datasource);
-		return ds;
+		if(ds!=null) return ds;
+		ds=getConfig().getDataSource(datasource,null);
+		if(ds!=null) return ds;
+		
+		throw DatabaseException.notFoundException(this, datasource);
 	}
 		
 // FUTURE add to PageContext
