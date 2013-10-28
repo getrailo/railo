@@ -14,6 +14,7 @@ import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.db.DataSource;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
@@ -835,5 +836,17 @@ public final class ArrayUtil {
 		c.setStrength(strength);
 		c.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
 		return c;
+	}
+
+
+	public static <E> List<E> merge(E[] a1, E[] a2) {
+		List<E> list=new ArrayList<E>();
+		for(int i=0;i<a1.length;i++){
+			list.add(a1[i]);
+		}
+		for(int i=0;i<a2.length;i++){
+			list.add(a2[i]);
+		}
+		return list;
 	}
 }
