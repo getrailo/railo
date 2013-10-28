@@ -54,18 +54,16 @@ public final class CallStackGet implements Function {
 		}
 
 		StringBuilder sb = new StringBuilder( 64 * arr.size() );
-		EntryIterator.EntryImpl entry;
 		Struct struct;
 		String func;
 
-		Iterator it = arr.entryIterator();
+		Iterator it = arr.valueIterator();
 
 		if ( type.equalsIgnoreCase( "text" ) || type.equalsIgnoreCase( "string" ) ) {
 
 			while (it.hasNext()) {
 
-				entry = (EntryIterator.EntryImpl)it.next();
-				struct = (Struct)entry.getValue();
+				struct = (Struct)it.next();
 
 				sb.append( (String)struct.get( KeyConstants._template ) );
 
@@ -89,8 +87,7 @@ public final class CallStackGet implements Function {
 
 			while (it.hasNext()) {
 
-				entry = (EntryIterator.EntryImpl)it.next();
-				struct = (Struct)entry.getValue();
+				struct = (Struct)it.next();
 
 				sb.append( "<li>" );
 
