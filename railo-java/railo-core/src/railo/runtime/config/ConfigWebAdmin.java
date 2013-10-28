@@ -3131,10 +3131,11 @@ public final class ConfigWebAdmin {
 	}
 
 	public void updateTemplateCharset(String charset) throws PageException {
+		
     	checkWriteAccess();
     	
     	Element element = _getRootElement("charset");
-		if(StringUtil.isEmpty(charset)){
+		if(StringUtil.isEmpty(charset,true)){
 			element.removeAttribute("template-charset");
 		}
 		else {

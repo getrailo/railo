@@ -40,6 +40,7 @@ Defaults --->
 				nullSupport="#form.nullSupport#"
 				dotNotationUpperCase="#dotNotUpper#"
                 supressWSBeforeArg="#form.supressWSBeforeArg#"
+				templateCharset="#form.templateCharset#"
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -54,7 +55,8 @@ Defaults --->
 				nullSupport=""
 				dotNotationUpperCase=""
 				supressWSBeforeArg=""
-				
+				templateCharset=""
+					
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -127,6 +129,25 @@ Redirtect to entry --->
 					</td>
 				</tr>
 				
+				<!--- Template --->
+				<tr>
+					<th scope="row">#stText.charset.templateCharset#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="text" class="small" name="templateCharset" value="#setting.templateCharset#" />
+						<cfelse>
+							<input type="hidden" name="templateCharset" value="#setting.templateCharset#">
+							<b>#charset.templateCharset#</b>
+						</cfif>
+						<div class="comment">#stText.charset.templateCharsetDescription#</div>
+						<cfsavecontent variable="codeSample">
+&lt;cfprocessingdirective pageEncoding="#setting.templateCharset#">
+&lt;!--- or --->
+&lt;cfscript>processingdirective pageEncoding="#setting.templateCharset#";&lt;/cfscript>
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct=true>
+					</td>
+				</tr>
 				
 				<!--- Dot Notation --->
 				<tr>

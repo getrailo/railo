@@ -92,6 +92,12 @@ Error Output --->
 							<b>#charset.templateCharset#</b>
 						</cfif>
 						<div class="comment">#stText.charset.templateCharsetDescription#</div>
+						<cfsavecontent variable="codeSample">
+&lt;cfprocessingdirective pageEncoding="#charset.templateCharset#">
+&lt;!--- or --->
+&lt;cfscript>processingdirective pageEncoding="#charset.templateCharset#";&lt;/cfscript>
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#" ct=true>
 					</td>
 				</tr>
 				
@@ -106,6 +112,10 @@ Error Output --->
 							<b>#charset.webCharset#</b>
 						</cfif>
 						<div class="comment">#stText.charset.webCharsetDescription#</div>
+						<cfsavecontent variable="codeSample">
+							this.charset.web="#charset.webCharset#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 				
@@ -120,6 +130,10 @@ Error Output --->
 							<b>#charset.resourceCharset#</b>
 						</cfif>
 						<div class="comment">#stText.charset.resourceCharsetDescription#</div>
+						<cfsavecontent variable="codeSample">
+							this.charset.web="#charset.resourceCharset#";
+						</cfsavecontent>
+						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
 				</tr>
 			</tbody>

@@ -3110,6 +3110,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     			getBoolObject("admin", "UpdateCompilerSettings", "supressWSBeforeArg"),
     			getBoolObject("admin", "UpdateCompilerSettings", "nullSupport")
 				);
+    	admin.updateTemplateCharset(getString("admin",action,"templateCharset"));
+        
+    	
         store();
         adminSync.broadcast(attributes, config);
 	}
@@ -3150,6 +3153,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("supressWSBeforeArg", config.getSupressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("nullSupport", config.getFullNullSupport()?Boolean.TRUE:Boolean.FALSE);
+    	sct.set("templateCharset", config.getTemplateCharset());
     }
     
     private void doGetLogSettings() throws  PageException {
