@@ -404,30 +404,7 @@ div.ok {
 	color:#e0e0e0;
 }
 
-/*/
-div.tip {	
-	background-color: #08F;
-	color: #FFF;
-	padding: 0.5em;
-	margin: 0.25em;
-	font-size: 10px;
-	opacity: 0.5;
-	border: 1px solid #667;
-	border-radius: 0.5em;
-	transition: 0.5s ease-in-out;
-}
 
-div.tip span { display:block; text-align: center; font-size:10px; }
-div.tip p { display:none; font-size:12px; }
-div.tip pre { display:none; font-family: monospace; padding: 1em; font-size:12px; }
-
-div.tip:active {
-	opacity: 1;
-}
-div.tip:active span { display:none; }
-div.tip:active p { display:inline; }
-div.tip:active pre { display:block;}
-//*/
 
 .coding-tip-trigger { 
 	cursor: pointer; 
@@ -435,6 +412,8 @@ div.tip:active pre { display:block;}
 }
 
 .coding-tip { 
+
+	box-sizing: border-box;
 	background-color: #669900;
 	color: #FFF;
 	margin: 0.25em;
@@ -442,6 +421,7 @@ div.tip:active pre { display:block;}
 	display: none; 
 	border: 1px solid #667;
 	border-radius: 0.5em;
+	max-width: 680px;
 }
 
 .coding-tip code {
@@ -453,6 +433,7 @@ div.tip:active pre { display:block;}
 	background-color: #CCC;
 	color: #222;
 	display: block;
+	overflow-x: scroll;
 }
 
 
