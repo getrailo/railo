@@ -339,10 +339,10 @@ public final class DebuggerImpl implements DebuggerPro {
 
 	    // Pages Parts
 		List<DebugEntryTemplatePart> filteredPartEntries = null;
-		boolean hasParts=partEntries!=null && !partEntries.isEmpty();
+		boolean hasParts=partEntries!=null && !partEntries.isEmpty() && !arrPages.isEmpty();
 		int qrySize=0;
 
-		if(hasParts && !arrPages.isEmpty()) {
+		if(hasParts) {
 
 			String slowestTemplate = arrPages.get( 0 ).getPath();
 
@@ -374,7 +374,7 @@ public final class DebuggerImpl implements DebuggerPro {
                 ,KeyConstants._snippet
             }, qrySize, "query" );
 
-		if(hasParts && !arrPages.isEmpty()) {
+		if(hasParts) {
 			row=0;
 	        Collections.sort( filteredPartEntries, DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR );
 
