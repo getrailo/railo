@@ -5462,8 +5462,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>CallStackGet</name>
 		<class>railo.runtime.functions.system.CallStackGet</class>
 		<description>return the context (stacktrace) of the current position.</description>
+		<argument>
+            <name>type</name>
+            <type>string</type>
+            <required>false</required>
+            <default>array</default>
+            <description>the type of the returned value, possible values are: [array], string, html, json</description>
+        </argument>
 		<return>
-			<type>array</type>
+			<type>any</type>
 		</return>
 	</function>
 	

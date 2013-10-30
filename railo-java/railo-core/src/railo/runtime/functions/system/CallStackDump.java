@@ -22,7 +22,7 @@ public class CallStackDump {
 	}
 
 	public static String call(PageContext pc, String output) throws PageException {
-		Array arr = CallStackGet.call(pc);
+		Array arr = (Array)CallStackGet.call(pc);
 		Struct sct=null;
 		String func;
 		
