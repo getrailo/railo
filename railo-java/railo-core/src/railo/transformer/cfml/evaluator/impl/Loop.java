@@ -95,7 +95,7 @@ public final class Loop extends EvaluatorSupport {
 		// condition loop
 		if(tag.containsAttribute("condition")){
 			if(tag.isScriptBase())
-				throw new EvaluatorException("tag loop-condition is not supported within cfscrip, use instead a while statement.");
+				throw new EvaluatorException("tag loop-condition is not supported within cfscript, use instead a while statement.");
 			
 			TagLib tagLib=tagLibTag.getTagLib();
 			ExprTransformer transformer;
