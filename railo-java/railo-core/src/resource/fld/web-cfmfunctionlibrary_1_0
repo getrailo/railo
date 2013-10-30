@@ -11608,6 +11608,13 @@ The following things are considered to be empty:
 			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
+		<argument>
+            <name>ignoreCase</name>
+            <type>boolean</type>
+            <required>false</required>
+            <default>false</default>
+            <description>if set to true, the duplicate value test will not be case sensitive</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
