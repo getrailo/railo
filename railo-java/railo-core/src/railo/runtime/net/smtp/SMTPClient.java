@@ -29,6 +29,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
 
+import org.apache.commons.collections.ReferenceMap;
+
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
