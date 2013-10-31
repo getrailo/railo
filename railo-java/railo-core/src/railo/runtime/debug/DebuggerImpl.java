@@ -339,7 +339,7 @@ public final class DebuggerImpl implements DebuggerPro {
 
 	    // Pages Parts
 		List<DebugEntryTemplatePart> filteredPartEntries = null;
-		boolean hasParts=partEntries!=null && !partEntries.isEmpty();
+		boolean hasParts=partEntries!=null && !partEntries.isEmpty() && !arrPages.isEmpty();
 		int qrySize=0;
 
 		if(hasParts) {

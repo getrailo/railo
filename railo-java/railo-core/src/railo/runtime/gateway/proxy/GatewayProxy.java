@@ -9,11 +9,8 @@ import railo.runtime.gateway.GatewayPro;
 
 public class GatewayProxy implements GatewayPro {
 	
-	private Gateway gateway;
+	private final Gateway gateway;
 
-	public GatewayProxy(Object obj){
-		this((Gateway) obj);
-	}
 	public GatewayProxy(Gateway gateway){
 		this.gateway=gateway;
 	}
