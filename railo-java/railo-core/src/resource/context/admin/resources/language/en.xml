@@ -907,7 +907,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.datasourcemodify">Create new datasource</data>
 	<data key="settings.verifyconnection">Verify connection</data>
 	<data key="settings.appcfc">Application.cfc</data>
-	<data key="settings.appcfcdesc">You can set this as well in the Application.cfc as follows</data>
+	<data key="settings.appcfcdesc">You can also set this in the Application.cfc as follows</data>
 	<data key="settings.codetip">You can do this in your code yourself as follows</data>
 <data key="settings.tip">Coding tip (Click me)</data>
 	
