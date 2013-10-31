@@ -12,12 +12,16 @@ string function toPackage(string directory){
 string function toName(string name){
 	return mid(arguments.name,1,len(arguments.name)-4);
 }
-
+function extFilter(path) {
+	var name=listLast(path,'\/');
+	var ext=listLast(name,'.');
+	if(ext==name)ext="";
+	return ext=="cfc" && name!="Application.cfc";
+}
 
 </cfscript>
 
-<cfdirectory action="list" recurse="true"  sort="dateLastModified desc"  directory="./testcases" name="dir" filter="*.cfc">
-
+<cfdirectory action="list" recurse="true"  sort="dateLastModified desc"  directory="./testcases" name="dir" filter="#extFilter#">
 <cfoutput>
 <h1>Jira Tickets</h1>
 <ul>
