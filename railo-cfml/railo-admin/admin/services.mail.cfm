@@ -28,7 +28,7 @@ Defaults --->
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="ms">
-<cfdump var="#mail#">
+
 <cfscript>
 	variables.stars = "*********";
 	function toPassword(host,pw, ms)
