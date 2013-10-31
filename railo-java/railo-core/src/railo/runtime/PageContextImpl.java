@@ -4,7 +4,6 @@ package railo.runtime;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,12 +41,10 @@ import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
 import railo.commons.io.BodyContentStack;
-import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -81,7 +78,6 @@ import railo.runtime.debug.DebuggerPro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.err.ErrorPagePool;
@@ -166,7 +162,6 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.PageContextUtil;
@@ -373,7 +368,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
 	    this.scopeContext=scopeContext;
         undefined=
-        	new UndefinedImpl(this,config.getScopeCascadingType());
+        	new UndefinedImpl(this,getScopeCascadingType());
         
         
 		//this.compiler=compiler;
@@ -465,7 +460,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	 _form=new FormImpl();
         	 urlForm=new UrlFormImpl(_form,_url);
         	 undefined=
-             	new UndefinedImpl(this,config.getScopeCascadingType());
+             	new UndefinedImpl(this,getScopeCascadingType());
         	 
         	 hasFamily=false;
          }
@@ -3126,4 +3121,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(cs!=null) return cs;
 		return config._getWebCharset();
 	}
+
+	public short getScopeCascadingType() {
+		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		if(ac==null) return config.getScopeCascadingType();
+		return ac.getScopeCascading();
+	}
+	
+	
 }

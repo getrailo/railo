@@ -1129,20 +1129,6 @@ public abstract class ConfigImpl implements Config {
     protected void setPassword(String password) {
         this.password=password;
     }
-    
-    
-    /**
-     * set how railo cascade scopes
-     * @param type cascading type
-     */
-    protected void setScopeCascadingType(String type) {
-        
-        if(type.equalsIgnoreCase("strict")) setScopeCascadingType(SCOPE_STRICT);
-        else if(type.equalsIgnoreCase("small")) setScopeCascadingType(SCOPE_SMALL);
-        else if(type.equalsIgnoreCase("standard"))setScopeCascadingType(SCOPE_STANDARD);
-        else if(type.equalsIgnoreCase("standart"))setScopeCascadingType(SCOPE_STANDARD);
-        else setScopeCascadingType(SCOPE_STANDARD);
-    }
 
     /**
      * set how railo cascade scopes

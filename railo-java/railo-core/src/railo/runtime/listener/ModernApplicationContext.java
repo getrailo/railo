@@ -23,6 +23,7 @@ import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
@@ -82,6 +83,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key IN_MEMORY_FILESYSTEM = KeyImpl.intern("inmemoryfilesystem");
 	private static final Collection.Key REST_SETTING = KeyImpl.intern("restsettings");
 	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
+	private static final Collection.Key SCOPE_CASCADING = KeyImpl.intern("scopeCascading");
 
 	
 	private ComponentAccess component;
@@ -165,6 +167,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 	private Resource[] restCFCLocations;
+
+	private short scopeCascading=-1;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
 		config = pc.getConfig();
@@ -194,11 +198,14 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.javaSettings=new JavaSettingsImpl();
         this.component=cfc;
 		
+        // read scope cascading
+        initScopeCascading();
+        
 		pc.addPageSource(component.getPageSource(), true);
 		try {
 			
 		
-
+			
 
 			
 			/////////// ORM /////////////////////////////////
@@ -213,6 +220,21 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 	}
 
+	public void initScopeCascading() {
+		Object o = get(component,SCOPE_CASCADING,null);
+		if(o!=null){
+			scopeCascading=ConfigWebUtil.toScopeCascading(Caster.toString(o,null),(short)-1);
+		}
+	}
+	public short getScopeCascading() {
+		if(scopeCascading==-1) return config.getScopeCascadingType();
+		return scopeCascading;
+	}
+
+	@Override
+	public void setScopeCascading(short scopeCascading) {
+		this.scopeCascading= scopeCascading;
+	}
 
 	
 	public void reinitORM(PageContext pc) throws PageException {
@@ -609,6 +631,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return localMode;
 	}
+	
+	
 
 	@Override
 	public Locale getLocale() {

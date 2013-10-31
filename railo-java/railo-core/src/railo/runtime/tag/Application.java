@@ -12,6 +12,7 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -27,6 +28,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.scope.UndefinedImpl;
 
 /**
 * Defines scoping for a CFML application, enables or disables storing client variables, 
@@ -88,6 +90,7 @@ public final class Application extends TagImpl {
 	private String cacheResource;
 	private Struct datasources;
 	private UDF onmissingtemplate;
+	private short scopeCascading=-1;
 	
      
     @Override
@@ -137,6 +140,7 @@ public final class Application extends TagImpl {
     	cacheObject=null;
     	cacheResource=null;
     	onmissingtemplate=null;
+    	scopeCascading=-1;
     }
     
     /** set the value setclientcookies
@@ -195,6 +199,14 @@ public final class Application extends TagImpl {
 		if(StringUtil.isEmpty(strTimeZone)) return;
 		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
 		
+	}
+	
+	public void setScopecascading(String scopeCascading) throws ApplicationException {
+		if(StringUtil.isEmpty(scopeCascading)) return;
+		short NULL=-1;
+		short tmp = ConfigWebUtil.toScopeCascading(scopeCascading,NULL);
+		if(tmp==NULL) throw new ApplicationException("invalid value ("+scopeCascading+") for attribute [ScopeCascading], valid values are [strict,small,standard]");
+		this.scopeCascading=tmp;
 	}
 	
 	public void setWebcharset(String charset) {
@@ -402,6 +414,12 @@ public final class Application extends TagImpl {
         	initORM=set(ac);
         }
         
+        // scope cascading
+        if(((UndefinedImpl)pageContext.undefinedScope()).getScopeCascadingType()!=ac.getScopeCascading()) {
+	    	pageContext.undefinedScope().initialize(pageContext);
+	    }
+        
+        // ORM
         if(initORM) ORMUtil.resetEngine(pageContext,false);
         
         return SKIP_BODY; 
@@ -469,6 +487,9 @@ public final class Application extends TagImpl {
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));
+		
+		// Scope cascading
+		if(scopeCascading!=-1) ac.setScopeCascading(scopeCascading);
 		
 		// ORM
 		boolean initORM=false;

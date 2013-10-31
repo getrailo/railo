@@ -3336,7 +3336,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else {
 			String strScopeCascadingType = scope.getAttribute("cascading");
 			if (hasAccess && !StringUtil.isEmpty(strScopeCascadingType)) {
-				config.setScopeCascadingType(strScopeCascadingType);
+				config.setScopeCascadingType(ConfigWebUtil.toScopeCascading(strScopeCascadingType,Config.SCOPE_STANDARD));
 			}
 			else if (hasCS)
 				config.setScopeCascadingType(configServer.getScopeCascadingType());

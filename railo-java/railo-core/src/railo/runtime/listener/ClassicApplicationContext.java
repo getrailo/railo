@@ -72,16 +72,13 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches=new HashMap<Integer, String>();
 	private Map<Integer,Boolean> sameFieldAsArrays=new HashMap<Integer, Boolean>();
-
 	private RestSettings restSettings;
-
 	private Resource[] restCFCLocations;
-
 	private JavaSettingsImpl javaSettings;
-
 	private DataSource[] dataSources;
-
 	private UDF onMissingTemplate;
+
+	private short scopeCascading;
 
     
     /**
@@ -104,6 +101,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.localMode=config.getLocalMode();
         this.locale=config.getLocale();
         this.timeZone=config.getTimeZone();
+        this.scopeCascading=config.getScopeCascadingType();
 
         this.webCharset=((ConfigImpl)config)._getWebCharset();
         this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
@@ -160,6 +158,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.localMode=localMode;
 		dbl.locale=locale;
 		dbl.timeZone=timeZone;
+		dbl.scopeCascading=scopeCascading;
 		dbl.webCharset=webCharset;
 		dbl.resourceCharset=resourceCharset;
 		dbl.sessionType=sessionType;
@@ -626,5 +625,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 
 	public UDF getOnMissingTemplate() { 
 		return onMissingTemplate;
+	}
+
+	@Override
+	public short getScopeCascading() {
+		return scopeCascading;
+	}
+
+	@Override
+	public void setScopeCascading(short scopeCascading) {
+		this.scopeCascading=scopeCascading;
 	}
 }

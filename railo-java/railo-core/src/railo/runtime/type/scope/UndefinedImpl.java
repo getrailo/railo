@@ -474,13 +474,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
 	@Override
 	public void initialize(PageContext pc) {
-		if(isInitalized()) return;
+		//if(isInitalized()) return;
 		isInit=true;
 		variable=pc.variablesScope();
         argument=pc.argumentsScope();
 		local=pc.localScope();
 		allowImplicidQueryCall=pc.getConfig().allowImplicidQueryCall();
-        type=pc.getConfig().getScopeCascadingType();
+        type=((PageContextImpl)pc).getScopeCascadingType();
         debug=pc.getConfig().debug() && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS);
 		
 		// Strict
@@ -709,5 +709,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
 		}
 		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
+
+
+	public short getScopeCascadingType() {
+		return type;
 	}
 }

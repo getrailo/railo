@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
 
+import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -47,6 +48,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
@@ -406,6 +408,15 @@ public class ModernAppListener extends AppListenerSupport {
 
 		
 		pc.setApplicationContext(appContext);
+		
+		// scope cascading
+		
+		if(((UndefinedImpl)pc.undefinedScope()).getScopeCascadingType()!=appContext.getScopeCascading()) {
+        	pc.undefinedScope().initialize(pc);
+        }
+        
+		
+		// ORM
 		if(appContext.isORMEnabled()) {
 			boolean hasError=throwsErrorWhileInit.toBooleanValue();
 			if(hasError)pc.addPageSource(app.getPageSource(), true);
