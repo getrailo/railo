@@ -489,9 +489,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	public PageException execute(SpoolerTask task) {
 		//task.closed();
 		try {
-			((SpoolerTaskSupport)task)._execute(config);
-			//if(task.closed())closedTasks.remove(task);
-			//else openTasks.remove(task);
+			if(task instanceof SpoolerTaskSupport)  // FUTURE this is bullshit, call the execute method directly, but you have to rewrite them for that
+				((SpoolerTaskSupport)task)._execute(config);
+			else 
+				task.execute(config);
 			
 			unstore(task);
 			log.info("remote-client", task.subject());
