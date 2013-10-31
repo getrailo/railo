@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import railo.commons.collection.HashMapPro;
 import railo.commons.collection.MapFactory;
 import railo.commons.collection.MapPro;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
@@ -1940,8 +1942,25 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 		
 		try {
+			//int len = in.readInt();
+			
+			byte[] buffer = new byte[0xffff];
+	        int len;
+	        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+	        while((len = in.read(buffer)) !=-1) {
+	        	baos.write(buffer, 0, len);
+	        }
+			
+			String str=new String(baos.toByteArray(),CharsetUtil.UTF8);
+			// all version older than 4.1.2.002 was serialized with writeUTF, so it is possible we have this Sting
+			if(str.length()>2 && str.charAt(0)==0) {
+				// first byte is 0 and second byte contains the length of the string
+				str=str.substring(2);
+			}
+			
 			// MUST do serialisation more like the cloning way
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,in.readUTF());
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,str);
+			
 			
 			
 			this._data=other._data;
@@ -1966,7 +1985,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			
 			
 		} catch (PageException e) {
-			throw new IOException(e.getMessage());
+			throw ExceptionUtil.toIOException(e);
 		}
 		finally {
 			if(pcCreated)ThreadLocalPageContext.release();
@@ -1986,7 +2005,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	public void writeExternal(ObjectOutput out) throws IOException {
 		try {
-			out.writeUTF(new ScriptConverter().serialize(this));
+			
+			
+			String str=new ScriptConverter().serialize(this);
+			//out.writeUTF(str); this function has a size limitation (64k), because of that it is no longer used
+			byte[] barr = str.getBytes(CharsetUtil.UTF8);
+			out.write(barr);
 		}
 		catch (ConverterException e) {
 			throw ExceptionUtil.toIOException(e);
