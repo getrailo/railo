@@ -61,32 +61,33 @@ Defaults --->
 	<div class="pageintro">#stText.application.title#</div>
 	
 
-	<cfsavecontent variable="codeSample">	
-	<pre>
+	<cfsavecontent variable="codeSample">
 component {
-this.name="#info.label#"; // name of the application context
 
-// regional settings
-this.locale = "#regional.locale#"; // default locale used for formating dates, numbers ...
-this.timezone = "#regional.timezone#"; // default timezone used
+	this.name = "#info.label#"; // name of the application context
 
-// scope handling
-this.sessionManagement = #scope.sessionManagement#; // session handling enabled or not
-this.sessionType = "#scope.sessionType#"; // cfml or jee based sessions
-this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# ); // untouched session livespan
+	// regional settings
+	this.locale = "#regional.locale#"; // default locale used for formating dates, numbers ...
+	this.timezone = "#regional.timezone#"; // default timezone used
 
-this.clientManagement = #scope.clientManagement#; // client scope enabled or not
-this.setDomainCookies = #scope.domainCookies#; // using domian cookies or not
-this.setClientCookies = #scope.clientCookies#;
-this.localMode = "#scope.LocalMode#"; // prefer the local scope at unscoped write
-this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# ); // livespan of a untouched application scope
+	// scope handling
+	this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# ); // lifespan of a untouched application scope
 
-this.bufferOutput = "#outputSetting.bufferOutput#"; // buffer the output f a tag/function body to output in case of a exception
+	this.sessionManagement = #scope.sessionManagement#; // session handling enabled or not
+	this.sessionType = "#scope.sessionType#"; // cfml or jee based sessions
+	this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# ); // untouched session lifespan
 
-// request
-setting requesttimeout = "#requestTimeout#"; // max livespan of a running request
+	this.clientManagement = #scope.clientManagement#; // client scope enabled or not
+	this.setDomainCookies = #scope.domainCookies#; // using domain cookies or not
+	this.setClientCookies = #scope.clientCookies#;
+
+	this.localMode = "#scope.LocalMode#"; // prefer the local scope at unscoped write
+
+	this.bufferOutput = "#outputSetting.bufferOutput#"; // buffer the output of a tag/function body to output in case of a exception
+
+	// request
+	setting requestTimeout = "#requestTimeout#"; // max lifespan of a running request
 }
-	</pre>
 </cfsavecontent>
 <cf_admin_coding_tip codeSample="#codeSample#" text="#stText.application.desc#" expand="true">
 	

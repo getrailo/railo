@@ -438,9 +438,9 @@ div.ok {
 	background-color: #CCC;
 	color: #222;
 	display: block;
+	cursor: pointer;
 	overflow-x: scroll;
 }
-
 
 
 /* unorganized */
