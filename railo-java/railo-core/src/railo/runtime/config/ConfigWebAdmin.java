@@ -191,7 +191,7 @@ public final class ConfigWebAdmin {
         else { 
             ConfigServerImpl cs=(ConfigServerImpl)config;
             ConfigWebImpl cw=cs.getConfigWebImpl(contextPath);
-            if(cw!=null)cw.setPassword(false,cw.getPassword(),password);
+            if(cw!=null)cw.setPassword(false,cw.getPassword(),password,true,false);
         }
     }
     

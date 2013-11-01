@@ -300,7 +300,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
-                        getString("oldPassword",null),getString("admin",action,"newPassword",true));
+                        getString("oldPassword",null),getString("admin",action,"newPassword",true),false,false);
             } 
             catch (Exception e) {
                 throw Caster.toPageException(e);
