@@ -1510,15 +1510,21 @@ public final class ConfigWebFactory extends ConfigFactory {
 				
 				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ALWAYS, true, false, true, true, false, false, listener, 100);
 				mappings.put(tmp.getVirtualLowerCase(), tmp);
-
 			}
-			
-			
 		}
 
-		if (!finished) {
-			tmp = new MappingImpl(config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null);
-			mappings.put(tmp.getVirtualLowerCase(), tmp);
+
+		if ( !finished ) {
+
+			if ( (config instanceof ConfigWebImpl) && ResourceUtil.isUNCPath( config.getRootDirectory().getPath() ) ) {
+
+				tmp = new MappingImpl( config, "/", config.getRootDirectory().getPath(), null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null );
+			} else {
+
+				tmp = new MappingImpl( config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null );
+			}
+
+			mappings.put( "/", tmp );
 		}
 
 		Mapping[] arrMapping = new Mapping[mappings.size()];
