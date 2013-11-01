@@ -2,7 +2,6 @@ package railo.transformer.cfml;
 
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.transformer.cfml.tag.TagData;
 
 public class TransfomerSettings {
 	private static final TransfomerSettings TRANS_SETTING_DOT_NOT_UPPER = new TransfomerSettings(true);

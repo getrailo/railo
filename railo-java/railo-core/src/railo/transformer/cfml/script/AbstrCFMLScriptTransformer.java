@@ -9,7 +9,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
 import railo.runtime.type.util.ArrayUtil;

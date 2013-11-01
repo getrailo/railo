@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.runtime.Component;
-import railo.runtime.config.Config;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;

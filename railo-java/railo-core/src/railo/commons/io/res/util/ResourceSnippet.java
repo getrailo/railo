@@ -1,9 +1,9 @@
 package railo.commons.io.res.util;
 
-import railo.commons.io.res.Resource;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import railo.commons.io.res.Resource;
 
 
 /**

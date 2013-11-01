@@ -1,7 +1,6 @@
 package railo.runtime.functions.system;
 
 import java.util.Iterator;
-import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
@@ -14,7 +13,6 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.GetTimeZone;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContextPro;

@@ -12,7 +12,6 @@ import railo.commons.net.http.httpclient3.HTTPEngine3Impl;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
 import railo.commons.net.http.httpclient4.HeaderImpl;
 import railo.runtime.net.proxy.ProxyData;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 
 public class HTTPEngine {

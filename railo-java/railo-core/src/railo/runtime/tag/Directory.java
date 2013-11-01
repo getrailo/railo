@@ -1,5 +1,10 @@
 package railo.runtime.tag;
 
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -40,11 +45,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.KeyConstants;
-
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
 
 /**
 * Handles interactions with directories.

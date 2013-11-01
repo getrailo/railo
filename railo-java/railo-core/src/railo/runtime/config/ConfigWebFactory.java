@@ -20,18 +20,14 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -61,7 +57,6 @@ import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;

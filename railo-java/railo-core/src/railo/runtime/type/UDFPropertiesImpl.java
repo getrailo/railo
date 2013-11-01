@@ -16,7 +16,6 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.type.util.UDFUtil;
 
 public final class UDFPropertiesImpl implements UDFProperties {

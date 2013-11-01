@@ -9,7 +9,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.tag.util.QueryParamConverter;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 
 public class QueryExecute extends BIF {
 	

@@ -1,7 +1,5 @@
 package railo.runtime.gateway.proxy;
 
-import java.io.IOException;
-
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.gateway.Gateway;
 import railo.runtime.gateway.GatewayEngine;

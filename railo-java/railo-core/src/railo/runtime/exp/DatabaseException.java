@@ -8,7 +8,6 @@ import java.util.List;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;

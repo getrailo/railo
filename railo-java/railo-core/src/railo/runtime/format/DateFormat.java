@@ -7,7 +7,6 @@ import java.util.TimeZone;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
 
 public final class DateFormat extends BaseFormat implements Format {
 	

@@ -12,7 +12,6 @@ import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.ListUtil;
 
