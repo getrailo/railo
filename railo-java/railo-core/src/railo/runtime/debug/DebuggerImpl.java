@@ -229,11 +229,42 @@ public final class DebuggerImpl implements DebuggerPro {
 		} catch (PageException e1) {}
 		
 		try {
-			PageSource[] arr = ((PageContextImpl)pc).getPageSources(debugEntry.getPath());
-			Page p = PageSourceImpl.loadPage(pc, arr);
+			String path = debugEntry.getPath();
+			PageSource[] arr = ((PageContextImpl)pc).getPageSources(path);
+			Page p = PageSourceImpl.loadPage(pc, arr,null);
+			
+			// patch for old path
+			String fullname = debugEntry.getFullname();
+			if(p==null) {
+				if(path!=null) {
+					boolean changed=false;
+					if(path.endsWith("/Modern.cfc") || path.endsWith("\\Modern.cfc")) {
+						path="/railo-server-context/admin/debug/Modern.cfc";
+						fullname="railo-server-context.admin.debug.Modern";
+						changed=true;
+					}
+					else if(path.endsWith("/Classic.cfc") || path.endsWith("\\Classic.cfc")) {
+						path="/railo-server-context/admin/debug/Classic.cfc";
+						fullname="railo-server-context.admin.debug.Classic";
+						changed=true;
+					}
+					else if(path.endsWith("/Comment.cfc") || path.endsWith("\\Comment.cfc")) {
+						path="/railo-server-context/admin/debug/Comment.cfc";
+						fullname="railo-server-context.admin.debug.Comment";
+						changed=true;
+					}
+					if(changed)pc.write("<span style='color:red'>Please update your debug template defintions in the railo admin by going into the detail view and hit the \"update\" button.</span>");
+					
+				}
+				
+				arr = ((PageContextImpl)pc).getPageSources(path);
+				p = PageSourceImpl.loadPage(pc, arr);
+			}
+			
+			
 			pc.addPageSource(p.getPageSource(), true);
 			try{
-				Component cfc = pc.loadComponent(debugEntry.getFullname());
+				Component cfc = pc.loadComponent(fullname);
 				cfc.callWithNamedValues(pc, "output", args);
 			}
 			finally {
