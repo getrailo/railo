@@ -1,5 +1,6 @@
 package railo.runtime.engine;
 
+import railo.print;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerImpl;
@@ -19,7 +20,7 @@ public final class Monitor extends Thread {
 	 * @param interval
 	 * @param run 
 	 */
-	public Monitor(ConfigServer configServer,RefBoolean run) {		
+	public Monitor(ConfigServer configServer,RefBoolean run) {	print.ds();	
         
         this.run=run;
         this.configServer=(ConfigServerImpl) configServer;

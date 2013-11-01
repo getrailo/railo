@@ -13,7 +13,7 @@ import com.intergral.fusiondebug.server.IFDStackFrame;
 
 public class FDQuery extends FDValueNotMutability {
 
-	private static final int INTERVALL = 10;
+	private static final int INTERVAL = 10;
 	private ArrayList children=new ArrayList();
 	private Query qry;
 	
@@ -40,13 +40,13 @@ public class FDQuery extends FDValueNotMutability {
 	
 	private static void fill(IFDStackFrame frame, Query qry, List lstRows, int start,int len, String[] strColumns) {
 		int to=start+len;
-		int intervall = INTERVALL;
-		while(intervall*intervall<len)
-			intervall*=intervall;
-		if(len>intervall){
+		int interval = INTERVAL;
+		while(interval*interval<len)
+			interval*=interval;
+		if(len>interval){
 			int max;
-			for(int i=start;i<to;i+=intervall)	{
-				max=(i+intervall)<to?(intervall-1):to-i;
+			for(int i=start;i<to;i+=interval)	{
+				max=(i+interval)<to?(interval-1):to-i;
 				ArrayList group=new ArrayList();
 				lstRows.add(new FDSimpleVariable(frame,"Rows","["+i+"-"+((i+max))+"]",group));
 				fill(frame, qry, group, i, max, strColumns);

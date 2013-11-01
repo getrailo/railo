@@ -21,7 +21,7 @@ import com.intergral.fusiondebug.server.IFDStackFrame;
 
 public class FDCollection extends FDValueSupport {
 
-	private static final int INTERVALL = 10;
+	private static final int INTERVAL = 10;
 	private ArrayList children;
 	private Collection coll;
 	private String name;
@@ -48,19 +48,19 @@ public class FDCollection extends FDValueSupport {
 		//Key[] keys = coll.keys();
 		children=new ArrayList();
 		
-		int intervall=INTERVALL;
-		while(intervall*intervall<keys.length)
-			intervall*=intervall;
+		int interval=INTERVAL;
+		while(interval*interval<keys.length)
+			interval*=interval;
 		
-		if(keys.length>intervall){
+		if(keys.length>interval){
 			FDCollection node;
 			
 			
 			int len=keys.length;
 			
 			int max;
-			for(int i=0;i<len;i+=intervall)	{
-				max=(i+(intervall))<len?(intervall):len-i;
+			for(int i=0;i<len;i+=interval)	{
+				max=(i+(interval))<len?(interval):len-i;
 				Key[] skeys=new Key[max];
 				for(int y=0;y<max;y++)	{
 					skeys[y]=keys[i+y];
