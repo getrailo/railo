@@ -2086,13 +2086,22 @@ public final class ConfigWebAdmin {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
         writerType=writerType.trim();
+        
+        // remove
+        if(StringUtil.isEmpty(writerType)) {
+        	if(scope.hasAttribute("cfml-writer"))scope.removeAttribute("cfml-writer");
+        	return;
+        }
+        
+        // update
         if(!"white-space".equalsIgnoreCase(writerType) && 
         		!"white-space-pref".equalsIgnoreCase(writerType) && 
         		!"regular".equalsIgnoreCase(writerType))
         	throw new ApplicationException("invalid writer type defintion ["+writerType+"], valid types are [white-space, white-space-pref, regular]");
         
-        Element scope=_getRootElement("setting");
         scope.setAttribute("cfml-writer",writerType.toLowerCase());
     } 
 
