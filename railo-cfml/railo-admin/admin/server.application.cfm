@@ -88,7 +88,7 @@ setting requesttimeout = "#requestTimeout#"; // max livespan of a running reques
 }
 	</pre>
 </cfsavecontent>
-<cf_admin_coding_tip codeSample="#codeSample#" text="#stText.application.desc#">
+<cf_admin_coding_tip codeSample="#codeSample#" text="#stText.application.desc#" expand="true">
 	
 
 </cfoutput>
