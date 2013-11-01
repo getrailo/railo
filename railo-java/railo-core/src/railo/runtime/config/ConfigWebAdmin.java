@@ -2834,7 +2834,8 @@ public final class ConfigWebAdmin {
 	public void removeDefaultPassword() throws SecurityException {
 		checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.removeAttribute("default-password");
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password");
+        if(root.hasAttribute("default-pw"))root.removeAttribute("default-pw");
         ((ConfigServerImpl)config).setDefaultPassword(null);
 	}
     
