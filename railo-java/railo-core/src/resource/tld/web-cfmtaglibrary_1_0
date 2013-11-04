@@ -4250,10 +4250,8 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Defines how the local scope of this function is invoked when a variable with no scope definition is used.  Accepted values include:  
 
-- always: This is an alias for "modern".
 - classic (default): The local scope is only invoked when the key already exists in it.
-- modern: The local scope is always invoked.
-- update: This is an alias for "classic".</description>
+- modern: The local scope is always invoked.</description>
 		</attribute>
 	</tag>
 	<!-- Graph -->
