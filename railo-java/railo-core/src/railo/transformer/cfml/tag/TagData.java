@@ -20,7 +20,7 @@ public class TagData extends Data {
 		this.tlibs = tlibs;
 	}
     public TagData(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,Boolean dotNotationUpperCase,Page page) {
-		super(page,cfml,new EvaluatorPool(),TransfomerSettings.toSetting(page.getConfig(),dotNotationUpperCase),flibs,scriptTags);
+		super(page,cfml,new EvaluatorPool(),TransfomerSettings.toSetting(page.getPageSource().getMapping(),dotNotationUpperCase),flibs,scriptTags);
 		this.tlibs = tlibs;
 	}
 	

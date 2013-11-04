@@ -19,7 +19,7 @@ public abstract class Data {
 		
 		
 	    public Data(Page page,CFMLString cfml,EvaluatorPool ep,TransfomerSettings settings,FunctionLib[] flibs,TagLibTag[] scriptTags) {
-	    	this.config = page.getConfig();
+	    	this.config = page.getPageSource().getMapping().getConfig();
 	    	this.page = page;
 	    	this.cfml = cfml;
 	    	this.settings = settings;

@@ -7,7 +7,9 @@ import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -1387,8 +1389,10 @@ public class CFMLExpressionInterpreter {
             if(!firstCanBeNumber)return null;
             else if(!cfml.isCurrentDigit())return null;
         }
-        
-        boolean doUpper = !isJson && ((ConfigWebImpl)pc.getConfig()).getDotNotationUpperCase();
+        boolean doUpper;
+        PageSource ps = pc.getCurrentPageSource();
+        if(ps!=null) doUpper= !isJson && ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
+        else doUpper = !isJson && ((ConfigWebImpl)pc.getConfig()).getDotNotationUpperCase();
         StringBuilder sb=new StringBuilder();
         sb.append(doUpper?cfml.getCurrentUpper():cfml.getCurrent());
         do {

@@ -5,6 +5,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
@@ -104,7 +105,8 @@ public final class Loop extends EvaluatorSupport {
 			try {
 				ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
 				transformer = tagLib.getExprTransfomer();
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig(),null));
+				Page page = ASMUtil.getAncestorPage(tag);
+				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

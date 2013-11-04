@@ -639,8 +639,8 @@ public final class ConfigWebFactory extends ConfigFactory {
 	}
 
 	private static void settings(ConfigImpl config) {
-		if (!(config instanceof ConfigServer))
-			doCheckChangesInLibraries(config);
+		if ((config instanceof ConfigWebImpl))
+			doCheckChangesInLibraries((ConfigWebImpl) config);
 
 	}
 
@@ -1315,7 +1315,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 
 
-	private static void doCheckChangesInLibraries(ConfigImpl config) {
+	private static void doCheckChangesInLibraries(ConfigWebImpl config) {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
@@ -1325,9 +1325,15 @@ public final class ConfigWebFactory extends ConfigFactory {
 		sb.append(';');
 
 		// dot notation upper case
-		sb.append(config.getDotNotationUpperCase());
-		sb.append(';');
-
+		_getDotNotationUpperCase(sb,config.getMappings());
+		_getDotNotationUpperCase(sb,config.getMappings());
+		_getDotNotationUpperCase(sb,config.getCustomTagMappings());
+		_getDotNotationUpperCase(sb,config.getComponentMappings());
+		_getDotNotationUpperCase(sb,config.getFunctionMapping());
+		_getDotNotationUpperCase(sb,config.getServerFunctionMapping());
+		_getDotNotationUpperCase(sb,config.getTagMapping());
+		_getDotNotationUpperCase(sb,config.getServerTagMapping());
+		
 		// supress ws before arg
 		sb.append(config.getSupressWSBeforeArg());
 		sb.append(';');
@@ -1377,6 +1383,12 @@ public final class ConfigWebFactory extends ConfigFactory {
 			}
 		}
 
+	}
+
+	private static void _getDotNotationUpperCase(StringBuilder sb, Mapping... mappings) {
+		for(int i=0;i<mappings.length;i++){
+			sb.append(((MappingImpl)mappings[i]).getDotNotationUpperCase()).append(';');
+		}
 	}
 
 	/**

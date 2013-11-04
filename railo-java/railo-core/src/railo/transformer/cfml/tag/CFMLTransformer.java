@@ -11,6 +11,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Info;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
@@ -128,7 +129,7 @@ public final class CFMLTransformer {
 		
 		boolean writeLog=config.getExecutionLogEnabled();
 		String charset=config.getTemplateCharset();
-		boolean dotUpper = config.getDotNotationUpperCase();
+		boolean dotUpper = ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
 		
 		
 		while(true){
@@ -256,7 +257,7 @@ public final class CFMLTransformer {
 
 		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(config,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
+		Page page=new Page(source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
 		TagData data = new TagData(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;

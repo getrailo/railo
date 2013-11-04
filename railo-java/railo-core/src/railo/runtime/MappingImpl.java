@@ -491,4 +491,8 @@ public final class MappingImpl implements Mapping {
 		if(appListener!=null) return appListener;
 		return config.getApplicationListener();
 	}
+	
+	public boolean getDotNotationUpperCase(){
+		return ((ConfigImpl)config).getDotNotationUpperCase();
+	}
 }
