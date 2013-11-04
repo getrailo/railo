@@ -4,13 +4,9 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.TimeZone;
 
-import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
-import railo.commons.date.TimeZoneUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public class DateCast implements Cast{

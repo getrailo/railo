@@ -2,11 +2,8 @@ package railo.runtime.engine;
 
 import java.util.Map;
 
-import railo.commons.io.res.util.ResourceSnippet;
-import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.runtime.PageContext;
 import railo.runtime.debug.DebugEntry;
-import railo.runtime.debug.DebugEntryTemplatePartImpl;
 
 public class DebugExecutionLog extends ExecutionLogSupport {
 	

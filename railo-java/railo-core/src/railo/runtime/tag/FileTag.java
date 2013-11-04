@@ -1,5 +1,11 @@
 package railo.runtime.tag;
 
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_MAKEUNIQUE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -40,12 +46,6 @@ import railo.runtime.type.scope.FormItem;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
-
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_MAKEUNIQUE;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
-import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 

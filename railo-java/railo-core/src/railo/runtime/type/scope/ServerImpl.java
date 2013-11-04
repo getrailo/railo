@@ -1,5 +1,7 @@
 package railo.runtime.type.scope;
 
+import java.io.File;
+
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
@@ -16,8 +18,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ReadOnlyStruct;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.KeyConstants;
-
-import java.io.File;
 
 
 /**

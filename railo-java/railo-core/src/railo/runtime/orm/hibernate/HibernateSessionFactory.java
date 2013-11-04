@@ -19,7 +19,6 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.w3c.dom.Document;
 
-import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
@@ -41,7 +40,6 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.reflection.Reflector;
-import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 

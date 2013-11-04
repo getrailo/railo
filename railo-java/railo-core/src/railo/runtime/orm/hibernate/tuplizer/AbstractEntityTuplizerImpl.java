@@ -25,7 +25,6 @@ import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 import railo.runtime.type.cfc.ComponentAccess;
-import railo.runtime.type.util.ComponentUtil;
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 

@@ -1,10 +1,11 @@
 package railo.commons.io.res.util;
 
 
+import java.util.Map;
+
 import railo.commons.collection.LinkedHashMapMaxSize;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageSource;
-import java.util.Map;
 
 public class ResourceSnippetsMap {
 

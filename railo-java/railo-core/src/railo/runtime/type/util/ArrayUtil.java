@@ -14,7 +14,6 @@ import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.db.DataSource;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;

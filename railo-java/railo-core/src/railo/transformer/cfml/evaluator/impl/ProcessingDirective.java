@@ -1,6 +1,5 @@
 package railo.transformer.cfml.evaluator.impl;
 
-import railo.print;
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
@@ -11,7 +10,6 @@ import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
 
 /**
  * Prueft den Kontext des Tag <code>catch</code>.

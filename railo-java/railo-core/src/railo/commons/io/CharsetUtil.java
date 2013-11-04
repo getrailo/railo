@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;

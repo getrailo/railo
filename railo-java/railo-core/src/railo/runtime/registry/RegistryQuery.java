@@ -30,7 +30,7 @@ public final class RegistryQuery {
 	 * @throws InterruptedException
 	 */
 	public static String executeQuery(String[] cmd) throws IOException, InterruptedException {
-		return Command.execute(cmd);
+		return Command.execute(cmd).getOutput();
 	}  
   
 	  /**

@@ -9,7 +9,6 @@ import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
 
 public final class PageEncoding extends EvaluatorSupport {
     

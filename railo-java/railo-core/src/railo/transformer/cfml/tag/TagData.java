@@ -1,13 +1,13 @@
 package railo.transformer.cfml.tag;
 
-import railo.runtime.config.Config;
 import railo.transformer.bytecode.Page;
 import railo.transformer.cfml.Data;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
 import railo.transformer.library.function.FunctionLib;
-import railo.transformer.library.tag.*;
+import railo.transformer.library.tag.TagLib;
+import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
 public class TagData extends Data {

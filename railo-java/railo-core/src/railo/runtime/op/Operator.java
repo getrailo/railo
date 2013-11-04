@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.Component;
 import railo.runtime.exp.ExpressionException;
@@ -20,8 +19,6 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;

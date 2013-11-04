@@ -20,18 +20,14 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -61,7 +57,6 @@ import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -1464,9 +1459,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if(config instanceof ConfigServer && virtual.equalsIgnoreCase("/railo-server-context/")) {
 					hasRailoServerContext=true;
 				}
-				
-				
-				
+
 				// railo-context
 				if (virtual.equalsIgnoreCase("/railo-context/")) {
 					if (StringUtil.isEmpty(listType, true))
@@ -1499,7 +1492,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if ((physical != null || archive != null)) {
 					
 					short insTemp=inspectTemplate(el);
-					
+					if("/railo-context/".equalsIgnoreCase(virtual) || "/railo-context".equalsIgnoreCase(virtual) ||
+						"/railo-server-context/".equalsIgnoreCase(virtual) || "/railo-server-context".equalsIgnoreCase(virtual))
+						insTemp=ConfigImpl.INSPECT_ONCE;
 					//boolean trusted = toBoolean(el.getAttribute("trusted"), false);
 					
 					
@@ -1520,17 +1515,23 @@ public final class ConfigWebFactory extends ConfigFactory {
 				ApplicationListener listener = ConfigWebUtil.loadListener("modern", null);
 				listener.setMode(ApplicationListener.MODE_CURRENT2ROOT);
 				
-				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ALWAYS, true, false, true, true, false, false, listener, 100);
+				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ONCE, true, false, true, true, false, false, listener, 100);
 				mappings.put(tmp.getVirtualLowerCase(), tmp);
-
 			}
-			
-			
 		}
 
-		if (!finished) {
-			tmp = new MappingImpl(config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null);
-			mappings.put(tmp.getVirtualLowerCase(), tmp);
+
+		if ( !finished ) {
+
+			if ( (config instanceof ConfigWebImpl) && ResourceUtil.isUNCPath( config.getRootDirectory().getPath() ) ) {
+
+				tmp = new MappingImpl( config, "/", config.getRootDirectory().getPath(), null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null );
+			} else {
+
+				tmp = new MappingImpl( config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null );
+			}
+
+			mappings.put( "/", tmp );
 		}
 
 		Mapping[] arrMapping = new Mapping[mappings.size()];

@@ -22,7 +22,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -300,7 +299,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
-                        getString("oldPassword",null),getString("admin",action,"newPassword",true));
+                        getString("oldPassword",null),getString("admin",action,"newPassword",true),false,false);
             } 
             catch (Exception e) {
                 throw Caster.toPageException(e);

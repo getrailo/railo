@@ -8,7 +8,6 @@ import java.util.TimeZone;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.dateTime.Beat;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;

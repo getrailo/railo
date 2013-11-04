@@ -413,15 +413,20 @@ div.ok {
 
 .coding-tip { 
 
+	display: none; 
 	box-sizing: border-box;
 	background-color: #669900;
 	color: #FFF;
 	margin: 0.25em;
 	padding: 0.5em;
-	display: none; 
 	border: 1px solid #667;
 	border-radius: 0.5em;
 	max-width: 680px;
+}
+
+.coding-tip.expanded { 
+
+	display: block;
 }
 
 .coding-tip code {
@@ -433,9 +438,9 @@ div.ok {
 	background-color: #CCC;
 	color: #222;
 	display: block;
+	cursor: pointer;
 	overflow-x: scroll;
 }
-
 
 
 /* unorganized */
