@@ -994,7 +994,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
     /**
-     * @return the current template SourceFile
+     * @return the current template PageSource
      */
     public PageSource getCurrentPageSource() {
     	return pathList.getLast();
@@ -1009,7 +1009,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
     /**
-     * @return the current template SourceFile
+     * @return the current template PageSource
      */
     public PageSource getCurrentTemplatePageSource() {
         return includePathList.getLast();

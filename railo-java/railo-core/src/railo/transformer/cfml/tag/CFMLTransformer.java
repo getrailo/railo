@@ -6,14 +6,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Info;
-import railo.runtime.SourceFile;
-import railo.runtime.config.Config;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
@@ -117,14 +115,14 @@ public final class CFMLTransformer {
 	 * EBNF:<br />
 	 * <code>{body}</code>
 	 * @param config
-	 * @param sf CFML File
+	 * @param ps CFML File
 	 * @param tlibs Tag Library Deskriptoren, nach denen innerhalb der CFML Datei gepr￼ft werden soll.
 	 * @param flibs Function Library Deskriptoren, nach denen innerhalb der Expressions der CFML Datei gepr￼ft werden soll.
 	 * @return ￜbersetztes CFXD Dokument Element.
 	 * @throws TemplateException
 	 * @throws IOException
 	 */
-	public Page transform(ConfigImpl config,SourceFile sf, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
+	public Page transform(ConfigImpl config,PageSource ps, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
 		Page p;
 		CFMLString cfml;
 		
@@ -135,8 +133,8 @@ public final class CFMLTransformer {
 		
 		while(true){
 			try {
-				cfml=new CFMLString(sf,charset,writeLog);
-				p = transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
+				cfml=new CFMLString(ps,charset,writeLog);
+				p = transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 				break;
 			}
 			catch(ProcessingDirectiveException pde) {
@@ -147,7 +145,7 @@ public final class CFMLTransformer {
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(sf.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
+		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 
@@ -155,17 +153,17 @@ public final class CFMLTransformer {
 			// try inside a cfscript
 			tlt = CFMLTransformer.getTLT(original,"script");
 			String text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
-			cfml=new CFMLString(text,charset,writeLog,sf);
+			cfml=new CFMLString(text,charset,writeLog,ps);
 			
 			try {
 				while(true){
 					if(cfml==null){
-						cfml=new CFMLString(sf,charset,writeLog);
+						cfml=new CFMLString(ps,charset,writeLog);
 						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
-						cfml=new CFMLString(text,charset,writeLog,sf);
+						cfml=new CFMLString(text,charset,writeLog,ps);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
+						p= transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
@@ -190,16 +188,16 @@ public final class CFMLTransformer {
 			if(p.isPage()){
 				tlt = CFMLTransformer.getTLT(original,"component");
 				text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
-				cfml=new CFMLString(text,charset,writeLog,sf);
+				cfml=new CFMLString(text,charset,writeLog,ps);
 						
 				while(true){
 					if(cfml==null){
-						cfml=new CFMLString(sf,charset,writeLog);
+						cfml=new CFMLString(ps,charset,writeLog);
 						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
-						cfml=new CFMLString(text,charset,writeLog,sf);
+						cfml=new CFMLString(text,charset,writeLog,ps);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
+						p= transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
@@ -256,7 +254,7 @@ public final class CFMLTransformer {
 		
 		
 
-		SourceFile source=cfml.getSourceFile(); 
+		PageSource source=cfml.getPageSource(); 
 		
 		Page page=new Page(config,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
 		TagData data = new TagData(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);

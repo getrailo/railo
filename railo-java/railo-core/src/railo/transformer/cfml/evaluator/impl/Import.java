@@ -119,7 +119,7 @@ public final class Import extends EvaluatorSupport {
 		    }
 		}
 		else {
-			Resource sourceFile=cfml.getSourceFile().getPhyscalFile();
+			Resource sourceFile=cfml.getPageSource().getPhyscalFile();
 		    if(sourceFile!=null) {
 		    	Resource file = sourceFile.getParentResource().getRealResource(textTagLib);
 				// TLD

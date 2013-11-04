@@ -1,7 +1,7 @@
 package railo.transformer.cfml.tag;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.SourceFile;
+import railo.runtime.PageSource;
 import railo.runtime.op.Caster;
 import railo.transformer.util.CFMLString;
 
@@ -57,8 +57,8 @@ public final class CFMLTransformerException extends Exception {
 		StringBuffer sb=new StringBuffer();
 		sb.append("Error\n");
 		sb.append("----------------------------------\n");
-		if(hasCFML && cfml.getSourceFile()!=null) {
-			sb.append("File: "+cfml.getSourceFile().getDisplayPath()+"\n");
+		if(hasCFML && cfml.getPageSource()!=null) {
+			sb.append("File: "+cfml.getPageSource().getDisplayPath()+"\n");
 		}
 		if(hasCFML) {
 			int line=cfml.getLine();
@@ -86,51 +86,6 @@ public final class CFMLTransformerException extends Exception {
 		sb.append(""+super.getMessage()+"\n");
 		return sb.toString();
 	}
-	
-	/* *
-	 * Gibt eine detaillierte Fehlermeldung als HTML Ausgabe zurueck.
-	 * @return Fehlermeldung als HTML Ausgabe.
-	 * /
-	public String getMessageAsHTML()	{
-		boolean hasCFML=cfml!=null;
-		
-		String str=HTMLOutput.getStyle("fnf","#ff4400","#ff954f","#4f1500");
-
-		str+=HTMLOutput.getHead("fnf","Railo - ParserException");
-		if(hasCFML && cfml.getSourceFile()!=null) {
-			str+=HTMLOutput.getItem("fnf","File",cfml.getSourceFile().getDisplayPath());
-		}
-		if(hasCFML) {
-			int line=cfml.getLine();
-			str+=HTMLOutput.getItem("fnf","Line", line+"");
-			str+=HTMLOutput.getItem("fnf","Column", cfml.getColumn()+"");
-			str+=HTMLOutput.getItem("fnf","Type", "Syntax");
-			int failureLine=line;
-			line=(line-2<1)?1:line-2;
-			int lineDescLen=(((line+5)+"").length());
-			int counter=0;
-			StringBuffer sb=new StringBuffer();
-			for(int i=line;;i++) {
-				if(i>0) {
-					String strLine=cfml.getLineAsString(i);
-					if(strLine==null)break;
-					String desc=((""+i).length()<lineDescLen)?"0"+i:""+i;
-					sb.append(desc+": ");
-					if(i==failureLine)sb.append("<b>");
-					sb.append((strLine.replaceAll("<","&lt;").replaceAll(">","&gt;")));
-					if(i==failureLine)sb.append("</b>");
-					sb.append("\n");
-					counter++;
-				}
-				if(counter==5) break;
-			}
-			str+=HTMLOutput.getItem("fnf","Code","<pre>"+sb+"</pre>");
-		}
-		str+=HTMLOutput.getItem("fnf","Message",StringUtil.replace(super.getMessage(),"\n","<br>",false));
-		str+=HTMLOutput.getBottom();
-		
-		return str;
-	}*/
 
 	/**
 	 * Gibt die Zeilennummer zurueck
@@ -152,8 +107,8 @@ public final class CFMLTransformerException extends Exception {
 	 * Source Dokument
 	 * @return Source Dokument
 	 */
-	public SourceFile getSource() {
-		return cfml.getSourceFile();
+	public PageSource getSource() {
+		return cfml.getPageSource();
 	}
 
     /**
