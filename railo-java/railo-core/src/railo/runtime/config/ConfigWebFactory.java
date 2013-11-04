@@ -1447,9 +1447,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if(config instanceof ConfigServer && virtual.equalsIgnoreCase("/railo-server-context/")) {
 					hasRailoServerContext=true;
 				}
-				
-				
-				
+
 				// railo-context
 				if (virtual.equalsIgnoreCase("/railo-context/")) {
 					if (StringUtil.isEmpty(listType, true))
@@ -1482,7 +1480,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if ((physical != null || archive != null)) {
 					
 					short insTemp=inspectTemplate(el);
-					
+					if("/railo-context/".equalsIgnoreCase(virtual) || "/railo-context".equalsIgnoreCase(virtual) ||
+						"/railo-server-context/".equalsIgnoreCase(virtual) || "/railo-server-context".equalsIgnoreCase(virtual))
+						insTemp=ConfigImpl.INSPECT_ONCE;
 					//boolean trusted = toBoolean(el.getAttribute("trusted"), false);
 					
 					
@@ -1503,7 +1503,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				ApplicationListener listener = ConfigWebUtil.loadListener("modern", null);
 				listener.setMode(ApplicationListener.MODE_CURRENT2ROOT);
 				
-				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ALWAYS, true, false, true, true, false, false, listener, 100);
+				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ONCE, true, false, true, true, false, false, listener, 100);
 				mappings.put(tmp.getVirtualLowerCase(), tmp);
 			}
 		}
