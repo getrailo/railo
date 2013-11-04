@@ -1,6 +1,7 @@
 package railo.runtime.listener;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -222,4 +223,12 @@ public interface ApplicationContext extends Serializable {
 	public abstract void setTimeZone(TimeZone timeZone);
 
 	public abstract TimeZone getTimeZone();
+
+	public abstract Charset getResourceCharset();
+	public abstract Charset getWebCharset();
+	public abstract void setResourceCharset(Charset cs);
+	public abstract void setWebCharset(Charset cs);
+	
+	public void setScopeCascading(short scopeCascading);
+	public short getScopeCascading();
 }

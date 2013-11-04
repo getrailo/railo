@@ -44,8 +44,8 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return default value
      * @throws PageException
      */
-    public abstract Object getDefaultValue(PageContext pc, int index) throws PageException;
-    
+    public Object getDefaultValue(PageContext pc, int index) throws PageException;
+     
 
 	 public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException;
 	 
@@ -156,5 +156,6 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
     public abstract Object call(PageContext pageContext, Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException;
 	
 	 
-	 
+
+	 public abstract int getReturnFormat(int defaultFormat);
 }

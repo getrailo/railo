@@ -3066,7 +3066,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 // FUTURE add to PageContext
 	public DataSource getDataSource(String datasource) throws PageException {
 
-		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		DataSource ds = getApplicationContext().getDataSource(datasource,null);
 		if(ds!=null) return ds;
 		ds=getConfig().getDataSource(datasource,null);
 		if(ds!=null) return ds;
@@ -3111,19 +3111,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	// FUTURE add this methods to the loader
 	public Charset getResourceCharset() {
-		Charset cs = ((ApplicationContextPro)getApplicationContext()).getResourceCharset();
+		Charset cs = getApplicationContext().getResourceCharset();
 		if(cs!=null) return cs;
 		return config._getResourceCharset();
 	}
 
 	public Charset getWebCharset() {
-		Charset cs = ((ApplicationContextPro)getApplicationContext()).getWebCharset();
+		Charset cs = getApplicationContext().getWebCharset();
 		if(cs!=null) return cs;
 		return config._getWebCharset();
 	}
 
 	public short getScopeCascadingType() {
-		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		ApplicationContext ac = getApplicationContext();
 		if(ac==null) return config.getScopeCascadingType();
 		return ac.getScopeCascading();
 	}
