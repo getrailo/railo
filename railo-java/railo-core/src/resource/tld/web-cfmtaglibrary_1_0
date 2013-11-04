@@ -2921,7 +2921,20 @@ Determines if the contents of the cfdocumentitem tag body has to be evaluated at
 				If no output file or variable attribute is specified,
 				output is displayed on page from which it was called.</description>
 		</attribute>
-
+		<attribute>
+            <type>string</type>
+            <name>errorFile</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The file to which to direct the error stream of the program. If neither errorFile nor errorVariable is specified, the error stream is discarded.</description>
+        </attribute>
+		<attribute>
+			<type>string</type>
+			<name>errorVariable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Variable in which to put program error stream output. If neither errorFile nor errorVariable is specified, the error stream is discarded.</description>
+		</attribute>
 	</tag>
 	<!-- Exit -->
 	<tag>
