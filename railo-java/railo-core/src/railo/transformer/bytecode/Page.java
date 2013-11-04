@@ -380,11 +380,12 @@ public final class Page extends BodyBase {
 	private int len;
 	private int off;
 	private int methodCount=0;
-	private final Config config;
+	//private final Config config;
+	private PageSource pageSource;
     
 	
 	
-    public Page(Config config,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean supressWSbeforeArg) {
+    public Page(PageSource pageSource,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean supressWSbeforeArg) {
     	name=name.replace('.', '/');
     	//body.setParent(this);
         this.name=name;
@@ -395,7 +396,7 @@ public final class Page extends BodyBase {
         
         this._writeLog=writeLog;
         this.supressWSbeforeArg=supressWSbeforeArg;
-        this.config=config;
+        this.pageSource=pageSource;
     }
     
     /**
@@ -1496,8 +1497,8 @@ public final class Page extends BodyBase {
 		return ++methodCount;
 	}
 
-	public Config getConfig() {
-		return config;
+	public PageSource getPageSource() {
+		return pageSource;
 	}
 	
 
