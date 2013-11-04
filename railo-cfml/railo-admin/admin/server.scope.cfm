@@ -279,6 +279,8 @@ Error Output --->
 						
 						<cfsavecontent variable="codeSample">
 							this.localMode = "#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"
+// or as part of a function declaration
+function test() localMode="#scope.LocalMode#" {}
 						</cfsavecontent>
 						<cf_admin_coding_tip codeSample="#codeSample#">
 					</td>
