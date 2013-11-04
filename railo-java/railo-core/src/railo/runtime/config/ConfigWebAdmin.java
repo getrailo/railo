@@ -48,6 +48,7 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
 import railo.runtime.Info;
+import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
@@ -191,7 +192,7 @@ public final class ConfigWebAdmin {
         else { 
             ConfigServerImpl cs=(ConfigServerImpl)config;
             ConfigWebImpl cw=cs.getConfigWebImpl(contextPath);
-            if(cw!=null)cw.setPassword(false,cw.getPassword(),password);
+            if(cw!=null)cw.setPassword(false,cw.getPassword(),password,true,false);
         }
     }
     
@@ -2114,13 +2115,22 @@ public final class ConfigWebAdmin {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
         writerType=writerType.trim();
+        
+        // remove
+        if(StringUtil.isEmpty(writerType)) {
+        	if(scope.hasAttribute("cfml-writer"))scope.removeAttribute("cfml-writer");
+        	return;
+        }
+        
+        // update
         if(!"white-space".equalsIgnoreCase(writerType) && 
         		!"white-space-pref".equalsIgnoreCase(writerType) && 
         		!"regular".equalsIgnoreCase(writerType))
         	throw new ApplicationException("invalid writer type defintion ["+writerType+"], valid types are [white-space, white-space-pref, regular]");
         
-        Element scope=_getRootElement("setting");
         scope.setAttribute("cfml-writer",writerType.toLowerCase());
     } 
 
@@ -2853,7 +2863,8 @@ public final class ConfigWebAdmin {
 	public void removeDefaultPassword() throws SecurityException {
 		checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.removeAttribute("default-password");
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password");
+        if(root.hasAttribute("default-pw"))root.removeAttribute("default-pw");
         ((ConfigServerImpl)config).setDefaultPassword(null);
 	}
     
@@ -3158,10 +3169,11 @@ public final class ConfigWebAdmin {
 	}
 
 	public void updateTemplateCharset(String charset) throws PageException {
+		
     	checkWriteAccess();
     	
     	Element element = _getRootElement("charset");
-		if(StringUtil.isEmpty(charset)){
+		if(StringUtil.isEmpty(charset,true)){
 			element.removeAttribute("template-charset");
 		}
 		else {
@@ -3446,10 +3458,10 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void updateExtension(Extension extension) throws PageException {
+	public void updateExtension(PageContext pc,Extension extension) throws PageException {
 		checkWriteAccess();
 		
-		String uid = createUid(extension.getProvider(),extension.getId());
+		String uid = createUid(pc,extension.getProvider(),extension.getId());
 		
 		Element extensions=_getRootElement("extensions");
 		Element[] children = ConfigWebFactory.getChildren(extensions,"extension");
@@ -3461,7 +3473,7 @@ public final class ConfigWebAdmin {
       	    el=children[i];
       	    provider=el.getAttribute("provider");
       	    id=el.getAttribute("id");
-  			if(uid.equalsIgnoreCase(createUid(provider, id))) {
+  			if(uid.equalsIgnoreCase(createUid(pc,provider, id))) {
   				setExtensionAttrs(el,extension);
   				return ;
   			}
@@ -3477,11 +3489,11 @@ public final class ConfigWebAdmin {
 	}
 
 
-	private String createUid(String provider, String id) throws PageException {
+	private String createUid(PageContext pc,String provider, String id) throws PageException {
 		if(Decision.isUUId(id)) {
-			return Hash.invoke(config,id,null,null, 1);
+			return Hash.invoke(pc,id,null,null, 1);
 		}
-		return Hash.invoke(config,provider+id,null,null, 1);
+		return Hash.invoke(pc,provider+id,null,null, 1);
 	}
 
 

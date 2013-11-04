@@ -9,9 +9,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import flex.messaging.config.ConfigurationFileResolver;
-
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -188,7 +185,7 @@ public final class ConfigServerFactory extends ConfigFactory{
 		// Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");
 		create("/resource/context/admin/gdriver/",new String[]{
-		"DirectoryWatcher.cfc","MailWatcher.cfc","Gateway.cfc","Field.cfc","Group.cfc"}
+		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc","Gateway.cfc","Field.cfc","Group.cfc"}
 		,gDir,doNew);
 		
 		// Security

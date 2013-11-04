@@ -22,6 +22,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
@@ -473,5 +474,22 @@ public final class ConfigWebUtil {
     		default: return defaultValue;
     	}
 	}
-    
+
+	public static short toScopeCascading(String type, short defaultValue) {
+		if(StringUtil.isEmpty(type)) return defaultValue;
+        if(type.equalsIgnoreCase("strict")) return Config.SCOPE_STRICT;
+        else if(type.equalsIgnoreCase("small")) return Config.SCOPE_SMALL;
+        else if(type.equalsIgnoreCase("standard"))return Config.SCOPE_STANDARD;
+        else if(type.equalsIgnoreCase("standart"))return Config.SCOPE_STANDARD;
+        return defaultValue;
+	}
+
+	public static String toScopeCascading(short type, String defaultValue) {
+		switch(type){
+			case Config.SCOPE_STRICT: return "strict";
+			case Config.SCOPE_SMALL: return "small";
+			case Config.SCOPE_STANDARD: return "standard";
+			default: return defaultValue;
+		}
+	}
 }

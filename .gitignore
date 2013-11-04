@@ -35,3 +35,4 @@ pom.xml
 sample.mov
 /.idea/
 /*.iml
+*.hbm.xml

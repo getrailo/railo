@@ -5,6 +5,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
@@ -14,6 +15,7 @@ import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.Data;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -26,7 +28,7 @@ import railo.transformer.util.CFMLString;
 public final class Loop extends EvaluatorSupport {
 	
 
-	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException {
+	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,Data data) throws TemplateException {
 		TagLoop loop=(TagLoop) tag;
 		// label
 		try {
@@ -94,7 +96,7 @@ public final class Loop extends EvaluatorSupport {
 		// condition loop
 		if(tag.containsAttribute("condition")){
 			if(tag.isScriptBase())
-				throw new EvaluatorException("tag loop-condition is not supported within cfscrip, use instead a while statement.");
+				throw new EvaluatorException("tag loop-condition is not supported within cfscript, use instead a while statement.");
 			
 			TagLib tagLib=tagLibTag.getTagLib();
 			ExprTransformer transformer;
@@ -103,7 +105,8 @@ public final class Loop extends EvaluatorSupport {
 			try {
 				ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
 				transformer = tagLib.getExprTransfomer();
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig()));
+				Page page = ASMUtil.getAncestorPage(tag);
+				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

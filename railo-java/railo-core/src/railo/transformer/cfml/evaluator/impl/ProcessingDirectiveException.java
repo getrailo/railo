@@ -6,12 +6,14 @@ import railo.transformer.util.CFMLString;
 public final class ProcessingDirectiveException extends TemplateException {
 
 	private String charset;
-	private boolean writeLog;
+	private Boolean writeLog;
+	private Boolean dotNotationUpperCase;
 
-	public ProcessingDirectiveException(CFMLString cfml, String charset, boolean writeLog) {
+	public ProcessingDirectiveException(CFMLString cfml, String charset,Boolean dotNotationUpperCase, Boolean writeLog) {
 		super(cfml, createMessage(cfml,charset,writeLog));
 		this.charset=charset;
 		this.writeLog=writeLog;
+		this.dotNotationUpperCase=dotNotationUpperCase;
 	}
 
 	private static String createMessage(CFMLString cfml, String charset,boolean writeLog) {
@@ -29,7 +31,10 @@ public final class ProcessingDirectiveException extends TemplateException {
 		return charset;
 	}
 
-	public boolean getWriteLog() {
+	public Boolean getDotNotationUpperCase() {
+		return dotNotationUpperCase;
+	}
+	public Boolean getWriteLog() {
 		return writeLog;
 	}
 

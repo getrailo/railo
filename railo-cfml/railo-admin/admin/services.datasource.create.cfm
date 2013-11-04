@@ -467,20 +467,23 @@ if(datasource.storage) optional.append('storage:#datasource.storage# // default:
 if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // default: false');
 </cfscript>
 
-		
-		<br>
-			<h3>Application.cfc</h3>
-			You can set this datasource connection in the Application.cfc as follows:
-<pre>
-this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif>={
-	class:'#datasource.classname#'
-	,connectionString:'#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
-	,username:'#replace(datasource.username,"'","''","all")#'
-	,password:"#datasource.passwordEncrypted#"</cfif><cfif optional.len()>
+
+
+<cfsavecontent variable="codeSample">
+	this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif> = {
+	  class: '#datasource.classname#'
+	, connectionString: '#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
+	, username: '#replace(datasource.username,"'","''","all")#'
+	, password: "#datasource.passwordEncrypted#"</cfif><cfif optional.len()>
 	
-// optional settings
-<cfloop array="#optional#" index="i" item="value">	,#value#<cfif i LT optional.len()>
-</cfif></cfloop></cfif>
-};</pre>
+	// optional settings
+	<cfloop array="#optional#" index="i" item="value">, #value#<cfif i LT optional.len()>
+	</cfif></cfloop></cfif>
+};
+</cfsavecontent>
+<cf_admin_coding_tip codeSample="#codeSample#" expand="true">
+
+
+
 		</cfif>
 </cfoutput>

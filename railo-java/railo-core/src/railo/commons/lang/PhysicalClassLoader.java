@@ -55,8 +55,10 @@ public final class PhysicalClassLoader extends ExtendableClassLoader implements 
     public PhysicalClassLoader(Resource directory, ClassLoader parent) throws IOException {
         super(parent);
         this.parent=parent;
-        if(!directory.isDirectory())
-            throw new IOException("resource "+directory+" is not a directory");
+        if(!directory.isDirectory()) {
+        	if(!directory.exists()) directory.mkdirs();
+        	else throw new IOException("resource "+directory+" is not a directory");
+        }
         if(!directory.canRead())
             throw new IOException("no access to "+directory+" directory");
         this.directory=directory;

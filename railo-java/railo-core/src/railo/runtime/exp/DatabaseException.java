@@ -2,12 +2,17 @@ package railo.runtime.exp;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
@@ -153,5 +158,34 @@ public final class DatabaseException extends PageExceptionImpl {
 		sct.setEL("queryError",strSQL);
 		sct.setEL("where","");
 		return sct;
+	}
+
+	public static DatabaseException notFoundException(PageContext pc, String datasource) {
+		
+		
+		List<String> list=new ArrayList<String>();
+		
+		// application based datasources
+		DataSource[] datasources = ((ApplicationContextPro)pc.getApplicationContext()).getDataSources();
+		if(datasources!=null)for(int i=0;i<datasources.length;i++){
+			list.add(datasources[i].getName());
+		}
+		
+		// config based datasources
+		datasources=pc.getConfig().getDataSources();
+		if(datasources!=null)for(int i=0;i<datasources.length;i++){
+			list.add(datasources[i].getName());
+		}
+		
+		// create error detail
+		DatabaseException de = new DatabaseException("datasource ["+datasource+"] doesn't exist",null,null,null);
+		de.setDetail(ExceptionUtil.createSoundexDetail(datasource,list.iterator(),"datasource names"));
+		de.setAdditional(KeyConstants._Datasource,datasource);
+		return de;
+	}
+
+	private static ApplicationContextPro getApplicationContext() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -10,6 +10,7 @@ import railo.commons.digest.MD5;
 import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -29,9 +30,11 @@ public class HMAC implements Function {
 	
 	public static String call(PageContext pc,Object oMessage, Object oKey, String algorithm, String charset) throws PageException {
 		// charset
+		Charset cs;
         if(StringUtil.isEmpty(charset,true))
-            charset=pc.getConfig().getWebCharset();
-		Charset cs = CharsetUtil.toCharset(charset);
+            cs=((PageContextImpl)pc).getWebCharset();
+        else
+        	cs = CharsetUtil.toCharset(charset);
 
         // message
 		byte[] msg=toBinary(oMessage,cs);

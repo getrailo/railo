@@ -595,6 +595,32 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<rtexprvalue>true</rtexprvalue>
 			<description>change the timezone defintion for the current application context.</description>
 		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>webcharset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>character set used for output streams, form-, url-, and cgi scope variables and reading/writing the header</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>resourcecharset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>character set used for reading from/writing to various resources</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>scopecascading</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#), the following values are supported:
+- strict: scans only the variables scope
+- small: scans the scopes variables,url,form
+- standard: scans the scopes variables,cgi,url,form,cookie
+			</description>
+		</attribute>
 		
 	</tag>
 	<!-- Argument -->
@@ -2921,7 +2947,20 @@ Determines if the contents of the cfdocumentitem tag body has to be evaluated at
 				If no output file or variable attribute is specified,
 				output is displayed on page from which it was called.</description>
 		</attribute>
-
+		<attribute>
+            <type>string</type>
+            <name>errorFile</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The file to which to direct the error stream of the program. If neither errorFile nor errorVariable is specified, the error stream is discarded.</description>
+        </attribute>
+		<attribute>
+			<type>string</type>
+			<name>errorVariable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Variable in which to put program error stream output. If neither errorFile nor errorVariable is specified, the error stream is discarded.</description>
+		</attribute>
 	</tag>
 	<!-- Exit -->
 	<tag>
@@ -4242,6 +4281,16 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>A Boolean value that specifies whether to require remote function calls to include an encrypted security token. For use with AJAX applications only.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>localMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Defines how the local scope of this function is invoked when a variable with no scope definition is used.  Accepted values include:  
+
+- classic (default): The local scope is only invoked when the key already exists in it.
+- modern: The local scope is always invoked.</description>
 		</attribute>
 	</tag>
 	<!-- Graph -->
@@ -9415,6 +9464,26 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<rtexprvalue>true</rtexprvalue>
 			<description>A string literal; the character encoding to use to read the page. The value may be enclosed in single or double quotation marks, or none.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>preserveCase</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+declare how variable keys defined by dot notation are handled.
+If set to false converts all struct keys defined with "dot notation" to upper case.
+Example:
+- sct.dotNotation --> keyname: "DOTNOTATION"
+- sct["bracketNotation"] --> keyname: "bracketNotation"
+
+If set to true keep all struct keys defined with "dot notation" in original case (according to the "bracket notation").
+Example:
+sct.dotNotation --> keyname: "dotNotation"
+sct["bracketNotation"] --> keyname: "bracketNotation"
+			</description>
+		</attribute>
+		
+		
 	</tag>
 
 	<!-- pageEncoding -->

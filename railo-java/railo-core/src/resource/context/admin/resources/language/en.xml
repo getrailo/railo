@@ -906,6 +906,12 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	
 	<data key="settings.datasourcemodify">Create new datasource</data>
 	<data key="settings.verifyconnection">Verify connection</data>
+	<data key="settings.appcfc">Application.cfc</data>
+	<data key="settings.appcfcdesc">You can also set this in the Application.cfc as follows</data>
+	<data key="settings.codetip">You can do this in your code yourself as follows</data>
+<data key="settings.tip">Coding tip (Click me)</data>
+	
+	<data key="settings.appcfcSomedesc">Some of this settings can be done in the Application.cfc as well</data>
 	<data key="settings.namemissing">Please enter a name for the datasource</data>
 	<data key="settings.dbclob">Clob</data>
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>

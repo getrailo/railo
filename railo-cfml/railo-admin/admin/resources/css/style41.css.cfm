@@ -389,7 +389,6 @@ div.error, div.warning, div.message {
 	border:1px solid red;
 	padding:5px;
 	margin:10px 0px;
-	xfont-weight:bold;
 	color:red;
 }
 div.warning {
@@ -405,6 +404,43 @@ div.ok {
 	color:#e0e0e0;
 }
 
+
+
+.coding-tip-trigger { 
+	cursor: pointer; 
+	color: #669900;
+}
+
+.coding-tip { 
+
+	display: none; 
+	box-sizing: border-box;
+	background-color: #669900;
+	color: #FFF;
+	margin: 0.25em;
+	padding: 0.5em;
+	border: 1px solid #667;
+	border-radius: 0.5em;
+	max-width: 680px;
+}
+
+.coding-tip.expanded { 
+
+	display: block;
+}
+
+.coding-tip code {
+
+	white-space: pre;
+	tab-size: 4;
+	margin: 0.5em;
+	padding: 0.5em;
+	background-color: #CCC;
+	color: #222;
+	display: block;
+	cursor: pointer;
+	overflow-x: scroll;
+}
 
 
 /* unorganized */

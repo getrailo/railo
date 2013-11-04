@@ -1,9 +1,12 @@
 package railo.runtime.tag;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 
+import railo.commons.io.CharsetUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.TagImpl;
@@ -32,7 +35,7 @@ public final class Header extends TagImpl {
 	
 	private boolean hasStatucCode;
 
-    private String charset;
+    private Charset charset;
     
 	@Override
 	public void release()	{
@@ -84,7 +87,7 @@ public final class Header extends TagImpl {
      * @param charset The charset to set.
      */
     public void setCharset(String charset) {
-        this.charset = charset;
+        this.charset = CharsetUtil.toCharset(charset);
     }
 
 
@@ -98,20 +101,15 @@ public final class Header extends TagImpl {
 		// set name value
 		if(name != null) {
             if(charset==null && name.equalsIgnoreCase("content-disposition")) {
-                    charset=pageContext.getConfig().getWebCharset();
+                    charset=((PageContextImpl)pageContext).getWebCharset();
             }
-            try {
-                if(charset!=null) {
-                    name = new String(name.getBytes(charset), "ISO-8859-1");
-                    value = new String(value.getBytes(charset), "ISO-8859-1");
-                }
-                else {
-                    name = new String(name.getBytes(), "ISO-8859-1");
-                    value = new String(value.getBytes(), "ISO-8859-1");
-                }
-            } 
-            catch (UnsupportedEncodingException e) {
-                throw Caster.toPageException(e);
+            if(charset!=null) {
+                name = new String(name.getBytes(charset), CharsetUtil.ISO88591);
+                value = new String(value.getBytes(charset), CharsetUtil.ISO88591);
+            }
+            else {
+                name = new String(name.getBytes(), CharsetUtil.ISO88591);
+                value = new String(value.getBytes(), CharsetUtil.ISO88591);
             }
             
 			if(name.toLowerCase().equals("content-type") && value.length()>0) {

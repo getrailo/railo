@@ -84,7 +84,12 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.trusted">Trusted</data>
 	<data key="customtags.customTagPathCache">Cache</data>
 	<data key="customtags.customTagPathCacheDesc">Customtag Pfade werden gecached und nicht wieder geprüft</data>
+	<data key="settings.codetip">Dies kann im Code wiefolgt gemacht werden</data>
+	<data key="settings.tip">Programmiertipp (Klick mich)</data>
 	
+	<data key="settings.appcfc">Application.cfc</data>
+	<data key="settings.appcfcdesc">Dies kann auch im Application.cfc wiefolgt konfiguriert werden</data>
+	<data key="settings.appcfcSomedesc">Einige dieser Settings können auch im Application.cfc vorgenommen werden</data>
 	
 	
 	<data key="customtags.mode.standard">CFML standard</data>
@@ -652,7 +657,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.applicationtimeoutdescription">Legt fest wielange Client Scope Daten behalten werden bevor sie gelöscht werden.</data>
 	<data key="scopes.clienttimeout">Client Timeout</data>
 	<data key="scopes.cascadetoresultsetdescription">Wenn eine Variable keinen vorangestellten Scope hat (Beispiel: #myVar# anstelle von #variables.myVar#), kann Railo (nach dem CFML Standard) auch verfügbare Query-Resultsets durchsuchen.</data>
-	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Cgi, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
+	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions erlauben es Railo Sessions über einen J2EE Server-Cluster zu verteilen. Wenn Sie diese Einstellung ändern verlieren Sie die aktuelle Session und müssen sich erneut einloggen.</data>
 	<data key="scopes.web">Hier können Sie festlegen, wie Railo Scopes abarbeitet.</data>
 	

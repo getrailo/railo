@@ -3,6 +3,7 @@ package railo.runtime.config;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.TimeZone;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.digest.Hash;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -289,9 +291,9 @@ public abstract class ConfigImpl implements Config {
 
     private short compileType=RECOMPILE_NEVER;
     
-    private String resourceCharset=SystemUtil.getCharset().name();
-    private String templateCharset=SystemUtil.getCharset().name();
-    private String webCharset="UTF-8";
+    private Charset resourceCharset=SystemUtil.getCharset();
+    private Charset templateCharset=SystemUtil.getCharset();
+    private Charset webCharset=CharsetUtil.UTF8;
 
 	private String mailDefaultEncoding = "UTF-8";
 	
@@ -1099,20 +1101,6 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setPassword(String password) {
         this.password=password;
-    }
-    
-    
-    /**
-     * set how railo cascade scopes
-     * @param type cascading type
-     */
-    protected void setScopeCascadingType(String type) {
-        
-        if(type.equalsIgnoreCase("strict")) setScopeCascadingType(SCOPE_STRICT);
-        else if(type.equalsIgnoreCase("small")) setScopeCascadingType(SCOPE_SMALL);
-        else if(type.equalsIgnoreCase("standard"))setScopeCascadingType(SCOPE_STANDARD);
-        else if(type.equalsIgnoreCase("standart"))setScopeCascadingType(SCOPE_STANDARD);
-        else setScopeCascadingType(SCOPE_STANDARD);
     }
 
     /**
@@ -2082,11 +2070,14 @@ public abstract class ConfigImpl implements Config {
 
 	@Override
 	public String getDefaultEncoding() {
-		return webCharset;
+		return webCharset.name();
 	}
 	
 	@Override
 	public String getTemplateCharset() {
+		return templateCharset.name();
+	}
+	public Charset _getTemplateCharset() {
 		return templateCharset;
 	}
 	
@@ -2095,11 +2086,14 @@ public abstract class ConfigImpl implements Config {
 	 * @param templateCharset
 	 */
 	protected void setTemplateCharset(String templateCharset) {
-		this.templateCharset = templateCharset;
+		this.templateCharset = CharsetUtil.toCharset(templateCharset, this.templateCharset);
 	}
 
 	@Override
 	public String getWebCharset() {
+		return webCharset.name();
+	}
+	public Charset _getWebCharset() {
 		return webCharset;
 	}
 	
@@ -2108,11 +2102,14 @@ public abstract class ConfigImpl implements Config {
 	 * @param resourceCharset
 	 */
 	protected void setResourceCharset(String resourceCharset) {
-		this.resourceCharset = resourceCharset;
+		this.resourceCharset = CharsetUtil.toCharset(resourceCharset, this.resourceCharset);
 	}
 
 	@Override
 	public String getResourceCharset() {
+		return resourceCharset.name();
+	}
+	public Charset _getResourceCharset() {
 		return resourceCharset;
 	}
 	
@@ -2121,7 +2118,7 @@ public abstract class ConfigImpl implements Config {
 	 * @param webCharset
 	 */
 	protected void setWebCharset(String webCharset) {
-		this.webCharset = webCharset;
+		this.webCharset = CharsetUtil.toCharset(webCharset, this.webCharset);;
 	}
 
 	public SecurityManager getSecurityManager() {

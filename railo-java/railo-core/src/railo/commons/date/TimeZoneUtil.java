@@ -1,12 +1,10 @@
 package railo.commons.date;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ListUtil;
@@ -190,9 +188,5 @@ public class TimeZoneUtil {
 		TimeZone tz = toTimeZone(strTimezone, null);
 		if(tz!=null) return tz;
 		throw new ExpressionException("can't cast value ("+strTimezone+") to a TimeZone","supported TimeZones are:"+getSupportedTimeZonesAsString());
-	}
-
-	public static Calendar getCalendar(TimeZone tz) {
-		return Calendar.getInstance(ThreadLocalPageContext.getTimeZone(tz));
 	}
 }

@@ -7,8 +7,11 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.Pair;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -60,9 +63,18 @@ public class HttpUtil {
 		Enumeration e = req.getParameterNames();
 		String[] values;
 		String name;
+		
 		while(e.hasMoreElements()){
 			name=(String) e.nextElement();
 			values=req.getParameterValues(name);
+			if(values==null && ReqRspUtil.needEncoding(name, true))
+				values=req.getParameterValues(ReqRspUtil.encode(name, req.getCharacterEncoding()));
+			if(values==null) {
+				PageContext pc = ThreadLocalPageContext.get();
+				if(pc!=null && ReqRspUtil.identical(pc.getHttpServletRequest(),req) ) {
+					values=HTTPServletRequestWrap.getParameterValues(ThreadLocalPageContext.get(), name);
+				}
+			}
 			for(int i=0;i<values.length;i++){
 				parameters.add(new Pair<String,String>(name,values[i]));
 			}
@@ -71,7 +83,7 @@ public class HttpUtil {
 	}
 	
 	public static Cookie[] cloneCookies(Config config,HttpServletRequest req) {
-		Cookie[] src=ReqRspUtil.getCookies(config, req);
+		Cookie[] src=ReqRspUtil.getCookies(req,CharsetUtil.getWebCharset());
 		if(src==null)return new Cookie[0];
 		
 		Cookie[] dest=new Cookie[src.length];

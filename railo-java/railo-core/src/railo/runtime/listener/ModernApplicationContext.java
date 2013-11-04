@@ -1,5 +1,6 @@
 package railo.runtime.listener;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
@@ -21,6 +23,7 @@ import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
@@ -80,6 +83,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key IN_MEMORY_FILESYSTEM = KeyImpl.intern("inmemoryfilesystem");
 	private static final Collection.Key REST_SETTING = KeyImpl.intern("restsettings");
 	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
+	private static final Collection.Key SCOPE_CASCADING = KeyImpl.intern("scopeCascading");
 
 	
 	private ComponentAccess component;
@@ -155,8 +159,16 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initLocale;
 	private TimeZone timeZone;
 	private boolean initTimeZone;
+	private Charset webCharset;
+	private boolean initWebCharset;
+	private Charset resourceCharset;
+	private boolean initResourceCharset;
+	
+	
 	
 	private Resource[] restCFCLocations;
+
+	private short scopeCascading=-1;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
 		config = pc.getConfig();
@@ -172,6 +184,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.localMode=config.getLocalMode();
         this.locale=config.getLocale();
         this.timeZone=config.getTimeZone();
+        this.webCharset=((ConfigImpl)config)._getWebCharset();
+        this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
         this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
@@ -184,11 +198,14 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.javaSettings=new JavaSettingsImpl();
         this.component=cfc;
 		
+        // read scope cascading
+        initScopeCascading();
+        
 		pc.addPageSource(component.getPageSource(), true);
 		try {
 			
 		
-
+			
 
 			
 			/////////// ORM /////////////////////////////////
@@ -203,6 +220,21 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 	}
 
+	public void initScopeCascading() {
+		Object o = get(component,SCOPE_CASCADING,null);
+		if(o!=null){
+			scopeCascading=ConfigWebUtil.toScopeCascading(Caster.toString(o,null),(short)-1);
+		}
+	}
+	public short getScopeCascading() {
+		if(scopeCascading==-1) return config.getScopeCascadingType();
+		return scopeCascading;
+	}
+
+	@Override
+	public void setScopeCascading(short scopeCascading) {
+		this.scopeCascading= scopeCascading;
+	}
 
 	
 	public void reinitORM(PageContext pc) throws PageException {
@@ -599,6 +631,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return localMode;
 	}
+	
+	
 
 	@Override
 	public Locale getLocale() {
@@ -625,7 +659,38 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return timeZone;
 	}
+
+	@Override
+	public Charset getWebCharset() {
+		if(!initWebCharset)initCharset();
+		return webCharset;
+		
+	}
 	
+	@Override
+	public Charset getResourceCharset() {
+		if(!initResourceCharset)initCharset();
+		return resourceCharset;
+		
+	}
+	
+
+	private void initCharset() {
+		Object o = get(component,KeyConstants._charset,null);
+		if(o!=null){
+			Struct sct = Caster.toStruct(o,null);
+			if(sct!=null) {
+				Charset web = CharsetUtil.toCharset(Caster.toString(sct.get(KeyConstants._web,null),null),null);
+				if(!initWebCharset && web!=null) webCharset=web;
+				Charset res = CharsetUtil.toCharset(Caster.toString(sct.get(KeyConstants._resource,null),null),null);
+				if(!initResourceCharset && res!=null) resourceCharset=res;
+			}
+		}
+		initWebCharset=true;
+		initResourceCharset=true; 
+	}
+
+
 
 	public boolean getBufferOutput() {
 		boolean bo = _getBufferOutput();
@@ -854,6 +919,18 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		initTimeZone=true;
 		this.timeZone=timeZone;
 	}
+	
+	public void setWebCharset(Charset webCharset) {
+		initWebCharset=true;
+		this.webCharset=webCharset;
+	}
+	
+	public void setResourceCharset(Charset resourceCharset) {
+		initResourceCharset=true;
+		this.resourceCharset=resourceCharset;
+	}
+	
+	
 	
 	public void setBufferOutput(boolean bufferOutput) {
 		initBufferOutput=true;

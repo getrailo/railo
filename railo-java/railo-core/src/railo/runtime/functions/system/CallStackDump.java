@@ -8,6 +8,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -21,7 +22,7 @@ public class CallStackDump {
 	}
 
 	public static String call(PageContext pc, String output) throws PageException {
-		Array arr = CallStackGet.call(pc);
+		Array arr = (Array)CallStackGet.call(pc);
 		Struct sct=null;
 		String func;
 		
@@ -56,7 +57,7 @@ public class CallStackDump {
 			IOUtil.write(
 					res, 
 					sb.toString()+"\n", 
-					pc.getConfig().getResourceCharset(), true);
+					((PageContextImpl)pc).getResourceCharset().name(), true);
 		}
 		}
 		catch(IOException ioe){

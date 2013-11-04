@@ -836,4 +836,16 @@ public final class ArrayUtil {
 		c.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
 		return c;
 	}
+
+
+	public static <E> List<E> merge(E[] a1, E[] a2) {
+		List<E> list=new ArrayList<E>();
+		for(int i=0;i<a1.length;i++){
+			list.add(a1[i]);
+		}
+		for(int i=0;i<a2.length;i++){
+			list.add(a2[i]);
+		}
+		return list;
+	}
 }

@@ -1,15 +1,18 @@
 package railo.runtime.tag;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -25,6 +28,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.scope.UndefinedImpl;
 
 /**
 * Defines scoping for a CFML application, enables or disables storing client variables, 
@@ -68,6 +72,8 @@ public final class Application extends TagImpl {
 	private int localMode=-1;
 	private Locale locale;
 	private TimeZone timeZone;
+	private Charset webCharset;
+	private Charset resourceCharset;
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -84,6 +90,7 @@ public final class Application extends TagImpl {
 	private String cacheResource;
 	private Struct datasources;
 	private UDF onmissingtemplate;
+	private short scopeCascading=-1;
 	
      
     @Override
@@ -114,6 +121,8 @@ public final class Application extends TagImpl {
         localMode=-1;
         locale=null;
         timeZone=null;
+        webCharset=null;
+        resourceCharset=null;
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
@@ -131,6 +140,7 @@ public final class Application extends TagImpl {
     	cacheObject=null;
     	cacheResource=null;
     	onmissingtemplate=null;
+    	scopeCascading=-1;
     }
     
     /** set the value setclientcookies
@@ -188,6 +198,26 @@ public final class Application extends TagImpl {
 	public void setTimezone(String strTimeZone) throws ExpressionException {
 		if(StringUtil.isEmpty(strTimeZone)) return;
 		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
+		
+	}
+	
+	public void setScopecascading(String scopeCascading) throws ApplicationException {
+		if(StringUtil.isEmpty(scopeCascading)) return;
+		short NULL=-1;
+		short tmp = ConfigWebUtil.toScopeCascading(scopeCascading,NULL);
+		if(tmp==NULL) throw new ApplicationException("invalid value ("+scopeCascading+") for attribute [ScopeCascading], valid values are [strict,small,standard]");
+		this.scopeCascading=tmp;
+	}
+	
+	public void setWebcharset(String charset) {
+		if(StringUtil.isEmpty(charset)) return;
+		webCharset = CharsetUtil.toCharset(charset);
+		
+	}
+	
+	public void setResourcecharset(String charset) {
+		if(StringUtil.isEmpty(charset)) return;
+		resourceCharset = CharsetUtil.toCharset(charset);
 		
 	}
 	
@@ -384,6 +414,12 @@ public final class Application extends TagImpl {
         	initORM=set(ac);
         }
         
+        // scope cascading
+        if(((UndefinedImpl)pageContext.undefinedScope()).getScopeCascadingType()!=ac.getScopeCascading()) {
+	    	pageContext.undefinedScope().initialize(pageContext);
+	    }
+        
+        // ORM
         if(initORM) ORMUtil.resetEngine(pageContext,false);
         
         return SKIP_BODY; 
@@ -437,6 +473,8 @@ public final class Application extends TagImpl {
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(locale!=null) 						ac.setLocale(locale);
 		if(timeZone!=null) 						ac.setTimeZone(timeZone);
+		if(webCharset!=null) 					ac.setWebCharset(webCharset);
+		if(resourceCharset!=null) 				ac.setResourceCharset(resourceCharset);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
 		
@@ -449,6 +487,9 @@ public final class Application extends TagImpl {
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));
+		
+		// Scope cascading
+		if(scopeCascading!=-1) ac.setScopeCascading(scopeCascading);
 		
 		// ORM
 		boolean initORM=false;

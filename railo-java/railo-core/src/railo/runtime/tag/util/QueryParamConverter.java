@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
@@ -18,8 +17,8 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.KeyConstants;
 

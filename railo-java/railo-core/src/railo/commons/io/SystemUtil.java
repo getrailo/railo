@@ -187,7 +187,23 @@ public final class SystemUtil {
         isFSCaseSensitive=temp.exists()?Boolean.FALSE:Boolean.TRUE; 
         f.delete(); 
     }
-	
+
+
+	/**
+	 * fixes a java canonical path to a Windows path
+	 * e.g. /C:/Windows/System32 will be changed to C:\Windows\System32
+	 *
+	 * @param path
+	 * @return
+	 */
+	public static String fixWindowsPath(String path) {
+		if ( isWindows && path.length() > 3 && path.charAt(0) == '/' && path.charAt(2) == ':' ) {
+			path = path.substring(1).replace( '/', '\\' );
+		}
+		return path;
+	}
+
+
     /**
      * @return is local machine a Windows Machine
      */

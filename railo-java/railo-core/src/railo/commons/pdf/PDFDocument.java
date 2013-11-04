@@ -30,6 +30,7 @@ import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -330,7 +331,7 @@ public final class PDFDocument {
     	}
     	// srcfile
     	else if(srcfile!=null) {
-    		if(StringUtil.isEmpty(strCharset))strCharset=pc.getConfig().getResourceCharset();
+    		if(StringUtil.isEmpty(strCharset))strCharset=((PageContextImpl)pc).getResourceCharset().name();
     		
 			// mimetype
 			if(StringUtil.isEmpty(strMimetype)) {

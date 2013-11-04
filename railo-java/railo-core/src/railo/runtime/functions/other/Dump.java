@@ -11,6 +11,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -130,7 +131,7 @@ public final class Dump implements Function {
 						outputRes, 
 						writer.toString(pc,dd,expand)+
 						"\n************************************************************************************\n", 
-						pc.getConfig().getResourceCharset(), true);
+						((PageContextImpl)pc).getResourceCharset(), true);
 			
 		} 
 		catch (IOException e) {

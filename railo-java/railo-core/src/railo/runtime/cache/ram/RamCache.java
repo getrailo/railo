@@ -18,14 +18,14 @@ import railo.runtime.type.Struct;
 
 public class RamCache extends CacheSupport {
 
-	private static final int DEFAULT_CONTROL_INTERVALL = 60;
+	private static final int DEFAULT_CONTROL_INTERVAL = 60;
 	private Map<String, RamCacheEntry> entries= new ConcurrentHashMap<String, RamCacheEntry>();
 	private long missCount;
 	private int hitCount;
 	
 	private long idleTime;
 	private long until;
-	private int controlIntervall=DEFAULT_CONTROL_INTERVALL*1000;
+	private int controlInterval=DEFAULT_CONTROL_INTERVAL*1000;
 	
 
 	public static void init(Config config,String[] cacheNames,Struct[] arguments)  {//print.ds();
@@ -35,7 +35,10 @@ public class RamCache extends CacheSupport {
 	public void init(Config config,String cacheName, Struct arguments) throws IOException {
 		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
-		controlIntervall=Caster.toIntValue(arguments.get("controlIntervall",null),DEFAULT_CONTROL_INTERVALL)*1000;
+		
+		Object ci = arguments.get("controlIntervall",null);
+		if(ci==null)ci = arguments.get("controlInterval",null);
+		controlInterval=Caster.toIntValue(ci,DEFAULT_CONTROL_INTERVAL)*1000;
 		new Controler(this).start();
 	}
 	
@@ -130,7 +133,7 @@ public class RamCache extends CacheSupport {
 				catch(Throwable t){
 					t.printStackTrace();
 				}
-				SystemUtil.sleep(ramCache.controlIntervall);
+				SystemUtil.sleep(ramCache.controlInterval);
 			}
 		}
 

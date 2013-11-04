@@ -62,11 +62,10 @@ public final class Error extends TagImpl {
 	* @throws MissingIncludeException 
 	**/
 	public void setTemplate(String template) throws MissingIncludeException	{
-	    PageSource sf=pageContext.getCurrentPageSource().getRealPage(template);
-	    //new PageSource(pageContext.getCurrentTemplateSourceFile(),template);
-		if(!sf.exists())
-			throw new MissingIncludeException(sf);
-		errorPage.setTemplate(sf);
+	    PageSource ps=pageContext.getCurrentPageSource().getRealPage(template);
+	    if(!ps.exists())
+			throw new MissingIncludeException(ps);
+		errorPage.setTemplate(ps);
 	}
 	
 	/** set the value mailto

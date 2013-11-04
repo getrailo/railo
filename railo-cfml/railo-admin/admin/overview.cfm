@@ -178,46 +178,24 @@ Error Output --->
 			</div>
 		</cfif>	
 	</cfif>
-	
-	<cfif !server.java.javaAgentSupported>
-		<!--- look for the railo-inst location, this may not work --->
-		<cfscript>	
-		string function getRealPath2RailoInstJar(required string valueWhenNotExist, required string valueOnError) localmode="true" {
-			try {
-				var root=expandPath("{classloader-directory}");
-				directory action="list" directory="#root#" recurse="false" name="res" 
-					filter="#function (path){
-						var name=listLast(path,'/\');
-						return name == "railo-instrumentation.jar" or name == "railo-inst.jar";
-					}#";
-				if(res.recordcount > 0){
-					sub=ListCompact(replace(res.directory,root,''),'/\');
-					return sub&server.separator.file&res.name;
-				}
-				else return valueWhenNotExist;
-				
-			}
-			catch(e){
-				return valueOnError;
-			}	
-		}
-		realpath=getRealPath2RailoInstJar("ne","");
-		</cfscript>
-		
+
+
+	<cfif !info.javaAgentSupported>
 		<div class="warning nofocus">
 			There is no Java Agent defined in this enviroment. 
 			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
 			To enable the Java Agent follow this instructions:
-			<!---There are 2 ways to provide the Java Agent functionality:--->
-			<ol>
-				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar<br>
-                    <cfif realpath == "ne"> (you can download it by clicking the Update JARs button on the <a href="server.cfm?action=services.update">Railo Server Administrator Update page</a>)
-                    <cfelseif stringlen(realpath)>
-                        in this environment that would be: <i>-javaagent:#realpath#</i>
-                    </cfif>                
+			<ul>
+				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar in your lib directory
+				<br>
+				<cfif !isNull(info.javaAgentPath) && len( info.javaAgentPath )>
+					in this environment that would be: <em>-javaagent=#replace( info.javaAgentPath, server.java.executionPath, "" )#</em>
+				<cfelse>
+
+					if the railo-inst.jar is not present in your lib folder you can download it from <a href="http://www.getrailo.org/download" target="new">here</a>.					
+				</cfif>
                 </li>
-			</ol>
-			
+			</ul>			
 		</div>
 	</cfif>
 	

@@ -144,7 +144,7 @@ public class CFMLProxy {
 		// Request
 		HttpServletRequestDummy req = new HttpServletRequestDummy(
 				root,"localhost",scriptName,queryString,
-				ReqRspUtil.getCookies(factory.getConfig(),formerReq),
+				ReqRspUtil.getCookies(formerReq,((ConfigImpl)factory.getConfig())._getWebCharset()),
 				HttpUtil.cloneHeaders(formerReq),
 				HttpUtil.cloneParameters(formerReq),
 				HttpUtil.getAttributesAsStruct(formerReq),null);

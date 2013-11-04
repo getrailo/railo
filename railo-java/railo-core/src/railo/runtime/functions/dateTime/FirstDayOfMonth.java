@@ -3,10 +3,9 @@
  */
 package railo.runtime.functions.dateTime;
 
-import java.util.Calendar;
 import java.util.TimeZone;
 
-import railo.commons.date.JREDateTimeUtil;
+import railo.commons.date.DateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -28,14 +27,7 @@ public final class FirstDayOfMonth extends BIF {
 	}
 	
 	private static double _call(PageContext pc , DateTime date,TimeZone tz) {
-        //synchronized (calendar) {
-		Calendar calendar=JREDateTimeUtil.getCalendar();
-    	calendar.clear();
-    	calendar.setTimeZone(tz);   
-		calendar.setTime(date);   
-		calendar.set(Calendar.DATE,1);         
-		return calendar.get(Calendar.DAY_OF_YEAR);
-        //}
+		return DateTimeUtil.getInstance().getFirstDayOfMonth(tz, date);
 	}
 	
 	@Override

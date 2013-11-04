@@ -5440,6 +5440,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- GetCanonicalPath -->
+	<function>
+		<name>GetCanonicalPath</name>
+		<class>railo.runtime.functions.file.GetCanonicalPath</class>
+		<description>Returns the canonical pathname string based on the given string.</description>
+		<argument>
+			<name>path</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>path to a component or component itself</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- getClassPath -->
 	<function>
 		<name>getClassPath</name>
@@ -5543,8 +5559,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>CallStackGet</name>
 		<class>railo.runtime.functions.system.CallStackGet</class>
 		<description>return the context (stacktrace) of the current position.</description>
+		<argument>
+            <name>type</name>
+            <type>string</type>
+            <required>false</required>
+            <default>array</default>
+            <description>the type of the returned value, possible values are: [array], string, html, json</description>
+        </argument>
 		<return>
-			<type>array</type>
+			<type>any</type>
 		</return>
 	</function>
 	
@@ -11717,6 +11740,13 @@ The following things are considered to be empty:
 			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
+		<argument>
+            <name>ignoreCase</name>
+            <type>boolean</type>
+            <required>false</required>
+            <default>false</default>
+            <description>if set to true, the duplicate value test will not be case sensitive</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -13408,18 +13438,18 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.query.QueryNew</class>
 		<description>Creates an empty query (query object).</description>
 		<argument>
-			<name>columnlist</name>
-			<alias>names,columns</alias>
-			<type>string</type>
+			<name>columnNames</name>
+			<alias>names,columns,columnlist</alias>
+			<type>object</type>
 			<required>Yes</required>
-			<description>Comma-delimited list of column names, or an empty string. </description>
+			<description>column names for the query created, allowed are comma-delimited string lists or a array.</description>
     	</argument>
 		<argument>
-			<name>columntypelist</name>
-			<alias>types</alias>
-			<type>string</type>
+			<name>columnTypes</name>
+			<alias>types,columntypelist</alias>
+			<type>object</type>
 			<required>No</required>
-			<description>Comma-delimited list specifying column data types.</description>
+			<description>column types for the query created, allowed are comma-delimited string lists or a array.</description>
     	</argument>
 		<argument>
 			<name>data</name>
@@ -15299,7 +15329,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
   - weak: a struct containing weak referenced values, which do not prevent their referents from being made garbage collected. Weak references are most often used to implement simple caches.
   - soft: a struct with soft reference values, which are cleared at the discretion of the garbage collector in response to memory demand.
   - linked: a struct with linked keys, maintain their creation order
-  - synchronized: a struct with a synchronized (thread-safe) access
+  the type "synchronized" is no longer supported and get ignored, because since version 4.1 all struct/scopes are "thread safe"
 			</description>
 		</argument>
 		<return>

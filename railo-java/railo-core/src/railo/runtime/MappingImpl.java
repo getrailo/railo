@@ -1,7 +1,6 @@
 package railo.runtime;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.PCLCollection;
-import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -490,5 +488,9 @@ public final class MappingImpl implements Mapping {
 	public ApplicationListener getApplicationListener() {
 		if(appListener!=null) return appListener;
 		return config.getApplicationListener();
+	}
+	
+	public boolean getDotNotationUpperCase(){
+		return ((ConfigImpl)config).getDotNotationUpperCase();
 	}
 }

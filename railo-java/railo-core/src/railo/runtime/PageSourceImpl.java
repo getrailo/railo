@@ -32,7 +32,7 @@ import railo.runtime.type.util.ListUtil;
 /**
  * represent a cfml file on the runtime system
  */
-public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
+public final class PageSourceImpl implements PageSource, Sizeable {
 
 	private static final long serialVersionUID = -7661676586215092539L;
 	//public static final byte LOAD_NONE=1;

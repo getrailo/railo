@@ -598,12 +598,12 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     
 
     /**
-     * @return the current template SourceFile
+     * @return the current template PageSource
      */
     public abstract PageSource getCurrentPageSource();
     
     /**
-     * @return the current template SourceFile
+     * @return the current template PageSource
      */
     public abstract PageSource getCurrentTemplatePageSource();
     

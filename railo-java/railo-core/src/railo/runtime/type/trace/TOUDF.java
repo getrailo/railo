@@ -94,13 +94,17 @@ public class TOUDF extends TOObjects implements UDF {
 		return udf.getReturnType();
 	}
 
-
 	@Override
 	public int getReturnFormat() {
 		log(null);
 		return udf.getReturnFormat();
 	}
-
+	
+	@Override
+	public int getReturnFormat(int defaultValue) {
+		log(null);
+		return udf.getReturnFormat(defaultValue);
+	}
 
 	@Override
 	public Boolean getSecureJson() {

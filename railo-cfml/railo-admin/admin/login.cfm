@@ -68,7 +68,7 @@
 					<tr>
 						<th scope="row" class="right">#stText.login.captchaHelp#</th>
 						<td>
-							<cfimage action="captcha" width="160" height="30" text="#cap#" difficulty="medium">
+							<cfimage action="captcha" width="180" height="35" text="#cap#" difficulty="medium">
 							<a style="font-size : 10px" href="#request.self#<cfif structKeyExists(url,"action")>?action=#url.action#</cfif>">Reload</a><br />
 							<cfinput type="text" name="captcha" value="" passthrough='autocomplete="off"'
 								class="medium" required="yes" message="#stText.login.captchaHelpMiss#">

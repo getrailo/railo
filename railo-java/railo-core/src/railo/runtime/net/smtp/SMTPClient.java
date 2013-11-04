@@ -350,10 +350,11 @@ public final class SMTPClient implements Serializable  {
 			boolean tls,boolean ssl) throws MessagingException {
 		
 	      Properties props = (Properties) System.getProperties().clone();
+	      String strTimeout = Caster.toString(getTimeout(config));
 	      
 	      props.put("mail.smtp.host", hostName);
-	      props.put("mail.smtp.timeout", Caster.toString(timeout));
-	      props.put("mail.smtp.connectiontimeout", Caster.toString(timeout));
+	      props.put("mail.smtp.timeout", strTimeout);
+	      props.put("mail.smtp.connectiontimeout", strTimeout);
 	      if(port>0){
 	    	  props.put("mail.smtp.port", Caster.toString(port));
 	      }
@@ -632,8 +633,7 @@ public final class SMTPClient implements Serializable  {
 		if(plainText==null && htmlText==null)
 			throw new MailException("you must define plaintext or htmltext");
 		
-		if(timeout<1)timeout=config.getMailTimeout()*1000;
-		
+		///if(timeout<1)timeout=config.getMailTimeout()*1000;
 		if(spool==SPOOL_YES || (spool==SPOOL_UNDEFINED && config.isMailSpoolEnable())) {
         	config.getSpoolerEngine().add(new MailSpoolerTask(this));
         }
@@ -644,6 +644,7 @@ public final class SMTPClient implements Serializable  {
 
 	public void _send(railo.runtime.config.ConfigWeb config) throws MailException {
 		long start=System.nanoTime();
+		long _timeout = getTimeout(config);
 		try {
 
         	Proxy.start(proxyData);
@@ -716,7 +717,7 @@ public final class SMTPClient implements Serializable  {
 	            	SerializableObject lock = new SerializableObject();
 	            	SMTPSender sender=new SMTPSender(lock,msgSess,server.getHostName(),server.getPort(),_username,_password);
             		sender.start();
-            		SystemUtil.wait(lock, timeout);
+            		SystemUtil.wait(lock, _timeout);
             		
             		if(!sender.hasSended()) {
                 		Throwable t = sender.getThrowable();
@@ -730,7 +731,7 @@ public final class SMTPClient implements Serializable  {
                 		
                 		// after thread s stopped check send flag again
                 		if(!sender.hasSended()){
-                			throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
+                			throw new MessagingException("timeout occurred after "+(_timeout/1000)+" seconds while sending mail message");
                 		}
                 	}
                 	clean(config,attachmentz);
@@ -767,6 +768,7 @@ public final class SMTPClient implements Serializable  {
 		else log.error("mail",LogUtil.toMessage(e));
 		
 		// listener
+		
 		Map<String,Object> props=new HashMap<String,Object>();
 		props.put("attachments", this.attachmentz);
 		props.put("bccs", this.bccs);
@@ -786,7 +788,7 @@ public final class SMTPClient implements Serializable  {
 		props.put("proxyData", this.proxyData);
 		props.put("rts", this.rts);
 		props.put("subject", this.subject);
-		props.put("timeout", this.timeout);
+		props.put("timeout", getTimeout(config));
 		props.put("timezone", this.timeZone);
 		props.put("tos", this.tos);
 		props.put("username", this.username);
@@ -794,6 +796,11 @@ public final class SMTPClient implements Serializable  {
 		((ConfigWebImpl)config).getActionMonitorCollector()
 			.log(config, "mail", "Mail", exe, props);
 		
+	}
+
+
+	private long getTimeout(Config config) {
+		return timeout>0?timeout:config.getMailTimeout()*1000L;
 	}
 
 

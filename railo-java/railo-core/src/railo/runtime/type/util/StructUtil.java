@@ -103,12 +103,18 @@ public final class StructUtil {
 
 	
 	public static DumpTable toDumpTable(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties dp) {
-		Key[] keys = order(CollectionUtil.keys(sct));
+		Key[] keys = order(sct,CollectionUtil.keys(sct));
 		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");// "#9999ff","#ccccff","#000000"
-		if(sct.size()>10 && dp.getMetainfo())table.setComment("Entries:"+sct.size());
-	    if(!StringUtil.isEmpty(title))table.setTitle(title);
-		maxlevel--;
+
 		int maxkeys=dp.getMaxKeys();
+		if(maxkeys < sct.size()) {
+			table.setComment("Entries: "+sct.size() + " (showing top " + maxkeys + ")");
+		}
+		else if(sct.size()>10 && dp.getMetainfo()) {
+			table.setComment("Entries: "+sct.size());
+		}
+		if(!StringUtil.isEmpty(title))table.setTitle(title);
+		maxlevel--;
 		int index=0;
 		for(int i=0;i<keys.length;i++) {
 			if(DumpUtil.keyValid(dp,maxlevel,keys[i])){
@@ -124,7 +130,9 @@ public final class StructUtil {
 	
 	
 
-	private static Key[] order(Key[] keys) {
+	private static Key[] order(Struct sct, Key[] keys) {
+		if(sct instanceof StructImpl && ((StructImpl)sct).getType()==Struct.TYPE_LINKED) return keys;
+		
 		TextComparator comp=new TextComparator(true,true);
 		Arrays.sort(keys,comp);
 		return keys;

@@ -124,6 +124,50 @@
 		</table>
 	</div>
 
+	<!--- TODO: move to reusable script in /res/js/admin.js !--->
+	<script>
+		var getDomObject = function( obj ) {	// returns the element if it is an object, or finds the object by id */
+
+			if ( typeof obj == 'string' || obj instanceof String )
+				return document.getElementById( obj );
+
+			return obj;
+		}
+
+		var selectText = function( obj ) {
+
+	        if ( document.selection ) {
+
+	            var range = document.body.createTextRange();
+	            range.moveToElementText( getDomObject( obj ) );
+	            range.select();
+	        } else if ( window.getSelection ) {
+
+	            var range = document.createRange();
+	            range.selectNode( getDomObject( obj ) );
+	            window.getSelection().addRange( range );
+	        }
+	    }
+
+
+		$( function(){
+
+			$( '.coding-tip-trigger' ).click( 
+				function(){ 
+					var $this = $(this);
+					$this.next( '.coding-tip' ).slideDown();
+					$this.hide();
+				}
+			);
+
+			$( '.coding-tip code' ).click( 
+				function(){ 					
+					selectText(this);					
+				}
+			).prop("title", "Click to select the text");
+		});
+	</script>
+
 	<cfif isDefined( "Request.htmlBody" )>#Request.htmlBody#</cfif>
 </body>
 </html>

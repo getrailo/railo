@@ -1,0 +1,1 @@
+<cfapplication webCharset="UTF-16" resourceCharset="UTF-16">

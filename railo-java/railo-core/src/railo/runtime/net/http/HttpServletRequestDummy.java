@@ -48,7 +48,7 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	private String method="GET";
 	private String pathInfo;
 	private String pathTranslated;
-	private String contextPath="/";
+	private String contextPath="";
 	private String queryString;
 	private String remoteUser;
 	private String requestedSessionId;

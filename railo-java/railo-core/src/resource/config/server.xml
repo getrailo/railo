@@ -238,7 +238,8 @@ Path placeholders:
 			archive=""
 			primary="physical"
 			listener-mode="modern"
-			listener-type="curr2root"/>
+			listener-type="curr2root"
+			inspect-template="once"/>
 		<mapping
 			readonly="yes"
 			inspect-template="always"
@@ -247,7 +248,8 @@ Path placeholders:
 			archive="{railo-config}/context/railo-context.ra"
 			primary="physical"
 			listener-mode="modern"
-			listener-type="curr2root"/>
+			listener-type="curr2root"
+			inspect-template="once"/>
 
 	</mappings>	
 	

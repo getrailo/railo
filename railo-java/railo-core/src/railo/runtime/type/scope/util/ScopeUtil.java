@@ -6,6 +6,7 @@ import java.util.Map;
 
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLItem;
+import railo.runtime.net.http.ReqRspUtil;
 
 public class ScopeUtil {
 
@@ -44,15 +45,21 @@ public class ScopeUtil {
 
 	public static String[] getParameterValues(URLItem[][] itemsArr, String[] encodings,String name) {
 		String n,v;
+		String encName;
+		
 		String[] arr=null;
 		URLItem[] items;
 		String encoding;
 		for(int x=0;x<itemsArr.length;x++){
 			items=itemsArr[x];
 			encoding=encodings[x];
+			if(ReqRspUtil.needEncoding(name, true)) encName=ReqRspUtil.encode(name, encoding);
+			else encName=null;
 			for(int i=0;i<items.length;i++){
 				n=items[i].getName();
-				if(!name.equals(n)) continue;
+				if(!name.equals(n) && (encName==null || !encName.equals(n))) {
+					continue;
+				}
 				v=items[i].getValue();
 				if(items[i].isUrlEncoded()) {
 					try{

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.InterpreterException;
 import railo.runtime.interpreter.ref.Ref;

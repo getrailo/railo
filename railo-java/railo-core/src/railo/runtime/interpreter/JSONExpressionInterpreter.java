@@ -1,7 +1,6 @@
 package railo.runtime.interpreter;
 
 import railo.commons.lang.NumberUtil;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.literal.LStringBuffer;

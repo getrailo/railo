@@ -3,10 +3,10 @@ package railo.transformer.cfml.evaluator;
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.cfml.Data;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
 
 
 
@@ -37,7 +37,7 @@ public class EvaluatorSupport implements Evaluator {
 	 * @return TagLib
 	 * @throws TemplateException
 	*/
-	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) 
+	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,Data data) 
         throws TemplateException {
 	    
 	    return null;

@@ -7,11 +7,8 @@ import java.util.TimeZone;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
 
 public final class DateFormat extends BaseFormat implements Format {
-	
-	private final Calendar calendar;
 	
 	/**
 	 * constructor of the class
@@ -19,7 +16,6 @@ public final class DateFormat extends BaseFormat implements Format {
 	 */
 	public DateFormat(Locale locale) {
 		super(locale);
-		calendar=JREDateTimeUtil.newInstance(locale);
 	}
 	
 
@@ -42,16 +38,14 @@ public final class DateFormat extends BaseFormat implements Format {
 		return format(date,mask,null);
 	}
 	public String format(Date date,String mask, TimeZone tz) {
-		//DateUtil.setTimeZone(null,calendar,date); 
-		calendar.setTimeZone(tz=ThreadLocalPageContext.getTimeZone(tz));  
-		calendar.setTime(date);     
-		
+		Calendar calendar = JREDateTimeUtil.getThreadCalendar(getLocale(),tz);
+		calendar.setTimeInMillis(date.getTime());
 
 		String lcMask=StringUtil.toLowerCase(mask);
-		if(lcMask.equals("short"))			return getAsString(java.text.DateFormat.SHORT,tz);
-		else if(lcMask.equals("medium"))		return getAsString(java.text.DateFormat.MEDIUM,tz);
-		else if(lcMask.equals("long")) 		return getAsString(java.text.DateFormat.LONG,tz);
-		else if(lcMask.equals("full"))		return getAsString(java.text.DateFormat.FULL,tz);
+		if(lcMask.equals("short"))			return getAsString(calendar,java.text.DateFormat.SHORT,tz);
+		else if(lcMask.equals("medium"))		return getAsString(calendar,java.text.DateFormat.MEDIUM,tz);
+		else if(lcMask.equals("long")) 		return getAsString(calendar,java.text.DateFormat.LONG,tz);
+		else if(lcMask.equals("full"))		return getAsString(calendar,java.text.DateFormat.FULL,tz);
 		
 		int len=mask.length();
 		int pos=0;
@@ -162,11 +156,10 @@ public final class DateFormat extends BaseFormat implements Format {
 	}
 	
 
-	private String getAsString(int style, TimeZone tz) {
+	private String getAsString(Calendar c,int style, TimeZone tz) {
 		java.text.DateFormat df = java.text.DateFormat.getDateInstance(style,getLocale());
 		df.setTimeZone(tz);
-		
-		return df.format(calendar.getTime());	
+		return df.format(c.getTime());	
 	}
 	
 }

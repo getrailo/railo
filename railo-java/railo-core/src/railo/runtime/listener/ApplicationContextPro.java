@@ -1,5 +1,6 @@
 package railo.runtime.listener;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -38,8 +39,17 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public Locale getLocale();
 	public void setLocale(Locale locale);
+	
+	public short getScopeCascading();
+	public void  setScopeCascading(short scopeCascading);
 
 	public TimeZone getTimeZone();
 	public void setTimeZone(TimeZone timeZone);
+
+	public Charset getWebCharset();
+	public void setWebCharset(Charset charset);
+
+	public Charset getResourceCharset();
+	public void setResourceCharset(Charset charset);
 	
 }

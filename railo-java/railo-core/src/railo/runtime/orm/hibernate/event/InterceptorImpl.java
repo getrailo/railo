@@ -7,7 +7,6 @@ import org.hibernate.type.Type;
 
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Operator;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateCaster;

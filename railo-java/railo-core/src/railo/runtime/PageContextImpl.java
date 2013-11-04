@@ -3,6 +3,8 @@ package railo.runtime;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -77,13 +79,13 @@ import railo.runtime.debug.DebuggerPro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.err.ErrorPagePool;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
@@ -162,6 +164,7 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.util.PageContextUtil;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -365,7 +368,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
 	    this.scopeContext=scopeContext;
         undefined=
-        	new UndefinedImpl(this,config.getScopeCascadingType());
+        	new UndefinedImpl(this,getScopeCascadingType());
         
         
 		//this.compiler=compiler;
@@ -457,7 +460,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	 _form=new FormImpl();
         	 urlForm=new UrlFormImpl(_form,_url);
         	 undefined=
-             	new UndefinedImpl(this,config.getScopeCascadingType());
+             	new UndefinedImpl(this,getScopeCascadingType());
         	 
         	 hasFamily=false;
          }
@@ -991,7 +994,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
     /**
-     * @return the current template SourceFile
+     * @return the current template PageSource
      */
     public PageSource getCurrentPageSource() {
     	return pathList.getLast();
@@ -1006,7 +1009,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
     /**
-     * @return the current template SourceFile
+     * @return the current template PageSource
      */
     public PageSource getCurrentTemplatePageSource() {
         return includePathList.getLast();
@@ -1951,7 +1954,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	// charset
     	try{
     		String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType(),new String[]{"",""})[1];
-    	if(StringUtil.isEmpty(charset))charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    	if(StringUtil.isEmpty(charset))charset=getWebCharset().name();
 	    	java.net.URL reqURL = new java.net.URL(req.getRequestURL().toString());
 	    	String path=ReqRspUtil.decode(reqURL.getPath(),charset,true);
 	    	String srvPath=req.getServletPath();
@@ -2294,6 +2297,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return null;
 	}
 
+
     /**
      * initialize the cfid and the cftoken
      */
@@ -2323,8 +2327,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         if(setCookie && applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
-            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+
+	        String domain = PageContextUtil.getCookieDomain( this );
+            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain );
+            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain );
         }
     }
     
@@ -2332,9 +2338,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void resetIdAndToken() {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
+
         if(applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
-            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+
+	        String domain = PageContextUtil.getCookieDomain( this );
+            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain);
+            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain);
         }
     }
     
@@ -3056,9 +3065,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 // FUTURE add to PageContext
 	public DataSource getDataSource(String datasource) throws PageException {
-		DataSource ds = getApplicationContext().getDataSource(datasource,null);
-		if(ds==null) ds=getConfig().getDataSource(datasource);
-		return ds;
+
+		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		if(ds!=null) return ds;
+		ds=getConfig().getDataSource(datasource,null);
+		if(ds!=null) return ds;
+		
+		throw DatabaseException.notFoundException(this, datasource);
 	}
 		
 // FUTURE add to PageContext
@@ -3095,4 +3108,25 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public PageException getPageException() {
 		return pe;
 	}
+
+	// FUTURE add this methods to the loader
+	public Charset getResourceCharset() {
+		Charset cs = ((ApplicationContextPro)getApplicationContext()).getResourceCharset();
+		if(cs!=null) return cs;
+		return config._getResourceCharset();
+	}
+
+	public Charset getWebCharset() {
+		Charset cs = ((ApplicationContextPro)getApplicationContext()).getWebCharset();
+		if(cs!=null) return cs;
+		return config._getWebCharset();
+	}
+
+	public short getScopeCascadingType() {
+		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		if(ac==null) return config.getScopeCascadingType();
+		return ac.getScopeCascading();
+	}
+	
+	
 }

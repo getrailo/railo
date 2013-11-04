@@ -2,7 +2,6 @@ package railo.runtime.config;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -14,9 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
-import railo.commons.collection.LinkedHashMapMaxSize;
-import railo.commons.collection.QueueMaxSize;
-import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -38,7 +34,6 @@ import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.debug.DebuggerPool;
 import railo.runtime.engine.ThreadQueueImpl;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -50,7 +45,6 @@ import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
@@ -410,12 +404,13 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.hasPassword();
 		}
 		
-		public void setPassword(boolean server, String passwordOldRaw, String passwordNewRaw) 
+		public void setPassword(boolean server, String passwordOld, String passwordNew, boolean oldPasswordIsHashed, boolean newPasswordIsHashed) 
 			throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
 	    	ConfigImpl config=server?configServer:this;
-	    	String passwordNew=ConfigWebFactory.hash(passwordNewRaw);
-	    	String passwordOld=ConfigWebFactory.hash(passwordOldRaw);
-		    if(!config.hasPassword()) { 
+	    	if(!oldPasswordIsHashed)passwordOld=ConfigWebFactory.hash(passwordOld);
+	    	if(!newPasswordIsHashed)passwordNew=ConfigWebFactory.hash(passwordNew);
+	    	
+	    	if(!config.hasPassword()) { 
 		    	config.setPassword(passwordNew);
 		        
 		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordNew);
@@ -424,7 +419,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		    }
 		    else {
 		    	ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
-		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
+		    	ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
 		        admin.setPassword(passwordNew);
 		        admin.store();
 		    }

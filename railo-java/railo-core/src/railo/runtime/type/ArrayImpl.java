@@ -484,17 +484,27 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table = new DumpTable("array","#99cc33","#ccff33","#000000");
 		table.setTitle("Array");
-		//if(size()>10)table.setComment("Size:"+size());
+
+		int top = dp.getMaxlevel();
+
+		if( size() > top )
+			table.setComment("Rows: " + size() + " (showing top " + top + ")");
+
 		int length=size();
-		maxlevel--;
+
 		for(int i=1;i<=length;i++) {
 			Object o=null;
 			try {
 				o = getE(i);
 			} 
 			catch (Exception e) {}
-			table.appendRow(1,new SimpleDumpData(i),DumpUtil.toDumpData(o, pageContext,maxlevel,dp));
+
+			table.appendRow( 1, new SimpleDumpData(i), DumpUtil.toDumpData(o, pageContext, maxlevel, dp) );
+
+			if ( i == top )
+				break;
 		}
+
 		return table;
 	}
 	

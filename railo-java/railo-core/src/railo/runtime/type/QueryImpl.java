@@ -1271,7 +1271,7 @@ public class QueryImpl implements Query,Objects {
 				try {
 					Object o=getAt(keys[y],i+1);
 					if(o instanceof String)sb.append(getToStringField(o.toString()));
-					else if(o instanceof Number) sb.append(getToStringField(Caster.toString(((Number)o).doubleValue())));
+					else if(o instanceof Number) sb.append(getToStringField(Caster.toString(((Number)o))));
 					else if(o instanceof Clob) sb.append(getToStringField(Caster.toString(o)));							
 					else sb.append(getToStringField(o.toString()));
 				} catch (PageException e) {

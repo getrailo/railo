@@ -40,7 +40,7 @@ public class CFMLExprTransformer extends AbstrCFMLScriptTransformer implements E
 	 * @throws TemplateException
 	 */
 	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
-		Data data = init(page,ep,fld,scriptTags, cfml,settings,false);
+		ExprData data = init(page,ep,fld,scriptTags, cfml,settings,false);
 		comments(data);
 		return assignOp(data);
 	}

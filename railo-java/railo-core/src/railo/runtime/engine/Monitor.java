@@ -19,7 +19,7 @@ public final class Monitor extends Thread {
 	 * @param interval
 	 * @param run 
 	 */
-	public Monitor(ConfigServer configServer,RefBoolean run) {		
+	public Monitor(ConfigServer configServer,RefBoolean run) {
         
         this.run=run;
         this.configServer=(ConfigServerImpl) configServer;

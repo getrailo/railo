@@ -551,7 +551,7 @@ public abstract class ComponentPage extends Page  {
 		try {
 			is=req.getInputStream();
 			
-			String input = IOUtil.toString(is,"iso-8859-1");
+			String input = IOUtil.toString(is,CharsetUtil.ISO88591);
 			return 
 			StringUtil.indexOfIgnoreCase(input, "soap:Envelope")!=-1 || 
 			StringUtil.indexOfIgnoreCase(input, "soapenv:Envelope")!=-1 || 
@@ -574,12 +574,16 @@ public abstract class ComponentPage extends Page  {
 		url.removeEL(KeyConstants._method);
 		Object args=url.get(KeyConstants._argumentCollection,null);
 		String strArgCollFormat=Caster.toString(url.get("argumentCollectionFormat",null),null);
+		
+		
+		// url.returnFormat
+		int urlReturnFormat=-1;
+		Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
+		if(oReturnFormatFromURL!=null)urlReturnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null),-1);
+		
+		// request header "accept"
 		List<MimeType> accept = ReqRspUtil.getAccept(pc);
-		int returnFormat = MimeType.toFormat(accept, -1);
-		if(returnFormat==-1) {
-			Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
-			if(oReturnFormatFromURL!=null)returnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null));
-		}
+		int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
 		
 		
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
@@ -596,7 +600,8 @@ public abstract class ComponentPage extends Page  {
       //content-type
         Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
-        Props props = getProps(pc, o, returnFormat);
+        Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
+        
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
         	
         
@@ -701,23 +706,27 @@ public abstract class ComponentPage extends Page  {
         }
 	}
 
-	private static Props getProps(PageContext pc, Object o,int returnFormat) {
+	private static Props getProps(PageContext pc, Object o,int urlReturnFormat,int headerReturnFormat) {
     	Props props = new Props();
     	
 		props.strType="any";
 		props.secureJson=pc.getApplicationContext().getSecureJson();
-		if(o instanceof UDF) {
-			UDF udf = ((UDF)o);
-			props.format=udf.getReturnFormat();
+		int udfReturnFormat=-1;
+		if(o instanceof UDFPlus) {
+			UDFPlus udf = ((UDFPlus)o);
+			udfReturnFormat=udf.getReturnFormat(-1);
 			props.type=udf.getReturnType();
 			props.strType=udf.getReturnTypeAsString();
 			props.output=udf.getOutput();
 			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
 		}
-		if(UDFUtil.isValidReturnFormat(returnFormat)){
-			props.format=returnFormat;
-		}
-    	
+
+		// format
+		if(isValid(urlReturnFormat)) props.format=urlReturnFormat;
+		else if(isValid(udfReturnFormat)) props.format=udfReturnFormat;
+		else if(isValid(headerReturnFormat)) props.format=headerReturnFormat;
+		else props.format=UDF.RETURN_FORMAT_WDDX;
+		
 		// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {
 			if(UDF.RETURN_FORMAT_WDDX==props.format)
@@ -729,9 +738,13 @@ public abstract class ComponentPage extends Page  {
     	return props;
     }
     
-    public static void writeToResponseStream(PageContext pc,Component component, String methodName,int returnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException, IOException {
+    private static boolean isValid(int returnFormat) {
+		return returnFormat!=-1 && returnFormat!=UDF.RETURN_FORMAT_XML;
+	}
+
+	public static void writeToResponseStream(PageContext pc,Component component, String methodName,int urlReturnFormat,int headerReturnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException, IOException {
     	Object o = component.get(KeyImpl.init(methodName),null);
-    	Props p = getProps(pc, o, returnFormat);
+    	Props p = getProps(pc, o, urlReturnFormat,headerReturnFormat);
     	_writeOut(pc, p, queryFormat, rtn,null);
     }
     
@@ -924,7 +937,9 @@ public abstract class ComponentPage extends Page  {
 	private Charset getCharset(PageContext pc) {
 		HttpServletResponse rsp = pc.getHttpServletResponse();
         String str = rsp.getCharacterEncoding();
-        if(StringUtil.isEmpty(str)) str=pc.getConfig().getWebCharset();
+        
+        if(StringUtil.isEmpty(str)) 
+        	return ((PageContextImpl)pc).getWebCharset();
         return CharsetUtil.toCharset(str, CharsetUtil.UTF8);
 	}
 

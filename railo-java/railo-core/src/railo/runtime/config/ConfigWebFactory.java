@@ -20,18 +20,14 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -61,7 +57,6 @@ import railo.commons.lang.SystemOut;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Info;
@@ -639,8 +634,8 @@ public final class ConfigWebFactory extends ConfigFactory {
 	}
 
 	private static void settings(ConfigImpl config) {
-		if (!(config instanceof ConfigServer))
-			doCheckChangesInLibraries(config);
+		if ((config instanceof ConfigWebImpl))
+			doCheckChangesInLibraries((ConfigWebImpl) config);
 
 	}
 
@@ -1163,7 +1158,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		Resource gwDir = componentsDir.getRealResource("railo/extension/gateway/");
 		create("/resource/context/gateway/",new String[]{
-		"DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
+		"TaskGateway.cfc","DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
 				},gwDir,doNew);
 
 		// resources/language
@@ -1212,7 +1207,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// delete Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");
 		delete(gDir,new String[]{
-		"DirectoryWatcher.cfc","MailWatcher.cfc"
+		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc"
 		});
 		
 		// add Gateway Drivers
@@ -1315,19 +1310,25 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 
 
-	private static void doCheckChangesInLibraries(ConfigImpl config) {
+	private static void doCheckChangesInLibraries(ConfigWebImpl config) {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
 
 		// charset
-		StringBuffer sb = new StringBuffer(config.getTemplateCharset());
+		StringBuilder sb = new StringBuilder(config.getTemplateCharset());
 		sb.append(';');
 
 		// dot notation upper case
-		sb.append(config.getDotNotationUpperCase());
-		sb.append(';');
-
+		_getDotNotationUpperCase(sb,config.getMappings());
+		_getDotNotationUpperCase(sb,config.getMappings());
+		_getDotNotationUpperCase(sb,config.getCustomTagMappings());
+		_getDotNotationUpperCase(sb,config.getComponentMappings());
+		_getDotNotationUpperCase(sb,config.getFunctionMapping());
+		_getDotNotationUpperCase(sb,config.getServerFunctionMapping());
+		_getDotNotationUpperCase(sb,config.getTagMapping());
+		_getDotNotationUpperCase(sb,config.getServerTagMapping());
+		
 		// supress ws before arg
 		sb.append(config.getSupressWSBeforeArg());
 		sb.append(';');
@@ -1377,6 +1378,12 @@ public final class ConfigWebFactory extends ConfigFactory {
 			}
 		}
 
+	}
+
+	private static void _getDotNotationUpperCase(StringBuilder sb, Mapping... mappings) {
+		for(int i=0;i<mappings.length;i++){
+			sb.append(((MappingImpl)mappings[i]).getDotNotationUpperCase()).append(';');
+		}
 	}
 
 	/**
@@ -1452,9 +1459,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if(config instanceof ConfigServer && virtual.equalsIgnoreCase("/railo-server-context/")) {
 					hasRailoServerContext=true;
 				}
-				
-				
-				
+
 				// railo-context
 				if (virtual.equalsIgnoreCase("/railo-context/")) {
 					if (StringUtil.isEmpty(listType, true))
@@ -1487,7 +1492,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if ((physical != null || archive != null)) {
 					
 					short insTemp=inspectTemplate(el);
-					
+					if("/railo-context/".equalsIgnoreCase(virtual) || "/railo-context".equalsIgnoreCase(virtual) ||
+						"/railo-server-context/".equalsIgnoreCase(virtual) || "/railo-server-context".equalsIgnoreCase(virtual))
+						insTemp=ConfigImpl.INSPECT_ONCE;
 					//boolean trusted = toBoolean(el.getAttribute("trusted"), false);
 					
 					
@@ -1508,17 +1515,23 @@ public final class ConfigWebFactory extends ConfigFactory {
 				ApplicationListener listener = ConfigWebUtil.loadListener("modern", null);
 				listener.setMode(ApplicationListener.MODE_CURRENT2ROOT);
 				
-				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ALWAYS, true, false, true, true, false, false, listener, 100);
+				tmp = new MappingImpl(config, "/railo-server-context", "{railo-server}/context/", null, ConfigImpl.INSPECT_ONCE, true, false, true, true, false, false, listener, 100);
 				mappings.put(tmp.getVirtualLowerCase(), tmp);
-
 			}
-			
-			
 		}
 
-		if (!finished) {
-			tmp = new MappingImpl(config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null);
-			mappings.put(tmp.getVirtualLowerCase(), tmp);
+
+		if ( !finished ) {
+
+			if ( (config instanceof ConfigWebImpl) && ResourceUtil.isUNCPath( config.getRootDirectory().getPath() ) ) {
+
+				tmp = new MappingImpl( config, "/", config.getRootDirectory().getPath(), null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null );
+			} else {
+
+				tmp = new MappingImpl( config, "/", "/", null, ConfigImpl.INSPECT_UNDEFINED, true, true, true, true, false, false, null );
+			}
+
+			mappings.put( "/", tmp );
 		}
 
 		Mapping[] arrMapping = new Mapping[mappings.size()];
@@ -3336,7 +3349,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else {
 			String strScopeCascadingType = scope.getAttribute("cascading");
 			if (hasAccess && !StringUtil.isEmpty(strScopeCascadingType)) {
-				config.setScopeCascadingType(strScopeCascadingType);
+				config.setScopeCascadingType(ConfigWebUtil.toScopeCascading(strScopeCascadingType,Config.SCOPE_STANDARD));
 			}
 			else if (hasCS)
 				config.setScopeCascadingType(configServer.getScopeCascadingType());

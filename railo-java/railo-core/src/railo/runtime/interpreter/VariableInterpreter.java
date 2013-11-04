@@ -6,7 +6,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.NullSupportHelper;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;

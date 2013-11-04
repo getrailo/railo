@@ -2,12 +2,14 @@ package railo.runtime.thread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.lang.ExceptionUtil;
@@ -111,7 +113,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			HttpServletRequest req = parent.getHttpServletRequest();
 			serverName=req.getServerName();
 			queryString=ReqRspUtil.getQueryString(req);
-			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(ThreadLocalPageContext.getConfig(parent),req));
+			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(req,parent.getWebCharset()));
 			parameters=HttpUtil.cloneParameters(req);
 			requestURI=req.getRequestURI();
 			headers=HttpUtil.cloneHeaders(req);

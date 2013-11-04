@@ -22,7 +22,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -98,6 +97,8 @@ import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.gateway.GatewayUtil;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.instrumentation.InstrumentationUtil;
+import railo.runtime.java.JavaUtil;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.monitor.IntervallMonitor;
@@ -298,7 +299,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
-                        getString("oldPassword",null),getString("admin",action,"newPassword",true));
+                        getString("oldPassword",null),getString("admin",action,"newPassword",true),false,false);
             } 
             catch (Exception e) {
                 throw Caster.toPageException(e);
@@ -1482,7 +1483,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	        }
 	        sct.set("servlets", srv);
         }
-        
+
+
+	    sct.setEL("javaAgentSupported", Caster.toBoolean(InstrumentationUtil.isSupported()));
+	    sct.setEL("javaAgentPath", JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent"));
+
     }
 
     /**
@@ -3104,6 +3109,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     			getBoolObject("admin", "UpdateCompilerSettings", "supressWSBeforeArg"),
     			getBoolObject("admin", "UpdateCompilerSettings", "nullSupport")
 				);
+    	admin.updateTemplateCharset(getString("admin",action,"templateCharset"));
+        
+    	
         store();
         adminSync.broadcast(attributes, config);
 	}
@@ -3144,6 +3152,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("supressWSBeforeArg", config.getSupressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("nullSupport", config.getFullNullSupport()?Boolean.TRUE:Boolean.FALSE);
+    	sct.set("templateCharset", config.getTemplateCharset());
     }
     
     private void doGetLogSettings() throws  PageException {
@@ -3232,12 +3241,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	pageContext.setVariable(rtnVar,qry);
         
     }
-
-    /*private String getContextPath() {
-		String cp = pageContext. getHttpServletRequest().getContextPath();
-		if(cp==null)return "";
-		return cp;
-	}*/
 
 	private void doGetDebuggingList() throws PageException {
     	Resource railoContext = ResourceUtil.toResourceExisting(pageContext ,"/railo-context/templates/debugging/");
@@ -3966,7 +3969,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateExtension() throws PageException {
     	
     		
-			admin.updateExtension(new ExtensionImpl(
+			admin.updateExtension(pageContext,new ExtensionImpl(
 						getStruct("config", null),
 			    		getString("admin", "UpdateExtensions", "id"),
 			    		getString("admin", "UpdateExtensions","provider"),
@@ -4625,7 +4628,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         sct.set("resourceCharset",config.getResourceCharset());
         sct.set("templateCharset",config.getTemplateCharset());
-        sct.set("webCharset",config.getWebCharset());
+        sct.set("webCharset",((PageContextImpl)pageContext).getWebCharset());
         sct.set("jreCharset",SystemUtil.getCharset());
 	}
 

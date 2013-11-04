@@ -9,6 +9,7 @@ import railo.commons.digest.HashUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -18,31 +19,31 @@ public final class Hash implements Function {
 	
 	// function for old code in ra files calling this function
 	public static String call(PageContext pc, String input) throws PageException {
-		return invoke( pc.getConfig(), input, null, null, 1 );
+		return invoke( pc, input, null, null, 1 );
 	}
     public synchronized static String call(PageContext pc , String input, String algorithm) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, null, 1 );
+		return invoke( pc, input, algorithm, null, 1 );
 	}
     public synchronized static String call(PageContext pc , String input, String algorithm, String encoding) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
+		return invoke( pc, input, algorithm, encoding, 1 );
 	}
 	//////
 	
 	
 	public static String call(PageContext pc, Object input) throws PageException {
-		return invoke( pc.getConfig(), input, null, null, 1 );
+		return invoke( pc, input, null, null, 1 );
 	}
 	
     public synchronized static String call(PageContext pc , Object input, String algorithm) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, null, 1 );
+		return invoke( pc, input, algorithm, null, 1 );
 	}
 
     public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
+		return invoke( pc, input, algorithm, encoding, 1 );
 	}
     
     public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, double numIterations) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, encoding, (int)numIterations );
+		return invoke( pc, input, algorithm, encoding, (int)numIterations );
 	}
 
     /*/	this method signature was called from ConfigWebAdmin.createUUID(), comment this comment to enable
@@ -51,8 +52,7 @@ public final class Hash implements Function {
     	return invoke(config, input, algorithm, encoding, 1);
     }	//*/
     
-    public synchronized static String invoke(Config config, Object input, String algorithm, String encoding, int numIterations) throws PageException {
-		
+    public synchronized static String invoke(PageContext pc, Object input, String algorithm, String encoding, int numIterations) throws PageException {
     	if(StringUtil.isEmpty(algorithm))algorithm="md5";
 		else algorithm=algorithm.trim().toLowerCase();
     	if("cfmx_compat".equals(algorithm)) algorithm="md5";
@@ -64,7 +64,7 @@ public final class Hash implements Function {
     	
     	
 		
-    	if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset();
+    	if(StringUtil.isEmpty(encoding))encoding=((PageContextImpl)pc).getWebCharset().name();
 		byte[] data = null;
 		
 		try {			

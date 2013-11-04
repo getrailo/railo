@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.net.http.ReqRspUtil;
@@ -25,7 +26,7 @@ public final class GetHTTPRequestData implements Function {
 		Struct sct=new StructImpl();
 		Struct headers=new StructImpl();
 		HttpServletRequest req = pc.getHttpServletRequest();
-		String charset = pc.getConfig().getWebCharset();
+		String charset = ((PageContextImpl)pc).getWebCharset().name();
 		// headers
 		Enumeration e = req.getHeaderNames();
 		while(e.hasMoreElements()) {

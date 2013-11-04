@@ -55,7 +55,7 @@ public class ApplicationDataSource extends DataSourceSupport {
 
 	@Override
 	public String getDatabase() {
-		throw exp();
+		throw new PageRuntimeException(new ApplicationException("Datasource defined in the Application.cfc has no name."));
 	}
 
 	@Override

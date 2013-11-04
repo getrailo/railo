@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -278,7 +279,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	@Override
 	public void initialize(PageContext pc) {
 		Config config = ThreadLocalPageContext.getConfig(pc);
-		charset = pc.getConfig().getWebCharset();
+		charset = ((PageContextImpl)pc).getWebCharset().name();
 		if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
@@ -287,7 +288,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		
 		HttpServletRequest req = pc. getHttpServletRequest();
 		this.rsp=pc. getHttpServletResponse();
-		javax.servlet.http.Cookie[] cookies=ReqRspUtil.getCookies(config,req);
+		javax.servlet.http.Cookie[] cookies=ReqRspUtil.getCookies(req,((PageContextImpl)pc).getWebCharset());
 		try {
 			for(int i=0;i<cookies.length;i++) {
 				set(config,cookies[i]);

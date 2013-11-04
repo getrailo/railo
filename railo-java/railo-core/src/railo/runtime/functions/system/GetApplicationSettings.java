@@ -1,7 +1,6 @@
 package railo.runtime.functions.system;
 
 import java.util.Iterator;
-import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
@@ -12,9 +11,9 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.GetTimeZone;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
@@ -68,6 +67,14 @@ public class GetApplicationSettings {
 		sct.setEL("localMode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?Boolean.TRUE:Boolean.FALSE);
 		sct.setEL(KeyConstants._locale,LocaleFactory.toString(pc.getLocale()));
 		sct.setEL(KeyConstants._timezone,TimeZoneUtil.toString(pc.getTimeZone()));
+		sct.setEL("scopeCascading",ConfigWebUtil.toScopeCascading(ac.getScopeCascading(),null));
+		
+		Struct cs=new StructImpl();
+		cs.setEL("web",((PageContextImpl)pc).getWebCharset().name());
+		cs.setEL("resource",((PageContextImpl)pc).getResourceCharset().name());
+		sct.setEL("charset", cs);
+		
+		
 		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 
