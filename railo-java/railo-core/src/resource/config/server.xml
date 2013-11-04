@@ -232,7 +232,6 @@ Path placeholders:
  -->	
 		<mapping
 			readonly="yes"
-			inspect-template="always"
 			virtual="/railo-server-context/"
 			physical="{railo-server}/context/"
 			archive=""
@@ -242,7 +241,6 @@ Path placeholders:
 			inspect-template="once"/>
 		<mapping
 			readonly="yes"
-			inspect-template="always"
 			virtual="/railo-context/"
 			physical="{railo-config}/context/"
 			archive="{railo-config}/context/railo-context.ra"
