@@ -13,7 +13,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("2",sct.railo);
 	}
 	
-	public void function testNoContentTypeDeclaration(){
+	private void function testNoContentTypeDeclaration(){
 		http result="local.result" url="#createURL("Jira2715/index.cfm")#" method="post" {
 			httpparam type="body" value="bas=1&railo=2";
 		}
