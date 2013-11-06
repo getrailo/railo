@@ -431,7 +431,7 @@ div.ok {
 
 .coding-tip code {
 
-	white-space: pre;
+	white-space: pre-wrap;
 	tab-size: 4;
 	margin: 0.5em;
 	padding: 0.5em;
@@ -439,7 +439,6 @@ div.ok {
 	color: #222;
 	display: block;
 	cursor: pointer;
-	overflow-x: scroll;
 }
 
 
