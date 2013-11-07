@@ -41,6 +41,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -57,6 +58,7 @@ import railo.commons.lock.KeyLock;
 import railo.commons.lock.Lock;
 import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDSignal;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -498,6 +500,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	@Override
 	public void release() {
+		CacheHandlerFactory.release(this);
+		
         if(config.getExecutionLogEnabled()){
         	execLog.release();
 			execLog=null;

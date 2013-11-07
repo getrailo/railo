@@ -534,7 +534,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
 				ch.set(pageContext, id,cachedWithin,new CacheEntry(query));
-				print.e("-->set");
 				
 				//cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
 	            //pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);

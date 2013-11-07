@@ -75,7 +75,11 @@ public final class Function extends EvaluatorSupport {
 		Attribute attrCachedWithin = tag.getAttribute("cachedwithin");
 		if(attrCachedWithin!=null) {
 			Expression val = attrCachedWithin.getValue();
-			tag.addAttribute(new Attribute(attrCachedWithin.isDynamicType(), attrCachedWithin.getName(), LitLong.toExpr(ASMUtil.timeSpanToLong(val), null, null), "numeric"));
+			tag.addAttribute(new Attribute(
+					attrCachedWithin.isDynamicType(), 
+					attrCachedWithin.getName(), 
+					ASMUtil.cachedWithinValue(val),
+					attrCachedWithin.getType()));
 		}
 		
 		// Attribute localMode

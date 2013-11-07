@@ -51,6 +51,7 @@ import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
+import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
@@ -1058,11 +1059,22 @@ public final class ASMUtil {
 	}
 
 
-	public static long timeSpanToLong(Expression val) throws EvaluatorException {
+	public static Literal cachedWithinValue(Expression val) throws EvaluatorException {
 		if(val instanceof Literal) {
-			Double d = ((Literal)val).getDouble(null);
-			if(d==null) throw cacheWithinException();
-			return TimeSpanImpl.fromDays(d.doubleValue()).getMillis();
+			Literal l=(Literal)val;
+			
+			// double == days
+			Double d = l.getDouble(null);
+			if(d!=null) {
+				return new LitLong(TimeSpanImpl.fromDays(d.doubleValue()).getMillis(), null, null);
+			}
+			
+			// request
+			String str=l.getString();
+			if(str!=null && "request".equalsIgnoreCase(str.trim()))
+				return new LitString("request",null,null);
+			
+			throw cacheWithinException();
 		}
 		// createTimespan
 		else if(val instanceof Variable) {
@@ -1080,7 +1092,7 @@ public final class ASMUtil {
 							double minutes=toDouble(args[2].getValue());
 							double seconds=toDouble(args[3].getValue());
 							double millis=len==5?toDouble(args[4].getValue()):0;
-							return new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis();
+							return new LitLong(new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis(),null,null);
 						}
 					}
 				}
@@ -1092,7 +1104,7 @@ public final class ASMUtil {
 
 
 	private static EvaluatorException cacheWithinException() {
-		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4)");
+		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4) or the string \"request\"");
 	}
 
 

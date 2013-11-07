@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
@@ -248,14 +249,13 @@ public final class TagFunction extends TagBase implements IFunction {
 		
 		
 		// cachedWithin
-		long cachedWithin=0;
+		Literal cachedWithin=null;
 		attr = removeAttribute("cachedwithin");
 		if(attr!=null) {
 			Expression val = attr.getValue();
-			if(val instanceof LitLong)
-				cachedWithin=((LitLong)val).getLongValue();
+			if(val instanceof Literal)
+				cachedWithin=((Literal)val);
 		}
-		
 		String strAccess = ((LitString)access).getString();
 		int acc = ComponentUtil.toIntAccess(strAccess,-1);
 		if(acc==-1)

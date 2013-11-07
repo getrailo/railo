@@ -95,10 +95,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private String result="cfstoredproc";
 	
 	private boolean clearCache;
-	private DateTimeImpl cachedbefore;
+	//private DateTimeImpl cachedbefore;
 	//private String cachename="";
 	private DateTime cachedafter;
 	private ProcParamBean returnValue=null;
+	private Object cachedWithin;
 	//private Map<String,ProcMetaCollection> procedureColumnCache;
 	
 	public void release() {
@@ -117,7 +118,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		
 
 		clearCache=false;
-		cachedbefore=null;
+		cachedWithin=null;
 		cachedafter=null;
 		//cachename="";
 		
@@ -147,12 +148,36 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	/** set the value cachedwithin
 	*  
 	* @param cachedwithin value to set
-	**/
+	*
 	public void setCachedwithin(TimeSpan cachedwithin)	{
 		if(cachedwithin.getMillis()>0)
 			this.cachedbefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedwithin.getMillis(),false);
 		else clearCache=true;
+	}*/
+	
+	/** set the value cachedwithin
+	*  
+	* @param cachedwithin value to set
+	**/
+	public void setCachedwithin(TimeSpan cachedwithin)	{
+		if(cachedwithin.getMillis()>0)
+			this.cachedWithin=cachedwithin;
+		else clearCache=true;
 	}
+	
+	public void setCachedwithin(Object cachedwithin) throws PageException	{
+		if(cachedwithin instanceof String) {
+			String str=((String)cachedwithin).trim();
+			if("request".equalsIgnoreCase(str)) {
+				this.cachedWithin="request";
+				return;
+			}
+		}
+		setCachedwithin(Caster.toTimespan(cachedwithin));
+	}
+	
+	
+	
 
 	/**
 	 * @param blockfactor The blockfactor to set.
@@ -461,7 +486,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    
 	// cache
 		    boolean isFromCache=false;
-		    boolean hasCached=cachedbefore!=null || cachedafter!=null;
+		    boolean hasCached=cachedWithin!=null || cachedafter!=null;
 		    Object cacheValue=null;
 		    String dsn = ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
 			if(clearCache) {
@@ -533,7 +558,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    	cache.set(COUNT, Caster.toDouble(count));
 			    	String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
 					CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
-					ch.set(pageContext, id, cachedbefore, cache);
+					ch.set(pageContext, id, cachedWithin, cache);
 			    	//pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
 			    }
 			    

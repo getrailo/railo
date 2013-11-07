@@ -1,19 +1,14 @@
 package railo.runtime.cache.tag.request;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.commons.io.cache.Cache;
-import railo.commons.io.cache.CacheEntry;
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFilter;
-import railo.runtime.exp.PageException;
-import railo.runtime.query.QueryCacheEntry;
-import railo.runtime.type.Query;
 
 public class RequestCacheHandler implements CacheHandler {
 	
@@ -25,7 +20,7 @@ public class RequestCacheHandler implements CacheHandler {
 	};
 
 	@Override
-	public Object get(PageContext pc, String id) {
+	public Object get(PageContext pc, String id) {print.e(Thread.currentThread().getId());
 		return data.get().get(id);
 	}
 
