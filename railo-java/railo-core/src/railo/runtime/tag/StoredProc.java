@@ -17,6 +17,8 @@ import javax.servlet.jsp.JspException;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.cache.tag.CacheHandler;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
@@ -464,10 +466,17 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    String dsn = ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
 			if(clearCache) {
 				hasCached=false;
-				pageContext.getQueryCache().remove(pageContext,_sql,dsn,username,password);
+				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
+				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+				ch.remove(pageContext, id);
+				//pageContext.getQueryCache().remove(pageContext,_sql,dsn,username,password);
 			}
 			else if(hasCached) {
-				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
+				hasCached=false;
+				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
+				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+				cacheValue = ch.get(pageContext, id);
+				//cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
 			}
 			int count=0;
 			if(cacheValue==null){
@@ -522,7 +531,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				}
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
-			    	pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
+			    	String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
+					CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+					ch.set(pageContext, id, cachedbefore, cache);
+			    	//pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
 			    }
 			    
 			}

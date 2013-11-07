@@ -1,15 +1,15 @@
 package railo.runtime.cache.tag;
 
-import java.io.IOException;
-
 import railo.runtime.PageContext;
+import railo.runtime.exp.PageException;
 
 public interface CacheHandler {
-	public abstract Object get(PageContext pc, CacheIdentifier id) throws IOException;
-	public boolean remove(PageContext pc, CacheIdentifier id) throws IOException;
-	public void set(PageContext pc, CacheIdentifier id, Object value) throws IOException;
-	public void clear(PageContext pc) throws IOException;
-	public void clean(PageContext pc) throws IOException;
-	public int size(PageContext pc) throws IOException;
+	public abstract Object get(PageContext pc, String id) throws PageException;
+	public boolean remove(PageContext pc, String id);
+	public void set(PageContext pc, String id, Object cachedwithin, Object value) throws PageException;
+	public void clear(PageContext pc);
+	public void clear(PageContext pc, CacheHandlerFilter filter);
+	public void clean(PageContext pc);
+	public int size(PageContext pc);
      
 }

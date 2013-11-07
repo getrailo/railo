@@ -9981,18 +9981,16 @@ sct["bracketNotation"] --> keyname: "bracketNotation"
 			<description>This is the age of which the query data can be</description>
 		</attribute>
 		<attribute>
-			<type>timeSpan</type>
+			<type>object</type>
 			<name>cachedWithin</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Timespan, using the CreateTimeSpan function. If original
-            query date falls within the time span, cached query data is
-            used. CreateTimeSpan defines a period from the present,
-            back. Takes effect only if query caching is enabled in the
-            Administrator.
+		<description>
+possible values are:
+String "request": If original query was created within the current request, cached query data isused.
+a timespan (created with function CreateTimeSpan): If original query date falls within the time span, cached query data isused. 
 
-            To use cached data, the current query must use the same SQL
-            statement, data source, query name, user name, and password.</description>
+To use cached data, the current query must use the same SQL statement, data source, query name, user name, and password.</description>
     </attribute>
 		<attribute>
 			<type>string</type>
