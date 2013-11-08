@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.print;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ConverterSupport;
@@ -36,10 +37,17 @@ public class UDFArgConverter {
 		if(done.contains(raw)) return "parent reference";
 		done.add(raw);
 		Collection c=null;
+		Object other=null;
 		try{
 			if((c=Caster.toCollection(o,null))!=null) {
-				done.add(c);
+				if(o!=c){
+					done.add(c);
+					other=c;
+				}
 				return serializeCollection(c,done);
+			}
+			if(o instanceof String) {
+				return "'"+escape((String)o)+"'";
 			}
 			if(o instanceof SimpleValue || o instanceof Number || o instanceof Boolean)
 				return Caster.toString(o,"");
@@ -47,7 +55,7 @@ public class UDFArgConverter {
 			return o.toString();
 		}
 		finally {
-			if(c!=null) done.remove(c);
+			if(other!=null) done.remove(other);
 			done.remove(raw);
 		}
 	}
@@ -101,11 +109,14 @@ public class UDFArgConverter {
 			e=it.next();
 			sb.append(e.getKey().getLowerString());
 			sb.append(":");
-			print.e(e.getValue().getClass().getName());
 			sb.append(serialize(e.getValue(),done));
 			notFirst=true;
 		}
 		
 		return sb.append("}").toString();
 	}
+	
+	private static String escape(String str) {
+        return StringUtil.replace(str,"'","''",false);
+    }
 }
