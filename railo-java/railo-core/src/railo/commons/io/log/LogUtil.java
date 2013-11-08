@@ -16,6 +16,8 @@ import railo.runtime.type.dt.DateTimeImpl;
  * Helper class for the logs
  */
 public final class LogUtil {
+	
+	public static final int LEVEL_TRACE=5; // FUTURE add to Log interface
     
     private static final  DateFormat dateFormat=new DateFormat(Locale.US);
     private static final  TimeFormat timeFormat=new TimeFormat(Locale.US);
@@ -96,6 +98,7 @@ public final class LogUtil {
         case Log.LEVEL_WARN:    return "WARN"; 
         case Log.LEVEL_ERROR:   return "ERROR"; 
         case Log.LEVEL_FATAL:   return "FATAL"; 
+        case LogUtil.LEVEL_TRACE:   return "TRACE"; 
         default:                return defaultValue;
         }
     }
@@ -115,6 +118,7 @@ public final class LogUtil {
         if(attribute.startsWith("warn")) return Log.LEVEL_WARN;
         if(attribute.startsWith("error")) return Log.LEVEL_ERROR;
         if(attribute.startsWith("fatal")) return Log.LEVEL_FATAL;
+        if(attribute.startsWith("trace")) return LogUtil.LEVEL_TRACE;
         
         return defaultValue;
     }    

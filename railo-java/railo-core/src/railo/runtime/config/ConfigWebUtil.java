@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -17,7 +16,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.logging.LoggerUtil;
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -331,10 +330,10 @@ public final class ConfigWebUtil {
         if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
         	return getLogAndSource(config,type,strLogger,logLevel);
         }
-        return new LogAndSourceImpl(LoggerUtil.getConsole(config, type, LoggerUtil.toLevel(logLevel)),strLogger);
+        return new LogAndSourceImpl(Log4jUtil.getConsole(config, type, Log4jUtil.toLevel(logLevel)),strLogger);
     }
     private static LogAndSource getLogAndSource(Config config,String type, String strLogger, int logLevel)  {
-        if(strLogger==null) return new LogAndSourceImpl(LoggerUtil.getConsole(config, type, LoggerUtil.toLevel(logLevel)),"");
+        if(strLogger==null) return new LogAndSourceImpl(Log4jUtil.getConsole(config, type, Log4jUtil.toLevel(logLevel)),"");
         
         // File
         strLogger=translateOldPath(strLogger);
@@ -342,7 +341,7 @@ public final class ConfigWebUtil {
         
         if(file!=null && ResourceUtil.canRW(file)) {
             try {
-				return new LogAndSourceImpl(LoggerUtil.getResource(config,file, type, LoggerUtil.toLevel(logLevel),((ConfigImpl)config)._getResourceCharset()),strLogger);
+				return new LogAndSourceImpl(Log4jUtil.getResource(config,file, type, Log4jUtil.toLevel(logLevel),((ConfigImpl)config)._getResourceCharset()),strLogger);
 			} catch (IOException e) {
 				print.e(e);
 				SystemOut.printDate(config.getErrWriter(),e.getMessage());
@@ -352,7 +351,7 @@ public final class ConfigWebUtil {
         if(file==null)SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], invalid path");
         else SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], no write access");
     
-        return new LogAndSourceImpl(LoggerUtil.getConsole(config, type, LoggerUtil.toLevel(logLevel)),strLogger);
+        return new LogAndSourceImpl(Log4jUtil.getConsole(config, type, Log4jUtil.toLevel(logLevel)),strLogger);
     
     }
 

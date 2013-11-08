@@ -92,6 +92,7 @@ public final class Log extends TagImpl {
 	    else if(type.equals("error")) this.type=railo.commons.io.log.Log.LEVEL_ERROR;
         else if(type.startsWith("fatal")) this.type=railo.commons.io.log.Log.LEVEL_FATAL;
         else if(type.startsWith("debug")) this.type=railo.commons.io.log.Log.LEVEL_DEBUG;
+        else if(type.startsWith("trace")) this.type=railo.commons.io.log.LogUtil.LEVEL_TRACE;
 		else
 		    throw new ApplicationException("invalid value for attribute type ["+type+"]",
 		      "valid values are [information,warning,error,fatal,debug]");

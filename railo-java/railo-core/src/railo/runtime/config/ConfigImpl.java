@@ -14,18 +14,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.log4j.Level;
 
 import railo.commons.digest.Hash;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.logging.LoggerUtil;
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -707,18 +706,18 @@ public abstract class ConfigImpl implements Config {
     @Override
     public LogAndSource getMailLogger() {
     	if(mailLogger==null)mailLogger=new LogAndSourceImpl(
-    			LoggerUtil.getConsole(this, "mail", Level.WARNING),"");
+    			Log4jUtil.getConsole(this, "mail", Level.ERROR),"");
 		return mailLogger;
     }
     
 
     public LogAndSource getRestLogger() {
-    	if(restLogger==null)restLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "rest", Level.WARNING),"");
+    	if(restLogger==null)restLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "rest", Level.ERROR),"");
 		return restLogger;
     }
 
     public LogAndSource getThreadLogger() {
-    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "thread", Level.WARNING),"");
+    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "thread", Level.ERROR),"");
 		return threadLogger;
     }
 
@@ -729,7 +728,7 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public LogAndSource getRequestTimeoutLogger() {
-    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "request-timeout", Level.WARNING),"");
+    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "request-timeout", Level.ERROR),"");
 		return requestTimeoutLogger;
     }
 
@@ -1108,18 +1107,18 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public LogAndSource getApplicationLogger() {
-    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "application", Level.WARNING),"");
+    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "application", Level.ERROR),"");
 		return applicationLogger;
     }
     
     public LogAndSource getDeployLogger() {
     	if(deployLogger==null){
-    		deployLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "deploy", Level.FINE),"");
+    		deployLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "deploy", Level.INFO),"");
     	}
 		return deployLogger;
     }
     public LogAndSource getScopeLogger() {
-    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "scope", Level.WARNING),"");
+    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "scope", Level.ERROR),"");
 		return scopeLogger;
     }
 
@@ -1582,7 +1581,7 @@ public abstract class ConfigImpl implements Config {
         this.ormLogger = ormLogger;
     }
     public LogAndSource getORMLogger() {
-    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "orm", Level.WARNING),"");
+    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "orm", Level.ERROR),"");
 		
         return ormLogger;
     }
@@ -1890,7 +1889,7 @@ public abstract class ConfigImpl implements Config {
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)
-    		mappingLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "mapping", Level.WARNING),"");
+    		mappingLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "mapping", Level.ERROR),"");
 		return mappingLogger;
     }
     
@@ -2312,7 +2311,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
-		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "exception", Level.WARNING),"");
+		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "exception", Level.ERROR),"");
 		return exceptionLogger;
 	}
 
@@ -2320,7 +2319,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getTraceLogger() {
-		if(traceLogger==null)traceLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "trace", Level.WARNING),"");
+		if(traceLogger==null)traceLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "trace", Level.ERROR),"");
 		return traceLogger;
 	}
 

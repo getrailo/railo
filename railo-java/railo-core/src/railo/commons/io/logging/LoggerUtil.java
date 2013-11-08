@@ -6,24 +6,22 @@ import java.nio.charset.Charset;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.XMLFormatter;
 
 import railo.commons.io.log.Log;
 import railo.commons.io.logging.format.ClassicFormatter;
 import railo.commons.io.logging.handler.ConsoleHandler;
-import railo.commons.io.logging.handler.ExceptionErrorManager;
 import railo.commons.io.logging.handler.ResourceHandler;
 import railo.commons.io.res.Resource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.type.util.ArrayUtil;
 
-public class LoggerUtil {
+ class LoggerUtil {
 
-	public static final long MAX_FILE_SIZE=0;//1024*1024;
+	public static final long MAX_FILE_SIZE=1024*1024*10;
     public static final int MAX_FILES=10;
-
+    
+    
     public static Logger getConsole(Config config,String type, Level level) {
     	if(config instanceof ConfigWeb) {
     		ConfigWeb cw=(ConfigWeb) config;
@@ -71,20 +69,22 @@ public class LoggerUtil {
 	public static Level toLevel(int level) {
 		switch(level){
 		case Log.LEVEL_FATAL: return Level.SEVERE;
-		case Log.LEVEL_ERROR: return Level.WARNING;
-		case Log.LEVEL_WARN: return Level.INFO;
-		case Log.LEVEL_DEBUG: return Level.CONFIG;
-		case Log.LEVEL_INFO: return Level.FINE;
+		case Log.LEVEL_ERROR: return Level.SEVERE;
+		case Log.LEVEL_WARN: return Level.WARNING;
+		case Log.LEVEL_DEBUG: return Level.FINE;
+		case Log.LEVEL_INFO: return Level.INFO;
 		}
 		return Level.FINE;
 	}
 
 	public static int toLevel(Level level) {
-		if(Level.SEVERE.equals(level)) return Log.LEVEL_FATAL;
-		if(Level.WARNING.equals(level)) return Log.LEVEL_ERROR;
-		if(Level.INFO.equals(level)) return Log.LEVEL_WARN;
+		if(Level.SEVERE.equals(level)) return Log.LEVEL_ERROR;
+		if(Level.WARNING.equals(level)) return Log.LEVEL_WARN;
+		if(Level.INFO.equals(level)) return Log.LEVEL_INFO;
 		if(Level.CONFIG.equals(level)) return Log.LEVEL_DEBUG;
-		if(Level.FINE.equals(level)) return Log.LEVEL_INFO;
+		if(Level.FINE.equals(level)) return Log.LEVEL_DEBUG;
+		if(Level.FINER.equals(level)) return Log.LEVEL_DEBUG;
+		if(Level.FINEST.equals(level)) return Log.LEVEL_DEBUG;
 		return Log.LEVEL_INFO;
 	}
 }

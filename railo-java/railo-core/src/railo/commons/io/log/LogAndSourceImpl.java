@@ -1,8 +1,8 @@
 package railo.commons.io.log;
 
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
-import railo.commons.io.logging.LegacyProxy;
+import railo.commons.io.log.log4j.LogAdapter;
 
 /**
  * 
@@ -10,14 +10,14 @@ import railo.commons.io.logging.LegacyProxy;
 public final class LogAndSourceImpl implements LogAndSource {
     
     private final String source;
-    private final LegacyProxy log;
+    private final LogAdapter log;
 
     /**
      * @param log
      * @param source
      */
     public LogAndSourceImpl(Logger logger, String source) {
-        this.log=new LegacyProxy(logger);
+        this.log=new LogAdapter(logger);
         this.source=source;
     }
     /*public LogAndSourceImpl(Log log, String source) {
