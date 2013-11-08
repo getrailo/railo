@@ -33,7 +33,6 @@ public class TimespanCacheHandler implements CacheHandler {
 
 	@Override
 	public Object get(PageContext pc, String id) {
-		print.e(id+"=>"+size(pc));
 		return getCache(pc).getValue(id,null);
 	}
 	
@@ -69,9 +68,7 @@ public class TimespanCacheHandler implements CacheHandler {
 			it.next(); // touch them to makes sure the cache remove them, not really good, cache must do this by itself
 		}
 		}
-		catch(IOException ioe){
-			print.e(ioe);
-		}
+		catch(IOException ioe){}
 	}
 	
 

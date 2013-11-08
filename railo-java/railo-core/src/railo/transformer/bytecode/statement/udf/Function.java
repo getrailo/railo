@@ -436,7 +436,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		if(light && bufferOutput!=null)light=false;
 		if(light && localMode!=null)light=false;
 		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
-		print.e("light:"+light);
 		if(light){
 			adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT);
 			return;
@@ -467,7 +466,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		
 		// cachedwithin
 		if(cachedWithin!=null) {
-			print.e("**"+cachedWithin.getClass().getName());
 			cachedWithin.writeOut(bc, Expression.MODE_REF);
 		}
 		else ASMConstants.NULL(adapter);

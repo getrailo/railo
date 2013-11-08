@@ -20,7 +20,7 @@ public class RequestCacheHandler implements CacheHandler {
 	};
 
 	@Override
-	public Object get(PageContext pc, String id) {print.e(Thread.currentThread().getId());
+	public Object get(PageContext pc, String id) {
 		return data.get().get(id);
 	}
 
