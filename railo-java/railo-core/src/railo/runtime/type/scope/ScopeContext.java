@@ -102,16 +102,16 @@ public final class ScopeContext {
 	public void error(Throwable t) {error(getLog(), t);}
 	
 	public static void info(Log log,String msg) {
-		if(log!=null)log.info("scope-context", msg);
+		if(log!=null)log.log(Log.LEVEL_INFO,"scope-context", msg);
 	}
 	
 
 	public static void error(Log log,String msg) {
-		if(log!=null)log.error("scope-context", msg);
+		if(log!=null)log.log(Log.LEVEL_ERROR,"scope-context", msg);
 	}
 	
 	public static void error(Log log,Throwable t) {
-		if(log!=null)log.error("scope-context",ExceptionUtil.getStacktrace(t, true));
+		if(log!=null)log.log(Log.LEVEL_ERROR,"scope-context",ExceptionUtil.getStacktrace(t, true));
 	}
 	
 
@@ -233,7 +233,7 @@ public final class ScopeContext {
 				if(doMemory)context.put(pc.getCFID(),client);
 			}
 			else
-				getLog().info("scope-context", "use existing client scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
+				getLog().log(Log.LEVEL_INFO,"scope-context", "use existing client scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
 			
 			client.touchBeforeRequest(pc);
 			return client;
@@ -536,7 +536,7 @@ public final class ScopeContext {
 				isNew.setValue(true);
 			}
 			else {
-				getLog().info("scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
+				getLog().log(Log.LEVEL_INFO,"scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
 			}
 			session.touchBeforeRequest(pc);
 			return session;
@@ -575,7 +575,7 @@ public final class ScopeContext {
 		Map<String, Map<String, Scope>> contextes = type==Scope.SCOPE_CLIENT?cfClientContextes:cfSessionContextes;
 		Map<String, Scope> context = getSubMap(contextes,appName);
 		Object res = context.remove(cfid);
-		getLog().info("scope-context", "remove "+VariableInterpreter.scopeInt2String(type)+" scope "+appName+"/"+cfid+" from memory");
+		getLog().log(Log.LEVEL_INFO,"scope-context", "remove "+VariableInterpreter.scopeInt2String(type)+" scope "+appName+"/"+cfid+" from memory");
 		
 		return res!=null;
 	}
@@ -790,7 +790,7 @@ public final class ScopeContext {
                 	if(!(o instanceof StorageScope)) continue;
     				StorageScope scope=(StorageScope)o;
     				if(scope.lastVisit()+timespan<now && !(scope instanceof MemoryScope)) {
-    					getLog().info("scope-context", "remove from memory "+strType+" scope for "+applicationName+"/"+cfid+" from storage "+scope.getStorage());
+    					getLog().log(Log.LEVEL_INFO,"scope-context", "remove from memory "+strType+" scope for "+applicationName+"/"+cfid+" from storage "+scope.getStorage());
     					
         				//if(scope instanceof StorageScope)((StorageScope)scope).store(cfmlFactory.getConfig());
     					fhm.remove(arrClients[y]);
@@ -850,7 +850,7 @@ public final class ScopeContext {
     						if(application!=null)application.setLastAccess(appLastAccess);
     						fhm.remove(cfids[y]);
         					scope.release();
-        					getLog().info("scope-context", "remove memory based "+VariableInterpreter.scopeInt2String(type)+" scope for "+applicationName+"/"+cfid);
+        					getLog().log(Log.LEVEL_INFO,"scope-context", "remove memory based "+VariableInterpreter.scopeInt2String(type)+" scope for "+applicationName+"/"+cfid);
         					count--;
     					}
     				}

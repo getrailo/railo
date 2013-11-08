@@ -1,6 +1,7 @@
 package railo.commons.io.log;
 
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.Config;
@@ -11,7 +12,7 @@ import railo.runtime.config.Config;
  */
 public final class LogConsole implements Log {
     
-    private static LogConsole[]  singeltons=new LogConsole[Log.LEVEL_FATAL+1];
+    private static LogConsole[] singeltons=new LogConsole[Log.LEVEL_FATAL+1];
     /*{
         new LogConsole(Log.LEVEL_INFO),
         new LogConsole(Log.LEVEL_DEBUG),

@@ -27,6 +27,7 @@ import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
@@ -987,7 +988,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     
     private void info(String doc) {
 		if(log==null) return;
-		log.info("Collection:"+getName(), "indexing "+doc);
+		log.log(Log.LEVEL_INFO,"Collection:"+getName(), "indexing "+doc);
 	}
 	
 	public class SpellDirFilter implements ResourceNameFilter {

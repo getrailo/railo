@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -14,7 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogConsole;
+import railo.commons.io.logging.LoggerUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ExceptionUtil;
@@ -31,7 +33,7 @@ public class ServletContextDummy implements ServletContext {
 	private int majorVersion;
 	private int minorVersion;
 	private Config config;
-	private LogConsole log;
+	private Logger log;
 	private Resource root;
 	
 	
@@ -42,7 +44,7 @@ public class ServletContextDummy implements ServletContext {
 		this.parameters=parameters;
 		this.majorVersion=majorVersion;
 		this.minorVersion=minorVersion;
-		log=new LogConsole(Log.LEVEL_INFO,config.getOutWriter());
+		log=LoggerUtil.getConsole(config, "servlet-context-dummy",Level.FINE);
 		
 	}
 
@@ -128,8 +130,8 @@ public class ServletContextDummy implements ServletContext {
 
 	@Override
 	public void log(String msg, Throwable t) {
-		if(t==null)log.log(Log.LEVEL_INFO, "ServletContext", msg);
-		else log.log(Log.LEVEL_ERROR, "ServletContext", msg+":\n"+ExceptionUtil.getStacktrace(t,false));
+		if(t==null)log.log(Level.FINE,msg, "ServletContext");
+		else log.log(Level.WARNING, msg+":\n"+ExceptionUtil.getStacktrace(t,false), "ServletContext");
 	}
 
 	@Override

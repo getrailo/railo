@@ -34,6 +34,7 @@ import org.apache.commons.collections.ReferenceMap;
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
@@ -764,8 +765,8 @@ public final class SMTPClient implements Serializable  {
 			sbTos.append(tos[i].toString());
 		}
 
-		if(e==null) log.info("mail","mail sended (from:"+from.toString()+"; to:"+sbTos+" subject:"+subject+")");
-		else log.error("mail",LogUtil.toMessage(e));
+		if(e==null) log.log(Log.LEVEL_INFO,"mail","mail sended (from:"+from.toString()+"; to:"+sbTos+" subject:"+subject+")");
+		else LogUtil.log(log,Log.LEVEL_ERROR,"mail",e);
 		
 		// listener
 		

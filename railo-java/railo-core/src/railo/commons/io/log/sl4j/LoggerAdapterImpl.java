@@ -7,6 +7,7 @@ import org.slf4j.spi.LocationAwareLogger;
 
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.LogUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.runtime.op.Caster;
 
@@ -56,7 +57,7 @@ public final class LoggerAdapterImpl extends MarkerIgnoringBase implements Locat
 		logger.log(level, _name, msg);
 	}
 	private void log(int level, String msg, Throwable t) {
-		log(level, msg+"\n"+ExceptionUtil.getStacktrace(t,true));
+		LogUtil.log(logger,level, _name, msg,t);
 	}
 	
 	private void log(int level, String format, Object arg) {

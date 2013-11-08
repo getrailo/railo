@@ -1410,7 +1410,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				strLogger = "{railo-config}/logs/mapping.log";
 		}
 
-		config.setMappingLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setMappingLogger(ConfigWebUtil.getLogAndSource(configServer, config,"mapping", strLogger, true, logLevel));
 
 		Element[] _mappings = getChildren(el, "mapping");
 
@@ -1577,7 +1577,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			else
 				strLogger = "{railo-config}/logs/rest.log";
 		}
-		config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer, config,"rest", strLogger, true, logLevel));
 
 		// allow-changes
 		/*
@@ -2103,7 +2103,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			logLevel = configServer.getMailLogger().getLogLevel();
 		if (logLevel == -1)
 			logLevel = Log.LEVEL_ERROR;
-		cw.setGatewayLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, hasAccess, logLevel));
+		cw.setGatewayLogger(ConfigWebUtil.getLogAndSource(configServer, config, "gateway",strLogger, hasAccess, logLevel));
 
 		GatewayEntry ge;
 
@@ -2967,7 +2967,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// Logger
 		String strLogger = hasAccess ? _clients.getAttribute("log") : null;
 		int logLevel = LogUtil.toIntType(_clients.getAttribute("log-level"), Log.LEVEL_ERROR);
-		LogAndSource log = ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel);
+		LogAndSource log = ConfigWebUtil.getLogAndSource(configServer, config,"remote-client", strLogger, true, logLevel);
 		config.setRemoteClientLog(log);
 
 		// directory
@@ -3253,7 +3253,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (logLevel == -1)
 			logLevel = Log.LEVEL_ERROR;
 
-		config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, hasAccess, logLevel));
+		config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer, config,"orm", strLogger, hasAccess, logLevel));
 
 		// engine
 		String defaultEngineClass = "railo.runtime.orm.hibernate.HibernateORMEngine";
@@ -3601,7 +3601,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (logLevel == -1)
 			logLevel = Log.LEVEL_ERROR;
 
-		config.setMailLogger(ConfigWebUtil.getLogAndSource(configServer, config, strMailLogger, hasAccess, logLevel));
+		config.setMailLogger(ConfigWebUtil.getLogAndSource(configServer, config,"mail", strMailLogger, hasAccess, logLevel));
 
 		// Spool Enable
 		String strSpoolEnable = mail.getAttribute("spool-enable");
@@ -3748,7 +3748,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			// Logger
 			String strLogger = search.getAttribute("log");
 			int logLevel = LogUtil.toIntType(search.getAttribute("log-level"), Log.LEVEL_ERROR);
-			LogAndSource log = ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel);
+			LogAndSource log = ConfigWebUtil.getLogAndSource(configServer, config, "search", strLogger, true, logLevel);
 
 			// Init
 			se.init(config, ConfigWebUtil.getFile(configDir, ConfigWebUtil.translateOldPath(search.getAttribute("directory")), "search", configDir, FileUtil.TYPE_DIR, config), log);
@@ -3778,7 +3778,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// Logger
 		String strLogger = scheduler.getAttribute("log");
 		int logLevel = LogUtil.toIntType(scheduler.getAttribute("log-level"), Log.LEVEL_INFO);
-		LogAndSource log = ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel);
+		LogAndSource log = ConfigWebUtil.getLogAndSource(configServer, config,"scheduler", strLogger, true, logLevel);
 
 		// set scheduler
 		Resource file = ConfigWebUtil.getFile(config.getRootDirectory(), scheduler.getAttribute("directory"), "scheduler", configDir, FileUtil.TYPE_DIR, config);
@@ -4393,7 +4393,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (StringUtil.isEmpty(strLogger))
 			strLogger = "{railo-web}/logs/scope.log";
 		int logLevel = LogUtil.toIntType(scope.getAttribute("log-level"), Log.LEVEL_ERROR);
-		config.setScopeLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setScopeLogger(ConfigWebUtil.getLogAndSource(configServer, config, "scope",strLogger, true, logLevel));
 
 		// Application Logger
 		strLogger = application.getAttribute("application-log");
@@ -4401,7 +4401,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			strLogger = configServer.getApplicationLogger().getSource();
 		if (StringUtil.isEmpty(strLogger)) strLogger = "{railo-web}/logs/application.log";
 		logLevel = LogUtil.toIntType(application.getAttribute("application-log-level"), Log.LEVEL_ERROR);
-		config.setApplicationLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setApplicationLogger(ConfigWebUtil.getLogAndSource(configServer, config,"application", strLogger, true, logLevel));
 
 		// Exception Logger
 		strLogger = application.getAttribute("exception-log");
@@ -4409,7 +4409,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			strLogger = configServer.getExceptionLogger().getSource();
 		if (StringUtil.isEmpty(strLogger)) strLogger = "{railo-web}/logs/exception.log";
 		logLevel = LogUtil.toIntType(application.getAttribute("exception-log-level"), Log.LEVEL_ERROR);
-		config.setExceptionLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setExceptionLogger(ConfigWebUtil.getLogAndSource(configServer, config,"exception", strLogger, true, logLevel));
 
 		// Trace Logger
 		strLogger = application.getAttribute("trace-log");
@@ -4417,7 +4417,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			strLogger = configServer.getTraceLogger().getSource();
 		if (StringUtil.isEmpty(strLogger)) strLogger = "{railo-web}/logs/trace.log";
 		logLevel = LogUtil.toIntType(application.getAttribute("trace-log-level"), Log.LEVEL_INFO);
-		config.setTraceLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setTraceLogger(ConfigWebUtil.getLogAndSource(configServer, config, "trace",strLogger, true, logLevel));
 
 		// Thread Logger
 		strLogger = hasAccess ? application.getAttribute("thread-log") : "";
@@ -4427,7 +4427,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			strLogger = "{railo-config}/logs/thread.log";
 
 		logLevel = LogUtil.toIntType(application.getAttribute("thread-log-level"), Log.LEVEL_ERROR);
-		config.setThreadLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setThreadLogger(ConfigWebUtil.getLogAndSource(configServer, config,"thread", strLogger, true, logLevel));
 
 		// deploy Logger
 		strLogger = hasAccess ? application.getAttribute("deploy-log") : "";
@@ -4437,7 +4437,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			strLogger = "{railo-config}/logs/deploy.log";
 
 		logLevel = LogUtil.toIntType(application.getAttribute("deploy-log-level"), Log.LEVEL_INFO);
-		config.setDeployLogger(ConfigWebUtil.getLogAndSource(configServer, config, strLogger, true, logLevel));
+		config.setDeployLogger(ConfigWebUtil.getLogAndSource(configServer, config,"deploy", strLogger, true, logLevel));
 
 		// Listener type
 		ApplicationListener listener;
@@ -4501,7 +4501,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		logLevel = LogUtil.toIntType(application.getAttribute("requesttimeout-log-level"), -1);
 		if (logLevel == -1)
 			logLevel = LogUtil.toIntType(scope.getAttribute("requesttimeout-log-level"), Log.LEVEL_ERROR); // deprecated
-		config.setRequestTimeoutLogger(ConfigWebUtil.getLogAndSource(configServer, config, strReqTimeLog, hasAccess, logLevel));
+		config.setRequestTimeoutLogger(ConfigWebUtil.getLogAndSource(configServer, config,"request-timeout", strReqTimeLog, hasAccess, logLevel));
 
 		// script-protect
 		String strScriptProtect = application.getAttribute("script-protect");

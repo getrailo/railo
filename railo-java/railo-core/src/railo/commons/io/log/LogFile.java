@@ -8,7 +8,7 @@ import railo.commons.io.res.util.ResourceUtil;
 /**
  * Simple Logger to log data to a file
  */
-public final class LogFile extends LogResource {
+ final class LogFile extends LogResource {
     
     /**
      * Constructor of the Logger 

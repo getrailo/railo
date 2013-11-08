@@ -23,11 +23,11 @@ public final class Beat implements Function {
     	
     	TimeZone tz = ThreadLocalPageContext.getTimeZone(pc);
     	DateTime date = DateCaster.toDateAdvanced(obj,tz);
-    	return format(date);
+    	return format(date.getTime());
     }
-    public static double format(DateTime date) {
+    public static double format(long time) {
     	
-        long millisInDay=DateTimeUtil.getInstance().getMilliSecondsInDay(BMD,date.getTime());
+        long millisInDay=DateTimeUtil.getInstance().getMilliSecondsInDay(BMD,time);
         double res = (millisInDay/day)*1000;
         return ((int)(res*1000))/1000D;
     }

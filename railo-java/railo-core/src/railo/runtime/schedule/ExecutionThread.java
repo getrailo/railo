@@ -6,7 +6,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -87,7 +89,7 @@ class ExecutionThread extends Thread {
         try {
         	rsp = HTTPEngine.get(new URL(url), user, pass, task.getTimeout(),HTTPEngine.MAX_REDIRECT, charset, null, proxy, headers);
         } catch (Exception e) {
-            if(log!=null)log.error(logName,e.getMessage());
+            if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
             hasError=true;
         }
         
@@ -115,14 +117,14 @@ class ExecutionThread extends Thread {
         	    try {
                     str=new URLResolver().transform(str,task.getUrl(),false);
                 } catch (PageException e) {
-                    if(log!=null)log.error(logName,e.getMessage());
+                    if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
                     hasError=true;
                 }
         	    try {
                     IOUtil.write(file,str,charset,false);
                 } 
                 catch (IOException e) {
-                    if(log!=null)log.error(logName,e.getMessage());
+                    if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
                     hasError=true;
                 }
 	        }
@@ -137,12 +139,12 @@ class ExecutionThread extends Thread {
                     //new File(file.getAbsolutePath()).write(method.getResponseBodyAsStream());
                 } 
                 catch (IOException e) {
-                    if(log!=null)log.error(logName,e.getMessage());
+                    if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
                     hasError=true;
                 }
 	        }
         }
-        if(!hasError && log!=null)log.info(logName,"executed");
+        if(!hasError && log!=null)log.log(Log.LEVEL_INFO,logName,"executed");
 	}
 	
     private static boolean isText(HTTPResponse rsp) {

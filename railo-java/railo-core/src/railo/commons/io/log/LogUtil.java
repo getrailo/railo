@@ -3,6 +3,8 @@ package railo.commons.io.log;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.io.logging.LegacyProxy;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.format.DateFormat;
 import railo.runtime.format.TimeFormat;
@@ -125,7 +127,31 @@ public final class LogUtil {
 		if(StringUtil.isEmpty(msg)) return clazz;
 		
 		return clazz+":"+msg;
+	}
+
+	public static void log(Log log, int level, String logName, Throwable t) { 
+		log(log,level,logName,"",t);
+	}   
+
+	public static void log(Log log, int level, String logName,String msg, Throwable t) { 
+		if(log instanceof LogAndSource) log=((LogAndSource)log).getLog();
+		if(log instanceof LegacyProxy) {
+			((LegacyProxy)log).log(level, logName, msg,t);
+		}
+		else {
+			String em = ExceptionUtil.getMessage(t);
+			String est = ExceptionUtil.getStacktrace(t, false);
+			log.log(level, logName, msg+";"+em+";"+est);
+		}
+	}
+
+	public static void log(Log log, int level, String logName, String msg, StackTraceElement[] stackTrace) {
+		Throwable t = new Throwable();
+		t.setStackTrace(stackTrace);
+		log(log,level,logName,msg,t);
 	}    
+	
+	
     
 /*
     public static File getLogFileX(Log log) {

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
@@ -21,10 +23,9 @@ import org.apache.commons.collections.map.ReferenceMap;
 import railo.commons.digest.Hash;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
+import railo.commons.io.logging.LoggerUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -264,13 +265,13 @@ public abstract class ConfigImpl implements Config {
     private boolean restList=false;
     //private boolean restAllowChanges=false;
     
-    private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    private LogAndSource mailLogger=null;
+    private LogAndSource restLogger=null;
+    private LogAndSource threadLogger=null;
     
     private LogAndSource requestTimeoutLogger=null;
     private LogAndSource applicationLogger=null;
-    private LogAndSource deployLogger=null;
+    private LogAndSourceImpl deployLogger=null;
     private LogAndSource exceptionLogger=null;
 	private LogAndSource traceLogger=null;
 
@@ -705,18 +706,19 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getMailLogger() {
-    	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(mailLogger==null)mailLogger=new LogAndSourceImpl(
+    			LoggerUtil.getConsole(this, "mail", Level.WARNING),"");
 		return mailLogger;
     }
     
 
     public LogAndSource getRestLogger() {
-    	if(restLogger==null)restLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(restLogger==null)restLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "rest", Level.WARNING),"");
 		return restLogger;
     }
 
     public LogAndSource getThreadLogger() {
-    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "thread", Level.WARNING),"");
 		return threadLogger;
     }
 
@@ -727,7 +729,7 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public LogAndSource getRequestTimeoutLogger() {
-    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "request-timeout", Level.WARNING),"");
 		return requestTimeoutLogger;
     }
 
@@ -1106,19 +1108,18 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public LogAndSource getApplicationLogger() {
-    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "application", Level.WARNING),"");
 		return applicationLogger;
     }
     
     public LogAndSource getDeployLogger() {
     	if(deployLogger==null){
-    		deployLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_INFO),"");
+    		deployLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "deploy", Level.FINE),"");
     	}
 		return deployLogger;
     }
-    
     public LogAndSource getScopeLogger() {
-    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "scope", Level.WARNING),"");
 		return scopeLogger;
     }
 
@@ -1581,7 +1582,7 @@ public abstract class ConfigImpl implements Config {
         this.ormLogger = ormLogger;
     }
     public LogAndSource getORMLogger() {
-    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "orm", Level.WARNING),"");
 		
         return ormLogger;
     }
@@ -1855,7 +1856,7 @@ public abstract class ConfigImpl implements Config {
     }
 
     protected void setDeployLogger(LogAndSource deployLogger) {
-        this.deployLogger=deployLogger;
+        this.deployLogger=(LogAndSourceImpl) deployLogger;
     }
 
     protected void setScopeLogger(LogAndSource scopeLogger) {
@@ -1889,7 +1890,7 @@ public abstract class ConfigImpl implements Config {
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)
-    		mappingLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+    		mappingLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "mapping", Level.WARNING),"");
 		return mappingLogger;
     }
     
@@ -2311,7 +2312,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
-		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "exception", Level.WARNING),"");
 		return exceptionLogger;
 	}
 
@@ -2319,7 +2320,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getTraceLogger() {
-		if(traceLogger==null)traceLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		if(traceLogger==null)traceLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "trace", Level.WARNING),"");
 		return traceLogger;
 	}
 

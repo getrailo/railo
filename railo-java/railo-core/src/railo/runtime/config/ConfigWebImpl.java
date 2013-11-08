@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -14,10 +15,9 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
+import railo.commons.io.logging.LoggerUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -72,7 +72,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverFunctionMapping;
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
+    private LogAndSource gatewayLogger=null;
     private DebuggerPool debuggerPool;
     
     
@@ -324,7 +324,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		}
 
 	    public LogAndSource getGatewayLogger() {
-	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LoggerUtil.getConsole(this, "gateway", Level.WARNING),"");
 			return gatewayLogger;
 	    }
 

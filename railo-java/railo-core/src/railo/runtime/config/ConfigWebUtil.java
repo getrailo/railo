@@ -5,24 +5,24 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
-import railo.commons.io.log.LogResource;
+import railo.commons.io.logging.LoggerUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
@@ -325,24 +325,26 @@ public final class ConfigWebUtil {
      * @return log
      * @throws IOException
     */
-    public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String strLogger, boolean hasAccess, int logLevel) throws IOException {
+    public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String type, String strLogger, boolean hasAccess, int logLevel) throws IOException {
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
     	//boolean isCS=config instanceof ConfigServer;
         if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
-        	return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
+        	return getLogAndSource(config,type,strLogger,logLevel);
         }
-        return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
+        return new LogAndSourceImpl(LoggerUtil.getConsole(config, type, LoggerUtil.toLevel(logLevel)),strLogger);
     }
-    private static LogAndSource getLogAndSource(Config config, String strLogger, int logLevel)  {
-        if(strLogger==null) return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),"");
+    private static LogAndSource getLogAndSource(Config config,String type, String strLogger, int logLevel)  {
+        if(strLogger==null) return new LogAndSourceImpl(LoggerUtil.getConsole(config, type, LoggerUtil.toLevel(logLevel)),"");
         
         // File
         strLogger=translateOldPath(strLogger);
         Resource file=ConfigWebUtil.getFile(config, config.getConfigDir(),strLogger, ResourceUtil.TYPE_FILE);
+        
         if(file!=null && ResourceUtil.canRW(file)) {
             try {
-				return new LogAndSourceImpl(new LogResource(file,logLevel,config.getResourceCharset()),strLogger);
+				return new LogAndSourceImpl(LoggerUtil.getResource(config,file, type, LoggerUtil.toLevel(logLevel),((ConfigImpl)config)._getResourceCharset()),strLogger);
 			} catch (IOException e) {
+				print.e(e);
 				SystemOut.printDate(config.getErrWriter(),e.getMessage());
 			}
         }
@@ -350,7 +352,7 @@ public final class ConfigWebUtil {
         if(file==null)SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], invalid path");
         else SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], no write access");
     
-        return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
+        return new LogAndSourceImpl(LoggerUtil.getConsole(config, type, LoggerUtil.toLevel(logLevel)),strLogger);
     
     }
 

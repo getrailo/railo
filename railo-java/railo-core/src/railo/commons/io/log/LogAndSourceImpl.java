@@ -1,26 +1,40 @@
 package railo.commons.io.log;
 
+import java.util.logging.Logger;
+
+import railo.commons.io.logging.LegacyProxy;
+
 /**
  * 
  */
 public final class LogAndSourceImpl implements LogAndSource {
     
     private final String source;
-    private final Log log;
+    private final LegacyProxy log;
 
     /**
      * @param log
      * @param source
      */
-    public LogAndSourceImpl(Log log, String source) {
-        this.log=log;
+    public LogAndSourceImpl(Logger logger, String source) {
+        this.log=new LegacyProxy(logger);
         this.source=source;
     }
+    /*public LogAndSourceImpl(Log log, String source) {
+        this.log=log;
+        this.source=source;
+    }*/
  
     @Override
     public void log(int level, String application, String message) {
         log.log(level,application,message);
     }
+    /*public void log(int level, String application, String message, Throwable t) {
+        log.log(level,application,message,t);
+    } 
+    public void log(int level, String application, Throwable t) {
+        log.log(level,application,t);
+    }*/
 
     @Override
     public void info(String application, String message) {
@@ -49,6 +63,10 @@ public final class LogAndSourceImpl implements LogAndSource {
     @Override
     public Log getLog() {
         return log;
+    }
+    
+    public Logger getLogger() {
+        return log.getLogger();
     }
 
     @Override

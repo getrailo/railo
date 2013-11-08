@@ -3,6 +3,7 @@ package railo.runtime.exp;
 import java.io.PrintWriter;
 
 import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -21,13 +22,13 @@ public final class ExceptionHandler {
 		pe.printStackTrace(config.getErrWriter()); 
 		
 		// apllication Log
-		StringBuffer message=new StringBuffer(pe.getMessage());
-		if(!StringUtil.isEmpty(pe.getDetail())) message.append("; ").append(pe.getDetail());
-		config.getApplicationLogger().log(Log.LEVEL_ERROR, "",message.toString());
+		//StringBuffer message=new StringBuffer(pe.getMessage());
+		//if(!StringUtil.isEmpty(pe.getDetail())) message.append("; ").append(pe.getDetail());
+		LogUtil.log(config.getApplicationLogger(),Log.LEVEL_ERROR, "",pe);
 		
 		// exception.log
 		String st = ExceptionUtil.getStacktrace(pe,true);
-		config.getExceptionLogger().log(Log.LEVEL_ERROR, "",st);
+		LogUtil.log(config.getExceptionLogger(),Log.LEVEL_ERROR, "",pe);
 		
 		
 	}

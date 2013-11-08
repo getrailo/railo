@@ -18,7 +18,7 @@ import railo.runtime.type.dt.DateTimeImpl;
  * Datasource output logger
  * TODO impl
  */
-public final class LogDataSource implements Log {
+ final class LogDataSource implements Log {
  
     private static final SQL SELECT = new SQLImpl("select for checking if table exists");//TODO
     private static final String INSERT = "insert into cflog(application,message,created) values(?,?,?)";//TODO

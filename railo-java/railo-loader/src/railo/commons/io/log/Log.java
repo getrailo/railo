@@ -34,6 +34,9 @@ public interface Log {
      */
     public void log(int level, String application, String message);
 
+    // FUTURE public void log(int level, String application, String message,Throwable t);
+    // FUTURE public void log(int level, String application,Throwable t);
+    
     /**
      * log level info
      * @param application application name
