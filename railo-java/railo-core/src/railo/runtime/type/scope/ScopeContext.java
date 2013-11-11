@@ -10,7 +10,6 @@ import org.safehaus.uuid.UUIDGenerator;
 
 import railo.commons.collection.MapFactory;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -78,7 +77,7 @@ public final class ScopeContext {
 	private StorageScopeEngine client;
 	private StorageScopeEngine session;
 	private CFMLFactoryImpl factory;
-	private LogAndSource log;
+	private Log log;
 	
 	
 	
