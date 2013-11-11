@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Pair;
@@ -189,7 +188,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 				ConfigWeb c = pc.getConfig();
 				if(c instanceof ConfigImpl) {
 					ConfigImpl ci=(ConfigImpl) c;
-					LogAndSource log = ci.getThreadLogger();
+					Log log = ci.getThreadLogger();
 					if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,this.getName(), t);
 				}
 				PageException pe = Caster.toPageException(t);

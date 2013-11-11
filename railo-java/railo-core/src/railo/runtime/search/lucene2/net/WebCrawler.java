@@ -33,11 +33,11 @@ import railo.runtime.type.util.ArrayUtil;
 public final class WebCrawler {
     
     private static HTMLUtil htmlUtil=new HTMLUtil();
-	private LogAndSource log;
+	private Log log;
 	
     
     
-    public WebCrawler(LogAndSource log) {
+    public WebCrawler(Log log) {
     	this.log=log;
 	}
 

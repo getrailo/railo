@@ -3,7 +3,6 @@ package railo.runtime.tag;
 import java.io.IOException;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
@@ -222,7 +221,7 @@ public final class Trace extends BodyTagImpl {
 		}
 		
 		// log
-		LogAndSource log = pageContext.getConfig().getTraceLogger();
+		Log log = pageContext.getConfig().getTraceLogger();
 		StringBuffer msg=new StringBuffer();
 		msg.append("["+trace.getTime()+" ms "+total+"] ");
 		msg.append("["+trace.getTemplate()+" @ line: "+trace.getLine()+"]");

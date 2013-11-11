@@ -26,11 +26,11 @@ import railo.runtime.util.URLResolver;
 class ExecutionThread extends Thread {
 
 	private Config config;
-	private LogAndSource log;
+	private Log log;
 	private ScheduleTask task;
 	private String charset;
 
-	public ExecutionThread(Config config, LogAndSource log, ScheduleTask task, String charset) {
+	public ExecutionThread(Config config, Log log, ScheduleTask task, String charset) {
 		this.config=config;
 		this.log=log;
 		this.task=task;
@@ -40,7 +40,7 @@ class ExecutionThread extends Thread {
 	public void run() {
 		execute(config, log, task, charset);
 	}
-	public static void execute(Config config, LogAndSource log, ScheduleTask task, String charset) {
+	public static void execute(Config config, Log log, ScheduleTask task, String charset) {
 		boolean hasError=false;
         String logName="schedule task:"+task.getTask();
        // init
