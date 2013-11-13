@@ -1,14 +1,22 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
-import railo.commons.io.log.LogConsole;
-import railo.commons.io.log.LogResource;
+import org.apache.log4j.Level;
+
+import railo.commons.io.CharsetUtil;
+import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.Log4jUtil;
+import railo.commons.io.log.log4j.LogAdapter;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.converter.ConverterException;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
@@ -39,10 +47,11 @@ public final class Log extends TagImpl {
 	private short type=railo.commons.io.log.Log.LEVEL_INFO;
 	/**  */
 	private String file;
+	private Throwable exception;
 
 	/** Specifies whether to log the application name if one has been specified in a application tag. */
 	private boolean application;
-	private String charset=null;
+	private Charset charset=null;
 	
 	@Override
 	public void release()	{
@@ -52,6 +61,8 @@ public final class Log extends TagImpl {
 		file=null;
 		application=false;
 		charset=null;
+		exception=null;
+		text=null;
 	}
 
 	/** set the value log
@@ -77,6 +88,12 @@ public final class Log extends TagImpl {
 	public void setText(String text)	{
 		this.text=text;
 	}
+	public void setException(Object exception) throws PageException	{
+		this.exception=Throw.toPageException(exception, null);
+		if(this.exception==null) throw new CasterException(exception,Exception.class);
+	}
+	
+	
 
 	/** set the value type
 	*  The type or severity of the message.
@@ -163,27 +180,35 @@ public final class Log extends TagImpl {
 	    railo.commons.io.log.Log logger;
 	    Config config =pageContext.getConfig();
 	    if(file==null) {
-	    	if(log==LOG_SCHEDULER)logger=config.getScheduleLogger();
-	    	else if(log==LOG_CONSOLE)logger=LogConsole.getInstance(config, railo.commons.io.log.Log.LEVEL_INFO);
-	        else logger=config.getApplicationLogger();
+	    	if(log==LOG_SCHEDULER)logger=((ConfigImpl)config).getLogger("scheduler");
+	    	else if(log==LOG_CONSOLE)logger=new LogAdapter(Log4jUtil.getConsoleLog(config, false, "cflog", Level.INFO));
+	        else logger=((ConfigImpl)config).getLogger("application");
 	        
 	    }
 	    else {
-	    	if(charset==null) charset=((PageContextImpl)pageContext).getResourceCharset().name();
+	    	if(charset==null) charset=((PageContextImpl)pageContext).getResourceCharset();
 	    	Resource logDir=config.getConfigDir().getRealResource("logs");
 	        if(!logDir.exists())logDir.mkdirs();
 	        try {
-	        	Resource f = logDir.getRealResource(file);
-                logger=new LogResource(f,railo.commons.io.log.Log.LEVEL_INFO,charset);
+	        	Resource res = logDir.getRealResource(file);
+                logger=new LogAdapter(Log4jUtil.getResourceLog(config,res,charset , "cflog", Level.INFO));
             } catch (IOException e) {
                 throw Caster.toPageException(e);
             }
 	    }
 	    
 	    
+	    
 	    String contextName = pageContext.getApplicationContext().getName();
 	    if(contextName==null || !application)contextName="";
-	    logger.log(type,contextName,text);
+	    if(exception!=null) {
+	    	if(StringUtil.isEmpty(text)) LogUtil.log(logger, type, contextName, exception);
+	    	else LogUtil.log(logger, type, contextName, text, exception);
+	    }
+	    else if(!StringUtil.isEmpty(text)) 
+	    	logger.log(type,contextName,text);
+	    else
+	    	throw new ApplicationException("you must define attribute text r attribute exception with the tag cflog");
         //logger.write(toStringType(type),contextName,text);
 		return SKIP_BODY;
 	}
@@ -193,6 +218,6 @@ public final class Log extends TagImpl {
 	 */
 	public void setCharset(String charset) {
 		if(StringUtil.isEmpty(log,true)) return;
-	    this.charset = charset;
+	    this.charset = CharsetUtil.toCharset(charset);
 	}
 }

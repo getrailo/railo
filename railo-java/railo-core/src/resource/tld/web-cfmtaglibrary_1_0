@@ -7906,6 +7906,7 @@ Valid only for cfinput type="text".</description>
 	<tag>
 		<name>Log</name>
 		<tag-class>railo.runtime.tag.Log</tag-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.Log</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Writes a message to a log file.</description>
@@ -7917,7 +7918,14 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>text</name>
-			<required>true</required>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>a exception to log.</description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>exception</name>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The message text to log.</description>
 		</attribute>
