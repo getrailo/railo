@@ -23,6 +23,7 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
@@ -832,12 +833,14 @@ public final class ASMUtil {
 	}*/
 
 
-	public static String createOverfowMethod(int id) {
-		return "_call"+StringUtil.addZeros(id,6);
+	public static String createOverfowMethod(String prefix, int id) { // pattern is used in function callstackget
+		if(StringUtil.isEmpty(prefix)) prefix="call";
+		return prefix+"_"+StringUtil.addZeros(id,6);
 	}
 	
 	public static boolean isOverfowMethod(String name) {
-		return name.startsWith("_call") && name.length()>=11;
+		return name.length()>6 && Decision.isNumeric(name.substring(name.length()-6,name.length()));
+		//return name.startsWith("_call") && name.length()>=11;
 	}
 
 

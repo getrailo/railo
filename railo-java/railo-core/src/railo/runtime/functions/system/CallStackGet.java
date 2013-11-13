@@ -32,20 +32,20 @@ public final class CallStackGet implements Function {
 		Throwable cause = t.getCause(); 
 		if(cause!=null)_getTagContext(pc, tagContext, cause,lineNumberName);
 		StackTraceElement[] traces = t.getStackTrace();
-		
 		UDF[] udfs = ((PageContextImpl)pc).getUDFs();
 		
         int line=0;
 		String template;
 		Struct item;
 		StackTraceElement trace=null;
-		String functionName;
+		String functionName,methodName;
 		int index=udfs.length-1;
 		for(int i=0;i<traces.length;i++) {
 			trace=traces[i];
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
-			if("udfCall".equals(trace.getMethodName()) && index>-1) 
+			methodName=trace.getMethodName();
+			if(methodName!=null && methodName.startsWith("udfCall") && index>-1) 
 				functionName=udfs[index--].getFunctionName();
 			
 			else functionName="";
