@@ -20,10 +20,10 @@ public final class Hash implements Function {
 	public static String call(PageContext pc, String input) throws PageException {
 		return invoke( pc.getConfig(), input, null, null, 1 );
 	}
-    public synchronized static String call(PageContext pc , String input, String algorithm) throws PageException {
+    public static String call(PageContext pc , String input, String algorithm) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, null, 1 );
 	}
-    public synchronized static String call(PageContext pc , String input, String algorithm, String encoding) throws PageException {
+    public static String call(PageContext pc , String input, String algorithm, String encoding) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
 	}
 	//////
@@ -33,15 +33,15 @@ public final class Hash implements Function {
 		return invoke( pc.getConfig(), input, null, null, 1 );
 	}
 	
-    public synchronized static String call(PageContext pc , Object input, String algorithm) throws PageException {
+    public static String call(PageContext pc , Object input, String algorithm) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, null, 1 );
 	}
 
-    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding) throws PageException {
+    public static String call(PageContext pc , Object input, String algorithm, String encoding) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
 	}
     
-    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, double numIterations) throws PageException {
+    public static String call(PageContext pc , Object input, String algorithm, String encoding, double numIterations) throws PageException {
 		return invoke( pc.getConfig(), input, algorithm, encoding, (int)numIterations );
 	}
 
@@ -51,7 +51,7 @@ public final class Hash implements Function {
     	return invoke(config, input, algorithm, encoding, 1);
     }	//*/
     
-    public synchronized static String invoke(Config config, Object input, String algorithm, String encoding, int numIterations) throws PageException {
+    public static String invoke(Config config, Object input, String algorithm, String encoding, int numIterations) throws PageException {
 		
     	if(StringUtil.isEmpty(algorithm))algorithm="md5";
 		else algorithm=algorithm.trim().toLowerCase();
