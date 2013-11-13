@@ -56,8 +56,20 @@ public final class LockManagerImpl implements LockManager {
 		return list.toArray(new String[list.size()]);
 	}
 
+	@Override
 	public void clean() {
 		locks.clean();
+	}
+
+
+	public Boolean isReadLocked(String name) {
+		if(!caseSensitive)name=name.toLowerCase();
+		return locks.isReadLocked(name);
+	}
+	
+	public Boolean isWriteLocked(String name) {
+		if(!caseSensitive)name=name.toLowerCase();
+		return locks.isWriteLocked(name);
 	}
 	
 	

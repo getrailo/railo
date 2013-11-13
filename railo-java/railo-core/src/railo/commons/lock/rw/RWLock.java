@@ -67,7 +67,19 @@ public class RWLock<L> {
 		return count;
 	}
     
-
+    /**
+     * Queries if the write lock is held by any thread.
+     */
+	public boolean isWriteLocked(){
+		return rwl.isWriteLocked();
+	}
+	
+	/**
+	 * Queries if one or more write lock is held by any thread.
+	 */
+	public boolean isReadLocked(){
+		return rwl.getReadLockCount()>0;
+	}
 	public L getLabel(){
 		return label;
 	}
