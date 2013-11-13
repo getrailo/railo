@@ -141,6 +141,9 @@ public final class MailUtil {
 
             if ( domain.indexOf( '.' ) > 0 ) {                          // make sure we have a dot and that it's not the first char
 
+	            if ( domain.contains( ".." ) )
+		            return false;
+
                 String tld = ListUtil.last( domain, ".", false );
                 int len = tld.length();
 
