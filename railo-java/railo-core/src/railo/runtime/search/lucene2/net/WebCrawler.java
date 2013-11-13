@@ -12,7 +12,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.HTMLUtil;

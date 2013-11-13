@@ -9,18 +9,12 @@ import java.util.Map.Entry;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.ApplicationListener;
@@ -312,47 +306,6 @@ public final class ConfigWebUtil {
             has=((ConfigWeb)config).getSecurityManager().getAccess(type)!=SecurityManager.VALUE_NO;
         }
         return has;
-    }
-
-    /**
-     * loads log
-     * @param configServer 
-     * @param config 
-     * @param strLogger
-     * @param hasAccess 
-     * @param logLevel 
-     * @return log
-     * @throws IOException
-    */
-    public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String type, String strLogger, boolean hasAccess, int logLevel) throws IOException {
-        if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
-    	//boolean isCS=config instanceof ConfigServer;
-        if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
-        	return getLogAndSource(config,type,strLogger,logLevel);
-        }
-        return new LogAndSourceImpl(Log4jUtil.getConsole(config, type, Log4jUtil.toLevel(logLevel)),strLogger);
-    }
-    private static LogAndSource getLogAndSource(Config config,String type, String strLogger, int logLevel)  {
-        if(strLogger==null) return new LogAndSourceImpl(Log4jUtil.getConsole(config, type, Log4jUtil.toLevel(logLevel)),"");
-        
-        // File
-        strLogger=translateOldPath(strLogger);
-        Resource file=ConfigWebUtil.getFile(config, config.getConfigDir(),strLogger, ResourceUtil.TYPE_FILE);
-        
-        if(file!=null && ResourceUtil.canRW(file)) {
-            try {
-				return new LogAndSourceImpl(Log4jUtil.getResource(config,file, type, Log4jUtil.toLevel(logLevel),((ConfigImpl)config)._getResourceCharset()),strLogger);
-			} catch (IOException e) {
-				print.e(e);
-				SystemOut.printDate(config.getErrWriter(),e.getMessage());
-			}
-        }
-        
-        if(file==null)SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], invalid path");
-        else SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], no write access");
-    
-        return new LogAndSourceImpl(Log4jUtil.getConsole(config, type, Log4jUtil.toLevel(logLevel)),strLogger);
-    
     }
 
     public static String translateOldPath(String path) {

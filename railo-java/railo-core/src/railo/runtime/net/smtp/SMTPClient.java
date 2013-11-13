@@ -35,13 +35,14 @@ import railo.commons.activation.ResourceDataSource;
 import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -649,7 +650,7 @@ public final class SMTPClient implements Serializable  {
 		try {
 
         	Proxy.start(proxyData);
-		LogAndSource log = config.getMailLogger();
+		Log log = ((ConfigImpl)config).getLogger("mail");
 		// Server
         Server[] servers = config.getMailServers();
         if(host!=null) {
@@ -744,7 +745,7 @@ public final class SMTPClient implements Serializable  {
 					if(i+1==servers.length) {
 						
 						listener(config,server,log,e,System.nanoTime()-start);
-						MailException me = new MailException(server.getHostName()+" "+LogUtil.toMessage(e)+":"+i);
+						MailException me = new MailException(server.getHostName()+" "+ExceptionUtil.getStacktrace(e, true)+":"+i);
 						me.setStackTrace(e.getStackTrace());
 						
 						throw me;
@@ -758,7 +759,7 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 
-	private void listener(ConfigWeb config,Server server, LogAndSource log, Exception e, long exe) {
+	private void listener(ConfigWeb config,Server server, Log log, Exception e, long exe) {
 		StringBuilder sbTos=new StringBuilder();
 		for(int i=0;i<tos.length;i++){
 			if(sbTos.length()>0)sbTos.append(", ");

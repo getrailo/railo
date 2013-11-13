@@ -6,19 +6,17 @@ import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.spi.LocationAwareLogger;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.runtime.op.Caster;
 
 public final class LoggerAdapterImpl extends MarkerIgnoringBase implements LocationAwareLogger {
 
 	private static final long serialVersionUID = 3875268250734654111L;
 	
-	private LogAndSource logger;
+	private Log logger;
 	private String _name;
 
-	public LoggerAdapterImpl(LogAndSource logger, String name){
+	public LoggerAdapterImpl(Log logger, String name){
 		this.logger=logger;
 		this._name=name;
 	}

@@ -90,7 +90,7 @@ public final class ScopeContext {
 	 */
 	private Log getLog() {
 		if(log==null) {
-			this.log=((ConfigImpl)factory.getConfig()).getScopeLogger();
+			this.log=((ConfigImpl)factory.getConfig()).getLogger("scope");
 			
 		}
 		return log;

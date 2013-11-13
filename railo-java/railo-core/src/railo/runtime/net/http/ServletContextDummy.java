@@ -45,7 +45,7 @@ public class ServletContextDummy implements ServletContext {
 		this.parameters=parameters;
 		this.majorVersion=majorVersion;
 		this.minorVersion=minorVersion;
-		log=Log4jUtil.getConsole(config, "servlet-context-dummy",Level.INFO);
+		log=Log4jUtil.getConsoleLog(config, false,"servlet-context-dummy",Level.INFO);
 		
 	}
 

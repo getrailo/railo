@@ -96,11 +96,11 @@ public class ClassicLayout extends Layout {
         ThrowableInformation ti = event.getThrowableInformation();
         if(ti!=null) {
         	Throwable t = ti.getThrowable();
-        	String em = ExceptionUtil.getMessage(t);
-            data.append(';');
+        	data.append(';');
+            String em = ExceptionUtil.getMessage(t);
             data.append(StringUtil.replace(em,"\"","\"\"",false));
-			String est = ExceptionUtil.getStacktrace(t, false);
-            data.append(';');
+			data.append(';');
+            String est = ExceptionUtil.getStacktrace(t, false);
             data.append(StringUtil.replace(est,"\"","\"\"",false));
         }
         

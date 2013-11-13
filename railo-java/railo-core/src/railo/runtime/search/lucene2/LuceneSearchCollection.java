@@ -28,7 +28,6 @@ import org.apache.lucene.store.FSDirectory;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
@@ -38,6 +37,7 @@ import railo.commons.io.res.util.FileWrapper;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.search.AddionalAttrs;
 import railo.runtime.search.IndexResult;
@@ -70,7 +70,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	
 	private Resource collectionDir;
 	private boolean spellcheck;
-	private LogAndSource log;
+	private Log log;
     private static final SerializableObject token=new SerializableObject();
 	
 	
@@ -88,8 +88,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         this.spellcheck=spellcheck;
         collectionDir=getPath().getRealResource(StringUtil.toIdentityVariableName(getName()));
         
-        log=searchEngine.getLogger();
-        
+        log=((ConfigImpl)searchEngine.getConfig()).getLogger("search");
     }
     
     public LuceneSearchCollection(SearchEngineSupport searchEngine, String name, Resource path, String language, //int count, 

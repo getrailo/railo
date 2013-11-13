@@ -11,13 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.log4j.Level;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -72,7 +68,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverFunctionMapping;
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
-    private LogAndSource gatewayLogger=null;
     private DebuggerPool debuggerPool;
     
     
@@ -322,16 +317,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public void setGatewayEngine(GatewayEngineImpl gatewayEngine) {
 			this.gatewayEngine=gatewayEngine;
 		}
-
-	    public LogAndSource getGatewayLogger() {
-	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(Log4jUtil.getConsole(this, "gateway", Level.ERROR),"");
-			return gatewayLogger;
-	    }
-
-
-	    public void setGatewayLogger(LogAndSource gatewayLogger) {
-	    	this.gatewayLogger=gatewayLogger;
-	    }
 
 		public TagHandlerPool getTagHandlerPool() {
 			return tagHandlerPool;

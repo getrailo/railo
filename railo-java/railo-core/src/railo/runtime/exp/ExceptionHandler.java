@@ -8,6 +8,7 @@ import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 
@@ -22,13 +23,11 @@ public final class ExceptionHandler {
 		pe.printStackTrace(config.getErrWriter()); 
 		
 		// apllication Log
-		//StringBuffer message=new StringBuffer(pe.getMessage());
-		//if(!StringUtil.isEmpty(pe.getDetail())) message.append("; ").append(pe.getDetail());
-		LogUtil.log(config.getApplicationLogger(),Log.LEVEL_ERROR, "",pe);
+		LogUtil.log(((ConfigImpl)config).getLogger("application"),Log.LEVEL_ERROR, "",pe);
 		
 		// exception.log
 		String st = ExceptionUtil.getStacktrace(pe,true);
-		LogUtil.log(config.getExceptionLogger(),Log.LEVEL_ERROR, "",pe);
+		LogUtil.log(((ConfigImpl)config).getLogger("exception"),Log.LEVEL_ERROR, "",pe);
 		
 		
 	}

@@ -16,6 +16,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -23,6 +24,7 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -45,12 +47,14 @@ public abstract class SearchEngineSupport implements SearchEngine {
     
 	private Resource searchFile;
 	private Resource searchDir;
-	private LogAndSource log;
-    private Document doc;
+	private Document doc;
     Struct collections=new StructImpl();
+	protected Config config;
 	
 	@Override
-	public void init(railo.runtime.config.Config config,Resource searchDir, LogAndSource log) throws SAXException, IOException, SearchException {
+	public void init(railo.runtime.config.Config config,Resource searchDir, 
+			LogAndSource log/* always null*/) throws SAXException, IOException, SearchException {
+		this.config=config;
 		this.searchDir=searchDir;
 		this.searchFile=searchDir.getRealResource("search.xml");
 		if(!searchFile.exists()) createSearchFile(searchFile);
@@ -67,7 +71,6 @@ public abstract class SearchEngineSupport implements SearchEngine {
 	    }
     	doc = parser.getDocument();
     	    	
-    	this.log=log;
         
     	readCollections(config);
 	} 
@@ -232,7 +235,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
 
 	@Override
 	public LogAndSource getLogger() {
-		return log;
+    	throw new RuntimeException("this method is no longer supported, call instead Config.getLogger");
 	}
 
     /**
@@ -488,4 +491,8 @@ public abstract class SearchEngineSupport implements SearchEngine {
     
     @Override
     public abstract String getDisplayName();
+
+	public Config getConfig() { 
+		return config;
+	}
 }

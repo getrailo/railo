@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -156,7 +157,10 @@ public final class ConfigWebAdmin {
     }
 
     public void setVersion(double version) {
-    	
+    	setVersion(doc,version);
+        
+    }
+    public static void setVersion(Document doc,double version) {
     	Element root=doc.getDocumentElement();
     	String str = Caster.toString(version);
     	if(str.length()>3)str=str.substring(0,3);
@@ -200,53 +204,8 @@ public final class ConfigWebAdmin {
     	this.config=config;
     	this.password=password;
         doc=loadDocument(config.getConfigFile());
-        if(config.getVersion()<2.0D){
-        	try {
-    			updateTo2(config);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-        }
         //setId(config.getId());
-    }    
-    // FUTURE resources for old version of railo remove in newer
-    private void updateTo2(ConfigImpl config) throws PageException, ClassException, SAXException, IOException, TagLibException, FunctionLibException {
-//    	 Server
-    	if(config instanceof ConfigServer) {
-    		addResourceProvider(
-    				"ftp",
-    				"railo.commons.io.res.type.ftp.FTPResourceProvider",
-    				"lock-timeout:20000;socket-timeout:-1;client-timeout:60000");
-    		// zip
-    		addResourceProvider(
-    				"zip",
-    				"railo.commons.io.res.type.zip.ZipResourceProvider",
-    				"lock-timeout:1000;case-sensitive:true;");
-    		// tar
-    		addResourceProvider(
-    				"tar",
-    				"railo.commons.io.res.type.tar.TarResourceProvider",
-    				"lock-timeout:1000;case-sensitive:true;");
-    		// tgz
-    		addResourceProvider(
-    				"tgz",
-    				"railo.commons.io.res.type.tgz.TGZResourceProvider",
-    				"lock-timeout:1000;case-sensitive:true;");
-    		
-    		
-    		
-    	}
-    	else {
-    		// ram
-    		addResourceProvider(
-    				"ram",
-    				"railo.commons.io.res.type.ram.RamResourceProvider",
-    				"case-sensitive:true;lock-timeout:1000;");
-    		
-    	}
-    	setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
-    	_store(config);
-    }
+    } 
     
     public static void checkForChangesInConfigFile(Config config) {
     	ConfigImpl ci=(ConfigImpl) config;
@@ -392,10 +351,32 @@ public final class ConfigWebAdmin {
             throw new SecurityException("no access to update mail server settings");
         ConfigWebUtil.getFile(config,config.getRootDirectory(),logFile,FileUtil.TYPE_FILE);
         
-        Element mail=_getRootElement("mail");
-        mail.setAttribute("log",logFile);
-        mail.setAttribute("log-level",level);
-        //config.setMailLogger(logFile.getCanonicalPath());
+        
+        Element logging = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "logging");
+		Element[] children = XMLUtil.getChildElementsAsArray(logging);
+		Element logger=null;
+    	
+		for(int i=0;i<children.length;i++){
+			if(children[i].getTagName().equals("logger") && "mail".equalsIgnoreCase(children[i].getAttribute("name"))) {
+				logger=children[i];
+				break;
+			}
+		}
+		if(logger==null) {
+			logger = doc.createElement("logger");
+			logging.appendChild(logger);
+		}
+		logger.setAttribute("name", "mail");
+    	if("console".equalsIgnoreCase(logFile)) {
+	    	logger.setAttribute("appender", "console");
+    		logger.setAttribute("layout", "pattern");
+    	}
+    	else {
+	    	logger.setAttribute("appender", "resource");
+	    	logger.setAttribute("appender-arguments", "path:"+logFile);
+    		logger.setAttribute("layout", "classic");
+		}
+    	logger.setAttribute("log-level",level);
     }
 
     /**
@@ -1126,6 +1107,135 @@ public final class ConfigWebAdmin {
         }
     	return false;
     }
+    
+
+    /**
+     * the following code remove all logging defintions spread over the complete xml and adds them to the new "logging" tag
+     * 
+     * @param doc
+     * @return
+     */
+
+    public static boolean fixLogging(ConfigServerImpl cs,ConfigImpl config,Document doc) {
+    	
+    	if(config.setVersion(doc)>=4.2D) return false;
+    		
+    	//setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
+        
+    	
+    	// mapping
+    	Element src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "mappings");
+    	fixLogging(cs,doc,src, "mapping","{railo-config}/logs/mapping.log");
+    	
+    	// rest
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "rest");
+    	fixLogging(cs,doc,src, "rest","{railo-config}/logs/rest.log");
+    	
+    	// gateway
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "gateways");
+    	fixLogging(cs,doc,src, "gateway","{railo-config}/logs/gateway.log");
+    	
+    	// remote clients
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "remote-clients");
+    	fixLogging(cs,doc,src, "remoteclient","{railo-config}/logs/remoteclient.log");
+    	
+    	// orm
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "orm");
+    	fixLogging(cs,doc,src, "orm","{railo-config}/logs/orm.log");
+    	
+    	// mail
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "mail");
+    	fixLogging(cs,doc,src, "mail","{railo-config}/logs/mail.log");
+    			
+		// search
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "search");
+    	fixLogging(cs,doc,src, "search","{railo-config}/logs/search.log");
+    	
+    	// scheduler
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "scheduler");
+    	fixLogging(cs,doc,src, "scheduler","{railo-config}/logs/scheduler.log");
+    	
+		// scope
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "scope");
+    	fixLogging(cs,doc,src, "scope","{railo-config}/logs/scope.log");
+    	
+    	// application
+    	Element app = src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "application");
+    	fixLogging(cs,doc,src, "application","application-log","application-log-level","{railo-config}/logs/application.log");
+    	
+    	// exception
+    	fixLogging(cs,doc,app, "exception","exception-log","exception-log-level","{railo-config}/logs/exception.log");
+    	
+    	// trace
+    	fixLogging(cs,doc,app, "trace","trace-log","trace-log-level","{railo-config}/logs/trace.log");
+    	
+    	// thread
+    	fixLogging(cs,doc,app, "thread","thread-log","thread-log-level","{railo-config}/logs/thread.log");
+    	
+    	// deploy
+    	fixLogging(cs,doc,app, "deploy","deploy-log","deploy-log-level","{railo-config}/logs/deploy.log");
+    	
+    	// requesttimeout
+    	fixLogging(cs,doc,app, "requesttimeout","requesttimeout-log","requesttimeout-log-level","{railo-config}/logs/requesttimeout.log");
+    	
+    	setVersion(doc,Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),4.2D));
+    	
+    	
+    	return true;
+    }
+
+    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name, String defaultValue) {
+    	return fixLogging(cs, doc, src, name, "log", "log-level", defaultValue);
+    }
+    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name,String logName, String levelName, String defaultValue) {
+    	
+    	
+    	String path,level;
+    	// Mapping logging
+    	
+    	path = src.getAttribute(logName);
+    	level = src.getAttribute(levelName);
+    	
+    	if(StringUtil.isEmpty(path) && !StringUtil.isEmpty(defaultValue) && (cs==null || cs.getLogger(name)==null)) {
+    		// ignore defaultValue, when there is a setting in server context
+    		path=defaultValue;
+    	}
+    	if(!StringUtil.isEmpty(path)) {
+	    	src.removeAttribute(logName);
+	    	src.removeAttribute(levelName);
+    		
+    		Element logging = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "logging");
+    		
+    		// first of all we have to make sure this is not already existing, if it does we ignore the old settings
+    		Element[] children = XMLUtil.getChildElementsAsArray(logging);
+    		for(int i=0;i<children.length;i++){
+    			if(children[i].getTagName().equals("logger") && name.equalsIgnoreCase(children[i].getAttribute("name"))) {
+    				return false;
+    			}
+    		}
+	    	
+    		SystemOut.printDate("move "+name+" logging");
+	    	Element logger = doc.createElement("logger");
+	    	logger.setAttribute("name", name);
+	    	if("console".equalsIgnoreCase(path)) {
+		    	logger.setAttribute("appender", "console");
+	    		logger.setAttribute("layout", "pattern");
+	    	}
+	    	else {
+		    	logger.setAttribute("appender", "resource");
+		    	logger.setAttribute("appender-arguments", "path:"+path);
+	    		logger.setAttribute("layout", "classic");
+    		}
+	    	
+	    	if(!StringUtil.isEmpty(level,true))logger.setAttribute("level", level.trim());
+
+	    	logging.appendChild(logger);
+	    	
+	    	return true;
+    	}
+    	return false;
+    }
+
 
     public static boolean fixS3(Document doc) {
     	Element resources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"resources",false,true);
@@ -3684,76 +3794,6 @@ public final class ConfigWebAdmin {
 		IOUtil.copy(is, fileLib.getOutputStream(), closeStream, true);
 		ConfigWebFactory.reloadLib((ConfigImpl) config);
 	}
-
-	public void updateLogSettings(String name, int level,String virtualpath, int maxfile, int maxfilesize) throws ApplicationException {
-		name=name.toLowerCase().trim();
-		
-		
-		
-		
-		if("application".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","application") ;
-		}
-		else if("exception".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","exception") ;
-		}
-		else if("trace".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","trace") ;
-		}
-		else if("thread".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","thread") ;
-		}
-		else if("orm".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "orm") ;
-		}
-		else if("gateway".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "gateways") ;
-		}
-		else if("mail".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "mail") ;
-		}  
-		else if("mapping".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "mappings") ;
-		}  
-		else if("remote-client".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "remote-clients") ;
-		}  
-		else if("request-timeout".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","requesttimeout") ;
-		}  
-		else if("request-timeout".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","requesttimeout") ;
-		}  
-		else if("schedule-task".equals(name)) {
-			if(config instanceof ConfigServer)
-				throw new ApplicationException("scheduled task logger is not supported for server context");
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "scheduler") ;
-		}  
-		else if("search".equals(name)) {
-			if(config instanceof ConfigServer)
-				throw new ApplicationException("search logger is not supported for server context");
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "search") ;
-		}  
-		else {
-			throw new ApplicationException("invalid logger name ["+name+"], supported names are [application,exception,trace,thread,orm,gateway,mail,mapping,remote-client,request-timeout,request-timeout,schedule-task,search]");
-		}
-	}
-
-	private void updateLogSettings(String name, int level, String virtualpath,int maxfile, int maxfilesize, String elName){
-		updateLogSettings(name, level, virtualpath,maxfile,maxfilesize,elName, null);
-	}
-
-	private void updateLogSettings(String name, int level, String virtualpath,int maxfile, int maxfilesize, String elName, String prefix) {
-		if(StringUtil.isEmpty(prefix)) prefix="";
-		else prefix+="-";
-		
-		Element el = _getRootElement(elName);
-		el.setAttribute(prefix+"log", virtualpath);
-		el.setAttribute(prefix+"log-level", LogUtil.toStringType(level, ""));
-		el.setAttribute(prefix+"log-max-file", Caster.toString(maxfile));
-		el.setAttribute(prefix+"log-max-file-size", Caster.toString(maxfilesize));
-	}
-
 
 	public void updateRemoteClientUsage(String code, String displayname) {
 		Struct usage = config.getRemoteClientUsage();

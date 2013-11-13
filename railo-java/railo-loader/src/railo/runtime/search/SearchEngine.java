@@ -34,7 +34,7 @@ public interface SearchEngine {
      * @throws SAXException
      * @throws SearchException
      */
-    public abstract void init(Config config, Resource searchDir, LogAndSource log)
+    public abstract void init(Config config, Resource searchDir, LogAndSource log) // FUTURE remove argument LogAndSource
             throws SAXException, IOException, SearchException;
 
     /**

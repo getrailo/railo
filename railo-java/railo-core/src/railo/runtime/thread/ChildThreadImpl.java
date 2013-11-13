@@ -188,7 +188,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 				ConfigWeb c = pc.getConfig();
 				if(c instanceof ConfigImpl) {
 					ConfigImpl ci=(ConfigImpl) c;
-					Log log = ci.getThreadLogger();
+					Log log = ci.getLogger("thread");
 					if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,this.getName(), t);
 				}
 				PageException pe = Caster.toPageException(t);

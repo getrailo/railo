@@ -6,9 +6,11 @@ import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugTrace;
+import railo.runtime.debug.DebugTraceImpl;
 import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
@@ -202,7 +204,7 @@ public final class Trace extends BodyTagImpl {
 			sb.append("<td>");
 			sb.append("<font color=\"orange\">");
 			sb.append("<b>");
-			sb.append(LogUtil.toStringType(trace.getType(),"INFO")+" - ");
+			sb.append(DebugTraceImpl.toType(trace.getType(),"INFO")+" - ");
 			sb.append("[CFTRACE "+tf.format(new DateTimeImpl(pageContext.getConfig()), "hh:mm:ss:l")+"]");
 			sb.append("["+trace.getTime()+" ms "+total+"]");
 			sb.append("["+trace.getTemplate()+" @ line: "+trace.getLine()+"]");
@@ -221,7 +223,7 @@ public final class Trace extends BodyTagImpl {
 		}
 		
 		// log
-		Log log = pageContext.getConfig().getTraceLogger();
+		Log log = ((ConfigImpl)pageContext.getConfig()).getLogger("trace");
 		StringBuffer msg=new StringBuffer();
 		msg.append("["+trace.getTime()+" ms "+total+"] ");
 		msg.append("["+trace.getTemplate()+" @ line: "+trace.getLine()+"]");

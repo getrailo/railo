@@ -3,6 +3,7 @@ package railo.commons.io.log.log4j;
 import org.apache.log4j.Logger;
 
 import railo.commons.io.log.Log;
+import railo.commons.lang.StringUtil;
 
 public class LogAdapter implements Log {
 	
@@ -19,7 +20,8 @@ public class LogAdapter implements Log {
 	}
 
 	public void log(int level, String application, String message, Throwable t) {
-		logger.log(Log4jUtil.toLevel(level), application+"->"+message,t);
+		if(StringUtil.isEmpty(message))logger.log(Log4jUtil.toLevel(level), application,t);
+		else logger.log(Log4jUtil.toLevel(level), application+"->"+message,t);
 	}
 
 	@Override

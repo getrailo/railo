@@ -12,6 +12,7 @@ import java.util.Map;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.util.ResourceSnippet;
 import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.commons.lang.StringUtil;
@@ -508,7 +509,7 @@ public final class DebuggerImpl implements DebuggerPro {
 	        	while(it.hasNext()) {
 	        		trace= it.next();
 	        		row++;
-	        		qryTraces.setAt(KeyConstants._type,row,LogUtil.toStringType(trace.getType(), "INFO"));  
+	        		qryTraces.setAt(KeyConstants._type,row,DebugTraceImpl.toType(trace.getType(), "INFO"));  
 	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
 	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
 	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyConstants._template,row,trace.getTemplate()); 

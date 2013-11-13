@@ -176,13 +176,13 @@ public class ResourceAppender extends WriterAppender {
     reset();
     Resource parent = res.getParentResource();
     if(!parent.exists()) parent.createDirectory(true);
-    
+    boolean writeHeader = !append || res.length()==0;// this must happen before we open the stream
     Writer fw = createWriter(res.getOutputStream(append));
     if(bufferedIO) {
       fw = new BufferedWriter(fw, bufferSize);
     }
     this.setQWForFiles(fw);
-    if(!append || res.length()==0) writeHeader();
+    if(writeHeader) writeHeader();
     LogLog.debug("setFile ended");
   }
 

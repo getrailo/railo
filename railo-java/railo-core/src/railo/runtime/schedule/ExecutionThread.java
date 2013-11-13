@@ -7,7 +7,6 @@ import java.nio.charset.Charset;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
@@ -17,6 +16,7 @@ import railo.commons.net.http.HTTPResponse;
 import railo.commons.net.http.Header;
 import railo.commons.security.Credentials;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.net.proxy.ProxyData;
@@ -26,21 +26,21 @@ import railo.runtime.util.URLResolver;
 class ExecutionThread extends Thread {
 
 	private Config config;
-	private Log log;
+	//private Log log;
 	private ScheduleTask task;
 	private String charset;
 
-	public ExecutionThread(Config config, Log log, ScheduleTask task, String charset) {
+	public ExecutionThread(Config config, ScheduleTask task, String charset) {
 		this.config=config;
-		this.log=log;
 		this.task=task;
 		this.charset=charset;
 	}
 
 	public void run() {
-		execute(config, log, task, charset);
+		execute(config, task, charset);
 	}
-	public static void execute(Config config, Log log, ScheduleTask task, String charset) {
+	public static void execute(Config config, ScheduleTask task, String charset) {
+		Log log = getLog(config);
 		boolean hasError=false;
         String logName="schedule task:"+task.getTask();
        // init
@@ -89,7 +89,8 @@ class ExecutionThread extends Thread {
         try {
         	rsp = HTTPEngine.get(new URL(url), user, pass, task.getTimeout(),HTTPEngine.MAX_REDIRECT, charset, null, proxy, headers);
         } catch (Exception e) {
-            if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
+        	
+            LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
             hasError=true;
         }
         
@@ -117,14 +118,14 @@ class ExecutionThread extends Thread {
         	    try {
                     str=new URLResolver().transform(str,task.getUrl(),false);
                 } catch (PageException e) {
-                    if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
+                    LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
                     hasError=true;
                 }
         	    try {
                     IOUtil.write(file,str,charset,false);
                 } 
                 catch (IOException e) {
-                    if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
+                    LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
                     hasError=true;
                 }
 	        }
@@ -139,15 +140,19 @@ class ExecutionThread extends Thread {
                     //new File(file.getAbsolutePath()).write(method.getResponseBodyAsStream());
                 } 
                 catch (IOException e) {
-                    if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
+                    LogUtil.log(log,Log.LEVEL_ERROR,logName,e);
                     hasError=true;
                 }
 	        }
         }
-        if(!hasError && log!=null)log.log(Log.LEVEL_INFO,logName,"executed");
+        if(!hasError)log.log(Log.LEVEL_INFO,logName,"executed");
 	}
 	
-    private static boolean isText(HTTPResponse rsp) {
+    private static Log getLog(Config config) {
+		return ((ConfigImpl)config).getLogger("scheduler");
+	}
+
+	private static boolean isText(HTTPResponse rsp) {
     	ContentType ct = rsp.getContentType();
         if(ct==null)return true;
         String mimetype = ct.getMimeType();

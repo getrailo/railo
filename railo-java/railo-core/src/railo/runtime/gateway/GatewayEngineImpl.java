@@ -48,7 +48,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	
 	public GatewayEngineImpl(ConfigWeb config){
 		this.config=config;
-		this.log=((ConfigWebImpl)config).getGatewayLogger();
+		this.log=((ConfigWebImpl)config).getLogger("gateway");
 		
 	}
 	

@@ -30,10 +30,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.Cache2;
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogResource;
-import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.LoggerAndSourceData;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -650,7 +647,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
         else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
-        else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
+        //else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
         else if(check("updateMonitor",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitor();
         else if(check("updateExecutionLog",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExecutionLog();
         
@@ -2315,7 +2312,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
     private void doUpdateMailSetting() throws PageException {
-        admin.setMailLog(getString("admin",action,"logfile"),getString("loglevel","ERROR"));
+        //admin.setMailLog(getString("admin",action,"logfile"),getString("loglevel","ERROR"));
         
         admin.setMailSpoolEnable(getBoolObject("admin",action,"spoolenable"));
         
@@ -2480,15 +2477,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         
-        LogAndSource ls=config.getMailLogger();
-        railo.commons.io.log.Log log=ls.getLog();
-        String logFile="";
+        //LoggerAndSourceData data = config.getLoggerAndSourceData("mail");
+        //railo.commons.io.log.Log log=ls.getLog();
+        
+        //String logFile="";
         //String logLevel="";
-        if(log instanceof LogResource)logFile=((LogResource)log).getResource().toString();
-        String logLevel=LogUtil.toStringType(log.getLogLevel(),"ERROR");
-        sct.set("strlogfile",ls.getSource());
-        sct.set("logfile",logFile);
-        sct.set("loglevel",logLevel);
+        //if(log instanceof LogResource)logFile=((LogResource)log).getResource().toString();
+        //String logLevel=LogUtil.toStringType(data.getLevel(),"ERROR");
+        //sct.set("strlogfile",ls.getSource());
+        //sct.set("logfile",logFile);
+        //sct.set("loglevel",logLevel);
         int maxThreads=20;
         SpoolerEngine engine = config.getSpoolerEngine();
         if(engine instanceof SpoolerEngineImpl) {
@@ -3160,46 +3158,44 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		pageContext.setVariable(returnVariable,_doGetLogSettings());
     }
     
-    private Query _doGetLogSettings() throws  PageException {
+    private Query _doGetLogSettings() {
     	Query qry=new QueryImpl(
-				new String[]{"name","level","path","virtualpath","class","maxFile","maxFileSize"},
-				new String[]{"varchar","varchar","varchar","varchar","varchar","varchar","varchar"},
+				new String[]{"name","level","appender","appenderArgs","layout","layoutArgs"},
 				0,railo.runtime.type.util.ListUtil.last("logs", '.'));
         int row=0;
         
-        doGetLogSettings(qry,"application",config.getApplicationLogger(),++row);
-        doGetLogSettings(qry,"scope",config.getScopeLogger(),++row);
-        doGetLogSettings(qry,"exception",config.getExceptionLogger(),++row);
-        if(config instanceof ConfigWeb)doGetLogSettings(qry,"gateway",((ConfigWebImpl)config).getGatewayLogger(),++row);
-        doGetLogSettings(qry,"mail",config.getMailLogger(),++row);
-        doGetLogSettings(qry,"mapping",config.getMappingLogger(),++row);
-        doGetLogSettings(qry,"orm",config.getORMLogger(),++row);
-        doGetLogSettings(qry,"remote-client",config.getRemoteClientLog(),++row);
-        doGetLogSettings(qry,"request-timeout",config.getRequestTimeoutLogger(),++row);
+        doGetLogSettings(qry,"application",config.getLoggerAndSourceData("application"),++row);
+        doGetLogSettings(qry,"scope",config.getLoggerAndSourceData("scope"),++row);
+        doGetLogSettings(qry,"exception",config.getLoggerAndSourceData("exception"),++row);
+        if(config instanceof ConfigWeb)doGetLogSettings(qry,"gateway",((ConfigWebImpl)config).getLoggerAndSourceData("gateway"),++row);
+        doGetLogSettings(qry,"mail",config.getLoggerAndSourceData("mail"),++row);
+        doGetLogSettings(qry,"mapping",config.getLoggerAndSourceData("mapping"),++row);
+        doGetLogSettings(qry,"orm",config.getLoggerAndSourceData("orm"),++row);
+        doGetLogSettings(qry,"remote-client",config.getLoggerAndSourceData("remoteclient"),++row);
+        doGetLogSettings(qry,"request-timeout",config.getLoggerAndSourceData("requesttimeout"),++row);
         if(config instanceof ConfigWeb){
-        	doGetLogSettings(qry,"schedule-task",config.getScheduleLogger(),++row);
-        	doGetLogSettings(qry,"search",config.getSearchEngine().getLogger(),++row);
+        	doGetLogSettings(qry,"schedule-task",config.getLoggerAndSourceData("scheduler"),++row);
+        	doGetLogSettings(qry,"search",config.getLoggerAndSourceData("search"),++row);
         }
-        doGetLogSettings(qry,"thread",config.getThreadLogger(),++row);
-        doGetLogSettings(qry,"trace",config.getTraceLogger(),++row);
+        doGetLogSettings(qry,"thread",config.getLoggerAndSourceData("thread"),++row);
+        doGetLogSettings(qry,"trace",config.getLoggerAndSourceData("trace"),++row);
+        doGetLogSettings(qry,"deploy",config.getLoggerAndSourceData("deploy"),++row);
+        
+        
         return qry;
 	}
     
 
-	private void doGetLogSettings(Query qry, String name,LogAndSource log, int row) {
+	private void doGetLogSettings(Query qry, String name,LoggerAndSourceData data, int row) {
 		qry.addRow();
 		qry.setAtEL("name", row, name);
-		qry.setAtEL("level", row, LogUtil.toStringType(log.getLogLevel(), ""));
-		qry.setAtEL("virtualpath", row, log.getSource());
-		qry.setAtEL("class", row, log.getLog().getClass().getName());
-        Log l = log.getLog();
-        if(l instanceof LogResource){
-        	LogResource lr = (LogResource)l;
-        	qry.setAtEL("maxFile", row, Caster.toString(lr.getMaxFiles()));
-        	qry.setAtEL("maxFileSize", row, Caster.toString(lr.getMaxFileSize()));
-        	qry.setAtEL("path", row, lr.getResource().getAbsolutePath());
-        }
-        
+		qry.setAtEL("level", row,data.getLevel().toString());
+		qry.setAtEL("appender", row, data.getAppender());
+		qry.setAtEL("appenderArgs", row, data.getAppenderArgs());
+		qry.setAtEL("layout", row, data.getLayout());
+		qry.setAtEL("layoutArgs", row, data.getLayoutArgs());
+		
+		
         
 	}
 
@@ -3896,7 +3892,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
     
-    private void doUpdateUpdateLogSettings() throws PageException  {
+    /*private void doUpdateUpdateLogSettings() throws PageException  {
     	int level=LogUtil.toIntType(getString("admin", "updateUpdateLogSettings", "level"), -1);
     	String source=getString("admin", "updateUpdateLogSettings", "path");
     	if(source.indexOf("{")==-1){
@@ -3917,7 +3913,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	);
         store();
         adminSync.broadcast(attributes, config);
-    }
+    }*/
     
 
 
