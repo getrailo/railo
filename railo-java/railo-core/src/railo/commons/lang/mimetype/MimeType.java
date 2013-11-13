@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
@@ -163,17 +162,6 @@ public class MimeType {
 
 		*/
 		return new MimeType(type, subtype, properties);
-	}
-
-	
-	public static void main(String[] args) {
-		print.e(getInstance(""));
-		print.e(getInstance("*"));
-		print.e(getInstance("*;"));
-		print.e(getInstance("*;*"));
-		print.e(getInstance(";"));
-		print.e(getInstance("/;"));
-		print.e(getInstance("/"));
 	}
 	
 	/**
