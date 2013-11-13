@@ -878,18 +878,18 @@
 		function unitFormat( string unit, numeric time, boolean prettify=false ) {
 			// display 0 digits right to the point when more or equal to 100ms
 			if ( arguments.time >= 100000000 )
-				return int( arguments.time / 1000000 ) & " ms";
+				return int( arguments.time / 1000000 );
 
 			// display 1 digit right to the point when more or equal to 10ms
 			if ( arguments.time >=  10000000 )
-				return ( int( arguments.time / 100000 ) / 10 ) & " ms";
+				return ( int( arguments.time / 100000 ) / 10 );
 
 			// display 2 digits right to the point when more or equal to 1ms
 			if ( arguments.time >=   1000000 )
-				return ( int( arguments.time / 10000 ) / 100 ) & " ms";
+				return ( int( arguments.time / 10000 ) / 100 );
 
 			// display 3 digits right to the point
-			return ( int( arguments.time / 1000 ) / 1000 ) & " ms";
+			return ( int( arguments.time / 1000 ) / 1000 );
 			
 		}
 
