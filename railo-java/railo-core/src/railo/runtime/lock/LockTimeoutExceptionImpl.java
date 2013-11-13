@@ -35,7 +35,7 @@ public final class LockTimeoutExceptionImpl extends Exception {
     	StringBuilder sb=new StringBuilder()
 			.append("a timeout occurred after ")
 			.append(getTime(timeout))
-			.append(" trying to accuire a ")
+			.append(" trying to acquire a ")
 			.append(toString(type));
     	
     	if(StringUtil.isEmpty(scopeName)) {
