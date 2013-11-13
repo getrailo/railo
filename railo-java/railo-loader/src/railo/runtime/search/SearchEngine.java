@@ -72,7 +72,7 @@ public interface SearchEngine {
     /**
      * @return returns the logfile of the search storage
      */
-    public abstract LogAndSource getLogger();
+    public abstract LogAndSource getLogger(); // FUTURE deprecated
 
     /**
      * return XML Element Matching index id
