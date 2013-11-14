@@ -957,7 +957,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		}
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
-		String responseCharset=rsp.getCharset();
+		Charset responseCharset=CharsetUtil.toCharset(rsp.getCharset());
 	// Write Response Scope
 		//String rawHeader=httpMethod.getStatusLine().toString();
 			String mimetype=null;
@@ -1066,17 +1066,17 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        
 	        
 	        // filecontent
-	        //try {
-	        //print.ln(">> "+responseCharset);
-
-		    InputStream is=null;
+	        InputStream is=null;
 		    if(isText && getAsBinary!=GET_AS_BINARY_YES) {
 		    	String str;
                 try {
-                	is = rsp.getContentAsStream();
-                    if(is!=null &&isGzipEncoded(contentEncoding))
-                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
-                        	
+                	
+                	// read content
+                	if(method!=METHOD_HEAD) {
+                		is = rsp.getContentAsStream();
+	                    if(is!=null &&isGzipEncoded(contentEncoding))
+	                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
+                	}  	
                     try {
                     	try{
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
@@ -1111,7 +1111,7 @@ public final class Http4 extends BodyTagImpl implements Http {
                     }
                 } 
 		        catch (IOException e1) {}
-		        
+
 		        if(name!=null) {
                     Query qry = CSVParser.toQuery( str, delimiter, textqualifier, columns, firstrowasheaders  );
                     pageContext.setVariable(name,qry);
@@ -1121,11 +1121,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 		    else {
 		    	byte[] barr=null;
 		        if(isGzipEncoded(contentEncoding)){
-		        	is=rsp.getContentAsStream();
-		        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
+		        	if(method!=METHOD_HEAD) {
+			        	is=rsp.getContentAsStream();
+			        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
+		        	}
+		        	
 		        	try {
 		        		try{
-		        			barr = IOUtil.toBytes(is);
+		        			barr = is==null?null: IOUtil.toBytes(is);
 		        		}
 		        		catch(EOFException eof){
 		        			if(is instanceof CachingGZIPInputStream)
@@ -1142,18 +1145,23 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        }
 		        else {
 		        	try {
-		        		barr = rsp.getContentAsByteArray();
+		        		if(method!=METHOD_HEAD) barr = rsp.getContentAsByteArray();
 					} 
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);
 					}
 		        }
 		        //IF Multipart response get file content and parse parts
-			    if(isMultipart) {
-			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
-			    } else {
-			    	cfhttp.set(FILE_CONTENT,barr);
-			    }
+		        if(barr!=null) {
+				    if(isMultipart) {
+				    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+				    } else {
+				    	cfhttp.set(FILE_CONTENT,barr);
+				    }
+		        }
+		        else 
+			    	cfhttp.set(FILE_CONTENT,"");
+		        
 		        
 		        if(file!=null) {
 		        	try {
