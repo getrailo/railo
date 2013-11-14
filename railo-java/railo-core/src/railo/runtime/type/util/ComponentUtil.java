@@ -491,7 +491,9 @@ public final class ComponentUtil {
 
 
 	public static String md5(Component c) throws IOException, ExpressionException {
-		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
+		return md5(ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c));
+	}
+	public static String md5(ComponentWrap cw) throws IOException {
 		Key[] keys = cw.keys();
 		Arrays.sort(keys);
 		
