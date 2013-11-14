@@ -19,6 +19,9 @@ import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.type.util.UDFUtil;
 
 public final class UDFPropertiesImpl implements UDFProperties {
+	private static final long serialVersionUID = 8679484452640746605L; // do not change
+
+	
 	public  String functionName;
 	public  int returnType;
 	public  String strReturnType;

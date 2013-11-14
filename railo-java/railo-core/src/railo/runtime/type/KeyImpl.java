@@ -20,6 +20,9 @@ import railo.runtime.type.dt.DateTime;
 
 public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable,WangJenkins {
 
+	private static final long serialVersionUID = -8864844181140115609L; // do not change
+
+	
 	private static final long[] byteTable = createLookupTable();
 	private static final long HSTART = 0xBB40E64DA205B064L;
 	private static final long HMULT = 7664345821815920749L;
