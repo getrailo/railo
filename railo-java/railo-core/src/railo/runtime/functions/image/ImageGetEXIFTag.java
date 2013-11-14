@@ -17,7 +17,7 @@ public class ImageGetEXIFTag {
 		Struct data = ImageGetEXIFMetadata.getData(img);
 		Object value = data.get(tagName, null);
 		if(value==null){
-			throw new FunctionException(pc, "ImageGetEXIFTag", 2, "tagName", ExceptionUtil.similarKeyMessage(data,tagName,"tag","tags"));
+			throw new FunctionException(pc, "ImageGetEXIFTag", 2, "tagName", ExceptionUtil.similarKeyMessage(data,tagName,"tag","tags",true));
 		}
 		return value;
 	}

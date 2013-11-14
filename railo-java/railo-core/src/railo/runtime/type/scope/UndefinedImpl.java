@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.commons.lang.ExceptionUtil;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -200,6 +201,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 				return rtn;
 			}
 		}
+		if(pc.getConfig().debug())
+			throw new ExpressionException(ExceptionUtil.similarKeyMessage(this, key.getString(), "key", "keys",false));
+			
 		throw new ExpressionException("variable ["+key.getString()+"] doesn't exist");
 	}
 	

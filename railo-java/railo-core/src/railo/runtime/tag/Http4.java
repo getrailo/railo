@@ -1128,7 +1128,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        	
 		        	try {
 		        		try{
-		        			barr = is==null?null: IOUtil.toBytes(is);
+		        			barr = is==null?new byte[0]: IOUtil.toBytes(is);
 		        		}
 		        		catch(EOFException eof){
 		        			if(is instanceof CachingGZIPInputStream)
@@ -1146,6 +1146,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        else {
 		        	try {
 		        		if(method!=METHOD_HEAD) barr = rsp.getContentAsByteArray();
+		        		else barr=new byte[0];
 					} 
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);

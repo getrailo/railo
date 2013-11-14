@@ -147,7 +147,7 @@ public final class RequestImpl extends StructSupport implements Request {
 
 	public Object get(Key key) throws PageException {
 		Object value = get(key,NullSupportHelper.NULL());
-		if(value==NullSupportHelper.NULL()) throw invalidKey(this,key);
+		if(value==NullSupportHelper.NULL()) throw invalidKey(null,this,key);
 		return value;
 	}
 	

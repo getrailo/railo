@@ -59,7 +59,7 @@ public final class ExceptionUtil {
 	 * @param keyLabel
 	 * @return
 	 */
-	public static String similarKeyMessage(Collection.Key[] _keys,String keySearched, String keyLabel, String keyLabels) {
+	public static String similarKeyMessage(Collection.Key[] _keys,String keySearched, String keyLabel, String keyLabels, boolean listAll) {
 		
 		Arrays.sort(_keys);
 		String list=ListUtil.arrayToList(_keys, ",");
@@ -67,14 +67,14 @@ public final class ExceptionUtil {
 		
 		for(int i=0;i<_keys.length;i++){
 			if(StringUtil.soundex(_keys[i].getString()).equals(keySearchedSoundex))
-				return keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" ["+_keys[i].getString()+"] available, complete list of all available "+keyLabels+" ["+list+"]";
+				return "The "+keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" with name ["+_keys[i].getString()+"] available"+(listAll?". Here is a complete list of all available "+keyLabels+": ["+list+"].":".");
 		}
-		return keyLabel+" ["+keySearched+"] does not exist, only the followings are available "+keyLabels+" ["+list+"]";
+		return "The "+keyLabel+" ["+keySearched+"] does not exist"+(listAll?", only the following "+keyLabels+" are available: ["+list+"].":".");
 	}
 	
 
-	public static String similarKeyMessage(Collection coll,String keySearched, String keyLabel, String keyLabels) {
-		return similarKeyMessage(CollectionUtil.keys(coll), keySearched, keyLabel, keyLabels);
+	public static String similarKeyMessage(Collection coll,String keySearched, String keyLabel, String keyLabels, boolean listAll) {
+		return similarKeyMessage(CollectionUtil.keys(coll), keySearched, keyLabel, keyLabels,listAll);
 	}
 
 	public static IOException toIOException(Throwable t) {

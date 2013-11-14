@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.print;
 import railo.commons.collection.HashMapPro;
 import railo.commons.collection.MapFactory;
 import railo.commons.collection.MapPro;
@@ -1959,7 +1960,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		Struct _this = Caster.toStruct(in.readObject(),null);
 		Struct _var = Caster.toStruct(in.readObject(),null);
 	    
-		
 		try {
 			ComponentImpl other=(ComponentImpl)EvaluateComponent.invoke(pc, name, md5, _this,_var);
 			_readExternal(other);
@@ -1970,59 +1970,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		finally {
 			if(pcCreated)ThreadLocalPageContext.release();
 		}
-		
-		
-		
-		
-		
-		/*try {
-			
-			byte[] buffer = new byte[0xffff];
-	        int len;
-	        ByteArrayOutputStream baos=new ByteArrayOutputStream();
-	        while((len = in.read(buffer)) !=-1) {
-	        	baos.write(buffer, 0, len);
-	        }
-			
-			String str=new String(baos.toByteArray(),CharsetUtil.UTF8);
-			// all version older than 4.1.2.002 was serialized with writeUTF, so it is possible we have this Sting
-			if(str.length()>2 && str.charAt(0)==0) {
-				// first byte is 0 and second byte contains the length of the string
-				str=str.substring(2);
-			}
-			
-			// MUST do serialisation more like the cloning way
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,str);
-			
-			
-			
-			this._data=other._data;
-			this._udfs=other._udfs;
-			setOwner(_udfs);
-			setOwner(_data);
-			this.afterConstructor=other.afterConstructor;
-			this.base=other.base;
-			//this.componentPage=other.componentPage;
-			this.pageSource=other.pageSource;
-			this.constructorUDFs=other.constructorUDFs;
-			this.dataMemberDefaultAccess=other.dataMemberDefaultAccess;
-			this.interfaceCollection=other.interfaceCollection;
-			this.isInit=other.isInit;
-			this.properties=other.properties;
-			this.scope=other.scope;
-			this.top=this;
-			this._triggerDataMember=other._triggerDataMember;
-			this.hasInjectedFunctions=other.hasInjectedFunctions;
-			this.useShadow=other.useShadow;
-			this.entity=other.entity;
-			
-			
-		} catch (PageException e) {
-			throw ExceptionUtil.toIOException(e);
-		}
-		finally {
-			if(pcCreated)ThreadLocalPageContext.release();
-		}*/
 	}
 
 	private void readExternalOldStyle(PageContext pc, String str) throws IOException {
@@ -2073,10 +2020,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         Struct _this=new StructImpl();
 		Struct _var=new StructImpl();
 		
-		out.writeUTF(getAbsName());
-		out.writeUTF(ComponentUtil.md5(cw));
-		out.writeObject(_this);
-		out.writeObject(_var);
 		
 		// this scope (removing all UDFs)
 		Object member;
@@ -2107,26 +2050,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	            _var.setEL(e.getKey(), member);
             }
         }
-		
+	    
 	    out.writeUTF(getAbsName());
 		out.writeUTF(ComponentUtil.md5(cw));
 		out.writeObject(_this);
 		out.writeObject(_var);
 		
-		
-		/* old serialisation process 
-		try {
-			
-			
-			String str=new ScriptConverter().serialize(this);
-			print.e(str);
-			//out.writeUTF(str); this function has a size limitation (64k), because of that it is no longer used
-			byte[] barr = str.getBytes(CharsetUtil.UTF8);
-			out.write(barr);
-		}
-		catch (ConverterException e) {
-			throw ExceptionUtil.toIOException(e);
-		}*/
 	}
 
 	@Override
