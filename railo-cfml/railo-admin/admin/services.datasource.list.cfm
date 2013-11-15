@@ -37,6 +37,8 @@
 								dbusername="#data.usernames[idx]#"
 								dbpassword="#data.passwords[idx]#">
 								<cfset stVeritfyMessages["#data.names[idx]#"].Label = "OK">
+
+								<cfdbinfo type="Version" datasource="#data.names[idx]#" name='stVeritfyMessages["#data.names[idx]#"].dbInfo'>
 							<cfcatch>
 								<!--- <cfset error.message=error.message&data.names[idx]&": "&cfcatch.message&"<br>"> --->
 								<cfset stVeritfyMessages[data.names[idx]].Label = "Error">
@@ -267,7 +269,13 @@ list all mappings and display necessary edit fields --->
 								<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 							</td>
 							<td><input type="hidden" name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
-							<td>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
+							<td>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#
+								<cfif isDefined( "stVeritfyMessages[srcLocal.name].dbInfo" ) && stVeritfyMessages[srcLocal.name].dbInfo.recordCount>
+									<cfset qDbInfo = stVeritfyMessages[srcLocal.name].dbInfo>
+									<div>Database: #qDbInfo.DATABASE_PRODUCTNAME# #qDbInfo.DATABASE_VERSION#</div>
+									<div>Driver: #qDbInfo.DRIVER_NAME# #qDbInfo.DRIVER_VERSION# (JDBC #qDbInfo.JDBC_MAJOR_VERSION#.#qDbInfo.JDBC_MINOR_VERSION#)</div>
+								</cfif>
+							</td>
 							<td>#yesNoFormat(srcLocal.storage)#</td>
 							<td>
 								<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
@@ -285,7 +293,7 @@ list all mappings and display necessary edit fields --->
 								</cfif>
 							</td>
 							<td><a class="btn-mini edit" href="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#" title="edit"><span>edit</span></a></td>
-						</tr>
+						</tr>						
 					</cfloop>
 					<cfmodule template="remoteclients.cfm" colspan="6" line="true">
 				</tbody>
