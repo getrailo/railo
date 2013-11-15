@@ -4,27 +4,23 @@
 	<cffunction name="afterTests"></cffunction>
 	<cffunction name="setUp"></cffunction>
 	--->
-	<cffunction name="testArrayLen">
+	<cffunction name="testArrayResize" localMode="modern">
 
 <!--- begin old test code --->
-<cfset var arr=arrayNew(1)>
+<cfset arr=arrayNew(1)>
 <cfset valueEquals(left="#arrayLen(arr)#", right="0")>
-<cfset ArrayAppend( arr, 1 )>
-<cfset valueEquals(left="#arrayLen(arr)#", right="1")>
-<cfset arr[9]=9>
-<cfset valueEquals(left="#arrayLen(arr)#", right="9")>
 <cfset ArrayResize(arr, 20)>
 <cfset valueEquals(left="#arrayLen(arr)#", right="20")>
-
-<cfset arr=arrayNew(2)>
-<cfset arr[1][1]=11>
-<cfset arr[1][2]=12>
-<cfset arr[1][3]=13>
-<cfset arr[2][1]=21>
-<cfset arr[2][2]=22>
-<cfset arr[2][3]=23>
-
-<cfset valueEquals(left="#arrayLen(arr)#", right="2")>
+<cfset ArrayResize(arr, 10)>
+<cfset valueEquals(left="#arrayLen(arr)#", right="20")>
+ 
+<cfset arr=arrayNew(1)>
+<cfset arr[2]=2>
+<cfset arr[4]=4>
+<cfset ArrayResize(arr, 10)>
+<cfset valueEquals(left="#arrayLen(arr)#", right="10")>
+<cfset valueEquals(left="#arr[2]#", right="2")>
+<cfset valueEquals(left="#arr[4]#", right="4")>
 
 <!--- end old test code --->
 	

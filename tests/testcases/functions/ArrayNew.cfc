@@ -4,27 +4,26 @@
 	<cffunction name="afterTests"></cffunction>
 	<cffunction name="setUp"></cffunction>
 	--->
-	<cffunction name="testArrayLen">
+	<cffunction name="testArrayNew" localMode="modern">
 
 <!--- begin old test code --->
-<cfset var arr=arrayNew(1)>
-<cfset valueEquals(left="#arrayLen(arr)#", right="0")>
-<cfset ArrayAppend( arr, 1 )>
-<cfset valueEquals(left="#arrayLen(arr)#", right="1")>
-<cfset arr[9]=9>
-<cfset valueEquals(left="#arrayLen(arr)#", right="9")>
-<cfset ArrayResize(arr, 20)>
-<cfset valueEquals(left="#arrayLen(arr)#", right="20")>
+<cfset arr=arrayNew(1)>
+<cfset arr=arrayNew(2)>
+<cfset arr=arrayNew(3)>
+
+<cftry>
+	<cfset arr=arrayNew(4)>
+	<cfset fail("must throw:Array dimension 4 must be between 1 and 3. ")>
+	<cfcatch></cfcatch>
+</cftry>
+<cftry>
+	<cfset arr=arrayNew(0)>
+	<cfset fail("must throw:Array dimension 4 must be between 1 and 3. ")>
+	<cfcatch></cfcatch>
+</cftry>
 
 <cfset arr=arrayNew(2)>
-<cfset arr[1][1]=11>
-<cfset arr[1][2]=12>
-<cfset arr[1][3]=13>
-<cfset arr[2][1]=21>
-<cfset arr[2][2]=22>
-<cfset arr[2][3]=23>
-
-<cfset valueEquals(left="#arrayLen(arr)#", right="2")>
+<cfset x=arr[1]>
 
 <!--- end old test code --->
 	
