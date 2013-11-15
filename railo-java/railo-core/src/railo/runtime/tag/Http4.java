@@ -262,7 +262,8 @@ public final class Http4 extends BodyTagImpl implements Http {
     private short authType=AUTH_TYPE_BASIC;
     private String workStation=null;
     private String domain=null;
-	private boolean preauth=true; 
+	private boolean preauth=true;
+	private boolean encoded=true; 
 
 	
 	@Override
@@ -303,6 +304,7 @@ public final class Http4 extends BodyTagImpl implements Http {
         workStation=null;
         domain=null;
         preauth=true; 
+        encoded=true;
 	}
 	
 	/**
@@ -311,6 +313,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 	public void setFirstrowasheaders(boolean firstrowasheaders)	{
 		this.firstrowasheaders=firstrowasheaders;
 	}
+	
+
+	public void setEncoded(boolean encoded)	{
+		this.encoded=encoded;
+	}
+
 
 	/** set the value password
 	*  When required by a server, a valid password.
@@ -612,15 +620,15 @@ public final class Http4 extends BodyTagImpl implements Http {
     		// URL
     			if(type.equals("url")) {
     				if(sbQS.length()>0)sbQS.append('&');
-    				sbQS.append(translateEncoding(param.getName(), charset));
+    				sbQS.append(param.getEncoded()?urlenc(param.getName(),charset):param.getName());
     				sbQS.append('=');
-    				sbQS.append(translateEncoding(param.getValueAsString(), charset));
+    				sbQS.append(param.getEncoded()?urlenc(param.getValueAsString(), charset):param.getValueAsString());
     			}
     		}
     		String host=null;
     		HttpHost httpHost;
     		try {
-    			URL _url = HTTPUtil.toURL(url,port);
+    			URL _url = HTTPUtil.toURL(url,port,encoded);
     			httpHost = new HttpHost(_url.getHost(),_url.getPort());
     			host=_url.getHost();
     			url=_url.toExternalForm();
@@ -632,11 +640,9 @@ public final class Http4 extends BodyTagImpl implements Http {
     				else {
     					url+="&"+sbQS;
     				}
-    					
     			}
-    			
-    			
-    		} catch (MalformedURLException mue) {
+    		} 
+    		catch (MalformedURLException mue) {
     			throw Caster.toPageException(mue);
     		}
     		
@@ -726,10 +732,10 @@ public final class Http4 extends BodyTagImpl implements Http {
     			}
     		// CGI
     			else if(type.equals("cgi")) {
-    				if(param.isEncoded())
-    				    req.addHeader(
-                                translateEncoding(param.getName(),charset),
-                                translateEncoding(param.getValueAsString(),charset));
+    				if(param.getEncoded())
+    					req.addHeader(
+    							urlenc(param.getName(),charset),
+    							urlenc(param.getValueAsString(),charset));
                     else
                         req.addHeader(param.getName(),param.getValueAsString());
     			}
@@ -1635,7 +1641,7 @@ public final class Http4 extends BodyTagImpl implements Http {
         return sb.toString();
     }
 
-    private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
+    private static String urlenc(String str, String charset) throws UnsupportedEncodingException {
     	if(!ReqRspUtil.needEncoding(str,false)) return str;
     	return URLEncoder.encode(str,charset);
     }

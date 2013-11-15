@@ -896,7 +896,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	// parse url (also query string)
 		URL _url=null;
 		try {
-			_url = HTTPUtil.toURL(url,port);
+			_url = HTTPUtil.toURL(url,port,true);
 			url=_url.toExternalForm();
 			
 			
@@ -980,7 +980,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 			}
 		// CGI
 			else if(type.equals("cgi")) {
-				if(param.isEncoded())
+				if(param.getEncoded())
 				    httpMethod.addRequestHeader(
                             translateEncoding(param.getName(),http.charset),
                             translateEncoding(param.getValueAsString(),http.charset));
