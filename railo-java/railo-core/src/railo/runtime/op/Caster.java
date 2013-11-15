@@ -3428,7 +3428,7 @@ public final class Caster {
     	if(Decision.isURL(str)) return str;
     	
     	try {
-			return HTTPUtil.toURL(str).toExternalForm();
+			return HTTPUtil.toURL(str,true).toExternalForm();
 		} 
     	catch (MalformedURLException e) {
     		throw new ExpressionException("can't cast value ["+str+"] to a URL",e.getMessage());
@@ -3440,7 +3440,7 @@ public final class Caster {
     	if(str==null) return defaultValue;
     	if(Decision.isURL(str)) return str;
     	try {
-			return HTTPUtil.toURL(str).toExternalForm();
+			return HTTPUtil.toURL(str,true).toExternalForm();
 		} 
     	catch (MalformedURLException e) {
     		return defaultValue;

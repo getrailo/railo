@@ -150,7 +150,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
      * @throws MalformedURLException
      */
     private static URL toURL(String url, int port) throws MalformedURLException {
-        URL u = HTTPUtil.toURL(url);
+        URL u = HTTPUtil.toURL(url,true);
         if(port==-1) return u;
         return new URL(u.getProtocol(), u.getHost(), port, u.getFile());
     }    

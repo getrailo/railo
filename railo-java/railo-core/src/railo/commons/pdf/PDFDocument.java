@@ -347,7 +347,7 @@ public final class PDFDocument {
 	    				String abs = srcfile.getAbsolutePath();
 	    				String contract = ContractPath.call(pc, abs);
 	    				if(!abs.equals(contract)) {
-	    					base=HTTPUtil.toURL(CGIImpl.getDomain(pc.getHttpServletRequest())+contract);
+	    					base=HTTPUtil.toURL(CGIImpl.getDomain(pc.getHttpServletRequest())+contract,true);
 	    				}
 
     			}
@@ -363,7 +363,7 @@ public final class PDFDocument {
     	// src
     	else if(src!=null) {
     		if(StringUtil.isEmpty(strCharset))strCharset="iso-8859-1";
-    		URL url = HTTPUtil.toURL(src);
+    		URL url = HTTPUtil.toURL(src,true);
 			
 			// set Proxy
 			if(StringUtil.isEmpty(proxyserver) && config.isProxyEnableFor(url.getHost())) {
@@ -423,7 +423,7 @@ public final class PDFDocument {
 		// bug in pd4ml-> html badse definition create a call
 		if(!StringUtil.isEmpty(userAgent) && userAgent.startsWith("Java"))return null;
 		
-		return HTTPUtil.toURL(GetDirectoryFromPath.call(pc, ReqRspUtil.getRequestURL(pc.getHttpServletRequest(), false)));
+		return HTTPUtil.toURL(GetDirectoryFromPath.call(pc, ReqRspUtil.getRequestURL(pc.getHttpServletRequest(), false)),true);
 	}
 
 

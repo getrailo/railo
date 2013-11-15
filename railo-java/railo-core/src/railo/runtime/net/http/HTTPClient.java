@@ -76,10 +76,10 @@ public class HTTPClient implements Objects, Iteratorable {
 
 	public HTTPClient(String httpUrl, String username, String password, ProxyData proxyData) throws PageException {
 		try {
-			url=HTTPUtil.toURL(httpUrl);
+			url=HTTPUtil.toURL(httpUrl,true);
 			
 			if(!StringUtil.isEmpty(this.url.getQuery())) throw new ApplicationException("invalid url, query string is not allowed as part of the call");
-			metaURL=HTTPUtil.toURL(url.toExternalForm()+"?cfml");
+			metaURL=HTTPUtil.toURL(url.toExternalForm()+"?cfml",true);
 		}
 		catch (MalformedURLException e) {
 			throw Caster.toPageException(e);
