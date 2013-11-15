@@ -272,8 +272,8 @@ list all mappings and display necessary edit fields --->
 							<td>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#
 								<cfif isDefined( "stVeritfyMessages[srcLocal.name].dbInfo" ) && stVeritfyMessages[srcLocal.name].dbInfo.recordCount>
 									<cfset qDbInfo = stVeritfyMessages[srcLocal.name].dbInfo>
-									<div>Database: #qDbInfo.DATABASE_PRODUCTNAME# #qDbInfo.DATABASE_VERSION#</div>
-									<div>Driver: #qDbInfo.DRIVER_NAME# #qDbInfo.DRIVER_VERSION# (JDBC #qDbInfo.JDBC_MAJOR_VERSION#.#qDbInfo.JDBC_MINOR_VERSION#)</div>
+									<div class="comment">#stText.settings.datasource.databaseName#: #qDbInfo.DATABASE_PRODUCTNAME# #qDbInfo.DATABASE_VERSION#</div>
+									<div class="comment">#stText.settings.datasource.driverName#: #qDbInfo.DRIVER_NAME# #qDbInfo.DRIVER_VERSION# (JDBC #qDbInfo.JDBC_MAJOR_VERSION#.#qDbInfo.JDBC_MINOR_VERSION#)</div>
 								</cfif>
 							</td>
 							<td>#yesNoFormat(srcLocal.storage)#</td>
