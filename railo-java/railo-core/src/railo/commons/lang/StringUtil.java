@@ -995,13 +995,34 @@ public final class StringUtil {
 
 	public static boolean isAscii(String str) {
 
-		for(int i=str.length()-1;i>=0;i--){
+		int len = str.length();
+		for(int i=len-1;i>=0;i--){
 
 			if( str.charAt(i) > 127 )
     			return false;
 		}
 		return true;
 	}
+
+
+	/**
+	 * returns true if all characters in the string are letters
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static boolean isAllAlpha(String str) {
+
+		int len = str.length();
+		for (int i=0; i<len; i++) {
+
+			if ( !Character.isLetter( str.charAt(i) ) )
+				return false;
+		}
+
+		return true;
+	}
+
 
 	public static boolean isWhiteSpace(String str) {
 		if(str==null) return false;
