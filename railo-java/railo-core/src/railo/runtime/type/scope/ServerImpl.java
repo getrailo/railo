@@ -3,6 +3,7 @@ package railo.runtime.type.scope;
 import java.io.File;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
@@ -11,7 +12,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.instrumentation.InstrumentationUtil;
-import railo.runtime.java.JavaUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -142,7 +142,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			railo.setEL(STATE,Info.getStateAsString());
 			railo.setEL(RELEASE_DATE,Info.getRealeaseDate());
 			railo.setEL(LOADER_VERSION,Caster.toDouble(SystemUtil.getLoaderVersion()));
-			railo.setEL(LOADER_PATH, JavaUtil.getJarPathForClass( "railo.loader.servlet.CFMLServlet" ));
+			railo.setEL(LOADER_PATH, ClassUtil.getSourcePathForClass("railo.loader.servlet.CFMLServlet", ""));
 
 			railo.setReadOnly(true);
 		super.setEL (RAILO,railo);
@@ -165,7 +165,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
 			java.setEL(JAVA_AGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
 			
-			//if(jap==null) jap=JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent");
+			//if(jap==null) jap=JavaUtil.getSourcePathForClass("railo.runtime.instrumentation.Agent");
 			//java.setEL(JAVA_AGENT_PATH, jap);
 			
 			if(jep==null) {

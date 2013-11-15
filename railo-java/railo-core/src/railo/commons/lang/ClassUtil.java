@@ -9,12 +9,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Set;
 
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -27,9 +29,7 @@ import railo.runtime.type.util.ListUtil;
 public final class ClassUtil {
 
 	/**
-	 * @param pc
-	 * @param lcType
-	 * @param type
+	 * @param className
 	 * @return
 	 * @throws ClassException 
 	 * @throws PageException
@@ -385,7 +385,7 @@ public final class ClassUtil {
 	
 	/**
 	 * get class pathes from all url ClassLoaders
-	 * @param ucl URL Class Loader
+	 * @param cl URL Class Loader
 	 * @param pathes Hashmap with allpathes
 	 */
 	private static void getClassPathesFromLoader(ClassLoader cl, Map pathes) {
@@ -540,4 +540,47 @@ public final class ClassUtil {
 		}
 		return clazz;
 	}
+
+
+	/**
+	 * returns the path to the directory or jar file that the class was loaded from
+	 *
+	 * @param clazz - the Class object to check, for a live object pass obj.getClass();
+	 * @param defaultValue - a value to return in case the source could not be determined
+	 * @return
+	 */
+	public static String getSourcePathForClass(Class clazz, String defaultValue) {
+
+		try {
+
+			String result = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+			result = URLDecoder.decode(result, Charset.UTF8);
+			result = SystemUtil.fixWindowsPath(result);
+			return result;
+		}
+		catch (Throwable t) {}
+
+		return defaultValue;
+	}
+
+
+	/**
+	 * tries to load the class and returns the path that it was loaded from
+	 *
+	 * @param className - the name of the class to check
+	 * @param defaultValue - a value to return in case the source could not be determined
+	 * @return
+	 */
+	public static String getSourcePathForClass(String className, String defaultValue) {
+
+		try {
+
+			return  getSourcePathForClass(ClassUtil.loadClass(className), defaultValue);
+		}
+		catch (Throwable t) {}
+
+		return defaultValue;
+	}
+
+
 }
