@@ -1,5 +1,6 @@
 package railo.runtime.tag;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,6 +8,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.Cookie;
 import javax.servlet.jsp.tagext.Tag;
 
+import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
@@ -46,28 +48,55 @@ public class TagUtil {
 
 	//private static final String "invalid call of the function ["+tlt.getName()+", you can not mix named on regular arguments]" = "invalid argument for function, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")";
 
-	public static void setAttributeCollection(PageContext pc,Tag tag, MissingAttribute[] missingAttrs, Struct attrs, int attrType) throws PageException {
+	public static void setAttributeCollection(PageContext pc,Tag tag, MissingAttribute[] missingAttrs, Struct _attrs, int attrType) throws PageException {
 		// check missing tags
-		if(!ArrayUtil.isEmpty(missingAttrs)){
-			Object value;
-			for(int i=0;i<missingAttrs.length;i++) {
-				value=attrs.get(
-						missingAttrs[i].getName()
-						,null);
-				if(value==null)
-					throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required but missing");
-					//throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required for tag "+tag.getFullName());
-				attrs.put(missingAttrs[i].getName(), Caster.castTo(pc, missingAttrs[i].getType(), value, false));
+		Map<Key, Object> att=new HashMap<Key, Object>();
+		{
+			Iterator<Entry<Key, Object>> it = _attrs.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()){
+				e = it.next();
+				att.put(e.getKey(), e.getValue());
 			}
 		}
 		
+		if(!ArrayUtil.isEmpty(missingAttrs)){
+			Key k;
+			Object value;
+			MissingAttribute miss;
+			for(int i=0;i<missingAttrs.length;i++) {
+				miss = missingAttrs[i];
+				value=att.get(miss.getName());
+				// check alias
+				if(value==null && !ArrayUtil.isEmpty(miss.getAlias())) {
+					String[] alias = miss.getAlias();
+					for(int y=0;y<alias.length;y++){
+						value=att.get(k=KeyImpl.init(alias[y]));
+						if(value!=null) {
+							att.remove(k);
+							break;
+						}
+					}
+				}
+				
+				
+				if(value==null)
+					throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required but missing");
+					//throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required for tag "+tag.getFullName());
+				att.put(
+						missingAttrs[i].getName(), 
+						Caster.castTo(pc, missingAttrs[i].getType(), value, false));
+			}
+		}
+		print.e("+++++++++++++");
+		print.e(att);
 		
 		//Key[] keys = attrs.keys();
 		Iterator<Entry<Key, Object>> it;
 		Entry<Key, Object> e;
 		if(TagLibTag.ATTRIBUTE_TYPE_DYNAMIC==attrType) {
 			DynamicAttributes da=(DynamicAttributes) tag;
-			it = attrs.entryIterator();
+			it = att.entrySet().iterator();
 			while(it.hasNext()) {
 				e = it.next();
 				da.setDynamicAttribute(null, e.getKey(),e.getValue());
@@ -75,7 +104,7 @@ public class TagUtil {
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_FIXED==attrType) {
 			Object value;
-			it = attrs.entryIterator();
+			it = att.entrySet().iterator();
 			while(it.hasNext()) {
 				e = it.next();
 				value=e.getValue();
@@ -85,7 +114,7 @@ public class TagUtil {
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_MIXED==attrType) {
 			MethodInstance setter;
-			it = attrs.entryIterator();
+			it = att.entrySet().iterator();
 			while(it.hasNext()) {
 				e = it.next();
 				setter = Reflector.getSetter(tag, e.getKey().getString(),e.getValue(),null);

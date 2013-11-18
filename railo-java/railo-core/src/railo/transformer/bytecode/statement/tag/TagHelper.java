@@ -13,13 +13,16 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.runtime.exp.Abort;
 import railo.runtime.tag.MissingAttribute;
+import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.type.LiteralStringArray;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
@@ -31,6 +34,7 @@ import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 public final class TagHelper {
 	private static final Type MISSING_ATTRIBUTE = Type.getType(MissingAttribute.class);
@@ -86,10 +90,15 @@ public final class TagHelper {
 			"newInstance",
 			ABORT,
 			new Type[]{Types.INT_VALUE});
-	private static final Method NEW_INSTANCE_MAX =  new Method(
+	private static final Method NEW_INSTANCE_MAX2 =  new Method(
 			"newInstance",
 			MISSING_ATTRIBUTE,
 			new Type[]{Types.COLLECTION_KEY,Types.STRING});
+	
+	private static final Method NEW_INSTANCE_MAX3 =  new Method(
+			"newInstance",
+			MISSING_ATTRIBUTE,
+			new Type[]{Types.COLLECTION_KEY,Types.STRING,Types.STRING_ARRAY});
 	
 	
 	
@@ -197,19 +206,23 @@ public final class TagHelper {
 				adapter.cast(currType, TAG);
 				
 				///
-				Map missings = tag.getMissingAttributes();
-				if(missings.size()>0) {
+				TagLibTagAttr[] missings = tag.getMissingAttributes();
+				if(!ArrayUtil.isEmpty(missings)) {
 					ArrayVisitor av=new ArrayVisitor();
-		            av.visitBegin(adapter,MISSING_ATTRIBUTE,missings.size());
-		            Map.Entry entry;
+		            av.visitBegin(adapter,MISSING_ATTRIBUTE,missings.length);
 		            int count=0;
-		            Iterator it = missings.entrySet().iterator();
-		            while(it.hasNext()){
-		            	entry=(Entry) it.next();
-		    			av.visitBeginItem(adapter, count++);
-		    				Variable.registerKey(bc, LitString.toExprString((String)entry.getKey()));
-			    			adapter.push((String)entry.getValue());
-		    				adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX);
+		            TagLibTagAttr miss;
+		            for(int i=0;i<missings.length;i++){
+		            	miss = missings[i];
+		            	av.visitBeginItem(adapter, count++);
+		    				Variable.registerKey(bc, LitString.toExprString(miss.getName()));
+			    			adapter.push(miss.getType());
+			    			if(ArrayUtil.isEmpty(miss.getAlias()))
+		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX2);
+		    				else {
+		    					new LiteralStringArray(miss.getAlias()).writeOut(bc, Expression.MODE_REF); 
+		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX3);
+		    				}
 		    			av.visitEndItem(bc.getAdapter());
 		            }
 		            av.visitEnd();
@@ -253,6 +266,7 @@ public final class TagHelper {
 				methodName=tag.getTagLibTag().getSetter(attr,type);
 				adapter.loadLocal(currLocal);
 				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
+				print.e("o:"+methodName);
 				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
 			}
 		}

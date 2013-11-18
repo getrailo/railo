@@ -24,6 +24,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
@@ -208,18 +209,19 @@ public final class GetTagData implements Function {
 		Struct _args=new StructImpl();
 		sct.set(KeyConstants._attributes,_args);
 		
-		Map atts = tag.getAttributes();
-		Iterator it = atts.keySet().iterator();
-		
+		//Map<String,TagLibTagAttr> atts = tag.getAttributes();
+		Iterator<Entry<String, TagLibTagAttr>> it = tag.getAttributes().entrySet().iterator();
+		Entry<String, TagLibTagAttr> e;
 		while(it.hasNext()) {
-		    Object key = it.next();
-		    TagLibTagAttr attr=(TagLibTagAttr) atts.get(key);
+		    e = it.next();
+		    TagLibTagAttr attr=e.getValue();
 		    if(attr.getHidden()) continue;
 		//for(int i=0;i<args.size();i++) {
 			Struct _arg=new StructImpl();
 			_arg.set(KeyConstants._status,TagLibFactory.toStatus(attr.getStatus()));
 			_arg.set(KeyConstants._description,attr.getDescription());
 			_arg.set(KeyConstants._type,attr.getType());
+			if(attr.getAlias()!=null)_arg.set(KeyConstants._alias,ListUtil.arrayToList(attr.getAlias(), ","));
 			_arg.set(KeyConstants._required,attr.isRequired()?Boolean.TRUE:Boolean.FALSE);
 			_arg.set("scriptSupport",attr.getScriptSupportAsString());
 			_args.setEL(attr.getName(),_arg);

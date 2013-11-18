@@ -205,6 +205,8 @@ public final class TagLibFactory extends DefaultHandler {
     			// description?
     			// Name
     			if(inside.equals("name")) att.setName(value);
+    			// Name
+    			if(inside.equals("alias")) att.setAlias(value);
 				// Required
 				else if(inside.equals("required")) 
 					att.setRequired(Caster.toBooleanValue(value,false));

@@ -39,6 +39,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -318,7 +319,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	}
 	
 
-	public void setEncoded(boolean encoded)	{
+	public void setEncodeurl(boolean encoded)	{print.ds("encoded:"+encoded);
 		this.encoded=encoded;
 	}
 
@@ -480,7 +481,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	* 	number. Port numbers specified in the url attribute override the port attribute.
 	* @param url value to set
 	**/
-	public void setUrl(String url)	{
+	public void setUrl(String url)	{print.ds("url:"+url);
 		this.url=url;
 	}
 

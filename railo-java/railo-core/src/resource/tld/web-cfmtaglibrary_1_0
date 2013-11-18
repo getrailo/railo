@@ -1753,6 +1753,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>displayname</name>
+			<alias>display</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>A string to be displayed when using introspection to show
@@ -1760,17 +1761,6 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
             heading, following the component name.
             If the style attribute is set to document, the displayname
             attribute is used as the name of the service element in the WSDL.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>display</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>A string to be displayed when using introspection to show
-            information about the CFC. The information appears on the
-            heading, following the component name.
-            If the style attribute is set to document, the displayname
-            attribute is used as the name of the service element in the WSDL (alias for displayname).</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2049,18 +2039,11 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>encode</name>
+			<name>encodeValue</name>
+			<alias>encode</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>if set to true, Railo url encodes the given name and value if necessary.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>encodeValue</name>
-			<status>deprecated</status>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for encode.</description>
 		</attribute>
 	</tag>
 	<!-- DBInfo -->
@@ -2119,16 +2102,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>dbname</name>
+			<alias>dbnames</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the database</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>dbnames</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Name of the database (alias for dbname)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2202,7 +2179,8 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>object</type>
-			<name>acl</name>
+			<name>storeacl</name>
+			<alias>acl</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>An array of struct where each struct represents a permission or grant.
@@ -2211,25 +2189,12 @@ Example:
 </description>
 		</attribute>
 		<attribute>
-			<type>object</type>
-			<name>storeacl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for attribute "acl"</description>
-		</attribute>
-		<attribute>
 			<type>string</type>
-			<name>storage</name>
+			<name>storelocation</name>
+			<alias>storage</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Only used for S3 Resources. The location of the created bucket/object. The location can either be EU,US or US-WEST. The default location is US.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>storelocation</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for attribute "storage"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2561,17 +2526,11 @@ Example:
 
 		<attribute>
 			<type>string</type>
-			<name>proxyServer</name>
+			<name>proxyHost</name>
+			<alias>proxyServer</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>alias for proxyHost</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>proxyHost</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Host name or IP address of a proxy server.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -3196,20 +3155,14 @@ Determines if the contents of the cfdocumentitem tag body has to be evaluated at
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>object</type>
-			<name>acl</name>
+			<name>storeacl</name>
+			<alias>acl</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>An array of struct where each struct represents a permission or grant.
 Example:
 [{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
 			</description>
-		</attribute>
-		<attribute>
-			<type>object</type>
-			<name>storeacl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -5610,7 +5563,8 @@ To use cached data, the function must be called with the exact same arguments.</
 		
 		<attribute>
 			<type>boolean</type>
-			<name>encoded</name>
+			<name>encodeurl</name>
+			<alias>encoded,encode</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
@@ -5685,7 +5639,10 @@ To use cached data, the function must be called with the exact same arguments.</
 			<name>multiparttype</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>alias for multiparttype</description>
+			<status>deprecated</status>
+			<description>
+			This attribute has been deprecated, use instead the attribute "multipart".
+			</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -6082,16 +6039,10 @@ To use cached data, the function must be called with the exact same arguments.</
 		<attribute>
 			<type>string</type>
 			<name>structName</name>
+			<alias>result</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the structure to be created.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>result</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Name of the structure to be created (alias for structname).</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -7880,6 +7831,7 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
+			<alias>id</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the name of the lock. Only one request can execute inside a cflock tag with a given
@@ -7907,13 +7859,6 @@ Valid only for cfinput type="text".</description>
 	A read-only lock allows more than one request to read shared data. An exclusive lock allows only one
 	request to read or write to shared data.</description>
 		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>id</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		<description>alias for name</description>
-    </attribute>
 	</tag>
 	<!-- Log -->
 	<tag>
@@ -8401,14 +8346,8 @@ Railo uses the number of characters in the file.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>tls</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for usetls</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
 			<name>usetls</name>
+			<alias>tls,starttls</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Whether to use Transport Level Security.</description>
@@ -8425,31 +8364,11 @@ Railo uses the number of characters in the file.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>starttls</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for useTls</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>ssl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for usessl</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
 			<name>usessl</name>
+			<alias>ssl,secure</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Whether to use Secure Sockets Layer.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>secure</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for ssl</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -12618,6 +12537,7 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>any</type>
 			<name>retryInterval</name>
+			<alias>retryIntervall</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>when type task, this attribute define a execution plan for additional tries of execution.
@@ -12633,14 +12553,6 @@ To use cached data, the current query must use the same SQL statement, data sour
 
 			in this case Railo replay the thread for maximum of 10 times, when the execution fails, 5 times every 5 seconds, then 5 times every 10 seconds.
 			</description>
-		</attribute>
-		<attribute>
-			<type>any</type>
-			<name>retryIntervall</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<status>deprecated</status>
-			<description>deprecated, alias for retryInterval</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -13232,22 +13144,13 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>var</name>
+			<alias>variable</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The name of a simple or complex variable to display.
 
             Useful for displaying a temporary value, or a value that
             does not display on any CFM page.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>variable</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>The name of a simple or complex variable to display.
-
-            Useful for displaying a temporary value, or a value that
-            does not display on any CFM page (alias for attribute "var").</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -13415,23 +13318,10 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>boolean</type>
 			<name>playlistThumbnails</name>
+			<alias>thumbs,thumbnails</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>using Thumbnails in playlist or not</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>thumbnails</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>using Thumbnails in playlist or not (alias for playlistThumbnails)</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>thumbs</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>using Thumbnails in playlist or not (alias for playlistThumbnails)</description>
 		</attribute>
 
 
