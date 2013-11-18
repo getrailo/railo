@@ -25,7 +25,7 @@ public class IPRangeCollection {
 			int listSize = list.size();
 			for ( int i=0; i < listSize; i++ ) {
 
-				IPRangeNode sibling = (IPRangeNode)list.get(i);
+				IPRangeNode sibling = list.get(i);
 
 				if ( child.containsRange( sibling ) ) {                         // move sibling under new child
 
