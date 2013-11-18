@@ -122,7 +122,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
         }	
     }
 	
-	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,List<Statement> statements,BytecodeContext bc) throws BytecodeException {
+	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,List<Statement> statements,final BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
         boolean isOutsideMethod;
         GeneratorAdapter a=null;
@@ -140,7 +140,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
-        		String method= ASMUtil.createOverfowMethod(bc.getPage().getMethodCount());
+        		String method= ASMUtil.createOverfowMethod(bc.getMethod().getName(),bc.getPage().getMethodCount());
         		ExpressionUtil.visitLine(bc, s.getStart());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});

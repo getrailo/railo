@@ -691,10 +691,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 		lib.mkdir();
 		Resource classes = config.getConfigDir().getRealResource("classes");
 		classes.mkdir();
-		Resource[] libs = lib.listResources(new ExtensionResourceFilter(".jar", false));
+		Resource[] libs = lib.listResources(ExtensionResourceFilter.EXTENSION_JAR_NO_DIR);
 
 		// merge resources
-		if (!ResourceUtil.isEmptyDirectory(classes,new ExtensionResourceFilter(".class", true))) {
+		if (!ResourceUtil.isEmptyDirectory(classes, ExtensionResourceFilter.EXTENSION_CLASS_DIR)) {
 			if(ArrayUtil.isEmpty(libs)) {
 				libs=new Resource[]{classes};
 			}

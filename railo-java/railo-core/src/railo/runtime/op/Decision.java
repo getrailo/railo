@@ -7,6 +7,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -51,6 +52,7 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.DateTimeImpl;
 
 
 /**
@@ -1350,38 +1352,45 @@ public final class Decision {
 
     	// get Calendar
         Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
-        //synchronized(c){
-	        // datetime
-	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
-	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].parse(str);
-		            return true;
-	            }
-	            catch (ParseException e) {}
-	        }
-	        // date
-	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
-	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	df[i].parse(str);
-		            return true;
-	            }
-	            catch (ParseException e) {}
-	        }
+        
+        // datetime
+        ParsePosition pp=new ParsePosition(0);
+        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
+        Date d;
+		for(int i=0;i<df.length;i++) {
+    		pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+        	d = df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+			
+        	return true;
+        }
+        
 	    	
-	        // time
-	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
-	        for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	df[i].parse(str);
-		            return true;
-	            } 
-	            catch (ParseException e) {}
-	        }
-        //} 
+	    // date
+		df=FormatUtil.getDateFormats(locale,tz,false);
+        for(int i=0;i<df.length;i++) {
+    		pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+			d=df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+        	return true;
+        }
+		
+        // time
+        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
+        for(int i=0;i<df.length;i++) {
+        	pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+        	d=df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+        	
+        	return true;
+        }
+        
         if(lenient) return isDateSimple(str, false);
         return false;
     }

@@ -5607,6 +5607,17 @@ To use cached data, the function must be called with the exact same arguments.</
 	an absolute URL, including the protocol (http or https) and hostname. It may optionally contain a port
 	number. Port numbers specified in the url attribute override the port attribute.</description>
 		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>encoded</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+			if set to true (default value) URL encodes the value of the attribute "URL" if necessary (no double encoding is happeing).
+			This setting has no influence on the values from httpparam type="url", for this use the attribute "encoded" from httpparam</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>result</name>
@@ -5896,7 +5907,9 @@ To use cached data, the function must be called with the exact same arguments.</
 			<name>encoded</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Applies to FormField and CGI types; ignored for all other types. Specifies whether to URLEncode the form field or header.</description>
+			<description>
+				Applies to type "cgi" and "url", ignored for all other types.
+				 Specifies whether to URL encode the the values defined with the tag, but only if necessary (no double encoding).</description>
 		</attribute>
 		<attribute>
 			<type>string</type>

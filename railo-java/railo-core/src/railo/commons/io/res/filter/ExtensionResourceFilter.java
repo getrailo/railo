@@ -14,7 +14,10 @@ public final class ExtensionResourceFilter implements ResourceFilter {
 	private final boolean allowDir;
 	private final boolean ignoreCase;
     //private int extLen;
-	
+
+	public static final ExtensionResourceFilter EXTENSION_JAR_NO_DIR = new ExtensionResourceFilter(".jar", false);
+	public static final ExtensionResourceFilter EXTENSION_CLASS_DIR  = new ExtensionResourceFilter(".class", true);
+
 
 	/**
 	 * Konstruktor des Filters

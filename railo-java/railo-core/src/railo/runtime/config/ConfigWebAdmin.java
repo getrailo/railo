@@ -3021,7 +3021,7 @@ public final class ConfigWebAdmin {
         Element update=_getRootElement("update");
         update.setAttribute("type",type);
         try {
-			location=HTTPUtil.toURL(location).toString();
+			location=HTTPUtil.toURL(location,true).toString();
 		} 
         catch (Throwable e) {}
         update.setAttribute("location",location);
@@ -3685,7 +3685,7 @@ public final class ConfigWebAdmin {
 	public void verifyExtensionProvider(String strUrl) throws PageException {
 		HTTPResponse method=null;
 		try {
-			URL url = HTTPUtil.toURL(strUrl+"?wsdl");
+			URL url = HTTPUtil.toURL(strUrl+"?wsdl",true);
 			method = HTTPEngine.get(url, null, null, 2000,HTTPEngine.MAX_REDIRECT, null, null, null, null);
 		} 
 		catch (MalformedURLException e) {

@@ -21,10 +21,10 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		admin.updateRegional(timezone,locale,timeserver,true);
 		
 		var mod=admin.getRegional();
-		assertEquals(mod.locale,locale);
-		assertEquals(mod.timeserver,timeserver);
-		assertEquals(mod.timezone,timezone);
-		assertEquals(mod.usetimeserver,true);
+		assertEquals(locale,mod.locale);
+		assertEquals(timeservr,mod.timeserver);
+		assertEquals(timezone,mod.timezone);
+		assertEquals(true,mod.usetimeserver);
 		
 		// without optional arguments
 		admin.updateRegional(timezone,locale,timeserver);

@@ -24,7 +24,7 @@ public class XMLEntityResolverDefaultHandler extends DefaultHandler {
 		if(entityRes!=null) return entityRes;
 		try {
 			// TODO user resources
-			return new InputSource(IOUtil.toBufferedInputStream(HTTPUtil.toURL(systemID).openStream()));
+			return new InputSource(IOUtil.toBufferedInputStream(HTTPUtil.toURL(systemID,true).openStream()));
 		} 
 		catch (Throwable t) {
 			return null;

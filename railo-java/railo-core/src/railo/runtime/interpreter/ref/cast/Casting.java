@@ -12,10 +12,10 @@ import railo.runtime.op.Caster;
  */
 public final class Casting extends RefSupport implements Ref {
     
-    private short type;
+    private final short type;
+    private final String strType;
     private Ref ref;
     private Object val;
-    private String strType;
     
     /**
      * constructor of the class
@@ -37,8 +37,8 @@ public final class Casting extends RefSupport implements Ref {
     
     @Override
     public Object getValue(PageContext pc) throws PageException {
-    	if(val!=null) return Caster.castTo(pc,type,strType,val);
-    	// patch for valueList ..., the complete interpreter code should be removed soon anyway
+    	// if ref == null, it is val based Casting
+    	if(ref==null) return Caster.castTo(pc,type,strType,val);
     	if(ref instanceof Variable && "queryColumn".equalsIgnoreCase(strType)) {
     		Variable var=(Variable) ref;
     		return Caster.castTo(pc,type,strType,var.getCollection(pc));

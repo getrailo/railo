@@ -301,7 +301,7 @@ public final class ReqRspUtil {
 
 	public static boolean isThis(HttpServletRequest req, String url) { 
 		try {
-			return isThis(req, HTTPUtil.toURL(url));
+			return isThis(req, HTTPUtil.toURL(url,true));
 		} 
 		catch (Throwable t) {
 			return false;

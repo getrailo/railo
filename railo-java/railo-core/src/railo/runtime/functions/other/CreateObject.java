@@ -1,6 +1,6 @@
 /**
  * Implements the CFML Function createobject
- * FUTURE neue attr unterstützen
+ * FUTURE neue attr unterstÔøΩtzen
  */
 package railo.runtime.functions.other;
 
@@ -152,7 +152,7 @@ public final class CreateObject implements Function {
     				clazz = ClassUtil.loadClass(cl,className);
     			}
     			catch(ClassException ce) {
-    				// no package defintion, then try java.lang
+    				// try java.lang if no package definition
     				if(className.indexOf('.')==-1) {
     					try{
     	    				clazz = ClassUtil.loadClass(cl,"java.lang."+className);
@@ -161,8 +161,8 @@ public final class CreateObject implements Function {
     	    				throw ce;
     	    			}
     				}
+				    else throw ce;
     			}
-    			
     			
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 
@@ -196,12 +196,12 @@ public final class CreateObject implements Function {
     } 
     
     public static Object doWebService(PageContext pc,String wsdlUrl) throws PageException {
-    	// TODO CF8 impl. alle neuen attribute für wsdl
+    	// TODO CF8 impl. all new attributes for wsdl
     	return new RPCClient(wsdlUrl);
     } 
 
     public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
-    	// TODO CF8 impl. alle neuen attribute für wsdl
+    	// TODO CF8 impl. all new attributes for wsdl
     	return new RPCClient(wsdlUrl,username,password,proxy);
     } 
     public static Object doHTTP(PageContext pc,String httpUrl) throws PageException {

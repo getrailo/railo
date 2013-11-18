@@ -3013,27 +3013,33 @@ public abstract class ConfigImpl implements Config {
 		ORMEngine engine = ormengines.get(name);
 		if(engine==null){
 			//try {
-			boolean hasError=false;	
+			Throwable t=null;
+			
 			try {
 				engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
 				engine.init(pc);
 			}
-			catch (ClassException t) {
-				hasError=true;	
+			catch (ClassException ce) {
+				t=ce;	
 			}
-			catch (NoClassDefFoundError t) {
-				hasError=true;	
+			catch (NoClassDefFoundError ncfe) {
+				t=ncfe;
 			}
 			
-			if(hasError) {
+			if(t!=null) {
+				
+				
 				// try to load orm jars
-				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
-					throw new ApplicationException(
-						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
-						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
-				throw new ApplicationException(
-							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
-							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
+				//if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
+				//	throw new ApplicationException(
+				//		"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
+				ApplicationException ae = new ApplicationException(
+							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
+				
+				ae.setStackTrace(t.getStackTrace());
+				ae.setDetail(t.getMessage());
+				
+				
 			
 			}
 				ormengines.put(name,engine);

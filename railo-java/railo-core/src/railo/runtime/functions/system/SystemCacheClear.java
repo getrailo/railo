@@ -60,7 +60,7 @@ public final class SystemCacheClear implements Function {
 							KeyImpl.init("customtag"),
 							KeyConstants._query,
 							KeyConstants._tag,
-							KeyConstants._function}, cacheName, "cache name", "cache names"));
+							KeyConstants._function}, cacheName, "cache name", "cache names",true));
 		
 		
 		return null;

@@ -45,6 +45,7 @@ public class HashMapPro<K,V>
     extends AbstractMapPro<K,V>
     implements Map<K,V>, MapPro<K,V>, Cloneable, Serializable
 {
+	private static final long serialVersionUID = 362498820763181265L;
 
     /**
      * The default initial capacity - MUST be a power of two.
@@ -1198,7 +1199,6 @@ public class HashMapPro<K,V>
         }
     }
 
-    private static final long serialVersionUID = 362498820763181265L;
 
     /**
      * Reconstitute the {@code HashMap} instance from a stream (i.e.,

@@ -15,6 +15,11 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	private boolean hasBracked;
 	private int columnIndex;
 	private QueryColumn col;
+	
+	public String toString(){
+		return "table:"+table+";column:"+column+";hasBracked:"+hasBracked+";columnIndex:"+columnIndex;
+		
+	}
 
 	public ColumnExpression(String value, int columnIndex) {
 		this.column=value;

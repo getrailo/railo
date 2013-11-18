@@ -707,7 +707,7 @@ public final class Page extends BodyBase {
 
 
 	private String createFunctionName(int i) {
-		return "_"+Integer.toString(i, Character.MAX_RADIX);
+		return "udfCall"+Integer.toString(i, Character.MAX_RADIX);
 	}
 
 	private boolean writeLog() {

@@ -73,7 +73,9 @@ public interface HTTPUtil {
      * @return url from string
      * @throws MalformedURLException
      */
-    public URL toURL(String strUrl, int port) throws MalformedURLException;
+    public URL toURL(String strUrl, int port) throws MalformedURLException; // FUTURE deprecated use method <code>toURL(String strUrl, int port, boolean encodeIfNecessary)</code> instead
+
+    // FUTURE public URL toURL(String strUrl, int port, boolean encodeIfNecessary) throws MalformedURLException;
 
     
     /**

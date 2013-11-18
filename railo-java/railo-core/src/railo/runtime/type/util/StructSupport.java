@@ -5,10 +5,13 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
@@ -28,8 +31,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @param key Invalid key
 	 * @return returns an invalid key Exception
 	 */
-	public static ExpressionException invalidKey(Struct sct,Key key) {
-
+	public static ExpressionException invalidKey(Config config,Struct sct,Key key) {
 		StringBuilder sb=new StringBuilder();
 		Iterator<Key> it = sct.keyIterator();
 		Key k;
@@ -41,7 +43,11 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 			if(sb.length()>0)sb.append(',');
 			sb.append(k.getString());
 		}
-
+		config=ThreadLocalPageContext.getConfig(config);
+		if(config!=null && config.debug())
+			return new ExpressionException(ExceptionUtil.similarKeyMessage(sct, key.getString(), "key", "keys",true));
+		
+		
 		return new ExpressionException( "key [" + key.getString() + "] doesn't exist (existing keys:" + sb.toString() + ")" );
 	}
 	

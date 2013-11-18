@@ -265,7 +265,8 @@ public final class Http4 extends BodyTagImpl implements Http {
     private short authType=AUTH_TYPE_BASIC;
     private String workStation=null;
     private String domain=null;
-	private boolean preauth=true; 
+	private boolean preauth=true;
+	private boolean encoded=true; 
 
 	
 	@Override
@@ -306,6 +307,7 @@ public final class Http4 extends BodyTagImpl implements Http {
         workStation=null;
         domain=null;
         preauth=true; 
+        encoded=true;
 	}
 	
 	/**
@@ -314,6 +316,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 	public void setFirstrowasheaders(boolean firstrowasheaders)	{
 		this.firstrowasheaders=firstrowasheaders;
 	}
+	
+
+	public void setEncoded(boolean encoded)	{
+		this.encoded=encoded;
+	}
+
 
 	/** set the value password
 	*  When required by a server, a valid password.
@@ -615,15 +623,15 @@ public final class Http4 extends BodyTagImpl implements Http {
     		// URL
     			if(type.equals("url")) {
     				if(sbQS.length()>0)sbQS.append('&');
-    				sbQS.append(translateEncoding(param.getName(), charset));
+    				sbQS.append(param.getEncoded()?urlenc(param.getName(),charset):param.getName());
     				sbQS.append('=');
-    				sbQS.append(translateEncoding(param.getValueAsString(), charset));
+    				sbQS.append(param.getEncoded()?urlenc(param.getValueAsString(), charset):param.getValueAsString());
     			}
     		}
     		String host=null;
     		HttpHost httpHost;
     		try {
-    			URL _url = HTTPUtil.toURL(url,port);
+    			URL _url = HTTPUtil.toURL(url,port,encoded);
     			httpHost = new HttpHost(_url.getHost(),_url.getPort());
     			host=_url.getHost();
     			url=_url.toExternalForm();
@@ -635,11 +643,9 @@ public final class Http4 extends BodyTagImpl implements Http {
     				else {
     					url+="&"+sbQS;
     				}
-    					
     			}
-    			
-    			
-    		} catch (MalformedURLException mue) {
+    		} 
+    		catch (MalformedURLException mue) {
     			throw Caster.toPageException(mue);
     		}
     		
@@ -729,10 +735,10 @@ public final class Http4 extends BodyTagImpl implements Http {
     			}
     		// CGI
     			else if(type.equals("cgi")) {
-    				if(param.isEncoded())
-    				    req.addHeader(
-                                translateEncoding(param.getName(),charset),
-                                translateEncoding(param.getValueAsString(),charset));
+    				if(param.getEncoded())
+    					req.addHeader(
+    							urlenc(param.getName(),charset),
+    							urlenc(param.getValueAsString(),charset));
                     else
                         req.addHeader(param.getName(),param.getValueAsString());
     			}
@@ -960,7 +966,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		}
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
-		String responseCharset=rsp.getCharset();
+		Charset responseCharset=CharsetUtil.toCharset(rsp.getCharset());
 	// Write Response Scope
 		//String rawHeader=httpMethod.getStatusLine().toString();
 			String mimetype=null;
@@ -1069,17 +1075,17 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        
 	        
 	        // filecontent
-	        //try {
-	        //print.ln(">> "+responseCharset);
-
-		    InputStream is=null;
+	        InputStream is=null;
 		    if(isText && getAsBinary!=GET_AS_BINARY_YES) {
 		    	String str;
                 try {
-                	is = rsp.getContentAsStream();
-                    if(is!=null &&isGzipEncoded(contentEncoding))
-                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
-                        	
+                	
+                	// read content
+                	if(method!=METHOD_HEAD) {
+                		is = rsp.getContentAsStream();
+	                    if(is!=null &&isGzipEncoded(contentEncoding))
+	                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
+                	}  	
                     try {
                     	try{
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
@@ -1114,7 +1120,7 @@ public final class Http4 extends BodyTagImpl implements Http {
                     }
                 } 
 		        catch (IOException e1) {}
-		        
+
 		        if(name!=null) {
                     Query qry = CSVParser.toQuery( str, delimiter, textqualifier, columns, firstrowasheaders  );
                     pageContext.setVariable(name,qry);
@@ -1124,11 +1130,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 		    else {
 		    	byte[] barr=null;
 		        if(isGzipEncoded(contentEncoding)){
-		        	is=rsp.getContentAsStream();
-		        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
+		        	if(method!=METHOD_HEAD) {
+			        	is=rsp.getContentAsStream();
+			        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
+		        	}
+		        	
 		        	try {
 		        		try{
-		        			barr = IOUtil.toBytes(is);
+		        			barr = is==null?new byte[0]: IOUtil.toBytes(is);
 		        		}
 		        		catch(EOFException eof){
 		        			if(is instanceof CachingGZIPInputStream)
@@ -1145,18 +1154,24 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        }
 		        else {
 		        	try {
-		        		barr = rsp.getContentAsByteArray();
+		        		if(method!=METHOD_HEAD) barr = rsp.getContentAsByteArray();
+		        		else barr=new byte[0];
 					} 
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);
 					}
 		        }
 		        //IF Multipart response get file content and parse parts
-			    if(isMultipart) {
-			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
-			    } else {
-			    	cfhttp.set(FILE_CONTENT,barr);
-			    }
+		        if(barr!=null) {
+				    if(isMultipart) {
+				    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+				    } else {
+				    	cfhttp.set(FILE_CONTENT,barr);
+				    }
+		        }
+		        else 
+			    	cfhttp.set(FILE_CONTENT,"");
+		        
 		        
 		        if(file!=null) {
 		        	try {
@@ -1629,7 +1644,7 @@ public final class Http4 extends BodyTagImpl implements Http {
         return sb.toString();
     }
 
-    private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
+    private static String urlenc(String str, String charset) throws UnsupportedEncodingException {
     	if(!ReqRspUtil.needEncoding(str,false)) return str;
     	return URLEncoder.encode(str,charset);
     }

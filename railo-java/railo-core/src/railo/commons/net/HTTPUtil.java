@@ -113,13 +113,13 @@ public final class HTTPUtil {
      * @return url from string
      * @throws MalformedURLException
      */
-	 public static URL toURL(String strUrl) throws MalformedURLException {
-		 return toURL(strUrl,-1);
+	 public static URL toURL(String strUrl,boolean encodeIfNecessary) throws MalformedURLException {
+		 return toURL(strUrl,-1,encodeIfNecessary);
 	 }
 	 
-	 public static URL toURL(String strUrl,URL defaultValue){
+	 public static URL toURL(String strUrl,boolean encodeIfNecessary,URL defaultValue){
 		 try {
-			return toURL(strUrl,-1);
+			return toURL(strUrl,-1,encodeIfNecessary);
 		} catch (MalformedURLException e) {
 			return defaultValue;
 		}
@@ -128,7 +128,7 @@ public final class HTTPUtil {
 
 	 public static String validateURL(String strUrl,String defaultValue){
 		 try {
-			return toURL(strUrl,-1).toExternalForm();
+			return toURL(strUrl,-1,true).toExternalForm();
 		} catch (MalformedURLException e) {
 			return defaultValue;
 		}
@@ -141,25 +141,24 @@ public final class HTTPUtil {
      * @throws MalformedURLException
      */
 
-	  public static URL toURL(String strUrl, int port) throws MalformedURLException {
-		  URL url;
-		  try {
-	            url=new URL(strUrl);
-	        }
-	        catch(MalformedURLException mue) {
-	            url=new URL("http://"+strUrl);
-	        }
-		  return toURL(url, port);
-	  }
-	 
-	 
-    private static URL toURL(URL url, int port) throws MalformedURLException {
+	public static URL toURL(String strUrl, int port, boolean encodeIfNecessary) throws MalformedURLException {
+		URL url;
+		try {
+			url=new URL(strUrl);
+		}
+		catch(MalformedURLException mue) {
+			url=new URL("http://"+strUrl);
+		}
+		if(!encodeIfNecessary) return url;
+		return encodeURL(url, port);
+	}
+
+    public static URL encodeURL(URL url) throws MalformedURLException {
+    	return encodeURL(url, -1);
     	
+    }
+    public static URL encodeURL(URL url, int port) throws MalformedURLException {
     	
-        
-        
-        
-        
         // file
         String path=url.getPath();
         //String file=url.getFile();
@@ -196,7 +195,6 @@ public final class HTTPUtil {
         	if(sqIndex!=-1) {
         		path+=decodeQuery(q,';');
         	}
-        	
         }
         
         // decode query	

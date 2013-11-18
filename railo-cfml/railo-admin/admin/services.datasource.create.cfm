@@ -97,13 +97,17 @@
 		
 	<cfelse>
 		<cfset actionType="update">
-		
+		<cfset _name="#structKeyExists(url,'name')?url.name:form.name#">
 		<cfadmin 
 		action="getDatasource"
 		type="#request.adminType#"
 		password="#session["password"&request.adminType]#"
-		name="#structKeyExists(url,'name')?url.name:form.name#"
+		name="#_name#"
 		returnVariable="datasource">
+		<cftry>
+			<cfdbinfo type="Version" datasource="#_name#" name='dbinfo'>
+			<cfcatch></cfcatch>
+		</cftry>
 		
 		<cfset datasource._password=datasource.password>
 		<cfset datasource.password="****************">
@@ -152,6 +156,10 @@
 		action="getTimeZones"
 		locale="#stText.locale#"
 		returnVariable="timezones">
+		
+		
+	
+							
 </cfsilent>
 
 <cfoutput>
@@ -191,12 +199,27 @@
 		<h3>Datasource configuration</h3>
 		<table class="maintbl">
 			<tbody>
+				<cfif isDefined("dbInfo")>
+				<tr>
+					<th scope="row">#stText.settings.datasource.databaseName#</th>
+					<td class="comment">
+						#dbInfo.DATABASE_PRODUCTNAME# #dbInfo.DATABASE_VERSION#
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.settings.datasource.driverName#</th>
+					<td class="comment">
+						#dbInfo.DRIVER_NAME# #dbInfo.DRIVER_VERSION# (JDBC #dbInfo.JDBC_MAJOR_VERSION#.#dbInfo.JDBC_MINOR_VERSION#)
+					</td>
+				</tr>
+				</cfif>
 				<tr>
 					<th scope="row">Name</th>
 					<td>
 						<cfinput type="text" name="newName" value="#datasource.name#" class="large">
 					</td>
 				</tr>
+				
 				<!--- Host --->
 				<cfif typeHost NEQ TYPE_HIDDEN>
 					<tr>
@@ -243,12 +266,12 @@
 							</cfoutput>
 						</select>
 						<div class="comment">#stText.Settings.dbtimezoneDesc#</div>
-						<div class="warning nofocus">
+						<!--- <div class="warning nofocus">
 							This feature is currently in Beta State.
 							If you have any problems while using this Implementation,
 							please post the bugs and errors in our
 							<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">bugtracking system</a>. 
-						</div>
+						</div>--->
 					</td>
 				</tr>
 				<!--- Username --->

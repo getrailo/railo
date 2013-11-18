@@ -123,7 +123,7 @@ public final class HTMLUtil {
 		String lcValue=value.toLowerCase();
 		try {
 			if(lcValue.startsWith("http://") || lcValue.startsWith("news://") || lcValue.startsWith("goopher://") || lcValue.startsWith("javascript:"))
-				list.add(HTTPUtil.toURL(value));
+				list.add(HTTPUtil.toURL(value,true));
 			else {
 				
 				

@@ -61,7 +61,7 @@ public abstract class SpoolerTaskHTTPCall extends SpoolerTaskSupport {
 		
 		
 			HTTPResponse res = HTTPEngine4Impl.post(
-				HTTPUtil.toURL(url), 
+				HTTPUtil.toURL(url,true), 
 				client.getServerUsername(), 
 				client.getServerPassword(), -1L, -1, ((PageContextImpl)pc).getWebCharset().name(), "Railo Remote Invocation", client.getProxyData(), null,params);
 		
