@@ -201,7 +201,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {
                     Log log = config.getRequestTimeoutLogger();
-                    if(log!=null)log.warn("controler","downgrade priority of the a thread at "+getPath(pc));
+                    if(log!=null)log.warn("controller","downgrade priority of the a thread at "+getPath(pc));
                     try {
                     	pc.getThread().setPriority(Thread.MIN_PRIORITY);
                     }
@@ -224,7 +224,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		}
 		catch(Throwable t){}
         
-        if(log!=null)log.error("controler",
+        if(log!=null)log.error("controller",
         		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks);
         pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
@@ -317,11 +317,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		this.config=config;
 	}
 
-	public Struct getRunningPageContextes() {
+	public Struct getRunningPageContexts() {
 		return runningPcs;
 	}
 
-	public long getPageContextesSize() {
+	public long getPageContextsSize() {
 		return SizeOf.size(pcs);
 	}
 	
