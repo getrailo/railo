@@ -22,7 +22,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		
 		var mod=admin.getRegional();
 		assertEquals(locale,mod.locale);
-		assertEquals(timeservr,mod.timeserver);
+		assertEquals(timeserver,mod.timeserver);
 		assertEquals(timezone,mod.timezone);
 		assertEquals(true,mod.usetimeserver);
 		
@@ -107,5 +107,10 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 	}
 	
+	
+	public void function testUpdateJar(){
+		dump(getmetaData(admin));abort;
+		admin.updateJar();
+	}
 	
 } 
