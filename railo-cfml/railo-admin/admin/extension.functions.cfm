@@ -121,7 +121,7 @@
 			<cfthread name="#name#" provider="#cfcName#" sess="#session.cfcs[cfcName]#" req="#request.cfcs[cfcName]#">
 				<cfsetting requesttimeout="50000">
 				<cftry>
-				<cfset systemOutput("start:"&attributes.provider,true,true)>
+				<cfset systemOutput("start:"&attributes.provider,true,false)>
 				<cfset var start=getTickCount()>
 				<!--- old soap call
 		        <cfset var cfc= createObject('webservice',attributes.provider&"?wsdl")>
@@ -168,7 +168,7 @@
 				<cfset datas[cfcName]=request.cfcs[cfcName]>
 			</cfif>
 		</cfloop>
-		<cfset systemOutput(datas,true,true)>
+		<!--- <cfset systemOutput(datas,true,true)> --->
 				
 		<cfreturn datas>
 		
