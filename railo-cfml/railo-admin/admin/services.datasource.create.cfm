@@ -504,7 +504,7 @@ if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // defau
 	</cfif></cfloop></cfif>
 };
 </cfsavecontent>
-<cf_admin_coding_tip codeSample="#codeSample#" expand="true">
+<cfset renderCodingTip( codeSample, "", true )>
 
 
 

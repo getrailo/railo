@@ -34,7 +34,8 @@
 </cfsavecontent>
 
 
-<cf_doc_layout title="Railo Object Methods Reference">
+
+<cfmodule template="doc_layout.cfm" title="Railo Object Methods Reference">
 
 
 <cfoutput>
@@ -147,4 +148,4 @@
 </cfoutput>
 
 
-</cf_doc_layout>
+</cfmodule><!--- doc_layout !--->
