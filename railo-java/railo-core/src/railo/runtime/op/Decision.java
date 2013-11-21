@@ -6,7 +6,6 @@ import java.net.URI;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,7 +51,6 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
 
 
 /**

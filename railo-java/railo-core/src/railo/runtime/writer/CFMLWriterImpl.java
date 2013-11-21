@@ -8,7 +8,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.cache.legacy.CacheItem;
