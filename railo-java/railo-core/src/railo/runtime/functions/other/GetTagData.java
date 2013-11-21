@@ -220,6 +220,8 @@ public final class GetTagData implements Function {
 			_arg.set(KeyConstants._status,TagLibFactory.toStatus(attr.getStatus()));
 			_arg.set(KeyConstants._description,attr.getDescription());
 			_arg.set(KeyConstants._type,attr.getType());
+			if(attr.getValues()!=null)_arg.set(KeyConstants._values,Caster.toArray(attr.getValues()));
+			if(attr.getDefaultValue()!=null)_arg.set("defaultValue",attr.getDefaultValue());
 			_arg.set(KeyConstants._required,attr.isRequired()?Boolean.TRUE:Boolean.FALSE);
 			_arg.set("scriptSupport",attr.getScriptSupportAsString());
 			_args.setEL(attr.getName(),_arg);
