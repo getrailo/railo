@@ -64,7 +64,7 @@ Defaults --->
 	<cfsavecontent variable="codeSample">
 component {
 
-	this.name = "#info.label#"; // name of the application context
+	this.name = "#info.label ?: '&lt;application-name&gt;' #"; // name of the application context
 
 	// regional settings
 	this.locale = "#regional.locale#"; // default locale used for formating dates, numbers ...
@@ -89,7 +89,6 @@ component {
 	setting requestTimeout = "#requestTimeout#"; // max lifespan of a running request
 }
 </cfsavecontent>
-<cf_admin_coding_tip codeSample="#codeSample#" text="#stText.application.desc#" expand="true">
-	
+<cfset renderCodingTip( codeSample, stText.application.desc, true )>
 
 </cfoutput>

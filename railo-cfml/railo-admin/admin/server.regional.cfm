@@ -160,7 +160,7 @@ Create Datasource --->
 						<cfsavecontent variable="codeSample">
 							this.locale = "#regional.locale#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<tr>
@@ -184,7 +184,7 @@ Create Datasource --->
 						<cfsavecontent variable="codeSample">
 							this.timezone = "#regional.timezone#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<tr>
