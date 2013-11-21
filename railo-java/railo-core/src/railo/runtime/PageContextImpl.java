@@ -503,14 +503,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
 		
 		if(config.debug()) {
-    		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
+    		if(!gatewayContext && !isChild)
+			    config.getDebuggerPool().store(this, debugger);
     		debugger.reset();
     	}
 		else ((DebuggerImpl)debugger).resetTraces(); // traces can alo be used when debugging is off
 		
 		this.serverPassword=null;
 
-		boolean isChild=parent!=null;
+//		boolean isChild=parent!=null;       // isChild is defined in the class outside this method
 		parent=null;
 		// Attention have to be before close
 		if(client!=null){
