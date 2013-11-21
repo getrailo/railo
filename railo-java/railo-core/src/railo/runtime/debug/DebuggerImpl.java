@@ -72,7 +72,7 @@ public final class DebuggerImpl implements DebuggerPro {
 	private Array historyId=new ArrayImpl();
 	private Array historyLevel=new ArrayImpl();
 
-	private DateTimeImpl starttime;
+	private long starttime=System.currentTimeMillis();
 
 	private DebugOutputLog outputLog;
 
@@ -562,7 +562,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		
 		if(addAddionalInfo) {
 			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
-			debugging.setEL(KeyImpl.init("starttime"),starttime);
+			debugging.setEL(KeyImpl.init("starttime"),new DateTimeImpl(starttime,false));
 			debugging.setEL(KeyConstants._id,pc.getId());
 		}
 
@@ -695,7 +695,7 @@ public final class DebuggerImpl implements DebuggerPro {
 	}
 
 	public void init(Config config) {
-		this.starttime=new DateTimeImpl(config);
+		this.starttime=System.currentTimeMillis()+config.getTimeServerOffset();
 	}
 
 	@Override

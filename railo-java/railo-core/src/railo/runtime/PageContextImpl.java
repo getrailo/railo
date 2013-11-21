@@ -489,7 +489,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
 		if(config.getExecutionLogEnabled())
 			this.execLog=config.getExecutionLogFactory().getInstance(this);
-		if(config.debug())
+		if(debugger!=null)
 			debugger.init(config);
 			
         return this;
