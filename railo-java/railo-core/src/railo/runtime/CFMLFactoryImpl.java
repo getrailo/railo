@@ -320,6 +320,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public Struct getRunningPageContexts() {
 		return runningPcs;
 	}
+	
+	// exists because it is used in Morpheus
+	public Struct getRunningPageContextes() {
+		return getRunningPageContexts();
+	}
 
 	public long getPageContextsSize() {
 		return SizeOf.size(pcs);
