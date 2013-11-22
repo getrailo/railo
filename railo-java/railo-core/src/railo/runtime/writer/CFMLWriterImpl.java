@@ -299,10 +299,10 @@ public class CFMLWriterImpl extends CFMLWriter {
 
     private OutputStream getOutputStream(boolean allowGzip) throws IOException {
     	
-    	if ( allowCompression && !response.isCommitted() ){
+        if ( allowCompression && allowGzip && !response.isCommitted() ){
     		
-    		String encodings = ReqRspUtil.getHeader(request,"Accept-Encoding",null);
-    	    if(allowGzip && !StringUtil.isEmpty(encodings) && encodings.indexOf("gzip")!=-1) {
+            String encodings = ReqRspUtil.getHeader(request, "Accept-Encoding", "");
+            if( encodings.contains("gzip") ) {
     	    	boolean inline=HttpServletResponseWrap.get();
     	    	if(!inline) {
     	    		ServletOutputStream os = response.getOutputStream();
