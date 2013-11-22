@@ -18,7 +18,7 @@
 			</cfloop>
 			
 			<cfif arrayLen(data.validUrls)>
-				<cfset datas=loadProvidersData(data.validUrls,10000,true)>
+				<cfset datas=loadProvidersData(data.validUrls,20000,true)>
 			<cfelse>
 				<cfset datas={}>
 			</cfif>
@@ -182,7 +182,10 @@ list all mappings and display necessary edit fields --->
 						</cfif>
 						<!--- check --->
 						<cfif StructKeyExists(stVeritfyMessages, providers.url)>
-							<td  class="tooltipMe favorite_inactive" title="#stVeritfyMessages[providers.url].message#">#stVeritfyMessages[providers.url].label#</td>
+							<cfset msg=stVeritfyMessages[providers.url]>
+							<td
+								class="tooltipMe favorite_inactive" 
+								title="#isNull(msg.message)?"":msg.message#">#msg.label#</td>
 						<cfelse>
 							<td>&nbsp;</td>
 						</cfif>
