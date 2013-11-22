@@ -69,9 +69,9 @@ public class CFMLWriterImpl extends CFMLWriter {
     /**
      * @throws IOException
      */
-    protected void initOut(boolean allowGzip) throws IOException {
+    protected void initOut() throws IOException {
         if (out == null) {
-        	out=getOutputStream(allowGzip);
+        	out=getOutputStream(false);
             //out=response.getWriter();
         }
     }
@@ -197,7 +197,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
         	
         }
-    	initOut(false);
+    	initOut();
     	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
         
     	if(cacheItem!=null && cacheItem.isValid()) {
@@ -276,7 +276,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
             if(barr.length<=512) allowCompression=false;
             
-            out = getOutputStream(true);
+            out = getOutputStream(allowCompression);
 	        
         	
         	if(contentLength && !(out instanceof GZIPOutputStream))ReqRspUtil.setContentLength(response,barr.length);
@@ -297,12 +297,12 @@ public class CFMLWriterImpl extends CFMLWriter {
     } 
     
 
-    private OutputStream getOutputStream(boolean allowGzip) throws IOException {
+    private OutputStream getOutputStream(boolean allowCompression) throws IOException {
     	
-        if ( allowCompression && allowGzip && !response.isCommitted() ){
+        if (allowCompression){
     		
             String encodings = ReqRspUtil.getHeader(request, "Accept-Encoding", "");
-            if( encodings.contains("gzip") ) {
+            if( encodings.indexOf("gzip")!=-1 ) {
     	    	boolean inline=HttpServletResponseWrap.get();
     	    	if(!inline) {
     	    		ServletOutputStream os = response.getOutputStream();
@@ -529,7 +529,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 	 * @see railo.runtime.writer.CFMLWriter#getResponseStream()
 	 */
 	public OutputStream getResponseStream() throws IOException {
-		initOut(false);
+		initOut();
 		return out;
 	}
 
