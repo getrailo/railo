@@ -878,6 +878,8 @@
 		<cfargument name="label1">
 		<cfargument name="label2" default="">
 
+		<cfset var isOpen = this.isSectionOpen( arguments.sectionId )>
+
 		<tr>
 			<td><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
 				#label1#</a></td>
