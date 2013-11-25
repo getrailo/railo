@@ -836,6 +836,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.usernamedescription">Username, um auf eine geschützte URL zuzugreifen.</data>
 	<data key="schedule.startdatedesc">Definert den Tag an welchem der Task zu ersten mal ausgeführt werden soll.</data>
 	<data key="settings.datasourcesettings">Einstellungen</data>
+	<data key="settings.datasource.databaseName">Datenbank (Name/Version)</data>
+	<data key="settings.datasource.driverName">Treiber (Name/Version)</data>
 	<data key="settings.readonlydatasources">Globale Datequellen (Datenquellen vom Server Administrator)</data>
 	<data key="settings.readonlydatasourcesdescription">Diese Datenquellen werden im Server Administrator für alle Web Instanzen erstellt und können im Web Administrator nicht geändert werden, diese können jedoch überschrieben werden indem sie eine Datenquelle mit dem selben Namen unterhalb anlegen.</data>
 	<data key="settings.dbpassdesc">Passwort für den Zugriff auf die Datenbank</data>

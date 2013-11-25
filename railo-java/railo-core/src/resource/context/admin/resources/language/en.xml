@@ -851,6 +851,9 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="schedule.usernamedescription">Username to access the URL if it is protected by authentication</data>
 	<data key="schedule.startdatedesc">Defines the date when the task should be executed the first time.</data>
 	<data key="settings.datasourcesettings">Settings</data>
+	<data key="settings.datasource.databaseName">Database (Name/Version)</data>
+	<data key="settings.datasource.driverName">Driver (Name/Version)</data>
+
 	<data key="settings.readonlydatasources">Global Datasources (Datasources from Server Administrator)</data>
 	<data key="settings.readonlydatasourcesdescription">These datasources have been created in the Server Administrator and are shared with ALL web contexts. You cannot modify these datasources in the Web Administrator, but you can override them by creating your own datasource with the same name.</data>
 	<data key="settings.dbpassdesc">The password for the database</data>
