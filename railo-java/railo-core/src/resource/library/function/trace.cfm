@@ -1,7 +1,7 @@
 <cffunction name="trace" returntype="void" caller="true" 
 	hint="Displays and logs debugging data about the state of an application at the time this function executes. 
 Tracks runtime logic flow, variable values, and execution time. Displays output at the end of the request or in the debugging section at the end of the request."><!---
-	---><cfargument name="caller" type="struct" required="yes" hint=""><!---
+	---><cfargument name="caller" type="struct" required="yes" hint="The Caller Scope"><!---
 	---><cfargument name="var" type="string" required="no" hint="The name of a simple or complex variable to display. Useful for displaying a temporary value, or a value that does not display on any CFM page."><!---
 	---><cfargument name="text" type="string" required="no" hint="string, which can include simple variable, but not complex variables such as arrays."><!---
 	---><cfargument name="type" type="string" required="no" default="Information"  hint="Corresponds to the cflog type attribute:
