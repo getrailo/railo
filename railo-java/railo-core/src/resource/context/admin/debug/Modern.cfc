@@ -5,6 +5,11 @@
 			  group("Execution Time","Execution times for templates, includes, modules, custom tags, and component method calls. Template execution times over this minimum highlight time appear in red.",3)
 			, field("Minimal Execution Time","minimal","0",true,{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
 			, field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
+			, field("Time format","timeFormat","standard",true,
+			{_top:"Format used for time values.",
+			standard:"Always dsiplay fratcal number part (123.001)",
+			natural:"Only display fratcal number part for small numbers (123)"
+			},"radio","standard,natural")
 			, group("Custom Debugging Output","Define what is outputted",3)
 			, field("Scope Variables","scopes","Enabled",false,"Enable Scope reporting","checkbox","Enabled")
 			, field("General Debug Information ","general","Enabled",false,
@@ -134,7 +139,7 @@
 		<cfloop query="#debugging.history#">
 			<cfif !structkeyExists(ordermap,debugging.history.id)><cfset ordermap[debugging.history.id]=structCount(ordermap)+1></cfif>
 		</cfloop>	
-		
+		<cfset var prettify=structKeyExists(custom,'timeformat') and custom.timeformat EQ "natural">
 		</cfsilent>
 		<cfif arguments.context EQ "web">
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
@@ -279,20 +284,20 @@
 
 					<table>
 						<cfset renderSectionHeadTR( sectionId
-							, "#unitFormat( arguments.custom.unit, tot-q-loa, true )# ms
+							, "#unitFormat( arguments.custom.unit, tot-q-loa, prettify )# ms
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Application" )>
 
 						<tr><td><table>
 							<tr>
-								<td class="pad txt-r">#unitFormat( arguments.custom.unit, loa )# ms</td>
+								<td class="pad txt-r">#unitFormat( arguments.custom.unit, loa,prettify )# ms</td>
 								<td class="pad">Startup/Compilation</td>
 							</tr>
 							<tr>
-								<td class="pad txt-r">#unitFormat( arguments.custom.unit, q )# ms</td>
+								<td class="pad txt-r">#unitFormat( arguments.custom.unit, q,prettify )# ms</td>
 								<td class="pad">Query</td>
 							</tr>
 							<tr>
-								<td class="pad txt-r bold">#unitFormat( arguments.custom.unit, tot, true )# ms</td>
+								<td class="pad txt-r bold">#unitFormat( arguments.custom.unit, tot, prettify )# ms</td>
 								<td class="pad bold">Total</td>
 							</tr>
 						</table></td></tr>
@@ -304,7 +309,7 @@
 										<th>Count</th>
 										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif> (ms)</th>
 										<th>Template</th>
-										<th><cfif isExecOrder>Order<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by Order (starting with the next request)">Order</a></cfif></th>
+										<th><cfif isExecOrder>Order<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by ID (starting with the next request)">Order</a></cfif></th>
 									</tr>
 									<cfset loa=0>
 									<cfset tot=0>
@@ -322,15 +327,15 @@
 										</cfif>
 										<cfset loa=loa+pages.load>
 										<tr class="nowrap #bad ? 'red' : ''#">
-											<td class="txt-r" title="#pages.total - pages.load#">#unitFormat(arguments.custom.unit, pages.total-pages.load)#</td>
+											<td class="txt-r" title="#pages.total - pages.load#">#unitFormat(arguments.custom.unit, pages.total-pages.load,prettify)#</td>
 											<td class="txt-r">#pages.count#</td>
-											<td class="txt-r" title="#pages.avg#"><cfif pages.count GT 1>#unitFormat(arguments.custom.unit, pages.avg)#<cfelse>-</cfif></td>
+											<td class="txt-r" title="#pages.avg#"><cfif pages.count GT 1>#unitFormat(arguments.custom.unit, pages.avg,prettify)#<cfelse>-</cfif></td>
 											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
 											<td class="txt-r faded" title="#pages.id#">#ordermap[pages.id]#</td>
 										</tr>
 									</cfloop>
 									<cfif hasBad>
-										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 )# ms average execution time</td></tr>
+										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 ,prettify)# ms average execution time</td></tr>
 									</cfif>
 								</table>
 							</td>	<!--- id="-railo-debug-#sectionId#" !--->
@@ -442,7 +447,7 @@
 										<cfloop query="timers">
 											<tr>
 												<td class="txt-r">#timers.label#</td>
-												<td class="txt-r">#unitFormat( arguments.custom.unit, timers.time * 1000000 )#</td>
+												<td class="txt-r">#unitFormat( arguments.custom.unit, timers.time * 1000000,prettify )#</td>
 												<td class="txt-r">#timers.template#</td>
 											</tr>
 										</cfloop>
@@ -511,8 +516,8 @@
 														<br />
 													</cfif>
 												</td>
-												<td class="txt-r">#unitFormat(arguments.custom.unit, total)#</td>
-												<td class="txt-r">#unitFormat(arguments.custom.unit, traces.time)#</td>
+												<td class="txt-r">#unitFormat(arguments.custom.unit, total,prettify)#</td>
+												<td class="txt-r">#unitFormat(arguments.custom.unit, traces.time,prettify)#</td>
 											</tr>
 										</cfloop>
 
@@ -537,7 +542,7 @@
 
 						<div class="section-title">SQL Queries</div>
 						<table>
-							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat( arguments.custom.unit, total )# ms)" )>
+							<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed (Total Records: #records#; Total Time: #unitFormat( arguments.custom.unit, total ,prettify)# ms)" )>
 
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
@@ -558,7 +563,7 @@
 													<th></th>
 													<td class="bold">#queries.name#</td>
 													<td class="txt-r">#queries.count#</td>
-													<td class="txt-r">#unitFormat(arguments.custom.unit, queries.time)#</td>
+													<td class="txt-r">#unitFormat(arguments.custom.unit, queries.time,prettify)#</td>
 													<td>#queries.datasource#</td>
 													<td>#queries.src#</td>
 												</tr>
@@ -883,6 +888,10 @@
 	<cfscript>
 
 		function unitFormat( string unit, numeric time, boolean prettify=false ) {
+			if(!prettify) {
+				return NumberFormat( arguments.time / 1000000, ",0.000" );
+			}
+			
 			// display 0 digits right to the point when more or equal to 100ms
 			if ( arguments.time >= 100000000 )
 				return int( arguments.time / 1000000 );
