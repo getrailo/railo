@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -24,6 +25,8 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.comparator.TextComparator;
+import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
  * 
@@ -113,6 +116,44 @@ public final class StructUtil {
 		else if(sct.size()>10 && dp.getMetainfo()) {
 			table.setComment("Entries: "+sct.size());
 		}
+		
+		// advanced
+		/*Map<Key, FunctionLibFunction> members = MemberUtil.getMembers(pageContext, CFTypes.TYPE_STRUCT);
+		if(members!=null) {
+			StringBuilder sb=new StringBuilder("This Struct is supporting the following Object functions:");
+			Iterator<Entry<Key, FunctionLibFunction>> it = members.entrySet().iterator();
+			Entry<Key, FunctionLibFunction> e;
+			while(it.hasNext()){
+				e = it.next();
+				sb.append("\n	.")
+				.append(e.getKey())
+				.append('(');
+				
+				
+				ArrayList<FunctionLibFunctionArg> args = e.getValue().getArg();
+				int optionals = 0;
+				for(int i=1;i<args.size();i++) {
+					FunctionLibFunctionArg arg=args.get(i);
+					if(i!=0)sb.append(", ");
+					if(!arg.getRequired()) {
+						sb.append("[");
+						optionals++;
+					}
+					sb.append(arg.getName());
+					sb.append(":");
+					sb.append(arg.getTypeAsString());
+				}
+				for(int i=0;i<optionals;i++)
+					sb.append("]");
+				sb.append("):"+e.getValue().getReturnTypeAsString());
+				
+				
+			}
+			table.setComment(sb.toString());
+		}*/
+		
+		
+		
 		if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;
 		int index=0;
