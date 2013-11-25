@@ -7,7 +7,7 @@
 			, field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
 			, field("Time format","timeFormat","standard",true,
 			{_top:"Format used for time values.",
-			standard:"Always dsiplay fratcal number part (123.001)",
+			standard:"Always display fratcal number part of a number (123.001)",
 			natural:"Only display fratcal number part for small numbers (123)"
 			},"radio","standard,natural")
 			, group("Custom Debugging Output","Define what is outputted",3)
