@@ -86,7 +86,7 @@
 		<cfargument name="custom" type="struct" required="yes" />
 		<cfargument name="debugging" required="true" type="struct" />
 		<cfargument name="context" type="string" default="web" />
-
+		<cfsilent>
 		<cfif !structKeyExists(arguments.custom,'minimal')><cfset arguments.custom.minimal="0"></cfif>
 		<cfif !structKeyExists(arguments.custom,'highlight')><cfset arguments.custom.highlight="250000"></cfif>
 		<cfif !structKeyExists(arguments.custom,'scopes')><cfset arguments.custom.scopes=false></cfif>
@@ -107,7 +107,7 @@
 
 		<cfset this.allSections = this.buildSectionStruct()>
 		<cfset var isExecOrder  = this.isSectionOpen( "ExecOrder" )>
-
+		
 		<cfif isExecOrder>
 
 			<cfset querySort(pages,"id","asc") />
@@ -128,7 +128,14 @@
 			,microsecond:"µs"
 			,nanosecond:"ns"
 			} />
-
+			
+			
+		<cfset var ordermap={}>
+		<cfloop query="#debugging.history#">
+			<cfif !structkeyExists(ordermap,debugging.history.id)><cfset ordermap[debugging.history.id]=structCount(ordermap)+1></cfif>
+		</cfloop>	
+		
+		</cfsilent>
 		<cfif arguments.context EQ "web">
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 		</cfif>
@@ -297,7 +304,7 @@
 										<th>Count</th>
 										<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by Avg Time (starting with the next request)">Avg Time</a><cfelse>Avg Time</cfif> (ms)</th>
 										<th>Template</th>
-										<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by ID (starting with the next request)">ID</a></cfif></th>
+										<th><cfif isExecOrder>Order<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' ); __RAILO.util.addClass( this, 'selected' );" class="sortby" title="Order by Order (starting with the next request)">Order</a></cfif></th>
 									</tr>
 									<cfset loa=0>
 									<cfset tot=0>
@@ -319,7 +326,7 @@
 											<td class="txt-r">#pages.count#</td>
 											<td class="txt-r" title="#pages.avg#"><cfif pages.count GT 1>#unitFormat(arguments.custom.unit, pages.avg)#<cfelse>-</cfif></td>
 											<td id="-railo-debug-pages-#pages.currentRow#" oncontextmenu="__RAILO.debug.selectText( this.id );">#pages.src#</td>
-											<td class="txt-r faded" title="#pages.id#">#pages.id % 10000#</td>
+											<td class="txt-r faded" title="#pages.id#">#ordermap[pages.id]#</td>
 										</tr>
 									</cfloop>
 									<cfif hasBad>
