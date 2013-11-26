@@ -489,7 +489,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 
 		if( size() > top )
 			table.setComment("Rows: " + size() + " (showing top " + top + ")");
-		else if(size()>10 && dp.getMetainfo()) {
+		else if(size()>10 && dp.getMetainfo()) 
 			table.setComment("Rows: "+size()); 
 		
 			
