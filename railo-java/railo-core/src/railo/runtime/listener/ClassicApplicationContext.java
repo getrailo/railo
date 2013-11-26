@@ -46,6 +46,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     private String clientstorage;
     private String sessionstorage;
 	private int scriptProtect;
+    private boolean typeChecking;
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
@@ -96,6 +97,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         applicationTimeout=config.getApplicationTimeout();
         loginStorage=Scope.SCOPE_COOKIE;
         scriptProtect=config.getScriptProtect();
+        typeChecking=((ConfigImpl)config).getTypeChecking();
         this.isDefault=isDefault;
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
@@ -143,6 +145,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.clientstorage=clientstorage;
 		dbl.sessionstorage=sessionstorage;
 		dbl.scriptProtect=scriptProtect;
+		dbl.typeChecking=typeChecking;
 		dbl.mappings=mappings;
 		dbl.dataSources=dataSources;
 		dbl.ctmappings=ctmappings;
@@ -314,6 +317,18 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	public int getScriptProtect() {
 		//if(isDefault)print.err("get:"+scriptProtect);
 		return scriptProtect;
+	}
+    
+    /**
+     * @param scriptProtect The scriptProtect to set.
+     */
+    public void setTypeChecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
+	}
+
+	@Override
+	public boolean getTypeChecking() {
+		return typeChecking;
 	}
 
 	

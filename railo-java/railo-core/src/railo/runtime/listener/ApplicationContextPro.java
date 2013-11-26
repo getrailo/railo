@@ -51,5 +51,8 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public Charset getResourceCharset();
 	public void setResourceCharset(Charset charset);
+
+	public boolean getTypeChecking();
+	public void setTypeChecking(boolean typeChecking);
 	
 }

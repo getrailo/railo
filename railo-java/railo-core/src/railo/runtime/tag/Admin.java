@@ -3093,6 +3093,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doUpdatePerformanceSettings() throws SecurityException, PageException {
     	admin.updateInspectTemplate(getString("admin",action,"inspectTemplate"));
+    	
+    	admin.updateTypeChecking(getBoolObject("admin",action,"typeChecking"));
         store();
         adminSync.broadcast(attributes, config);
 	}
@@ -3205,6 +3207,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(it==ConfigImpl.INSPECT_ALWAYS)str="always";
         else if(it==ConfigImpl.INSPECT_NEVER)str="never";
         sct.set("inspectTemplate",str);
+        sct.set("typeChecking",config.getTypeChecking());
 	}
     
     

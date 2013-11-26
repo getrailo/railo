@@ -432,6 +432,14 @@ Specifies how Railo stores session variables:
 			in response to a remote call.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>typeChecking</name>
+			<required>false</required>
+			<default-value>true</default-value>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If disabled, Railo ignores type defintions with function arguments and return values</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>secureJsonPrefix</name>
 			<required>false</required>

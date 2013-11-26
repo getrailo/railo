@@ -84,6 +84,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key REST_SETTING = KeyImpl.intern("restsettings");
 	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
 	private static final Collection.Key SCOPE_CASCADING = KeyImpl.intern("scopeCascading");
+	private static final Collection.Key TYPE_CHECKING = KeyImpl.intern("typeChecking");
 
 	
 	private ComponentAccess component;
@@ -100,6 +101,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private TimeSpan applicationTimeout;
 	private int loginStorage=Scope.SCOPE_COOKIE;
 	private int scriptProtect;
+	private boolean typeChecking;
 	private Object defaultDataSource;
 	private boolean bufferOutput;
 	private short sessionType;
@@ -129,6 +131,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSetDomainCookies;
 	private boolean initSetSessionManagement;
 	private boolean initScriptProtect;
+	private boolean initTypeChecking;
 	private boolean initClientStorage;
 	private boolean initSecureJsonPrefix;
 	private boolean initSecureJson;
@@ -172,6 +175,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
 		config = pc.getConfig();
+		ConfigImpl ci = ((ConfigImpl)config);
     	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
         setSessionManagement=config.isSessionManagement();
@@ -180,18 +184,19 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         clientTimeout=config.getClientTimeout();
         applicationTimeout=config.getApplicationTimeout();
         scriptProtect=config.getScriptProtect();
+        typeChecking=ci.getTypeChecking();
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
         this.locale=config.getLocale();
         this.timeZone=config.getTimeZone();
-        this.webCharset=((ConfigImpl)config)._getWebCharset();
+        this.webCharset=ci._getWebCharset();
         this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
-        this.bufferOutput=((ConfigImpl)config).getBufferOutput();
+        this.bufferOutput=ci.getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
-        this.sessionStorage=((ConfigImpl)config).getSessionStorage();
-        this.clientStorage=((ConfigImpl)config).getClientStorage();
+        this.sessionStorage=ci.getSessionStorage();
+        this.clientStorage=ci.getClientStorage();
         
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSetting=config.getRestSetting();
@@ -415,6 +420,16 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			initScriptProtect=true; 
 		}
 		return scriptProtect;
+	}
+
+	@Override
+	public boolean getTypeChecking() {
+		if(!initTypeChecking) {
+			Boolean b = Caster.toBoolean(get(component,TYPE_CHECKING,null),null);
+			if(b!=null) typeChecking=b.booleanValue();
+			initTypeChecking=true; 
+		}
+		return typeChecking;
 	}
 
 	@Override
@@ -864,6 +879,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public void setScriptProtect(int scriptrotect) {
 		initScriptProtect=true;
 		this.scriptProtect=scriptrotect;
+	}
+
+
+	@Override
+	public void setTypeChecking(boolean typeChecking) {
+		initTypeChecking=true;
+		this.typeChecking=typeChecking;
 	}
 
 	@Override

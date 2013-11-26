@@ -374,6 +374,7 @@ public abstract class ConfigImpl implements Config {
 	private AMFCaster amfCaster;
 	//private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
+	private boolean typeChecking=true;
 	private String serial="";
 	private String cacheMD5;
 	private boolean executionLogEnabled;
@@ -400,6 +401,8 @@ public abstract class ConfigImpl implements Config {
 	
 	private List<Layout> consoleLayouts=new ArrayList<Layout>();
 	private List<Layout> resourceLayouts=new ArrayList<Layout>();
+
+
 	
 	
 	/**
@@ -2900,6 +2903,15 @@ public abstract class ConfigImpl implements Config {
 	public short getInspectTemplate() {
 		return inspectTemplate;
 	}
+	
+
+	public boolean getTypeChecking() {
+		return typeChecking;
+	}
+	protected void setTypeChecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
+	}
+	
 
 	/**
 	 * @param inspectTemplate the inspectTemplate to set

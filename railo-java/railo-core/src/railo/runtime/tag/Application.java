@@ -62,6 +62,7 @@ public final class Application extends TagImpl {
 	private Boolean bufferOutput;
 	private Boolean secureJson;
 	private String scriptrotect;
+	private Boolean typeChecking;
 	private Object datasource;
 	private Object defaultdatasource;
 	private int loginstorage=Scope.SCOPE_UNDEFINED;
@@ -111,6 +112,7 @@ public final class Application extends TagImpl {
         bufferOutput=null;
         secureJson=null;
         secureJsonPrefix=null;
+        typeChecking=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
         scriptrotect=null;
         datasource=null;
@@ -389,9 +391,12 @@ public final class Application extends TagImpl {
 	/**
 	 * @param scriptrotect the scriptrotect to set
 	 */			
-	public void setScriptprotect(String strScriptrotect) {
+    public void setScriptprotect(String strScriptrotect) {
 		this.scriptrotect=strScriptrotect;
-		//getAppContext().setScriptProtect(strScriptrotect);
+	}
+    
+    public void setTypechecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
 	}
 
 	public void setOnmissingtemplate(Object oUDF) throws PageException {
@@ -465,6 +470,7 @@ public final class Application extends TagImpl {
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
 		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
+		if(typeChecking!=null)					ac.setTypeChecking(typeChecking.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());
 		if(setClientManagement!=null)			ac.setSetClientManagement(setClientManagement.booleanValue());

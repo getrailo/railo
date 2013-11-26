@@ -93,11 +93,9 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	}
 
 	private final Object castToAndClone(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
-		//if(value instanceof Array)print.out(count++);
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+		if(!((PageContextImpl)pc).getTypeChecking() || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
 			return arg.isPassByReference()?value:Duplicator.duplicate(value,false);
 		throw new UDFCasterException(this,arg,value,index);
-		//REALCAST return Caster.castTo(pc,arg.getType(),arg.getTypeAsString(),value);
 	}
 	private final Object castTo(FunctionArgument arg,Object value, int index) throws PageException {
 		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) return value;
@@ -326,7 +324,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	        
 	        
 	        
-	        if(properties.returnType==CFTypes.TYPE_ANY) return returnValue;
+	        if(properties.returnType==CFTypes.TYPE_ANY || !((PageContextImpl)pc).getTypeChecking()) return returnValue;
 	        else if(Decision.isCastableTo(properties.strReturnType,returnValue,false,false,-1)) return returnValue;
 	        else throw new UDFCasterException(this,properties.strReturnType,returnValue);
 			//REALCAST return Caster.castTo(pageContext,returnType,returnValue,false);

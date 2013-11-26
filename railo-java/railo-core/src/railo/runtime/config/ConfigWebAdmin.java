@@ -1981,6 +1981,21 @@ public final class ConfigWebAdmin {
         datasources.setAttribute("inspect-template",str);
 
 	}
+	
+
+	public void updateTypeChecking(Boolean typeChecking) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update");
+        
+        Element datasources=_getRootElement("application");
+        if(typeChecking==null)datasources.removeAttribute("type-checking");
+        else datasources.setAttribute("type-checking",Caster.toString(typeChecking.booleanValue()));
+
+	}
+	
+	
     
     
     /**

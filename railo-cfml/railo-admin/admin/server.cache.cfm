@@ -1,6 +1,9 @@
 <cfset error.message="">
 <cfset error.detail="">
 
+<cfset stText.setting.typeChecking="UDF Type Checking">
+<cfset stText.setting.typeCheckingDesc="If disabled Railo ignores type defintions with function arguments and return values">
+
 <cfadmin 
 	action="securityManager"
 	type="#request.adminType#"
@@ -55,7 +58,7 @@ Defaults --->
 					password="#session["password"&request.adminType]#"
 					
 					inspectTemplate="#form.inspectTemplate#"
-					
+					typeChecking="#!isNull(form.typeChecking) and form.typeChecking EQ true#"
 					remoteClients="#request.getRemoteClients()#"
 					>
 			
@@ -68,6 +71,7 @@ Defaults --->
 					password="#session["password"&request.adminType]#"
 					
 					inspectTemplate=""
+					typeChecking=""
 					
 					remoteClients="#request.getRemoteClients()#"
 					>
@@ -149,6 +153,24 @@ Create Datasource --->
 						</cfif>
 					</td>
 				</tr>
+				
+				
+				<!--- Type Checking --->
+				<tr>
+					<th scope="row">#stText.setting.typeChecking#</th>
+					<td class="fieldPadded">
+						<label>
+							<input class="checkbox" type="checkbox" name="typeChecking" value="true"<cfif settings.typeChecking EQ true> checked="checked"</cfif>>
+						</label>
+						<div class="comment">#stText.setting.inspectTemplateNeverDesc#</div>
+						<!--- 
+						<cfsavecontent variable="codeSample">
+							pagePoolClear();
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample, stText.settings.codetip )>--->
+					</td>
+				</tr>
+				
 				<!--- PagePool --->
 				<tr>
 					<th scope="row">#stText.setting.templateCache#</th>

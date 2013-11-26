@@ -3133,6 +3133,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(ac==null) return config.getScopeCascadingType();
 		return ac.getScopeCascading();
 	}
+
+	public boolean getTypeChecking() {
+		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		if(ac==null) return config.getTypeChecking();
+		return ac.getTypeChecking();
+	}
 	
 	
 }

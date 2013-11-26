@@ -4363,6 +4363,12 @@ public final class ConfigWebFactory extends ConfigFactory {
 			}
 		}
 
+		// Type Checking
+		Boolean typeChecking = Caster.toBoolean(application.getAttribute("type-checking"),null);
+		if (typeChecking !=null) config.setTypeChecking(typeChecking.booleanValue());
+		else if(hasCS) config.setTypeChecking(configServer.getTypeChecking());
+		
+		
 		// Listener Mode
 		int listenerMode = ConfigWebUtil.toListenerMode(application.getAttribute("listener-mode"), -1);
 		if (listenerMode == -1) {
