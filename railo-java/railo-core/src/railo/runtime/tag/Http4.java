@@ -319,7 +319,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	}
 	
 
-	public void setEncodeurl(boolean encoded)	{print.ds("encoded:"+encoded);
+	public void setEncodeurl(boolean encoded)	{
 		this.encoded=encoded;
 	}
 
@@ -481,7 +481,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	* 	number. Port numbers specified in the url attribute override the port attribute.
 	* @param url value to set
 	**/
-	public void setUrl(String url)	{print.ds("url:"+url);
+	public void setUrl(String url)	{
 		this.url=url;
 	}
 
