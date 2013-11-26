@@ -44,7 +44,7 @@
 </cfsavecontent>
 
 
-<cf_doc_layout title="Railo Tag Reference">
+<cfmodule template="doc_layout.cfm" title="Railo Tag Reference">
 
 
 <cfoutput>
@@ -195,4 +195,4 @@
 </cfoutput>
 
 
-</cf_doc_layout>
+</cfmodule><!--- doc_layout !--->

@@ -640,7 +640,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		}
     	long now = System.currentTimeMillis()+getTimeServerOffset();
     	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
-    		throw new ApplicationException("nonce is outdated");
+    		throw new ApplicationException("nonce is outdated (timserver offset:"+getTimeServerOffset()+")");
     	previousNonces.put(timeNonce,"");
     	
     	String[] keys=getAuthenticationKeys();

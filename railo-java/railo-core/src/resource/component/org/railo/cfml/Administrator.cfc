@@ -199,8 +199,36 @@ component	{
 			action="getLocales";
 			return rtn;
 	}
+
+
 	
+	/**
+	* @hint updates or inserts of not existing a jar to the Railo handled lib folder
+	* @path path (including file name) to the jar file, this can be any virtual file systm supported (local filesystem, zip, ftp, s3, ram ...)
+	*/
+	public void function updateJar(required string path){
+		admin 
+			type="#variables.type#"
+			password="#variables.password#"
+			returnVariable="local.rtn"
+			
+			action="updateJar"
+			jar="#arguments.path#";
+	}
 	
+	/**
+	* @hint removes a existing jar from the Railo handled lib folder, if the jar does not exists, the call is simply ignored 
+	* @name name of the jar (no path) of the jar file to remove
+	*/
+	public void function removeJar(required string name){
+		admin 
+			type="#variables.type#"
+			password="#variables.password#"
+			returnVariable="local.rtn"
+			
+			action="removeJar"
+			name="#arguments.name#";
+	}
 	
 	
 } 

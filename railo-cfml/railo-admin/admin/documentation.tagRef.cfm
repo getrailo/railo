@@ -5,12 +5,55 @@
 	NL="
 ";
 
-	function formatDesc(string desc){
-		desc=replace(trim(desc),NL&"-","<br><li>","all");
-		desc=replace(desc,NL,"<br>","all");
-	
+stText.doc.attr.values="the following values are supported:
+<values>";
+stText.doc.attr.default="Default Value";
+
+	function formatDesc(required attr ){
+		var arr=listToArray(trim(attr.description),NL);
+		var desc="";
+		var in=false;
+		loop array="#arr#" index="local.i" item="local.line" {
+			if(i>1) desc&="<br>";
+			if(left(trim(line),1)=='-') {
+				line=(in?'':'<ul style="margin-top:4px;margin-left:0px;margin-bottom:0px;padding-left:16px;">')&replace(line,'-','<li>');
+				in=true;
+			}
+			desc&=line;
+		}
+		if(in)desc&="</ul>";
+		
+		// has value defintion
+		var doit=false;
+		if(!isNull(attr.values)) {
+			// only add this, if this is not already in the desc
+			loop array="#attr.values#" item="local.v" {
+				if(!findnocase(v,desc)) {
+					doit=true;
+				}
+			}
+			if(doit){
+				if(trim(desc)>0)desc&="<br><br>";
+				desc&=replace(stText.doc.attr.values,"<values>","<br>"&attrList(attr.values,', '));
+			}
+		}
+		
 		return desc;
 	}
+	
+	function attrList(required array arr, delimiter='|') localMode="true"{
+		arraySort(arr,"textnocase")
+		return arrayToList(arr,delimiter);
+		
+	}
+	
+	function attrValue(required attr){
+		if(isNull(attr.values) or !isArray(attr.values))
+			return attr.type;
+		return attrList(attr.values);
+	}
+	
+	
 </cfscript>
 
 <cfoutput>
@@ -85,7 +128,7 @@
 <pre><span class="syntaxTag">&lt;#tagName#</span><cfif data.attributeType EQ "noname"> <span class="syntaxAttr">##<cfloop array="#arrAttrNames#" index="key">#data.attributes[key].type# <cfbreak></cfloop>expression##</span> <cfelse><!--- 
 ---><cfloop array="#arrAttrNames#" index="key"><cfset attr=data.attributes[key]><cfif attr.status EQ "hidden"><cfcontinue></cfif>
 	<cfif not attr.required><span class="syntaxAttr">[</span></cfif><!---
-	---><span class="syntaxAttr">#key#</span>=<span class="syntaxText">"<cfif not attr.required><i></cfif>#attr.type#<cfif not attr.required></i></cfif>"</span><!---
+	---><span class="syntaxAttr">#key#</span>=<span class="syntaxText">"<cfif not attr.required><i></cfif>#attrValue(attr)#<cfif not attr.required></i></cfif>"</span><!---
 	---><cfif not attr.required><span class="syntaxAttr">]</span></cfif></cfloop></cfif><!---
 
 ---><cfif data.attributeType EQ "dynamic" or data.attributeType EQ "mixed"> <span class="syntaxAttr">...</span> </cfif><cfif data.bodyType EQ "prohibited"><span class="syntaxTag">&gt;</span>
@@ -114,7 +157,7 @@ Single type
 multiple
 ---><cfelse><cfloop array="#arrAttrNames#" index="key"><cfset attr=data.attributes[key]><cfif attr.status EQ "hidden"><cfcontinue></cfif>
 	<cfif not attr.required><span class="syntaxAttr">[</span></cfif><!---
-	---><span class="syntaxAttr">#key#</span>=<span class="syntaxText">"<cfif not attr.required><i></cfif>#attr.type#<cfif not attr.required></i></cfif>"</span><!---
+	---><span class="syntaxAttr">#key#</span>=<span class="syntaxText">"<cfif not attr.required><i></cfif>#attrValue(attr)#<cfif not attr.required></i></cfif>"</span><!---
 	---><cfif not attr.required><span class="syntaxAttr">]</span></cfif></cfloop></cfif><!---
 
 ---><cfif data.attributeType EQ "dynamic" or data.attributeType EQ "mixed"> <span class="syntaxAttr">...</span> </cfif><cfif data.bodyType EQ "prohibited"><span class="syntaxAttr">;</span><cfelseif data.bodyType EQ "required" or data.bodyType EQ "free"><span class="syntaxAttr"> {
@@ -141,12 +184,18 @@ multiple
 			</div>
 		</cfif>
 		<cfif (data.attributeType EQ "fixed" or data.attributeType EQ "mixed") and arrayLen(arrAttrNames)>
+			<cfset hasdefaults=false>
+			<cfloop array="#arrAttrNames#" index="key">
+				<cfset attr=data.attributes[key]>
+				<cfif !isNull(attr.defaultValue)><cfset hasdefaults=true></cfif>
+			</cfloop>
 			<table class="maintbl">
 				<thead>
 					<tr>
-						<th width="21%">#stText.doc.attr.name#</th>
+						<th width="20%">#stText.doc.attr.name#</th>
 						<th width="7%">#stText.doc.attr._type#</th>
 						<th width="7%">#stText.doc.attr.required#</th>
+						<cfif hasdefaults><th width="7%">#stText.doc.attr.default#</th></cfif>
 						<th width="65%">#stText.doc.attr.description#</th>
 					</tr>
 				</thead>
@@ -158,7 +207,8 @@ multiple
 							<td>#key#</td>
 							<td><cfif attr.type EQ "object">any<cfelse>#attr.type#</cfif></td>
 							<td>#YesNoFormat(attr.required)#</td>
-							<td><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#formatDesc(attr.description)#</cfif>&nbsp;</td>
+							<cfif hasdefaults><td><cfif isNull(attr.defaultValue)>&nbsp;<cfelse>#attr.defaultValue#</cfif></td></cfif>
+							<td><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#formatDesc(attr)#</cfif></td>
 						</tr>
 					</cfloop>
 				</tbody>

@@ -137,24 +137,28 @@ public final class MailUtil {
 
         if ( addr != null ) {
 
-            String domain = ListUtil.last( addr.getAddress(), '@' );
+	        String address = addr.getAddress();
 
-            if ( domain.indexOf( '.' ) > 0 ) {                          // make sure we have a dot and that it's not the first char
+	        if ( address.contains( ".." ) )
+		        return false;
 
-                String tld = ListUtil.last( domain, ".", false );
-                int len = tld.length();
+	        int pos = address.indexOf( '@' );
 
-                if ( len > 1 ) {
+	        if ( pos < 1 || pos == address.length() - 1 )
+		        return false;
 
-                    for ( int i=0; i<len; i++ ) {
+	        String local  = address.substring(0, pos);
+	        String domain = address.substring(pos + 1);
 
-                        if ( !Character.isLetter( tld.charAt( i ) ) )
-                            return false;
-                    }
+	        if ( domain.charAt( 0 ) == '.'
+			  || local.charAt(  0 ) == '.'
+			  || local.charAt( local.length() - 1 ) == '.' )
+		        return false;
 
-                    return true;
-                }
-            }
+	        pos = domain.lastIndexOf( '.' );
+
+	        if ( pos > 0 && pos < domain.length() - 2 )         // test TLD to be at least 2 chars all alpha characters
+	            return StringUtil.isAllAlpha( domain.substring( pos + 1 ) );
         }
 
         return false;
@@ -175,6 +179,7 @@ public final class MailUtil {
             try {
 
                 InternetAddress addr = new InternetAddress( str );
+
                 fixIDN( addr );
                 return addr;
             }

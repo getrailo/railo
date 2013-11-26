@@ -7,8 +7,6 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;

@@ -173,7 +173,7 @@ public class Video extends TagSupport {
         else if(action.equals("uninstall"))		this.action=ACTION_UNINSTALL;
         
         else throw doThrow("invalid value for attribute action for tag video ["+action+"], " +
-        		"valid actions are [concat, convert, cutImage, info]");
+        		"valid actions are [concat, convert, cutImage, info,install,uninstall]");
 		
 	}
 

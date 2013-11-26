@@ -69,8 +69,8 @@
 		<cfargument name="timeout" default="5000" type="numeric">
     	<cfargument name="forceReload" default="false" type="boolean">
     	
-		<cfset local.cfcNames="">
 		<cfset local.datas={}>
+		<cfset var failed=false>
 		<cfloop array="#arguments.providers#" item="local.cfcName">
 			<cfif !arguments.forceReload>
 				<!--- session --->
@@ -84,8 +84,7 @@
 		        	<cfcontinue/>
 		        </cfif>
 		        
-		        
-	    		<!--- request (within request we only try once to load the data) --->
+		        <!--- request (within request we only try once to load the data) --->
 		        <cfif 
 					StructKeyExists(request,"cfcs") and 
 					StructKeyExists(request.cfcs,cfcName)>
@@ -93,25 +92,25 @@
 		        	<cfcontinue/>
 		        </cfif>
 	        </cfif>
+	        <cfset var failed=true>
 	        <cfset datas[cfcName]=false>
-	        <cfset cfcNames=listAppend(cfcNames,cfcName)>
 		</cfloop>
-		        	
-		<cfif len(cfcNames) EQ 0> <cfreturn datas></cfif>
-        <cfset var names="">
-		<cfloop list="#cfcnames#" item="local.cfcName">
+		
+		<cfset local.cfcNames="">
+				
+		<cfif !failed> <cfreturn datas></cfif>
+		<cfset var names="">
+		<cfloop array="#arguments.providers#" item="local.cfcName">
 			
 			<!--- when was the last try to recieve this data?, we try only every  --->
-	        <cfif 
+	        <cfif !forcereload and
 				StructKeyExists(session,"cfcstries") and 
 				StructKeyExists(session.cfcstries,cfcName)>
 				<cfif  DateAdd("s",60,session.cfcstries[cfcName]) GT now()>
 					<cfcontinue/>
 				</cfif>
 			</cfif>
-	        <cfset session.cfcstries[cfcName]=now()>
-		        
-			
+			<cfset session.cfcstries[cfcName]=now()>
 			
 			
 			<cfset session.cfcs[cfcName]={}>
@@ -121,35 +120,24 @@
 			<cfthread name="#name#" provider="#cfcName#" sess="#session.cfcs[cfcName]#" req="#request.cfcs[cfcName]#">
 				<cfsetting requesttimeout="50000">
 				<cftry>
-				<cfset systemOutput("start:"&attributes.provider,true,true)>
-				<cfset var start=getTickCount()>
-				<!--- old soap call
-		        <cfset var cfc= createObject('webservice',attributes.provider&"?wsdl")>
-				<cfset systemOutput("after wsdl call"&(getTickCount()-start),true,true)>--->
-				
-				<!--- list Applications --->
-				<cfhttp url="#attributes.provider#?returnFormat=serialize&method=listApplications" result="local.http">
-				<cfset attributes.req.listApplications=evaluate(http.fileContent)>
-				<cfset attributes.sess.listApplications=attributes.req.listApplications>
-				
-				<!--- old soap call
-		        <cfset attributes.req.listApplications=cfc.listApplications()>
-		        <cfset attributes.sess.listApplications=attributes.req.listApplications>
-				<cfset systemOutput("after list call"&(getTickCount()-start),true,true)> --->
-				
-				<!--- get Info --->
-				<cfhttp url="#attributes.provider#?returnFormat=serialize&method=getInfo" result="local.http">
-				<cfset attributes.req.getInfo=evaluate(http.fileContent)>
-		        <cfset attributes.req.getInfo.lastModified=now()>
-		        <cfset attributes.sess.getInfo=attributes.req.getInfo>
-		        
-				<!--- old soap call
-		        <cfset attributes.req.getInfo=cfc.getInfo()>
-		        <cfset attributes.req.getInfo.lastModified=now()>
-		        <cfset attributes.sess.getInfo=attributes.req.getInfo>
-		        <cfset systemOutput("after info call"&(getTickCount()-start),true,true)> --->
+					<cfset var start=getTickCount()>
+					
+					<!--- list Applications --->
+					<cfhttp url="#attributes.provider#?returnFormat=serialize&method=listApplications" result="local.http">
+					<cfset attributes.req.listApplications=evaluate(http.fileContent)>
+					<cfset attributes.sess.listApplications=attributes.req.listApplications>
+					
+					<!--- get Info --->
+					<cfhttp url="#attributes.provider#?returnFormat=serialize&method=getInfo" result="local.http">
+					<cfset attributes.req.getInfo=evaluate(http.fileContent)>
+			        <cfset attributes.req.getInfo.lastModified=now()>
+			        <cfset attributes.sess.getInfo=attributes.req.getInfo>
+			        	
 					<cfcatch>
+						<!---
+						<cfset systemOutput("#attributes.provider#?returnFormat=serialize&method=listApplications",true,true)>
 						<cfset systemOutput(serialize(cfcatch),true,true)>
+						--->
 						<cfrethrow>
 					</cfcatch>
 		        </cftry>
@@ -159,7 +147,8 @@
 		<cfif arguments.timeout GT 0>
 			<cfthread action="join" names="#names#" timeout="#arguments.timeout#"/>
 		</cfif>
-		<cfloop list="#cfcNames#" item="local.cfcName">
+			
+		<cfloop array="#arguments.providers#" item="local.cfcName">
 			<cfif 
 				StructKeyExists(request,"cfcs") and 
 				StructKeyExists(request.cfcs,cfcName) and 
@@ -168,7 +157,6 @@
 				<cfset datas[cfcName]=request.cfcs[cfcName]>
 			</cfif>
 		</cfloop>
-		<cfset systemOutput(datas,true,true)>
 				
 		<cfreturn datas>
 		

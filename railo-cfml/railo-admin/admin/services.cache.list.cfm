@@ -274,7 +274,7 @@ this.cache.query = "#isNull(defaults.query) || !len(defaults.query)?"&lt;cache-n
 this.cache.resource = "#isNull(defaults.resource) || !len(defaults.resource)?"&lt;cache-name>":defaults.resource#";
 this.cache.function = "#isNull(defaults.function) || !len(defaults.function)?"&lt;cache-name>":defaults.function#";
 </cfsavecontent>
-<cf_admin_coding_tip codeSample="#codeSample#">
+<cfset renderCodingTip( codeSample )>
 
 						</td>
 						</tr>

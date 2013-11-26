@@ -152,7 +152,7 @@ Defaults --->
 						<cfsavecontent variable="codeSample">
 							this.bufferOutput = "#setting.bufferOutput#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<cfif hasAccess>

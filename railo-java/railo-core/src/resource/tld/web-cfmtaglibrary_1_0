@@ -253,6 +253,8 @@
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>create,update</values>
+			<default-value>create</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>action for the data set:
@@ -262,6 +264,7 @@
 		<attribute>
 			<type>string</type>
 			<name>loginStorage</name>
+			<values>cookie,session</values>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
@@ -293,6 +296,7 @@ Specifies how Railo stores client variables:
 		<attribute>
 			<type>string</type>
 			<name>sessionType</name>
+			<values>cfml,j2ee</values>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 <description>
@@ -440,8 +444,8 @@ Specifies how Railo stores session variables:
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Defines how the local scope of a function is invoked when a variable with no scope definition is used (default value set in the railo administrator).
-- always: the local scope is always invoked
-- update (CFML standard): the local scope is only invoked when the key already exists in it</description>
+- modern: the local scope is always invoked
+- classic (CFML standard): the local scope is only invoked when the key already exists in it</description>
 		</attribute>
 
 		<attribute>
@@ -458,47 +462,28 @@ Specifies how Railo stores session variables:
 			<rtexprvalue>true</rtexprvalue>
 			<description>
 A struct that defines all the ORM settings, the following keys are supported:
-
-autogenmap(default:true): Specifies whether Railo should automatically generate mapping for the persistent CFCs. If autogenmap=false, mapping should be provided in the form of "{cfc-name}.cfc.hbm.xml" files.
-
-automanageSession(default:true; not supported yet): Lets you specify if Railo must manage Hibernate session automatically. If enabled: Railo manages the session completely. That is, it decides when to flush the session, when to clear the session, and when to close the session. If disabled: The application is responsible for managing flushing, clearing, or closing of the session. The only exception is (in the case of transaction), when the transaction commits, the application flushes the session. Railo closes the ORM session at the end of request irrespective of this flag being enabled or disabled.
-
-cacheconfig: Specifies the location of the configuration file that should be used by the secondary cache provider.This setting is used only when secondarycacheenabled=true.
-
-cacheprovider: Specifies the cache provider that should be used by ORM as secondary cache.
-
-catalog: Specifies the default Catalog that should be used by ORM.
-
-cfclocation: Specifies the directory (or array of directories) that should be used by Railo to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent CFCs.
-
-datasource: Specifies the data source that should be used by ORM. If it is not specified here, then the data source specified for the application is picked up.
-
-dbcreate(default:none): Hibernate can automatically create the tables for your application in the database. dbCreate takes the following values:
-- update: Setting this value creates the table if it does not exist or update the table if it exists.
-- dropcreate: Setting this value drops the table if it exists and then creates it.
-- none: Setting this value does not change anything in the database schema.
-
-dialect: Specifies the dialect.Railo supports the following dialects: [Cache 2007.1, Cache71, Cach� 2007.1, DB2, DB2/390, DB2/400, DB2390, DB2400, DB2AS400, DB2OS390, DataDirectOracle9, Derby, Firebird, FrontBase, H2, H2DB, HSQL, HSQLDB, Informix, Ingres, Interbase, JDataStore, MSSQL, Mckoi, MckoiSQL, MicrosoftSQLServer, Mimer, MimerSQL, MySQL, MySQL/InnoDB, MySQL/MyISAM, MySQL5, MySQL5/InnoDB, MySQL5InnoDB, MySQLInnoDB, MySQLMyISAM, MySQLwithInnoDB, MySQLwithMyISAM, Oracle, Oracle10g, Oracle8i, Oracle9, Oracle9i, Pointbase, PostgreSQL, PostgresPlus, Progress, SAPDB, SQLServer, Sybase, Sybase11, SybaseASE15, SybaseAnywhere, com.ddtek.jdbc.db2.DB2Driver, com.microsoft.jdbc.sqlserver.SQLServerDriver, oracle.jdbc.driver.OracleDriver, org.firebirdsql.jdbc.FBDriver, org.gjt.mm.mysql.Driver, org.h2.Driver, org.hsqldb.jdbcDriver, org.postgresql.Driver]
-
-eventHandling(default:false): Specifies whether ORM Event callbacks should be given.
-
-flushatrequestend(default:true): Specifies whether ormflush should be called automatically at request end. If flushatrequestend is false, ormflush is not called automatically at request end.
-
-logSQL(default:false): Specifies whether the SQL queries that are executed by ORM will be logged. If LogSQL=true, the SQL queries are logged to the console.
-
-ormconfig: The Hibernate configuration file. This file contains various configuration parameters like, dialect, cache settings, and mapping files that are required for the application. For more details, see www.hibernate.org/hib_docs/reference/en/html/session-configuration.html. The settings defined in the ormsettings override the settings defined in the Hibernate Configuration XML file.The connection information in the Hibernate Configuration XML file is however ignored because Railo uses its own connection pool. You will need to use this only when you need to use a hibernate setting that is not available using ormsetting.
-
-savemapping(default:false): Specifies whether the generated Hibernate mapping file has to be saved to disc. If you set the value to true, the Hibernate mapping XML file is saved with the filename "CFC name".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting.
-
-schema: Specifies the default Schema that should be used by ORM.
-
-secondarycacheenabled(default:false): Specifies whether secondary caching should be enabled
-
-skipCFCWithError(default:false;not implemented yet): Lets you specify if Railo must skip the CFCs that have errors. If set to true, Railo ignores the CFCs that have errors.
-
-sqlscript: Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed.
-
-useDBForMapping(default:true): Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information.
+- autogenmap(default:true): Specifies whether Railo should automatically generate mapping for the persistent CFCs. If autogenmap=false, mapping should be provided in the form of "{cfc-name}.cfc.hbm.xml" files.
+- automanageSession(default:true; not supported yet): Lets you specify if Railo must manage Hibernate session automatically. If enabled: Railo manages the session completely. That is, it decides when to flush the session, when to clear the session, and when to close the session. If disabled: The application is responsible for managing flushing, clearing, or closing of the session. The only exception is (in the case of transaction), when the transaction commits, the application flushes the session. Railo closes the ORM session at the end of request irrespective of this flag being enabled or disabled.
+- cacheconfig: Specifies the location of the configuration file that should be used by the secondary cache provider.This setting is used only when secondarycacheenabled=true.
+- cacheprovider: Specifies the cache provider that should be used by ORM as secondary cache.
+- catalog: Specifies the default Catalog that should be used by ORM.
+- cfclocation: Specifies the directory (or array of directories) that should be used by Railo to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent CFCs.
+- datasource: Specifies the data source that should be used by ORM. If it is not specified here, then the data source specified for the application is picked up.
+- dbcreate(default:none): Hibernate can automatically create the tables for your application in the database. dbCreate takes the following values:
+-- update: Setting this value creates the table if it does not exist or update the table if it exists.
+-- dropcreate: Setting this value drops the table if it exists and then creates it.
+-- none: Setting this value does not change anything in the database schema.
+- dialect: Specifies the dialect.Railo supports the following dialects: [Cache 2007.1, Cache71, Cach� 2007.1, DB2, DB2/390, DB2/400, DB2390, DB2400, DB2AS400, DB2OS390, DataDirectOracle9, Derby, Firebird, FrontBase, H2, H2DB, HSQL, HSQLDB, Informix, Ingres, Interbase, JDataStore, MSSQL, Mckoi, MckoiSQL, MicrosoftSQLServer, Mimer, MimerSQL, MySQL, MySQL/InnoDB, MySQL/MyISAM, MySQL5, MySQL5/InnoDB, MySQL5InnoDB, MySQLInnoDB, MySQLMyISAM, MySQLwithInnoDB, MySQLwithMyISAM, Oracle, Oracle10g, Oracle8i, Oracle9, Oracle9i, Pointbase, PostgreSQL, PostgresPlus, Progress, SAPDB, SQLServer, Sybase, Sybase11, SybaseASE15, SybaseAnywhere, com.ddtek.jdbc.db2.DB2Driver, com.microsoft.jdbc.sqlserver.SQLServerDriver, oracle.jdbc.driver.OracleDriver, org.firebirdsql.jdbc.FBDriver, org.gjt.mm.mysql.Driver, org.h2.Driver, org.hsqldb.jdbcDriver, org.postgresql.Driver]
+- eventHandling(default:false): Specifies whether ORM Event callbacks should be given.
+- flushatrequestend(default:true): Specifies whether ormflush should be called automatically at request end. If flushatrequestend is false, ormflush is not called automatically at request end.
+- logSQL(default:false): Specifies whether the SQL queries that are executed by ORM will be logged. If LogSQL=true, the SQL queries are logged to the console.
+- ormconfig: The Hibernate configuration file. This file contains various configuration parameters like, dialect, cache settings, and mapping files that are required for the application. For more details, see www.hibernate.org/hib_docs/reference/en/html/session-configuration.html. The settings defined in the ormsettings override the settings defined in the Hibernate Configuration XML file.The connection information in the Hibernate Configuration XML file is however ignored because Railo uses its own connection pool. You will need to use this only when you need to use a hibernate setting that is not available using ormsetting.
+- savemapping(default:false): Specifies whether the generated Hibernate mapping file has to be saved to disc. If you set the value to true, the Hibernate mapping XML file is saved with the filename "CFC name".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting.
+- schema: Specifies the default Schema that should be used by ORM.
+- secondarycacheenabled(default:false): Specifies whether secondary caching should be enabled
+- skipCFCWithError(default:false;not implemented yet): Lets you specify if Railo must skip the CFCs that have errors. If set to true, Railo ignores the CFCs that have errors.
+- sqlscript: Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed.
+- useDBForMapping(default:true): Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information.
 </description>
 		</attribute>
 		<attribute>
@@ -782,10 +767,12 @@ Depending on this setting Railo scans certain scopes to find a variable called f
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>cache,flush,clientcache,servercache,optimal,content,put,get</values>
+			<default-value>cache</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		<description>
-			- cache: server-side and client-side template caching.
+			- cache (default): server-side and client-side template caching.
             - flush: refresh cached pages (template caching).
             - clientcache: browser-side caching only. To cache a personalized page, use this option.
             - servercache: server-side caching only. Not recommended.
@@ -1677,6 +1664,8 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>create,repair,delete,optimize,list,map,categorylist</values>	
+			<default-value>list</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the action to perform.</description>
@@ -2164,6 +2153,8 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>list,create,delete,forcedelete,rename,copy</values>
+			<default-value>list</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Defines the action to be taken with directory(ies) specified in directory.</description>
@@ -2962,13 +2953,15 @@ Determines if the contents of the cfdocumentitem tag body has to be evaluated at
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>create,read</values>
+			<default-value>read</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		<description>The name to use for the JavaScript proxy class.
         The action to take, one of the following values:
-        "create" Creates an RSS 2.0 or Atom 1.0 feed XML document and saves it in a variable, writes it to a file, or both.
-        "read" Parses an RSS or Atom feed from a URL or an XML file and saves it in a structure or query.
-        You can also get query metadata in a separate structure. (optional, default= read)</description>
+        - create: Creates an RSS 2.0 or Atom 1.0 feed XML document and saves it in a variable, writes it to a file, or both.
+        - read (default): Parses an RSS or Atom feed from a URL or an XML file and saves it in a structure or query.
+        You can also get query metadata in a separate structure. </description>
     </attribute>
 		<attribute>
 			<type>struct</type>
@@ -3167,6 +3160,7 @@ Example:
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>info,move,rename,copy,delete,read,readbinary,write,append,upload,uploadall,touch</values>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Type of file manipulation that the tag performs.</description>
@@ -3951,6 +3945,7 @@ If omitted, the file's attributes are maintained.</description>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>copy,exists,existsfile,existsdir,open,close,changedir,createdir,listdir,removedir,getfile,putfile,rename,remove,getcurrentdir,getcurrenturl</values>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>the action that should be execute</description>
@@ -5527,6 +5522,8 @@ To use cached data, the function must be called with the exact same arguments.</
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>append,read,reset,write</values>
+			<default-value>append</default-value>
 			<required>no</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>possible actions are:
@@ -5909,11 +5906,11 @@ To use cached data, the function must be called with the exact same arguments.</
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>border,captcha,convert,writetobrowser,write,rotate,resize,read,info</values>
+			<default-value>read</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Action to execute. Must be one of the following:
-			border, captcha, convert, info, read, resize, rotate, write, writeToBrowser
-			The default action is read, which you do not need to specify explicitly.</description>
+			<description>Action to execute.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -6135,6 +6132,8 @@ To use cached data, the function must be called with the exact same arguments.</
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>getHeaderOnly,getAll,delete</values>
+			<default-value>getHeaderOnly</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the mail action.</description>
@@ -6346,6 +6345,7 @@ both functions must have the same attributes; otherwise
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>list,update,delete,purge,refresh</values>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the index action.</description>
@@ -7519,6 +7519,8 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>add,delete,modifydn,modify,query</values>
+			<default-value>query</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the LDAP action.</description>
@@ -8631,10 +8633,12 @@ Railo uses the number of characters in the file.</description>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>create,connect</values>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>-  create: instantiates a COM object (typically, a DLL) before invoking methods or properties.
-    - connect: connects to a COM object (typically, an EXE) running on server.</description>
+			<description>
+- create: instantiates a COM object (typically, a DLL) before invoking methods or properties.
+- connect: connects to a COM object (typically, an EXE) running on server.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8745,14 +8749,16 @@ Each type-value pair must start with a hyphen.</description>
 		<tag-class>railo.runtime.tag.ObjectCache</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
-		<description>Flushes the query cache</description>
+		<description>Flushes the query cache or returns the current size.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>clear,size</values>
+			<default-value>clear</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Clears queries from the cache in the Application scope.</description>
+			<description></description>
 		</attribute>
 		<attribute>
 			<type>object</type>
@@ -8961,6 +8967,7 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>addWatermark,deletePages,getInfo,merge,protect,read,removeWatermark,setInfo,thumbnail,write</values>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>action to take</description>
@@ -9322,6 +9329,8 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>getHeaderOnly,getAll,delete</values>
+			<default-value>getHeaderOnly</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the mail action.</description>
@@ -10130,6 +10139,7 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>getAll,get,set,delete</values>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>action to the registry</description>
@@ -10460,13 +10470,17 @@ dWord: creates a value of 0 (zero)</description>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>delete,run,update,list,resume,pause</values>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>delete: deletes the specified task
-            update: updates an existing task or creates a new task,
-                if one with the name specified by the task attribute
-                does not exist
-            run: executes the specified task</description>
+<description>
+- delete: deletes the specified task
+- update: updates an existing task or creates a new task, if one with the name specified by the task attribute does not exist
+- run: executes the specified task
+- list: list all scheduled tasks defined
+- pause: pause execution of the defined scheduled task
+- resume: resume execution of a paused scheduled task
+</description>
     	</attribute>
 		<attribute>
 			<type>string</type>
@@ -10678,7 +10692,7 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-	<!-- ScriptJava -->
+	<!-- ScriptJava
 	<tag>
 		<name>ScriptJava</name>
 		<tag-class>railo.runtime.tag.ScriptJava</tag-class>
@@ -10695,7 +10709,7 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 		<description>language used inside cfscript (only cfml supported in this version)</description>
     </attribute>
-	</tag>
+	</tag> -->
 	<!-- Search -->
 	<tag>
 		<name>Search</name>
@@ -12509,28 +12523,29 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>join,run,sleep,terminate</values>
+			<default-value>run</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The action to take, one of the following values:
-            join Makes the current thread wait until the thread or threads
-            specified in the name attribute complete processing, or until the
-            period specified in the timeout attribute passes, before continuing
-            processing. If you don't specify a timeout and thread you are joining
-            to doesn't finish, the current thread also cannot finish processing.
-            run Creates a thread and starts it processing.
-            sleep Suspends the current threads processing for the time specified
-            by the duration attribute. This action is useful if one thread must wait
-            for another thread to do processing without joining the threads.
-            terminate Stops processing of the thread specified in the name attribute.
-            If you terminate a thread, the thread scope includes an ERROR metadata
-            structure with information about the termination. (optional, default=run)</description>
+<description>
+The action to take, one of the following values:
+- join: Makes the current thread wait until the thread or threads specified in the name attribute complete processing,
+or until the period specified in the timeout attribute passes, before continuing processing.
+If you don't specify a timeout and thread you are joining to doesn't finish, the current thread also cannot finish processing.
+- run: Creates a thread and starts it processing.
+- sleep: Suspends the current threads processing for the time specified by the duration attribute. 
+This action is useful if one thread must wait for another thread to do processing without joining the threads.
+- terminate: Stops processing of the thread specified in the name attribute.
+If you terminate a thread, the thread scope includes an ERROR metadata structure with information about the termination.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
+			<values>deamon,task</values>
+			<default-value>deamon</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>type of the thread
+			<description>type of the thread:
 			- deamon (default): executes as deamon of the current thread
 			- task: executed by the task manager</description>
 		</attribute>
@@ -12732,6 +12747,7 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>begin,commit,setsavepoint,rollback</values>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 <description>
@@ -13641,9 +13657,10 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>concat,convert,cutImage,info,install,uninstall</values>
 			<required>yes</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Type of video manipulation that the tag performs. provided actions are [info,convert,cutimage,concat]</description>
+			<description>Type of video manipulation that the tag performs.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -13885,6 +13902,7 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>cfml2wddx,wddx2cfml,cfml2js,wddx2js</values>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the action taken by the cfwddx tag.</description>
@@ -14055,17 +14073,11 @@ To use cached data, the current query must use the same SQL statement, data sour
 		<attribute>
 			<type>string</type>
 			<name>action</name>
+			<values>delete,list,read,readbinary,unzip,zip</values>
+			<default-value>zip</default-value>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>The action to take. Must be one of the following:
-            delete
-            list
-            read
-            readBinary
-            unzip
-            zip
-            If you do not specify an action, Railo
-            applies the default action, zip. </description>
+		<description>The action to take.</description>
     </attribute>
 		<attribute>
 			<type>string</type>

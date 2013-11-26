@@ -162,7 +162,7 @@ Error Output --->
 						<cfsavecontent variable="codeSample">
 							this.sessionType = "#scope.sessionType#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					 </td>
 				</tr>
 				
@@ -196,7 +196,7 @@ Error Output --->
 						<cfsavecontent variable="codeSample">
 							this.sessionManagement = #scope.sessionManagement#;
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<tr>
@@ -213,7 +213,7 @@ Error Output --->
 						<cfsavecontent variable="codeSample">
 							this.clientManagement = #scope.clientManagement#;
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<!--- Domain Cookies --->
@@ -231,7 +231,7 @@ Error Output --->
 						<cfsavecontent variable="codeSample">
 							this.setDomainCookies = #scope.domainCookies#;
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<!--- Client Cookies --->
@@ -249,7 +249,7 @@ Error Output --->
 						<cfsavecontent variable="codeSample">
 							this.setClientCookies = #scope.clientCookies#;
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>		
 				
@@ -289,7 +289,7 @@ Error Output --->
 // or as part of a function declaration
 function test() localMode="#scope.LocalMode#" {}
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<!--- Session Timeout --->
@@ -329,7 +329,7 @@ function test() localMode="#scope.LocalMode#" {}
 						<cfsavecontent variable="codeSample">
 							this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# );
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<!--- Application Timeout --->
@@ -369,7 +369,7 @@ function test() localMode="#scope.LocalMode#" {}
 						<cfsavecontent variable="codeSample">
 							this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# );
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<!--- Client Timeout --->
@@ -409,7 +409,7 @@ function test() localMode="#scope.LocalMode#" {}
 						<cfsavecontent variable="codeSample">
 							this.clientTimeout = createTimeSpan( #scope.clientTimeout_day#, #scope.clientTimeout_hour#, #scope.clientTimeout_minute#, #scope.clientTimeout_second# );
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				
@@ -439,7 +439,7 @@ function test() localMode="#scope.LocalMode#" {}
 						<cfsavecontent variable="codeSample">
 							this.sessionStorage = "#scope.sessionStorage#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				
@@ -453,7 +453,7 @@ function test() localMode="#scope.LocalMode#" {}
 						<cfsavecontent variable="codeSample">
 							this.clientStorage = "#scope.clientStorage#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				
