@@ -457,6 +457,14 @@ Specifies how Railo stores session variables:
 		</attribute>
 
 		<attribute>
+			<type>struct</type>
+			<name>tag</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>tags/attributes default value in the following structure:
+#{location:{addtoken=false}}#</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>ormenabled</name>
 			<required>false</required>

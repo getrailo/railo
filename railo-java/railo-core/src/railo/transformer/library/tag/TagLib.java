@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.jsp.tagext.Tag;
+
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
@@ -119,6 +122,18 @@ public class TagLib implements Cloneable {
 	 */
 	public TagLibTag getTag(String name)	{
 		return tags.get(name);
+	}
+	
+	public TagLibTag getTag(Class clazz)	{
+		Iterator<TagLibTag> _tags = tags.values().iterator();
+		TagLibTag tlt;
+		while(_tags.hasNext()){
+			tlt = _tags.next();
+			if(tlt.getTagClassName().equalsIgnoreCase(clazz.getName())) {
+				return tlt;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -393,5 +408,6 @@ public class TagLib implements Cloneable {
 		}
 		return scriptTags;
 	}
+	
 	
 }

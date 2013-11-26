@@ -81,6 +81,7 @@ public final class Application extends TagImpl {
 
 	private boolean ormenabled;
 	private Struct ormsettings;
+	private Struct tag;
 	private Struct s3;
 	
 	private Boolean triggerDataMember=null;
@@ -131,6 +132,7 @@ public final class Application extends TagImpl {
         
         ormenabled=false;
         ormsettings=null;
+        tag=null;
         s3=null;
         //appContext=null;
         
@@ -315,6 +317,9 @@ public final class Application extends TagImpl {
 	public void setOrmsettings(Struct ormsettings) {
 		this.ormsettings = ormsettings;
 	}
+	public void setTag(Struct tag) {
+		this.tag = tag;
+	}
 
 	/**
 	 * @param s3 the s3 to set
@@ -489,7 +494,7 @@ public final class Application extends TagImpl {
 		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);
 		if(cacheResource!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE, cacheResource);
 		if(cacheTemplate!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE, cacheTemplate);
-		
+		if(tag!=null) ac.setTagAttributeDefaultValues(tag);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));

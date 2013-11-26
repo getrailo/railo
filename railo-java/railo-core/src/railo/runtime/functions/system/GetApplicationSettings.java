@@ -1,6 +1,9 @@
 package railo.runtime.functions.system;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
@@ -35,6 +38,8 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
+import railo.transformer.library.tag.TagLib;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 public class GetApplicationSettings {
 	public static Struct call(PageContext pc) {
@@ -118,6 +123,32 @@ public class GetApplicationSettings {
 			}
 			
 		}
+		
+		// tag
+		Map<Key, Map<Collection.Key, Object>> tags = ac.getTagAttributeDefaultValues();
+		if(tags!=null) {
+			Struct tag = new StructImpl(),s;
+			Iterator<Entry<Key, Map<Collection.Key, Object>>> it = tags.entrySet().iterator();
+			Entry<Collection.Key, Map<Collection.Key, Object>> e;
+			Iterator<Entry<Collection.Key, Object>> iit;
+			Entry<Collection.Key, Object> ee;
+			Struct tmp;
+			//TagLib lib = ((ConfigImpl)pc.getConfig()).getCoreTagLib();
+			while(it.hasNext()){
+				e = it.next();
+				iit=e.getValue().entrySet().iterator();
+				tmp=new StructImpl();
+				while(iit.hasNext()){
+					ee = iit.next();
+					//lib.getTagByClassName(ee.getKey());
+					tmp.setEL(ee.getKey(), ee.getValue());
+				}
+				tag.setEL(e.getKey(), tmp);
+				
+			}
+			sct.setEL(KeyConstants._tag, tag);
+		}
+		
 		
 		//cache
 		String func = ac.getDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION);

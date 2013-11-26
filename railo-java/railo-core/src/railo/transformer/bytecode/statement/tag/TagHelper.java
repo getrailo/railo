@@ -47,7 +47,8 @@ public final class TagHelper {
 			"setAttributeCollection",Types.VOID,new Type[]{Types.PAGE_CONTEXT,TAG,MISSING_ATTRIBUTE_ARRAY,Types.STRUCT,Types.INT_VALUE});
 	
 	// Tag use(String)
-	private static final Method USE= new Method("use",TAG,new Type[]{Types.STRING});
+	private static final Method USE1= new Method("use",TAG,new Type[]{Types.STRING});
+	private static final Method USE3= new Method("use",TAG,new Type[]{Types.STRING,Types.STRING,Types.INT_VALUE});
 	
 	// void setAppendix(String appendix)
 	private static final Method SET_APPENDIX = new Method("setAppendix",Type.VOID_TYPE,new Type[]{Types.STRING});
@@ -161,8 +162,11 @@ public final class TagHelper {
 		
 	// tag=pc.use(str);
 		adapter.loadArg(0);
+		adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 		adapter.push(tlt.getTagClassName());
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, USE);
+		adapter.push(tlt.getFullName());
+		adapter.push(tlt.getAttributeType());
+		adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, USE3);
 		adapter.checkCast(currType);
 		adapter.storeLocal(currLocal);
 	
@@ -266,7 +270,6 @@ public final class TagHelper {
 				methodName=tag.getTagLibTag().getSetter(attr,type);
 				adapter.loadLocal(currLocal);
 				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
-				print.e("o:"+methodName);
 				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
 			}
 		}

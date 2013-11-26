@@ -7,12 +7,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
@@ -48,6 +50,9 @@ import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.transformer.library.tag.TagLib;
+import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 public class ModernApplicationContext extends ApplicationContextSupport {
 
@@ -88,8 +93,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	
 	private ComponentAccess component;
-	private ConfigWeb config;
-
+	
 	private String name=null;
 	
 	private boolean setClientCookies;
@@ -132,6 +136,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSetSessionManagement;
 	private boolean initScriptProtect;
 	private boolean initTypeChecking;
+	private boolean initDefaultAttributeValues;
 	private boolean initClientStorage;
 	private boolean initSecureJsonPrefix;
 	private boolean initSecureJson;
@@ -174,7 +179,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private short scopeCascading=-1;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
-		config = pc.getConfig();
+		super(pc.getConfig());
 		ConfigImpl ci = ((ConfigImpl)config);
     	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
@@ -203,6 +208,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.javaSettings=new JavaSettingsImpl();
         this.component=cfc;
 		
+        
         // read scope cascading
         initScopeCascading();
         
@@ -1117,4 +1123,24 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			initJavaSettings=true; 
 		}
 	}
+
+	@Override
+	public Map<Collection.Key, Object> getTagAttributeDefaultValues(String tagClassName) {
+		if(!initDefaultAttributeValues) {
+			// this.tag.<tagname>.<attribute-name>=<value>
+			Struct sct = Caster.toStruct(get(component,KeyConstants._tag,null),null);
+			if(sct!=null) {
+				setTagAttributeDefaultValues(sct);
+			}
+		}
+		return super.getTagAttributeDefaultValues(tagClassName);
+	}
+	
+	@Override
+	public void setTagAttributeDefaultValues(Struct sct) {
+		initDefaultAttributeValues=true;
+		super.setTagAttributeDefaultValues(sct);
+	}
+
+	
 }

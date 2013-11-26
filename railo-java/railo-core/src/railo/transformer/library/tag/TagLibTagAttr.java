@@ -99,6 +99,12 @@ public final class TagLibTagAttr {
 	public String getName() {
 		return name;
 	}
+	
+
+	public TagLibTag getTag() {
+		return tag;
+	}
+	
 	public String[] getAlias() {
 		return alias;
 	}

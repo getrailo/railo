@@ -47,6 +47,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.Pair;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -120,6 +121,7 @@ import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.tag.Login;
 import railo.runtime.tag.TagHandlerPool;
+import railo.runtime.tag.TagUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -172,6 +174,8 @@ import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.DevNullBodyContent;
+import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 /**
  * page context for every page object. 
@@ -2415,21 +2419,30 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void setErrorPage(ErrorPage ep) {
 		errorPagePool.setErrorPage(ep);
 	}
+    
+    @Override
+    public Tag use(Class clazz) throws PageException {
+        return use(clazz.getName());
+	}
 	
     @Override
     public Tag use(String tagClassName) throws PageException {
-
+    	return use(tagClassName,null,-1);
+    }
+    public Tag use(String tagClassName, String fullname,int attrType) throws PageException {
+    	
         parentTag=currentTag;
 		currentTag= tagHandlerPool.use(tagClassName);
         if(currentTag==parentTag) throw new ApplicationException("");
         currentTag.setPageContext(this);
         currentTag.setParent(parentTag);
+        if(attrType>=0 && fullname!=null) {
+	        Map<Collection.Key, Object> attrs = ((ApplicationContextPro)applicationContext).getTagAttributeDefaultValues(fullname);
+	        if(attrs!=null) {
+	        	TagUtil.setAttributes(this,currentTag, attrs, attrType);
+	        }
+        }
         return currentTag;
-	}
-    
-    @Override
-    public Tag use(Class clazz) throws PageException {
-        return use(clazz.getName());
 	}
 	
     @Override

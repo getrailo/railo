@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.Cookie;
 import javax.servlet.jsp.tagext.Tag;
 
-import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
@@ -20,10 +19,12 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
@@ -88,12 +89,14 @@ public class TagUtil {
 						Caster.castTo(pc, missingAttrs[i].getType(), value, false));
 			}
 		}
-		print.e("+++++++++++++");
-		print.e(att);
-		
-		//Key[] keys = attrs.keys();
+		setAttributes(pc,tag,att,attrType);
+	}
+	
+
+	public static void setAttributes(PageContext pc,Tag tag, Map<Key, Object> att, int attrType) throws PageException {
 		Iterator<Entry<Key, Object>> it;
 		Entry<Key, Object> e;
+		//TagLibTag tlt=null;
 		if(TagLibTag.ATTRIBUTE_TYPE_DYNAMIC==attrType) {
 			DynamicAttributes da=(DynamicAttributes) tag;
 			it = att.entrySet().iterator();
@@ -105,10 +108,23 @@ public class TagUtil {
 		else if(TagLibTag.ATTRIBUTE_TYPE_FIXED==attrType) {
 			Object value;
 			it = att.entrySet().iterator();
+			MethodInstance setter;
 			while(it.hasNext()) {
 				e = it.next();
 				value=e.getValue();
-				if(value!=null)Reflector.callSetterEL(tag, e.getKey().getString(),value);
+				if(value!=null){
+					setter = Reflector.getSetter(tag, e.getKey().getLowerString(),value,null);
+					//if(tlt==null) tlt=getTLT(pc.getConfig(), tag);
+					//setter=getSetter(pc,tlt,tag,e.getKey().getLowerString(),value);
+					if(setter!=null) {
+						try {
+							setter.invoke(tag);
+						} 
+						catch (Exception _e) {
+							throw Caster.toPageException(_e);
+						}
+					}
+				}
 				//}catch(PageException pe){}
 			}	
 		}
@@ -117,7 +133,9 @@ public class TagUtil {
 			it = att.entrySet().iterator();
 			while(it.hasNext()) {
 				e = it.next();
-				setter = Reflector.getSetter(tag, e.getKey().getString(),e.getValue(),null);
+				setter = Reflector.getSetter(tag, e.getKey().getLowerString(),e.getValue(),null);
+				//if(tlt==null) tlt=getTLT(pc.getConfig(), tag);
+				//setter=getSetter(pc,tlt,tag,e.getKey().getLowerString(),e.getValue());
 				if(setter!=null) {
 					try {
 						setter.invoke(tag);
@@ -132,6 +150,30 @@ public class TagUtil {
 				}
 			}
 		}
+	}
+
+	/*private static MethodInstance getSetter(PageContext pc,TagLibTag tlt, Tag tag, String name, Object value) throws PageException { 
+		MethodInstance setter = Reflector.getSetter(tag, name,value,null);
+		if(setter==null && tlt!=null) {
+			TagLibTagAttr attr = tlt.getAttribute(name);
+			if(attr==null)
+				throw new TemplateException(
+					"Attribute "+name+" is not allowed for tag "+tlt.getFullName(),
+					"valid attribute names are ["+tlt.getAttributeNames()+"]");
+			value=Caster.castTo(pc, attr.getType(), value, false);
+			setter = Reflector.getSetter(tag, name,value,null);
+		}
+		return setter;
+	}*/
+
+	private static TagLibTag getTLT(ConfigWeb config, Tag tag) {
+		TagLib[] tlds = ((ConfigWebImpl)config).getTLDs();
+		TagLibTag tlt;
+		for(int i=0;i<tlds.length;i++){
+			tlt = tlds[i].getTag(tag.getClass());
+			if(tlt!=null) return tlt;
+		}
+		return null;
 	}
 
 	public static void setDynamicAttribute(StructImpl attributes,Collection.Key name, Object value, short caseType) {

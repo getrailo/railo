@@ -7,11 +7,13 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import railo.commons.io.res.Resource;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -22,6 +24,7 @@ import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
+import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
@@ -57,7 +60,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Object defaultDataSource;
 	private boolean ormEnabled;
 	private Object ormdatasource;
-	private ORMConfiguration config;
+	private ORMConfiguration ormConfig;
 	private Properties s3;
 	
 
@@ -86,7 +89,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
      * constructor of the class
      * @param config
      */
-    public ClassicApplicationContext(Config config,String name,boolean isDefault, Resource source) {
+    public ClassicApplicationContext(ConfigWeb config,String name,boolean isDefault, Resource source) {
+    	super(config);
     	this.name=name;
     	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
@@ -124,14 +128,14 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * Constructor of the class, only used by duplicate method
      */
-    private ClassicApplicationContext() {
-    	
+    private ClassicApplicationContext(ConfigWeb config) {
+    	super(config);
     }
     
 
 	public ApplicationContext duplicate() {
-		ClassicApplicationContext dbl = new ClassicApplicationContext();
-		
+		ClassicApplicationContext dbl = new ClassicApplicationContext(config);
+		dbl._duplicate(this);
 		
 		dbl.name=name;
 		dbl.setClientCookies=setClientCookies;
@@ -171,7 +175,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.sameFieldAsArrays=Duplicator.duplicateMap(sameFieldAsArrays, new HashMap<Integer, Boolean>(),false );
 		
 		dbl.ormEnabled=ormEnabled;
-		dbl.config=config;
+		dbl.ormConfig=ormConfig;
 		dbl.ormdatasource=ormdatasource;
 		dbl.sessionCluster=sessionCluster;
 		dbl.clientCluster=clientCluster;
@@ -179,9 +183,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		
 		return dbl;
 	}
-    
-    
-    @Override
+
+	@Override
     public TimeSpan getApplicationTimeout() {
         return applicationTimeout;
     }
@@ -424,10 +427,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
 
 	public ORMConfiguration getORMConfiguration() {
-		return config;
+		return ormConfig;
 	}
 	public void setORMConfiguration(ORMConfiguration config) {
-		this.config= config;
+		this.ormConfig= config;
 	}
 
 	public void setORMEnabled(boolean ormEnabled) {
