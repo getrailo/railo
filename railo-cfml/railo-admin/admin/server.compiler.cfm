@@ -145,7 +145,7 @@ Redirtect to entry --->
 &lt;!--- or --->
 &lt;cfscript>processingdirective pageEncoding="#setting.templateCharset#";&lt;/cfscript>
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#" ct=true>
+						<cfset renderCodingTip( codeSample ,stText.settings.codetip)>
 					</td>
 				</tr>
 				
@@ -184,7 +184,7 @@ Redirtect to entry --->
 &lt;!--- or --->
 &lt;cfscript>processingdirective preserveCase="#!setting.DotNotationUpperCase#";&lt;/cfscript>
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#" ct=true>
+						<cfset renderCodingTip( codeSample ,stText.settings.codetip)>
 					</td>
 				</tr>
 				

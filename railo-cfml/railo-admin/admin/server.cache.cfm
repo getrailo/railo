@@ -162,12 +162,8 @@ Create Datasource --->
 						<label>
 							<input class="checkbox" type="checkbox" name="typeChecking" value="true"<cfif settings.typeChecking EQ true> checked="checked"</cfif>>
 						</label>
-						<div class="comment">#stText.setting.inspectTemplateNeverDesc#</div>
-						<!--- 
-						<cfsavecontent variable="codeSample">
-							pagePoolClear();
-						</cfsavecontent>
-						<cfset renderCodingTip( codeSample, stText.settings.codetip )>--->
+						<div class="comment">#stText.setting.typeCheckingDesc#</div>
+						<cfset renderCodingTip( "this.typeChecking = "&settings.typeChecking&";" )>
 					</td>
 				</tr>
 				
