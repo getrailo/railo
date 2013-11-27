@@ -35,6 +35,12 @@ Defaults --->
 	returnVariable="info">
 
 <cfadmin 
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	action="getPerformanceSettings"
+	returnVariable="PerformanceSettings">
+	
+<cfadmin 
 	action="getApplicationSetting"
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
@@ -85,6 +91,9 @@ component {
 
 	this.bufferOutput = "#outputSetting.bufferOutput#"; // buffer the output of a tag/function body to output in case of a exception
 
+	this.typeChecking = #PerformanceSettings.typeChecking#; // If set to false Railo ignores type defintions with function arguments and return values
+
+	
 	// request
 	setting requestTimeout = "#requestTimeout#"; // max lifespan of a running request
 }
