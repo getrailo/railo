@@ -10,7 +10,7 @@ import railo.commons.lang.StringUtil;
  */
 public final class ExtensionResourceFilter implements ResourceFilter {
 	
-	private final String[] extensions;
+	private String[] extensions;
 	private final boolean allowDir;
 	private final boolean ignoreCase;
     //private int extLen;
@@ -49,11 +49,27 @@ public final class ExtensionResourceFilter implements ResourceFilter {
 		for(int i=0;i<extensions.length;i++) {
 			if(!StringUtil.startsWith(extensions[i],'.'))
 	            tmp[i]="."+extensions[i];
-			else tmp[i]=extensions[i];
+			else 
+				tmp[i]=extensions[i];
 		}
 		this.extensions=tmp;
     	this.allowDir=allowDir;
     	this.ignoreCase=ignoreCase;
+	}
+	
+	public void addExtension(String extension) {
+		String[] tmp=new String[extensions.length+1];
+		// add existing
+		for(int i=0;i<extensions.length;i++) {
+			tmp[i]=extensions[i];
+		}
+		// add the new one
+		if(!StringUtil.startsWith(extension,'.'))
+            tmp[extensions.length]="."+extension;
+		else 
+			tmp[extensions.length]=extension;
+		
+		this.extensions=tmp;
 	}
 
 	@Override
@@ -72,6 +88,21 @@ public final class ExtensionResourceFilter implements ResourceFilter {
 				}
 			}
 		}
+		return false;
+	}
+	
+	public boolean accept(String name) {
+			for(int i=0;i<extensions.length;i++) {
+				if(ignoreCase){
+					if(StringUtil.endsWithIgnoreCase(name,extensions[i]))
+						return true;
+				}
+				else {
+					if(name.endsWith(extensions[i]))
+						return true;
+				}
+			}
+		
 		return false;
 	}
 	
