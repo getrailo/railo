@@ -6,12 +6,14 @@ import java.io.InputStream;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.util.ListUtil;
 
 public class SourceNameClassVisitor extends ClassVisitor {
 
 	private String sourceName;
+	private String sourcePath;
 
 	public SourceNameClassVisitor(int arg0) {
 		super(arg0);
@@ -22,20 +24,22 @@ public class SourceNameClassVisitor extends ClassVisitor {
 		super.visitSource(source, debug);
 		if(!StringUtil.isEmpty(source)){
 			String name=ListUtil.last(source, "/\\");
-			if(StringUtil.endsWithIgnoreCase(name, ".cfc")) {
+			if(StringUtil.endsWithIgnoreCase(name, ".cfc") || StringUtil.endsWithIgnoreCase(name, ".cfm")) {
 				this.sourceName=name;
+				this.sourcePath=source;
 			}
 		}
 	}
 
 
-    public static String getSourceName(Class clazz) throws IOException {
+    public static Pair<String,String> getSourceNameAndPath(Class clazz) throws IOException {
     		String name = "/"+clazz.getName().replace('.', '/')+".class";
 	    	InputStream in=clazz.getResourceAsStream(name);
 	        ClassReader classReader=new ClassReader(in);
 	        SourceNameClassVisitor visitor = new SourceNameClassVisitor(4);
 	        classReader.accept(visitor, 0);
-	        return visitor.sourceName;
+	        if(visitor.sourceName==null) return null;
+	        return new Pair<String,String>(visitor.sourceName,visitor.sourcePath);
     	
     }
 

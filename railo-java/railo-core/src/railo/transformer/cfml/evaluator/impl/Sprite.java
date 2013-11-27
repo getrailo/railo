@@ -38,7 +38,7 @@ public final class Sprite extends EvaluatorSupport {
         String id="sprite_"+IDGenerator.intId();
         try {
 			Page page = ASMUtil.getAncestorPage(tag);
-			String key=Md5.getDigestAsString(Thread.currentThread().getId()+":"+page.getSource());
+			String key=Md5.getDigestAsString(Thread.currentThread().getId()+":"+page.getPageSource().getDisplayPath());
 			Expression src = tag.getAttribute("src").getValue();
 			
 			

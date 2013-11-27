@@ -18,6 +18,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -368,7 +369,6 @@ public final class Page extends BodyBase {
     
     //private Body body=new Body();
 	private Resource source;
-	private final String path;
 	private boolean isComponent;
 	private boolean isInterface;
 
@@ -392,7 +392,6 @@ public final class Page extends BodyBase {
         this.version=version;
         this.lastModifed=lastModifed;
         this.source=source;
-        this.path=source.getAbsolutePath();
         
         this._writeLog=writeLog;
         this.supressWSbeforeArg=supressWSbeforeArg;
@@ -422,7 +421,8 @@ public final class Page extends BodyBase {
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
     	cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
-        cw.visitSource(this.path, null);
+    	//cw.visitSource(this.source.getAbsolutePath(), null);
+    	cw.visitSource(this.pageSource.getFullRealpath(), null);
 
         // static constructor
         //GeneratorAdapter statConstrAdapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,cw);
@@ -1393,14 +1393,6 @@ public final class Page extends BodyBase {
         		
         	}
         }
-	}
-
-
-	/**
-	 * @return the source
-	 */
-	public String getSource() {
-		return path;
 	}
 
 	/**

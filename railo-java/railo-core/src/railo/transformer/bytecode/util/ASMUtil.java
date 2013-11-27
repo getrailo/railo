@@ -18,6 +18,7 @@ import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
@@ -490,7 +491,7 @@ public final class ASMUtil {
 		aprint.o(stat);
 		while(true)	{
 			parent=parent.getParent();
-			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getSource());
+			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getPageSource().getDisplayPath());
 			else aprint.o("parent-> "+ parent);
 			if(parent==null) break;
 		}
@@ -1138,8 +1139,14 @@ public final class ASMUtil {
 	}
 
 
+	public static Pair<String, String> getSourceNameAndpath(Class clazz) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(clazz);
+	}
 	public static String getSourceName(Class clazz) throws IOException {
-		return SourceNameClassVisitor.getSourceName(clazz);
+		return SourceNameClassVisitor.getSourceNameAndPath(clazz).getName();
+	}
+	public static String getSourcePath(Class clazz) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(clazz).getValue();
 	}
 
 	public static boolean hasOnlyDataMembers(Variable var) {
