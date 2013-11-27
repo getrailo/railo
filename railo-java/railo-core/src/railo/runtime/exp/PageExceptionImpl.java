@@ -206,7 +206,6 @@ public abstract class PageExceptionImpl extends PageException {
 				
 				Resource res = config.getResource(template);
 				
-				// never happens i think
 				if(!res.exists()) {
 					res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template);
 				}
