@@ -5,6 +5,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.op.Caster;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -21,15 +22,14 @@ public class PageContextUtil {
 
 
 	public static String getCookieDomain(PageContext pc) {
+		if(!pc.getApplicationContext().isSetDomainCookies()) return null;
 
-		String result = (String) pc.cgiScope().get(KeyConstants._server_name, null);
+		String result = Caster.toString(pc.cgiScope().get(KeyConstants._server_name, null),null);
 
-		if ( result != null && pc.getApplicationContext().isSetDomainCookies()) {
+		if(!StringUtil.isEmpty(result)) {
 
 			String listLast = ListUtil.last(result, '.');
-
 			if ( !railo.runtime.op.Decision.isNumeric(listLast) ) {    // if it's numeric then must be IP address
-
 				int numparts = 2;
 				int listLen = ListUtil.len( result, '.', true );
 
