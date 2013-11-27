@@ -78,7 +78,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.archive">Archiv</data>
 	<data key="customtags.primary">Primär</data>
 	<data key="customtags.customtagdeepsearch">Untergeordnete Verzeichnisse einbeziehen</data>
-	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach Customtags durchsuchen (für Archive nicht unterstützt)</data>
+	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach custom tags durchsuchen.</data>
 	<data key="customtags.archivemissing">Bitte geben Sie einen Wert für den Archivnamen an. (Zeile </data>
 	<data key="customtags.customtaglocalsearchdesc">Lokales Verzeichnisse aus welchen der Customtag aufgerufen wird, nach dem Customtag durchsuchen</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -462,7 +462,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
 	<data key="components.componentmappingsearch">Mappings einbeziehen</data>
 	<data key="components.componentDeepSearch">Unterverzeichnisse durchsuchen</data>
-	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden. Dies funktioniert nicht für Archive!</data>
+	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden.</data>
 	<data key="components.useshadowdescription">Definiert, ob eine Komponente einen eigenständigen &quot;Variables&quot; Scope parallel zum &quot;this&quot; Scope hat (CFML Standard) oder nicht. Wenn nicht, dann werden alle nicht spezifizierten Variablen in den &quot;this&quot; scope geschrieben.</data>
 	<data key="components.server">Definert Komponenteneinstellungen, die als Standartwert für alle Webs gelten.</data>
 	<data key="components.useshadow">Allow Variable Scope</data>

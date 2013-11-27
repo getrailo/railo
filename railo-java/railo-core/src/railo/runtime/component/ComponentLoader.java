@@ -9,6 +9,7 @@ import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
+import railo.commons.lang.MappingUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
@@ -227,12 +228,11 @@ public class ComponentLoader {
     		page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
     		
     		// recursive search
-    		if(page==null && config.doComponentDeepSearch() && m.hasPhysical() && path.indexOf('/')==-1) {
-    			String _path=getPagePath(pc, m.getPhysical(), null,pathWithCFC,DirectoryResourceFilter.FILTER);
-    			if(_path!=null) {
-    				ps=m.getPageSource(_path);
-        			page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
-        			doCache=false;// do not cache this, it could be ambigous
+    		if(page==null && config.doComponentDeepSearch() && path.indexOf('/')==-1) {
+    			ps=MappingUtil.searchMappingRecursive(m, pathWithCFC, true);
+    			if(ps!=null) {
+    				page = ((PageSourceImpl)ps).loadPage(pc,(Page)null);
+    				if(page!=null) doCache=false;// do not cache this, it could be ambigous
     			}
     		}
     		

@@ -77,7 +77,7 @@
 	<data key="customtags.archive">Archive</data>
 	<data key="customtags.primary">Primary</data>
 	<data key="customtags.customtagdeepsearch">Search subdirectories</data>
-	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories (not supported for archives)</data>
+	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories.</data>
 	<data key="customtags.archivemissing">Please enter a value for the archive name (row </data>
 	<data key="customtags.customtaglocalsearchdesc">Search in the caller directory for the custom tag</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -484,7 +484,7 @@
 	<data key="components.trusted">Trusted</data>
 	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
-	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
+	Search for CFCs in the subdirectories of the "Additional Resources" below.</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: {url})</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>

@@ -21,6 +21,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
@@ -1139,14 +1140,14 @@ public final class ASMUtil {
 	}
 
 
-	public static Pair<String, String> getSourceNameAndpath(Class clazz) throws IOException {
-		return SourceNameClassVisitor.getSourceNameAndPath(clazz);
+	public static Pair<String, String> getSourceNameAndPath(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC);
 	}
-	public static String getSourceName(Class clazz) throws IOException {
-		return SourceNameClassVisitor.getSourceNameAndPath(clazz).getName();
+	public static String getSourceName(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getName();
 	}
-	public static String getSourcePath(Class clazz) throws IOException {
-		return SourceNameClassVisitor.getSourceNameAndPath(clazz).getValue();
+	public static String getSourcePath(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getValue();
 	}
 
 	public static boolean hasOnlyDataMembers(Variable var) {
