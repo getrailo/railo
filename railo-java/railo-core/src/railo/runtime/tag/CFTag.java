@@ -95,7 +95,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
      */
     protected InitFile source;
     private String appendix;
-	//private boolean doCustomTagDeepSearch;
 	
 	private Component cfc;
 	private boolean isEndTag;
