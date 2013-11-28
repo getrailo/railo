@@ -340,7 +340,7 @@ public final class Cache extends BodyTagImpl {
         	
         	OutputStream os=null;
         	try {
-                ci.writeTo(os=getOutputStream(),ReqRspUtil.getCharacterEncoding(pageContext,rsp));
+                ci.writeTo(os=getOutputStream(),ReqRspUtil.getCharacterEncoding(pageContext,rsp).name());
         		//IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
             } 
             finally {

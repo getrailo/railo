@@ -936,8 +936,7 @@ public abstract class ComponentPage extends PagePlus  {
 
 	private Charset getCharset(PageContext pc) {
 		HttpServletResponse rsp = pc.getHttpServletResponse();
-        String str = ReqRspUtil.getCharacterEncoding(pc,rsp);
-        return CharsetUtil.toCharset(str, CharsetUtil.UTF8);
+        return ReqRspUtil.getCharacterEncoding(pc,rsp);
 	}
 
 	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {

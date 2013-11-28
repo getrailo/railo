@@ -32,6 +32,7 @@ import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -218,6 +219,7 @@ public final class ReqRspUtil {
 			return str;
 		}
 	}
+    
     public static String encode(String str,String charset) {
 		try {
 			return URLEncoder.encode(str, charset);
@@ -226,9 +228,16 @@ public final class ReqRspUtil {
 			return str;
 		}
 	}
-    
-    
-    
+
+    public static String encode(String str,Charset charset) {
+		try {
+			return URLEncoder.encode(str, charset);
+		} 
+		catch (UnsupportedEncodingException e) {
+			return str;
+		}
+	}
+
     public static boolean needEncoding(String str, boolean allowPlus){
     	if(StringUtil.isEmpty(str,false)) return false;
     	
@@ -389,8 +398,7 @@ public final class ReqRspUtil {
     	
 		MimeType contentType = getContentType(pc);
 		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
-        String strCS = getCharacterEncoding(pc,req);
-        Charset cs = CharsetUtil.toCharset(strCS);
+		Charset cs = getCharacterEncoding(pc,req);
         
         boolean isBinary =!(
         		strContentType == null || 
@@ -519,20 +527,23 @@ public final class ReqRspUtil {
 		return false;
 	}
 
-	public static String getCharacterEncoding(PageContext pc, ServletRequest req) {
-		String ce = req.getCharacterEncoding();
-		if(!StringUtil.isEmpty(ce,true)) return ce;
-		return _getCharacterEncoding(pc);
+	public static Charset getCharacterEncoding(PageContext pc, ServletRequest req) {
+		return _getCharacterEncoding(pc,req.getCharacterEncoding());
 	}
 	
-	public static String getCharacterEncoding(PageContext pc, ServletResponse rsp) {
-		String ce = rsp.getCharacterEncoding();
-		if(!StringUtil.isEmpty(ce,true)) return ce;
-		return _getCharacterEncoding(pc);
+	public static Charset getCharacterEncoding(PageContext pc, ServletResponse rsp) {
+		return _getCharacterEncoding(pc,rsp.getCharacterEncoding());
 	}
 	
-	private static String _getCharacterEncoding(PageContext pc) {
-		Config config = ThreadLocalPageContext.getConfig(pc); // TODO 4.2
-		return config.getWebCharset();
+	private static Charset _getCharacterEncoding(PageContext pc, String ce) {
+		if(!StringUtil.isEmpty(ce,true)) {
+			Charset c = CharsetUtil.toCharset(ce,null);
+			if(c!=null) return c;
+		}
+		
+		pc=ThreadLocalPageContext.get(pc);
+		if(pc!=null) return ((PageContextImpl)pc).getWebCharset();
+		Config config = ThreadLocalPageContext.getConfig(pc);
+		return ((ConfigImpl)config)._getWebCharset();
 	}
 }

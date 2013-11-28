@@ -43,6 +43,7 @@ import org.apache.oro.text.regex.Perl5Matcher;
 
 import railo.print;
 import railo.commons.io.BodyContentStack;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -1757,12 +1758,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void handlePageException(PageException pe) {
 		if(!Abort.isSilentAbort(pe)) {
 			
-			String charEnc = ReqRspUtil.getCharacterEncoding(this,rsp);
-	        if(StringUtil.isEmpty(charEnc,true)) {
+			Charset cs = ReqRspUtil.getCharacterEncoding(this,rsp);
+	        if(cs==null) {
 				rsp.setContentType("text/html");
 	        }
 	        else {
-	        	rsp.setContentType("text/html; charset=" + charEnc);
+	        	rsp.setContentType("text/html; charset=" + cs.name());
 	        }
 	        rsp.setHeader("exception-message", pe.getMessage());
 	        //rsp.setHeader("exception-detail", pe.getDetail());
@@ -2399,12 +2400,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	this.locale=locale;
         HttpServletResponse rsp = getHttpServletResponse();
         
-        String charEnc = ReqRspUtil.getCharacterEncoding(this,rsp);
+        Charset charEnc = ReqRspUtil.getCharacterEncoding(this,rsp);
         rsp.setLocale(locale);
-        if(charEnc.equalsIgnoreCase("UTF-8")) {
+        if(charEnc.equals(CharsetUtil.UTF8)) {
         	rsp.setContentType("text/html; charset=UTF-8");
         }
-        else if(!charEnc.equalsIgnoreCase(ReqRspUtil.getCharacterEncoding(this,rsp))) {
+        else if(!charEnc.equals(ReqRspUtil.getCharacterEncoding(this,rsp))) {
                 rsp.setContentType("text/html; charset=" + charEnc);
         }
 	}

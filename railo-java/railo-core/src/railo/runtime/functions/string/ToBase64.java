@@ -17,7 +17,7 @@ public final class ToBase64 implements Function {
 	 * @throws PageException
 	 */
 	public static String call(PageContext pc , Object object) throws PageException {
-		return call(pc,object,ReqRspUtil.getCharacterEncoding(pc,pc.getHttpServletResponse()));
+		return call(pc,object,ReqRspUtil.getCharacterEncoding(pc,pc.getHttpServletResponse()).name());
 	}
 	/**
 	 * @param pc
