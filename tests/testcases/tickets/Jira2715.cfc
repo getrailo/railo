@@ -30,7 +30,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		}
 		
 		sct=evaluate(trim(result.filecontent));
-		dump(createURL("Jira2715/reqhead.cfm")); abort;
+		//dump(createURL("Jira2715/reqhead.cfm")); abort;
 	}
 	
 	private string function createURL(string calledName){

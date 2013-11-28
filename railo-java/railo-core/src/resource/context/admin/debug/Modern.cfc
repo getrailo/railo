@@ -40,9 +40,9 @@
 		}
 
 		private void function throwWhenNotNumeric(struct custom, string name){
-			throwWhenEmpty(custom,name);
-			if(!isNumeric(trim(custom[name])))
-			throw "value for ["&name&"] must be numeric";
+			throwWhenEmpty(arguments.custom, arguments.name);
+			if(!isNumeric(trim(arguments.custom[arguments.name])))
+			throw "value for [" & arguments.name & "] must be numeric";
 		}
 
 		private function isColumnEmpty(query qry,string columnName){
@@ -52,17 +52,17 @@
 
 		function isSectionOpen( string name ) {
 
-			if ( name == "ALL" && !structKeyExists( Cookie, variables.cookieName ) )
+			if ( arguments.name == "ALL" && !structKeyExists( Cookie, variables.cookieName ) )
 				return true;
 
 			var cookieValue = structKeyExists( Cookie, variables.cookieName ) ? Cookie[ variables.cookieName ] : 0;
 
-			return cookieValue && ( bitAnd( cookieValue, this.allSections[ name ] ) );
+			return cookieValue && ( bitAnd( cookieValue, this.allSections[ arguments.name ] ) );
 		}
 
 		function isEnabled( custom, key ) {
 
-			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
+			return structKeyExists( arguments.custom, arguments.key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
 		}
 
 
@@ -136,10 +136,10 @@
 			
 			
 		<cfset var ordermap={}>
-		<cfloop query="#debugging.history#">
-			<cfif !structkeyExists(ordermap,debugging.history.id)><cfset ordermap[debugging.history.id]=structCount(ordermap)+1></cfif>
+		<cfloop query="#arguments.debugging.history#">
+			<cfif !structkeyExists(ordermap, arguments.debugging.history.id)><cfset ordermap[ arguments.debugging.history.id ]=structCount(ordermap)+1></cfif>
 		</cfloop>	
-		<cfset var prettify=structKeyExists(custom,'timeformat') and custom.timeformat EQ "natural">
+		<cfset var prettify=structKeyExists(arguments.custom,'timeformat') and arguments.custom.timeformat EQ "natural">
 		</cfsilent>
 		<cfif arguments.context EQ "web">
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
@@ -188,8 +188,8 @@
 
 		<cfoutput>
 
-			<cfset sectionId = "ALL">
-			<cfset isOpen = this.isSectionOpen( sectionId )>
+			<cfset var sectionId = "ALL">
+			<cfset var isOpen = this.isSectionOpen( sectionId )>
 
 			<!-- Railo Debug Output !-->
 			<fieldset id="-railo-debug" class="#arguments.custom.size# #isOpen ? '' : 'collapsed'#">
@@ -314,7 +314,7 @@
 									<cfset loa=0>
 									<cfset tot=0>
 									<cfset q=0>
-									<cfset hasBad = false>
+									<cfset var hasBad = false>
 									<cfloop query="pages">
 										<cfset tot=tot+pages.total>
 										<cfset q=q+pages.query>
@@ -878,17 +878,19 @@
 		<cfargument name="label1">
 		<cfargument name="label2" default="">
 
+		<cfset var isOpen = this.isSectionOpen( arguments.sectionId )>
+
 		<tr>
-			<td><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
-				#label1#</a></td>
-			<td class="pad"><a onclick="__RAILO.debug.toggleSection( '#sectionId#' );">#label2#</a></td>
+			<td><a id="-railo-debug-btn-#arguments.sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" onclick="__RAILO.debug.toggleSection( '#arguments.sectionId#' );">
+				#arguments.label1#</a></td>
+			<td class="pad"><a onclick="__RAILO.debug.toggleSection( '#arguments.sectionId#' );">#arguments.label2#</a></td>
 		</tr>
 	</cffunction>
 
 	<cfscript>
 
 		function unitFormat( string unit, numeric time, boolean prettify=false ) {
-			if(!prettify) {
+			if ( !arguments.prettify ) {
 				return NumberFormat( arguments.time / 1000000, ",0.000" );
 			}
 			

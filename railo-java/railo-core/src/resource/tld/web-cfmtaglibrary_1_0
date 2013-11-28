@@ -5587,6 +5587,19 @@ To use cached data, the function must be called with the exact same arguments.</
 		
 		<attribute>
 			<type>string</type>
+			<name>compression</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Informs the target webserver to disable compression for the response. Possible values are:
+- true (default): compression enabled
+- false: compression disabled
+- none (deprecated): use "false" instead
+</description>
+		</attribute>
+		
+		
+		<attribute>
+			<type>string</type>
 			<name>result</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -6198,6 +6211,14 @@ To use cached data, the function must be called with the exact same arguments.</
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the first row number to be retrieved. Default is 1. This attribute is ignored if
 		messageNumber is specified.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>debug</name>
+			<status>deprecated</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is deprecated and ignored, log control happens via the logging framwork directly.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -9379,6 +9400,14 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the maximum time, in seconds, to wait for mail processing. Defaults is 60 seconds.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>debug</name>
+			<status>deprecated</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is deprecated and ignored, log control happens via the logging framwork directly.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>

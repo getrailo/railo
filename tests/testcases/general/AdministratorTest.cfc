@@ -109,8 +109,8 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 	
 	public void function testUpdateJar(){
-		dump(getmetaData(admin));abort;
-		admin.updateJar();
+		//dump(getmetaData(admin));abort;
+		//admin.updateJar();
 	}
 	
 } 

@@ -1757,7 +1757,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void handlePageException(PageException pe) {
 		if(!Abort.isSilentAbort(pe)) {
 			
-			String charEnc = rsp.getCharacterEncoding();
+			String charEnc = ReqRspUtil.getCharacterEncoding(this,rsp);
 	        if(StringUtil.isEmpty(charEnc,true)) {
 				rsp.setContentType("text/html");
 	        }
@@ -2399,12 +2399,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	this.locale=locale;
         HttpServletResponse rsp = getHttpServletResponse();
         
-        String charEnc = rsp.getCharacterEncoding();
+        String charEnc = ReqRspUtil.getCharacterEncoding(this,rsp);
         rsp.setLocale(locale);
         if(charEnc.equalsIgnoreCase("UTF-8")) {
         	rsp.setContentType("text/html; charset=UTF-8");
         }
-        else if(!charEnc.equalsIgnoreCase(rsp.getCharacterEncoding())) {
+        else if(!charEnc.equalsIgnoreCase(ReqRspUtil.getCharacterEncoding(this,rsp))) {
                 rsp.setContentType("text/html; charset=" + charEnc);
         }
 	}

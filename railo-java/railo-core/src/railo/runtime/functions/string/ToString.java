@@ -9,6 +9,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 
 public final class ToString implements Function {
@@ -20,8 +21,7 @@ public final class ToString implements Function {
 	}
 	public static String call(PageContext pc , Object object, String encoding) throws PageException {
 		if(StringUtil.isEmpty(encoding)) {
-			encoding = pc.getResponse().getCharacterEncoding();
-			if(StringUtil.isEmpty(encoding,true))encoding="UTF-8";
+			encoding = ReqRspUtil.getCharacterEncoding(pc,pc.getResponse());
 		}
 		
 		if(object instanceof byte[]){

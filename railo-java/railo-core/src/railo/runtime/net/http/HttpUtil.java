@@ -68,14 +68,14 @@ public class HttpUtil {
 			name=(String) e.nextElement();
 			values=req.getParameterValues(name);
 			if(values==null && ReqRspUtil.needEncoding(name, true))
-				values=req.getParameterValues(ReqRspUtil.encode(name, req.getCharacterEncoding()));
+				values=req.getParameterValues(ReqRspUtil.encode(name, ReqRspUtil.getCharacterEncoding(null,req)));
 			if(values==null) {
 				PageContext pc = ThreadLocalPageContext.get();
 				if(pc!=null && ReqRspUtil.identical(pc.getHttpServletRequest(),req) ) {
 					values=HTTPServletRequestWrap.getParameterValues(ThreadLocalPageContext.get(), name);
 				}
 			}
-			for(int i=0;i<values.length;i++){
+			if(values!=null)for(int i=0;i<values.length;i++){
 				parameters.add(new Pair<String,String>(name,values[i]));
 			}
 		}

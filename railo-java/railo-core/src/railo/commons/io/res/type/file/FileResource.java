@@ -143,21 +143,23 @@ public final class FileResource extends File implements Resource {
 	@Override
 	public void moveTo(Resource dest) throws IOException {
 		if(this.equals(dest)) return;
+		boolean done=false;
 		if(dest instanceof File) {
 			provider.lock(this);
 			try {
 				if(dest.exists() && !dest.delete())
 					throw new IOException("can't move file "+this.getAbsolutePath()+" cannot remove existing file "+dest.getAbsolutePath());
 				
-				if(!super.renameTo((File)dest)) {
+				done=super.renameTo((File)dest);
+				/*if(!super.renameTo((File)dest)) {
 					throw new IOException("can't move file "+this.getAbsolutePath()+" to destination resource "+dest.getAbsolutePath());
-				}
+				}*/
 			}
 			finally {
 				provider.unlock(this);
 			}
 		}
-		else {
+		if(!done) {
 			ResourceUtil.checkMoveToOK(this, dest);
 			IOUtil.copy(getInputStream(),dest,true);
 			if(!this.delete()) {

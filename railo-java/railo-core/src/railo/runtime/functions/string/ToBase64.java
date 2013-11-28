@@ -3,6 +3,7 @@ package railo.runtime.functions.string;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 
 /**
@@ -16,7 +17,7 @@ public final class ToBase64 implements Function {
 	 * @throws PageException
 	 */
 	public static String call(PageContext pc , Object object) throws PageException {
-		return call(pc,object,pc. getHttpServletResponse().getCharacterEncoding());
+		return call(pc,object,ReqRspUtil.getCharacterEncoding(pc,pc.getHttpServletResponse()));
 	}
 	/**
 	 * @param pc

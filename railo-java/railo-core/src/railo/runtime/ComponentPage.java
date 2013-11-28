@@ -936,10 +936,7 @@ public abstract class ComponentPage extends PagePlus  {
 
 	private Charset getCharset(PageContext pc) {
 		HttpServletResponse rsp = pc.getHttpServletResponse();
-        String str = rsp.getCharacterEncoding();
-        
-        if(StringUtil.isEmpty(str)) 
-        	return ((PageContextImpl)pc).getWebCharset();
+        String str = ReqRspUtil.getCharacterEncoding(pc,rsp);
         return CharsetUtil.toCharset(str, CharsetUtil.UTF8);
 	}
 

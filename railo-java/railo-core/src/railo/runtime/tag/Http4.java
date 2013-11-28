@@ -102,7 +102,9 @@ public final class Http4 extends BodyTagImpl implements Http {
 
 	public static final String MULTIPART_RELATED = "multipart/related";
 	public static final String MULTIPART_FORM_DATA = "multipart/form-data";
-
+	
+	
+	
     /**
      * Maximum redirect count (5)
      */
@@ -268,6 +270,8 @@ public final class Http4 extends BodyTagImpl implements Http {
     private String domain=null;
 	private boolean preauth=true;
 	private boolean encoded=true; 
+	
+	private boolean compression=true;
 
 	
 	@Override
@@ -309,6 +313,7 @@ public final class Http4 extends BodyTagImpl implements Http {
         domain=null;
         preauth=true; 
         encoded=true;
+        compression=true;
 	}
 	
 	/**
@@ -545,6 +550,16 @@ public final class Http4 extends BodyTagImpl implements Http {
 	    else if(method.equals("options")) this.method=METHOD_OPTIONS;
 	    else if(method.equals("patch")) this.method=METHOD_PATCH;
 	    else throw new ApplicationException("invalid method type ["+(method.toUpperCase())+"], valid types are POST,GET,HEAD,DELETE,PUT,TRACE,OPTIONS,PATCH");
+	}
+	
+	public void setCompression(String strCompression) throws ApplicationException {
+		if(StringUtil.isEmpty(strCompression,true)) return;
+		Boolean b = Caster.toBoolean(strCompression,null);
+		
+		if(b!=null) compression=b.booleanValue();
+		else if(strCompression.trim().equalsIgnoreCase("none")) compression=false;
+	    else throw new ApplicationException("invalid value for attribute compression ["+strCompression+"], valid values are: true,false or none");
+		
 	}
 
 
@@ -828,7 +843,16 @@ public final class Http4 extends BodyTagImpl implements Http {
     		if(postParam!=null && postParam.size()>0)
     			post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(postParam,charset));
     		
-    		req.setHeader("Accept-Encoding",acceptEncoding.append("gzip").toString());
+    		if(compression){
+    			acceptEncoding.append("gzip");
+    		}
+    		else {
+    			acceptEncoding.append("deflate;q=0");
+    			req.setHeader("TE", "deflate;q=0");
+    		}
+			req.setHeader("Accept-Encoding",acceptEncoding.toString());
+    		
+    		
     		
     		// multipart
     		if(doMultiPart && eem!=null) {
