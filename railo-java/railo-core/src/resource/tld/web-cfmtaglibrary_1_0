@@ -6208,6 +6208,14 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
+			<name>debug</name>
+			<status>deprecated</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is deprecated and ignored, log control happens via the logging framwork directly.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
 			<name>generateUniqueFilenames</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -9410,6 +9418,14 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the maximum time, in seconds, to wait for mail processing. Defaults is 60 seconds.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>debug</name>
+			<status>deprecated</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is deprecated and ignored, log control happens via the logging framwork directly.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
