@@ -5578,6 +5578,19 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		
 		<attribute>
 			<type>string</type>
+			<name>compression</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Informs the target webserver to disable compression for the response. Possible values are:
+- true (default): compression enabled
+- false: compression disabled
+- none (deprecated): use "false" instead
+</description>
+		</attribute>
+		
+		
+		<attribute>
+			<type>string</type>
 			<name>result</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
