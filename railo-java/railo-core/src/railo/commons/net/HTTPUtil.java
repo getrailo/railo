@@ -588,7 +588,7 @@ public final class HTTPUtil {
 			
         	disp.include(req,hsrw);
 	        if(!hsrw.isCommitted())hsrw.flushBuffer();
-	        pc.write(IOUtil.toString(baos.toByteArray(), hsrw.getCharacterEncoding()));
+	        pc.write(IOUtil.toString(baos.toByteArray(), ReqRspUtil.getCharacterEncoding(pc,hsrw)));
         }
         finally{
         	HttpServletResponseWrap.release();

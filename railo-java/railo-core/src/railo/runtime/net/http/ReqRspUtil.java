@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,9 +30,11 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
@@ -40,6 +44,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
+import railo.runtime.type.scope.FormImpl;
 
 public final class ReqRspUtil {
 
@@ -385,7 +390,7 @@ public final class ReqRspUtil {
     	
 		MimeType contentType = getContentType(pc);
 		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
-        String strCS = req.getCharacterEncoding();
+        String strCS = getCharacterEncoding(pc,req);
         Charset cs = CharsetUtil.toCharset(strCS);
         
         boolean isBinary =!(
@@ -513,5 +518,22 @@ public final class ReqRspUtil {
 			right=((HTTPServletRequestWrap)right).getOriginalRequest();
 		if(left==right) return true;
 		return false;
+	}
+
+	public static String getCharacterEncoding(PageContext pc, ServletRequest req) {
+		String ce = req.getCharacterEncoding();
+		if(!StringUtil.isEmpty(ce,true)) return ce;
+		return _getCharacterEncoding(pc);
+	}
+	
+	public static String getCharacterEncoding(PageContext pc, ServletResponse rsp) {
+		String ce = rsp.getCharacterEncoding();
+		if(!StringUtil.isEmpty(ce,true)) return ce;
+		return _getCharacterEncoding(pc);
+	}
+	
+	private static String _getCharacterEncoding(PageContext pc) {
+		Config config = ThreadLocalPageContext.getConfig(pc); // TODO 4.2
+		return config.getWebCharset();
 	}
 }

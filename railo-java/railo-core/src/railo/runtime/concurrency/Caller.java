@@ -11,6 +11,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.thread.ThreadUtil;
 
 public abstract class Caller implements Callable<String> { 
@@ -36,8 +37,8 @@ public abstract class Caller implements Callable<String> {
 			try {
 			HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
 			
-			String enc = rsp.getCharacterEncoding();
-			if(enc==null) enc="ISO-8859-1";
+			String enc = ReqRspUtil.getCharacterEncoding(pc,rsp);
+			//if(enc==null) enc="ISO-8859-1";
 			
 			pc.getOut().flush(); //make sure content is flushed
 			

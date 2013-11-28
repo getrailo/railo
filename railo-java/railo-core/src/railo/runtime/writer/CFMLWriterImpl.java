@@ -198,7 +198,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         }
     	initOut();
-    	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
+    	byte[] barr = _toString(true).getBytes(ReqRspUtil.getCharacterEncoding(null,response));
         
     	if(cacheItem!=null && cacheItem.isValid()) {
     		cacheItem.store(barr, flushed);
@@ -265,7 +265,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         		return;
         	}
         	//print.out(_toString());
-        	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
+        	byte[] barr = _toString(true).getBytes(ReqRspUtil.getCharacterEncoding(null,response));
             
         	if(cacheItem!=null)	{
         		cacheItem.store(barr, false);
