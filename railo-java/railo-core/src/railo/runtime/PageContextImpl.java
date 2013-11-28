@@ -2269,8 +2269,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
     @Override
     public long getRequestTimeout() {
-		if(requestTimeout==-1)
+		if(requestTimeout==-1) {
+			if(applicationContext!=null) {
+				return ((ApplicationContextPro)applicationContext).getRequestTimeout().getMillis();
+			}
 			requestTimeout=config.getRequestTimeout().getMillis();
+		}
 		return requestTimeout;
 	}
 	

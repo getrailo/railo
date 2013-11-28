@@ -387,6 +387,14 @@ Specifies how Railo stores session variables:
 		the Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>
+			<type>timespan</type>
+			<name>requestTimeout</name>
+			<alias>timeout</alias>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Sets the amount of time Railo will wait for a request to finish before a request timeout will be raised. This means that the execution of the request will be stopped.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>setDomainCookies</name>
 			<required>false</required>

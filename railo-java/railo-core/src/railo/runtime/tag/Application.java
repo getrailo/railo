@@ -52,9 +52,10 @@ public final class Application extends TagImpl {
 	private String clientstorage;
 	private String sessionstorage;
 	private Boolean setClientManagement;
+	private TimeSpan applicationTimeout;
 	private TimeSpan sessionTimeout;
 	private TimeSpan clientTimeout;
-	private TimeSpan applicationTimeout;
+	private TimeSpan requestTimeout;
 	private Mapping[] mappings;
 	private Mapping[] customTagMappings;
 	private Mapping[] componentMappings;
@@ -106,6 +107,7 @@ public final class Application extends TagImpl {
         setClientManagement=null;
         sessionTimeout=null;
         clientTimeout=null;
+        requestTimeout=null;
         applicationTimeout=null;
         mappings=null;
         customTagMappings=null;
@@ -272,6 +274,10 @@ public final class Application extends TagImpl {
 	
 	public void setClienttimeout(TimeSpan clientTimeout)	{
 		this.clientTimeout=clientTimeout;
+	}
+	
+	public void setRequesttimeout(TimeSpan requestTimeout)	{
+		this.requestTimeout=requestTimeout;
 	}
 	
 
@@ -443,6 +449,7 @@ public final class Application extends TagImpl {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
+		if(requestTimeout!=null)				ac.setRequestTimeout(requestTimeout);
 		if(clientstorage!=null)	{
 			ac.setClientstorage(clientstorage);
 		}

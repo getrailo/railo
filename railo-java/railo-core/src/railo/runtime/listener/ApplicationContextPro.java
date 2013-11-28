@@ -11,6 +11,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
+import railo.runtime.type.dt.TimeSpan;
 import railo.transformer.library.tag.TagLibTagAttr;
 
 // FUTURE move to ApplicationContext
@@ -64,5 +65,7 @@ public interface ApplicationContextPro extends ApplicationContext {
 	Map<Collection.Key, Map<Collection.Key, Object>> getTagAttributeDefaultValues();
 	public Map<Collection.Key, Object> getTagAttributeDefaultValues(String fullName);
 	public void setTagAttributeDefaultValues(Struct sct);
-	
+
+	public TimeSpan getRequestTimeout();
+	public void setRequestTimeout(TimeSpan timeout);
 }

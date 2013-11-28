@@ -7,14 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
-import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
@@ -24,7 +23,6 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.DeprecatedException;
@@ -50,9 +48,6 @@ import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.transformer.library.tag.TagLib;
-import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.library.tag.TagLibTagAttr;
 
 public class ModernApplicationContext extends ApplicationContextSupport {
 
@@ -68,7 +63,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key INVOKE_IMPLICIT_ACCESSOR = KeyImpl.intern("InvokeImplicitAccessor");
 	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.intern("sessionManagement");
 	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.intern("sessionTimeout");
-	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.intern("clientTimeout");
+	private static final Collection.Key CLIENT_TIMEOUT =  KeyImpl.intern("clientTimeout");
+	private static final Collection.Key REQUEST_TIMEOUT = KeyImpl.intern("requestTimeout");
 	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.intern("setClientCookies");
 	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.intern("setDomainCookies");
 	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.intern("scriptProtect");
@@ -92,6 +88,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key TYPE_CHECKING = KeyImpl.intern("typeChecking");
 
 	
+	
 	private ComponentAccess component;
 	
 	private String name=null;
@@ -100,9 +97,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean setDomainCookies;
 	private boolean setSessionManagement;
 	private boolean setClientManagement;
+	private TimeSpan applicationTimeout;
 	private TimeSpan sessionTimeout;
 	private TimeSpan clientTimeout;
-	private TimeSpan applicationTimeout;
+	private TimeSpan requestTimeout;
 	private int loginStorage=Scope.SCOPE_COOKIE;
 	private int scriptProtect;
 	private boolean typeChecking;
@@ -130,6 +128,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initApplicationTimeout;
 	private boolean initSessionTimeout;
 	private boolean initClientTimeout;
+	private boolean initRequestTimeout;
 	private boolean initSetClientCookies;
 	private boolean initSetClientManagement;
 	private boolean initSetDomainCookies;
@@ -187,6 +186,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         setClientManagement=config.isClientManagement();
         sessionTimeout=config.getSessionTimeout();
         clientTimeout=config.getClientTimeout();
+        requestTimeout=config.getRequestTimeout();
         applicationTimeout=config.getApplicationTimeout();
         scriptProtect=config.getScriptProtect();
         typeChecking=ci.getTypeChecking();
@@ -362,6 +362,23 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			initClientTimeout=true;
 		}
 		return clientTimeout;
+	}
+
+	@Override
+	public TimeSpan getRequestTimeout() {
+		if(!initRequestTimeout) {
+			Object o=get(component,REQUEST_TIMEOUT,null);
+			if(o==null)o=get(component,KeyConstants._timeout,null);
+			if(o!=null)requestTimeout=Caster.toTimespan(o,requestTimeout);
+			initRequestTimeout=true;
+		}
+		return requestTimeout;
+	}
+	
+	@Override
+	public void setRequestTimeout(TimeSpan requestTimeout) {
+		this.requestTimeout = requestTimeout;
+		initRequestTimeout=true;
 	}
 
 	@Override

@@ -7,11 +7,9 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import railo.commons.io.res.Resource;
-import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
@@ -24,7 +22,6 @@ import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
-import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
@@ -43,6 +40,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     private boolean setSessionManagement;
     private boolean setClientManagement;
     private TimeSpan sessionTimeout=null; 
+    private TimeSpan requestTimeout=null; 
 	private TimeSpan clientTimeout;
     private TimeSpan applicationTimeout=null;
     private int loginStorage=-1;
@@ -97,6 +95,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         setSessionManagement=config.isSessionManagement();
         setClientManagement=config.isClientManagement();
         sessionTimeout=config.getSessionTimeout();
+        requestTimeout=config.getRequestTimeout();
         clientTimeout=config.getClientTimeout();
         applicationTimeout=config.getApplicationTimeout();
         loginStorage=Scope.SCOPE_COOKIE;
@@ -143,6 +142,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.setSessionManagement=setSessionManagement;
 		dbl.setClientManagement=setClientManagement;
 		dbl.sessionTimeout=sessionTimeout;
+		dbl.requestTimeout=requestTimeout;
 		dbl.clientTimeout=clientTimeout;
 		dbl.applicationTimeout=applicationTimeout;
 		dbl.loginStorage=loginStorage;
@@ -653,5 +653,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setScopeCascading(short scopeCascading) {
 		this.scopeCascading=scopeCascading;
+	}
+
+	@Override
+	public TimeSpan getRequestTimeout() {
+		return requestTimeout;
+	}
+
+	@Override
+	public void setRequestTimeout(TimeSpan requestTimeout) {
+		this.requestTimeout=requestTimeout;
 	}
 }
