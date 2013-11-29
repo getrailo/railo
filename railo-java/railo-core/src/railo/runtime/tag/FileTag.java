@@ -12,7 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
@@ -94,7 +96,7 @@ public final class FileTag extends BodyTagImpl {
 	private String filefield;
 
 	/** Character set name for the file contents. */
-	private String charset=null;
+	private Charset charset=null;
 
 	/** Yes: appends newline character to text written to file */
 	private boolean addnewline=true;
@@ -239,7 +241,8 @@ public final class FileTag extends BodyTagImpl {
 	* @param charset value to set
 	**/
 	public void setCharset(String charset)	{
-		this.charset=charset.trim();
+		if(StringUtil.isEmpty(charset)) return;
+		this.charset=CharsetUtil.toCharset(charset.trim());
 	}
 	
 	/** set the value acl
@@ -328,8 +331,8 @@ public final class FileTag extends BodyTagImpl {
 
 	@Override
 	public int doStartTag() throws PageException	{
-		
-		if(StringUtil.isEmpty(charset)) charset=((PageContextImpl)pageContext).getResourceCharset().name();
+		if(charset==null) charset=((PageContextImpl)pageContext).getResourceCharset();
+
 		securityManager = pageContext.getConfig().getSecurityManager();
 		
 		switch(action){
@@ -628,8 +631,7 @@ public final class FileTag extends BodyTagImpl {
         		if(fixnewline)content=doFixNewLine(content);
         		if(addnewline) content+=SystemUtil.getOSSpecificLineSeparator();
         		
-                if(content.length()==0)ResourceUtil.touch(file);
-                else IOUtil.write(file,content,charset,false);
+                IOUtil.write(file,content,charset,false);
         		
         	}    
         } 

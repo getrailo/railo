@@ -30,20 +30,24 @@ function extFilter(path) {
 	<ul>
 	<cfset count=0>
 	<cfloop query="#dir#">
-		<cfset package=toPackage(dir.directory)>
-		<cfset n=toName(dir.name)>
-		<cfset meta=GetComponentMetadata("#package#.#n#")>
-		<!---<cfif left(package,len("testcase-templates")) == "testcase-templates">
-			<cfcontinue>
-		</cfif>--->
-		<cfif isDefined('meta.extends.fullname') and (meta.extends.fullname EQ "org.railo.cfml.test.RailoTestCase" or meta.extends.fullname EQ "mxunit.framework.TestCase")>
-			<cfif ++count GT 10><cfbreak></cfif>
-			<li>
-				<a href="index.cfm?action=single&testcase=#package#.#n#">Run #package#.#n#</a>
-				
-			</li>
-		</cfif>
-		
+		<cftry>
+			
+			<cfset package=toPackage(dir.directory)>
+			<cfset n=toName(dir.name)>
+			<cfset meta=GetComponentMetadata("#package#.#n#")>
+			<!---<cfif left(package,len("testcase-templates")) == "testcase-templates">
+				<cfcontinue>
+			</cfif>--->
+			<cfif isDefined('meta.extends.fullname') and (meta.extends.fullname EQ "org.railo.cfml.test.RailoTestCase" or meta.extends.fullname EQ "mxunit.framework.TestCase")>
+				<cfif ++count GT 10><cfbreak></cfif>
+				<li>
+					<a href="index.cfm?action=single&testcase=#package#.#n#">Run #package#.#n#</a>					
+				</li>
+			</cfif>
+		<cfcatch>
+			<cfdump var="#cfcatch#" label="#cfcatch.message#" expand="false">
+		</cfcatch>
+		</cftry>		
 	</cfloop>
 	</ul>
 	<li>
@@ -441,5 +445,3 @@ testSuite.addTestCase('...',1000); // timeout setting for the testcase, it shoul
 			};
 		</script>
 </cfif>
-
-
