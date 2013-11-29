@@ -129,7 +129,7 @@ Error Output --->
 						<cfsavecontent variable="codeSample">
 							this.scopeCascading = "#type#";
 						</cfsavecontent>
-						<cf_admin_coding_tip codeSample="#codeSample#">
+						<cfset renderCodingTip( codeSample)>
 					</td>
 				</tr>
 				<!--- cascade to result --->

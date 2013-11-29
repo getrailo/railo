@@ -267,10 +267,9 @@ Error Output --->
 		(appSettings.requestTimeout_minute*60) +
 		(appSettings.requestTimeout_hour*3600) +
 		(appSettings.requestTimeout_day*3600*24)>
-
-	&lt;cfsetting requesttimeout = "#total#"&gt;
+	this.requestTimeout=createTimeSpan(#appSettings.requestTimeout_day#,#appSettings.requestTimeout_hour#,#appSettings.requestTimeout_minute#,#appSettings.requestTimeout_second#);
 </cfsavecontent>
-<cfset renderCodingTip( codeSample, stText.settings.codetip )>
+<cfset renderCodingTip( codeSample)>
 
 
 					</td>

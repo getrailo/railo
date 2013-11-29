@@ -95,7 +95,7 @@ component {
 
 	
 	// request
-	setting requestTimeout = "#requestTimeout#"; // max lifespan of a running request
+	this.requestTimeout=createTimeSpan(#appSettings.requestTimeout_day#,#appSettings.requestTimeout_hour#,#appSettings.requestTimeout_minute#,#appSettings.requestTimeout_second#); // max lifespan of a running request
 }
 </cfsavecontent>
 <cfset renderCodingTip( codeSample, stText.application.desc, true )>
