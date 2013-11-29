@@ -3634,8 +3634,8 @@ public final class ConfigWebFactory extends ConfigFactory {
 	}
 
 	private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
-		if (configServer != null)
-			return;
+		// only load in server context
+		if (configServer != null) return;
 
 		configServer = (ConfigServerImpl) config;
 
