@@ -42,7 +42,7 @@ public class RunAsJavaApplication {
         context.addHandler(servlets);
 
         // Map a servlet onto the container
-        ServletHolder servlet = servlets.addServlet("CFMLServlet", "*.cfc/*,*.cfm/*,*.cfml/*,*.cfc,*.cfm,*.cfml", "railo.debug.loader.servlet.CFMLServlet");
+        ServletHolder servlet = servlets.addServlet("CFMLServlet", "*.cfc/*,*.cfm/*,*.cfml/*,*.cfs/*,*.cfc,*.cfm,*.cfml,*.cfs", "railo.debug.loader.servlet.CFMLServlet");
         servlet.setInitOrder(0);
 
         if (adminContextDir == null) webContextDir = appDir;

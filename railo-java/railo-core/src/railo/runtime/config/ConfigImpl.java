@@ -533,6 +533,10 @@ public abstract class ConfigImpl implements Config {
         return Constants.CFC_EXTENSION;
     }
 
+	public String getCFSExtension() {
+
+		return Constants.CFS_EXTENSION;
+	}
     
     /**
      * return all Function Library Deskriptors

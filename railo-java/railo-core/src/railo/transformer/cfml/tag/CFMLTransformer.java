@@ -147,7 +147,9 @@ public final class CFMLTransformer {
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
+		String ext = ResourceUtil.getExtension(ps.getResource(),"");
+		boolean isCFS = ext.equalsIgnoreCase(config.getCFSExtension());
+		if(p.isPage() && (ext.equalsIgnoreCase(config.getCFCExtension()) || isCFS) ) {
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 
@@ -181,9 +183,13 @@ public final class CFMLTransformer {
 			}
 			catch (TemplateException e) {
 				//print.printST(e);
+				if (isCFS)
+					throw e;
 			}
 			
-			
+
+			if (isCFS)
+				return p;
 			
 			
 			// try inside a component
@@ -210,9 +216,7 @@ public final class CFMLTransformer {
 					}
 				}
 			}
-			
 		}
-		
 		
 		return p;
 	}
