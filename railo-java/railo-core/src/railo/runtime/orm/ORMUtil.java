@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
@@ -73,10 +74,10 @@ public class ORMUtil {
 	}
 
 	private static void printError(Throwable t, ORMEngine engine,String msg) {
-		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
-		else SystemOut.printDate(msg,SystemOut.ERR);
+		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemUtil.ERR);
+		else SystemOut.printDate(msg, SystemUtil.ERR);
 		if(t==null)t=new Throwable();
-		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
+		t.printStackTrace(SystemOut.getPrinWriter(SystemUtil.ERR));
 	}
 
 	public static boolean equals(Object left, Object right) {
