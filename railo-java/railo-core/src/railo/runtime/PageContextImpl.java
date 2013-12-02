@@ -2327,12 +2327,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             cftoken=Caster.toString(oCftoken,null);
         }
         
-        if(setCookie && applicationContext.isSetClientCookies()) {
-
-	        String domain = PageContextUtil.getCookieDomain( this );
-            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain );
-            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain );
-        }
+        if(setCookie && applicationContext.isSetClientCookies())
+	        setClientCookies();
     }
     
 
@@ -2340,13 +2336,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
 
-        if(applicationContext.isSetClientCookies()) {
-
-	        String domain = PageContextUtil.getCookieDomain( this );
-            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain);
-            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain);
-        }
+        if(applicationContext.isSetClientCookies())
+	        setClientCookies();
     }
+
+
+	private void setClientCookies() {
+
+		String domain = PageContextUtil.getCookieDomain( this );
+		cookieScope().setCookieEL( KeyConstants._cfid, cfid, CookieImpl.NEVER,false, "/", domain, true, true, false );
+		cookieScope().setCookieEL( KeyConstants._cftoken, cftoken, CookieImpl.NEVER,false, "/", domain, true, true, false );
+	}
     
 
     @Override
