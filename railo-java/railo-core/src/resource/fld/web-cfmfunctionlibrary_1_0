@@ -13129,8 +13129,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
-		<status>unimplemeted</status>
-		<description>Converts query data to a structure that contains a paged subset of the query.</description>
+		<status>deprecated</status>
+		<description>Use instead the function QuerySlice. Converts query data to a structure that contains a paged subset of the query.</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
