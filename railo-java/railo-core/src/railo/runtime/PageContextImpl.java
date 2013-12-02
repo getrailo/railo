@@ -389,7 +389,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			boolean needsSession, 
 			int bufferSize, 
 			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
-	   initialize(
+		initialize(
 			   (HttpServlet)servlet,
 			   (HttpServletRequest)req,
 			   (HttpServletResponse)rsp,
@@ -491,8 +491,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			this.execLog=config.getExecutionLogFactory().getInstance(this);
 		if(debugger!=null)
 			debugger.init(config);
-			
-        return this;
+		
+		undefined.initialize(this);
+		return this;
 	 }
 	
 	@Override
@@ -1072,7 +1073,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     @Override
     public Undefined undefinedScope() {
-        if(!undefined.isInitalized()) undefined.initialize(this);
+        //if(!undefined.isInitalized()) undefined.initialize(this);
         return undefined;
     }
     
@@ -1080,7 +1081,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return undefined scope, undefined scope is a placeholder for the scopecascading
      */
     public Undefined us() {
-    	if(!undefined.isInitalized()) undefined.initialize(this);
+    	//if(!undefined.isInitalized()) undefined.initialize(this);
     	return undefined;
     }
     
