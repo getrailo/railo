@@ -73,6 +73,7 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -86,10 +87,12 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.CollectionStruct;
+import railo.runtime.type.CustomType;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -3521,6 +3524,15 @@ public final class Caster {
             if(comp.instanceOf(strType)) return o;
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
         }
+        
+        /* custom type (disabled for the moment)
+        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
+        if(ct!=null) {
+        	Object obj= ct.convert(pc,o,Null.NULL);
+        	if(obj!=Null.NULL) return obj;
+        }
+        */
+        
         throw new CasterException(o,strType);
     }   
     

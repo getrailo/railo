@@ -22,6 +22,7 @@ import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
+import railo.runtime.type.CustomType;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
@@ -663,5 +664,11 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setRequestTimeout(TimeSpan requestTimeout) {
 		this.requestTimeout=requestTimeout;
+	}
+
+	@Override
+	public CustomType getCustomType(String strType) {
+		// not supported
+		return null;
 	}
 }

@@ -27,6 +27,7 @@ import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Util;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -1300,7 +1301,7 @@ public final class Decision {
 		return type.endsWith("[]");
 	}
 
-	public static boolean isCastableTo(short type,String strType, Object o) {
+	public static boolean isCastableTo(PageContext pc,short type,String strType, Object o) {
 		switch(type){
 		case CFTypes.TYPE_ANY:          return true;
 		case CFTypes.TYPE_STRING:		return isCastableToString(o);
@@ -1331,7 +1332,7 @@ public final class Decision {
         	if(arr!=null){
         		Iterator it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(type,t, it.next()))
+        			if(!isCastableTo(pc,type,t, it.next()))
         				return false;
         			
         		}
@@ -1340,7 +1341,10 @@ public final class Decision {
         	
         }
         
-		return false;
+        /* custom type (disabled for the moment)
+        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
+        return ct!=null && ct.convert(pc,o,Null.NULL)!=Null.NULL;*/
+        return false;
 	}
 
     public synchronized static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {

@@ -93,12 +93,12 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	}
 
 	private final Object castToAndClone(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
-		if(!((PageContextImpl)pc).getTypeChecking() || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+		if(!((PageContextImpl)pc).getTypeChecking() || Decision.isCastableTo(pc,arg.getType(),arg.getTypeAsString(),value)) 
 			return arg.isPassByReference()?value:Duplicator.duplicate(value,false);
 		throw new UDFCasterException(this,arg,value,index);
 	}
-	private final Object castTo(FunctionArgument arg,Object value, int index) throws PageException {
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) return value;
+	private final Object castTo(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
+		if(Decision.isCastableTo(pc,arg.getType(),arg.getTypeAsString(),value)) return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}
 	
@@ -119,7 +119,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 					if(!NullSupportHelper.full()) newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
 				}
 				else {
-					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));
+					newArgs.setEL(funcArgs[i].getName(),castTo(pc,funcArgs[i],d,i+1));
 				}
 			}
 		}
@@ -159,7 +159,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 				}
 				newArgs.set(name,Argument.NULL);
 			}
-			else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));	
+			else newArgs.set(name,castTo(pageContext,funcArgs[i],defaultValue,i+1));	
 		}
 		
 		

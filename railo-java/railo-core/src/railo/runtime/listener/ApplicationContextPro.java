@@ -5,11 +5,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+
 import railo.commons.lang.Pair;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.CustomType;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
 import railo.transformer.library.tag.TagLibTagAttr;
@@ -68,4 +70,6 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public TimeSpan getRequestTimeout();
 	public void setRequestTimeout(TimeSpan timeout);
+
+	public CustomType getCustomType(String strType);
 }

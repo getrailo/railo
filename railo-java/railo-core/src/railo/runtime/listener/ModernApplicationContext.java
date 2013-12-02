@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import railo.print;
@@ -40,9 +41,12 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.CustomType;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFCustomType;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
@@ -124,7 +128,9 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches;
 	private Map<Integer,Boolean> sameFieldAsArrays;
-	
+	private Map<String,CustomType> customTypes;
+
+	private boolean initCustomTypes;
 	private boolean initApplicationTimeout;
 	private boolean initSessionTimeout;
 	private boolean initClientTimeout;
@@ -1159,5 +1165,25 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		super.setTagAttributeDefaultValues(sct);
 	}
 
-	
+	@Override
+	public CustomType getCustomType(String strType) {
+		if(!initCustomTypes) {
+			if(customTypes==null)
+				customTypes=new HashMap<String, CustomType>();
+			
+			// this.type.susi=function(any value){};
+			Struct sct = Caster.toStruct(get(component,KeyConstants._type,null),null);
+			if(sct!=null) {
+				Iterator<Entry<Key, Object>> it = sct.entryIterator();
+				Entry<Key, Object> e;
+				UDF udf;
+				while(it.hasNext()){
+					e = it.next();
+					udf=Caster.toFunction(e.getValue(), null);
+					if(udf!=null) customTypes.put(e.getKey().getLowerString(), new UDFCustomType(udf));
+				}
+			}
+		}
+		return customTypes.get(strType.trim().toLowerCase());
+	}
 }
