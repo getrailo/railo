@@ -1765,7 +1765,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	        else {
 	        	rsp.setContentType("text/html; charset=" + cs.name());
 	        }
-	        rsp.setHeader("exception-message", pe.getMessage());
+	        rsp.setHeader("exception-message", StringUtil.emptyIfNull(pe.getMessage()).replace('\n', ' '));
 	        //rsp.setHeader("exception-detail", pe.getDetail());
 	        
 			int statusCode=getStatusCode(pe);
