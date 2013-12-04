@@ -1774,7 +1774,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			
 			ErrorPage ep=errorPagePool.getErrorPage(pe,ErrorPageImpl.TYPE_EXCEPTION);
 			
-			ExceptionHandler.printStackTrace(this,pe);
+			//ExceptionHandler.printStackTrace(this,pe);
 			ExceptionHandler.log(getConfig(),pe);
 
 			// error page exception
