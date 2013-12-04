@@ -281,6 +281,15 @@ public final class VariableUtilImpl implements VariableUtil {
 			//print.out("get:"+key);
             return XMLStructFactory.newInstance((Node)coll,false).get(key);
         }
+		else if(coll instanceof String) {
+			if(Decision.isInteger(key.getString())) { // i do the decision call and the caster call, because in most cases the if will be false
+				String str=(String)coll;
+				int index = Caster.toIntValue(key.getString(),-1);
+				if(index>0 && index<=str.length()) {
+					return str.substring(index-1,index);
+				}
+			}
+		}
         // HTTPSession
 		/*else if(coll instanceof HttpSession) {
             return ((HttpSession)coll).getAttribute(key.getString());
