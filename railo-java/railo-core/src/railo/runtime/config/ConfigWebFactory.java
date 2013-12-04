@@ -952,26 +952,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 				createFileFromResourceEL("/resource/locales/pt-PT-date.df", file);
 		}
 
-		// Jacob
-		if (SystemUtil.isWindows()) {
-			Resource systemDir = SystemUtil.getSystemDirectory();
-			if (systemDir != null) {
-
-				String name = (SystemUtil.getJREArch() == SystemUtil.ARCH_64) ? "jacob-x64.dll" : "jacob-x86.dll";
-
-				Resource jacob = systemDir.getRealResource(name);
-				if (!jacob.exists()) {
-					createFileFromResourceEL("/resource/bin/" + name, jacob);
-				}
-				// SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_PATH+":"+jacob.getAbsolutePath());
-				System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacob.getAbsolutePath());
-				// SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_NAME+":"+name);
-				System.setProperty(LibraryLoader.JACOB_DLL_NAME, name);
-
-				// jacob.dll.name.x86 & jacob.dll.name.x64
-
-			}
-		}
 
 		// video
 		Resource videoDir = configDir.getRealResource("video");
