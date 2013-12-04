@@ -1156,7 +1156,7 @@ public final class Reflector {
 		if(rtn!=NULL) return rtn;
 		
 		char first=prop.charAt(0);
-        if(first>='0' && first<='9') throw new ApplicationException("there is no property with name ["+prop+"]");
+		if(first>='0' && first<='9') throw new ApplicationException("there is no property with name ["+prop+"]  found in ["+Caster.toTypeName(objd)+"]");
         return callGetter(obj,prop);
         
 	}
