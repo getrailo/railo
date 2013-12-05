@@ -1168,7 +1168,7 @@ public final class CFMLTransformer {
 			if(!attr.isRequired()) tmp.append("[");
 			if(c++>0)pattern.append(" ");
 			tmp.append(attr.getName());
-			tmp.append("\"");
+			tmp.append("=\"");
 			tmp.append(attr.getType());
 			tmp.append("\"");
 			if(!attr.isRequired()) tmp.append("]");
