@@ -215,9 +215,6 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
     	String id=CacheHandlerFactory.createId(this,args,values);
     	CacheHandler ch = CacheHandlerFactory.udf.getInstance(pc.getConfig(), properties.cachedWithin);
 		Object o=ch.get(pc, id);
-		//String id = UDFUtil.callerHash(this,args,values);
-    	//Cache cache = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION,DEFAULT_CACHE);	
-		//Object o =  cache.getValue(id,null);
 		
 		// get from cache
 		if(o instanceof UDFCacheEntry ) {
