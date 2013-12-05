@@ -131,7 +131,7 @@ Error Output --->
 						</cfif>
 						<div class="comment">#stText.charset.resourceCharsetDescription#</div>
 						<cfsavecontent variable="codeSample">
-							this.charset.web="#charset.resourceCharset#";
+							this.charset.resource="#charset.resourceCharset#";
 						</cfsavecontent>
 						<cfset renderCodingTip( codeSample)>
 					</td>
