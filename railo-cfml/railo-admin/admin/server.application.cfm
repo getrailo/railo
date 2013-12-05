@@ -112,36 +112,48 @@ component {
 
 	this.name = "#info.label ?: '&lt;application-name&gt;' #"; // name of the application context
 
-	// regional settings
-	this.locale = "#regional.locale#"; // default locale used for formating dates, numbers ...
-	this.timezone = "#regional.timezone#"; // default timezone used
+// regional
+	// default locale used for formating dates, numbers ...
+	this.locale = "#regional.locale#"; 
+	// default timezone used
+	this.timezone = "#regional.timezone#"; 
 
-	// scope handling
-	this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# ); // lifespan of a untouched application scope
-
-	this.sessionManagement = #scope.sessionManagement#; // session handling enabled or not
-	this.sessionType = "#scope.sessionType#"; // cfml or jee based sessions
-	this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# ); // untouched session lifespan
+// scope handling
+	// lifespan of a untouched application scope
+	this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# ); 
+	
+	// session handling enabled or not
+	this.sessionManagement = #scope.sessionManagement#; 
+	// cfml or jee based sessions
+	this.sessionType = "#scope.sessionType#"; 
+	// untouched session lifespan
+	this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# ); 
 	this.sessionStorage = "#scope.sessionStorage#";
 	
-	this.clientManagement = #scope.clientManagement#; // client scope enabled or not
+	// client scope enabled or not
+	this.clientManagement = #scope.clientManagement#; 
 	this.clientTimeout = createTimeSpan( #scope.clientTimeout_day#, #scope.clientTimeout_hour#, #scope.clientTimeout_minute#, #scope.clientTimeout_second# );
 	this.clientStorage = "#scope.clientStorage#";
 						
-	this.setDomainCookies = #scope.domainCookies#; // using domain cookies or not
+	// using domain cookies or not
+	this.setDomainCookies = #scope.domainCookies#; 
 	this.setClientCookies = #scope.clientCookies#;
 
-	this.localMode = "#scope.LocalMode#"; // prefer the local scope at unscoped write
-
-	this.bufferOutput = "#outputSetting.bufferOutput#"; // buffer the output of a tag/function body to output in case of a exception
-
-	this.typeChecking = #PerformanceSettings.typeChecking#; // If set to false Railo ignores type defintions with function arguments and return values
-
+	// prefer the local scope at unscoped write
+	this.localMode = "#scope.LocalMode#"; 
 	
-	// request
-	this.requestTimeout=createTimeSpan(#appSettings.requestTimeout_day#,#appSettings.requestTimeout_hour#,#appSettings.requestTimeout_minute#,#appSettings.requestTimeout_second#); // max lifespan of a running request
+	// buffer the output of a tag/function body to output in case of a exception
+	this.bufferOutput = "#outputSetting.bufferOutput#"; 
+	
+	// If set to false Railo ignores type defintions with function arguments and return values
+	this.typeChecking = #PerformanceSettings.typeChecking#;
+	
+	
+// request
+	// max lifespan of a running request
+	this.requestTimeout=createTimeSpan(#appSettings.requestTimeout_day#,#appSettings.requestTimeout_hour#,#appSettings.requestTimeout_minute#,#appSettings.requestTimeout_second#); 
 
-	// charset
+// charset
 	this.charset.web="#charset.webCharset#";
 	this.charset.resource="#charset.resourceCharset#";
 	
