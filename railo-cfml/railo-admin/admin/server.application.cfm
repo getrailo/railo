@@ -50,17 +50,57 @@ Defaults --->
 		(appSettings.requestTimeout_minute*60) +
 		(appSettings.requestTimeout_hour*3600) +
 		(appSettings.requestTimeout_day*3600*24)>
-		
+
+
+<cfadmin 
+	action="getCharset"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="charset">		
 
 <cfadmin 
 	action="getOutputSetting"
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="outputSetting">
+	
+
+<!--- cache --->
+<cfadmin 
+	action="getCacheConnections"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="cacheConnections">
+<cfset defaults={}>
+    <cfloop index="type" list="object,template,query,resource,function,include">
+		<cfloop query="cacheConnections">
+		<cfif cacheConnections.default EQ type>
+			<cfset defaults[type]=cacheConnections.name>
+		</cfif>
+		</cfloop>
+	</cfloop>
+<cfscript>
+hasObj=!isNull(defaults.object) && len(defaults.object);
+hasTem=!isNull(defaults.template) && len(defaults.template);
+hasQry=!isNull(defaults.query) && len(defaults.query);
+hasRes=!isNull(defaults.resource) && len(defaults.resource);
+hasFun=!isNull(defaults.function) && len(defaults.function);
+hasInc=!isNull(defaults.include) && len(defaults.include);
+hasCache=hasObj || hasTem || hasQry || hasRes || hasFun || hasInc;
+</cfscript>
+
+<!--- datasource --->
+<cfadmin 
+	action="getDatasources"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="datasources">
 
 <cfset stText.application.title="Application.cfc">
 <cfset stText.application.desc="All settings possible in Application.cfc based on your settings">
 </cfsilent>
+
+
 <cfoutput>
 	
 
@@ -82,8 +122,12 @@ component {
 	this.sessionManagement = #scope.sessionManagement#; // session handling enabled or not
 	this.sessionType = "#scope.sessionType#"; // cfml or jee based sessions
 	this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# ); // untouched session lifespan
-
+	this.sessionStorage = "#scope.sessionStorage#";
+	
 	this.clientManagement = #scope.clientManagement#; // client scope enabled or not
+	this.clientTimeout = createTimeSpan( #scope.clientTimeout_day#, #scope.clientTimeout_hour#, #scope.clientTimeout_minute#, #scope.clientTimeout_second# );
+	this.clientStorage = "#scope.clientStorage#";
+						
 	this.setDomainCookies = #scope.domainCookies#; // using domain cookies or not
 	this.setClientCookies = #scope.clientCookies#;
 
@@ -96,6 +140,46 @@ component {
 	
 	// request
 	this.requestTimeout=createTimeSpan(#appSettings.requestTimeout_day#,#appSettings.requestTimeout_hour#,#appSettings.requestTimeout_minute#,#appSettings.requestTimeout_second#); // max lifespan of a running request
+
+	// charset
+	this.charset.web="#charset.webCharset#";
+	this.charset.resource="#charset.resourceCharset#";
+	
+	this.scopeCascading = "#scope.scopeCascadingType#";
+<cfif hasCache>
+	// cache
+<cfif hasObj>	this.cache.object = "#!hasObj?"&lt;cache-name>":defaults.object#";
+</cfif><cfif hasTem>	this.cache.template = "#!hasTem?"&lt;cache-name>":defaults.template#";
+</cfif><cfif hasQry>	this.cache.query = "#!hasQry?"&lt;cache-name>":defaults.query#";
+</cfif><cfif hasRes>	this.cache.resource = "#!hasRes?"&lt;cache-name>":defaults.resource#";
+</cfif><cfif hasFun>	this.cache.function = "#!hasFun?"&lt;cache-name>":defaults.function#";
+</cfif><cfif hasInc>	this.cache.include = "#!hasInc?"&lt;cache-name>":defaults.include#";</cfif>
+</cfif>	
+	<cfloop query="#datasources#"><cfscript>
+optional=[];
+// not supported yet optional.append('default:false // default: false');
+if(datasources.blob) optional.append('blob:#datasources.blob# // default: false');
+if(datasources.clob) optional.append('clob:#datasources.clob# // default: false');
+if(isNumeric(datasources.connectionLimit))optional.append('connectionLimit:#datasources.connectionLimit# // default:-1');
+if(datasources.connectionTimeout NEQ 1)optional.append('connectionTimeout:#datasources.connectionTimeout# // default: 1; unit: seconds');
+if(datasources.metaCacheTimeout NEQ 60000)optional.append(',metaCacheTimeout:#datasources.metaCacheTimeout# // default: 60000; unit: milliseconds');
+if(len(datasources.timezone))optional.append("timezone:'#replace(datasources.timezone,"'","''","all")#'");
+if(datasources.storage) optional.append('storage:#datasources.storage# // default: false');
+if(datasources.readOnly) optional.append('readOnly:#datasources.readOnly# // default: false');
+</cfscript>
+// datasource #datasources.name#
+	this.datasources<cfif isValid('variableName',datasources.name) and !find('.',datasources.name)>.#datasources.name#<cfelse>['#datasources.name#']</cfif> = {
+	  class: '#datasources.classname#'
+	, connectionString: '#replace(datasources.dsnTranslated,"'","''","all")#'<cfif len(datasources.password)>
+	, username: '#replace(datasources.username,"'","''","all")#'
+	, password: "#datasources.passwordEncrypted#"</cfif><cfif optional.len()>
+	
+	// optional settings
+	<cfloop array="#optional#" index="i" item="value">, #value#<cfif i LT optional.len()>
+	</cfif></cfloop></cfif>
+	};
+	</cfloop>
+
 }
 </cfsavecontent>
 <cfset renderCodingTip( codeSample, stText.application.desc, true )>

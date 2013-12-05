@@ -276,12 +276,12 @@ hasFun=!isNull(defaults.function) && len(defaults.function);
 hasInc=!isNull(defaults.include) && len(defaults.include);
 </cfscript>
 <cfsavecontent variable="codeSample">
-#hasObj?"":"//"#this.cache.object = "#!hasObj?"&lt;cache-name>":defaults.object#";
-#hasTem?"":"//"#this.cache.template = "#!hasTem?"&lt;cache-name>":defaults.template#";
-#hasQry?"":"//"#this.cache.query = "#!hasQry?"&lt;cache-name>":defaults.query#";
-#hasRes?"":"//"#this.cache.resource = "#!hasRes?"&lt;cache-name>":defaults.resource#";
-#hasFun?"":"//"#this.cache.function = "#!hasFun?"&lt;cache-name>":defaults.function#";
-#hasInc?"":"//"#this.cache.include = "#!hasInc?"&lt;cache-name>":defaults.include#";
+this.cache.object = "#!hasObj?"&lt;cache-name>":defaults.object#";
+this.cache.template = "#!hasTem?"&lt;cache-name>":defaults.template#";
+this.cache.query = "#!hasQry?"&lt;cache-name>":defaults.query#";
+this.cache.resource = "#!hasRes?"&lt;cache-name>":defaults.resource#";
+this.cache.function = "#!hasFun?"&lt;cache-name>":defaults.function#";
+this.cache.include = "#!hasInc?"&lt;cache-name>":defaults.include#";	
 </cfsavecontent>
 <cfset renderCodingTip( codeSample )>
 

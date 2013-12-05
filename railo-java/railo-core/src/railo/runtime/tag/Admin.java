@@ -529,10 +529,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getDatasourceSetting",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasourceSetting();
         else if(check("getCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_READ  )) doGetCustomTagSetting();
         else if(check("getDatasource",          ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasource();
+        else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getCacheConnections",    ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheConnections();
         else if(check("getCacheConnection",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheConnection();
         else if(check("getCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheDefaultConnection();
-        else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getRemoteClients",       ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClients();
         else if(check("getRemoteClient",       	ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClient();
         else if(check("hasRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doHasRemoteClientUsage();
@@ -3795,9 +3795,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Map ds = config.getDataSourcesAsMap();
         Iterator it = ds.keySet().iterator();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
-                "timezone","username","password","readonly"
+                "timezone","username","password","passwordEncrypted","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
-                ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings"},ds.size(),"query");
+                ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings","metaCacheTimeout"},ds.size(),"query");
         
         int row=0;
 
@@ -3815,6 +3815,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("dsnTranslated",row,d.getDsnTranslated());
             qry.setAt("timezone",row,toStringTimeZone(d.getTimeZone()));
             qry.setAt(KeyConstants._password,row,d.getPassword());
+
+            qry.setAt("passwordEncrypted",row,ConfigWebFactory.encrypt(d.getPassword()));
             qry.setAt(KeyConstants._username,row,d.getUsername());
             qry.setAt(KeyConstants._readonly,row,Caster.toBoolean(d.isReadOnly()));
             qry.setAt(KeyConstants._select,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
@@ -3834,6 +3836,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("clob",row,Boolean.valueOf(d.isClob()));
             qry.setAt("validate",row,Boolean.valueOf(d.validate()));
             qry.setAt("storage",row,Boolean.valueOf(d.isStorage()));
+            qry.setAt("metaCacheTimeout",row,Caster.toDouble(d.getMetaCacheTimeout()));
             
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
