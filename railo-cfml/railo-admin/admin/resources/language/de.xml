@@ -883,6 +883,9 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
 	<data key="settings.cache.defaulttypeFunction">Function</data>
 	<data key="settings.cache.defaulttypeFunctionDesc">Diese Cache Connection wird für für das cachen von cffunction/function Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">Diese Cache Connection wird für für das cachen von cfinclude verwendet.</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>

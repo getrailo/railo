@@ -156,7 +156,8 @@ public class GetApplicationSettings {
 		String qry = ac.getDefaultCacheName(Config.CACHE_DEFAULT_QUERY);
 		String res = ac.getDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE);
 		String tmp = ac.getDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE);
-		if(func!=null || obj!=null || qry!=null || res!=null || tmp!=null) {
+		String inc = ac.getDefaultCacheName(Config.CACHE_DEFAULT_INCLUDE);
+		if(func!=null || obj!=null || qry!=null || res!=null || tmp!=null || inc!=null) {
 			Struct cache=new StructImpl();
 			sct.setEL(KeyConstants._cache, cache);
 			if(func!=null)cache.setEL(KeyConstants._function, func);
@@ -164,6 +165,7 @@ public class GetApplicationSettings {
 			if(qry!=null)cache.setEL(KeyConstants._query, qry);
 			if(res!=null)cache.setEL(KeyConstants._resource, res);
 			if(tmp!=null)cache.setEL(KeyConstants._template, tmp);
+			if(inc!=null)cache.setEL(KeyConstants._include, inc);
 		}
 		
 		// java settings

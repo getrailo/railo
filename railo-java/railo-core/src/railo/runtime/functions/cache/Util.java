@@ -137,6 +137,7 @@ public class Util {
 		if(type==ConfigImpl.CACHE_DEFAULT_QUERY) return "query";
 		if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE) return "resource";
 		if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION) return "function";
+		if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE) return "include";
 		return defaultValue;
 	}
 
@@ -183,6 +184,7 @@ public class Util {
 		if("resource".equals(type)) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
 		if("template".equals(type)) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
 		if("function".equals(type)) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
+		if("include".equals(type)) return ConfigImpl.CACHE_DEFAULT_INCLUDE;
 		return defaultValue;
 	}
 
@@ -192,6 +194,7 @@ public class Util {
 		if(ConfigImpl.CACHE_DEFAULT_RESOURCE==type) return "resource";
 		if(ConfigImpl.CACHE_DEFAULT_TEMPLATE==type) return "template";
 		if(ConfigImpl.CACHE_DEFAULT_FUNCTION==type) return "function";
+		if(ConfigImpl.CACHE_DEFAULT_INCLUDE==type) return "include";
 		return defaultValue;
 	}
 }

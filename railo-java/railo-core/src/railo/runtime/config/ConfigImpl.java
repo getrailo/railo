@@ -181,12 +181,14 @@ public abstract class ConfigImpl implements Config {
 	private CacheConnection defaultCacheTemplate=null;
 	private CacheConnection defaultCacheQuery=null;
 	private CacheConnection defaultCacheResource=null;
+	private CacheConnection defaultCacheInclude=null;
 
 	private String cacheDefaultConnectionNameFunction=null;
 	private String cacheDefaultConnectionNameObject=null;
 	private String cacheDefaultConnectionNameTemplate=null;
 	private String cacheDefaultConnectionNameQuery=null;
 	private String cacheDefaultConnectionNameResource=null;
+	private String cacheDefaultConnectionNameInclude=null;
 	
     private TagLib[] tlds=new TagLib[1];
     private FunctionLib[] flds=new FunctionLib[1];
@@ -2951,6 +2953,9 @@ public abstract class ConfigImpl implements Config {
 			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameObject)){
 				defaultCacheObject=cc;
 			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameInclude)){
+				defaultCacheInclude=cc;
+			}
 		}
 	}
 	
@@ -2966,6 +2971,7 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return defaultCacheQuery;
 		if(type==CACHE_DEFAULT_RESOURCE)	return defaultCacheResource;
+		if(type==CACHE_DEFAULT_INCLUDE)		return defaultCacheInclude;
 		return null;
 	}
 
@@ -2975,6 +2981,7 @@ public abstract class ConfigImpl implements Config {
 		else if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_RESOURCE)	cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_INCLUDE)	cacheDefaultConnectionNameInclude=cacheDefaultConnectionName;
 	}
 	
 	@Override
@@ -2984,6 +2991,7 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
 		if(type==CACHE_DEFAULT_RESOURCE)	return cacheDefaultConnectionNameResource;
+		if(type==CACHE_DEFAULT_INCLUDE)	return cacheDefaultConnectionNameInclude;
 		return null;
 	}
 

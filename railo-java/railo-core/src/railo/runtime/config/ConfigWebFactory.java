@@ -1934,6 +1934,21 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else
 			config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION, "");
 
+		// default include
+		String defaultInclude = eCache.getAttribute("default-include");
+		if (hasAccess && !StringUtil.isEmpty(defaultInclude)) {
+			print.e("include:"+defaultInclude);
+			config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_INCLUDE, defaultInclude);
+		}
+		else if (hasCS) {
+			if (eCache.hasAttribute("default-include"))
+				config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_INCLUDE, "");
+			else
+				config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_INCLUDE, configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_INCLUDE));
+		}
+		else
+			config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_INCLUDE, "");
+
 		// default query
 		String defaultQuery = eCache.getAttribute("default-query");
 		if (hasAccess && !StringUtil.isEmpty(defaultQuery)) {

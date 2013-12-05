@@ -581,6 +581,13 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<description>name of the cache used to store data from ram resource in this context</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>cacheInclude</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used to store data from a include</description>
+		</attribute>
+		<attribute>
 			<type>object</type>
 			<name>onMissingTemplate</name>
 			<required>false</required>
@@ -6345,6 +6352,21 @@ both functions must have the same attributes; otherwise
 			<script-support>required</script-support>
 			<description>A logical path to an existing page.</description>
 		</attribute>
+		
+		
+		<attribute>
+			<type>object</type>
+			<name>cachedWithin</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+possible values are:
+String "request": If original content was created within the current request, cached content data isused.
+a timespan (created with function CreateTimeSpan): If original content date falls within the time span, cached content data isused. 
+
+To use cached data, the function must be called with the exact same arguments.
+		</description>
+    	</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>runOnce</name>

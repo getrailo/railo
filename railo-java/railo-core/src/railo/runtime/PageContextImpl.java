@@ -41,7 +41,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
@@ -60,6 +59,7 @@ import railo.commons.lock.KeyLock;
 import railo.commons.lock.Lock;
 import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDSignal;
+import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
@@ -168,11 +168,13 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.PageContextUtil;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
+import railo.runtime.writer.BodyContentUtil;
 import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.DevNullBodyContent;
 import railo.transformer.library.tag.TagLibTag;
@@ -793,6 +795,45 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void doInclude(String realPath, boolean runOnce) throws PageException {
 		doInclude(getRelativePageSources(realPath),runOnce);
 	}
+	
+	public void doInclude(String realPath, boolean runOnce, Object cachedWithin) throws PageException {
+		if(cachedWithin==null) {
+			doInclude(realPath, runOnce);
+		}
+		
+		// ignore call when runonce an it is not first call 
+		PageSource[] sources = getRelativePageSources(realPath);
+		if(runOnce) {
+			Page currentPage = PageSourceImpl.loadPage(this, sources);
+			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
+		}
+		
+		// get cached data
+		String id=CacheHandlerFactory.createId(sources);
+		CacheHandler ch = CacheHandlerFactory.include.getInstance(getConfig(), cachedWithin);
+		Object obj=ch.get(this, id);
+		
+		if(obj!=null && obj instanceof String) {
+			try {
+				write((String) obj);
+				return;
+			} catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		
+		BodyContent bc =  pushBody();
+	    
+	    try {
+	    	doInclude(sources, runOnce);
+	    	String out = bc.getString();
+	    	ch.set(this, id,cachedWithin,out);
+			return;
+		}
+        finally {
+        	BodyContentUtil.flushAndPop(this,bc);
+        }
+	}
 
 	@Override
 	public void doInclude(PageSource source) throws PageException {
@@ -851,7 +892,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				if(Abort.isAbort(pe)) {
 					if(Abort.isAbort(pe,Abort.SCOPE_REQUEST))throw pe;
                 }
-                else    {
+                else {
                 	pe.addContext(currentPage.getPageSource(),-187,-187, null);
                 	throw pe;
                 }

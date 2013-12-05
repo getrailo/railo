@@ -11,6 +11,7 @@ import railo.print;
 import railo.commons.digest.HashUtil;
 import railo.commons.lang.KeyGenerator;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
@@ -39,12 +40,14 @@ public class CacheHandlerFactory {
 
 	public static final int TYPE_TIMESPAN=1;
 	public static final int TYPE_REQUEST=2;
+	public static final int TYPE_INCLUDE=4;
 
 	public static final char CACHE_DEL = ';';
 	public static final char CACHE_DEL2 = ':';
 
 	public static CacheHandlerFactory query=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_QUERY);
 	public static CacheHandlerFactory udf=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+	public static CacheHandlerFactory include=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 	
 	private final RequestCacheHandler rch=new RequestCacheHandler();
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
@@ -57,6 +60,7 @@ public class CacheHandlerFactory {
 	public static void release(PageContext pc){
 		query.rch.clear(pc);
 		udf.rch.clear(pc);
+		include.rch.clear(pc);
 	}
 
 	/**
@@ -109,6 +113,27 @@ public class CacheHandlerFactory {
 		getTimespanCacheHandler(pc.getConfig()).clean(pc);
 	}
 
+	public static String createId(PageSource[] sources) throws PageException{
+		String str;
+		if(sources.length==1) {
+			str= sources[0].getDisplayPath();
+		}
+		else {
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<sources.length;i++){
+				if(i>0)sb.append(";");
+				sb.append(sources[i].getDisplayPath());
+			}
+			str=sb.toString();
+		}
+		try {
+			return Util.key(KeyGenerator.createKey(str));
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+	}
+
 	public static String createId(SQL sql, String datasource, String username,String password) throws PageException{
 		try {
 			return Util.key(KeyGenerator.createKey(sql.toHashString()+datasource+username+password));
@@ -137,46 +162,11 @@ public class CacheHandlerFactory {
 		}
 		else if(args!=null){
 			sb.append(_createId(args));
-			/*for(int i=0;i<args.length;i++){
-				if(!Decision.isSimpleValue(args[i])) {
-					if(Decision.isStruct(args[i])) {
-						_createId(sb, Caster.toStruct(args[i],null), false);
-						continue;
-					}
-					else if(Decision.isArray(args[i])) {
-						_createId(sb, Caster.toArray(args[i],null), false);
-						continue;
-					}
-					
-					throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
-				}
-				sb.append(HashUtil.create64BitHash(args[i].toString())).append(CACHE_DEL);
-				
-			}*/
 		}
 		return HashUtil.create64BitHashAsString(sb, Character.MAX_RADIX);
 	}
 
 	private static String _createId(Object values) {
 		return HashUtil.create64BitHash(UDFArgConverter.serialize(values))+"";
-		/*
-		//Iterator<Entry<Key, Object>> it = values.entryIterator();
-		Collection.Key[] keys = CollectionUtil.keys(values);
-		Arrays.sort(keys);
-		Object v;
-		for(int i=0;i<keys.length;i++){
-			v=values.get(keys[i],null);
-			if(!Decision.isSimpleValue(v)) {
-				if(Decision.isStruct(v) || Decision.isArray(v)){
-					sb.append(((KeyImpl)keys[i]).hash()).append(CACHE_DEL2);
-					_createId(sb, Caster.toCollection(v,null), false);
-					sb.append(CACHE_DEL);
-					continue;
-				}
-				throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
-			}
-			sb.append(((KeyImpl)keys[i]).hash()).append(CACHE_DEL2).append(HashUtil.create64BitHash(v.toString())).append(CACHE_DEL);
-			
-		}*/
 	}
 }

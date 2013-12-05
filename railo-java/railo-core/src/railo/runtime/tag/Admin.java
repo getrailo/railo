@@ -2733,6 +2733,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		if(def.equals("query")) return ConfigImpl.CACHE_DEFAULT_QUERY;
 		if(def.equals("resource")) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
 		if(def.equals("function")) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
+		if(def.equals("include")) return ConfigImpl.CACHE_DEFAULT_INCLUDE;
     	
 		throw new ApplicationException("invalid default type ["+def+"], valid default types are [object,template,query,resource,function]");
 	}
@@ -2743,6 +2744,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY,getString("admin",action,"query"));
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE,getString("admin",action,"resource"));
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION,getString("admin",action,"function"));
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE,getString("admin",action,"include"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2753,6 +2755,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE);
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3404,6 +3407,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         CacheConnection defQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
         CacheConnection defRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
         CacheConnection defUDF=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+        CacheConnection defInc=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE);
+
         int row=0;
         String def;
 		while(it.hasNext()){
@@ -3417,6 +3422,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	if(cc==defQry)def="query";
         	if(cc==defRes)def="resource";
         	if(cc==defUDF)def="function";
+        	if(cc==defInc)def="include";
         	qry.setAtEL("class", row, cc.getClazz().getName());
         	qry.setAtEL("name", row, cc.getName());
         	qry.setAtEL("custom", row, cc.getCustom());
@@ -3443,8 +3449,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	type=ConfigImpl.CACHE_DEFAULT_RESOURCE;
         else if(strType.equals("function"))
         	type=ConfigImpl.CACHE_DEFAULT_FUNCTION;
+        else if(strType.equals("include"))
+        	type=ConfigImpl.CACHE_DEFAULT_INCLUDE;
         else
-        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object, template,query,resource,function]");
+        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object,template,query,resource,function,include]");
 		
         CacheConnection cc = config.getCacheDefaultConnection(type);
         if(cc!=null){
@@ -3472,6 +3480,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		CacheConnection dQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
 		CacheConnection dRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
 		CacheConnection dUDF=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+		CacheConnection dInc=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 		
 		Struct sct;
 		String d;
@@ -3486,6 +3495,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 else if(cc==dQry)d="query";
                 else if(cc==dRes)d="resource";
                 else if(cc==dUDF)d="function";
+                else if(cc==dInc)d="include";
                 sct.setEL(KeyConstants._name,cc.getName());
                 sct.setEL(KeyConstants._class,cc.getClazz().getName());
                 sct.setEL(KeyConstants._custom,cc.getCustom());

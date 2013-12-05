@@ -1553,6 +1553,8 @@ public final class ConfigWebAdmin {
     		parent.removeAttribute("default-resource");
         if(name.equalsIgnoreCase(parent.getAttribute("default-function")))
     		parent.removeAttribute("default-function");
+        if(name.equalsIgnoreCase(parent.getAttribute("default-include")))
+    		parent.removeAttribute("default-include");
         
         
         if(_default==ConfigImpl.CACHE_DEFAULT_OBJECT){
@@ -1569,6 +1571,9 @@ public final class ConfigWebAdmin {
         }
         else if(_default==ConfigImpl.CACHE_DEFAULT_FUNCTION){
         	parent.setAttribute("default-function",name);
+        }
+        else if(_default==ConfigImpl.CACHE_DEFAULT_INCLUDE){
+        	parent.setAttribute("default-include",name);
         }
         
         // Update
@@ -1623,6 +1628,9 @@ public final class ConfigWebAdmin {
         else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
         	parent.removeAttribute("default-function");
         }
+        else if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE){
+        	parent.removeAttribute("default-include");
+        }
     }
 	
 	public void updateCacheDefaultConnection(int type,String name) throws PageException {
@@ -1647,6 +1655,9 @@ public final class ConfigWebAdmin {
         }
         else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
         	parent.setAttribute("default-function", name);
+        }
+        else if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE){
+        	parent.setAttribute("default-include", name);
         }
     }
 	

@@ -89,6 +89,7 @@ public final class Application extends TagImpl {
 	private String cacheFunction;
 	private String cacheQuery;
 	private String cacheTemplate;
+	private String cacheInclude;
 	private String cacheObject;
 	private String cacheResource;
 	private Struct datasources;
@@ -145,6 +146,7 @@ public final class Application extends TagImpl {
     	cacheTemplate=null;
     	cacheObject=null;
     	cacheResource=null;
+    	cacheInclude=null;
     	onmissingtemplate=null;
     	scopeCascading=-1;
     }
@@ -292,6 +294,10 @@ public final class Application extends TagImpl {
 	public void setCachetemplate(String cacheTemplate)	{
 		if(StringUtil.isEmpty(cacheTemplate,true)) return;
 		this.cacheTemplate=cacheTemplate.trim();
+	}
+	public void setCacheinclude(String cacheInclude)	{
+		if(StringUtil.isEmpty(cacheInclude,true)) return;
+		this.cacheInclude=cacheInclude.trim();
 	}
 	public void setCacheobject(String cacheObject)	{
 		if(StringUtil.isEmpty(cacheObject,true)) return;
@@ -501,6 +507,7 @@ public final class Application extends TagImpl {
 		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);
 		if(cacheResource!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE, cacheResource);
 		if(cacheTemplate!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE, cacheTemplate);
+		if(cacheInclude!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_INCLUDE, cacheInclude);
 		if(tag!=null) ac.setTagAttributeDefaultValues(tag);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);

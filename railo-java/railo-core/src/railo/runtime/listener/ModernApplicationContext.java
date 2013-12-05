@@ -596,6 +596,9 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 					// Object
 					name=Caster.toString(sct.get(KeyConstants._object,null),null);
 					if(!StringUtil.isEmpty(name,true)) defaultCaches.put(Config.CACHE_DEFAULT_OBJECT, name.trim());
+					// INCLUDE
+					name=Caster.toString(sct.get(KeyConstants._include,null),null);
+					if(!StringUtil.isEmpty(name,true)) defaultCaches.put(Config.CACHE_DEFAULT_INCLUDE, name.trim());
 					// Resource
 					name=Caster.toString(sct.get(KeyConstants._resource,null),null);
 					if(!StringUtil.isEmpty(name,true)) {
