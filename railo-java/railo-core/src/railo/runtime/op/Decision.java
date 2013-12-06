@@ -1326,14 +1326,15 @@ public final class Decision {
             return comp.instanceOf(strType);
         }
         if(isArrayType(strType) && isArray(o)){
-        	String t=strType.substring(0,strType.length()-2);
+        	String _strType=strType.substring(0,strType.length()-2);
+        	short _type=CFTypes.toShort(_strType, false, (short)-1);
         	Array arr = Caster.toArray(o,null);
         	if(arr!=null){
-        		Iterator it = arr.valueIterator();
+        		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(type,t, it.next()))
+        			Object obj = it.next();
+        			if(!isCastableTo(_type,_strType, obj))
         				return false;
-        			
         		}
         		return true;
         	}
