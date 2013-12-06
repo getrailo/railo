@@ -3150,7 +3150,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	pageContext.setVariable(returnVariable,sct);
 
     	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
-    	sct.set("supressWSBeforeArg", config.getSupressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
+    	sct.set("supressWSBeforeArg", config.getSuppressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("nullSupport", config.getFullNullSupport()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("templateCharset", config.getTemplateCharset());
     }
