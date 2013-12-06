@@ -77,7 +77,7 @@
 	<data key="customtags.archive">Archive</data>
 	<data key="customtags.primary">Primary</data>
 	<data key="customtags.customtagdeepsearch">Search subdirectories</data>
-	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories (not supported for archives)</data>
+	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories.</data>
 	<data key="customtags.archivemissing">Please enter a value for the archive name (row </data>
 	<data key="customtags.customtaglocalsearchdesc">Search in the caller directory for the custom tag</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -214,7 +214,7 @@
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
 	<data key="menu.documentation.objRef">Object Reference</data>
-	<data key="charset.templatecharsetdescription">Default character set for templates (*.cfm and *.cfc files)</data>
+	<data key="charset.templatecharsetdescription">Default character used to read templates (*.cfm and *.cfc files)</data>
 	<data key="charset.webcharsetdescription">Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header</data>
 	<data key="charset.webcharset">Web charset</data>
 	<data key="charset.missingresourcecharset">Please specify a resource charset</data>
@@ -484,7 +484,7 @@
 	<data key="components.trusted">Trusted</data>
 	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
-	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
+	Search for CFCs in the subdirectories of the "Additional Resources" below.</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: {url})</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
@@ -596,7 +596,7 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="scopes.applicationtimeoutdescription">Sets the amount of time Railo will keep the application scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.clienttimeout">Client timeout</data>
 	<data key="scopes.cascadetoresultsetdescription">When a variable has no scope defined (Example: #myVar# instead of #variables.myVar#), Railo will also search available resultsets (CFML&amp;nbsp;Standard) or not</data>
-	<data key="scopes.cascadingdescription">Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#)&lt;br/&gt;- strict: scans only the variables scope&lt;br/&gt;- small: scans the scopes variables,cgi,url,form&lt;br/&gt;- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie</data>
+	<data key="scopes.cascadingdescription">Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#)&lt;br/&gt;- strict: scans only the variables scope&lt;br/&gt;- small: scans the scopes variables,url,form&lt;br/&gt;- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions allow to make sessions over a cluster. when you change this setting you will lose your current session and you must make a new login</data>
 	<data key="scopes.web">Here you can define the settings for how Railo handles scopes.</data>
 	<data key="scopes.localmodeClassic">Classic</data>
@@ -1140,6 +1140,9 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaulttypeFunctionDesc">This cache connection is used for caching the results of the tag cffunction/function</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">This cache connection is used for the Ram Resource (ram://...)</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">This cache connection is used for caching the results of the tag cfinclude</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>

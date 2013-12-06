@@ -78,7 +78,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.archive">Archiv</data>
 	<data key="customtags.primary">Primär</data>
 	<data key="customtags.customtagdeepsearch">Untergeordnete Verzeichnisse einbeziehen</data>
-	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach Customtags durchsuchen (für Archive nicht unterstützt)</data>
+	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach custom tags durchsuchen.</data>
 	<data key="customtags.archivemissing">Bitte geben Sie einen Wert für den Archivnamen an. (Zeile </data>
 	<data key="customtags.customtaglocalsearchdesc">Lokales Verzeichnisse aus welchen der Customtag aufgerufen wird, nach dem Customtag durchsuchen</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -462,7 +462,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
 	<data key="components.componentmappingsearch">Mappings einbeziehen</data>
 	<data key="components.componentDeepSearch">Unterverzeichnisse durchsuchen</data>
-	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden. Dies funktioniert nicht für Archive!</data>
+	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden.</data>
 	<data key="components.useshadowdescription">Definiert, ob eine Komponente einen eigenständigen &quot;Variables&quot; Scope parallel zum &quot;this&quot; Scope hat (CFML Standard) oder nicht. Wenn nicht, dann werden alle nicht spezifizierten Variablen in den &quot;this&quot; scope geschrieben.</data>
 	<data key="components.server">Definert Komponenteneinstellungen, die als Standartwert für alle Webs gelten.</data>
 	<data key="components.useshadow">Allow Variable Scope</data>
@@ -657,7 +657,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.applicationtimeoutdescription">Legt fest wielange Client Scope Daten behalten werden bevor sie gelöscht werden.</data>
 	<data key="scopes.clienttimeout">Client Timeout</data>
 	<data key="scopes.cascadetoresultsetdescription">Wenn eine Variable keinen vorangestellten Scope hat (Beispiel: #myVar# anstelle von #variables.myVar#), kann Railo (nach dem CFML Standard) auch verfügbare Query-Resultsets durchsuchen.</data>
-	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Cgi, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
+	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions erlauben es Railo Sessions über einen J2EE Server-Cluster zu verteilen. Wenn Sie diese Einstellung ändern verlieren Sie die aktuelle Session und müssen sich erneut einloggen.</data>
 	<data key="scopes.web">Hier können Sie festlegen, wie Railo Scopes abarbeitet.</data>
 	
@@ -883,6 +883,9 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
 	<data key="settings.cache.defaulttypeFunction">Function</data>
 	<data key="settings.cache.defaulttypeFunctionDesc">Diese Cache Connection wird für für das cachen von cffunction/function Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">Diese Cache Connection wird für für das cachen von cfinclude verwendet.</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>

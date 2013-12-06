@@ -1079,6 +1079,9 @@ public final class ASMUtil {
 			if(str!=null && "request".equalsIgnoreCase(str.trim()))
 				return new LitString("request",null,null);
 			
+			if(str!=null && "smart".equalsIgnoreCase(str.trim()))
+				return new LitString("smart",null,null);
+			
 			throw cacheWithinException();
 		}
 		// createTimespan
@@ -1109,7 +1112,7 @@ public final class ASMUtil {
 
 
 	private static EvaluatorException cacheWithinException() {
-		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4) or the string \"request\"");
+		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4) or the string \"request\" or the string \"smart\"");
 	}
 
 

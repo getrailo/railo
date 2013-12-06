@@ -16,6 +16,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.cache.tag.request.RequestCacheHandler;
+import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.cache.tag.timespan.TimespanCacheHandler;
 import railo.runtime.cache.tag.udf.UDFArgConverter;
 import railo.runtime.config.Config;
@@ -40,7 +41,7 @@ public class CacheHandlerFactory {
 
 	public static final int TYPE_TIMESPAN=1;
 	public static final int TYPE_REQUEST=2;
-	public static final int TYPE_INCLUDE=4;
+	public static final int TYPE_SMART=4;
 
 	public static final char CACHE_DEL = ';';
 	public static final char CACHE_DEL2 = ':';
@@ -49,12 +50,15 @@ public class CacheHandlerFactory {
 	public static CacheHandlerFactory udf=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
 	public static CacheHandlerFactory include=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 	
-	private final RequestCacheHandler rch=new RequestCacheHandler();
+	private final RequestCacheHandler rch;
+	private final SmartCacheHandler sch;
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
 	private int cacheDefaultType;
 	
 	private CacheHandlerFactory(int cacheDefaultType){
 		this.cacheDefaultType=cacheDefaultType;
+		rch=new RequestCacheHandler(cacheDefaultType);
+		sch=new SmartCacheHandler(cacheDefaultType);
 	}
 	
 	public static void release(PageContext pc){
@@ -73,6 +77,7 @@ public class CacheHandlerFactory {
 		}
 		String str=Caster.toString(cachedWithin,"").trim();
 		if("request".equalsIgnoreCase(str)) return rch;
+		if("smart".equalsIgnoreCase(str)) return sch;
 		
 		return null;
 	}
@@ -80,6 +85,7 @@ public class CacheHandlerFactory {
 	public CacheHandler getInstance(Config config,int type){
 		if(TYPE_TIMESPAN==type)return getTimespanCacheHandler(config);
 		if(TYPE_REQUEST==type) return rch;
+		if(TYPE_SMART==type) return sch;
 		return null;
 	}
 	
@@ -168,5 +174,27 @@ public class CacheHandlerFactory {
 
 	private static String _createId(Object values) {
 		return HashUtil.create64BitHash(UDFArgConverter.serialize(values))+"";
+	}
+	
+
+	public static String toStringType(int type, String defaultValue) {
+		switch(type){
+		case TYPE_REQUEST: 	return "request";
+		case TYPE_TIMESPAN:	return "timespan";
+		case TYPE_SMART: 	return "smart";
+		}
+		return defaultValue;
+	}
+	
+	public static String toStringCacheName(int type, String defaultValue) {
+		switch(type){
+		case ConfigImpl.CACHE_DEFAULT_FUNCTION:	return "function";
+		case ConfigImpl.CACHE_DEFAULT_INCLUDE: 	return "include";
+		case ConfigImpl.CACHE_DEFAULT_OBJECT: 	return "object";
+		case ConfigImpl.CACHE_DEFAULT_QUERY: 	return "query";
+		case ConfigImpl.CACHE_DEFAULT_RESOURCE: 	return "resource";
+		case ConfigImpl.CACHE_DEFAULT_TEMPLATE: 	return "template";
+		}
+		return defaultValue;
 	}
 }

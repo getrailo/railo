@@ -18,6 +18,11 @@ public class RequestCacheHandler implements CacheHandler {
 			return new HashMap<String, Object>();
 		}
 	};
+	private final int cacheType;
+
+	public RequestCacheHandler(int cacheType) {
+		this.cacheType=cacheType;
+	}
 
 	@Override
 	public Object get(PageContext pc, String id) {

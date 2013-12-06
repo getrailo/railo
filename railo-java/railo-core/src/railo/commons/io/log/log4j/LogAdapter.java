@@ -41,7 +41,7 @@ public class LogAdapter implements Log {
 
 	@Override
 	public void error(String application, String message) {
-		log(Log.LEVEL_WARN,application,message);
+		log(Log.LEVEL_ERROR,application,message);
 	}
 
 	@Override

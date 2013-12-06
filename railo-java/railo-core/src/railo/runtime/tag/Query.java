@@ -281,6 +281,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				this.cachedWithin="request";
 				return;
 			}
+			if("smart".equalsIgnoreCase(str)) {
+				this.cachedWithin="smart";
+				return;
+			}
 		}
 		setCachedwithin(Caster.toTimespan(cachedwithin));
 	}
