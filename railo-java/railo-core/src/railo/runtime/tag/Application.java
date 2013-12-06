@@ -96,6 +96,7 @@ public final class Application extends TagImpl {
 	private Struct datasources;
 	private UDF onmissingtemplate;
 	private short scopeCascading=-1;
+	private Boolean suppress;
 	
      
     @Override
@@ -118,6 +119,7 @@ public final class Application extends TagImpl {
         secureJson=null;
         secureJsonPrefix=null;
         typeChecking=null;
+        suppress=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
         scriptrotect=null;
         datasource=null;
@@ -420,6 +422,10 @@ public final class Application extends TagImpl {
     public void setTypechecking(boolean typeChecking) {
 		this.typeChecking=typeChecking;
 	}
+    
+    public void setSuppressremotecomponentcontent(boolean suppress) {
+		this.suppress=suppress;
+	}
 
 	public void setOnmissingtemplate(Object oUDF) throws PageException {
 		this.onmissingtemplate=Caster.toFunction(oUDF);
@@ -494,6 +500,7 @@ public final class Application extends TagImpl {
 		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
 		if(typeChecking!=null)					ac.setTypeChecking(typeChecking.booleanValue());
+		if(suppress!=null)						ac.setSuppressContent(suppress.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());
 		if(setClientManagement!=null)			ac.setSetClientManagement(setClientManagement.booleanValue());

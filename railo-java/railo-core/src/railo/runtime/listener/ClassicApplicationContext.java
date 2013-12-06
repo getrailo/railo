@@ -83,6 +83,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 
 	private short scopeCascading;
 	private boolean allowCompression;
+	private boolean suppressRemoteComponentContent;
     
     /**
      * constructor of the class
@@ -113,6 +114,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.webCharset=((ConfigImpl)config)._getWebCharset();
         this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
         this.bufferOutput=((ConfigImpl)config).getBufferOutput();
+        suppressRemoteComponentContent=((ConfigImpl)config).isSuppressContent();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
@@ -123,7 +125,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSettings=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
-        
+        this.suppressRemoteComponentContent=((ConfigImpl)config).isSuppressContent();
     }
     
     /**
@@ -157,6 +159,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.ctmappings=ctmappings;
 		dbl.cmappings=cmappings;
 		dbl.bufferOutput=bufferOutput;
+		dbl.allowCompression=allowCompression;
+		dbl.suppressRemoteComponentContent=suppressRemoteComponentContent;
 		dbl.secureJson=secureJson;
 		dbl.secureJsonPrefix=secureJsonPrefix;
 		dbl.isDefault=isDefault;
@@ -681,5 +685,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	public CustomType getCustomType(String strType) {
 		// not supported
 		return null;
+	}
+
+	@Override
+	public boolean getSuppressContent() {
+		return suppressRemoteComponentContent;
+	}
+
+	@Override
+	public void setSuppressContent(boolean suppressContent) {
+		this.suppressRemoteComponentContent=suppressContent;
 	}
 }

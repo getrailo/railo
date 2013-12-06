@@ -452,8 +452,17 @@ Specifies how Railo stores session variables:
 			<name>compression</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>if set to true railo GZIP compress the response stream if the client accept this.</description>
+			<description>Enable compression (GZip) for the Railo Response stream for text-based responses when supported by the client (Web Browser).</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>suppressRemoteComponentContent</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</description>
+		</attribute>
+		
+		
 		<attribute>
 			<type>string</type>
 			<name>secureJsonPrefix</name>

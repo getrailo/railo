@@ -90,7 +90,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
 	private static final Collection.Key SCOPE_CASCADING = KeyImpl.intern("scopeCascading");
 	private static final Collection.Key TYPE_CHECKING = KeyImpl.intern("typeChecking");
-	private static final Collection.Key COMPRESSION = KeyImpl.intern("compression");
+	
+	private static final Key SUPPRESS_CONTENT = KeyImpl.intern("suppressRemoteComponentContent");
 
 
 	
@@ -113,6 +114,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean allowCompression;
 	private Object defaultDataSource;
 	private boolean bufferOutput;
+	private boolean suppressContent;
 	private short sessionType;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -164,6 +166,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private int localMode;
 	private boolean initLocalMode;
 	private boolean initBufferOutput;
+	private boolean initSuppressContent;
 	private boolean initS3;
 	private boolean ormEnabled;
 	private ORMConfiguration ormConfig;
@@ -208,6 +211,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.webCharset=ci._getWebCharset();
         this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
         this.bufferOutput=ci.getBufferOutput();
+        suppressContent=ci.isSuppressContent();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
@@ -775,6 +779,20 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			initBufferOutput=true; 
 		}
 		return bufferOutput;
+	}
+	
+	public boolean getSuppressContent() {
+		if(!initSuppressContent) {
+			Object o = get(component,SUPPRESS_CONTENT,null);
+			if(o!=null)suppressContent=Caster.toBooleanValue(o, suppressContent);
+			initSuppressContent=true; 
+		}
+		return suppressContent;
+	}
+	
+	public void setSuppressContent(boolean suppressContent) {
+		this.suppressContent=suppressContent;
+		initSuppressContent=true; 
 	}
 
 	@Override

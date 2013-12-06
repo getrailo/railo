@@ -144,7 +144,7 @@ public abstract class ComponentPage extends PagePlus  {
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
-            boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
+            boolean suppressContent = ((PageContextImpl)pc).getSuppressContent();
             if(suppressContent)pc.clear();
             Object method;
             

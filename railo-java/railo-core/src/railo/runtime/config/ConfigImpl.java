@@ -3343,13 +3343,13 @@ public abstract class ConfigImpl implements Config {
 		return dotNotationUpperCase;
 	}
 
-	private boolean getSupressWSBeforeArg=true;
-	protected void setSupressWSBeforeArg(boolean getSupressWSBeforeArg) {
-		this.getSupressWSBeforeArg=getSupressWSBeforeArg;
+	private boolean getSuppressWSBeforeArg=true;
+	protected void setSuppressWSBeforeArg(boolean getSuppressWSBeforeArg) {
+		this.getSuppressWSBeforeArg=getSuppressWSBeforeArg;
 	}
 
-	public boolean getSupressWSBeforeArg() {
-		return getSupressWSBeforeArg;
+	public boolean getSuppressWSBeforeArg() {
+		return getSuppressWSBeforeArg;
 	}
 
 	private RestSettings restSetting=new RestSettingImpl(false,UDF.RETURN_FORMAT_JSON);
