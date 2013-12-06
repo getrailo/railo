@@ -143,7 +143,8 @@ component {
 	this.localMode = "#scope.LocalMode#"; 
 	
 	// buffer the output of a tag/function body to output in case of a exception
-	this.bufferOutput = "#outputSetting.bufferOutput#"; 
+	this.bufferOutput = #outputSetting.bufferOutput#; 
+	this.compression = #outputSetting.AllowCompression#;
 	
 	// If set to false Railo ignores type defintions with function arguments and return values
 	this.typeChecking = #PerformanceSettings.typeChecking#;
