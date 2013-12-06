@@ -1,0 +1,1 @@
+<cfapplication suppressRemoteComponentContent="#url.suppress#">
