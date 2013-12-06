@@ -1403,7 +1403,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"component");
             
-        Class<?> skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
+        Class<?> skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSuppressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
