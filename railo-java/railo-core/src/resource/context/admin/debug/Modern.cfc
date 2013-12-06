@@ -338,7 +338,7 @@
 										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 ,prettify)# ms average execution time</td></tr>
 									</cfif>
 								</table>
-							</td>	<!--- id="-railo-debug-#sectionId#" !--->
+							</td><!--- #-railo-debug-#sectionId# !--->
 						</tr>
 					</table>
 
@@ -379,7 +379,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -418,7 +418,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -453,7 +453,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -522,7 +522,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 
@@ -626,7 +626,7 @@
 										</cfloop>
 
 									</tr></td></table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -690,7 +690,7 @@
 											<cfelse>
 												the Scope will be displayed with the next request
 											</cfif>
-										</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+										</td></tr></table><!--- #-railo-debug-#sectionId# !--->
 									</td></tr>
 								<cfelse>
 
@@ -703,101 +703,15 @@
 						</table>
 					</cfif>
 
-				</div>	<!--- #-railo-debug-ALL !--->
-			</fieldset>	<!--- #-railo-debug !--->
+				</div><!--- #-railo-debug-ALL !--->
+			</fieldset><!--- #-railo-debug !--->
 		</cfoutput>
 
 
 		<script>
+			<cfinclude template="/railo-context/res/js/railo-util.min.js">
+
 			var __RAILO = __RAILO || {};
-
-			__RAILO.util = 	{
-
-				getCookie: 			function( name, def ) {
-
-					var cookies = document.cookie.split( '; ' );
-					var len = cookies.length;
-					var parts;
-
-					for ( var i=0; i<len; i++ ) {
-
-						parts = cookies[ i ].split( '=' );
-
-						if ( parts[ 0 ] == name )
-							return unescape( parts[ 1 ] );
-					}
-
-					return def;
-				}
-
-				, getCookieNames:	function() {
-
-					var result = [];
-					var cookies = document.cookie.split( '; ' );
-					var len = cookies.length;
-					var parts;
-
-					for ( var i=0; i<len; i++ ) {
-
-						parts = cookies[ i ].split( '=' );
-						result.push( parts[ 0 ] );
-					}
-
-					return result;
-				}
-
-				, setCookie: 		function( name, value, expires ) {
-
-					document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" ) + "; path=/";
-				}
-
-				, removeCookie: 	function( name ) {
-
-					__RAILO.util.setCookie( name, "", new Date( 0 ) );
-				}
-
-				, getDomObject: 	function( obj ) {			// returns the element if it is an object, or finds the object by id */
-
-					if ( typeof obj == 'string' || obj instanceof String )
-						return document.getElementById( obj );
-
-					return obj;
-				}
-
-				, hasClass: 		function( obj, cls ) {
-
-					obj = __RAILO.util.getDomObject( obj );
-					return ( obj.className.indexOf( cls ) > -1 );
-				}
-
-				, addClass: 		function( obj, cls ) {
-
-					if ( __RAILO.util.hasClass( obj, cls ) )
-						return;
-
-					obj = __RAILO.util.getDomObject( obj );
-					obj.className += " " + cls;
-				}
-
-				, removeClass: 		function( obj, cls ) {
-
-					obj = __RAILO.util.getDomObject( obj );
-					obj.className = obj.className.replace( cls, "" );
-				}
-
-				, toggleClass: 		function( obj, cls ) {
-
-					obj = __RAILO.util.getDomObject( obj );
-
-					if ( __RAILO.util.hasClass( obj, cls ) )
-						__RAILO.util.removeClass( obj, cls );
-					else
-						__RAILO.util.addClass( obj, cls );
-
-					return ( __RAILO.util.hasClass( obj, cls ) );
-				}
-			};
-
 
 			__RAILO.debug = {
 
@@ -861,7 +775,7 @@
 			};
 		</script>
 
-	</cffunction>	<!--- output() !--->
+	</cffunction><!--- output() !--->
 
 
 	<cffunction name="doMore" returntype="void">
