@@ -119,6 +119,12 @@ Defaults --->
 							<!---<input type="hidden" name="AllowCompression" value="#setting.AllowCompression#">--->
 						</cfif>
 						<div class="comment">#stText.setting.AllowCompressionDescription#</div>
+						
+
+						<cfsavecontent variable="codeSample">
+							this.compression = #setting.AllowCompression#;
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 
@@ -150,7 +156,7 @@ Defaults --->
 
 
 						<cfsavecontent variable="codeSample">
-							this.bufferOutput = "#setting.bufferOutput#";
+							this.bufferOutput = #setting.bufferOutput#;
 						</cfsavecontent>
 						<cfset renderCodingTip( codeSample )>
 					</td>
