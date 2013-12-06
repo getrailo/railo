@@ -1342,7 +1342,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		_getDotNotationUpperCase(sb,config.getServerTagMapping());
 		
 		// supress ws before arg
-		sb.append(config.getSupressWSBeforeArg());
+		sb.append(config.getSuppressWSBeforeArg());
 		sb.append(';');
 
 		// full null support
@@ -4292,15 +4292,15 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		// supress WS between cffunction and cfargument
 		if (mode == ConfigImpl.MODE_STRICT) {
-			config.setSupressWSBeforeArg(true);
+			config.setSuppressWSBeforeArg(true);
 		}
 		else {
-			String supress = compiler.getAttribute("supress-ws-before-arg");
-			if (!StringUtil.isEmpty(supress, true)) {
-				config.setSupressWSBeforeArg(Caster.toBooleanValue(supress, true));
+			String suppress = compiler.getAttribute("supress-ws-before-arg");
+			if (!StringUtil.isEmpty(suppress, true)) {
+				config.setSuppressWSBeforeArg(Caster.toBooleanValue(suppress, true));
 			}
 			else if (hasCS) {
-				config.setSupressWSBeforeArg(configServer.getSupressWSBeforeArg());
+				config.setSuppressWSBeforeArg(configServer.getSuppressWSBeforeArg());
 			}
 		}
 
