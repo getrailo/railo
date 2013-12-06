@@ -406,16 +406,21 @@ div.ok {
 
 
 
-.coding-tip-trigger { 
+.coding-tip-trigger-server { 
 	cursor: pointer; 
-	color: #669900;
+	color: #9c0000;
 }
 
-.coding-tip { 
+.coding-tip-trigger-web { 
+	cursor: pointer; 
+	color: #007bb7;
+}
+
+.coding-tip-server { 
 
 	display: none; 
 	box-sizing: border-box;
-	background-color: #669900;
+	background-color: #9c0000;
 	color: #FFF;
 	margin: 0.25em;
 	padding: 0.5em;
@@ -424,12 +429,27 @@ div.ok {
 	max-width: 680px;
 }
 
-.coding-tip.expanded { 
+.coding-tip-web { 
 
+	display: none; 
+	box-sizing: border-box;
+	background-color: #007bb7;
+	color: #FFF;
+	margin: 0.25em;
+	padding: 0.5em;
+	border: 1px solid #667;
+	border-radius: 0.5em;
+	max-width: 680px;
+}
+
+.coding-tip-server.expanded { 
+	display: block;
+}
+.coding-tip-web.expanded { 
 	display: block;
 }
 
-.coding-tip code {
+.coding-tip-server code ,.coding-tip-web code {
 
 	white-space: pre-wrap;
 	tab-size: 4;

@@ -152,15 +152,15 @@
 
 		$( function(){
 
-			$( '.coding-tip-trigger' ).click( 
+			$( '.coding-tip-trigger-#request.adminType#' ).click( 
 				function(){ 
 					var $this = $(this);
-					$this.next( '.coding-tip' ).slideDown();
+					$this.next( '.coding-tip-#request.adminType#' ).slideDown();
 					$this.hide();
 				}
 			);
 
-			$( '.coding-tip code' ).click( 
+			$( '.coding-tip-#request.adminType# code' ).click( 
 				function(){ 					
 					selectText(this);					
 				}
