@@ -82,7 +82,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private UDF onMissingTemplate;
 
 	private short scopeCascading;
-
+	private boolean allowCompression;
     
     /**
      * constructor of the class
@@ -102,6 +102,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         loginStorage=Scope.SCOPE_COOKIE;
         scriptProtect=config.getScriptProtect();
         typeChecking=((ConfigImpl)config).getTypeChecking();
+        allowCompression=((ConfigImpl)config).allowCompression();
         this.isDefault=isDefault;
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
@@ -654,6 +655,16 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setScopeCascading(short scopeCascading) {
 		this.scopeCascading=scopeCascading;
+	}
+
+	@Override
+	public boolean getAllowCompression() {
+		return allowCompression;
+	}
+
+	@Override
+	public void setAllowCompression(boolean allowCompression) {
+		this.allowCompression=allowCompression;
 	}
 
 	@Override

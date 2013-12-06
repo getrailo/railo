@@ -90,6 +90,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
 	private static final Collection.Key SCOPE_CASCADING = KeyImpl.intern("scopeCascading");
 	private static final Collection.Key TYPE_CHECKING = KeyImpl.intern("typeChecking");
+	private static final Collection.Key COMPRESSION = KeyImpl.intern("compression");
+
 
 	
 	
@@ -108,6 +110,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private int loginStorage=Scope.SCOPE_COOKIE;
 	private int scriptProtect;
 	private boolean typeChecking;
+	private boolean allowCompression;
 	private Object defaultDataSource;
 	private boolean bufferOutput;
 	private short sessionType;
@@ -141,6 +144,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSetSessionManagement;
 	private boolean initScriptProtect;
 	private boolean initTypeChecking;
+	private boolean initAllowCompression;
 	private boolean initDefaultAttributeValues;
 	private boolean initClientStorage;
 	private boolean initSecureJsonPrefix;
@@ -196,6 +200,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         applicationTimeout=config.getApplicationTimeout();
         scriptProtect=config.getScriptProtect();
         typeChecking=ci.getTypeChecking();
+        allowCompression=ci.allowCompression();
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
         this.locale=config.getLocale();
@@ -243,6 +248,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			scopeCascading=ConfigWebUtil.toScopeCascading(Caster.toString(o,null),(short)-1);
 		}
 	}
+	
+	
 	public short getScopeCascading() {
 		if(scopeCascading==-1) return config.getScopeCascadingType();
 		return scopeCascading;
@@ -459,6 +466,23 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			initTypeChecking=true; 
 		}
 		return typeChecking;
+	}
+
+	@Override
+	public boolean getAllowCompression() {
+		if(!initAllowCompression) {
+			Boolean b = Caster.toBoolean(get(component,KeyConstants._compression,null),null);
+			if(b!=null) allowCompression=b.booleanValue();
+			initAllowCompression=true; 
+		}
+		print.e("allowCompression:"+allowCompression);
+		return allowCompression;
+	}
+
+	@Override
+	public void setAllowCompression(boolean allowCompression) {
+		this.allowCompression=allowCompression;
+		initAllowCompression=true;
 	}
 
 	@Override

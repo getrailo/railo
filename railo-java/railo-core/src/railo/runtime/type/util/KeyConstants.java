@@ -868,6 +868,7 @@ public class KeyConstants {
 	public static final Key _nulls = KeyImpl._const("nulls");
 	public static final Key _scale = KeyImpl._const("scale");
 	public static final Key _include = KeyImpl._const("include");
+	public static final Key _compression = KeyImpl._const("compression");
 	
 	private static MapPro<String,Key> _____keys;
 	

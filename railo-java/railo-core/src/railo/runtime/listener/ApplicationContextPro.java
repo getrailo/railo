@@ -72,4 +72,8 @@ public interface ApplicationContextPro extends ApplicationContext {
 	public void setRequestTimeout(TimeSpan timeout);
 
 	public CustomType getCustomType(String strType);
+	
+	public boolean  getAllowCompression();
+	public void setAllowCompression(boolean allowCompression);
+	
 }

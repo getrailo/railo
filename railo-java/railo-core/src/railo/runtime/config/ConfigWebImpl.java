@@ -424,14 +424,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.allowRequestTimeout();
 		}
 		
-		public CFMLWriter getCFMLWriter(HttpServletRequest req, HttpServletResponse rsp) {
+		public CFMLWriter getCFMLWriter(PageContext pc, HttpServletRequest req, HttpServletResponse rsp) {
 			// FUTURE  move interface CFMLWriter to Loader and load dynaicly from railo-web.xml
 	        if(writerType==CFML_WRITER_WS)
-	            return new CFMLWriterWS		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWS		(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	        else if(writerType==CFML_WRITER_REFULAR) 
-	            return new CFMLWriterImpl			(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterImpl			(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	        else
-	            return new CFMLWriterWSPref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWSPref	(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	    }
 
 		

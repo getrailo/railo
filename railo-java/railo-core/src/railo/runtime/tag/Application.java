@@ -79,6 +79,7 @@ public final class Application extends TagImpl {
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
+	private Boolean compression;
 
 	private boolean ormenabled;
 	private Struct ormsettings;
@@ -132,6 +133,7 @@ public final class Application extends TagImpl {
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
+        compression=null;
         
         ormenabled=false;
         ormsettings=null;
@@ -306,6 +308,9 @@ public final class Application extends TagImpl {
 	public void setCacheresource(String cacheResource)	{
 		if(StringUtil.isEmpty(cacheResource,true)) return;
 		this.cacheResource=cacheResource.trim();
+	}
+	public void setCompression(boolean compress)	{
+		this.compression=compress;
 	}
 	
 
@@ -501,7 +506,7 @@ public final class Application extends TagImpl {
 		if(resourceCharset!=null) 				ac.setResourceCharset(resourceCharset);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
-		
+		if(compression!=null) 						ac.setAllowCompression(compression.booleanValue());
 		if(cacheFunction!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION, cacheFunction);
 		if(cacheObject!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_OBJECT, cacheObject);
 		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);

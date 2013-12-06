@@ -47,7 +47,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.Pair;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -168,7 +167,6 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
-import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.PageContextUtil;
@@ -177,8 +175,6 @@ import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.BodyContentUtil;
 import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.DevNullBodyContent;
-import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.library.tag.TagLibTagAttr;
 
 /**
  * page context for every page object. 
@@ -446,14 +442,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
          // Writers
         if(config.debugLogOutput()) {
-        	CFMLWriter w = config.getCFMLWriter(req,rsp);
+        	CFMLWriter w = config.getCFMLWriter(this,req,rsp);
         	w.setAllowCompression(false);
         	DebugCFMLWriter dcw = new DebugCFMLWriter(w);
         	bodyContentStack.init(dcw);
         	debugger.setOutputLog(dcw);
         }
         else {
-        	bodyContentStack.init(config.getCFMLWriter(req,rsp));
+        	bodyContentStack.init(config.getCFMLWriter(this,req,rsp));
         }
         
 		
@@ -699,7 +695,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
     @Override
     public void close() {
-		IOUtil.closeEL(getOut());
+    	IOUtil.closeEL(getOut());
 	}
 	
     public PageSource getRelativePageSource(String realPath) {
@@ -983,7 +979,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.undefined=new UndefinedImpl(other,(short)other.undefined.getType());
     	
     	// writers
-    	other.bodyContentStack.init(config.getCFMLWriter(other.req,other.rsp));
+    	other.bodyContentStack.init(config.getCFMLWriter(this,other.req,other.rsp));
     	//other.bodyContentStack.init(other.req,other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(), other.config.isShowVersion(),config.contentLength(),config.allowCompression());
     	other.writer=other.bodyContentStack.getWriter();
     	other.forceWriter=other.writer;
@@ -3197,6 +3193,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
 		if(ac==null) return config.getTypeChecking();
 		return ac.getTypeChecking();
+	}
+
+
+
+	public boolean getAllowCompression() {
+		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		if(ac==null) return config.allowCompression();
+		return ac.getAllowCompression();
 	}
 	
 	

@@ -448,6 +448,13 @@ Specifies how Railo stores session variables:
 			<description>If disabled, Railo ignores type defintions with function arguments and return values</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>compression</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true railo GZIP compress the response stream if the client accept this.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>secureJsonPrefix</name>
 			<required>false</required>
