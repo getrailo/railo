@@ -2164,7 +2164,6 @@ the usage of this argument depend on type defined with argument "type":
 - java: java class to load
 - webservice: WSDL url to call
 - component: The CFC name; corresponds to the name of the file that defines the component
-		
 		</description>
     </argument>
 		<argument>
@@ -2174,7 +2173,7 @@ the usage of this argument depend on type defined with argument "type":
 		<description>
 the usage of this argument depend on type defined with argument "type":
 - com: not used (ignored)
-- java: classpath used to load the defined class, this can be a list of multiple pathes (directory containg class files or jar files)
+- java: classpath used to load the defined class, this can be a list of multiple paths (directories containing class files or jar files)
 - webservice: a struct containing the following optional keys (username,password,proxyServer,proxyPort,proxyUser,proxyPassword) 
 - component: not used (ignored)
 </description>
@@ -2186,7 +2185,7 @@ the usage of this argument depend on type defined with argument "type":
 		<description>
 the usage of this argument depend on type defined with argument "type":
 - com: not used (ignored)
-- java: delimter used for the classpath (default comma)
+- java: delimiter used for the classpath (default comma)
 - webservice: not used (ignored)
 - component: not used (ignored)</description>
     </argument>
