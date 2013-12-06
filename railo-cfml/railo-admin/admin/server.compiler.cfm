@@ -24,8 +24,8 @@ Defaults --->
 			<cfif isDefined('form.dotNotation') and form.dotNotation EQ "oc">
             	<cfset dotNotUpper=false>
             </cfif>
-            <cfif not isDefined('form.supressWSBeforeArg')>
-            	<cfset form.supressWSBeforeArg=false>
+            <cfif not isDefined('form.suppressWSBeforeArg')>
+            	<cfset form.suppressWSBeforeArg=false>
             </cfif>
             <cfif not isDefined('form.nullSupport')>
             	<cfset form.nullSupport=false>
@@ -39,7 +39,7 @@ Defaults --->
 				
 				nullSupport="#form.nullSupport#"
 				dotNotationUpperCase="#dotNotUpper#"
-                supressWSBeforeArg="#form.supressWSBeforeArg#"
+                suppressWSBeforeArg="#form.suppressWSBeforeArg#"
 				templateCharset="#form.templateCharset#"
 				remoteClients="#request.getRemoteClients()#">
 	
@@ -54,7 +54,7 @@ Defaults --->
 				
 				nullSupport=""
 				dotNotationUpperCase=""
-				supressWSBeforeArg=""
+				suppressWSBeforeArg=""
 				templateCharset=""
 					
 				remoteClients="#request.getRemoteClients()#">
@@ -188,16 +188,16 @@ Redirtect to entry --->
 					</td>
 				</tr>
 				
-				<!--- Supress Whitespace in front of cfargument --->
+				<!--- Suppress Whitespace in front of cfargument --->
 				<tr>
-					<th scope="row">#stText.setting.supressWSBeforeArg#</th>
+					<th scope="row">#stText.setting.suppressWSBeforeArg#</th>
 					<td>
 						<cfif hasAccess>
-        					<input type="checkbox" name="supressWSBeforeArg" value="true" <cfif setting.supressWSBeforeArg>checked="checked"</cfif> />
+        					<input type="checkbox" name="suppressWSBeforeArg" value="true" <cfif setting.suppressWSBeforeArg>checked="checked"</cfif> />
 						<cfelse>
-							<b>#yesNoFormat(setting.supressWSBeforeArg)#</b><br /><input type="hidden" name="supressWSBeforeArg" value="#setting.supressWSBeforeArg#">
+							<b>#yesNoFormat(setting.suppressWSBeforeArg)#</b><br /><input type="hidden" name="suppressWSBeforeArg" value="#setting.suppressWSBeforeArg#">
 						</cfif>
-						<div class="comment">#stText.setting.supressWSBeforeArgDesc#</div>
+						<div class="comment">#stText.setting.suppressWSBeforeArgDesc#</div>
 					</td>
 				</tr>
 

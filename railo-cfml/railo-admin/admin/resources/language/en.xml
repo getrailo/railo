@@ -659,9 +659,9 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
 	<data key="setting.dotNotationOriginalCase">Keep original case</data>
 	
-	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
+	<data key="setting.suppressWSBeforeArg">Suppress whitespace before cfargument</data>
 
-	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
+	<data key="setting.suppressWSBeforeArgDesc">if set, Railo suppress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Clear template cache</data>
@@ -692,7 +692,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
 
-	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContent">Suppress Content for CFC Remoting</data>
 	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
 	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
 	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>

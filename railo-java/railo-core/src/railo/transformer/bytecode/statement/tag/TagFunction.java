@@ -65,7 +65,7 @@ public final class TagFunction extends TagBase implements IFunction {
 		Statement stat;
 		Tag tag;
 		
-		// supress WS between cffunction and the last cfargument
+		// suppress WS between cffunction and the last cfargument
 		Tag last=null;
 		if(bc.getSupressWSbeforeArg()){
 			// check if there is a cfargument at all

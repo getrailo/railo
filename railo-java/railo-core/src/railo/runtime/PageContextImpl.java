@@ -3206,7 +3206,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public boolean getSuppressContent() {
 		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
 		if(ac==null) return config.isSuppressContent();
-		print.e(ac.getSuppressContent());
 		return ac.getSuppressContent();
 	}
 }

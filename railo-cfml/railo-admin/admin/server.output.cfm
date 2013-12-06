@@ -87,7 +87,7 @@ Defaults --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<table class="maintbl">
 			<tbody>
-				<!--- Supress Whitespace --->
+				<!--- Suppress Whitespace --->
 				<tr>
 					<th scope="row">#stText.setting.whitespace#</th>
 					<td>
@@ -128,7 +128,7 @@ Defaults --->
 					</td>
 				</tr>
 
-				<!--- Supress Content when CFC Remoting --->
+				<!--- Suppress Content when CFC Remoting --->
 				<tr>
 					<th scope="row">#stText.setting.suppressContent#</th>
 					<td>

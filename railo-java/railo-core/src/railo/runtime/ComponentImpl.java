@@ -1817,11 +1817,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return getJavaAccessClass(pc,isNew, false,true,true,true);
     }
 
-    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean suppressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	ComponentProperties props =(takeTop)?top.properties:properties;
     	if(props.javaAccessClass==null) {
-    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(pc,this,isNew,create,writeLog,supressWSbeforeArg);
+    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(pc,this,isNew,create,writeLog,suppressWSbeforeArg);
 		}
     	return props.javaAccessClass;
     }

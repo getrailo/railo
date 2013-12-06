@@ -1341,7 +1341,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		_getDotNotationUpperCase(sb,config.getTagMapping());
 		_getDotNotationUpperCase(sb,config.getServerTagMapping());
 		
-		// supress ws before arg
+		// suppress ws before arg
 		sb.append(config.getSuppressWSBeforeArg());
 		sb.append(';');
 
@@ -4290,13 +4290,15 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		Element compiler = getChildByName(doc.getDocumentElement(), "compiler");
 
-		// supress WS between cffunction and cfargument
+		// suppress WS between cffunction and cfargument
 		if (mode == ConfigImpl.MODE_STRICT) {
 			config.setSuppressWSBeforeArg(true);
 		}
 		else {
-			String suppress = compiler.getAttribute("supress-ws-before-arg");
-			if (!StringUtil.isEmpty(suppress, true)) {
+			String suppress = compiler.getAttribute("suppress-ws-before-arg");
+			if(StringUtil.isEmpty(suppress, true)) 
+				suppress = compiler.getAttribute("supress-ws-before-arg");
+			if(!StringUtil.isEmpty(suppress, true)) {
 				config.setSuppressWSBeforeArg(Caster.toBooleanValue(suppress, true));
 			}
 			else if (hasCS) {
@@ -4335,7 +4337,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			((ConfigServerImpl) config).setFullNullSupport(fns);
 		}
 		
-		// supress WS between cffunction and cfargument
+		// suppress WS between cffunction and cfargument
 		
 		String str = compiler.getAttribute("externalize-string-gte");
 		if (Decision.isNumeric(str)) {

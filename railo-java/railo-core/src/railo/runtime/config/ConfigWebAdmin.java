@@ -4117,12 +4117,17 @@ public final class ConfigWebAdmin {
     		element.setAttribute("dot-notation-upper-case", Caster.toString(dotNotationUpperCase));
     	}
     	
+
+		// remove old settings
+		if(element.hasAttribute("supress-ws-before-arg"))
+			element.removeAttribute("supress-ws-before-arg");
+		
     	if(suppressWSBeforeArg==null){
-			if(element.hasAttribute("supress-ws-before-arg"))
-				element.removeAttribute("supress-ws-before-arg");
+			if(element.hasAttribute("suppress-ws-before-arg"))
+				element.removeAttribute("suppress-ws-before-arg");
 		}
     	else {
-    		element.setAttribute("supress-ws-before-arg", Caster.toString(suppressWSBeforeArg));
+    		element.setAttribute("suppress-ws-before-arg", Caster.toString(suppressWSBeforeArg));
     	}
     	
     	// full null support
