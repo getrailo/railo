@@ -145,6 +145,7 @@ component {
 	// buffer the output of a tag/function body to output in case of a exception
 	this.bufferOutput = #outputSetting.bufferOutput#; 
 	this.compression = #outputSetting.AllowCompression#;
+	this.suppressRemoteComponentContent = #outputSetting.suppressContent#;
 	
 	// If set to false Railo ignores type defintions with function arguments and return values
 	this.typeChecking = #PerformanceSettings.typeChecking#;

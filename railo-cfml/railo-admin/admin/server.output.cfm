@@ -139,6 +139,11 @@ Defaults --->
 							<!---<input type="hidden" name="suppressContent" value="#setting.suppressContent#">--->
 						</cfif>
 						<div class="comment">#stText.setting.suppressContentDescription#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.suppressRemoteComponentContent = #setting.suppressContent#;
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 
