@@ -258,7 +258,7 @@ public final class CFMLTransformer {
 
 		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
+		Page page=new Page(source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
 		TagData data = new TagData(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;
