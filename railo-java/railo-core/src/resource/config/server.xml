@@ -72,7 +72,7 @@ Path placeholders:
 	</dump-writers>
 	
 	
-	<remote-clients directory="{railo-config}remote-client/" log="logs/" log-level="info"/>
+	<remote-clients directory="{railo-config}remote-client/"/>
 	
     <resources>
         <!--
