@@ -46,7 +46,7 @@ Path placeholders:
     		arguments="case-sensitive:true;lock-timeout:1000;"/>
     </resources>
     
-    <remote-clients directory="{railo-web}remote-client/" log="logs/" log-level="info"/>
+    <remote-clients directory="{railo-web}remote-client/"/>
 	
 	
 	<!--
