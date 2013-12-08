@@ -109,7 +109,9 @@ public class Log4jUtil {
 					path=path.trim();
 					path=ConfigWebUtil.translateOldPath(path);
 					res=ConfigWebUtil.getFile(config, config.getConfigDir(),path, ResourceUtil.TYPE_FILE);
-					
+
+					if (path.indexOf('.') == -1)        // points to directory {railo-config}/logs    -- see RAILO-2783 can not get output stream for directory
+						return null;
 				}
 				
 				// charset
