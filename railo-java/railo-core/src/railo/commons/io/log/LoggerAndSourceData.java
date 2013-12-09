@@ -64,7 +64,7 @@ public final class LoggerAndSourceData {
     public Log getLog() {
     	if(_log==null) {
     		Layout l = Log4jUtil.getLayout(layout, layoutArgs);
-    		Appender a = Log4jUtil.getAppender(config, l, appender, appenderArgs);
+    		Appender a = Log4jUtil.getAppender(config, l,name, appender, appenderArgs);
     		_log=new LogAdapter(Log4jUtil.getLogger(config, a, name, level));
     	}
         return _log;

@@ -17,11 +17,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.xml.XMLLayout;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
-import railo.commons.io.log.LoggerAndSourceData;
 import railo.commons.io.log.log4j.appender.ConsoleAppender;
 import railo.commons.io.log.log4j.appender.RollingResourceAppender;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
@@ -71,7 +69,7 @@ public class Log4jUtil {
     	return logger;
 	}
     
-    public static final Appender getAppender(Config config,Layout layout,String strAppender, Map<String, String> appenderArgs){
+    public static final Appender getAppender(Config config,Layout layout,String name,String strAppender, Map<String, String> appenderArgs){
     	if(appenderArgs==null)appenderArgs=new HashMap<String, String>();
     	
     	// Appender
@@ -109,7 +107,9 @@ public class Log4jUtil {
 					path=path.trim();
 					path=ConfigWebUtil.translateOldPath(path);
 					res=ConfigWebUtil.getFile(config, config.getConfigDir(),path, ResourceUtil.TYPE_FILE);
-					
+					if(res.isDirectory()) {
+						res=res.getRealResource(name+".log");
+					}
 				}
 				
 				// charset
