@@ -20,8 +20,10 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
+import org.apache.log4j.Level;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -31,6 +33,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.Cache2;
 import railo.commons.io.log.LoggerAndSourceData;
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -539,7 +542,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClientUsage();
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
-        else if(check("getLogSetting", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSetting();
         else if(check("getLogSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSettings();
         else if(check("getCompilerSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetCompilerSettings();
         else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
@@ -602,6 +604,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
         else if(check("updateLoginSettings", ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateLoginSettings();
+        else if(check("updateLogSettings", ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateLogSettings();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
         else if(check("updateSSLCertificate",ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateSSLCertificate();
         else if(check("updateMonitorEnabled",   ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitorEnabled();
@@ -678,7 +681,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeGatewayEntry",  	ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
         else if(check("removeDebugEntry",  		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDebugEntry();
         else if(check("removeCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCacheDefaultConnection();
-        
+        else if(check("removeLogSetting",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveLogSetting();
+    	
         else if(check("storageGet",             ACCESS_FREE) && check2(ACCESS_READ  )) doStorageGet();
         else if(check("storageSet",             ACCESS_FREE) && check2(ACCESS_WRITE  )) doStorageSet();
         
@@ -2760,6 +2764,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
 
+
+	private void doRemoveLogSetting() throws PageException {
+		print.e("-------");
+		admin.removeLogSetting(getString("admin", "RemoveLogSettings", "name"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+	
+	
     private void doRemoveResourceProvider() throws PageException {
     	String classname=getString("admin",action,"class");
     	
@@ -3116,7 +3130,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
 	}
     
-    private void doGetLogSetting() throws PageException {
+    /*private void doGetLogSetting() throws PageException {
     	String name=getString("admin", "GetLogSetting", "name");
     	name=name.trim().toLowerCase();
     	Query qry=_doGetLogSettings();
@@ -3142,7 +3156,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	}
     	throw new ApplicationException("invalig log name ["+name+"]");
     	
-	}
+	}*/
     
     private void doGetCompilerSettings() throws  PageException {
     	String returnVariable=getString("admin",action,"returnVariable");
@@ -3161,44 +3175,28 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private Query _doGetLogSettings() {
-    	Query qry=new QueryImpl(
-				new String[]{"name","level","appender","appenderArgs","layout","layoutArgs"},
-				0,railo.runtime.type.util.ListUtil.last("logs", '.'));
+    	Map<String, LoggerAndSourceData> loggers = config.getLoggers();
+        Query qry=new QueryImpl(
+				new String[]{"name","level","appenderClass","appenderArgs","layoutClass","layoutArgs","readonly"},
+				loggers.size(),railo.runtime.type.util.ListUtil.last("logs", '.'));
         int row=0;
-        
-        doGetLogSettings(qry,"application",config.getLoggerAndSourceData("application"),++row);
-        doGetLogSettings(qry,"scope",config.getLoggerAndSourceData("scope"),++row);
-        doGetLogSettings(qry,"exception",config.getLoggerAndSourceData("exception"),++row);
-        if(config instanceof ConfigWeb)doGetLogSettings(qry,"gateway",((ConfigWebImpl)config).getLoggerAndSourceData("gateway"),++row);
-        doGetLogSettings(qry,"mail",config.getLoggerAndSourceData("mail"),++row);
-        doGetLogSettings(qry,"mapping",config.getLoggerAndSourceData("mapping"),++row);
-        doGetLogSettings(qry,"orm",config.getLoggerAndSourceData("orm"),++row);
-        doGetLogSettings(qry,"remote-client",config.getLoggerAndSourceData("remoteclient"),++row);
-        doGetLogSettings(qry,"request-timeout",config.getLoggerAndSourceData("requesttimeout"),++row);
-        if(config instanceof ConfigWeb){
-        	doGetLogSettings(qry,"schedule-task",config.getLoggerAndSourceData("scheduler"),++row);
-        	doGetLogSettings(qry,"search",config.getLoggerAndSourceData("search"),++row);
+        Iterator<Entry<String, LoggerAndSourceData>> it = loggers.entrySet().iterator();
+        Entry<String, LoggerAndSourceData> e;
+        LoggerAndSourceData logger;
+        while(it.hasNext()){
+        	e = it.next();
+        	logger = e.getValue();
+        	row++;
+        	qry.setAtEL("name", row, e.getKey());
+    		qry.setAtEL("level", row,logger.getLevel().toString());
+    		qry.setAtEL("appenderClass", row, logger.getAppender().getClass().getName());
+    		qry.setAtEL("appenderArgs", row, logger.getAppenderArgs());
+    		qry.setAtEL("layoutClass", row, logger.getLayout().getClass().getName());
+    		qry.setAtEL("layoutArgs", row, logger.getLayoutArgs());
+    		qry.setAtEL("readonly", row, logger.getReadOnly());
+    		
         }
-        doGetLogSettings(qry,"thread",config.getLoggerAndSourceData("thread"),++row);
-        doGetLogSettings(qry,"trace",config.getLoggerAndSourceData("trace"),++row);
-        doGetLogSettings(qry,"deploy",config.getLoggerAndSourceData("deploy"),++row);
-        
-        
         return qry;
-	}
-    
-
-	private void doGetLogSettings(Query qry, String name,LoggerAndSourceData data, int row) {
-		qry.addRow();
-		qry.setAtEL("name", row, name);
-		qry.setAtEL("level", row,data.getLevel().toString());
-		qry.setAtEL("appender", row, data.getAppender());
-		qry.setAtEL("appenderArgs", row, data.getAppenderArgs());
-		qry.setAtEL("layout", row, data.getLayout());
-		qry.setAtEL("layoutArgs", row, data.getLayoutArgs());
-		
-		
-        
 	}
 
 	private void doGetPerformanceSettings() throws ApplicationException, PageException {
@@ -4266,6 +4264,22 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		boolean captcha = getBool("admin", "UpdateLoginSettings", "captcha");
 		int delay = getInt("admin", "UpdateLoginSettings", "delay");
 		admin.updateLoginSettings(captcha,delay);
+		store();
+	}
+
+	private void doUpdateLogSettings() throws PageException {
+		String str = getString("admin", "UpdateLogSettings", "level", true);
+		Level l = Log4jUtil.toLevel(str,null);
+		if(l==null)throw new ApplicationException("invalid log level name ["+str+"], valid log level names are [INFO,DEBUG,WARN,ERROR,FATAL,TRACE]");
+		
+		admin.updateLogSettings(
+				getString("admin", "UpdateLogSettings", "name", true)
+				,l
+				,getString("admin", "UpdateLogSettings", "appenderClass", true)
+				,Caster.toStruct(getObject("admin", "UpdateLogSettings", "appenderArgs"))
+				,getString("admin", "UpdateLogSettings", "layoutClass", true)
+				,Caster.toStruct(getObject("admin", "UpdateLogSettings", "layoutArgs"))
+		);
 		store();
 	}
     

@@ -76,7 +76,7 @@ public class Log4jUtil {
 		Appender appender=null;
 		if(!StringUtil.isEmpty(strAppender)) {
 			// Console Appender
-			if("console".equalsIgnoreCase(strAppender)) {
+			if("console".equalsIgnoreCase(strAppender) || ConsoleAppender.class.getName().equalsIgnoreCase(strAppender)) {
 				// stream-type
 				boolean doError=false;
 				String st = Caster.toString(appenderArgs.get("streamtype"),null);
@@ -85,6 +85,8 @@ public class Log4jUtil {
 					if(st.equals("err") || st.equals("error"))
 						doError=true;
 				}
+				appenderArgs.put("streamtype",doError?"error":"output");
+				
 				
 				// get print writer
 				PrintWriter pw;
@@ -98,7 +100,7 @@ public class Log4jUtil {
 				}
 				appender = new ConsoleAppender(pw,layout);
 			}
-			else if("resource".equalsIgnoreCase(strAppender)) {
+			else if("resource".equalsIgnoreCase(strAppender) || RollingResourceAppender.class.getName().equalsIgnoreCase(strAppender)) {
 				
 				// path
 				Resource res=null;
@@ -112,15 +114,21 @@ public class Log4jUtil {
 					}
 				}
 				
+				
 				// charset
 				Charset charset = CharsetUtil.toCharset(Caster.toString(appenderArgs.get("charset"),null),null);
-				if(charset==null)charset=((ConfigImpl)config)._getResourceCharset();
+				if(charset==null){
+					charset=((ConfigImpl)config)._getResourceCharset();
+					appenderArgs.put("charset",charset.name());
+				}
 				
 				// maxfiles
 				int maxfiles = Caster.toIntValue(appenderArgs.get("maxfiles"),10);
+				appenderArgs.put("maxfiles",Caster.toString(maxfiles));
 				
 				// maxfileSize
 				long maxfilesize = Caster.toLongValue(appenderArgs.get("maxfilesize"),1024*1024*10);
+				appenderArgs.put("maxfilesize",Caster.toString(maxfilesize));
 				
 				
 				try {
@@ -167,45 +175,56 @@ public class Log4jUtil {
 		Layout layout=null;
 		if(!StringUtil.isEmpty(strLayout)) {
 			// Classic Layout
-			if("classic".equalsIgnoreCase(strLayout)) layout=new ClassicLayout();
+			if("classic".equalsIgnoreCase(strLayout) || ClassicLayout.class.getName().equalsIgnoreCase(strLayout))
+				layout=new ClassicLayout();
 			
 			// HTML Layout
-			else if("html".equalsIgnoreCase(strLayout)) {
+			else if("html".equalsIgnoreCase(strLayout) || HTMLLayout.class.getName().equalsIgnoreCase(strLayout)) {
 				HTMLLayout html = new HTMLLayout();
 				layout=html;
 				
 				// Location Info
 				Boolean locInfo = Caster.toBoolean(layoutArgs.get("locationinfo"),null);
 				if(locInfo!=null) html.setLocationInfo(locInfo.booleanValue());
+				else locInfo=Boolean.FALSE;
+				layoutArgs.put("locationinfo", locInfo.toString());
 				
 				// Title
-				String title = Caster.toString(layoutArgs.get("title"),null);
+				String title = Caster.toString(layoutArgs.get("title"),"");
 				if(!StringUtil.isEmpty(title,true)) html.setTitle(title);
+				layoutArgs.put("title", title);
 				
 			}
 			// XML Layout
-			else if("xml".equalsIgnoreCase(strLayout)) {
+			else if("xml".equalsIgnoreCase(strLayout) || XMLLayout.class.getName().equalsIgnoreCase(strLayout)) {
 				XMLLayout xml = new XMLLayout();
 				layout=xml;
 	
 				// Location Info
 				Boolean locInfo = Caster.toBoolean(layoutArgs.get("locationinfo"),null);
 				if(locInfo!=null) xml.setLocationInfo(locInfo.booleanValue());
+				else locInfo=Boolean.FALSE;
+				layoutArgs.put("locationinfo", locInfo.toString());
 				
 				// Properties
 				Boolean props = Caster.toBoolean(layoutArgs.get("properties"),null);
 				if(props!=null) xml.setProperties(props.booleanValue());
+				else props=Boolean.FALSE;
+				layoutArgs.put("properties", props.toString());
 				
 			}
 			// Pattern Layout
-			else if("pattern".equalsIgnoreCase(strLayout)) {
+			else if("pattern".equalsIgnoreCase(strLayout) || PatternLayout.class.getName().equalsIgnoreCase(strLayout)) {
 				PatternLayout patt = new PatternLayout();
 				layout=patt;
 				
 				// pattern
 				String pattern = Caster.toString(layoutArgs.get("pattern"),null);
 				if(!StringUtil.isEmpty(pattern,true)) patt.setConversionPattern(pattern);
-				else patt.setConversionPattern(DEFAULT_PATTERN);
+				else {
+					patt.setConversionPattern(DEFAULT_PATTERN);
+					layoutArgs.put("pattern", DEFAULT_PATTERN);
+				}
 			}
 			// class defintion
 			else {

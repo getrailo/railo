@@ -115,6 +115,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.language">Sprache</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
+	<data key="menu.server.logging">Logging</data>
 	<data key="menu.services.label">Dienste</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -598,8 +599,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 
 	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
 	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
-	<data key="setting.supressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
-	<data key="setting.supressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
+	<data key="setting.suppressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
+	<data key="setting.suppressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
 	Dieses Setting wird ignoriert wenn es zwischen den Tags ein andere Ausgabe als White-Spaces hat.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Template Cache leeren</data>
@@ -894,7 +895,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
-	<data key="settings.cache.Buttons.default">set as default</data>
+	<data key="settings.cache.Buttons.default">als default Wert</data>
+	
 	
 	
 	<data key="settings.dbValidate">Validate</data>

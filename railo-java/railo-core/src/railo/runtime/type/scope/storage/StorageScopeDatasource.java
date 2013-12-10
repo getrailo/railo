@@ -132,7 +132,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		DatasourceConnection dc = null;
 		ConfigImpl ci = (ConfigImpl)config;
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
-		Log log=((ConfigImpl)config).getLogger("scope");
+		Log log=((ConfigImpl)config).getLog("scope");
 		try {
 			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
 			DataSource ds;
@@ -156,7 +156,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		
 		
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
-		Log log=((ConfigImpl)config).getLogger("scope");
+		Log log=((ConfigImpl)config).getLog("scope");
 		try {
 			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
 			DataSource ds;

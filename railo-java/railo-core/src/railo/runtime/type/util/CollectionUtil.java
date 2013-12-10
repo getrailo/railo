@@ -53,8 +53,6 @@ public class CollectionUtil {
 				sb.append(it.next().getString());
 			}
 		}
-		
-
 		return sb.toString();
 	}
 	

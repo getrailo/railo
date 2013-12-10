@@ -650,7 +650,7 @@ public final class SMTPClient implements Serializable  {
 		try {
 
         	Proxy.start(proxyData);
-		Log log = ((ConfigImpl)config).getLogger("mail");
+		Log log = ((ConfigImpl)config).getLog("mail");
 		// Server
         Server[] servers = config.getMailServers();
         if(host!=null) {

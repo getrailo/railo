@@ -19,6 +19,7 @@ import java.util.TimeZone;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,6 +30,8 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LoggerAndSourceData;
+import railo.commons.io.log.log4j.LogAdapter;
+import railo.commons.io.log.log4j.appender.ResourceAppender;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -704,17 +707,17 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getMailLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getRequestTimeoutLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getTraceLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
 
     @Override
@@ -1087,12 +1090,12 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getScheduleLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getApplicationLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     
@@ -2221,7 +2224,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
 	
 	/**
@@ -2625,7 +2628,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the remoteClientLog
 	 */
 	public LogAndSource getRemoteClientLog() {
-		throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLogger"));
+		throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
 
 	protected void setSpoolerEngine(SpoolerEngine spoolerEngine) {
@@ -3483,28 +3486,50 @@ public abstract class ConfigImpl implements Config {
 		return resourceLayouts.toArray(new Layout[resourceLayouts.size()]);
 	}
 
+
+	protected void clearLoggers() {
+		if(loggers.size()==0) return;
+		Iterator<LoggerAndSourceData> it = loggers.values().iterator();
+		while(it.hasNext()){
+			it.next().getAppender().close();
+		}
+		loggers.clear();
+	}
+	
 	protected LoggerAndSourceData addLogger(String name, Level level,
 			String strAppender, Map<String, String> appenderArgs, 
-			String strLayout, Map<String, String> layoutArgs) {
+			String strLayout, Map<String, String> layoutArgs, boolean readOnly) {
 	
-		LoggerAndSourceData las = new LoggerAndSourceData(this,name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level);
+		LoggerAndSourceData las = new LoggerAndSourceData(this,name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
 		loggers.put(name.toLowerCase(),las);
 		return las;
 	}
 	
-	protected Map<String,LoggerAndSourceData> getLoggers(){
+	public Map<String,LoggerAndSourceData> getLoggers(){
 		return loggers;
 	}
-
-	public Log getLogger(String name){
-		LoggerAndSourceData las = loggers.get(name.toLowerCase());
-		if(las==null) return addLogger(name, Level.ERROR, "console", null, "pattern", null).getLog();
-		return las.getLog();
+	public Log getLog(String name){
+		return getLog(name, true);
 	}
 	
-	public LoggerAndSourceData getLoggerAndSourceData(String name){
+	public Log getLog(String name, boolean createIfNecessary){
+		LoggerAndSourceData lsd = getLoggerAndSourceData(name,createIfNecessary);
+		if(lsd==null) return null;
+		return lsd.getLog();
+	}
+	
+	public Logger getLogger(String name, boolean createIfNecessary){
+		LoggerAndSourceData lsd = getLoggerAndSourceData(name,createIfNecessary);
+		if(lsd==null) return null;
+		return ((LogAdapter)lsd.getLog()).getLogger();
+	}
+
+	public LoggerAndSourceData getLoggerAndSourceData(String name, boolean createIfNecessary){
 		LoggerAndSourceData las = loggers.get(name.toLowerCase());
-		if(las==null) return addLogger(name, Level.ERROR, "console", null, "pattern", null);
+		if(las==null) {
+			if(!createIfNecessary) return null;
+			return addLogger(name, Level.ERROR, "console", null, "pattern", null,true);
+		}
 		return las;
 	}
 

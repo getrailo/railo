@@ -64,7 +64,7 @@ public class SmartCacheHandler implements CacheHandler {
 	}
 
 	private void print(PageContext pc, String msg) {
-		((ConfigImpl)pc.getConfig()).getLogger("application").error(CacheHandlerFactory.toStringCacheName(cacheType, null),msg);
+		((ConfigImpl)pc.getConfig()).getLog("application").error(CacheHandlerFactory.toStringCacheName(cacheType, null),msg);
 	}
 
 }

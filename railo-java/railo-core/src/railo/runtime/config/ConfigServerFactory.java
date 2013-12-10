@@ -188,6 +188,18 @@ public final class ConfigServerFactory extends ConfigFactory{
 		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc","Gateway.cfc","Field.cfc","Group.cfc"}
 		,gDir,doNew);
 		
+		// Logging/appender
+		Resource app = adminDir.getRealResource("logging/appender");
+		create("/resource/context/admin/logging/appender/",new String[]{
+		"ConsoleAppender.cfc","ResourceAppender.cfc","Appender.cfc","Field.cfc","Group.cfc"}
+		,app,doNew);
+		
+		// Logging/layout
+		Resource lay = adminDir.getRealResource("logging/layout");
+		create("/resource/context/admin/logging/layout/",new String[]{
+		"ClassicLayout.cfc","HTMLLayout.cfc","PatternLayout.cfc","XMLLayout.cfc","Layout.cfc","Field.cfc","Group.cfc"}
+		,lay,doNew);
+		
 		// Security
 		Resource secDir = configDir.getRealResource("security");
         if(!secDir.exists())secDir.mkdirs();

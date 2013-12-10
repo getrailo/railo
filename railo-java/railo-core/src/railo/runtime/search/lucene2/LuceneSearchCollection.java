@@ -88,7 +88,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         this.spellcheck=spellcheck;
         collectionDir=getPath().getRealResource(StringUtil.toIdentityVariableName(getName()));
         
-        log=((ConfigImpl)searchEngine.getConfig()).getLogger("search");
+        log=((ConfigImpl)searchEngine.getConfig()).getLog("search");
     }
     
     public LuceneSearchCollection(SearchEngineSupport searchEngine, String name, Resource path, String language, //int count, 

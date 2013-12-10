@@ -203,7 +203,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 }
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {
-                    Log log = config.getLogger("requesttimeout");
+                    Log log = config.getLog("requesttimeout");
                     if(log!=null)log.log(Log.LEVEL_WARN,"controler","downgrade priority of the a thread at "+getPath(pc));
                     try {
                     	pc.getThread().setPriority(Thread.MIN_PRIORITY);
@@ -215,7 +215,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	}
 	
 	public static void terminate(PageContext pc) {
-		Log log = ((ConfigImpl)pc.getConfig()).getLogger("requesttimeout");
+		Log log = ((ConfigImpl)pc.getConfig()).getLog("requesttimeout");
         
 		String strLocks="";
 		try{

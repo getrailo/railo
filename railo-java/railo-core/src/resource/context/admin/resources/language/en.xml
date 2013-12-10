@@ -178,6 +178,7 @@
 	<data key="menu.server.language">Language</data>
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
+	<data key="menu.server.logging">Logging</data>
 	<data key="menu.services.label">Services</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -659,9 +660,9 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
 	<data key="setting.dotNotationOriginalCase">Keep original case</data>
 	
-	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
+	<data key="setting.suppressWSBeforeArg">Suppress whitespace before cfargument</data>
 
-	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
+	<data key="setting.suppressWSBeforeArgDesc">if set, Railo suppress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Clear template cache</data>
@@ -692,7 +693,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
 
-	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContent">Suppress Content for CFC Remoting</data>
 	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
 	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
 	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>
@@ -1151,6 +1152,20 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
+
+
+	<data key="settings.logging.name">Name</data>
+	<data key="settings.logging.layout">Layout</data>
+	<data key="settings.logging.level">Level</data>
+	<data key="settings.logging.appender">Appender</data>
+	<data key="settings.logging.titleCreate">Create new Log</data>
+	<data key="settings.logging.readOnlyTitle">Readonly Logs</data>
+	<data key="settings.logging.readOnlyDesc">Readonly Logs are generated within the "server administrator" for all web instances and can not be modified by the "web administrator.</data>
+	<data key="settings.logging.title">Logs</data>
+	<data key="settings.logging.desc">List of existing Logs for ths enviroment</data>
+	<data key="settings.logging.detailDesc">Log settings for a specific Log</data>
+	<data key="settings.logging.noDriver">There are no Appender/Layout drivers in that system</data>
+
 	<data key="settings.cache.Buttons.default">set as default</data>
 	<data key="settings.orm.title">Settings</data>
 	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>

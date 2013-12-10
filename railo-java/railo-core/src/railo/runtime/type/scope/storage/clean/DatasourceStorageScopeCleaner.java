@@ -50,7 +50,7 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 		DatasourceConnectionPool pool = cwi.getDatasourceConnectionPool();
 		try {
 			dc=pool.getDatasourceConnection(null,dataSource,null,null);
-			Log log=((ConfigImpl)config).getLogger("scope");
+			Log log=((ConfigImpl)config).getLog("scope");
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 			executor.clean(config, dc, type, engine,this, listener, log);
 		}

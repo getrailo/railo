@@ -135,7 +135,7 @@ public class ScheduledTaskThread extends Thread {
 	
 	private void log(int level, String msg) {
 		String logName="schedule task:"+task.getTask();
-		((ConfigImpl)config).getLogger("scheduler").log(level,logName, msg);
+		((ConfigImpl)config).getLog("scheduler").log(level,logName, msg);
 	}
 
 

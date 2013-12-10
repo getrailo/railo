@@ -223,7 +223,7 @@ public final class Trace extends BodyTagImpl {
 		}
 		
 		// log
-		Log log = ((ConfigImpl)pageContext.getConfig()).getLogger("trace");
+		Log log = ((ConfigImpl)pageContext.getConfig()).getLog("trace");
 		StringBuffer msg=new StringBuffer();
 		msg.append("["+trace.getTime()+" ms "+total+"] ");
 		msg.append("["+trace.getTemplate()+" @ line: "+trace.getLine()+"]");

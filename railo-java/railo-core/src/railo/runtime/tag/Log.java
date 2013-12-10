@@ -2,6 +2,8 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 
@@ -10,17 +12,17 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.log.log4j.LogAdapter;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.converter.ConverterException;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.type.KeyImpl;
 
 /**
 * Writes a message to a log file.
@@ -30,15 +32,9 @@ import railo.runtime.tag.util.DeprecatedUtil;
 **/
 public final class Log extends TagImpl {
 
-    private final static short LOG_APPLICATION=10;
-    private final static short LOG_SCHEDULER=11;
-    private final static short LOG_CONSOLE=12;
-    
-    
-
 	/** If you omit the file attribute, specifies the standard log file in which to write the message. 
 	** 		Ignored if you specify a file attribute */
-	private short log=LOG_APPLICATION;
+	private String log=null;
 
 	/** The message text to log. */
 	private String text;
@@ -56,7 +52,7 @@ public final class Log extends TagImpl {
 	@Override
 	public void release()	{
 		super.release();
-		log=LOG_APPLICATION;
+		log=null;
 		type=railo.commons.io.log.Log.LEVEL_INFO;
 		file=null;
 		application=false;
@@ -73,12 +69,8 @@ public final class Log extends TagImpl {
 	**/
 	public void setLog(String log) throws ApplicationException	{
 		if(StringUtil.isEmpty(log,true)) return;
-	    log=log.toLowerCase().trim();
-	    if(log.equals("application")) this.log=LOG_APPLICATION;
-	    else if(log.equals("scheduler")) this.log=LOG_SCHEDULER;
-	    else if(log.equals("console")) this.log=LOG_CONSOLE;
-		else 
-		    throw new ApplicationException("invalid value for attribute log ["+log+"]","valid values are [application, scheduler,console]");
+	    this.log=log.trim();
+	    // throw new ApplicationException("invalid value for attribute log ["+log+"]","valid values are [application, scheduler,console]");
 	}
 
 	/** set the value text
@@ -177,13 +169,26 @@ public final class Log extends TagImpl {
 
 	@Override
 	public int doStartTag() throws PageException	{
+		ConfigImpl config =(ConfigImpl) pageContext.getConfig();
 	    railo.commons.io.log.Log logger;
-	    Config config =pageContext.getConfig();
-	    if(file==null) {
-	    	if(log==LOG_SCHEDULER)logger=((ConfigImpl)config).getLogger("scheduler");
-	    	else if(log==LOG_CONSOLE)logger=new LogAdapter(Log4jUtil.getConsoleLog(config, false, "cflog", Level.INFO));
-	        else logger=((ConfigImpl)config).getLogger("application");
-	        
+		if(file==null) {
+	    	logger=config.getLog(log.toLowerCase(),false);
+	    	if(logger==null) {
+	    		// for backward compatiblity
+	    		if("console".equalsIgnoreCase(log))
+	    			logger=new LogAdapter(Log4jUtil.getConsoleLog(config, false, "cflog", Level.INFO));
+	    		else {
+	    			Set<String> set = config.getLoggers().keySet();
+	    			Iterator<String> it = set.iterator();
+	    			railo.runtime.type.Collection.Key[] keys=new railo.runtime.type.Collection.Key[set.size()];
+	    			int index=0;
+	    			while(it.hasNext()){
+	    				keys[index++]=KeyImpl.init(it.next());
+	    			}
+	    			
+	    			throw new ApplicationException(ExceptionUtil.similarKeyMessage(keys, log, "attribute log", "log names", true));
+	    		}
+	    	}
 	    }
 	    else {
 	    	if(charset==null) charset=((PageContextImpl)pageContext).getResourceCharset();
@@ -192,7 +197,8 @@ public final class Log extends TagImpl {
 	        try {
 	        	Resource res = logDir.getRealResource(file);
                 logger=new LogAdapter(Log4jUtil.getResourceLog(config,res,charset , "cflog", Level.INFO));
-            } catch (IOException e) {
+            } 
+	        catch (IOException e) {
                 throw Caster.toPageException(e);
             }
 	    }

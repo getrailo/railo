@@ -14,7 +14,8 @@
 				struct(action:"scope",label:stMenu.server.scope),
 				struct(action:"request",label:stMenu.server.request),
 				struct(action:"output",label:stMenu.server.output),
-				struct(action:"error",label:stMenu.server.error)
+				struct(action:"error",label:stMenu.server.error),
+				struct(action:"logging",label:stMenu.server.logging)
 			)
 		),
 		struct(

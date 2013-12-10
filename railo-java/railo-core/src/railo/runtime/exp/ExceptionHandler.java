@@ -23,11 +23,11 @@ public final class ExceptionHandler {
 		pe.printStackTrace(config.getErrWriter()); 
 		
 		// apllication Log
-		LogUtil.log(((ConfigImpl)config).getLogger("application"),Log.LEVEL_ERROR, "",pe);
+		LogUtil.log(((ConfigImpl)config).getLog("application"),Log.LEVEL_ERROR, "",pe);
 		
 		// exception.log
 		String st = ExceptionUtil.getStacktrace(pe,true);
-		LogUtil.log(((ConfigImpl)config).getLogger("exception"),Log.LEVEL_ERROR, "",pe);
+		LogUtil.log(((ConfigImpl)config).getLog("exception"),Log.LEVEL_ERROR, "",pe);
 		
 		
 	}

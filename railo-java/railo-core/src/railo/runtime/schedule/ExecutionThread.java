@@ -149,7 +149,7 @@ class ExecutionThread extends Thread {
 	}
 	
     private static Log getLog(Config config) {
-		return ((ConfigImpl)config).getLogger("scheduler");
+		return ((ConfigImpl)config).getLog("scheduler");
 	}
 
 	private static boolean isText(HTTPResponse rsp) {

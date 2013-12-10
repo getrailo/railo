@@ -1227,6 +1227,21 @@ public final class ConfigWebFactory extends ConfigFactory {
 		"Gateway.cfc","Field.cfc","Group.cfc"}
 		,gDir,doNew);
 		
+
+		// add Logging/appender
+		Resource app = adminDir.getRealResource("logging/appender");
+		create("/resource/context/admin/logging/appender/",new String[]{
+		"Appender.cfc","Field.cfc","Group.cfc"}
+		,app,doNew);
+		
+		// Logging/layout
+		Resource lay = adminDir.getRealResource("logging/layout");
+		create("/resource/context/admin/logging/layout/",new String[]{
+		"Layout.cfc","Field.cfc","Group.cfc"}
+		,lay,doNew);
+		
+		
+		
 		
 		
 		Resource templatesDir = contextDir.getRealResource("templates");
@@ -1644,6 +1659,8 @@ public final class ConfigWebFactory extends ConfigFactory {
 		Element child;
 		String name,appender,appenderArgs,layout,layoutArgs;
 		Level level=Level.ERROR;
+		boolean readOnly=false;
+		config.clearLoggers();
 		for(int i=0;i<children.length;i++){
 			child=children[i];
 			name=StringUtil.trim(child.getAttribute("name"),"");
@@ -1652,17 +1669,17 @@ public final class ConfigWebFactory extends ConfigFactory {
 			layout=StringUtil.trim(child.getAttribute("layout"),"");
 			layoutArgs=StringUtil.trim(child.getAttribute("layout-arguments"),"");
 			level=Log4jUtil.toLevel(StringUtil.trim(child.getAttribute("level"),""),Level.ERROR);
-			
+			readOnly=Caster.toBooleanValue(child.getAttribute("read-only"),false);
 			
 			// ignore when no appender/name is defined
 			if(!StringUtil.isEmpty(appender) && !StringUtil.isEmpty(name)) {
 				Map<String, String> appArgs = toArguments(appenderArgs, true,true);
 				if(!StringUtil.isEmpty(layout)) {
 					Map<String, String> layArgs = toArguments(layoutArgs, true,true);
-					config.addLogger(name,level,appender,appArgs,layout,layArgs);
+					config.addLogger(name,level,appender,appArgs,layout,layArgs,readOnly);
 				}
 				else
-					config.addLogger(name,level,appender,appArgs,null,null);
+					config.addLogger(name,level,appender,appArgs,null,null,readOnly);
 			}
 		}
 		
@@ -1672,13 +1689,15 @@ public final class ConfigWebFactory extends ConfigFactory {
 			LoggerAndSourceData data;
 			while(it.hasNext()){
 				e = it.next();
+				print.e(e.getKey()+"-");
 				
 				// logger only exists in server context
-				if(config.getLogger(e.getKey())==null) {
+				if(config.getLog(e.getKey(),false)==null) {
 					data = e.getValue();
+					print.e(e.getKey()+"+");
 					config.addLogger(e.getKey(), data.getLevel(), 
-							data.getAppender(), data.getAppenderArgs(), 
-							data.getLayout(), data.getLayoutArgs());
+							data.getAppenderName(), data.getAppenderArgs(), 
+							data.getLayoutName(), data.getLayoutArgs(),true);
 				}
 			}
 			
@@ -3043,12 +3062,12 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (dir != null && !dir.exists())
 			dir.mkdirs();
 		if (config.getSpoolerEngine() == null) {
-			config.setSpoolerEngine(new SpoolerEngineImpl(config, dir, "Remote Client Spooler", config.getLogger("remoteclient"), maxThreads));
+			config.setSpoolerEngine(new SpoolerEngineImpl(config, dir, "Remote Client Spooler", config.getLog("remoteclient"), maxThreads));
 		}
 		else {
 			SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();
 			engine.setConfig(config);
-			engine.setLog(config.getLogger("remoteclient"));
+			engine.setLog(config.getLog("remoteclient"));
 			engine.setPersisDirectory(dir);
 			engine.setMaxThreads(maxThreads);
 

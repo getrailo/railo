@@ -7984,18 +7984,20 @@ Valid only for cfinput type="text".</description>
 			<name>log</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>If you omit the file attribute, specifies the standard log file in which to write the message.
-		Ignored if you specify a file attribute</description>
+			<description>If you omit the file attribute, specifies the log in which to write the message.
+			this references can be defined in the Railo Administrator.
+		Ignored if you specify a file attribute.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>file</name>
 			<required>false</required>
+			<status>deprecated</status>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Message file. Specify only the main part of the filename.
+		<description>Define instead a log reference in the Railo Administrator and use the name of the genrated log with the attribute log.
+		 Specify only the main part of the filename.
             For example, to log to the Testing.log file, specify
             "Testing".
-
             The file must be located in the default log directory. You
             cannot specify a directory path. If the file does not
             exist, it is created automatically, with the suffix .log.</description>
@@ -8003,14 +8005,17 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
+			<alias>level</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
-			Type (severity) of the message:
-- information (default)
-- warning
-- error
-- fatal 
+			the following is the log type (level) in decreasing order of severity:
+- fatal: Severe errors that cause premature termination.
+- error: Other runtime errors or unexpected conditions.
+- warn,warning: Use of deprecated APIs, poor use of API, 'almost' errors, other runtime situations that are undesirable or unexpected, but not necessarily "wrong". 
+- info,information (default): Interesting runtime events.
+- debug: Detailed information on the flow through the system.
+- trace:Most detailed information.
 			</description>
 		</attribute>
 		<attribute>

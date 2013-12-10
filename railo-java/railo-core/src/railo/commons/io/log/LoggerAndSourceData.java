@@ -17,43 +17,58 @@ import railo.runtime.config.Config;
 public final class LoggerAndSourceData {
     
     private LogAdapter _log;
-	private final String appender;
+    private final String strAppender;
+    private Appender appender;
 	private final Map<String, String> appenderArgs;
-	private final String layout;
+	private final String strLayout;
+	private Layout layout;
 	private final Map<String, String> layoutArgs;
 	private final Level level;
 	private final String name;
 	private final Config config;
+	private final boolean readOnly;
 
  
-    public LoggerAndSourceData(Config config,String name,String appender, Map<String, String> appenderArgs, String layout, Map<String, String> layoutArgs, Level level) {
+    public LoggerAndSourceData(Config config,String name,String appender, Map<String, String> appenderArgs, String layout, Map<String, String> layoutArgs, Level level, boolean readOnly) {
     	//this.log=new LogAdapter(logger);
     	this.config=config;
     	this.name=name;
-    	this.appender=appender;
+    	this.strAppender=appender;
     	this.appenderArgs=appenderArgs;
-    	this.layout=layout;
+    	this.strLayout=layout;
     	this.layoutArgs=layoutArgs;
     	this.level=level;
+    	this.readOnly=readOnly;
     }
 
 	public String getName() {
 		return name;
 	}
 	
-	public String getAppender() {
+	public String getAppenderName() {
+		return strAppender;
+	}
+	
+	public Appender getAppender() {
+		getLog();// initilaize if necessary
 		return appender;
 	}
 
 	public Map<String, String> getAppenderArgs() {
+		getLog();// initilaize if necessary
 		return appenderArgs;
 	}
 
-	public String getLayout() {
+	public Layout getLayout() {
+		getLog();// initilaize if necessary
 		return layout;
+	}
+	public String getLayoutName() {
+		return strLayout;
 	}
 
 	public Map<String, String> getLayoutArgs() {
+		getLog();// initilaize if necessary
 		return layoutArgs;
 	}
 
@@ -61,11 +76,15 @@ public final class LoggerAndSourceData {
 		return level;
 	}
 
+	public boolean getReadOnly() {
+		return readOnly;
+	}
+
     public Log getLog() {
     	if(_log==null) {
-    		Layout l = Log4jUtil.getLayout(layout, layoutArgs);
-    		Appender a = Log4jUtil.getAppender(config, l,name, appender, appenderArgs);
-    		_log=new LogAdapter(Log4jUtil.getLogger(config, a, name, level));
+    		layout = Log4jUtil.getLayout(strLayout, layoutArgs);
+    		appender = Log4jUtil.getAppender(config, layout,name, strAppender, appenderArgs);
+    		_log=new LogAdapter(Log4jUtil.getLogger(config, appender, name, level));
     	}
         return _log;
     }

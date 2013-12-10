@@ -17,6 +17,10 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.apache.log4j.HTMLLayout;
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.xml.XMLLayout;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -31,6 +35,10 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.Log4jUtil;
+import railo.commons.io.log.log4j.appender.ConsoleAppender;
+import railo.commons.io.log.log4j.appender.RollingResourceAppender;
+import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.filter.ResourceNameFilter;
@@ -528,6 +536,26 @@ public final class ConfigWebAdmin {
 	      	}
         }
     }
+
+	
+	public void removeLogSetting(String name) throws SecurityException {
+		checkWriteAccess();
+    	print.e("name:"+name);
+        Element logging=_getRootElement("logging");
+        Element[] children = ConfigWebFactory.getChildren(logging,"logger");
+        if(children.length>0) {
+        	String _name;
+	      	for(int i=0;i<children.length;i++) {
+	      		Element el=children[i];
+	      		_name=el.getAttribute("name");
+	      		print.e("_name:"+_name);
+	            
+	  			if(_name!=null && _name.equalsIgnoreCase(name)) {
+	  				logging.removeChild(children[i]);
+	  			}
+	      	}
+        }
+	}
     
     static void updateMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
@@ -1196,7 +1224,7 @@ public final class ConfigWebAdmin {
     	path = src.getAttribute(logName);
     	level = src.getAttribute(levelName);
     	
-    	if(StringUtil.isEmpty(path) && !StringUtil.isEmpty(defaultValue) && (cs==null || cs.getLogger(name)==null)) {
+    	if(StringUtil.isEmpty(path) && !StringUtil.isEmpty(defaultValue) && (cs==null || cs.getLog(name)==null)) {
     		// ignore defaultValue, when there is a setting in server context
     		path=defaultValue;
     	}
@@ -4102,6 +4130,70 @@ public final class ConfigWebAdmin {
         login.setAttribute("delay",Caster.toString(delay));
 		
 	}
+	
+
+
+
+	public void updateLogSettings(String name, Level level, String appenderClassName, Struct appenderArgs, String layoutClassName, Struct layoutArgs) throws PageException {
+		checkWriteAccess();
+		// TODO
+    	//boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_GATEWAY);
+        // if(!hasAccess) throw new SecurityException("no access to update gateway entry");
+        
+        // check parameters
+		name=name.trim();
+    	if(StringUtil.isEmpty(name))
+            throw new ApplicationException("name can't be a empty value");
+
+    	if(StringUtil.isEmpty(appenderClassName))
+    		throw new ExpressionException("you must define appender class name");
+    	if(StringUtil.isEmpty(layoutClassName))
+    		throw new ExpressionException("you must define layout class name");
+    	
+        try {
+        	ClassUtil.loadClass(appenderClassName);
+        	ClassUtil.loadClass(layoutClassName);
+        	
+		}
+        catch (ClassException e) {
+            throw Caster.toPageException(e);
+		}
+        
+        Element parent=_getRootElement("logging");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(parent,"logger");
+        Element el=null;
+      	for(int i=0;i<children.length;i++) {
+      	    String n=children[i].getAttribute("name");
+      	    if(name.equalsIgnoreCase(n)) {
+      	    	el=children[i];
+      	    	break;
+  			}
+      	  
+      	}
+      	// Insert
+      	if(el==null) {
+	      	el=doc.createElement("logger");
+	      	parent.appendChild(el);
+	      	el.setAttribute("name",name);
+      	}
+      	
+      	// appender
+      	if(appenderClassName.equals(ConsoleAppender.class.getName())) appenderClassName="console";
+      	if(appenderClassName.equals(RollingResourceAppender.class.getName())) appenderClassName="resource";
+      	// layout
+      	if(layoutClassName.equals(PatternLayout.class.getName())) layoutClassName="pattern";
+      	if(layoutClassName.equals(ClassicLayout.class.getName())) layoutClassName="classic";
+      	if(layoutClassName.equals(HTMLLayout.class.getName())) layoutClassName="html";
+      	if(layoutClassName.equals(XMLLayout.class.getName())) layoutClassName="xml";
+
+      	el.setAttribute("level",level.toString());
+  		el.setAttribute("appender",appenderClassName);
+      	el.setAttribute("appender-arguments",toStringCSSStyle(appenderArgs));
+	    el.setAttribute("layout",layoutClassName);
+	    el.setAttribute("layout-arguments",toStringCSSStyle(layoutArgs));
+	}
 
 
 	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean suppressWSBeforeArg, Boolean nullSupport) throws PageException {
@@ -4322,6 +4414,7 @@ public final class ConfigWebAdmin {
 		}
 	}
 
+
 	public boolean _removeExtension(ConfigImpl config,String extensionID) throws IOException, PageException, SAXException {
 		if(!Decision.isUUId(extensionID)) throw new IOException("id ["+extensionID+"] is invalid, it has to be a UUID"); 
 		
@@ -4506,7 +4599,4 @@ public final class ConfigWebAdmin {
 		}
 		return sb.toString();
 	}
-
-
-
 }

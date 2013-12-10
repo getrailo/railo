@@ -75,7 +75,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         this.lastUpdate=lastUpdate;
         this.created=created;
 
-        log=((ConfigImpl)searchEngine.getConfig()).getLogger("search");
+        log=((ConfigImpl)searchEngine.getConfig()).getLog("search");
 	}
 
 	@Override

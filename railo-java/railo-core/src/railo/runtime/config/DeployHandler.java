@@ -82,7 +82,7 @@ public class DeployHandler {
 	}
 
 	private static void deployArchive(Config config,Resource archive) throws ZipException, IOException {
-		Log logger = ((ConfigImpl)config).getLogger("deploy");
+		Log logger = ((ConfigImpl)config).getLog("deploy");
 		String type=null,virtual=null,name=null;
 		boolean readOnly,topLevel,hidden,physicalFirst;
 		short inspect;
@@ -155,7 +155,7 @@ public class DeployHandler {
 		ConfigImpl ci = (ConfigImpl)config;
 		boolean isWeb=config instanceof ConfigWeb;
 		String type=isWeb?"web":"server";
-		Log logger = ((ConfigImpl)config).getLogger("deploy");
+		Log logger = ((ConfigImpl)config).getLog("deploy");
 		
 		// Manifest
 		Manifest manifest = null;
