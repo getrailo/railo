@@ -27,10 +27,7 @@
 		<cfset verify=getForm('verify',false)>
 		<cfparam name="form.metaCacheTimeout" default="60000">
 		
-		<cfadmin 
-			action="updateDatasource"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
+		<cfadmin action="updateDatasource" type="#request.adminType#" password="#session["password"&request.adminType]#"
 			
 			classname="#driver.getClass()#"
 			dsn="#driver.getDSN()#"
@@ -53,7 +50,6 @@
 			validate="#getForm('validate',false)#"
 			storage="#getForm('storage',false)#"
 			
-			
 			allowed_select="#getForm('allowed_select',false)#"
 			allowed_insert="#getForm('allowed_insert',false)#"
 			allowed_update="#getForm('allowed_update',false)#"
@@ -65,6 +61,7 @@
 			allowed_grant="#getForm('allowed_grant',false)#"
 			verify="#verify#"
 			custom="#custom#"
+			dbdriver="#form.type#"
 			remoteClients="#request.getRemoteClients()#">
 			<cfset form.mark="update">
 		<cfset v="">
@@ -163,14 +160,8 @@
 </cfsilent>
 
 <cfoutput>
-	<h2>
-		<cfif actionType EQ "update">
-			#stText.Settings.DatasourceDescriptionUpdate#
-		<cfelse>
-			#stText.Settings.DatasourceDescriptionCreate#
-		</cfif>
-		#driver.getName()#
-	</h2>
+	<h2>#stText.Settings[ "DatasourceDescription" & ( actionType == "update" ? "Update" : "Create" ) ]# #driver.getName()#</h2>
+
 	<div class="pageintro">#driver.getDescription()#</div>
 	
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">

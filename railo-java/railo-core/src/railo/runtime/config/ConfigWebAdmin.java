@@ -1235,9 +1235,9 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
-            String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,boolean validate,boolean storage,String timezone, Struct custom) throws ExpressionException, SecurityException {
+    public void updateDataSource(String name, String newName, String clazzName, String dsn, String username, String password,
+            String host, String database, int port, int connectionLimit, int connectionTimeout, long metaCacheTimeout,
+            boolean blob, boolean clob, int allow, boolean validate, boolean storage, String timezone, Struct custom, String dbdriver) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1306,8 +1306,11 @@ public final class ConfigWebAdmin {
                 el.setAttribute("validate",Caster.toString(validate));
                 el.setAttribute("storage",Caster.toString(storage));
                 el.setAttribute("custom",toStringURLStyle(custom));
-                
-	      		return ;
+
+	            if (!StringUtil.isEmpty( dbdriver ))
+		            el.setAttribute("dbdriver", Caster.toString(dbdriver));
+
+	      		return;
   			}
       	}
       	
@@ -1334,14 +1337,16 @@ public final class ConfigWebAdmin {
         if(connectionTimeout>-1)el.setAttribute("connectionTimeout",Caster.toString(connectionTimeout));
         if(metaCacheTimeout>-1)el.setAttribute("metaCacheTimeout",Caster.toString(metaCacheTimeout));
         
-        
-        
         el.setAttribute("blob",Caster.toString(blob));
         el.setAttribute("clob",Caster.toString(clob));
         el.setAttribute("validate",Caster.toString(validate));
         el.setAttribute("storage",Caster.toString(storage));
         if(allow>-1)el.setAttribute("allow",Caster.toString(allow));
         el.setAttribute("custom",toStringURLStyle(custom));
+
+	    if (!StringUtil.isEmpty( dbdriver ))
+		    el.setAttribute("dbdriver", Caster.toString(dbdriver));
+
         /*
   		    String host,String database,int port,String connectionLimit, String connectionTimeout,
             boolean blob,boolean clob,int allow,Struct custom

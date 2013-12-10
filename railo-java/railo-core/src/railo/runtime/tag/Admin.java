@@ -2653,6 +2653,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         boolean storage=getBoolV("storage",false);
         boolean verify=getBoolV("verify",true);
         Struct custom=getStruct("custom",new StructImpl());
+	    String dbdriver = getString("dbdriver", "");
         
         //config.getDatasourceConnectionPool().remove(name);
         DataSource ds=null;
@@ -2684,8 +2685,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 validate,
                 storage,
                 timezone,
-                custom
-                
+                custom,
+		        dbdriver
         );
         store();
         adminSync.broadcast(attributes, config);
