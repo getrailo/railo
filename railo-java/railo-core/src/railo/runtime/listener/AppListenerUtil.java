@@ -248,7 +248,9 @@ public final class AppListenerUtil {
 					Caster.toBooleanValue(data.get(READ_ONLY,null),false), 
 					true, 
 					Caster.toBooleanValue(data.get(STORAGE,null),false), 
-					Caster.toTimeZone(data.get(TIMEZONE,null),null));
+					Caster.toTimeZone(data.get(TIMEZONE,null),null),
+					""
+			);
 
 			return ds;
 		
@@ -446,7 +448,7 @@ public final class AppListenerUtil {
 
 	/**
 	 * translate string definition of script protect to int definition
-	 * @param scriptProtect
+	 * @param strScriptProtect
 	 * @return
 	 */
 	public static int translateScriptProtect(String strScriptProtect) {

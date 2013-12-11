@@ -26,11 +26,12 @@ public final class DataSourceImpl  extends DataSourceSupport {
     private String connStrTranslated;
     private Struct custom;
 	private boolean validate;
+	private String dbdriver;
     
 	/**
 	 * constructor of the class
 	 * @param name 
-	 * @param clazz 
+	 * @param className
 	 * @param host 
 	 * @param dsn
 	 * @param database 
@@ -48,14 +49,15 @@ public final class DataSourceImpl  extends DataSourceSupport {
 	 */
     public DataSourceImpl(String name,String className, String host, String dsn, String database, int port, String username, String password, 
             int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly, 
-            boolean validate,boolean storage, TimeZone timezone) throws ClassException {
-        this(name, toClass(className), host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly,validate,storage,timezone);
-    	
+            boolean validate, boolean storage, TimeZone timezone, String dbdriver) throws ClassException {
+
+        this(name, toClass(className), host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly, validate, storage, timezone, dbdriver);
 	}
 
-	private DataSourceImpl(String name,Class<?> clazz, String host, String dsn, String database, int port, String username, String password, 
-            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly, 
-            boolean validate,boolean storage,TimeZone timezone) {
+	private DataSourceImpl(String name, Class<?> clazz, String host, String dsn, String database, int port, String username, String password,
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly,
+            boolean validate, boolean storage, TimeZone timezone, String dbdriver) {
+
 		super(name, clazz,username,ConfigWebFactory.decrypt(password),blob,clob,connectionLimit, connectionTimeout, metaCacheTimeout, timezone, allow<0?ALLOW_ALL:allow, storage, readOnly);
 			
         this.host=host;
@@ -68,6 +70,8 @@ public final class DataSourceImpl  extends DataSourceSupport {
         
         this.connStrTranslated=dsn; 
         translateDsn();
+
+		this.dbdriver = dbdriver;
         
         //	throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
         
@@ -137,12 +141,12 @@ public final class DataSourceImpl  extends DataSourceSupport {
     
     @Override
     public Object clone() {
-        return new DataSourceImpl(getName(),getClazz(), host, connStr, database, port, getUsername(), getPassword(), getConnectionLimit(), getConnectionTimeout(),getMetaCacheTimeout(), isBlob(), isClob(), allow, custom, isReadOnly(),validate,isStorage(),getTimeZone());
+        return new DataSourceImpl(getName(),getClazz(), host, connStr, database, port, getUsername(), getPassword(), getConnectionLimit(), getConnectionTimeout(),getMetaCacheTimeout(), isBlob(), isClob(), allow, custom, isReadOnly(),validate,isStorage(),getTimeZone(), dbdriver);
     }
 
     @Override
     public DataSource cloneReadOnly() {
-        return new DataSourceImpl(getName(),getClazz(), host, connStr, database, port, getUsername(), getPassword(), getConnectionLimit(), getConnectionTimeout(),getMetaCacheTimeout(), isBlob(), isClob(), allow,custom, true,validate,isStorage(),getTimeZone());
+        return new DataSourceImpl(getName(),getClazz(), host, connStr, database, port, getUsername(), getPassword(), getConnectionLimit(), getConnectionTimeout(),getMetaCacheTimeout(), isBlob(), isClob(), allow,custom, true,validate,isStorage(),getTimeZone(), dbdriver);
     }
 
     @Override
@@ -163,5 +167,9 @@ public final class DataSourceImpl  extends DataSourceSupport {
     @Override
     public boolean validate() {
 		return validate;
+	}
+
+	public String getDbDriver() {
+		return dbdriver;
 	}
 }

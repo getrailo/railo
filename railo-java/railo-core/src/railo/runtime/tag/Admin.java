@@ -2658,7 +2658,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         //config.getDatasourceConnectionPool().remove(name);
         DataSource ds=null;
 		try {
-			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
+			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null, dbdriver);
 		} catch (ClassException e) {
 			throw new DatabaseException(
 					"can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder ("+e.getMessage()+")",null,null,null);
@@ -2901,7 +2901,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
 
-    private void _doVerifyDatasource(String classname, String dsn, String username, String password) throws PageException {
+    private void _doVerifyDatasource(String classname, String connString, String username, String password) throws PageException {
         try {
         	Class clazz=null;
         	try {
@@ -2910,7 +2910,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 				e.printStackTrace();
 			}
 			if(clazz==null)clazz=ClassUtil.loadClass(config.getClassLoader(),classname);
-            _doVerifyDatasource(clazz, dsn, username, password);
+            _doVerifyDatasource(clazz, connString, username, password);
         } 
         catch (ClassException e) {
             throw Caster.toPageException(e);
@@ -3577,6 +3577,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 sct.setEL("clob",Boolean.valueOf(d.isClob()));
                 sct.setEL("validate",Boolean.valueOf(d.validate()));
                 sct.setEL("storage",Boolean.valueOf(d.isStorage()));
+
+	            if (d instanceof DataSourceImpl) {
+
+		            sct.setEL("dbdriver", Caster.toString( ((DataSourceImpl)d).getDbDriver(), "" ));
+	            }
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;
             }
