@@ -39,6 +39,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -884,7 +885,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	
     	
-    	
     	// private Debugger debugger=new DebuggerImpl();
     	other.requestTimeout=requestTimeout;
     	other.locale=locale;
@@ -917,11 +917,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	
     	// scopes
-    	//other.req.setAttributes(request);
-    	/*HttpServletRequest org = other.req.getOriginalRequest();
-    	if(org instanceof HttpServletRequestDummy) {
-    		((HttpServletRequestDummy)org).setAttributes(request);
-    	}*/
     	other.req=req;
     	other.request=request;
     	other.form=form;
@@ -955,41 +950,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         
+        // initialize stuff
+        other.undefined.initialize(other);
+    	
+        
     }
-    
-    /*public static void setState(PageContextImpl other,ApplicationContext applicationContext, boolean isCFCRequest) {
-
-    	other.hasFamily=true;
-    	
-		other.applicationContext=applicationContext;
-		other.thread=Thread.currentThread();
-		other.startTime=System.currentTimeMillis();
-        other.isCFCRequest = isCFCRequest;
-        
-    	// path
-    	other.base=base;
-    	java.util.Iterator it = includePathList.iterator();
-    	while(it.hasNext()) {
-    		other.includePathList.add(it.next());
-    	}
-    	
-    	// scopes
-    	other.request=request;
-    	other.form=form;
-    	other.url=url;
-    	other.urlForm=urlForm;
-    	other._url=_url;
-    	other._form=_form;
-    	other.variables=variables;
-    	other.undefined=new UndefinedImpl(other,(short)other.undefined.getType());
-    	
-    	// writers
-    	other.bodyContentStack.init(other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(),other.config.isShowVersion());
-    	other.writer=other.bodyContentStack.getWriter();
-    	other.forceWriter=other.writer;
-        
-        other.psq=psq;
-	}*/
     
     public int getCurrentLevel() {
         return includePathList.size()+1;
