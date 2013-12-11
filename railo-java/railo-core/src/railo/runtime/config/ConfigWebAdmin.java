@@ -1315,7 +1315,7 @@ public final class ConfigWebAdmin {
       	}
       	
       	if(!hasInsertAccess)
-            throw new SecurityException("no access to add datsource connections, the maximum count of ["+maxLength+"] datasources is reached");
+            throw new SecurityException("no access to add datasource connections, the maximum count of ["+maxLength+"] datasources is reached");
       	
       	// Insert
       	Element el=doc.createElement("data-source");
