@@ -23,7 +23,6 @@ public class UDFCustomType implements CustomType {
 			return udf.call(pc, new Object[]{o}, false);
 		}
 		catch (Throwable t) {
-			print.e(t);
 			return defaultValue;
 		}
 	}

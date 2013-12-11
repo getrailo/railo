@@ -2766,7 +2766,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 
 	private void doRemoveLogSetting() throws PageException {
-		print.e("-------");
 		admin.removeLogSetting(getString("admin", "RemoveLogSettings", "name"));
         store();
         adminSync.broadcast(attributes, config);

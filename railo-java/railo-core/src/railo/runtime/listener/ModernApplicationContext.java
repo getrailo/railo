@@ -479,7 +479,6 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			if(b!=null) allowCompression=b.booleanValue();
 			initAllowCompression=true; 
 		}
-		print.e("allowCompression:"+allowCompression);
 		return allowCompression;
 	}
 

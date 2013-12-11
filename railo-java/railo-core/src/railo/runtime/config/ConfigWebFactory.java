@@ -1669,12 +1669,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 			LoggerAndSourceData data;
 			while(it.hasNext()){
 				e = it.next();
-				print.e(e.getKey()+"-");
 				
 				// logger only exists in server context
 				if(config.getLog(e.getKey(),false)==null) {
 					data = e.getValue();
-					print.e(e.getKey()+"+");
 					config.addLogger(e.getKey(), data.getLevel(), 
 							data.getAppenderName(), data.getAppenderArgs(), 
 							data.getLayoutName(), data.getLayoutArgs(),true);
@@ -1936,7 +1934,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// default include
 		String defaultInclude = eCache.getAttribute("default-include");
 		if (hasAccess && !StringUtil.isEmpty(defaultInclude)) {
-			print.e("include:"+defaultInclude);
 			config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_INCLUDE, defaultInclude);
 		}
 		else if (hasCS) {

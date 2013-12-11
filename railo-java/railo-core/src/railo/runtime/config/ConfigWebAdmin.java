@@ -540,16 +540,14 @@ public final class ConfigWebAdmin {
 	
 	public void removeLogSetting(String name) throws SecurityException {
 		checkWriteAccess();
-    	print.e("name:"+name);
-        Element logging=_getRootElement("logging");
+    	Element logging=_getRootElement("logging");
         Element[] children = ConfigWebFactory.getChildren(logging,"logger");
         if(children.length>0) {
         	String _name;
 	      	for(int i=0;i<children.length;i++) {
 	      		Element el=children[i];
 	      		_name=el.getAttribute("name");
-	      		print.e("_name:"+_name);
-	            
+	      		
 	  			if(_name!=null && _name.equalsIgnoreCase(name)) {
 	  				logging.removeChild(children[i]);
 	  			}
