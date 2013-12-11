@@ -1334,7 +1334,7 @@ public final class Decision {
         		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
         			Object obj = it.next();
-        			if(!isCastableTo(_type,_strType, obj))
+        			if(!isCastableTo(pc,_type,_strType, obj))
         				return false;
         		}
         		return true;
