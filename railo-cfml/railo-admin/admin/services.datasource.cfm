@@ -20,7 +20,7 @@
 	</cfif>
 </cfloop>
 
-<cffunction name="getTypeName">
+<cffunction name="getDbDriverTypeName">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
 	<cfset var key="">
@@ -34,7 +34,7 @@
     <cfreturn variables.drivers['other'].getName()>
 </cffunction>
 
-<cffunction name="getType">
+<cffunction name="getDbDriverType">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
 	<cfset var key="">
