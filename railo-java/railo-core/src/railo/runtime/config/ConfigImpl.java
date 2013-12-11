@@ -115,6 +115,7 @@ import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import flex.messaging.config.ConfigMap;
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 
 /**
@@ -2186,7 +2187,7 @@ public abstract class ConfigImpl implements Config {
         Entry<String, DataSource> entry;
         while(it.hasNext()) {
             entry = it.next();
-            if(!entry.getKey().equals("_queryofquerydb"))
+            if(!entry.getKey().equals(QOQ_DATASOURCE_NAME))
                 map.put(entry.getKey(),entry.getValue());
         }        
         return map;
