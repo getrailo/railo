@@ -12943,6 +12943,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.PrecisionEvaluate</tte-class>
 		<description>Evaluates one or more string expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
