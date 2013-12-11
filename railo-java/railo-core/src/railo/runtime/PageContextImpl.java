@@ -1073,7 +1073,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     @Override
     public Undefined undefinedScope() {
-        //if(!undefined.isInitalized()) undefined.initialize(this);
+        if(!undefined.isInitalized()) undefined.initialize(this);
         return undefined;
     }
     
@@ -1081,7 +1081,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return undefined scope, undefined scope is a placeholder for the scopecascading
      */
     public Undefined us() {
-    	//if(!undefined.isInitalized()) undefined.initialize(this);
+    	if(!undefined.isInitalized()) undefined.initialize(this);
     	return undefined;
     }
     
