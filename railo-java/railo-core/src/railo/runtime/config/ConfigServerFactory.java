@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.jacob.com.LibraryLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -211,6 +212,29 @@ public final class ConfigServerFactory extends ConfigFactory{
         if(!propDir.exists())propDir.mkdirs();
         create("/resource/properties/","ESAPI.properties",propDir,doNew);
 		System.setProperty("org.owasp.esapi.resources", propDir.toString());
+
+
+		// Jacob
+		if (SystemUtil.isWindows()) {
+
+			Resource binDir = configDir.getRealResource("bin");
+			if (binDir != null) {
+
+				if (!binDir.exists())
+					binDir.mkdirs();
+
+				String name = (SystemUtil.getJREArch() == SystemUtil.ARCH_64) ? "jacob-x64.dll" : "jacob-x86.dll";
+
+				Resource jacob = binDir.getRealResource(name);
+				if (!jacob.exists()) {
+					createFileFromResourceEL("/resource/bin/" + name, jacob);
+				}
+				// SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_PATH+":"+jacob.getAbsolutePath());
+				System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacob.getAbsolutePath());
+				// SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_NAME+":"+name);
+				System.setProperty(LibraryLoader.JACOB_DLL_NAME, name);
+			}
+		}
 	}
 	
 }

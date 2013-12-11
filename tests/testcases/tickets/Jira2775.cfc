@@ -27,7 +27,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 	public void function testValidRanges(){
 		
-		sct=QueryConvertForGrid(qry,1,-	10);
+		sct=QueryConvertForGrid(qry,1,-10);
 		assertEquals('',valueList(sct.query.a));
 		
 		sct=QueryConvertForGrid(qry,5,10);

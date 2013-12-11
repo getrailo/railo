@@ -3525,14 +3525,41 @@ public final class Caster {
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
         }
         
-        /* custom type (disabled for the moment)
+        if(strType.endsWith("[]") && Decision.isArray(o)){
+	    	String _strType=strType.substring(0,strType.length()-2);
+	    	short _type=CFTypes.toShort(_strType, false, (short)-1);
+	    	Array arr = Caster.toArray(o,null);
+	    	if(arr!=null){
+	    		
+	    		// convert the values
+	    		Iterator<Entry<Key, Object>> it = arr.entryIterator();
+	    		Array _arr=new ArrayImpl();
+	    		Entry<Key, Object> e;
+	    		Object src,trg;
+	    		boolean hasChanged=false;
+	    		while(it.hasNext()){
+	    			e = it.next();
+	    			src=e.getValue();
+	    			trg=castTo(pc, _type, _strType, src);
+	    			_arr.setEL(e.getKey(), trg);
+	    			if(src!=trg) hasChanged=true;
+	    		}
+	    		if(!hasChanged) return arr;
+	    		return _arr;
+	    	}
+	    	
+	    }
+
+	    /* custom type (disabled for the moment)
         CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
         if(ct!=null) {
         	Object obj= ct.convert(pc,o,Null.NULL);
         	if(obj!=Null.NULL) return obj;
         }
         */
-        
+
+
+	    
         throw new CasterException(o,strType);
     }   
     

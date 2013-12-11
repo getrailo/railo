@@ -395,7 +395,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			boolean needsSession, 
 			int bufferSize, 
 			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
-	   initialize(
+		initialize(
 			   (HttpServlet)servlet,
 			   (HttpServletRequest)req,
 			   (HttpServletResponse)rsp,
@@ -497,8 +497,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			this.execLog=config.getExecutionLogFactory().getInstance(this);
 		if(debugger!=null)
 			debugger.init(config);
-			
-        return this;
+		
+		undefined.initialize(this);
+		return this;
 	 }
 	
 	@Override
@@ -930,7 +931,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	
     	
-    	
     	// private Debugger debugger=new DebuggerImpl();
     	other.requestTimeout=requestTimeout;
     	other.locale=locale;
@@ -963,11 +963,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	
     	// scopes
-    	//other.req.setAttributes(request);
-    	/*HttpServletRequest org = other.req.getOriginalRequest();
-    	if(org instanceof HttpServletRequestDummy) {
-    		((HttpServletRequestDummy)org).setAttributes(request);
-    	}*/
     	other.req=req;
     	other.request=request;
     	other.form=form;
@@ -1001,41 +996,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         
+        // initialize stuff
+        other.undefined.initialize(other);
+    	
+        
     }
-    
-    /*public static void setState(PageContextImpl other,ApplicationContext applicationContext, boolean isCFCRequest) {
-
-    	other.hasFamily=true;
-    	
-		other.applicationContext=applicationContext;
-		other.thread=Thread.currentThread();
-		other.startTime=System.currentTimeMillis();
-        other.isCFCRequest = isCFCRequest;
-        
-    	// path
-    	other.base=base;
-    	java.util.Iterator it = includePathList.iterator();
-    	while(it.hasNext()) {
-    		other.includePathList.add(it.next());
-    	}
-    	
-    	// scopes
-    	other.request=request;
-    	other.form=form;
-    	other.url=url;
-    	other.urlForm=urlForm;
-    	other._url=_url;
-    	other._form=_form;
-    	other.variables=variables;
-    	other.undefined=new UndefinedImpl(other,(short)other.undefined.getType());
-    	
-    	// writers
-    	other.bodyContentStack.init(other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(),other.config.isShowVersion());
-    	other.writer=other.bodyContentStack.getWriter();
-    	other.forceWriter=other.writer;
-        
-        other.psq=psq;
-	}*/
     
     public int getCurrentLevel() {
         return includePathList.size()+1;
@@ -2378,12 +2343,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             cftoken=Caster.toString(oCftoken,null);
         }
         
-        if(setCookie && applicationContext.isSetClientCookies()) {
-
-	        String domain = PageContextUtil.getCookieDomain( this );
-            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain );
-            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain );
-        }
+        if(setCookie && applicationContext.isSetClientCookies())
+	        setClientCookies();
     }
     
 
@@ -2391,13 +2352,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
 
-        if(applicationContext.isSetClientCookies()) {
-
-	        String domain = PageContextUtil.getCookieDomain( this );
-            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/", domain);
-            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/", domain);
-        }
+        if(applicationContext.isSetClientCookies())
+	        setClientCookies();
     }
+
+
+	private void setClientCookies() {
+
+		String domain = PageContextUtil.getCookieDomain( this );
+		cookieScope().setCookieEL( KeyConstants._cfid, cfid, CookieImpl.NEVER,false, "/", domain, true, true, false );
+		cookieScope().setCookieEL( KeyConstants._cftoken, cftoken, CookieImpl.NEVER,false, "/", domain, true, true, false );
+	}
     
 
     @Override

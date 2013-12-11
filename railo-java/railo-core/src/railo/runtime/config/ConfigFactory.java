@@ -176,6 +176,7 @@ public abstract class ConfigFactory {
 			createFileFromResource(resource, file, null);
 		}
 		catch (Throwable e) {
+			SystemOut.printDate(e.toString(), SystemUtil.ERR);
 		}
 	}
 

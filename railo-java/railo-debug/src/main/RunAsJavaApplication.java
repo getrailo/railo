@@ -33,7 +33,10 @@ public class RunAsJavaApplication {
         //context.setClassLoader(new ContextClassloader());
         context.setContextPath(strContext);
         context.addWelcomeFile("index.cfm");
-        context.addVirtualHost(host);
+
+	    if ( host != null && !host.isEmpty() )
+	        context.addVirtualHost(host);
+
         //context.setClassPath(lib);
         server.addContext(context);
 
@@ -76,7 +79,10 @@ public class RunAsJavaApplication {
         System.out.println("servercontext:" + adminContextDir);
         WebApplicationContext context = new WebApplicationContext(appDir);
         context.setContextPath(strContext);
-        context.addVirtualHost(host);
+
+	    if ( host != null && !host.isEmpty() )
+	        context.addVirtualHost(host);
+
         server.addContext(context);
         appDir += path;
         context.addHandler(new ResourceHandler());
@@ -130,7 +136,7 @@ public class RunAsJavaApplication {
         listener.setPort(port);
         server.addListener(listener);
 
-	    String host = "localhost";
+	    String host = null;
 
         // Create a context
         File webxml = new File(appDir + "/WEB-INF/web.xml");
@@ -154,6 +160,7 @@ public class RunAsJavaApplication {
 
         server.start();
 
-	    DesktopUtil.launchBrowser( host, port, false );
+	    if ( host != null && !host.isEmpty() )
+		    DesktopUtil.launchBrowser( host, port, false );
     }
 }

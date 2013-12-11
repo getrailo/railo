@@ -8,11 +8,11 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 
+import static railo.commons.io.SystemUtil.ERR;
+import static railo.commons.io.SystemUtil.OUT;
+
 public final class SystemOut {
 
-	public static int OUT=SystemUtil.OUT;
-	public static int ERR=SystemUtil.ERR;
-	
     /**
      * logs a value 
      * @param value

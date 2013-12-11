@@ -151,7 +151,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     		FileItemIterator iter = upload.getItemIterator(context);
         	//byte[] value;
         	InputStream is;
-        	ArrayList list=new ArrayList();
+        	ArrayList<URLItem> list=new ArrayList<URLItem>();
 			while (iter.hasNext()) {
 			    FileItemStream item = iter.next();
 
@@ -170,7 +170,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    }       
 			}
 			
-			raw=(URLItem[]) list.toArray(new URLItem[list.size()]);
+			raw= list.toArray(new URLItem[list.size()]);
 			fillDecoded(raw,encoding,scriptProteced,pc.getApplicationContext().getSameFieldAsArray(SCOPE_FORM));
 		} 
     	catch (Exception e) {
@@ -263,10 +263,10 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
         raw=empty;
 		
 		if(!fileItems.isEmpty()) {
-			Iterator it = fileItems.entrySet().iterator();
+			Iterator<Entry<String, Item>> it = fileItems.entrySet().iterator();
 			Item item;
 			while(it.hasNext()) {
-				item=(Item) ((Map.Entry) it.next()).getValue();
+				item=it.next().getValue();
 				item.getResource().delete();
 			}
 			fileItems.clear();
@@ -279,13 +279,13 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	public FormItem[] getFileItems() {
 		if(fileItems==null || fileItems.isEmpty()) return new FormImpl.Item[0];
 		
-		Iterator it = fileItems.entrySet().iterator();
-		Map.Entry entry;
+		Iterator<Entry<String, Item>> it = fileItems.entrySet().iterator();
+		Map.Entry<String, Item> entry;
 		FormImpl.Item[] rtn=new FormImpl.Item[fileItems.size()];
 		int index=0;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			rtn[index++]=(Item) entry.getValue();
+			entry=it.next();
+			rtn[index++]=entry.getValue();
 		}
 		return rtn;
 	}
@@ -323,16 +323,10 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		catch (PageException e) {}
 		
 		// /file.tmp
-		Iterator it = fileItems.entrySet().iterator();
-		//print.out("------------------");
+		Iterator<Entry<String, Item>> it = fileItems.entrySet().iterator();
 		while(it.hasNext()) {
-			item=(Item) ((Map.Entry)it.next()).getValue();
-			//print.out(item.getResource().getAbsolutePath()+" - "+key);
-			//try {
-				//if(item.getStoreLocation().getCanonicalFile().toString().equalsIgnoreCase(key))return item;
-				if(item.getResource().getAbsolutePath().equalsIgnoreCase(key))return item;
-			//} 
-			//catch (IOException e) {}
+			item=it.next().getValue();
+			if(item.getResource().getAbsolutePath().equalsIgnoreCase(key))return item;
 		}
 		
 		return null;
