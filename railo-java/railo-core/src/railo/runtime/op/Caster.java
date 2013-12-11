@@ -409,7 +409,9 @@ public final class Caster {
      * @throws PageException
      */
     public static double toDoubleValue(Object o) throws PageException {
-        if(o instanceof Number) return ((Number)o).doubleValue();
+        if(o instanceof Number) {
+        	return ((Number)o).doubleValue();
+        }
         else if(o instanceof Boolean) return ((Boolean)o).booleanValue()?1:0;
         else if(o instanceof String) return toDoubleValue(o.toString(),true);
         //else if(o instanceof Clob) return toDoubleValue(toString(o));
@@ -4287,9 +4289,7 @@ public final class Caster {
 	public static BigDecimal toBigDecimal(Object o) throws PageException {
 		if(o instanceof BigDecimal) return (BigDecimal) o;
 		if(o instanceof Number) {
-			if(o instanceof Integer) return new BigDecimal(((Integer)o).intValue());
-			if(o instanceof Long) return new BigDecimal(((Long)o).longValue());
-			return new BigDecimal(((Number)o).doubleValue());
+			return new BigDecimal(((Number)o).toString());
 		}
         else if(o instanceof Boolean) return new BigDecimal(((Boolean)o).booleanValue()?1:0);
         else if(o instanceof String) return new BigDecimal(o.toString());
