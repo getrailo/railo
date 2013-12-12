@@ -11,6 +11,7 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
+import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
@@ -55,7 +56,7 @@ public class Ansi92 extends SQLExecutorSupport {
 	    catch (DatabaseException de) {
 	    	if(dc==null || !createTableIfNotExist) throw de;
 	    	try {
-	    		SQL sql = createSQL(dc,"text",strType);
+	    		SQL sql = createSQL(dc,DataSourceUtil.isMySQL(dc)?"longtext":"text",strType);
 	    		ScopeContext.info(log,sql.toString());
 				new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
 	    	}
@@ -184,17 +185,10 @@ public class Ansi92 extends SQLExecutorSupport {
 	private static SQL createSQL(DatasourceConnection dc, String textType, String type) {
 		String clazz = dc.getDatasource().getClazz().getName();
 		
-	    boolean isMSSQL=
-	    	clazz.equals("com.microsoft.jdbc.sqlserver.SQLServerDriver") || 
-	    	clazz.equals("net.sourceforge.jtds.jdbc.Driver");
-	    boolean isHSQLDB=
-	    	clazz.equals("org.hsqldb.jdbcDriver");
-	    boolean isOracle=
-	    	clazz.indexOf("OracleDriver")!=-1;
 	    
 	    StringBuffer sb=new StringBuffer("CREATE TABLE ");
 	    
-		if(isMSSQL)sb.append("dbo.");
+		if(DataSourceUtil.isMSSQL(dc))sb.append("dbo.");
 		sb.append(PREFIX+"_"+type+"_data (");
 		
 		// expires
@@ -205,8 +199,8 @@ public class Ansi92 extends SQLExecutorSupport {
 		sb.append("name varchar(255) NOT NULL, ");
 		// data
 		sb.append("data ");
-		if(isHSQLDB)sb.append("varchar ");
-		else if(isOracle)sb.append("CLOB ");
+		if(DataSourceUtil.isHSQLDB(dc))sb.append("varchar ");
+		else if(DataSourceUtil.isOracle(dc))sb.append("CLOB ");
 		else sb.append(textType+" ");
 		sb.append(" NOT NULL");
 		
