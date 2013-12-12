@@ -1,5 +1,8 @@
 component extends="org.railo.cfml.test.RailoTestCase"	{
 
+	public function setUp(){
+		file action="touch" file="#getCurrentTemplatePath()#";
+	}
 
 	public void function testPrecisionEvaluateString(){
 		
