@@ -406,22 +406,23 @@ div.ok {
 
 
 
-.coding-tip-trigger { 
+.coding-tip-trigger {
+
 	cursor: pointer; 
-	color: #669900;
+	color: #007bb7;
 }
 
 .coding-tip { 
 
 	display: none; 
 	box-sizing: border-box;
-	background-color: #669900;
 	color: #FFF;
 	margin: 0.25em;
 	padding: 0.5em;
 	border: 1px solid #667;
 	border-radius: 0.5em;
 	max-width: 680px;
+	background-color: #007bb7;
 }
 
 .coding-tip.expanded { 
@@ -439,6 +440,16 @@ div.ok {
 	color: #222;
 	display: block;
 	cursor: pointer;
+}
+
+.admin-server .coding-tip-trigger {
+
+	color: #9c0000;
+}
+
+.admin-server .coding-tip {
+
+	background-color: #9c0000;
 }
 
 
