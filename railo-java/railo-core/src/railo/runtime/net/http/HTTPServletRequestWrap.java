@@ -47,7 +47,7 @@ import railo.runtime.util.EnumerationWrapper;
 /**
  * extends a existing {@link HttpServletRequest} with the possibility to reread the input as many you want.
  */
-public final class HTTPServletRequestWrap implements HttpServletRequest {
+public final class HTTPServletRequestWrap implements HttpServletRequest,Serializable {
 
 
 	private boolean firstRead=true;
