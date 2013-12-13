@@ -64,11 +64,6 @@ import com.sun.mail.smtp.SMTPMessage;
 
 public final class SMTPClient implements Serializable  {
 
-	
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5227282806519740328L;
 	
 	private static final int SPOOL_UNDEFINED=0;
@@ -758,13 +753,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	private void listener(ConfigWeb config,Server server, LogAndSource log, Exception e, long exe) {
-		StringBuilder sbTos=new StringBuilder();
-		for(int i=0;i<tos.length;i++){
-			if(sbTos.length()>0)sbTos.append(", ");
-			sbTos.append(tos[i].toString());
-		}
-
-		if(e==null) log.info("mail","mail sended (from:"+from.toString()+"; to:"+sbTos+" subject:"+subject+")");
+		if(e==null) log.info("mail","mail sended (subject:"+subject+"from:"+toString(from)+"; to:"+toString(tos)+"; cc:"+toString(ccs)+"; bcc:"+toString(bccs)+"; ft:"+toString(fts)+"; rt:"+toString(rts)+")");
 		else log.error("mail",LogUtil.toMessage(e));
 		
 		// listener
@@ -796,6 +785,18 @@ public final class SMTPClient implements Serializable  {
 		((ConfigWebImpl)config).getActionMonitorCollector()
 			.log(config, "mail", "Mail", exe, props);
 		
+	}
+
+
+	private static String toString(InternetAddress... ias) {
+		if(ArrayUtil.isEmpty(ias)) return "";
+		
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<ias.length;i++){
+			if(sb.length()>0)sb.append(", ");
+			sb.append(ias[i].toString());
+		}
+		return sb.toString();
 	}
 
 
