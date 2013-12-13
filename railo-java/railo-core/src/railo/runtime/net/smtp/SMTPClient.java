@@ -714,7 +714,7 @@ public final class SMTPClient implements Serializable  {
             		sender.start();
             		SystemUtil.wait(lock, _timeout);
             		
-            		if(!sender.hasSended()) {
+            		if(!sender.isSent()) {
                 		Throwable t = sender.getThrowable();
                 		if(t!=null) throw Caster.toPageException(t);
                 		
@@ -724,8 +724,8 @@ public final class SMTPClient implements Serializable  {
                 		}
                 		catch(Throwable t2){}
                 		
-                		// after thread s stopped check send flag again
-                		if(!sender.hasSended()){
+                		// after thread is stopped check sent flag again
+                		if(!sender.isSent()){
                 			throw new MessagingException("timeout occurred after "+(_timeout/1000)+" seconds while sending mail message");
                 		}
                 	}
@@ -753,7 +753,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	private void listener(ConfigWeb config,Server server, LogAndSource log, Exception e, long exe) {
-		if(e==null) log.info("mail","mail sended (subject:"+subject+"from:"+toString(from)+"; to:"+toString(tos)+"; cc:"+toString(ccs)+"; bcc:"+toString(bccs)+"; ft:"+toString(fts)+"; rt:"+toString(rts)+")");
+		if(e==null) log.info("mail","mail sent (subject:"+subject+"from:"+toString(from)+"; to:"+toString(tos)+"; cc:"+toString(ccs)+"; bcc:"+toString(bccs)+"; ft:"+toString(fts)+"; rt:"+toString(rts)+")");
 		else log.error("mail",LogUtil.toMessage(e));
 		
 		// listener
