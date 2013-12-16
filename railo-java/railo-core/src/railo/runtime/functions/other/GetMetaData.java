@@ -62,7 +62,7 @@ public final class GetMetaData implements Function {
 	        else if(object instanceof Image) {
 	            return ((Image)object).info();
 	        }
-			
+			if(object==null) throw new FunctionException(pc,"GetMetaData",1,"object","value is null");
 			return object.getClass();
 		}
 		
