@@ -329,7 +329,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 
 	@Override
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return ((ComponentPro)component).getProperties(onlyPeristent,includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+		return ComponentUtil.getProperties(component, onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 
 	@Override

@@ -455,7 +455,16 @@ public class CommonUtil {
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
 		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly);
+		
+		try{
+			java.lang.reflect.Method getProperties = c.getClass().getMethod("getProperties", new Class[]{
+				boolean.class,boolean.class,boolean.class,boolean.class});
+			return (Property[]) getProperties.invoke(c, new Object[]{onlyPeristent,includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly});
+		}
+		catch(Throwable t){t.printStackTrace();}
+		
+		
 		return c.getProperties(onlyPeristent);
 	}
 	

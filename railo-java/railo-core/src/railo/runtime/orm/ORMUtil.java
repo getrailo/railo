@@ -28,6 +28,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -229,9 +230,7 @@ public class ORMUtil {
 	}*/
 
 	private static Property[] getProperties(Component cfc) {
-		if(cfc instanceof ComponentPro)
-			return ((ComponentPro)cfc).getProperties(true,true,false,false);
-		return cfc.getProperties(true);
+		return ComponentUtil.getProperties(cfc, true,true,false,false);
 	}
 	
 	public static boolean isRelated(Property prop) {

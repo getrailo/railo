@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.axis.AxisFault;
+import org.hibernate.annotations.common.reflection.ReflectionUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -41,6 +42,7 @@ import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
+import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -595,7 +597,16 @@ public final class ComponentUtil {
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
 		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly);
+		
+		// reflection
+		try{
+			java.lang.reflect.Method getProperties = c.getClass().getMethod("getProperties", new Class[]{
+				boolean.class,boolean.class,boolean.class,boolean.class});
+			return (Property[]) getProperties.invoke(c, new Object[]{onlyPeristent,includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly});
+		}
+		catch(Throwable t){t.printStackTrace();}
+		
 		return c.getProperties(onlyPeristent);
 	}
 
