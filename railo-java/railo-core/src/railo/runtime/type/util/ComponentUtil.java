@@ -36,6 +36,7 @@ import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.server.ComponentController;
@@ -692,6 +693,7 @@ public final class ComponentUtil {
         func.set(KeyConstants._output,Caster.toBoolean(udf.output));
         func.set(KeyConstants._returntype, udf.strReturnType);
         func.set(KeyConstants._description, udf.description);
+        if(udf.localMode!=null)func.set("localMode", AppListenerUtil.toLocalMode(udf.localMode.intValue(), ""));
         
         func.set(KeyConstants._owner, udf.pageSource.getDisplayPath());
         
