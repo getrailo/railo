@@ -24,7 +24,7 @@
 <head>
 	<title>Railo #ucFirst(request.adminType)# Administrator</title>
 
-	<link rel="stylesheet" href="resources/css/style42b.css.cfm" type="text/css" />
+	<link rel="stylesheet" href="../res/css/style42.css.cfm" type="text/css">
 
 	<script src="resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script>
 	<script src="resources/js/jquery.blockUI.js.cfm" type="text/javascript"></script>
