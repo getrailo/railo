@@ -12,6 +12,12 @@ component {
 			, GIF : "image/gif"
 			, JPG : "image/jpeg"
 			, PNG : "image/png"
+
+			, SVG : "image/svg+xml"
+			, EOT : "application/vnd.ms-fontobject"
+			, OTF : "application/x-font-opentype"
+			, TTF : "application/x-font-ttf"
+			, WOFF: "application/font-woff"
 		};
 
 		return this;
@@ -23,8 +29,6 @@ component {
 		var filename = right( target, 4 ) == ".cfm" ? left( target, len( target ) - 4 ) : target;
 
 		var resInfo = getResInfo( filename );
-
-//		systemOutput( "\_/--> response.isCommitted: " & getPageContext().getResponse().isCommitted(), true );
 
 		if ( resInfo.exists ) {
 
