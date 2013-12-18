@@ -709,8 +709,9 @@
 
 
 		<script>
-			<cfinclude template="/railo-context/res/js/railo-util.min.js">
-
+			<cffile action="read" file="/railo-context/res/js/util.min.js" variable="local.minjs">
+			<cfoutput>#minjs#</cfoutput>
+			
 			var __RAILO = __RAILO || {};
 
 			__RAILO.debug = {
