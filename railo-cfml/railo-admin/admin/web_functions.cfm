@@ -317,7 +317,7 @@ ACCESS.CFX_USAGE=securityManager.getAccess(smClass.TYPE_CFX_USAGE);
 		<div class="coding-tip-trigger-#request.adminType#">&lt;?/&gt;<!--- #stText.settings.tip#---></div>		
 	</cfif>
 	<div class="coding-tip-#request.adminType# #arguments.isExpand ? 'expanded' : ''#">
-		<div>#desc#:</div>
+		<div><cfif !(isBoolean(desc) && !desc)>#desc#:</cfif></div>
 		<code>#trim( arguments.codeSample )#</code>
 	</div>
 </cffunction>
