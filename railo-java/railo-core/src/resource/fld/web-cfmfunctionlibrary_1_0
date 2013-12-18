@@ -15478,8 +15478,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>data</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>A variable representing data in Base64-encoded format or a PDF document.</description>
-    </argument>
+			<description>A variable representing data in Base64-encoded format or a PDF document.</description>
+		</argument>
+		<argument>
+			<name>charset</name>
+			<type>string</type>
+			<required>false</required>
+			<description>
+			if first argument is a string and this argument is set, the string is not handled as base64 encoded string, 
+			it is simply converted to a binary, with help of the given argument. 
+			the value can be a valid charset name, "web" for the web charset defined with this context or "resource" for the resource charset defined in the context.</description>
+		</argument>
 		<return>
 			<type>binary</type>
 		</return>
