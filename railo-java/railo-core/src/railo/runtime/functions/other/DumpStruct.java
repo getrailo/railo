@@ -5,6 +5,8 @@ package railo.runtime.functions.other;
 
 import java.util.Set;
 
+import railo.print;
+import railo.commons.digest.HashUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -17,6 +19,9 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.ext.function.Function;
+import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -84,28 +89,62 @@ public final class DumpStruct implements Function {
 			table=new DumpTable("#ffffff","#cccccc","#000000");
 			table.appendRow(1,dd);
 		}
-		return toCFML(table,object,hasReference);
+		return toCFML(table,object,hasReference,null);
 	}
 	
 	
-	private static Object toCFML(DumpData dd, Object object, RefBoolean hasReference) {
-		if(dd instanceof DumpTable)return toCFML((DumpTable) dd,object,hasReference);
+	private static Object toCFML(DumpData dd, Object object, RefBoolean hasReference, Struct colors) {
+		if(dd instanceof DumpTable)return toCFML((DumpTable) dd,object,hasReference,colors);
 		if(dd==null) return new SimpleDumpData("null");
 		return dd.toString();
 	}
 	
-	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference) {
+	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference, Struct colors) {
+		
 		Struct sct=new StructImpl();
-		StructUtil.setELIgnoreWhenNull(sct,"borderColor", toShortColor(dt.getBorderColor()));
+		if(colors==null) {
+			colors=new StructImpl();
+			sct.setEL("colors", colors);
+		}
+		Collection.Key type;
+		if(dt.getType()!=null) type=KeyImpl.init(dt.getType());
+		else if(object!=null) type=KeyImpl.init(object.getClass().getName());
+		else type=KeyConstants._null;
+		
+		// colors
+		String borderColor = toShortColor(dt.getBorderColor());
+		String fontColor = toShortColor(dt.getFontColor());
+		String highLightColor = toShortColor(dt.getHighLightColor());
+		String normalColor = toShortColor(dt.getNormalColor());
+		// create color id
+		Key colorId = KeyImpl.init(Long.toString(HashUtil.create64BitHash(new StringBuilder(borderColor)
+		.append(':').append(fontColor)
+		.append(':').append(highLightColor)
+		.append(':').append(normalColor)),Character.MAX_RADIX));
+		
+		
+		if(!colors.containsKey(colorId)) {
+			Struct color=new StructImpl();
+			StructUtil.setELIgnoreWhenNull(color,"borderColor", borderColor);
+			StructUtil.setELIgnoreWhenNull(color,"fontColor", fontColor);
+			StructUtil.setELIgnoreWhenNull(color,"highLightColor", highLightColor);
+			StructUtil.setELIgnoreWhenNull(color,"normalColor", normalColor);
+			colors.setEL(colorId, color);
+		}
+		
+
+		//StructUtil.setELIgnoreWhenNull(sct,"borderColor", borderColor);
+		//StructUtil.setELIgnoreWhenNull(sct,"fontColor", fontColor);
+		//StructUtil.setELIgnoreWhenNull(sct,"highLightColor", highLightColor);
+		//StructUtil.setELIgnoreWhenNull(sct,"normalColor", normalColor);
+		StructUtil.setELIgnoreWhenNull(sct,"colorId", colorId.getString());
+		
 		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._comment, dt.getComment());
-		StructUtil.setELIgnoreWhenNull(sct,"fontColor", toShortColor(dt.getFontColor()));
 		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._height, dt.getHeight());
 		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._width, dt.getWidth());
-		StructUtil.setELIgnoreWhenNull(sct,"highLightColor", toShortColor(dt.getHighLightColor()));
-		StructUtil.setELIgnoreWhenNull(sct,"normalColor", toShortColor(dt.getNormalColor()));
 		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._title, dt.getTitle());
 		
-		if(!StringUtil.isEmpty(dt.getType()))sct.setEL(KeyConstants._type, dt.getType());
+		sct.setEL(KeyConstants._type, type.getString());
 		if(!StringUtil.isEmpty(dt.getId()))sct.setEL(KeyConstants._id, dt.getId());
 			
 		if("ref".equals(dt.getType())){
@@ -123,7 +162,7 @@ public final class DumpStruct implements Function {
 			items = dr.getItems();
 			if(qry==null)qry=new QueryImpl(toColumns(items),drs.length,"data");
 			for(int c=1;c<=items.length;c++){
-				qry.setAtEL("data"+c, r+1, toCFML(items[c-1],object,hasReference));
+				qry.setAtEL("data"+c, r+1, toCFML(items[c-1],object,hasReference,colors));
 			}
 			qry.setAtEL("highlight", r+1, new Double(dr.getHighlightType()));
 			
@@ -157,7 +196,7 @@ public final class DumpStruct implements Function {
 		return null;
 	}
 		
-	private static Object toShortColor(String color) {
+	private static String toShortColor(String color) {
 		if(color!=null && color.length()==7 && color.startsWith("#")) {
 			if(color.charAt(1)==color.charAt(2) && color.charAt(3)==color.charAt(4) && color.charAt(5)==color.charAt(6))
 				return "#"+color.charAt(1)+color.charAt(3)+color.charAt(5);
