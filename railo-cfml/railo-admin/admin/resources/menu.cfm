@@ -15,7 +15,8 @@
 				struct(action:"request",label:stMenu.server.request),
 				struct(action:"output",label:stMenu.server.output),
 				struct(action:"error",label:stMenu.server.error),
-				struct(action:"logging",label:stMenu.server.logging)
+				struct(action:"logging",label:stMenu.server.logging),
+				struct(action:"export",label:stMenu.server.export)
 			)
 		),
 		struct(

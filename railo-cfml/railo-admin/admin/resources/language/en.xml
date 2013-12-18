@@ -179,6 +179,7 @@
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.server.logging">Logging</data>
+	<data key="menu.server.export">Export</data>
 	<data key="menu.services.label">Services</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -761,6 +762,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="buttons.delete">delete</data>
 	<data key="buttons.reset">reset</data>
 	<data key="buttons.repair">repair</data>
+	<data key="buttons.export">export</data>
 	<data key="video.web.installed">The video components are installed on your system.</data>
 	<data key="video.web.installedbut">The video components are installed but they can not be executed properly.Just switch to the Railo Server Administrator, in order to repair it:</data>
 	<data key="video.upload">Upload</data>
@@ -933,6 +935,10 @@ If the timezone of your Railo instance and your database is different, this can 
 	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
+	<data key="settings.exportAppCFC">Export Application.cfc</data>
+	<data key="settings.exportAppCFCDesc">Export the settings of this Web Context as Application.cfc Template, of course this includes only settings possible in Application.cfc.</data>
+	
+
 	<data key="settings.dbpass">Password</data>
 	<data key="settings.listdatasourcesdescweb"></data>
 	<data key="settings.dbhost">Host/Server</data>

@@ -96,15 +96,10 @@ hasCache=hasObj || hasTem || hasQry || hasRes || hasFun || hasInc;
 	password="#session["password"&request.adminType]#"
 	returnVariable="datasources">
 
-<cfset stText.application.title="Application.cfc">
-<cfset stText.application.desc="All settings possible in Application.cfc based on your settings">
 </cfsilent>
 
 
 <cfoutput>
-	
-
-	<div class="pageintro">#stText.application.title#</div>
 	
 
 	<cfsavecontent variable="codeSample">
@@ -196,6 +191,23 @@ if(datasources.readOnly) optional.append('readOnly:#datasources.readOnly# // def
 
 }
 </cfsavecontent>
-<cfset renderCodingTip( codeSample, stText.application.desc, true )>
+
+
+<cfif form.subAction EQ stText.Buttons.export>
+	<cfheader name="Content-Disposition" value="inline; filename=Application.cfc">
+	<cfcontent reset="true" variable="#toBinary(codeSample,"utf-8")#" type="application/cfml">
+	<cfabort>
+</cfif>
+
+
+
+<h1>#stText.settings.exportAppCFC#</h1>	
+<div class="pageintro">#stText.settings.exportAppCFCDesc#</div>
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.export#">
+</cfform>
+
+
+<cfset renderCodingTip( codeSample,false, false )>
 
 </cfoutput>
