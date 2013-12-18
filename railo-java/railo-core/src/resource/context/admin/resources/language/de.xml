@@ -116,6 +116,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.server.logging">Logging</data>
+	<data key="menu.server.export">Export</data>
 	<data key="menu.services.label">Dienste</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -762,6 +763,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.delete">löschen</data>
 	<data key="buttons.reset">zurücksetzen</data>
 	<data key="buttons.repair">reparieren</data>
+	<data key="buttons.export">export</data>
 	<data key="schedule.executiontimedescmonthly">Definert die Zeit bei welcher der Task monatlich ausgeführt werden soll.</data>
 	<data key="schedule.username">Username</data>
 	<data key="schedule.passworddescription">Passwort, um auf eine geschützte URL zuzugreifen.</data>
@@ -836,6 +838,11 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.executiondesconce">Dieser Task wird nur einmal zu einer bestimmten Zeit ausgeführt.</data>
 	<data key="schedule.usernamedescription">Username, um auf eine geschützte URL zuzugreifen.</data>
 	<data key="schedule.startdatedesc">Definert den Tag an welchem der Task zu ersten mal ausgeführt werden soll.</data>
+	
+	<data key="settings.exportAppCFC">Export Application.cfc</data>
+	<data key="settings.exportAppCFCDesc">Einstellungen dieses Web Context als Application.cfc Template exportieren, natürlich beinhaltet dies nur Einstellungen welche im Application.cfc möglich sind.</data>
+	
+
 	<data key="settings.datasourcesettings">Einstellungen</data>
 	<data key="settings.datasource.databaseName">Datenbank (Name/Version)</data>
 	<data key="settings.datasource.driverName">Treiber (Name/Version)</data>
