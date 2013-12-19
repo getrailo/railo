@@ -12,6 +12,12 @@ component {
 			, GIF : "image/gif"
 			, JPG : "image/jpeg"
 			, PNG : "image/png"
+
+			, SVG : "image/svg+xml"
+			, EOT : "application/vnd.ms-fontobject"
+			, OTF : "application/x-font-opentype"
+			, TTF : "application/x-font-ttf"
+			, WOFF: "application/font-woff"
 		};
 
 		return this;
@@ -20,11 +26,9 @@ component {
 
 	function onMissingTemplate( target ) {
 
-		var filename = right( target, 4 ) == ".cfm" ? left( target, len( target ) - 4 ) : target;
+		var filename = right( arguments.target, 4 ) == ".cfm" ? left( arguments.target, len( arguments.target ) - 4 ) : arguments.target;
 
 		var resInfo = getResInfo( filename );
-
-//		systemOutput( "\_/--> response.isCommitted: " & getPageContext().getResponse().isCommitted(), true );
 
 		if ( resInfo.exists ) {
 
@@ -45,7 +49,7 @@ component {
 			header statuscode='404' statustext='Not Found';
 		//	header statuscode='404' statustext='Not Found @ #resInfo.path#';
 
-			systemOutput( "static resource #target# was not found @ #resInfo.path#", true, true );
+			systemOutput( "static resource #arguments.target# was not found @ #resInfo.path#", true, true );
 		}
 
 		return resInfo.exists;
@@ -54,17 +58,17 @@ component {
 
 	private function getResInfo( filename ) {
 
-		if ( structKeyExists( this.resources, filename ) )
-			return this.resources[ filename ];
+		if ( structKeyExists( this.resources, arguments.filename ) )
+			return this.resources[ arguments.filename ];
 
-		var result = { path: expandPath( filename ) };
+		var result = { path: expandPath( arguments.filename ) };
 
 		result.exists = fileExists( result.path );
 
 		if ( !result.exists )
 			return result;
 
-		var ext = listLast( filename, '.' );
+		var ext = listLast( arguments.filename, '.' );
 
 		result.mimeType = this.mimeTypes.keyExists( ext ) ? this.mimeTypes[ ext ] : "";
 
@@ -74,7 +78,7 @@ component {
 
 		result.etag = hash( result.contents );
 
-		this.resources[ filename ] = result;
+		this.resources[ arguments.filename ] = result;
 
 		return result;
 	}

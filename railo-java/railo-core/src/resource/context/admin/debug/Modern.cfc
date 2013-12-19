@@ -709,8 +709,7 @@
 
 
 		<script>
-			<cffile action="read" file="/railo-context/res/js/util.min.js" variable="local.minjs">
-			<cfoutput>#minjs#</cfoutput>
+			<cfset this.includeFileInline( "/railo-context/res/js/util.min.js" )>
 			
 			var __RAILO = __RAILO || {};
 
@@ -839,6 +838,13 @@
 
 			return arguments.size & 'B';
 		}
+
+
+		function includeFileInline( filename ) cachedWithin=createTimeSpan(0, 1, 0, 0) {
+
+			echo( fileRead( expandPath( arguments.filename ) ) );
+		}
+
 	</cfscript>
 
 

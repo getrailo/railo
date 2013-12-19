@@ -189,7 +189,7 @@ LOGGING
 ===========================
 
 Possible Layouts:
----------------------------
+- - - - - - - - - - - - - -
 
 Classic: 
  Same layout as with Railo 1 - 4.1
@@ -214,7 +214,7 @@ for every argument defined railo tries to call a matching setter method
 
 
 Possible Appenders:
----------------------------
+- - - - - - - - - - - - - -
 
 Console: 
 logs events to to the error or output stream
