@@ -113,6 +113,9 @@ public class Log4jUtil {
 						res=res.getRealResource(name+".log");
 					}
 				}
+				if(res==null) {
+					res=ConfigWebUtil.getFile(config, config.getConfigDir(),"logs/"+name+".log", ResourceUtil.TYPE_FILE);
+				}
 				
 				
 				// charset
