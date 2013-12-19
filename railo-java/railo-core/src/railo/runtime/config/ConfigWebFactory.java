@@ -109,6 +109,7 @@ import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
 import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.ActionMonitorFatory;
+import railo.runtime.monitor.AsyncRequestMonitor;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.IntervallMonitorWrap;
 import railo.runtime.monitor.RequestMonitor;
@@ -3643,13 +3644,14 @@ public final class ConfigWebFactory extends ConfigFactory {
 		java.util.List<RequestMonitor> requests = new ArrayList<RequestMonitor>();
 		java.util.List<MonitorTemp> actions = new ArrayList<MonitorTemp>();
 		String className, strType, name;
-		boolean log;
+		boolean log,async;
 		short type;
 		for (int i = 0; i < children.length; i++) {
 			Element el = children[i];
 			className = el.getAttribute("class");
 			strType = el.getAttribute("type");
 			name = el.getAttribute("name");
+			async = Caster.toBooleanValue(el.getAttribute("async"),false);
 			log = Caster.toBooleanValue(el.getAttribute("log"), true);
 			
 			if ("request".equalsIgnoreCase(strType))
@@ -3681,6 +3683,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 					}
 					else {
 						RequestMonitor m = obj instanceof RequestMonitor ? (RequestMonitor) obj : new RequestMonitorWrap(obj);
+						if(async) m=new AsyncRequestMonitor(m);
 						m.init(configServer, name, log);
 						SystemOut.printDate(config.getOutWriter(), "initialize "+(strType)+" monitor ["+clazz.getName()+"]");
 						
