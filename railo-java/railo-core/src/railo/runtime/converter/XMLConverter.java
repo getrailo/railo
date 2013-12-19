@@ -23,11 +23,10 @@ import org.xml.sax.InputSource;
 import railo.commons.lang.NumberUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -43,10 +42,11 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -154,15 +154,10 @@ public final class XMLConverter extends ConverterSupport {
 	 */
 	private String _serializeComponent(Component component, Map<Object,String> done) throws ConverterException {
 		StringBuffer sb=new StringBuffer();
-		ComponentAccess ca;
-		try {
-			component=new ComponentWrap(Component.ACCESS_PRIVATE, ca=ComponentUtil.toComponentAccess(component));
-		} catch (ExpressionException e1) {
-			throw toConverterException(e1);
-		}
-		boolean isPeristent=ca.isPersistent();
-		
-		
+		Component ca;
+		component=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ca=component);
+		boolean isPeristent=ComponentProUtil.isPersistent(ca);
+
         deep++;
         Object member;
         Iterator<Key> it = component.keyIterator();
@@ -686,9 +681,9 @@ public final class XMLConverter extends ConverterSupport {
 		PageContext pc = ThreadLocalPageContext.get();
 		
 		// Load comp
-		ComponentAccess comp=null;
+		Component comp=null;
 		try {
-			comp = ComponentUtil.toComponentAccess(pc.loadComponent(name));
+			comp = pc.loadComponent(name);
 			if(!ComponentUtil.md5(comp).equals(md5)){
 				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
 			}

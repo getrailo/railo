@@ -18,7 +18,8 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentPro;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
@@ -47,7 +48,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFCustomType;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.CollectionUtil;
@@ -96,7 +97,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	
 	
-	private ComponentAccess component;
+	private ComponentPro component;
 	
 	private String name=null;
 	
@@ -190,7 +191,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private short scopeCascading=-1;
 		
-	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
+	public ModernApplicationContext(PageContext pc, ComponentPro cfc, RefBoolean throwsErrorWhileInit) {
 		super(pc.getConfig());
 		ConfigImpl ci = ((ConfigImpl)config);
     	setClientCookies=config.isClientCookies();
@@ -850,13 +851,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return ormConfig;
 	}
 
-	public ComponentAccess getComponent() {
+	public Component getComponent() {
 		return component;
 	}
 
 	public Object getCustom(Key key) {
 		try {
-			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, component); 
+			ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE, component); 
 			return cw.get(key,null);
 		} 
 		catch (Throwable t) {}
@@ -869,7 +870,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 
-	private static Object get(ComponentAccess app, Key name,String defaultValue) {
+	private static Object get(ComponentPro app, Key name,String defaultValue) {
 		Member mem = app.getMember(Component.ACCESS_PRIVATE, name, true, false);
 		if(mem==null) return defaultValue;
 		return mem.getValue();

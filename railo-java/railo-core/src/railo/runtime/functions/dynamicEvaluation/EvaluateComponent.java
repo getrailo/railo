@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -45,7 +45,7 @@ public final class EvaluateComponent {
 		
 		// this	
 		// delete this scope data members
-		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,comp);
+		ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,comp);
 		Collection.Key[] cwKeys = CollectionUtil.keys(cw);
 		Object member;
 		for(int i=0;i<cwKeys.length;i++) {

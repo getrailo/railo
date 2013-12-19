@@ -9,7 +9,6 @@ import railo.commons.io.SystemUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
@@ -28,6 +27,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
@@ -230,7 +230,7 @@ public class ORMUtil {
 	}*/
 
 	private static Property[] getProperties(Component cfc) {
-		return ComponentUtil.getProperties(cfc, true,true,false,false);
+		return ComponentProUtil.getProperties(cfc, true,true,false,false);
 	}
 	
 	public static boolean isRelated(Property prop) {

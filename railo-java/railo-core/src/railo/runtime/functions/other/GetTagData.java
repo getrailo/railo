@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
@@ -90,7 +90,7 @@ public final class GetTagData implements Function {
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		
 		Component cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
-        ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
+        ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE, cfc);
 		Struct metadata=Caster.toStruct(cw.get("metadata",null),null,false);
 		
 		

@@ -13,7 +13,7 @@ import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -274,7 +274,7 @@ public class TagUtil {
 			
 			Page p = ps.loadPage(pc);
 			ComponentImpl c = ComponentLoader.loadComponent(pc, p, ps, filename, true,true);
-			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
+			ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,c);
 			Struct meta = Caster.toStruct( cw.get(KeyConstants._metadata,null),null);
 
 			// TODO handle all metadata here and make checking at runtime useless

@@ -3,15 +3,17 @@ package railo.runtime.type.cfc;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.runtime.Component;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.util.ComponentProUtil;
 
-public class ComponentAccessEntryIterator extends EntryIterator implements Iterator<Entry<Key, Object>> {
+public class ComponentEntryIterator extends EntryIterator implements Iterator<Entry<Key, Object>> {
 
-	private ComponentAccess cfc;
+	private Component cfc;
 	private int access;
 
-	public ComponentAccessEntryIterator(ComponentAccess cfc, Key[] keys, int access) { 
+	public ComponentEntryIterator(Component cfc, Key[] keys, int access) { 
 		super(cfc,keys);
 		this.cfc=cfc;
 		this.access=access;
@@ -26,10 +28,10 @@ public class ComponentAccessEntryIterator extends EntryIterator implements Itera
 	
 	public class CAEntryImpl extends EntryImpl implements Entry<Key, Object> {
 		
-		private ComponentAccess cfc;
+		private Component cfc;
 		private int access;
 
-		public CAEntryImpl(ComponentAccess cfc, Key key, int access) {
+		public CAEntryImpl(Component cfc, Key key, int access) {
 			super(cfc,key);
 			this.cfc=cfc;
 			this.access=access;
@@ -37,7 +39,7 @@ public class ComponentAccessEntryIterator extends EntryIterator implements Itera
 
 		@Override
 		public Object getValue() {
-			return cfc.get(access,key,null);
+			return ComponentProUtil.get(cfc,access,key,null);
 		}
 
 		@Override

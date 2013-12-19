@@ -340,7 +340,7 @@ public class HibernateUtil {
 		return ComponentUtil.getCompileTime(pc, ps);
 	}
 	
-	public static Object getMetaStructItem(Component cfc,Collection.Key name) throws PageException {
-		return ComponentUtil.toComponentAccess(cfc).getMetaStructItem(name);
+	public static Object getMetaStructItem(Component cfc,Collection.Key name) {
+		return CommonUtil.getMetaStructItem(cfc,name);
 	}
 }

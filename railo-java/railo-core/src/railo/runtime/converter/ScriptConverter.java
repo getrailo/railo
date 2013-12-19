@@ -17,10 +17,9 @@ import org.w3c.dom.Node;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.functions.displayFormatting.TimeFormat;
@@ -35,10 +34,11 @@ import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -237,19 +237,12 @@ public final class ScriptConverter extends ConverterSupport {
      * @throws ConverterException
      */
     private void _serializeComponent(Component c, StringBuffer sb, Set<Object> done) throws ConverterException {
-    	
-    	ComponentAccess ci;
+
+		ComponentSpecificAccess cw = new ComponentSpecificAccess(Component.ACCESS_PRIVATE,c);  
+
+		sb.append(goIn());
 		try {
-			ci = ComponentUtil.toComponentAccess(c);
-		} catch (ExpressionException ee) {
-			throw new ConverterException(ee.getMessage());
-		}
-		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);  
-        
-    	
-    	sb.append(goIn());
-        try {
-        	sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(ci)+"',{");
+			sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(c)+"',{");
 		} catch (Exception e) {
 			throw toConverterException(e);
 		}
@@ -277,16 +270,16 @@ public final class ScriptConverter extends ConverterSupport {
 	        deep--;
 		}
         {
-        	boolean isPeristent=ci.isPersistent();
+        	boolean isPeristent = ComponentProUtil.isPersistent(c);
     		
-        	ComponentScope scope = ci.getComponentScope();
+        	ComponentScope scope = c.getComponentScope();
         	Iterator<Entry<Key, Object>> it = scope.entryIterator();
             sb.append(",{");
         	deep++;
         	doIt=false;
         	Property p;
             Boolean remotingFetch;
-        	Struct props = ignoreRemotingFetch?null:ComponentUtil.getPropertiesAsStruct(ci,false);
+        	Struct props = ignoreRemotingFetch?null:ComponentUtil.getPropertiesAsStruct(c,false);
         	Entry<Key, Object> e;
         	Key k;
         	while(it.hasNext()) {

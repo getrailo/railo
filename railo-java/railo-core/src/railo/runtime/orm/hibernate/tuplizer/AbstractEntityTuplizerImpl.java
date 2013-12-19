@@ -24,7 +24,7 @@ import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
-import railo.runtime.type.cfc.ComponentAccess;
+
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
@@ -112,12 +112,12 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
 	@Override
 	public Class getConcreteProxyClass() {
-		return ComponentAccess.class;// ????
+		return Component.class;// ????
 	}
 
 	@Override
 	public Class getMappedClass() {
-		return ComponentAccess.class; // ????
+		return Component.class; // ????
 	}
 
 	public EntityMode getEntityMode() {

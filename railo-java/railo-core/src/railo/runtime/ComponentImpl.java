@@ -71,9 +71,9 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
-import railo.runtime.type.cfc.ComponentAccess;
-import railo.runtime.type.cfc.ComponentAccessEntryIterator;
-import railo.runtime.type.cfc.ComponentAccessValueIterator;
+
+import railo.runtime.type.cfc.ComponentEntryIterator;
+import railo.runtime.type.cfc.ComponentValueIterator;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.StringIterator;
@@ -82,6 +82,7 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
@@ -94,7 +95,7 @@ import railo.runtime.type.util.UDFUtil;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public final class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
+public final class ComponentImpl extends StructSupport implements Externalizable,ComponentPro,coldfusion.runtime.TemplateProxy,Sizeable {
 	private static final long serialVersionUID = -245618330485511484L; // do not change this
 
 
@@ -748,12 +749,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
-		return new ComponentAccessEntryIterator(this, keys(access),access);
+		return new ComponentEntryIterator(this, keys(access),access);
 	}
 
 	@Override
 	public Iterator<Object> valueIterator(int access) {
-		return new ComponentAccessValueIterator(this,keys(access),access);
+		return new ComponentValueIterator(this,keys(access),access);
 	}
 
 	
@@ -778,7 +779,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
         if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyConstants._super)) {
-        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this)._base());
+        	Component ac =ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this);
+        	return SuperComponent.superMember((ComponentImpl)ComponentProUtil.getBaseComponent(ac));
             //return SuperComponent . superMember(base);
         }
     	if(superAccess) {
@@ -805,7 +807,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyConstants._super)) {
-        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());
+        	Component ac = ComponentUtil.getActiveComponent(pc,this);
+        	return SuperComponent.superMember((ComponentImpl)ComponentProUtil.getBaseComponent(ac));
         }
         if(superAccess) 
         	return  _udfs.get(key);
@@ -921,7 +924,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     
 	static DumpTable _toDumpData(ComponentImpl ci,PageContext pc, int maxlevel, DumpProperties dp,int access) {
 		maxlevel--;
-		ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ci);
+		ComponentSpecificAccess cw=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ci);
 		Collection.Key[] keys= cw.keys();
 		
 		
@@ -2011,7 +2014,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
-		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,this);  
+		ComponentSpecificAccess cw = new ComponentSpecificAccess(Component.ACCESS_PRIVATE,this);  
         Struct _this=new StructImpl();
 		Struct _var=new StructImpl();
 		
@@ -2054,7 +2057,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 	@Override
-	public ComponentAccess _base() {
+	public Component getBaseComponent() {
 		return base;
 	}	
 	

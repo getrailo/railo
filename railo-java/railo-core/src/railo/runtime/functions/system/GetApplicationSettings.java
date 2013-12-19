@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -190,7 +190,7 @@ public class GetApplicationSettings {
 			sct.setEL(KeyConstants._component, cfc.getPageSource().getDisplayPath());
 			
 			try {
-				ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
+				ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE, cfc);
 				Iterator<Key> it = cw.keyIterator();
 				Collection.Key key;
 				Object value;

@@ -21,7 +21,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -38,6 +37,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.orm.hibernate.tuplizer.proxy.ComponentProProxy;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -45,7 +45,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.util.ListUtil;
@@ -454,18 +454,7 @@ public class CommonUtil {
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly);
-		
-		try{
-			java.lang.reflect.Method getProperties = c.getClass().getMethod("getProperties", new Class[]{
-				boolean.class,boolean.class,boolean.class,boolean.class});
-			return (Property[]) getProperties.invoke(c, new Object[]{onlyPeristent,includeBaseProperties,preferBaseProperties,inheritedMappedSuperClassOnly});
-		}
-		catch(Throwable t){t.printStackTrace();}
-		
-		
-		return c.getProperties(onlyPeristent);
+		return ComponentProProxy.getProperties(c, onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
 	}
 	
 	public static void write(Resource res, String string, Charset charset, boolean append) throws IOException {
@@ -481,7 +470,7 @@ public class CommonUtil {
 	}
 
 	public static void setEntity(Component c, boolean entity) { 
-		((ComponentAccess)c).setEntity(entity);
+		ComponentProProxy.setEntity(c,entity);
 	}
 
 	public static PageContext pc() {
@@ -492,5 +481,13 @@ public class CommonUtil {
 	public static Config config() { 
 		//return CFMLEngineFactory.getInstance().getThreadPageContext().getConfig();
 		return ThreadLocalPageContext.getConfig();
+	}
+
+	public static boolean isPersistent(Component c) {
+		return ComponentProProxy.isPersistent(c);
+	}
+
+	public static Object getMetaStructItem(Component c, Key name) {
+		return ComponentProProxy.getMetaStructItem(c,name);
 	}
 }

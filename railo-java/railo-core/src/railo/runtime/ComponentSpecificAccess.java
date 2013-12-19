@@ -2,6 +2,7 @@ package railo.runtime;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.component.Member;
@@ -16,16 +17,17 @@ import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
-import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.Collection.Key;
+
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
+public final class ComponentSpecificAccess extends StructSupport implements ComponentPro, Objects {
    
     private int access;
-    private ComponentAccess component;
-    //private ComponentImpl ci;
+    private ComponentPro component;
 
     /**
      * constructor of the class
@@ -33,13 +35,19 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
      * @param component
      * @throws ExpressionException 
      */
-    public ComponentWrap(int access, ComponentAccess component) {
+    public ComponentSpecificAccess(int access, Component component) {
     	this.access=access;
-        this.component=component;
+        this.component=ComponentProUtil.toComponentPro(component);
     }
     
-    public static ComponentWrap  toComponentWrap(int access, Component component) throws ExpressionException {
-    	return new ComponentWrap(access, ComponentUtil.toComponentAccess(component));
+    public static ComponentSpecificAccess  toComponentSpecificAccess(int access, Component component) {
+    	if(component instanceof ComponentSpecificAccess) {
+    		ComponentSpecificAccess csa=(ComponentSpecificAccess) component;
+    		if(access==csa.getAccess()) return csa;
+    		component=csa.getComponent();
+    	}
+    	
+    	return new ComponentSpecificAccess(access, component);
     }
 
     @Override
@@ -288,7 +296,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     
     @Override
     public Collection duplicate(boolean deepCopy) {
-    	return new ComponentWrap(access,(ComponentAccess) component.duplicate(deepCopy));
+    	return new ComponentSpecificAccess(access,(ComponentPro)component.duplicate(deepCopy));
     }
 
     /*public Object set(PageContext pc, String propertyName, Object value) throws PageException {
@@ -329,7 +337,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 
 	@Override
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return ComponentUtil.getProperties(component, onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+		return ComponentProUtil.getProperties(component, onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 
 	@Override
@@ -337,7 +345,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component.getComponentScope();
 	}
 
-	public ComponentAccess getComponentAccess() {
+	public Component getComponent() {
 		return component;
 	}
 
@@ -378,4 +386,102 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     public void registerUDF(Collection.Key key, UDFProperties props){
 		component.registerUDF(key, props);
     }
+
+	@Override
+	public boolean isPersistent() {
+		return component.isPersistent();
+	}
+
+	@Override
+	public boolean isAccessors() {
+		return component.isAccessors();
+	}
+
+	@Override
+	public void setEntity(boolean entity) {
+		component.setEntity(entity);
+	}
+
+	@Override
+	public boolean isEntity() {
+		return component.isEntity();
+	}
+
+	@Override
+	public Component getBaseComponent() {
+		return component.getBaseComponent();
+	}
+
+	@Override
+	public Set<Key> keySet(int access) {
+		return component.keySet(access);
+	}
+
+	@Override
+	public Object getMetaStructItem(Key name) {
+		return component.getMetaStructItem(name);
+	}
+
+
+	@Override
+	public Object call(PageContext pc, int access, Key name, Object[] args) throws PageException {
+		return component.call(pc, access, name, args);
+	}
+
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, int access, Key name, Struct args) throws PageException {
+		return component.callWithNamedValues(pc, access, name, args);
+	}
+
+	@Override
+	public int size(int access) {
+		return component.size();
+	}
+
+	@Override
+	public Key[] keys(int access) {
+		return component.keys(access);
+	}
+
+
+	@Override
+	public Iterator<Key> keyIterator(int access) {
+		return component.keyIterator(access);
+	}
+
+	@Override
+	public Iterator<String> keysAsStringIterator(int access) {
+		return component.keysAsStringIterator(access);
+	}
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator(int access) {
+		return component.entryIterator(access);
+	}
+
+	@Override
+	public Iterator<Object> valueIterator(int access) {
+		return component.valueIterator(access);
+	}
+
+	@Override
+	public Object get(int access, Key key) throws PageException {
+		return component.get(access, key);
+	}
+
+	@Override
+	public Object get(int access, Key key, Object defaultValue) {
+		return component.get(access, key, defaultValue);
+	}
+
+	@Override
+	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
+		return toDumpData(pageContext, maxlevel, dp, access);
+	}
+
+	@Override
+	public boolean contains(int access, Key name) {
+		return component.contains(access, name);
+	}
 }

@@ -20,10 +20,9 @@ import org.w3c.dom.Node;
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
@@ -40,12 +39,13 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
@@ -250,15 +250,12 @@ public final class JSONConverter extends ConverterSupport {
         
         if(struct instanceof Component){
         	Boolean remotingFetch;
-        	Component cp = (Component)struct;
+        	Component cfc = (Component)struct;
         	boolean isPeristent=false;
-        	try {
-				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);
-				isPeristent=ca.isPersistent();
-			} catch (ExpressionException ee) {}
+        	isPeristent=ComponentProUtil.isPersistent(cfc);
 			
-        	Property[] props = cp.getProperties(false);
-        	ComponentScope scope = cp.getComponentScope();
+        	Property[] props = cfc.getProperties(false);
+        	ComponentScope scope = cfc.getComponentScope();
         	for(int i=0;i<props.length;i++) {
         		if(!ignoreRemotingFetch) {
         			remotingFetch=Caster.toBoolean(props[i].getDynamicAttributes().get(REMOTING_FETCH,null),null);
@@ -338,13 +335,8 @@ public final class JSONConverter extends ConverterSupport {
      * @throws ConverterException
      */
     private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
-    	try {
-			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component);
-	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
-		} 
-    	catch (ExpressionException e) {
-			throw toConverterException(e);
-		}
+    	ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,component);
+	    _serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
     }
     
 
