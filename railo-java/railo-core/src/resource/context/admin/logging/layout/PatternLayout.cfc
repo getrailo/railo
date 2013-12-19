@@ -5,11 +5,11 @@
 		
 		)>
     
-	<cffunction name="getClass" returntype="string">
+	<cffunction name="getClass" returntype="string" output="false">
     	<cfreturn "org.apache.log4j.PatternLayout">
     </cffunction>
     
-	<cffunction name="getLabel" returntype="string">
+	<cffunction name="getLabel" returntype="string" output="false">
     	<cfreturn "Pattern">
     </cffunction>
 	<cffunction name="getDescription" returntype="string" output="no">

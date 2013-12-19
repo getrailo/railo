@@ -5,11 +5,11 @@
 		
 		)>
     
-	<cffunction name="getClass" returntype="string">
+	<cffunction name="getClass" returntype="string" output="false">
     	<cfreturn "railo.commons.io.log.log4j.appender.ConsoleAppender">
     </cffunction>
     
-	<cffunction name="getLabel" returntype="string">
+	<cffunction name="getLabel" returntype="string" output="false">
     	<cfreturn "Console">
     </cffunction>
 	<cffunction name="getDescription" returntype="string" output="no">

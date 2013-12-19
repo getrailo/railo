@@ -7,7 +7,7 @@
     	<cfreturn "railo.commons.io.log.log4j.layout.ClassicLayout">
     </cffunction>
     
-	<cffunction name="getLabel" returntype="string">
+	<cffunction name="getLabel" returntype="string" output="false">
     	<cfreturn "Classic">
     </cffunction>
 	<cffunction name="getDescription" returntype="string" output="no">

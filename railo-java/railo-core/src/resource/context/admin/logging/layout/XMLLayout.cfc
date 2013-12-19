@@ -6,11 +6,11 @@
 		
 		)>
     
-	<cffunction name="getClass" returntype="string">
+	<cffunction name="getClass" returntype="string" output="false">
     	<cfreturn "org.apache.log4j.xml.XMLLayout">
     </cffunction>
     
-	<cffunction name="getLabel" returntype="string">
+	<cffunction name="getLabel" returntype="string" output="false">
     	<cfreturn "XML">
     </cffunction>
 	<cffunction name="getDescription" returntype="string" output="no">

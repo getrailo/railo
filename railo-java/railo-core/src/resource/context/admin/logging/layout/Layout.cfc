@@ -20,7 +20,7 @@
 	</cffunction>
 
 
-	<cffunction name="getCustomFields" returntype="array">
+	<cffunction name="getCustomFields" returntype="array" output="false">
     	<cfreturn variables.fields>
     </cffunction>
 </cfcomponent>

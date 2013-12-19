@@ -8,7 +8,7 @@
 		
 		)>
 		
-	<cffunction name="getCustomFields" returntype="array">
+	<cffunction name="getCustomFields" returntype="array" output="false">
 		<cfif !isNull(form._name)>
 			<cfset var fields=duplicate(variables.fields)>
 			<cfloop array="#fields#" index="local.i" item="local.field">
@@ -28,11 +28,11 @@
 		<cfreturn fields>
     </cffunction>
     
-	<cffunction name="getClass" returntype="string">
+	<cffunction name="getClass" returntype="string" output="false">
     	<cfreturn "railo.commons.io.log.log4j.appender.RollingResourceAppender">
     </cffunction>
     
-	<cffunction name="getLabel" returntype="string">
+	<cffunction name="getLabel" returntype="string" output="false">
     	<cfreturn "Resource">
     </cffunction>
 	<cffunction name="getDescription" returntype="string" output="no">

@@ -5,14 +5,18 @@
     </while>--->
     <cfreturn arguments.str>
 </cffunction>
+
+<cfset goto="list">
 <cftry>
 	<cfset stVeritfyMessages = StructNew()>
+
+	
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
 		<cfcase value="#stText.Buttons.submit#">
 			<cfset custom=struct()>
-			<cfset layoutArgs=struct()>
-			<cfset appenderArgs=struct()>
+			<cfset layoutArgs={}>
+			<cfset appenderArgs={}>
 		
 		
 			<!--- custom --->
@@ -50,15 +54,24 @@
 					
 		</cfcase>
 	</cfswitch>
-	<cfcatch>
+	<cfcatch><cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
 </cftry>
 <!--- 
 Redirtect to entry --->
+<cfset __name=StructKeyExists(url,'name')?url.name:form._name>
+
 <cfif cgi.request_method EQ "POST" and error.message EQ "" and form.mainAction neq "none">
+	<cfif goto EQ "create">
+		<cflocation url="#request.self#?action=#url.action#&action2=#goto#&name=#__name#" addtoken="no">
+	</cfif>
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+	
+	
+	
+	
 </cfif>
 
 <cfset isNew=false>
@@ -82,17 +95,42 @@ Redirtect to entry --->
 	<cfset layout=layouts[log.layoutClass]>
 	<cfset appender=appenders[log.appenderClass]>
 </cfif>
+
 <cfoutput>
 	<!--- 
 	Error Output --->
 	<cfset printError(error)>
-
+	
+<script>
+disableBlockUI=true;
+active={};
+var bodies={};
+function enable(btn,type,id){
+	var old=active[type];
+	if(old==id) return;
+	active[type]=id;
+	
+	
+	 
+	
+	$(document).ready(function(){
+			//$('.button submit').css('background','url("")');
+			$(btn).css('background','url("")');
+			$('##button_'+old).css('background','');
+			
+			bodies[old]=$('##div_'+old).detach();
+			
+			bodies[id].appendTo("##group_"+type);
+    		
+	  		//$('##div_'+id).show();
+	});
+}
+</script>
+	
 	<h2>Log "#log.name#"</h2>
 	<div class="pageintro">#stText.Settings.logging.detailDesc#</div>
 	
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
-		<cfinput type="hidden" name="appenderClass" value="#log.appenderClass#">
-		<cfinput type="hidden" name="layoutClass" value="#log.layoutClass#" >
 		<cfinput type="hidden" name="name" value="#log.name#" >
 		<table class="maintbl">
 			<tbody>
@@ -118,14 +156,33 @@ Redirtect to entry --->
 		</table>
 		<cfloop list="appender,layout" item="_name">
 		<cfset argsCol=_name&"Args">
-		<cfset driver=variables[_name]>
-		<cfif !arrayLen(driver.getCustomFields())><cfbreak></cfif>
+		<cfset _driver=variables[_name]>
+		<cfset drivers=variables[_name&"s"]>
+		<!--- <cfif !arrayLen(driver.getCustomFields())><cfbreak></cfif>--->
 		<br />
-		<h3>#trim(driver.getLabel())# #ucFirst(_name)#</h3>
-		<div class="pageintro">#driver.getDescription()#</div>
+		
+		<h3>#ucFirst(_name)#</h3>
+		<cfloop collection="#drivers#" index="driverClass" item="driver">
+			<cfset id="#_name#_#hash(driver.getClass(),'quick')#">
+			<cfset active=driver.getClass() EQ _driver.getClass()>
+		<input id="button_#id#" onclick="enable(this,'#_name#','#id#');"
+				type="button"
+				class="button submit" 
+				name="change#_name#" 
+				<cfif driver.getClass() EQ _driver.getClass()> style="background: url('');"</cfif> 
+				value="#driver.getLabel()#">
+		</cfloop>
+		<div id="group_#_name#">
+		<cfloop collection="#drivers#" index="driverClass" item="driver">
+			<cfset id="#_name#_#hash(driver.getClass(),'quick')#">
+			<cfset active=driver.getClass() EQ _driver.getClass()>
+		
+		<div id="div_#id#">
+		<input type="hidden" name="#_name#Class" value="#driver.getClass()#">
+		
+		<br>#driver.getDescription()#
 		<table class="maintbl">
 			<tbody>
-				
 				<cfset custom=log[argsCol]>
 				<cfloop array="#driver.getCustomFields()#" index="field">
 					<cfif isInstanceOf(field,"Group")>
@@ -139,7 +196,9 @@ Redirtect to entry --->
 					</cfif>
 
 					<cfset doBR=true>
-					<cfif StructKeyExists(custom,field.getName())>
+					<cfif !active>
+						<cfset default=field.getDefaultValue()>
+					<cfelseif StructKeyExists(custom,field.getName())>
 						<cfset default=custom[field.getName()]>
 					<cfelseif isNew>
 						<cfset default=field.getDefaultValue()>
@@ -262,7 +321,34 @@ Redirtect to entry --->
 			</tbody>
 			
 		</table>
+		</div>
+		
 			</cfloop>
+		</div>	
+		<script>	
+		<cfloop collection="#drivers#" index="driverClass" item="driver">
+			<cfset id="#_name#_#hash(driver.getClass(),'quick')#">
+			<cfset active=driver.getClass() EQ _driver.getClass()>
+			
+		<cfif !active>
+		$(document).ready(function(){
+    		bodies['#id#']=$('##div_#id#').detach();
+		});
+		<cfelse>
+		active['#_name#']='#id#';
+		</cfif>
+		
+		</cfloop></script>
+			
+		</cfloop>
+			
+		<!---<script>
+		
+		$(document).ready(function(){
+    		$('##appender').hide();
+		});
+		</script>--->
+			
 		<table class="maintbl">
 		<tfoot>
 				<tr>
