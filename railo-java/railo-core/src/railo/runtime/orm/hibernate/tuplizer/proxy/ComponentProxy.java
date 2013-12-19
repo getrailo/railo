@@ -423,6 +423,6 @@ public abstract class ComponentProxy implements Component {
 
 	@Override
 	public Collection duplicate(boolean deepCopy) {
-		return (Collection) Duplicator.duplicate(getComponent(),deepCopy);
+		return getComponent().duplicate(deepCopy);
 	}
 }

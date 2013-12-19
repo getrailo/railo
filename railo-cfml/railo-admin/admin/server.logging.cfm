@@ -12,7 +12,7 @@
         returnVariable="logs"
         remoteClients="#request.getRemoteClients()#">
 
-
+<cfdump var="#logs#">
 <!--- load available appenders --->
 <cfset appenders={}>
 <cfset names=structnew("linked")>

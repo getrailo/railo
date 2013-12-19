@@ -24,7 +24,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.QueryUtil;
 
 public class HibernateCaster {
@@ -163,10 +162,8 @@ public class HibernateCaster {
 		
 		if(info!=null){
 			tmp=HibernateCaster.toHibernateType(info,defaultValue);
-			//ORMUtil.printError("type ["+type+"] is not a valid Hibernate type. Use instead type ["+tmp+"]", engine);
 			return tmp;
 		}
-		//throw new ORMException("type ["+type+"] is not a valid Hibernate type.");
 		return defaultValue;
 		
 		
@@ -415,7 +412,7 @@ public class HibernateCaster {
 					}
 				}
 				isArray.setValue(true);
-				return ArrayUtil.toArray(trg);
+				return CommonUtil.toArray(trg);
 				
 			}
 			throw pe;

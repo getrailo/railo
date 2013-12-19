@@ -1,4 +1,6 @@
-package railo.runtime.orm.naming;
+package railo.runtime.orm.hibernate.naming;
+
+import railo.runtime.orm.naming.NamingStrategy;
 
 public class DefaultNamingStrategy implements NamingStrategy {
 

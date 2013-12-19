@@ -1,6 +1,7 @@
-package railo.runtime.orm.naming;
+package railo.runtime.orm.hibernate.naming;
 
 import railo.loader.util.Util;
+import railo.runtime.orm.naming.NamingStrategy;
 
 public class SmartNamingStrategy implements NamingStrategy {
 	

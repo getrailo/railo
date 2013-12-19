@@ -34,8 +34,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("getProperties", new Class[]{boolean.class, boolean.class, boolean.class , boolean.class});
 			return (Property[])m.invoke(c, new Object[]{onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 	
 	public boolean isPersistent() {
@@ -45,20 +46,22 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 	public static boolean isPersistent(Component c) {
 		try{
 			java.lang.reflect.Method m = c.getClass().getMethod("isPersistent", new Class[]{});
-			return Caster.toBooleanValue(m.invoke(c, new Object[]{}));
+			return CommonUtil.toBooleanValue(m.invoke(c, new Object[]{}));
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public boolean isAccessors() {
 		Component c = getComponent();
 		try{
 			java.lang.reflect.Method m = c.getClass().getMethod("isAccessors", new Class[]{});
-			return Caster.toBooleanValue(m.invoke(c, new Object[]{}));
+			return CommonUtil.toBooleanValue(m.invoke(c, new Object[]{}));
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Object getMetaStructItem(Key name) {
@@ -70,8 +73,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("getMetaStructItem", new Class[]{Key.class});
 			return m.invoke(c, new Object[]{name});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Set<Key> keySet(int access) {
@@ -80,8 +84,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("keySet", new Class[]{int.class});
 			return (Set<Key>)m.invoke(c, new Object[]{access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Object call(PageContext pc, int access, Key name, Object[] args) {
@@ -90,8 +95,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("call", new Class[]{PageContext.class, int.class, Key.class, Object[].class});
 			return m.invoke(c, new Object[]{pc, access, name, args});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Object callWithNamedValues(PageContext pc, int access, Key name, Struct args) {
@@ -100,18 +106,20 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("callWithNamedValues", new Class[]{PageContext.class, int.class, Key.class, Struct.class});
 			return m.invoke(c, new Object[]{pc, access, name, args});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public int size(int access) {
 		Component c = getComponent();
 		try{
 			java.lang.reflect.Method m = c.getClass().getMethod("size", new Class[]{int.class});
-			return Caster.toIntValue(m.invoke(c, new Object[]{access}));
+			return CommonUtil.toIntValue(m.invoke(c, new Object[]{access}));
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Key[] keys(int access) {
@@ -120,8 +128,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("keys", new Class[]{int.class});
 			return (Key[]) m.invoke(c, new Object[]{access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
@@ -130,8 +139,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("entryIterator", new Class[]{int.class});
 			return (Iterator<Entry<Key, Object>>)m.invoke(c, new Object[]{access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Iterator<Object> valueIterator(int access) {
@@ -140,8 +150,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("valueIterator", new Class[]{int.class});
 			return (Iterator<Object>)m.invoke(c, new Object[]{access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 	
 
@@ -151,8 +162,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("get", new Class[]{int.class,Key.class});
 			return m.invoke(c, new Object[]{access,key});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Object get(int access, Key key, Object defaultValue) {
@@ -161,8 +173,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("get", new Class[]{int.class,Key.class,Object.class});
 			return m.invoke(c, new Object[]{access,key,defaultValue});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Iterator<Key> keyIterator(int access) {
@@ -171,8 +184,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("keyIterator", new Class[]{int.class});
 			return (Iterator<Key>) m.invoke(c, new Object[]{access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 	
 	public Iterator<String> keysAsStringIterator(int access) {
@@ -181,8 +195,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("keysAsStringIterator", new Class[]{int.class});
 			return (Iterator<String>) m.invoke(c, new Object[]{access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
@@ -191,18 +206,20 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("toDumpData", new Class[]{PageContext.class, int.class, DumpProperties.class, int.class});
 			return (DumpData) m.invoke(c, new Object[]{pageContext, maxlevel, dp, access});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public boolean contains(int access, Key name) {
 		Component c = getComponent();
 		try{
 			java.lang.reflect.Method m = c.getClass().getMethod("contains", new Class[]{int.class, Key.class});
-			return Caster.toBooleanValue(m.invoke(c, new Object[]{access, name}));
+			return CommonUtil.toBooleanValue(m.invoke(c, new Object[]{access, name}));
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Member getMember(int access, Key key, boolean dataMember, boolean superAccess) {
@@ -211,8 +228,9 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("getMember", new Class[]{int.class, Key.class, boolean.class, boolean.class});
 			return (Member) m.invoke(c, new Object[]{access, key, dataMember, superAccess});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 	
 	public void setEntity(boolean entity) {
@@ -225,18 +243,20 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			m.invoke(c, new Object[]{entity});
 			return;
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public boolean isEntity() {
 		Component c = getComponent();
 		try{
 			java.lang.reflect.Method m = c.getClass().getMethod("isEntity", new Class[]{});
-			return Caster.toBooleanValue(m.invoke(c, new Object[]{}));
+			return CommonUtil.toBooleanValue(m.invoke(c, new Object[]{}));
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 
 	public Component getBaseComponent() {
@@ -245,7 +265,8 @@ public abstract class ComponentProProxy extends ComponentProxy implements Compon
 			java.lang.reflect.Method m = c.getClass().getMethod("getBaseComponent", new Class[]{});
 			return (Component)m.invoke(c, new Object[]{});
 		}
-		catch(Throwable t){t.printStackTrace();}
-		throw new RuntimeException("Missing Component Pro method");
+		catch(Throwable t){
+			throw new RuntimeException(t);
+		}
 	}
 }

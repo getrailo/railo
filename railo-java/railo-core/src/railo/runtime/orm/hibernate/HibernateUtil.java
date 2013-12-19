@@ -252,7 +252,6 @@ public class HibernateUtil {
 			}
 			
 			if(rows.size()==0)	{
-				//ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
 				return null;
 			}
 			return rows;
@@ -284,7 +283,7 @@ public class HibernateUtil {
 			}
 		}
 		finally {
-			DBUtil.closeEL(columns);
+			CommonUtil.closeEL(columns);
 		}// Table susid defined for cfc susid does not exist.
 		
 		return rows;
@@ -304,7 +303,7 @@ public class HibernateUtil {
 		}
         catch(Throwable t){}
 		finally {
-			DBUtil.closeEL(tables);
+			CommonUtil.closeEL(tables);
 		}
         return null;
         
@@ -330,7 +329,7 @@ public class HibernateUtil {
 		Property[] props = CommonUtil.getProperties(c,onlyPeristent,includeBaseProperties,false,false);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(CommonUtil.FIELDTYPE,null),"")))
+			if("id".equalsIgnoreCase(CommonUtil.toString(props[i].getDynamicAttributes().get(CommonUtil.FIELDTYPE,null),"")))
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);

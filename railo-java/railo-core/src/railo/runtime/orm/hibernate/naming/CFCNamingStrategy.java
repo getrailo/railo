@@ -1,10 +1,11 @@
-package railo.runtime.orm.naming;
+package railo.runtime.orm.hibernate.naming;
 
 import railo.runtime.Component;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.naming.NamingStrategy;
 import railo.runtime.type.UDF;
 
 public class CFCNamingStrategy implements NamingStrategy {
