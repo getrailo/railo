@@ -133,10 +133,11 @@ public final class DumpStruct implements Function {
 		}
 		
 
-		//StructUtil.setELIgnoreWhenNull(sct,"borderColor", borderColor);
-		//StructUtil.setELIgnoreWhenNull(sct,"fontColor", fontColor);
-		//StructUtil.setELIgnoreWhenNull(sct,"highLightColor", highLightColor);
-		//StructUtil.setELIgnoreWhenNull(sct,"normalColor", normalColor);
+		StructUtil.setELIgnoreWhenNull(sct,"borderColor", borderColor);
+		StructUtil.setELIgnoreWhenNull(sct,"fontColor", fontColor);
+		StructUtil.setELIgnoreWhenNull(sct,"highLightColor", highLightColor);
+		StructUtil.setELIgnoreWhenNull(sct,"normalColor", normalColor);
+		
 		StructUtil.setELIgnoreWhenNull(sct,"colorId", colorId.getString());
 		
 		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._comment, dt.getComment());
