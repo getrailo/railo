@@ -24,7 +24,11 @@ public final class XmlParse implements Function {
 	}
 	public static Node call(PageContext pc , String strXML, boolean caseSensitive, String strValidator) throws PageException {
 		try {
-			InputSource xml = XMLUtil.toInputSource(pc,strXML.trim());
+			strXML = strXML.trim();
+			if (!strXML.isEmpty() && strXML.charAt(0) == '\uFEFF')
+				strXML = strXML.substring(1);
+
+			InputSource xml = XMLUtil.toInputSource(pc,strXML);
 			InputSource validator =StringUtil.isEmpty(strValidator)?null:XMLUtil.toInputSource(pc,strValidator.trim());
 			return XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),caseSensitive);
 		} 
