@@ -8,7 +8,7 @@ component {
 		this.mimeTypes = {
 
 			  CSS : "text/css"
-			, JS  : "text/js"
+			, JS  : "text/javascript"
 			, GIF : "image/gif"
 			, JPG : "image/jpeg"
 			, PNG : "image/png"
@@ -19,6 +19,8 @@ component {
 			, TTF : "application/x-font-ttf"
 			, WOFF: "application/font-woff"
 		};
+
+		this.basePath = getDirectoryFromPath( expandPath( getCurrentTemplatePath() ) );
 
 		return this;
 	}
@@ -61,16 +63,21 @@ component {
 		if ( structKeyExists( this.resources, arguments.filename ) )
 			return this.resources[ arguments.filename ];
 
-		var result = { path: expandPath( arguments.filename ) };
+		var ext = listLast( arguments.filename, '.' );
 
-		result.exists = fileExists( result.path );
+		var result = { path: expandPath( arguments.filename ), exists: false, mimeType: "" };
+
+		if ( this.mimeTypes.keyExists( ext ) )
+			result.mimeType = this.mimeTypes[ ext ];
+
+		if ( isEmpty(result.mimeType) || (find(this.basePath, result.path) != 1) )
+			return result;
+
+		if ( fileExists(result.path) )
+			result.exists = true;
 
 		if ( !result.exists )
 			return result;
-
-		var ext = listLast( arguments.filename, '.' );
-
-		result.mimeType = this.mimeTypes.keyExists( ext ) ? this.mimeTypes[ ext ] : "";
 
 		result.isText = left( result.mimeType, 4 ) == "text";
 
