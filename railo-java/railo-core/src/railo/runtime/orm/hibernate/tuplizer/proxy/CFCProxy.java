@@ -1,17 +1,23 @@
 package railo.runtime.orm.hibernate.tuplizer.proxy;
 
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 
 public class CFCProxy extends ComponentProProxy {
 	
-	private Component cfc;
+	private ComponentPro cfc;
 
 	public CFCProxy(Component cfc){
-		this.cfc=cfc; 
+		this.cfc=(ComponentPro)cfc; 
 	}
 	
 	@Override
 	public Component getComponent() {
+		return cfc;
+	}
+	
+	@Override
+	public ComponentPro getComponentPro() {
 		return cfc;
 	}
 	

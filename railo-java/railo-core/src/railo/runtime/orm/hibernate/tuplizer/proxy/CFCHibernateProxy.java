@@ -6,6 +6,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 
 
 
@@ -22,6 +23,11 @@ public class CFCHibernateProxy extends ComponentProProxy implements HibernatePro
 	@Override
 	public Component getComponent() {
 		return li.getCFC();
+	}
+	
+	@Override
+	public ComponentPro getComponentPro() {
+		return (ComponentPro) li.getCFC();
 	}
 	
 	public CFCHibernateProxy(CFCLazyInitializer li) {
