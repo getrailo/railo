@@ -23,9 +23,9 @@
 		<title>#Attributes.title#</title>
 		<meta name="description" value="#Attributes.description#">
 
-		<link rel="stylesheet" href="../res/css/bootstrap2.min.css.cfm">
-		<link rel="stylesheet" href="../res/css/bootstrap2-responsive.min.css.cfm">
-		<link rel="stylesheet" href="../res/css/doc.css.cfm">
+		<link rel="stylesheet" href="../res/css/bootstrap2.min.css.cfm" type="text/css">
+		<link rel="stylesheet" href="../res/css/bootstrap2-responsive.min.css.cfm" type="text/css">
+		<link rel="stylesheet" href="../res/css/doc.css.cfm" type="text/css">
 
 		<cfif Request.keyExists( "htmlHead" )>
 			#Request.htmlHead#
@@ -70,8 +70,8 @@
 
 	</cfoutput>
 
-		<script src="../res/js/jquery-1.9.min.js.cfm"></script>
-		<script src="../res/js/bootstrap2.min.js.cfm"></script>
+		<script src="../res/js/jquery-1.9.min.js.cfm" type="text/javascript"></script>
+		<script src="../res/js/bootstrap2.min.js.cfm" type="text/javascript"></script>
 
 		<script type="text/javascript">
 
