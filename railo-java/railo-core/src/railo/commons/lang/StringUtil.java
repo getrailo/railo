@@ -1,11 +1,9 @@
 package railo.commons.lang;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
@@ -884,24 +882,7 @@ public final class StringUtil {
         if(isEmpty(str)) return 0;
         return str.charAt(0);
     }
-
-	/**
-	 * change charset of string from system default to givenstr
-	 * @param str
-	 * @param charset
-	 * @return
-	 * @throws UnsupportedEncodingException 
-	 */
-	public static String changeCharset(String str, String charset, String defaultValue) {
-		if(str==null) return str;
-		try {
-			return new String(str.getBytes(SystemUtil.getCharset()),charset);
-		} catch (UnsupportedEncodingException e) {
-			return defaultValue;
-		}
-	}
-
-
+    
 	public static String removeWhiteSpace(String str) {
 		if(isEmpty(str)) return str;
 		StringBuilder sb=new StringBuilder();
