@@ -892,18 +892,6 @@ public final class StringUtil {
 	 * @return
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static String changeCharset(String str, String charset) throws UnsupportedEncodingException {
-		if(str==null) return str;
-		return new String(str.getBytes(charset),charset);
-	}
-
-	/**
-	 * change charset of string from system default to givenstr
-	 * @param str
-	 * @param charset
-	 * @return
-	 * @throws UnsupportedEncodingException 
-	 */
 	public static String changeCharset(String str, String charset, String defaultValue) {
 		if(str==null) return str;
 		try {
