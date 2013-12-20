@@ -468,9 +468,9 @@ public final class StringUtil {
 	 */
 	public static String trim(String str,boolean removeBOM,boolean removeSpecialWhiteSpace,String defaultValue) {
 		if(str==null) return defaultValue;
+		if(str.isEmpty()) return str;
 		// remove leading BOM Marks
 		if(removeBOM) {
-			if(str.isEmpty()) return str;
 			// UTF-16, big-endian
 	        if (str.charAt(0) == '\uFEFF') str=str.substring(1);
 	        else if (str.charAt(0) == '\uFFFD') str=str.substring(1);
@@ -485,7 +485,7 @@ public final class StringUtil {
 	        }
 		}
 		
-		if(removeSpecialWhiteSpace && !str.isEmpty()) {
+		if(removeSpecialWhiteSpace) {
 			int len = str.length();
 	        int startIndex = 0,endIndex=len-1;
 	        // left
