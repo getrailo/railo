@@ -43,7 +43,7 @@
 				password="#session["password"&request.adminType]#"
 				
 				
-				name="#trim(form.name)#" 
+				name="#trim(form._name)#" 
 				level="#form.level#"
 				appenderClass="#trim(form.appenderClass)#"  
 				appenderArgs="#(appenderArgs)#" 
@@ -131,7 +131,7 @@ function enable(btn,type,id){
 	<div class="pageintro">#stText.Settings.logging.detailDesc#</div>
 	
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
-		<cfinput type="hidden" name="name" value="#log.name#" >
+		<cfinput type="hidden" name="_name" value="#log.name#" >
 		<table class="maintbl">
 			<tbody>
 				<tr>
