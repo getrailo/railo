@@ -12,6 +12,7 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.QuietWriter;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.retirement.RetireOutputStream;
 
 public class ResourceAppender extends WriterAppender {
 
@@ -177,7 +178,7 @@ public class ResourceAppender extends WriterAppender {
     Resource parent = res.getParentResource();
     if(!parent.exists()) parent.createDirectory(true);
     boolean writeHeader = !append || res.length()==0;// this must happen before we open the stream
-    Writer fw = createWriter(res.getOutputStream(append));
+    Writer fw = createWriter(new RetireOutputStream(res, append, 1));
     if(bufferedIO) {
       fw = new BufferedWriter(fw, bufferSize);
     }
