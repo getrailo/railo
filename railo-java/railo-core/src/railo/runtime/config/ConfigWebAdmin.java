@@ -1151,58 +1151,58 @@ public final class ConfigWebAdmin {
     	
     	// mapping
     	Element src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "mappings");
-    	fixLogging(cs,doc,src, "mapping","{railo-config}/logs/mapping.log");
+    	fixLogging(cs,doc,src, "mapping",false,"{railo-config}/logs/mapping.log");
     	
     	// rest
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "rest");
-    	fixLogging(cs,doc,src, "rest","{railo-config}/logs/rest.log");
+    	fixLogging(cs,doc,src, "rest",false,"{railo-config}/logs/rest.log");
     	
     	// gateway
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "gateways");
-    	fixLogging(cs,doc,src, "gateway","{railo-config}/logs/gateway.log");
+    	fixLogging(cs,doc,src, "gateway",false,"{railo-config}/logs/gateway.log");
     	
     	// remote clients
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "remote-clients");
-    	fixLogging(cs,doc,src, "remoteclient","{railo-config}/logs/remoteclient.log");
+    	fixLogging(cs,doc,src, "remoteclient",false,"{railo-config}/logs/remoteclient.log");
     	
     	// orm
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "orm");
-    	fixLogging(cs,doc,src, "orm","{railo-config}/logs/orm.log");
+    	fixLogging(cs,doc,src, "orm",false,"{railo-config}/logs/orm.log");
     	
     	// mail
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "mail");
-    	fixLogging(cs,doc,src, "mail","{railo-config}/logs/mail.log");
+    	fixLogging(cs,doc,src, "mail",false,"{railo-config}/logs/mail.log");
     			
 		// search
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "search");
-    	fixLogging(cs,doc,src, "search","{railo-config}/logs/search.log");
+    	fixLogging(cs,doc,src, "search",false,"{railo-config}/logs/search.log");
     	
     	// scheduler
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "scheduler");
-    	fixLogging(cs,doc,src, "scheduler","{railo-config}/logs/scheduler.log");
+    	fixLogging(cs,doc,src, "scheduler",false,"{railo-config}/logs/scheduler.log");
     	
 		// scope
     	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "scope");
-    	fixLogging(cs,doc,src, "scope","{railo-config}/logs/scope.log");
+    	fixLogging(cs,doc,src, "scope",false,"{railo-config}/logs/scope.log");
     	
     	// application
     	Element app = src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "application");
-    	fixLogging(cs,doc,src, "application","application-log","application-log-level","{railo-config}/logs/application.log");
+    	fixLogging(cs,doc,src, "application","application-log","application-log-level",false,"{railo-config}/logs/application.log");
     	
     	// exception
-    	fixLogging(cs,doc,app, "exception","exception-log","exception-log-level","{railo-config}/logs/exception.log");
+    	fixLogging(cs,doc,app, "exception","exception-log","exception-log-level",false,"{railo-config}/logs/exception.log");
     	
     	// trace
-    	fixLogging(cs,doc,app, "trace","trace-log","trace-log-level","{railo-config}/logs/trace.log");
+    	fixLogging(cs,doc,app, "trace","trace-log","trace-log-level",false,"{railo-config}/logs/trace.log");
     	
     	// thread
-    	fixLogging(cs,doc,app, "thread","thread-log","thread-log-level","{railo-config}/logs/thread.log");
+    	fixLogging(cs,doc,app, "thread","thread-log","thread-log-level",false,"{railo-config}/logs/thread.log");
     	
     	// deploy
-    	fixLogging(cs,doc,app, "deploy","deploy-log","deploy-log-level","{railo-config}/logs/deploy.log");
+    	fixLogging(cs,doc,app, "deploy","deploy-log","deploy-log-level",false,"{railo-config}/logs/deploy.log");
     	
     	// requesttimeout
-    	fixLogging(cs,doc,app, "requesttimeout","requesttimeout-log","requesttimeout-log-level","{railo-config}/logs/requesttimeout.log");
+    	fixLogging(cs,doc,app, "requesttimeout","requesttimeout-log","requesttimeout-log-level",false,"{railo-config}/logs/requesttimeout.log");
     	
     	setVersion(doc,Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),4.2D));
     	
@@ -1210,10 +1210,10 @@ public final class ConfigWebAdmin {
     	return true;
     }
 
-    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name, String defaultValue) {
-    	return fixLogging(cs, doc, src, name, "log", "log-level", defaultValue);
+    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name,boolean deleteSourceAttributes, String defaultValue) {
+    	return fixLogging(cs, doc, src, name, "log", "log-level", deleteSourceAttributes, defaultValue);
     }
-    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name,String logName, String levelName, String defaultValue) {
+    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name,String logName, String levelName,boolean deleteSourceAttributes, String defaultValue) {
     	
     	
     	String path,level;
@@ -1227,8 +1227,8 @@ public final class ConfigWebAdmin {
     		path=defaultValue;
     	}
     	if(!StringUtil.isEmpty(path)) {
-	    	src.removeAttribute(logName);
-	    	src.removeAttribute(levelName);
+	    	if(deleteSourceAttributes)src.removeAttribute(logName);
+	    	if(deleteSourceAttributes)src.removeAttribute(levelName);
     		
     		Element logging = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "logging");
     		
