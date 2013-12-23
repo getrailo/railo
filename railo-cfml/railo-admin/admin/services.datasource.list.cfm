@@ -209,7 +209,7 @@ list all mappings and display necessary edit fields --->
 								<input type="hidden" name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">
 								#srcGlobal.name#
 							</td>
-							<td>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
+							<td>#getDbDriverTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
 							<td>#yesNoFormat(srcGlobal.storage)#</td>
 							<td>
 								<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
@@ -269,7 +269,7 @@ list all mappings and display necessary edit fields --->
 								<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 							</td>
 							<td><input type="hidden" name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
-							<td>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#
+							<td>#getDbDriverTypeName(srcLocal.ClassName,srcLocal.dsn)#
 								<cfif isDefined( "stVeritfyMessages[srcLocal.name].dbInfo" ) && stVeritfyMessages[srcLocal.name].dbInfo.recordCount>
 									<cfset qDbInfo = stVeritfyMessages[srcLocal.name].dbInfo>
 									<div class="comment">#stText.settings.datasource.databaseName#: #qDbInfo.DATABASE_PRODUCTNAME# #qDbInfo.DATABASE_VERSION#</div>

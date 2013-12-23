@@ -406,50 +406,31 @@ div.ok {
 
 
 
-.coding-tip-trigger-server { 
-	cursor: pointer; 
-	color: #9c0000;
-}
+.coding-tip-trigger {
 
-.coding-tip-trigger-web { 
 	cursor: pointer; 
 	color: #007bb7;
 }
 
-.coding-tip-server { 
+.coding-tip { 
 
 	display: none; 
 	box-sizing: border-box;
-	background-color: #9c0000;
 	color: #FFF;
 	margin: 0.25em;
 	padding: 0.5em;
 	border: 1px solid #667;
 	border-radius: 0.5em;
 	max-width: 680px;
-}
-
-.coding-tip-web { 
-
-	display: none; 
-	box-sizing: border-box;
 	background-color: #007bb7;
-	color: #FFF;
-	margin: 0.25em;
-	padding: 0.5em;
-	border: 1px solid #667;
-	border-radius: 0.5em;
-	max-width: 680px;
 }
 
-.coding-tip-server.expanded { 
-	display: block;
-}
-.coding-tip-web.expanded { 
+.coding-tip.expanded { 
+
 	display: block;
 }
 
-.coding-tip-server code ,.coding-tip-web code {
+.coding-tip code {
 
 	white-space: pre-wrap;
 	tab-size: 4;
@@ -459,6 +440,16 @@ div.ok {
 	color: #222;
 	display: block;
 	cursor: pointer;
+}
+
+.admin-server .coding-tip-trigger {
+
+	color: #9c0000;
+}
+
+.admin-server .coding-tip {
+
+	background-color: #9c0000;
 }
 
 

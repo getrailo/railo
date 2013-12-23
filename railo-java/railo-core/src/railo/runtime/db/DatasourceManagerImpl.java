@@ -20,7 +20,9 @@ import railo.runtime.orm.ORMSession;
  * this class handle multible db connection, transaction and logging
  */
 public final class DatasourceManagerImpl implements DataSourceManager {
-	
+
+	public static final String QOQ_DATASOURCE_NAME = "_queryofquerydb";
+
 	private ConfigImpl config;
 	
 	boolean autoCommit=true;
@@ -61,7 +63,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
                     transConn=dc;
     			}
     			else if(!transConn.equals(dc)) {
-                	if("_queryofquerydb".equalsIgnoreCase(ds.getName())) return dc;
+                	if(QOQ_DATASOURCE_NAME.equalsIgnoreCase(ds.getName())) return dc;
     				throw new DatabaseException(
     						"can't use different connections inside a transaction",null,null,dc);
     			}

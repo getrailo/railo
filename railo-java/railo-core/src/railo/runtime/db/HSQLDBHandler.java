@@ -30,6 +30,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.util.CollectionUtil;
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 /**
  * class to reexecute queries on the resultset object inside the cfml enviroment
@@ -325,14 +326,11 @@ public final class HSQLDBHandler {
 			QueryImpl nqr=null;
 			ConfigImpl config = (ConfigImpl)pc.getConfig();
 			DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
-			DatasourceConnection dc=pool.getDatasourceConnection(pc,config.getDataSource("_queryofquerydb"),"sa","");
+			DatasourceConnection dc=pool.getDatasourceConnection(pc,config.getDataSource(QOQ_DATASOURCE_NAME),"sa","");
 	    	Connection conn = dc.getConnection();
 	    	try {
 	    		DBUtil.setAutoCommitEL(conn,false);
-	    		
-		    	
-	    		
-	    		
+
 	        	//sql.setSQLString(HSQLUtil.sqlToZQL(sql.getSQLString(),false));
 		        try {
 	    			Iterator<String> it = tables.iterator();

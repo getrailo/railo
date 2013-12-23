@@ -148,6 +148,7 @@ import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 import com.jacob.com.LibraryLoader;
 
@@ -1806,7 +1807,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			Entry<String, DataSource> entry;
 			while (it.hasNext()) {
 				entry = it.next();
-				if (!entry.getKey().equals("_queryofquerydb"))
+				if (!entry.getKey().equals(QOQ_DATASOURCE_NAME))
 					datasources.put(entry.getKey(), entry.getValue().cloneReadOnly());
 			}
 		}
@@ -1814,13 +1815,13 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// TODO support H2
 		// Default query of query DB
 		/*
-		 * setDatasource(datasources, "_queryofquerydb" ,"org.h2.Driver" ,"" ,""
+		 * setDatasource(datasources, QOQ_DATASOURCE_NAME, "org.h2.Driver" ,"" ,""
 		 * ,-1 ,"jdbc:h2:.;MODE=HSQLDB" ,"sa" ,"" ,-1 ,-1 ,true ,true
 		 * ,DataSource.ALLOW_ALL, new StructImpl() );
 		 */
 		// Default query of query DB
-		setDatasource(config, datasources, "_queryofquerydb", "org.hsqldb.jdbcDriver", "", "", -1, "jdbc:hsqldb:.", "sa", "", -1, -1, 60000, true, true, DataSource.ALLOW_ALL,
-				false, false, null, new StructImpl());
+		setDatasource(config, datasources, QOQ_DATASOURCE_NAME, "org.hsqldb.jdbcDriver", "", "", -1, "jdbc:hsqldb:.", "sa", "", -1, -1, 60000, true, true, DataSource.ALLOW_ALL,
+				false, false, null, new StructImpl(), "");
 
 		SecurityManager sm = config.getSecurityManager();
 		short access = sm.getAccess(SecurityManager.TYPE_DATASOURCE);
@@ -1871,7 +1872,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 						toInt(dataSource.getAttribute("connectionTimeout"), -1), toLong(dataSource.getAttribute("metaCacheTimeout"), 60000),
 						toBoolean(dataSource.getAttribute("blob"), true), toBoolean(dataSource.getAttribute("clob"), true),
 						toInt(dataSource.getAttribute("allow"), DataSource.ALLOW_ALL), toBoolean(dataSource.getAttribute("validate"), false),
-						toBoolean(dataSource.getAttribute("storage"), false), dataSource.getAttribute("timezone"), toStruct(dataSource.getAttribute("custom")));
+						toBoolean(dataSource.getAttribute("storage"), false), dataSource.getAttribute("timezone"), toStruct(dataSource.getAttribute("custom")), dataSource.getAttribute("dbdriver"));
 			}
 		}
 		// }
@@ -2230,20 +2231,20 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 	private static void setDatasource(ConfigImpl config, Map<String, DataSource> datasources, String datasourceName, String className, String server, String databasename,
 			int port, String dsn, String user, String pass, int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,
-			boolean validate, boolean storage, String timezone, Struct custom) throws ClassException {
+			boolean validate, boolean storage, String timezone, Struct custom, String dbdriver) throws ClassException {
 
-		datasources.put(datasourceName.toLowerCase(),
+		datasources.put( datasourceName.toLowerCase(),
 				new DataSourceImpl(datasourceName, className, server, dsn, databasename, port, user, pass, connectionLimit, connectionTimeout, metaCacheTimeout, blob, clob, allow,
-						custom, false, validate, storage, StringUtil.isEmpty(timezone, true) ? null : TimeZoneUtil.toTimeZone(timezone, null)));
+						custom, false, validate, storage, StringUtil.isEmpty(timezone, true) ? null : TimeZoneUtil.toTimeZone(timezone, null), dbdriver) );
 
 	}
 
 	private static void setDatasourceEL(ConfigImpl config, Map<String, DataSource> datasources, String datasourceName, String className, String server, String databasename,
 			int port, String dsn, String user, String pass, int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,
-			boolean validate, boolean storage, String timezone, Struct custom) {
+			boolean validate, boolean storage, String timezone, Struct custom, String dbdriver) {
 		try {
 			setDatasource(config, datasources, datasourceName, className, server, databasename, port, dsn, user, pass, connectionLimit, connectionTimeout, metaCacheTimeout, blob,
-					clob, allow, validate, storage, timezone, custom);
+					clob, allow, validate, storage, timezone, custom, dbdriver);
 		}
 		catch (Throwable t) {
 		}

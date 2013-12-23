@@ -2,6 +2,7 @@ package railo.transformer.bytecode.util;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -214,6 +215,7 @@ public final class Types {
 	public static final Type CLASS = Type.getType(Class.class);
 	public static final Type CLASS_ARRAY = Type.getType(Class[].class);
 	public static final Type CLASS_LOADER = Type.getType(ClassLoader.class);
+	public static final Type BIG_DECIMAL = Type.getType(BigDecimal.class);
 	 
 
 	/**

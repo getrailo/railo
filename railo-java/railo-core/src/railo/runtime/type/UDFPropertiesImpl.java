@@ -326,6 +326,8 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		strReturnType = ExternalizableUtil.readString(in);
 		verifyClient = ExternalizableUtil.readBoolean(in);
 		cachedWithin = ExternalizableUtil.readString(in);
+		int tmp=in.readInt();
+		localMode=tmp==-1?null:tmp;
 		
 		if(arguments!=null && arguments.length>0){
 			this.argumentsSet=new HashSet<Collection.Key>();
@@ -357,6 +359,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		ExternalizableUtil.writeString(out,strReturnType);
 		ExternalizableUtil.writeBoolean(out,verifyClient);
 		ExternalizableUtil.writeString(out,Caster.toString(cachedWithin,null));
+		out.writeInt(localMode==null?-1:localMode.intValue());
 	}
 
 
