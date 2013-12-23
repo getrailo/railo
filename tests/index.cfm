@@ -171,15 +171,26 @@ testSuite.addTestCase('...',1000); // timeout setting for the testcase, it shoul
 	</cffunction>
 
 
+	<cffunction name="getFirstNonMxunitElement" output="false">
+		<cfargument name="tagcontext">
+
+		<cfloop array="#arguments.tagcontext#" index="local.i" item="local.e">
+			
+			<cfif findNoCase( "/mxunit", local.e.template ) != 1>
+				
+				<cfreturn "#local.e.template#:#local.e.line#">
+			</cfif>
+		</cfloop>
+
+		<cfreturn "">
+	</cffunction>
+
+
 <cfoutput query="#qry#" group="component">
 
 			<cfset sectionId = "ALL">
-			<cfset isOpen = false>
-			<cfset total=0>
-			<cfoutput>
-				<cfif qry.testStatus NEQ "Passed"><cfset isOpen=true></cfif>
-				<cfset total+=qry.time>
-			</cfoutput>
+			<cfset isOpen = qry.testStatus != "Passed">
+			<cfset total=qry.time>
 					
 			<!-- Railo Debug Output !-->
 			<fieldset id="-railo-debug" class="medium #isOpen ? '' : 'collapsed'#">
@@ -218,12 +229,7 @@ testSuite.addTestCase('...',1000); // timeout setting for the testcase, it shoul
 					<table>
 
 							<cfset renderSectionHeadTR(sectionId , qry.testName&" (#qry.testStatus#)", isOpen)>
-							<!---
-							<tr>
-								<td class="pad label">User Agent:</td>
-								<td class="pad">#cgi.http_user_agent#</td>
-							</tr>
-							--->
+							
 							<tr>
 								<td colspan="2" id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 									<table class="ml14px">
@@ -237,6 +243,10 @@ testSuite.addTestCase('...',1000); // timeout setting for the testcase, it shoul
 											<td class="label">Message:</td>
 											<cfset err=qry.error>
 											<td class="cfdebug">#err.message#</td>
+										</tr>
+										<tr>
+											<td class="label">Thrown From:</td>
+											<td class="cfdebug">#getFirstNonMxunitElement( err.tagcontext )#</td>
 										</tr>
 										<tr>
 											<td class="label">Stacktrace:</td>
