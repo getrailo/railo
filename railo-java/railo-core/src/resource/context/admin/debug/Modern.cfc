@@ -51,13 +51,17 @@
 		}
 
 		function isSectionOpen( string name ) {
-
+			try{
 			if ( arguments.name == "ALL" && !structKeyExists( Cookie, variables.cookieName ) )
 				return true;
 
 			var cookieValue = structKeyExists( Cookie, variables.cookieName ) ? Cookie[ variables.cookieName ] : 0;
 
 			return cookieValue && ( bitAnd( cookieValue, this.allSections[ arguments.name ] ) );
+			}
+			catch(e){
+				return false;
+			}
 		}
 
 		function isEnabled( custom, key ) {
@@ -107,8 +111,12 @@
 		<cfif not isDefined('arguments.debugging.traces')>
 			<cfset arguments.debugging.traces=queryNew('type,category,text,template,line,var,total,trace') />
 		</cfif>
+		<cfif not isDefined('arguments.debugging.dumps')>
+			<cfset arguments.debugging.traces=queryNew('output,template,line') />
+		</cfif>
 		<cfset var timers=arguments.debugging.timers />
 		<cfset var traces=arguments.debugging.traces />
+		<cfset var dumps=arguments.debugging.dumps />
 
 		<cfset this.allSections = this.buildSectionStruct()>
 		<cfset var isExecOrder  = this.isSectionOpen( "ExecOrder" )>
@@ -525,8 +533,43 @@
 								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
-
 					</cfif>
+					
+					<!--- Dumps --->
+					<cfif dumps.recordcount>
+
+						<cfset sectionId = "Dump">
+						<cfset isOpen = this.isSectionOpen( sectionId )>
+
+						<div class="section-title">Dumps</div>
+
+						
+						<table>
+
+							<cfset renderSectionHeadTR( sectionId, "#dumps.recordcount# Dump#( dumps.recordcount GT 1 ) ? 's' : ''#" )>
+
+							<tr>
+								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
+									<table class="details">
+										<tr>
+											<th>Output</th>
+											<th>Template</th>
+											<th>Line</th>
+										</tr>
+										<cfset total=0 />
+										<cfloop query="dumps">
+											<tr>
+												<td>#dumps.output#</td>
+												<td>#dumps.template#</td>
+												<td class="txt-r">#dumps.line#</td>
+											</tr>
+										</cfloop>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</cfif>
+					
 
 					<!--- Queries --->
 					<cfif queries.recordcount>

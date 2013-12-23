@@ -40,6 +40,13 @@ public interface DebuggerPro extends Debugger {
     
     public DebugTrace[] getTraces(PageContext pc);
     
+    public DebugDump addDump(PageSource ps,String dump);
+	
+    
+    
+    
+    
+    
     public void setOutputLog(DebugOutputLog outputLog);
     
     public void init(Config config);

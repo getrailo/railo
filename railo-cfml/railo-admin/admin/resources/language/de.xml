@@ -565,6 +565,8 @@ Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template
 	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
 	<data key="debug.settings.tracing"> Tracing </data>
 	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.dump"> Dump </data>
+	<data key="debug.settings.dumpDesc">Select this option to enable output produced with help of the tag cfdump and send to debugging.</data>
 	<data key="debug.settings.timer"> Timer </data>
 	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
 	<data key="debug.settings.timer"> Timer </data>

@@ -64,6 +64,7 @@ public final class DebuggerImpl implements DebuggerPro {
 	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
+	private List<DebugDump> dumps=new ArrayList<DebugDump>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
 	private Map<String,ImplicitAccessImpl> implicitAccesses=new HashMap<String,ImplicitAccessImpl>();
 	
@@ -88,6 +89,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		implicitAccesses.clear();
 		timers.clear();
 		traces.clear();
+		dumps.clear();
 		exceptions.clear();
 		historyId.clear();
 		historyLevel.clear();
@@ -485,6 +487,31 @@ public final class DebuggerImpl implements DebuggerPro {
 			}
 			catch(PageException dbe) {}
         }
+        
+     // dumps
+		len=dumps==null?0:dumps.size();
+		if(!((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DUMP))len=0;
+        Query qryDumps=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._output,
+                		KeyConstants._template,
+                		KeyConstants._line},
+                len,"dumps");
+        if(len>0) {
+        	try {
+	        	Iterator<DebugDump> it = dumps.iterator();
+	        	DebugDump dd;
+	        	row=0;
+	        	while(it.hasNext()) {
+	        		dd= it.next();
+	        		row++;
+	        		qryDumps.setAt(KeyConstants._output,row,dd.getOutput());  
+	        		if(!StringUtil.isEmpty(dd.getTemplate()))qryDumps.setAt(KeyConstants._template,row,dd.getTemplate()); 
+	        		if(dd.getLine()>0)qryDumps.setAt(KeyConstants._line,row,new Double(dd.getLine())); 
+	        	}
+			}
+			catch(PageException dbe) {}
+        }
 
 		// traces
 		len=traces==null?0:traces.size();
@@ -572,6 +599,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		debugging.setEL(KeyConstants._queries,qryQueries);
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
+		debugging.setEL("dumps",qryDumps);
 		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
 		//debugging.setEL(OUTPUT_LOG,qryOutputLog);
 		
@@ -657,6 +685,27 @@ public final class DebuggerImpl implements DebuggerPro {
 		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace);
 		traces.add(t);
 		return t;
+	}
+	
+	
+	public DebugDump addDump(PageSource ps,String dump) {
+		
+		StackTraceElement[] _traces = new Exception("Stack trace").getStackTrace();
+		String clazz=ps.getFullClassName();
+		int line=0;
+		
+		// line
+		for(int i=0;i<_traces.length;i++) {
+			StackTraceElement trace=_traces[i];
+    		if(trace.getClassName().startsWith(clazz)) {
+    			line=trace.getLineNumber();
+    			break;
+			}
+		}
+		
+		DebugDump dt=new DebugDumpImpl(ps.getDisplayPath(),line,dump);
+		dumps.add(dt);
+		return dt;
 	}
 	
 	@Override

@@ -2679,7 +2679,7 @@ public final class ConfigWebAdmin {
      * @param debug if value is null server setting is used
      * @throws SecurityException
      */
-    public void updateDebug(Boolean debug, Boolean database, Boolean exception, Boolean tracing, Boolean timer, 
+    public void updateDebug(Boolean debug, Boolean database, Boolean exception, Boolean tracing, Boolean dump, Boolean timer, 
     		Boolean implicitAccess, Boolean queryUsage) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
@@ -2698,6 +2698,9 @@ public final class ConfigWebAdmin {
         
         if(tracing!=null)debugging.setAttribute("tracing",Caster.toString(tracing.booleanValue()));
         else debugging.removeAttribute("tracing");
+        
+        if(dump!=null)debugging.setAttribute("dump",Caster.toString(dump.booleanValue()));
+        else debugging.removeAttribute("dump");
         
         if(timer!=null)debugging.setAttribute("timer",Caster.toString(timer.booleanValue()));
         else debugging.removeAttribute("timer");

@@ -148,6 +148,7 @@ public abstract class ConfigImpl implements Config {
 	public static final int DEBUG_TIMER = 8;
 	public static final int DEBUG_IMPLICIT_ACCESS = 16;
 	public static final int DEBUG_QUERY_USAGE = 32;
+	public static final int DEBUG_DUMP = 64;
 	
 	
 	

@@ -3827,6 +3827,17 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else if (hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION))
 			options += ConfigImpl.DEBUG_EXCEPTION;
 
+		
+		str = debugging.getAttribute("dump");
+		if (hasAccess && !StringUtil.isEmpty(str)) {
+			if (toBoolean(str, false))
+				options += ConfigImpl.DEBUG_DUMP;
+		}
+		else if (hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_DUMP))
+			options += ConfigImpl.DEBUG_DUMP;
+
+		
+		
 		str = debugging.getAttribute("tracing");
 		if (hasAccess && !StringUtil.isEmpty(str)) {
 			if (toBoolean(str, false))

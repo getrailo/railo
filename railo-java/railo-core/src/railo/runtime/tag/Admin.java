@@ -76,6 +76,7 @@ import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -274,6 +275,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             doGetDebugData();
             return SKIP_BODY;
         }
+        if(action.equals("adddump")) {
+            doAddDump();
+            return SKIP_BODY;
+        }
         if(action.equals("getloginsettings")) {
         	doGetLoginSettings();
             return SKIP_BODY;
@@ -337,7 +342,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         return Tag.SKIP_BODY;
     }
 
-    private short toType(String strType, boolean throwError) throws ApplicationException {
+    private void doAddDump() throws ApplicationException {
+		DebuggerPro debugger=(DebuggerPro) pageContext.getDebugger();
+		PageSource ps = pageContext.getCurrentTemplatePageSource();
+		debugger.addDump(ps, getString("admin",action,"dump",true));
+	}
+
+	private short toType(String strType, boolean throwError) throws ApplicationException {
     	strType=StringUtil.toLowerCase(strType).trim();
     	if("web".equals(strType))return TYPE_WEB;
     	else if("server".equals(strType))return TYPE_SERVER;
@@ -1371,6 +1382,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set(KeyConstants._database,Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_DATABASE)));
         sct.set(KeyConstants._exception,Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)));
         sct.set("tracing",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_TRACING)));
+        sct.set("dump",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_DUMP)));
         sct.set("timer",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_TIMER)));
         sct.set("implicitAccess",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS)));
         sct.set("queryUsage",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)));
@@ -1425,6 +1437,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("admin",action,"returnVariable"),
                 pageContext.getConfig().debug()?pageContext.getDebugger().getDebuggingData(pageContext):null);
     }
+    
+    
+    
+    
     private void doGetLoggedDebugData() throws PageException {
     	
     	if(config instanceof ConfigServer) return ;
@@ -1681,6 +1697,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     			Caster.toBoolean(getString("database",""),null),
     			Caster.toBoolean(getString("exception",""),null),
     			Caster.toBoolean(getString("tracing",""),null),
+    			Caster.toBoolean(getString("dump",""),null),
     			Caster.toBoolean(getString("timer",""),null),
     			Caster.toBoolean(getString("implicitAccess",""),null),
     			Caster.toBoolean(getString("queryUsage",""),null)
