@@ -76,7 +76,7 @@
 
 		function buildSectionStruct() {
 
-			var otherSections = [ "ALL", "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Query", "Timer", "Trace", "More" ];
+			var otherSections = [ "ALL", "Dump", "ExecTime", "ExecOrder", "Exceptions", "ImpAccess", "Info", "Query", "Timer", "Trace", "More" ];
 			var i = 0;
 
 			var result = {};
