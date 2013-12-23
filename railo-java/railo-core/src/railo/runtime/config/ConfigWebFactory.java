@@ -2674,12 +2674,17 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (config instanceof ConfigServer) {
 
 			// Dump
-			Resource f = dir.getRealResource("Dump.cfc");
-			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/tag/Dump.cfc", f);
+			create("/resource/library/tag/",new String[]{
+					"Dump.cfc"
+					},dir,doNew);
+			
+			Resource sub = dir.getRealResource("railo/dump/skins/");
+			create("/resource/library/tag/railo/dump/skins/",new String[]{
+					"text.cfm","simple.cfm","modern.cfm","classic.cfm","pastel.cfm"
+					},sub,doNew);
 
 			// MediaPlayer
-			f = dir.getRealResource("MediaPlayer.cfc");
+			Resource f = dir.getRealResource("MediaPlayer.cfc");
 			if (!f.exists() || doNew)
 				createFileFromResourceEL("/resource/library/tag/MediaPlayer.cfc", f);
 			Resource build = dir.getRealResource("build");
