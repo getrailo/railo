@@ -480,7 +480,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(clearCache) {
 			hasCached=false;
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
-			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
+			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 			ch.remove(pageContext, id);
 			//pageContext.getQueryCache().remove(pageContext,sql,datasource!=null?datasource.getName():null,username,password);
 		}

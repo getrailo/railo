@@ -23,6 +23,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.KeyImpl;
+import railo.transformer.cfml.evaluator.EvaluatorException;
 
 /**
 * Writes a message to a log file.
@@ -169,6 +170,10 @@ public final class Log extends TagImpl {
 
 	@Override
 	public int doStartTag() throws PageException	{
+		
+		 if(text==null && exception==null)
+	        	throw new ApplicationException("Wrong Context, you must define one of the following attributes [text, exception]");
+		
 		ConfigImpl config =(ConfigImpl) pageContext.getConfig();
 	    railo.commons.io.log.Log logger;
 		if(file==null) {
