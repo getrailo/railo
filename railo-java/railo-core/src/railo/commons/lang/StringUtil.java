@@ -1082,6 +1082,35 @@ public final class StringUtil {
 	}
 
 
+	/**
+	 * returns true if the input string has letters and they are all UPPERCASE
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static boolean isAllUpperCase(String str) {
+
+		if ( str == null )  return false;
+
+		boolean hasLetters = false;
+		char c;
+
+		for (int i=str.length()-1; i >= 0; i--) {
+
+			c = str.charAt(i);
+			if ( Character.isLetter( c )) {
+
+				if ( !Character.isUpperCase( c ))
+					return false;
+
+				hasLetters = true;
+			}
+		}
+
+		return hasLetters;
+	}
+
+
 	public static boolean isWhiteSpace(String str) {
 		if(str==null) return false;
 		for(int i=str.length()-1;i>=0;i--){
