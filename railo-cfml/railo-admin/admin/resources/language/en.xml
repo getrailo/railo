@@ -884,7 +884,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.gateway.buttons.default">set as default</data>
 	<data key="settings.gateway.default">Default</data>
 	<data key="settings.gateway.namemissing">Cancel</data>
-	<data key="settings.gateway.descexisting">List of all existing gateways for ths enviroment</data>
+	<data key="settings.gateway.descexisting">List of all existing gateways for this enviroment</data>
 	<data key="settings.gateway.title">Gateway</data>
 	<data key="settings.dbdatabase">Database</data>
 	<data key="settings.dbhostdesc">Host name where the database server is located</data>
@@ -1115,7 +1115,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.gateway.class">Class</data>
 	<data key="settings.gateway.titleCreate">Create a new Gateway instance</data>
 	<data key="settings.gateway.titleExisting">List of existing gateway instances</data>
-	<data key="settings.gateway.descExisting">List of all existing gateways for ths enviroment</data>
+	<data key="settings.gateway.descExisting">List of all existing gateways for this enviroment</data>
 	<data key="settings.gateway.nameMissing">Cancel</data>
 	<data key="settings.gateway.type">Type</data>
 	<data key="settings.gateway.state">State</data>
@@ -1136,7 +1136,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.class">Class</data>
 	<data key="settings.cache.titleCreate">Create a new cache connection</data>
 	<data key="settings.cache.titleExisting">List of existing cache connections</data>
-	<data key="settings.cache.descExisting">List of all existing connection for ths enviroment</data>
+	<data key="settings.cache.descExisting">List of all existing connection for this enviroment</data>
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>
 	<data key="settings.cache.defaulttypeObject">Object</data>
@@ -1170,7 +1170,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.logging.readOnlyTitle">Readonly Logs</data>
 	<data key="settings.logging.readOnlyDesc">Readonly Logs are generated within the "server administrator" for all web instances and can not be modified by the "web administrator.</data>
 	<data key="settings.logging.title">Logs</data>
-	<data key="settings.logging.desc">List of existing Logs for ths enviroment</data>
+	<data key="settings.logging.desc">List of existing Logs for this enviroment</data>
 	<data key="settings.logging.detailDesc">Log settings for a specific Log</data>
 	<data key="settings.logging.noDriver">There are no Appender/Layout drivers in that system</data>
 
