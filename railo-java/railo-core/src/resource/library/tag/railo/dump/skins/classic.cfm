@@ -21,23 +21,23 @@
 
 	stClasses = { 
 		stCustomClasses : { 
-				Array:{headerColor:'090', darkColor:'cfc', lightColor:'fff', textColorHeader:'fff'},
-				Mongo:{headerColor:'393', darkColor:'393', lightColor:'966' },
-				Object:{headerColor:'f44', darkColor:'fcc', lightColor:'fff', textColorHeader:'fff' },
-				Query:{headerColor:'a6a', darkColor:'fdf', lightColor:'fff', textColorHeader:'fff' },
-				SimpleValue:{headerColor:'fff', darkColor:'fff', lightColor:'fff', pointer:0},
-				Struct:{headerColor:'44c', darkColor:'cdf', lightColor:'fff', textColorHeader:'fff' , textColor:'000' },
-				SubXML:{headerColor:'aaa', darkColor:'aaa', lightColor:'ddd' }, 
-				XML:{headerColor:'aaa', darkColor:'aaa', lightColor:'ddd' },
-				white: {headerColor:'fff', darkColor:'fff', lightColor:'ccc' }
-			},
-			stBaseClasses : {
-				tdBase:{		style:'.tdBase {border: 1px solid ##000;padding: 4px;vertical-align: top;}'},
-				tableDump:{		style:'.tableDump {font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: xx-small;background-color: ##aaa;color: ##000;border-spacing: 10px;border-collapse:collapse;empty-cells:show;}'},
-				baseHeader:{	style:'.baseHeader {border: 2px solid ##000;padding: 4px;text-align: left;vertical-align: top;cursor:pointer;margin: 0px 0px -1px 0px;}'},
-				header:{		style:'.Header {font-weight: bold}'},
-				Meta:{		style:'.Meta {font-weight: normal}'},
-				tdClickName:{ 	style:'.tdClickName {empty-cells: show}'}
-			}
+			Array:{headerColor:'090', darkColor:'cfc', lightColor:'fff', textColorHeader:'fff'},
+			Mongo:{headerColor:'393', darkColor:'393', lightColor:'966' },
+			Object:{headerColor:'f44', darkColor:'fcc', lightColor:'fff', textColorHeader:'fff' },
+			Query:{headerColor:'a6a', darkColor:'fdf', lightColor:'fff', textColorHeader:'fff' },
+			SimpleValue:{headerColor:'fff', darkColor:'fff', lightColor:'fff', pointer:0},
+			Struct:{headerColor:'44c', darkColor:'cdf', lightColor:'fff', textColorHeader:'fff' , textColor:'000' },
+			SubXML:{headerColor:'aaa', darkColor:'aaa', lightColor:'ddd' }, 
+			XML:{headerColor:'aaa', darkColor:'aaa', lightColor:'ddd' },
+			white: {headerColor:'fff', darkColor:'fff', lightColor:'ccc' }
+		},
+		stBaseClasses : {
+			tdBase: {		style:'{border: 1px solid ##000;padding: 4px;vertical-align: top;}'},
+			tableDump: {	style:'{font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: xx-small;background-color: ##eee;color: ##000;border-spacing: 10px;border-collapse:collapse;empty-cells:show;}'},
+			baseHeader: {	style:'{border: 2px solid ##000;padding: 4px;text-align: left;vertical-align: top;cursor:pointer;margin: 0px 0px -1px 0px;}'},
+			header: {		style:'{font-weight: bold; border:1px solid ##000;}'},
+			meta: {			style:'{font-weight: normal}'},
+			tdClickName: { 	style:'{empty-cells: show}'}
+		}
 	};
 </cfscript>

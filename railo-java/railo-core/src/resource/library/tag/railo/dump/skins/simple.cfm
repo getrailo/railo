@@ -30,12 +30,12 @@
 			white: {headerColor:'fff', darkColor:'fff', lightColor:'fff', border:0}
 		},
 		stBaseClasses : {
-			tdBase:{		style:'.tdBase {border: 0px;padding: 4px;vertical-align: top;}'},
-			tableDump:{		style:'.tableDump {font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: xx-small;background-color: ##aaa;color: ##000;border-spacing: 10px;border-collapse:collapse;empty-cells:show;}'},
-			baseHeader:{	style:'.baseHeader {border: 0px solid ##000;padding: 4px;text-align: left;vertical-align: top;cursor:pointer;margin: 0px 0px -1px 0px;}'},
-			header:{		style:'.Header {font-weight: bold}'},
-			Meta:{		style:'.Meta {font-weight: normal}'},
-			tdClickName:{ 	style:'.tdClickName {empty-cells: show}'}
+			tdBase: {		style:'{border: 0px;padding: 4px;vertical-align: top;}'},
+			tableDump: {	style:'{font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: xx-small;background-color: ##fff;color: ##000;border-spacing: 10px;border-collapse:collapse;empty-cells:show;}'},
+			baseHeader: {	style:'{border: 0px solid ##000;padding: 4px;text-align: left;vertical-align: top;cursor:pointer;margin: 0px 0px -1px 0px;}'},
+			header: {		style:'{font-weight: bold; border:1px solid ##000;}'},
+			meta: {			style:'{font-weight: normal}'},
+			tdClickName: { 	style:'{empty-cells: show}'}
 		}
 	};
 </cfscript>
