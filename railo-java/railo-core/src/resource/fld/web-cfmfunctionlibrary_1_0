@@ -13242,7 +13242,28 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>array</type>
 		</return>
 	</function>
-	
+	<!-- queryRowData -->
+    	<function>
+    		<name>queryRowData</name>
+    		<class>railo.runtime.functions.query.QueryRowData</class>
+    		<member-name>rowData</member-name>
+    		<description>Returns a struct with the data from a query for a given row number</description>
+    		<argument>
+    			<name>query</name>
+    			<type>query</type>
+    			<required>Yes</required>
+    			<description>query object do get data from</description>
+    	    </argument>
+    		<argument>
+    			<name>rowNumber</name>
+    			<type>number</type>
+    			<required>Yes</required>
+    			<description>position of the row to be returned</description>
+    	    </argument>
+    		<return>
+    			<type>struct</type>
+    		</return>
+    	</function>
 	
 	
 	<!-- queryColumnList -->
