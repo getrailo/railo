@@ -3685,6 +3685,7 @@ dec: descending (z to a) sort order.
 		<name>dumpStruct</name>
 		<class>railo.runtime.functions.other.DumpStruct</class>
 		<description>creates out of given object dump infomration as struct</description>
+		<status>hidden</status>
 		<argument>
 			<name>value</name>
 			<type>any</type>
