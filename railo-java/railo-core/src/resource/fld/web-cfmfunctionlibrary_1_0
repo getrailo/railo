@@ -2352,6 +2352,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Creates a Universally Unique Identifier (UUID). A UUID is a
         35-character string representation of a unique 128-bit integer
         xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx : x is a hexadecimal digit</description>
+        <argument>
+            <name>isShort</name>
+            <type>boolean</type>
+            <required>false</required>
+            <description>If true, the UUID will be encoded with CaSe-sensitive, URL-safe, character set for a length of 22 or 23 characters.</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
