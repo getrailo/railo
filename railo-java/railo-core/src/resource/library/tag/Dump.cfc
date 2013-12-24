@@ -142,7 +142,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		// set global variables
 		variables.format = attrib.format;
 		variables.expand = attrib.expand;
-		variables.topElement = attrib.eval ?: "";
+		variables.topElement = attrib.eval ?: "var";
 		variables.colors = getSafeColors(meta.colors);
 		variables.dumpID  = createId();
 		variables.context =	'title="' & context & '"';
