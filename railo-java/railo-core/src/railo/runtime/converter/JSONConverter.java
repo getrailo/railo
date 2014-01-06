@@ -642,7 +642,7 @@ public final class JSONConverter extends ConverterSupport {
 			if(arr[i] < 128){
 				switch(arr[i]) {
 					case '\\': rtn.append("\\\\"); break;
-					case '/': rtn.append("\\/"); break;
+					//case '/': rtn.append("\\/"); break;
 					case '\n': rtn.append("\\n"); break;
 					case '\r': rtn.append("\\r"); break;
 					case '\f': rtn.append("\\f"); break;

@@ -1,22 +1,3 @@
-<!--- <cfcomponent extends="org.railo.cfml.test.RailoTestCase">
-	<cfprocessingdirective pageencoding="utf-8"/>
-	
-	<cffunction name="test">
-		<cfscript>
-		
-		var str="L?EL?EL?EL?E....";
-	
-		var repl="a very long string to replace E";
-		var result=replaceNoCase(str,"E",repl,"all");
-		systemoutput(str,true,true);
-		dump(str);
-		dump(repl);
-		dump(result);
-		abort;
-		</cfscript>
-	</cffunction>
-</cfcomponent> --->
-
 <cfscript>
 	pageencoding "utf-8"; 
 component extends="org.railo.cfml.test.RailoTestCase"	{

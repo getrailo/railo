@@ -602,8 +602,9 @@ public final class SMTPClient implements Serializable  {
 		if(!StringUtil.isEmpty(att.getType())) mbp.setHeader("Content-Type", att.getType());
 		if(!StringUtil.isEmpty(att.getDisposition())){
 			mbp.setDisposition(att.getDisposition());
-			if(mp instanceof MimeMultipart)
+			/*if(mp instanceof MimeMultipart) {
 				((MimeMultipart)mp).setSubType("related");
+			}*/
 			
 		}
 		if(!StringUtil.isEmpty(att.getContentID()))mbp.setContentID(att.getContentID());
