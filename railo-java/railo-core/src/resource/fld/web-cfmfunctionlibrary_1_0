@@ -5702,6 +5702,24 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 		</return>
 	</function>
 	
+	<!-- GetPrinterList -->
+	<function>
+		<name>GetPrinterList</name>
+		<class>railo.runtime.functions.system.GetPrinterList</class>
+		<description>Gets a string list of available printers.</description>
+		<argument>
+			<name>delimiters</name>
+			<alias>delimiter</alias>
+			<type>string</type>
+			<required>No</required>
+			<default>,</default>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- GetVFSMetaData -->
 	<function>
 		<name>GetVFSMetaData</name>
@@ -6390,7 +6408,7 @@ if this attribute is not provided all types are returned.</description>
 			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
-		<description>A string or a variable that contains one. A delimited list of delimiters. Elements may consist of multiple characters.
+		<description>A delimited list of delimiters. Elements may consist of multiple characters.
 Default list of delimiters: space character, tab character, newline character; or their codes: "chr(32)", "chr(9)", chr(10).
 Default list delimiter: comma character.</description>
     </argument>
