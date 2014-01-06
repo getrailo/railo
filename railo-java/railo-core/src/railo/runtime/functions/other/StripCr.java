@@ -9,7 +9,7 @@ import railo.runtime.ext.function.Function;
 public final class StripCr implements Function {
 
 	public static String call(PageContext pc , String string) {
-		StringBuffer sb=new StringBuffer(string.length());
+		StringBuilder sb=new StringBuilder(string.length());
 		int start=0;
 		int pos=0;
 		

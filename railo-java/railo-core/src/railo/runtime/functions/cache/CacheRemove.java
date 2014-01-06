@@ -39,12 +39,12 @@ public final class CacheRemove implements Function {
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
-		StringBuffer sb=null;
+		StringBuilder sb=null;
 		try{
 			while(it.hasNext()){
 				id= Util.key(Caster.toString(it.next()));
 				if(!cache.remove(id) && throwOnError){
-					if(sb==null)sb=new StringBuffer();
+					if(sb==null)sb=new StringBuilder();
 					else sb.append(',');
 					sb.append(id);
 				}		

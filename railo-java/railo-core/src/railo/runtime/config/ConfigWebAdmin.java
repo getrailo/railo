@@ -1799,7 +1799,7 @@ public final class ConfigWebAdmin {
 	private static String toStringURLStyle(Struct sct) {
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
-        StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
         while(it.hasNext()) {
             e = it.next();
             if(rtn.length()>0)rtn.append('&');
@@ -1812,7 +1812,7 @@ public final class ConfigWebAdmin {
 
 	private static String toStringCSSStyle(Struct sct) {
         //Collection.Key[] keys = sct.keys();
-        StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
         

@@ -33,14 +33,14 @@ public class PieSectionLegendLabelGeneratorImpl implements
 		String value=Caster.toString(pd.getKey(pd.getIndex(c)),"");
 		
 		StringList list = ListUtil.toList(value, '\n');
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		String line;
 		int lineLen;
 		while(list.hasNext()) {
 			line=list.next();
 			lineLen=metrics.stringWidth(line);
 			if(lineLen>with) {
-				reorganize(sb,list,new StringBuffer(line));
+				reorganize(sb,list,new StringBuilder(line));
 				break;
 			}
 			if(sb.length()>0)sb.append('\n');
@@ -54,7 +54,7 @@ public class PieSectionLegendLabelGeneratorImpl implements
 		//return "StringUtil.reverse()";
 	}
 
-	private void reorganize(StringBuffer sb, StringList list, StringBuffer rest) {
+	private void reorganize(StringBuilder sb, StringList list, StringBuilder rest) {
 		// fill rest
 		String item;
 		while(list.hasNext()) {

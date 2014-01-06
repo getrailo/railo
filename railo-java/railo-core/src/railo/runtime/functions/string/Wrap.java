@@ -35,7 +35,7 @@ public final class Wrap implements Function {
 	public static String wrap(String str, int wrapTextLength) {
 		if(wrapTextLength<=0)return str;
 		
-		StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
 		String ls=SystemUtil.getOSSpecificLineSeparator();
 		Array arr = ListUtil.listToArray(str,ls);
 		int len=arr.size();

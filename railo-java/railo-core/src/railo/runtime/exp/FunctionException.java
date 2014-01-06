@@ -77,7 +77,7 @@ public final class FunctionException extends ExpressionException {
 		}
 		if(function == null) return "";
 		
-		StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
 		rtn.append(function.getName()+"(");
 		
 		

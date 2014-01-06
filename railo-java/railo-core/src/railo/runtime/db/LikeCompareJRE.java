@@ -28,7 +28,7 @@ class LikeCompareJRE  {
         	if(escape.length()>1)throw new DatabaseException("Invalid escape character ["+escape+"] has been specified in a LIKE conditional",null,sql,null);
         }
         
-    	StringBuffer sb = new StringBuffer(wildcard.length());
+        StringBuilder sb = new StringBuilder(wildcard.length());
         int len=wildcard.length();
         //boolean isEscape=false;
         char c;

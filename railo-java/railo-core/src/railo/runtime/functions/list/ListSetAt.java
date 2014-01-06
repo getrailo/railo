@@ -40,7 +40,7 @@ public final class ListSetAt implements Function {
 			throw new FunctionException(pc,"listSetAt",2,"position","invalid string list index ["+(pos)+"], indexes go from 1 to "+(len));
 		}
 		
-		StringBuffer sb=new StringBuffer();//RepeatString.call(new StringBuffer(),delimiter,removedInfo[0]);
+		StringBuilder sb=new StringBuilder();//RepeatString.call(new StringBuffer(),delimiter,removedInfo[0]);
 		boolean hasStart=false;
 		boolean hasSet=false;
 		String v;

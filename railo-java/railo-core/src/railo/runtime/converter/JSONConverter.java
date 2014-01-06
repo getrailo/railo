@@ -79,7 +79,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @throws ConverterException
      */
     
-    private void _serializeClass(PageContext pc,Set test,Class clazz,Object obj, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeClass(PageContext pc,Set test,Class clazz,Object obj, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
     	Struct sct=new StructImpl(Struct.TYPE_LINKED);
     	if(test==null)test=new HashSet();
     	
@@ -130,7 +130,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDate(Date date, StringBuffer sb) {
+	private void _serializeDate(Date date, StringBuilder sb) {
 		_serializeDateTime(new DateTimeImpl(date),sb);
 	}
 	/**
@@ -139,7 +139,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
+	private void _serializeDateTime(DateTime dateTime, StringBuilder sb) {
 		
 		sb.append('"');
 		
@@ -169,7 +169,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(PageContext pc,Set test,Array array, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeArray(PageContext pc,Set test,Array array, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		_serializeList(pc,test,array.toList(),sb,serializeQueryByColumns,done);
 	}
 	
@@ -181,7 +181,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeList(PageContext pc,Set test,List list, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeList(PageContext pc,Set test,List list, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -195,7 +195,7 @@ public final class JSONConverter extends ConverterSupport {
 		
 		sb.append(']');
 	}
-	private void _serializeArray(PageContext pc,Set test,Object[] arr, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeArray(PageContext pc,Set test,Object[] arr, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -215,7 +215,7 @@ public final class JSONConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs, Set<Object> done) throws ConverterException {
+    public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuilder sb, boolean serializeQueryByColumns, boolean addUDFs, Set<Object> done) throws ConverterException {
         // Component
     	if(struct instanceof Component){
     		String res = castToJson(pc, (Component)struct, NULL_STRING);
@@ -307,7 +307,7 @@ public final class JSONConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    private void _serializeMap(PageContext pc,Set test,Map map, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeMap(PageContext pc,Set test,Map map, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
         sb.append(goIn());
         sb.append("{");
         
@@ -334,13 +334,13 @@ public final class JSONConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeComponent(PageContext pc,Set test,Component component, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
     	ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,component);
 	    _serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
     }
     
 
-    private void _serializeUDF(PageContext pc,Set test,UDF udf, StringBuffer sb,boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeUDF(PageContext pc,Set test,UDF udf, StringBuilder sb,boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		Struct sct=new StructImpl();
 		try {
 			// Meta
@@ -375,7 +375,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 		Collection.Key[] _keys = CollectionUtil.keys(query);
 		sb.append(goIn());
@@ -463,12 +463,12 @@ public final class JSONConverter extends ConverterSupport {
 	/**
 	 * serialize a Object to his xml Format represenation
 	 * @param object Object to serialize
-	 * @param sb StringBuffer to write data
+	 * @param sb StringBuilder to write data
 	 * @param serializeQueryByColumns 
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serialize(PageContext pc,Set test,Object object, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serialize(PageContext pc,Set test,Object object, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 		// NULL
 		if(object==null || object==NULL) {
@@ -477,7 +477,7 @@ public final class JSONConverter extends ConverterSupport {
 		    return;
 		}
 		// String
-		if(object instanceof String || object instanceof StringBuffer) {
+		if(object instanceof String || object instanceof StringBuilder) {
 		    sb.append(goIn());
 		    sb.append('"');
 		    sb.append(escape(object.toString()));
@@ -609,7 +609,7 @@ public final class JSONConverter extends ConverterSupport {
 		}
 	}
 
-	private void _serializeXML(Node node, StringBuffer sb) {
+	private void _serializeXML(Node node, StringBuilder sb) {
     	node=XMLCaster.toRawNode(node);
     	sb.append(goIn());
 	    sb.append('"');
@@ -619,7 +619,7 @@ public final class JSONConverter extends ConverterSupport {
 	}
 
 
-	private void _serializeTimeSpan(TimeSpan span, StringBuffer sb) {
+	private void _serializeTimeSpan(TimeSpan span, StringBuilder sb) {
     	
 	        sb.append(goIn());
 		    sb.append("createTimeSpan(");
@@ -637,7 +637,7 @@ public final class JSONConverter extends ConverterSupport {
 	
 	public static String escape(String str) {
 		char[] arr=str.toCharArray();
-		StringBuffer rtn=new StringBuffer(arr.length);
+		StringBuilder rtn=new StringBuilder(arr.length);
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i] < 128){
 				switch(arr[i]) {
@@ -671,7 +671,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	public String serialize(PageContext pc,Object object, boolean serializeQueryByColumns) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize(pc,null,object,sb,serializeQueryByColumns,new HashSet<Object>());
 		return sb.toString();
 	}

@@ -54,7 +54,7 @@ public final class DateFormat extends BaseFormat implements Format {
 		int pos=0;
 		if(len==0) return "";
 		
-		StringBuffer formated=new StringBuffer();
+		StringBuilder formated=new StringBuilder();
 		
 		
 		

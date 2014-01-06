@@ -318,7 +318,7 @@ public final class ConfigWebUtil {
     }
 
 	public static Object getIdMapping(Mapping m) {
-		StringBuffer id=new StringBuffer(m.getVirtualLowerCase());
+		StringBuilder id=new StringBuilder(m.getVirtualLowerCase());
         if(m.hasPhysical())id.append(m.getStrPhysical());
         if(m.hasArchive())id.append(m.getStrPhysical());
         return m.toString().toLowerCase();

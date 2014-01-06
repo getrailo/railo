@@ -170,7 +170,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeList(List list, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<array length="+_+list.size()+_+">");
+		StringBuilder sb=new StringBuilder(goIn()+"<array length="+_+list.size()+_+">");
 				
 		ListIterator it=list.listIterator();
 		while(it.hasNext()) {
@@ -189,7 +189,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException 
 	 */
 	private String _serializeComponent(Component component, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Component ca;
 		component=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ca=component);
 		boolean isPeristent=ComponentProUtil.isPersistent(ca);
@@ -251,7 +251,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeStruct(Struct struct, Set<Object> done) throws ConverterException {
-        StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+		StringBuilder sb=new StringBuilder(goIn()+"<struct>");
         
         Iterator<Key> it = struct.keyIterator();
 
@@ -276,7 +276,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeMap(Map map, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+		StringBuilder sb=new StringBuilder(goIn()+"<struct>");
 		
 		Iterator it=map.keySet().iterator();
 
@@ -303,7 +303,7 @@ public final class WDDXConverter extends ConverterSupport {
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
 		Collection.Key[] keys = CollectionUtil.keys(query);
-		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.util.ListUtil.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
+		StringBuilder sb=new StringBuilder(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.util.ListUtil.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	
 		deep++;
@@ -449,7 +449,7 @@ public final class WDDXConverter extends ConverterSupport {
 	public String serialize(Object object) throws ConverterException {
 		deep=0;
 		
-		StringBuffer sb=new StringBuffer();	
+		StringBuilder sb=new StringBuilder();	
 		if(xmlConform)sb.append("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>");	
 		sb.append("<wddxPacket version="+_+"1.0"+_+">");	
 		deep++;
@@ -600,7 +600,7 @@ public final class WDDXConverter extends ConverterSupport {
 	private Object _deserializeString(Element element) {
 		NodeList childList = element.getChildNodes();
 		int len = childList.getLength();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Node data;
 		String str;
 		for(int i=0;i<len;i++) {
@@ -821,7 +821,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @return return current blockquote
 	 */
 	private String goIn() {
-		//StringBuffer rtn=new StringBuffer(deep);
+		//StringBuilder rtn=new StringBuilder(deep);
 		//for(int i=0;i<deep;i++) rtn.append('\t');
 		//return rtn.toString();
 		return "";

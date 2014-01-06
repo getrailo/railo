@@ -29,7 +29,7 @@ public class WildCardFilter implements CacheKeyFilter {
     public WildCardFilter(String wildcard,boolean ignoreCase) throws MalformedPatternException {
         this.wildcard=wildcard;
         this.ignoreCase=ignoreCase;
-        StringBuffer sb = new StringBuffer(wildcard.length());
+        StringBuilder sb = new StringBuilder(wildcard.length());
         int len=wildcard.length();
         
         for(int i=0;i<len;i++) {

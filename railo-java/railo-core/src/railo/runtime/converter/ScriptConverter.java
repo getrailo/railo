@@ -67,7 +67,7 @@ public final class ScriptConverter extends ConverterSupport {
      * @param sb
 	 * @throws ConverterException
      */
-    private void _serializeSerializable(Serializable serializable, StringBuffer sb) throws ConverterException {
+    private void _serializeSerializable(Serializable serializable, StringBuilder sb) throws ConverterException {
        
         sb.append(goIn());
 	    sb.append("evaluateJava('");
@@ -86,7 +86,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDate(Date date, StringBuffer sb) throws ConverterException {
+	private void _serializeDate(Date date, StringBuilder sb) throws ConverterException {
 		_serializeDateTime(new DateTimeImpl(date),sb);
 	}
 	/**
@@ -95,7 +95,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDateTime(DateTime dateTime, StringBuffer sb) throws ConverterException {
+	private void _serializeDateTime(DateTime dateTime, StringBuilder sb) throws ConverterException {
 	   
 
 	    try {
@@ -118,7 +118,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(Array array, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeArray(Array array, StringBuilder sb, Set<Object> done) throws ConverterException {
 		_serializeList(array.toList(),sb,done);
 	}
 	
@@ -129,7 +129,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeList(List list, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeList(List list, StringBuilder sb, Set<Object> done) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -151,7 +151,7 @@ public final class ScriptConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    public void _serializeStruct(Struct struct, StringBuffer sb, Set<Object> done) throws ConverterException {
+    public void _serializeStruct(Struct struct, StringBuilder sb, Set<Object> done) throws ConverterException {
         sb.append(goIn());
         sb.append('{');
         Iterator it=struct.keyIterator();
@@ -173,7 +173,7 @@ public final class ScriptConverter extends ConverterSupport {
     }
     
     public String serializeStruct(Struct struct, Set<Collection.Key> ignoreSet) throws ConverterException {
-    	StringBuffer sb =new StringBuffer();
+    	StringBuilder sb =new StringBuilder();
         sb.append(goIn());
         sb.append("{");
         boolean hasIgnores=ignoreSet!=null;
@@ -204,7 +204,7 @@ public final class ScriptConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    private void _serializeMap(Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
+    private void _serializeMap(Map map, StringBuilder sb, Set<Object> done) throws ConverterException {
         if(map instanceof Serializable) {
         	_serializeSerializable((Serializable)map,sb);
         	return;
@@ -236,7 +236,7 @@ public final class ScriptConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    private void _serializeComponent(Component c, StringBuffer sb, Set<Object> done) throws ConverterException {
+    private void _serializeComponent(Component c, StringBuilder sb, Set<Object> done) throws ConverterException {
 
 		ComponentSpecificAccess cw = new ComponentSpecificAccess(Component.ACCESS_PRIVATE,c);  
 
@@ -326,7 +326,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(Query query, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeQuery(Query query, StringBuilder sb, Set<Object> done) throws ConverterException {
 		
 		//Collection.Key[] keys = query.keys();
 		Iterator<Key> it = query.keyIterator();
@@ -368,11 +368,11 @@ public final class ScriptConverter extends ConverterSupport {
 	/**
 	 * serialize a Object to his xml Format represenation
 	 * @param object Object to serialize
-	 * @param sb StringBuffer to write data
+	 * @param sb StringBuilder to write data
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serialize(Object object, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serialize(Object object, StringBuilder sb, Set<Object> done) throws ConverterException {
 		//try	{
 			deep++;
 			// NULL
@@ -510,7 +510,7 @@ public final class ScriptConverter extends ConverterSupport {
 	
 
 
-    private void _serializeXML(Node node, StringBuffer sb) {
+    private void _serializeXML(Node node, StringBuilder sb) {
     	node=XMLCaster.toRawNode(node);
     	sb.append(goIn());
 	    sb.append("xmlParse('");
@@ -519,7 +519,7 @@ public final class ScriptConverter extends ConverterSupport {
     	
 	}
 
-    private void _serializeTimeSpan(TimeSpan span, StringBuffer sb) {
+    private void _serializeTimeSpan(TimeSpan span, StringBuilder sb) {
     	
 	        sb.append(goIn());
 		    sb.append("createTimeSpan(");
@@ -553,7 +553,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 */
 	public String serialize(Object object) throws ConverterException {
 		deep=0;
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize(object,sb,new HashSet<Object>());
 		return sb.toString();
 	}
@@ -563,7 +563,7 @@ public final class ScriptConverter extends ConverterSupport {
 	 * @return return current blockquote
 	 */
 	private String goIn() {
-	    /*StringBuffer rtn=new StringBuffer('\n');
+	    /*StringBuilder rtn=new StringBuilder('\n');
 		for(int i=0;i<deep;i++) rtn.append('\t');
 		return rtn.toString();
 		/*/

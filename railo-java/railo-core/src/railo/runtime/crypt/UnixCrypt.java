@@ -254,7 +254,7 @@ public final class UnixCrypt extends Object { //
    */ 
    public static final String crypt(String salt, String original) { 
        while(salt.length() < 2) salt += "A"; 
-       StringBuffer buffer = new StringBuffer(" "); 
+       StringBuilder buffer = new StringBuilder(" "); 
        char charZero = salt.charAt(0); 
        char charOne = salt.charAt(1); 
        buffer.setCharAt(0, charZero); 

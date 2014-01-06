@@ -128,7 +128,7 @@ public final class XMLConverter extends ConverterSupport {
 	 */
 	private String _serializeList(List list, Map<Object,String> done, String id) throws ConverterException {
 		// <ARRAY ID="1" SIZE="1"><ITEM INDEX="1" TYPE="STRING">hello world</ITEM></ARRAY>
-		StringBuffer sb=new StringBuffer(goIn()+"<ARRAY ID=\""+id+"\" SIZE="+_+list.size()+_+">");
+		StringBuilder sb=new StringBuilder(goIn()+"<ARRAY ID=\""+id+"\" SIZE="+_+list.size()+_+">");
 		int index;
 		ListIterator it=list.listIterator();
 		while(it.hasNext()) {
@@ -153,7 +153,7 @@ public final class XMLConverter extends ConverterSupport {
 	 * @throws ConverterException 
 	 */
 	private String _serializeComponent(Component component, Map<Object,String> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Component ca;
 		component=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ca=component);
 		boolean isPeristent=ComponentProUtil.isPersistent(ca);
@@ -215,7 +215,7 @@ public final class XMLConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeStruct(Struct struct, Map<Object,String> done, String id) throws ConverterException {
-        StringBuffer sb=new StringBuffer(goIn()+"<STRUCT ID=\""+id+"\">");
+        StringBuilder sb=new StringBuilder(goIn()+"<STRUCT ID=\""+id+"\">");
         
         Iterator<Key> it = struct.keyIterator();
 
@@ -243,7 +243,7 @@ public final class XMLConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeMap(Map map, Map<Object,String> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+		StringBuilder sb=new StringBuilder(goIn()+"<struct>");
 		
 		Iterator it=map.keySet().iterator();
 
@@ -288,7 +288,7 @@ public final class XMLConverter extends ConverterSupport {
 		 *  </QUERY>
 		*/
 		Collection.Key[] keys = CollectionUtil.keys(query);
-		StringBuffer sb=new StringBuffer(goIn()+"<QUERY ID=\""+id+"\">");
+		StringBuilder sb=new StringBuilder(goIn()+"<QUERY ID=\""+id+"\">");
 		
 		// columns
 		sb.append(goIn()+"<COLUMNNAMES>");
@@ -450,7 +450,7 @@ public final class XMLConverter extends ConverterSupport {
 	public String serialize(Object object) throws ConverterException {
 		deep=0;
 		
-		StringBuffer sb=new StringBuffer();	
+		StringBuilder sb=new StringBuilder();	
 		//if(xmlConform)sb.append("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>");	
 		deep++;
 		sb.append(_serialize(object,new HashMap<Object,String>()));
@@ -592,7 +592,7 @@ public final class XMLConverter extends ConverterSupport {
 	private Object _deserializeString(Element element) {
 		NodeList childList = element.getChildNodes();
 		int len = childList.getLength();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Node data;
 		String str;
 		for(int i=0;i<len;i++) {
@@ -798,7 +798,7 @@ public final class XMLConverter extends ConverterSupport {
 	 * @return return current blockquote
 	 */
 	private String goIn() {
-		//StringBuffer rtn=new StringBuffer(deep);
+		//StringBuilder rtn=new StringBuilder(deep);
 		//for(int i=0;i<deep;i++) rtn.append('\t');
 		//return rtn.toString();
 		return "";

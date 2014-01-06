@@ -13,7 +13,7 @@ public final class LJustify implements Function {
 		if(len<1) throw new ExpressionException("Parameter 2 of function lJustify which is now ["+len+"] must be a positive integer");
 		else if((len-=str.length())<=0) return str;
 		else {
-			StringBuffer sb=new StringBuffer(str.length()+len);
+			StringBuilder sb=new StringBuilder(str.length()+len);
 			sb.append(str);
 			for(int i=1;i<=len;i++) {
 				//str+=" ";

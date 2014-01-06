@@ -13,7 +13,7 @@ public final class UUCoder {
      * @return encoded String
      */
     public static String encode(byte barr[]) {
-        StringBuffer rtn = new StringBuffer();
+    	StringBuilder rtn = new StringBuilder();
         int len = barr.length;
         int read = 0;
         boolean stop = false;
@@ -80,7 +80,7 @@ public final class UUCoder {
         return rtn;
     }
 
-    private static void encodeBytes(byte in[], int off, StringBuffer out) {
+    private static void encodeBytes(byte in[], int off, StringBuilder out) {
         out.append(_enc((byte)(in[off] >>> 2)));
         out.append(_enc((byte)(in[off] << 4 & 0x30 | in[off + 1] >>> 4 & 0xf)));
         out.append(_enc((byte)(in[off + 1] << 2 & 0x3c | in[off + 2] >>> 6 & 3)));

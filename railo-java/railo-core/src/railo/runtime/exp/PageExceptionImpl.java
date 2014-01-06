@@ -363,7 +363,7 @@ public abstract class PageExceptionImpl extends PageException {
 	}
 	
 	private static String getCodePrint(String[] content,int line, boolean asHTML ) {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		// bad Line
 		for(int i=line-2;i<line+3;i++) {
 			if(i>0 && i<=content.length) {

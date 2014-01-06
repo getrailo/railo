@@ -396,7 +396,7 @@ public class DumpUtil {
 			if(fields.length>0)table.appendRow(1,new SimpleDumpData("fields"),fieldDump);
 			
 			// Methods
-			StringBuffer objMethods=new StringBuffer();
+			StringBuilder objMethods=new StringBuilder();
 			Method[] methods=clazz.getMethods();
 			DumpTable methDump = new DumpTable("#cc9999","#ffcccc","#000000");
 			methDump.appendRow(7,new SimpleDumpData("return"),new SimpleDumpData("interface"),new SimpleDumpData("exceptions"));
@@ -410,7 +410,7 @@ public class DumpUtil {
 				}
 				
 				// exceptions
-				StringBuffer sbExp=new StringBuffer();
+				StringBuilder sbExp=new StringBuilder();
 				Class[] exceptions = method.getExceptionTypes();
 				for(int p=0;p<exceptions.length;p++){
 					if(p>0)sbExp.append("\n");
@@ -418,7 +418,7 @@ public class DumpUtil {
 				}
 				
 				// parameters
-				StringBuffer sbParams=new StringBuffer(method.getName());
+				StringBuilder sbParams=new StringBuilder(method.getName());
 				sbParams.append('(');
 				Class[] parameters = method.getParameterTypes();
 				for(int p=0;p<parameters.length;p++){

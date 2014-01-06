@@ -18,18 +18,18 @@ public final class RepeatString implements Function {
         int len=(int) count;
         if(len<0) throw new ExpressionException("Parameter 2 of function repeatString which is now ["+len+"] must be a non-negative integer");
         char[] chars=str.toCharArray();
-        StringBuffer cb=new StringBuffer(chars.length*len);
+        StringBuilder cb=new StringBuilder(chars.length*len);
         for(int i=0;i<len;i++)cb.append(chars);
         return cb.toString();
     }
-    public static StringBuffer call(StringBuffer sb,String str, double count) throws ExpressionException {
+    public static StringBuilder call(StringBuilder sb,String str, double count) throws ExpressionException {
         int len=(int) count;
         if(len<0) throw new ExpressionException("Parameter 1 of function repeatString which is now ["+len+"] must be a non-negative integer");
         
         for(int i=0;i<len;i++)sb.append(str);
         return sb;
     }
-    public static StringBuffer call(StringBuffer sb,char c, double count) throws ExpressionException {
+    public static StringBuilder call(StringBuilder sb,char c, double count) throws ExpressionException {
         int len=(int) count;
         if(len<0) throw new ExpressionException("Parameter 1 of function repeatString which is now ["+len+"] must be a non-negative integer");
         

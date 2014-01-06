@@ -85,7 +85,7 @@ public final class AppListenerUtil {
 	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 	    //Config config = pc.getConfig();
 		for(int i=arr.size()-1;i>0;i--) {
-		    StringBuffer sb=new StringBuffer("/");
+			StringBuilder sb=new StringBuilder("/");
 			for(int y=1;y<i;y++) {
 			    sb.append((String)arr.get(y,""));
 			    sb.append('/');

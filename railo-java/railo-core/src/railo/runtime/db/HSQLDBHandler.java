@@ -75,9 +75,9 @@ public final class HSQLDBHandler {
 			int[] innerTypes=toInnerTypes(types);
 			// CREATE STATEMENT
 				String comma="";
-				StringBuffer create=new StringBuffer("CREATE TABLE "+name+" (");
-				StringBuffer insert=new StringBuffer("INSERT INTO  "+name+" (");
-				StringBuffer values=new StringBuffer("VALUES (");
+				StringBuilder create=new StringBuilder("CREATE TABLE "+name+" (");
+				StringBuilder insert=new StringBuilder("INSERT INTO  "+name+" (");
+				StringBuilder values=new StringBuilder("VALUES (");
 				for(int i=0;i<keys.length;i++) {
 					String key=keys[i].getString();
 					String type=(doSimpleTypes)?"VARCHAR_IGNORECASE":toUsableType(types[i]);
