@@ -3,6 +3,7 @@ package railo.commons.io.res.util;
 import java.io.File;
 
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -58,7 +59,7 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
 	
 	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(String pattern) {
 
-		if( !pattern.trim().isEmpty() )            
+		if( !StringUtil.isEmpty(pattern, true) )
 	    	return new WildcardPatternFilter( pattern );
         
 	    return null;

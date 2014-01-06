@@ -2240,7 +2240,7 @@ Example:
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
-	-  file: includes only filenames.
+	- file: includes only filenames.
     - dir: includes only directory names.
     - all: includes both filenames and directory names.</description>
 		</attribute>
@@ -2271,8 +2271,9 @@ Example:
 			<name>filter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Optional for action = "list". Ignored by all other actions. File extension filter applied to
-		returned names. For example: *m. Only one mask filter can be applied at a time.</description>
+			<description>Optional for action = "list". Ignored by all other actions. Can be either a wildcard filter,
+			e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
+			whether that item should be included in the result or not.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -14210,13 +14211,14 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             </description>
     </attribute>
 		<attribute>
-			<type>string</type>
-			<name>filter</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		<description>File filter applied to the action. The action
-            applies to all files in the pathname specified that match the filter. </description>
-    </attribute>
+            <type>any</type>
+            <name>filter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional filter. Can be either a wildcard filter,
+            e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
+            whether that item should be included in the result or not.</description>
+        </attribute>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -14358,13 +14360,14 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             ZIP or JAR file. </description>
     </attribute>
 		<attribute>
-			<type>string</type>
-			<name>filter</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		<description>File filter applied to the action. For example, for the zip action,
-            all the files in the source directory matching the filter are zipped. </description>
-    </attribute>
+            <type>any</type>
+            <name>filter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional filter. Can be either a wildcard filter,
+            e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
+            whether that item should be included in the result or not.</description>
+        </attribute>
 		<attribute>
 			<type>string</type>
 			<name>prefix</name>
