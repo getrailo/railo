@@ -5700,8 +5700,9 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>delimiter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Required for creating a query. If you pass a string with more than one character then the first
-			character is used. Default is a comma.</description>
+			<description>Used only when creating a query from an http request that returns data in a CSV format. This
+			value specifies the Field delimiter for the CSV data. Only the first character is used. Default is a comma.
+			</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
