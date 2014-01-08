@@ -143,6 +143,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterEntryImpl;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.wrap.MapAsStruct;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 
@@ -3207,13 +3208,23 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	qry.setAtEL("name", row, e.getKey());
     		qry.setAtEL("level", row,logger.getLevel().toString());
     		qry.setAtEL("appenderClass", row, logger.getAppender().getClass().getName());
-    		qry.setAtEL("appenderArgs", row, logger.getAppenderArgs());
+    		qry.setAtEL("appenderArgs", row, toStruct(logger.getAppenderArgs()));
     		qry.setAtEL("layoutClass", row, logger.getLayout().getClass().getName());
-    		qry.setAtEL("layoutArgs", row, logger.getLayoutArgs());
+    		qry.setAtEL("layoutArgs", row, toStruct(logger.getLayoutArgs()));
     		qry.setAtEL("readonly", row, logger.getReadOnly());
-    		
         }
         return qry;
+	}
+
+	private Object toStruct(Map<String, String> map) {
+		Iterator<Entry<String, String>> it = map.entrySet().iterator();
+		Entry<String, String> e;
+		Struct sct=new StructImpl();
+		while(it.hasNext()){
+			e = it.next();
+			sct.setEL(e.getKey(), e.getValue());	
+		}
+		return sct;
 	}
 
 	private void doGetPerformanceSettings() throws ApplicationException, PageException {
