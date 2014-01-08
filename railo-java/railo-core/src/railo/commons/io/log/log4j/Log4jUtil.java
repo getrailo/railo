@@ -133,9 +133,12 @@ public class Log4jUtil {
 				long maxfilesize = Caster.toLongValue(appenderArgs.get("maxfilesize"),1024*1024*10);
 				appenderArgs.put("maxfilesize",Caster.toString(maxfilesize));
 				
+				// timeout
+				int timeout = Caster.toIntValue(appenderArgs.get("timeout"),1);
+				appenderArgs.put("timeout",Caster.toString(timeout));
 				
 				try {
-					appender=new RollingResourceAppender(layout,res,charset,true,maxfilesize,maxfiles);
+					appender=new RollingResourceAppender(layout,res,charset,true,maxfilesize,maxfiles,timeout);
 				}
 				catch (IOException e) {
 					e.printStackTrace();

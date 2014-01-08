@@ -22,10 +22,11 @@ public class RetireOutputStream extends OutputStream {
 	public RetireOutputStream(Resource res, boolean append, int retireRangeInMinutes){
 		this.res=res;
 		this.append=append;
-		retireRange = retireRangeInMinutes*60000;
+		retireRange = retireRangeInMinutes>0?retireRangeInMinutes*60000:0;
 	}
 
 	private OutputStream getOutputStream() throws IOException {
+		
 		if(os==null) {
 			//print.e("start "+res);
 			os=res.getOutputStream(append);
@@ -47,6 +48,12 @@ public class RetireOutputStream extends OutputStream {
 		
 		return true;
 	}
+	private boolean retireNow() throws IOException{
+		if(os==null)return false;
+		append=true;
+		close();
+		return true;
+	}
 
 	@Override
 	public void close() throws IOException {
@@ -63,25 +70,31 @@ public class RetireOutputStream extends OutputStream {
 
 	@Override
 	public void flush() throws IOException {
-		if(os!=null)getOutputStream().flush();
+		if(os!=null){
+			getOutputStream().flush();
+			if(retireRange==0) retireNow();
+		}
 	}
 	
 	@Override
 	public void write(int b) throws IOException {
 		//print.e("write:"+((char)b));
 		getOutputStream().write(b);
+		if(retireRange==0) retireNow();
 	}
 
 	@Override
 	public void write(byte[] b) throws IOException {
 		//print.e("write.barr:"+b.length);
 		getOutputStream().write(b);
+		if(retireRange==0) retireNow();
 	}
 
 	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		//print.e("write.barr:"+b.length+":"+off+":"+len);
 		getOutputStream().write(b, off, len);
+		if(retireRange==0) retireNow();
 	}
 
 }

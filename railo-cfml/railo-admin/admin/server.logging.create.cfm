@@ -279,11 +279,9 @@ function enable(btn,type,id){
 								</cfif>
 								<select name="custom_#_name#_#field.getName()#">
 									<cfif not field.getRequired()><option value=""> ---------- </option></cfif>
-									<cfif len(trim(default))>
-										<cfloop index="item" list="#field.getDefaultValue()#">
-											<option <cfif item EQ default>selected="selected"</cfif> >#item#</option>
-										</cfloop>
-									</cfif>
+									<cfloop index="item" list="#field.getValues()#">
+										<option <cfif item EQ default>selected="selected"</cfif> >#item#</option>
+									</cfloop>
 								</select>
 							<cfelseif type EQ "radio" or type EQ "checkbox">
 								<cfset desc=field.getDescription()>

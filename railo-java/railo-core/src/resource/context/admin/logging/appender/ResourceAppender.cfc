@@ -4,7 +4,9 @@
 		field("Path","path","{railo-config}/logs/",true,"Path to the file (any virtual filesystem supported)","text")
 		,field("Charset","charset","UTF-8",true,"charset used to write the file (empty == resource charset)","text")
 		,field("Max Files","maxfiles","10",true,"Maximal amount of Files created, if this number is reached the oldest get destroyed for every new file","text")
-		,field("Max File Size","maxfilesize",10*1024*1024,true,"The maxial size of a log file created in bytes","text")
+		,field("Max File Size (in bytes)","maxfilesize",10*1024*1024,true,"The maxial size of a log file created in bytes","text")
+		,field("Stream Timeout (in minutes)","timeout","1",true,
+			"Defines a timeout in minutes of inactivity after which the stream to the log resource will be automatically closed. If set to [0] a new stream is used for every request to the log resource (slow).","select","0,1,2,3,4,5,6")
 		
 		)>
 		

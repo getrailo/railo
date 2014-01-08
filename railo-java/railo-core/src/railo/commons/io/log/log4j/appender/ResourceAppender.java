@@ -41,6 +41,8 @@ public class ResourceAppender extends WriterAppender {
    */
   protected final int bufferSize;
 
+private  final int timeout;
+
 
   /**
      Instantiate a FileAppender and open the file designated by
@@ -49,7 +51,7 @@ public class ResourceAppender extends WriterAppender {
 
     <p>The file will be appended to.  */
   public ResourceAppender(Layout layout, Resource res,Charset charset) throws IOException {
-    this(layout, res,charset, true,false,DEFAULT_BUFFER_SIZE);
+    this(layout, res,charset, true,false,1,DEFAULT_BUFFER_SIZE);
   }
 
 
@@ -63,7 +65,12 @@ public class ResourceAppender extends WriterAppender {
     <code>filename</code> will be truncated before being opened.
   */
   public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append) throws IOException {
-	  this(layout,res,charset,append,false,DEFAULT_BUFFER_SIZE);
+	  this(layout,res,charset,append,false,1,DEFAULT_BUFFER_SIZE);
+  }
+  
+
+  public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append, int timeout) throws IOException {
+	  this(layout,res,charset,append,false,timeout,DEFAULT_BUFFER_SIZE);
   }
 
   /**
@@ -80,10 +87,11 @@ public class ResourceAppender extends WriterAppender {
 
   */
   public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append, boolean bufferedIO,
-	       int bufferSize) throws IOException {
+	int timeout,int bufferSize) throws IOException {
     this.layout = layout;
     this.bufferedIO=bufferedIO;
     this.bufferSize=bufferSize;
+    this.timeout=timeout;
     this.fileAppend=append;
     this.res=res;
     setEncoding(charset.name());
@@ -178,7 +186,7 @@ public class ResourceAppender extends WriterAppender {
     Resource parent = res.getParentResource();
     if(!parent.exists()) parent.createDirectory(true);
     boolean writeHeader = !append || res.length()==0;// this must happen before we open the stream
-    Writer fw = createWriter(new RetireOutputStream(res, append, 1));
+    Writer fw = createWriter(new RetireOutputStream(res, append, timeout));
     if(bufferedIO) {
       fw = new BufferedWriter(fw, bufferSize);
     }

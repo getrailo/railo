@@ -34,7 +34,7 @@ public class RollingResourceAppender extends ResourceAppender {
 
     <p>The file will be appended to.  */
   public RollingResourceAppender(Layout layout, Resource res,Charset charset) throws IOException {
-    this(layout, res,charset, true,MAX_FILE_SIZE,MAX_BACKUP_INDEX);
+    this(layout, res,charset, true,MAX_FILE_SIZE,MAX_BACKUP_INDEX,1);
   }
 
 
@@ -48,7 +48,7 @@ public class RollingResourceAppender extends ResourceAppender {
     <code>filename</code> will be truncated before being opened.
   */
   public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append) throws IOException {
-    this(layout, res,charset, append,MAX_FILE_SIZE,MAX_BACKUP_INDEX);
+    this(layout, res,charset, append,MAX_FILE_SIZE,MAX_BACKUP_INDEX,1);
   }
   
 
@@ -61,8 +61,8 @@ public class RollingResourceAppender extends ResourceAppender {
     appended to. Otherwise, the file desginated by
     <code>filename</code> will be truncated before being opened.
   */
-  public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append, long maxFileSize,int maxBackupIndex) throws IOException {
-    super(layout, res,charset, append);
+  public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append, long maxFileSize,int maxBackupIndex, int timeout) throws IOException {
+    super(layout, res,charset, append,timeout);
     this.maxFileSize=maxFileSize;
     this.maxBackupIndex=maxBackupIndex;
   }
