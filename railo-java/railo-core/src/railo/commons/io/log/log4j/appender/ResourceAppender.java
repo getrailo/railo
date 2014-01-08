@@ -41,7 +41,7 @@ public class ResourceAppender extends WriterAppender {
    */
   protected final int bufferSize;
 
-private  final int timeout;
+  private final int timeout;
 
 
   /**
