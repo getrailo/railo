@@ -16,18 +16,23 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -62,7 +67,7 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 	private String path_info;
 	private String query_string;
 	private boolean disconnected;
-	private HttpServletRequest req;
+	private final HttpServletRequest req;
 	
 	private static class DisconnectData {
 		private Map<String, Object> attributes;
@@ -88,9 +93,11 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 		private String remoteAddr;
 		private String protocol;
 		private Locale locale;
+		private HttpSession session;
+		private Principal userPrincipal;
 	}
 	DisconnectData disconnectData;
-
+	
 	/**
 	 * Constructor of the class
 	 * @param req 
@@ -98,7 +105,6 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 	 */
 	public HTTPServletRequestWrap(HttpServletRequest req) {
 		this.req=pure(req);
-		
 		if((servlet_path=attrAsString("javax.servlet.include.servlet_path"))!=null){
 			request_uri=attrAsString("javax.servlet.include.request_uri");
 			context_path=attrAsString("javax.servlet.include.context_path");
@@ -322,10 +328,11 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 
 
 	public HttpServletRequest getOriginalRequest() {
+		if(disconnected) return null;
 		return req;
 	}
 
-	public void disconnect() {
+	public void disconnect(PageContextImpl pc) {
 		if(disconnected) return;
 		disconnectData=new DisconnectData();
 		
@@ -384,6 +391,12 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 		disconnectData.remoteAddr=req.getRemoteAddr();
 		disconnectData.protocol=req.getProtocol();
 		disconnectData.locale=req.getLocale();
+		// only store it when j2ee sessions are enabled
+		if(pc.getSessionType()==Config.SESSION_TYPE_J2EE)
+			disconnectData.session=req.getSession(true); // create if necessary
+		
+		disconnectData.userPrincipal=req.getUserPrincipal();
+		
 		if(barr==null) {
 			try {
 				barr=IOUtil.toBytes(req.getInputStream(),true);
@@ -394,7 +407,7 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 			}
 		}
 		disconnected=true;
-		req=null;
+		//req=null;
 	}
 	
 	static class ArrayEnum<E> implements Enumeration<E> {
@@ -546,20 +559,19 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 
 	@Override
 	public HttpSession getSession() {
-		if(!disconnected) return req.getSession();
-		throw new RuntimeException("this method is not supported when root request is gone");
+		return getSession(true);
 	}
 
 	@Override
 	public HttpSession getSession(boolean create) {
 		if(!disconnected) return req.getSession(create);
-		throw new RuntimeException("this method is not supported when root request is gone");
+		return this.disconnectData.session;
 	}
 
 	@Override
 	public Principal getUserPrincipal() {
 		if(!disconnected) return req.getUserPrincipal();
-		throw new RuntimeException("this method is not supported when root request is gone");
+		return this.disconnectData.userPrincipal;
 	}
 
 	@Override
@@ -583,12 +595,6 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 	public boolean isRequestedSessionIdValid() {
 		if(!disconnected) return req.isRequestedSessionIdValid();
 		return disconnectData.requestedSessionIdValid;
-	}
-
-	@Override
-	public boolean isUserInRole(String role) {
-		if(!disconnected) return req.isUserInRole(role);
-		throw new RuntimeException("this method is not supported when root request is gone");
 	}
 
 	@Override
@@ -616,8 +622,38 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 	}
 
 	@Override
+	public boolean isUserInRole(String role) {
+		if(!disconnected) return req.isUserInRole(role);
+		// try it anyway, in some servlet engine it is still working
+		try{
+			return req.isUserInRole(role);
+		}
+		catch(Throwable t){}
+		// TODO add support for this
+		throw new RuntimeException("this method is not supported when root request is gone");
+	}
+
+	@Override
 	public Enumeration getLocales() {
 		if(!disconnected) return req.getLocales();
+		// try it anyway, in some servlet engine it is still working
+		try{
+			return req.getLocales();
+		}
+		catch(Throwable t){}
+		// TODO add support for this
+		throw new RuntimeException("this method is not supported when root request is gone");
+	}
+
+	@Override
+	public String getRealPath(String path) {
+		if(!disconnected) return req.getRealPath(path);
+		// try it anyway, in some servlet engine it is still working
+		try{
+			return req.getRealPath(path);
+		}
+		catch(Throwable t){}
+		// TODO add support for this
 		throw new RuntimeException("this method is not supported when root request is gone");
 	}
 
@@ -633,12 +669,6 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 	public String getProtocol() {
 		if(!disconnected) return req.getProtocol();
 		return disconnectData.protocol;
-	}
-
-	@Override
-	public String getRealPath(String path) {
-		if(!disconnected) return req.getRealPath(path);
-		throw new RuntimeException("this method is not supported when root request is gone");
 	}
 
 	@Override

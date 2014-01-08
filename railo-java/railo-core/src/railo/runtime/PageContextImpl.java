@@ -560,7 +560,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         // Scopes
         if(hasFamily) {
         	if(!isChild){
-        		req.disconnect();
+        		req.disconnect(this);
         	}
         	
         	request=null;
