@@ -201,7 +201,7 @@ public final class Log extends TagImpl {
 	        if(!logDir.exists())logDir.mkdirs();
 	        try {
 	        	Resource res = logDir.getRealResource(file);
-                logger=new LogAdapter(Log4jUtil.getResourceLog(config,res,charset , "cflog", Level.INFO));
+                logger=new LogAdapter(Log4jUtil.getResourceLog(config,res,charset , "cflog", Level.TRACE,0));
             } 
 	        catch (IOException e) {
                 throw Caster.toPageException(e);

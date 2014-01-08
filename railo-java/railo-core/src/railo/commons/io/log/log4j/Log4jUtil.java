@@ -15,8 +15,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.net.SyslogAppender;
 import org.apache.log4j.xml.XMLLayout;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
@@ -43,8 +45,15 @@ public class Log4jUtil {
 
 
 
-	public static Logger getResourceLog(Config config, Resource res, Charset charset, String name, Level level) throws IOException {
-		RollingResourceAppender a = new RollingResourceAppender(new ClassicLayout(),res,charset);
+	public static Logger getResourceLog(Config config, Resource res, Charset charset, String name, Level level, int timeout) throws IOException {
+		RollingResourceAppender a = new RollingResourceAppender(
+				new ClassicLayout()
+				,res
+				,charset
+				,true
+				,RollingResourceAppender.DEFAULT_MAX_FILE_SIZE
+				,RollingResourceAppender.DEFAULT_MAX_BACKUP_INDEX
+				,timeout); // no open stream at all
 		return getLogger(config, a, name, level);
 	}
 
@@ -146,6 +155,7 @@ public class Log4jUtil {
 			}
 			// class defintion
 			else {
+				print.e(strAppender);
 				Object obj = ClassUtil.loadInstance(strAppender,null,null);
 				if(obj instanceof Appender) {
 					appender=(Appender) obj;
@@ -157,9 +167,13 @@ public class Log4jUtil {
 							Reflector.callSetter(obj, e.getKey(), e.getValue());
 						}
 						catch (PageException e1) {
+							print.e(e1);
 							e1.printStackTrace(); // TODO log
 						}
 					}
+					org.apache.log4j.net.SyslogAppender s=(SyslogAppender) appender;
+					print.e(s.getFacility());
+					print.e(s.getSyslogHost());
 				}
 			}
 		}

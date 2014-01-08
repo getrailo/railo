@@ -18,8 +18,8 @@ import railo.commons.io.res.Resource;
 public class RollingResourceAppender extends ResourceAppender {
 	
 	
-	private static final long MAX_FILE_SIZE = 10*1024*1024;
-	private static final int MAX_BACKUP_INDEX = 10;
+	public static final long DEFAULT_MAX_FILE_SIZE = 10*1024*1024;
+	public static final int DEFAULT_MAX_BACKUP_INDEX = 10;
 
 	protected final long maxFileSize;
 	protected int  maxBackupIndex;
@@ -34,7 +34,7 @@ public class RollingResourceAppender extends ResourceAppender {
 
     <p>The file will be appended to.  */
   public RollingResourceAppender(Layout layout, Resource res,Charset charset) throws IOException {
-    this(layout, res,charset, true,MAX_FILE_SIZE,MAX_BACKUP_INDEX,1);
+    this(layout, res,charset, true,DEFAULT_MAX_FILE_SIZE,DEFAULT_MAX_BACKUP_INDEX,1);
   }
 
 
@@ -48,7 +48,7 @@ public class RollingResourceAppender extends ResourceAppender {
     <code>filename</code> will be truncated before being opened.
   */
   public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append) throws IOException {
-    this(layout, res,charset, append,MAX_FILE_SIZE,MAX_BACKUP_INDEX,1);
+    this(layout, res,charset, append,DEFAULT_MAX_FILE_SIZE,DEFAULT_MAX_BACKUP_INDEX,1);
   }
   
 
