@@ -10,5 +10,7 @@
 		<cfset foo = function(){return true;} > <!--- not fine --->
 		<cfset foo = function(){return true;} /><!--- not fine --->
 		<cfset foo = function(){return true;}/> <!--- fine--->
+		
+		<cfset foo = /* hello world*/ function(){return true;} /* hello world*/ > <!--- not fine --->
 	</cffunction>
 </cfcomponent>
