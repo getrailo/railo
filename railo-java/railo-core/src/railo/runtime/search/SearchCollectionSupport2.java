@@ -18,6 +18,7 @@ import railo.commons.lock.KeyLock;
 import railo.commons.lock.Lock;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -68,7 +69,8 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 		this.language=SearchUtil.translateLanguage(language);
         this.lastUpdate=lastUpdate;
         this.created=created;
-		this.log = searchEngine.getLogger();
+
+        log=((ConfigImpl)searchEngine.getConfig()).getLog("search");
 	}
 
 	@Override

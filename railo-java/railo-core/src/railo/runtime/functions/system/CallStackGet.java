@@ -123,13 +123,14 @@ public final class CallStackGet implements Function {
 		String template;
 		Struct item;
 		StackTraceElement trace=null;
-		String functionName;
+		String functionName,methodName;
 		int index=udfs.length-1;
 		for(int i=0;i<traces.length;i++) {
 			trace=traces[i];
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
-			if("udfCall".equals(trace.getMethodName()) && index>-1)
+			methodName=trace.getMethodName();
+			if(methodName!=null && methodName.startsWith("udfCall") && index>-1) 
 				functionName=udfs[index--].getFunctionName();
 
 			else functionName="";
@@ -137,6 +138,10 @@ public final class CallStackGet implements Function {
 			item=new StructImpl();
 			line=trace.getLineNumber();
 			item.setEL(KeyConstants._function,functionName);
+			try {
+				template=ExpandPath.call(pc, template);
+			}
+			catch (PageException e) {}
 			item.setEL(KeyConstants._template,template);
 			item.setEL(lineNumberName,new Double(line));
 			tagContext.appendEL(item);

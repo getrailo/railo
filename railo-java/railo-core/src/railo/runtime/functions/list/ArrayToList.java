@@ -23,7 +23,7 @@ public final class ArrayToList extends BIF {
 		if(len==1)return Caster.toString(array.get(1,""));
 		
 		Object o=array.get(1,null);
-		StringBuffer sb=new StringBuffer(o==null?"":Caster.toString(o));
+		StringBuilder sb=new StringBuilder(o==null?"":Caster.toString(o));
 		for(int i=2;i<=len;i++) {
 			sb.append(delimiter);
 			o=array.get(i,null);
@@ -37,7 +37,7 @@ public final class ArrayToList extends BIF {
 		if(len==1)return Caster.toString(array.getE(1));
 		
 		Object o=array.get(1,null);
-		StringBuffer sb=new StringBuffer(o==null?"":Caster.toString(o));
+		StringBuilder sb=new StringBuilder(o==null?"":Caster.toString(o));
 		for(int i=2;i<=len;i++) {
 			sb.append(delimiter);
 			o=array.get(i,null);

@@ -16,6 +16,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
@@ -187,12 +188,35 @@ public final class TagLibTag {
 	 * @return Attribute das angfragt wurde oder null.
 	 */
 	public TagLibTagAttr getAttribute(String name) {
-		return attributes.get(name);
+		return getAttribute(name, false);
+	}
+	
+	public TagLibTagAttr getAttribute(String name, boolean checkAlias) {
+		TagLibTagAttr attr = attributes.get(name);
+		// checking alias
+		if(attr==null && checkAlias) 
+			return getAttributeByAlias(name);
+		return attr;
+		
 	}
 	
 
+	public TagLibTagAttr getAttributeByAlias(String alias) {
+		Iterator<TagLibTagAttr> it = attributes.values().iterator();
+		TagLibTagAttr attr;
+		String[] aliases;
+		while(it.hasNext()){
+			attr = it.next();
+			if(ArrayUtil.isEmpty(attr.getAlias())) continue;
+			aliases = attr.getAlias();
+			for(int i=0;i<aliases.length;i++){
+				if(aliases[i].equalsIgnoreCase(alias)) return attr;
+			}
+		}
+		return null;
+	}
 
-	
+
 	/**
 	 * Gibt das erste Attribut, welches innerhalb des Tag definiert wurde, zurueck.
 	 * @return  Attribut das angfragt wurde oder null.
@@ -710,7 +734,7 @@ public final class TagLibTag {
 	}
 
 	public String getHash() {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		sb.append(this.getTagClassName());
 		sb.append(this.getAttributeNames());
 		sb.append(this.getAttributeType());

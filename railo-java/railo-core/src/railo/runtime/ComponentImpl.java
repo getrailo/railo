@@ -1,6 +1,5 @@
 package railo.runtime;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -21,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import railo.commons.collection.HashMapPro;
 import railo.commons.collection.MapFactory;
 import railo.commons.collection.MapPro;
-import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
@@ -41,8 +39,6 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.NullSupportHelper;
-import railo.runtime.converter.ConverterException;
-import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -53,6 +49,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.dynamicEvaluation.EvaluateComponent;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
@@ -74,9 +71,9 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
-import railo.runtime.type.cfc.ComponentAccess;
-import railo.runtime.type.cfc.ComponentAccessEntryIterator;
-import railo.runtime.type.cfc.ComponentAccessValueIterator;
+
+import railo.runtime.type.cfc.ComponentEntryIterator;
+import railo.runtime.type.cfc.ComponentValueIterator;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.StringIterator;
@@ -85,6 +82,7 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
@@ -97,16 +95,21 @@ import railo.runtime.type.util.UDFUtil;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public final class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
+public final class ComponentImpl extends StructSupport implements Externalizable,ComponentPro,coldfusion.runtime.TemplateProxy,Sizeable {
+	private static final long serialVersionUID = -245618330485511484L; // do not change this
 
 
+	/*
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * Any change here must be changed in the method writeExternal,readExternal as well
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * */
 	private ComponentProperties properties;
 	private MapPro<Key,Member> _data;
     private MapPro<Key,UDF> _udfs;
 
 	ComponentImpl top=this;
     ComponentImpl base;
-    //private ComponentPage componentPage;
     private PageSource pageSource;
     private ComponentScope scope;
     
@@ -746,12 +749,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
-		return new ComponentAccessEntryIterator(this, keys(access),access);
+		return new ComponentEntryIterator(this, keys(access),access);
 	}
 
 	@Override
 	public Iterator<Object> valueIterator(int access) {
-		return new ComponentAccessValueIterator(this,keys(access),access);
+		return new ComponentValueIterator(this,keys(access),access);
 	}
 
 	
@@ -776,7 +779,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
         if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyConstants._super)) {
-        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this)._base());
+        	Component ac =ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this);
+        	return SuperComponent.superMember((ComponentImpl)ComponentProUtil.getBaseComponent(ac));
             //return SuperComponent . superMember(base);
         }
     	if(superAccess) {
@@ -803,7 +807,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyConstants._super)) {
-        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());
+        	Component ac = ComponentUtil.getActiveComponent(pc,this);
+        	return SuperComponent.superMember((ComponentImpl)ComponentProUtil.getBaseComponent(ac));
         }
         if(superAccess) 
         	return  _udfs.get(key);
@@ -919,7 +924,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     
 	static DumpTable _toDumpData(ComponentImpl ci,PageContext pc, int maxlevel, DumpProperties dp,int access) {
 		maxlevel--;
-		ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ci);
+		ComponentSpecificAccess cw=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ci);
 		Collection.Key[] keys= cw.keys();
 		
 		
@@ -1401,7 +1406,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"component");
             
-        Class<?> skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
+        Class<?> skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSuppressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
@@ -1815,11 +1820,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return getJavaAccessClass(pc,isNew, false,true,true,true);
     }
 
-    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+    public Class getJavaAccessClass(PageContext pc,RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean suppressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	ComponentProperties props =(takeTop)?top.properties:properties;
     	if(props.javaAccessClass==null) {
-    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(pc,this,isNew,create,writeLog,supressWSbeforeArg);
+    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(pc,this,isNew,create,writeLog,suppressWSbeforeArg);
 		}
     	return props.javaAccessClass;
     }
@@ -1941,55 +1946,60 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			pc=ThreadUtil.createPageContext(config, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", "/","", new Cookie[0], parr, parr, new StructImpl());
 		}
 		
+		// reading fails for serialized data from Railo version 4.1.2.002
+		String name = in.readUTF();
+		
+		if(name.startsWith("evaluateComponent('") && name.endsWith("})")) {
+			readExternalOldStyle(pc, name);
+			return;
+		}
+		
+		String md5 = in.readUTF();
+		Struct _this = Caster.toStruct(in.readObject(),null);
+		Struct _var = Caster.toStruct(in.readObject(),null);
+	    
 		try {
-			//int len = in.readInt();
-			
-			byte[] buffer = new byte[0xffff];
-	        int len;
-	        ByteArrayOutputStream baos=new ByteArrayOutputStream();
-	        while((len = in.read(buffer)) !=-1) {
-	        	baos.write(buffer, 0, len);
-	        }
-			
-			String str=new String(baos.toByteArray(),CharsetUtil.UTF8);
-			// all version older than 4.1.2.002 was serialized with writeUTF, so it is possible we have this Sting
-			if(str.length()>2 && str.charAt(0)==0) {
-				// first byte is 0 and second byte contains the length of the string
-				str=str.substring(2);
-			}
-			
-			// MUST do serialisation more like the cloning way
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,str);
-			
-			
-			
-			this._data=other._data;
-			this._udfs=other._udfs;
-			setOwner(_udfs);
-			setOwner(_data);
-			this.afterConstructor=other.afterConstructor;
-			this.base=other.base;
-			//this.componentPage=other.componentPage;
-			this.pageSource=other.pageSource;
-			this.constructorUDFs=other.constructorUDFs;
-			this.dataMemberDefaultAccess=other.dataMemberDefaultAccess;
-			this.interfaceCollection=other.interfaceCollection;
-			this.isInit=other.isInit;
-			this.properties=other.properties;
-			this.scope=other.scope;
-			this.top=this;
-			this._triggerDataMember=other._triggerDataMember;
-			this.hasInjectedFunctions=other.hasInjectedFunctions;
-			this.useShadow=other.useShadow;
-			this.entity=other.entity;
-			
-			
-		} catch (PageException e) {
+			ComponentImpl other=(ComponentImpl)EvaluateComponent.invoke(pc, name, md5, _this,_var);
+			_readExternal(other);
+		}
+		catch (PageException e) {
 			throw ExceptionUtil.toIOException(e);
 		}
 		finally {
 			if(pcCreated)ThreadLocalPageContext.release();
 		}
+	}
+
+	private void readExternalOldStyle(PageContext pc, String str) throws IOException {
+		try {
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,str);
+			_readExternal(other);
+		}
+		catch (PageException e) {
+			throw ExceptionUtil.toIOException(e);
+		}
+	}
+
+	private void _readExternal(ComponentImpl other) {
+		this._data=other._data;
+		this._udfs=other._udfs;
+		setOwner(_udfs);
+		setOwner(_data);
+		this.afterConstructor=other.afterConstructor;
+		this.base=other.base;
+		//this.componentPage=other.componentPage;
+		this.pageSource=other.pageSource;
+		this.constructorUDFs=other.constructorUDFs;
+		this.dataMemberDefaultAccess=other.dataMemberDefaultAccess;
+		this.interfaceCollection=other.interfaceCollection;
+		this.isInit=other.isInit;
+		this.properties=other.properties;
+		this.scope=other.scope;
+		this.top=this;
+		this._triggerDataMember=other._triggerDataMember;
+		this.hasInjectedFunctions=other.hasInjectedFunctions;
+		this.useShadow=other.useShadow;
+		this.entity=other.entity;
 	}
 
 	private void  setOwner(Map<Key,? extends Member> data) {
@@ -2004,21 +2014,50 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
-		try {
-			
-			
-			String str=new ScriptConverter().serialize(this);
-			//out.writeUTF(str); this function has a size limitation (64k), because of that it is no longer used
-			byte[] barr = str.getBytes(CharsetUtil.UTF8);
-			out.write(barr);
+		ComponentSpecificAccess cw = new ComponentSpecificAccess(Component.ACCESS_PRIVATE,this);  
+        Struct _this=new StructImpl();
+		Struct _var=new StructImpl();
+		
+		
+		// this scope (removing all UDFs)
+		Object member;
+	    {
+	    	Iterator<Entry<Key, Object>> it = cw.entryIterator();
+	        Entry<Key, Object> e;
+	        while(it.hasNext()) {
+	            e = it.next();
+	            member = e.getValue();
+	            if(member instanceof UDF)continue;
+	            _this.setEL(e.getKey(), member);
+	        }
 		}
-		catch (ConverterException e) {
-			throw ExceptionUtil.toIOException(e);
-		}
+		
+	    
+	    // variables scope (removing all UDFs and key "this")
+	    {
+        	ComponentScope scope = getComponentScope();
+        	Iterator<Entry<Key, Object>> it = scope.entryIterator();
+            Entry<Key, Object> e;
+        	Key k;
+        	while(it.hasNext()) {
+        		e = it.next();
+        		k = e.getKey();
+                if(KeyConstants._THIS.equalsIgnoreCase(k))continue;
+                member = e.getValue();
+                if(member instanceof UDF)continue;
+	            _var.setEL(e.getKey(), member);
+            }
+        }
+	    
+	    out.writeUTF(getAbsName());
+		out.writeUTF(ComponentUtil.md5(cw));
+		out.writeObject(_this);
+		out.writeObject(_var);
+		
 	}
 
 	@Override
-	public ComponentAccess _base() {
+	public Component getBaseComponent() {
 		return base;
 	}	
 	

@@ -22,6 +22,7 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.it.ValueIterator;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
@@ -109,7 +110,8 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	@Override
 	public Object get(Key key, Object defaultValue) {
 		if(key.equalsIgnoreCase(KeyConstants._SUPER)) {
-			return SuperComponent.superInstance((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component)._base());
+			Component ac = ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component);
+			return SuperComponent.superInstance((ComponentImpl) ComponentProUtil.getBaseComponent(ac));
 		}
 		if(key.equalsIgnoreCase(KeyConstants._THIS)) return component.top;
 		

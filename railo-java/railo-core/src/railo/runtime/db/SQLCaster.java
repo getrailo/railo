@@ -386,7 +386,7 @@ public final class SQLCaster {
 
 	/*private static String toString(Clob clob) throws SQLException, IOException {
 	    Reader in = clob.getCharacterStream();
-	    StringBuffer buf = new StringBuffer();
+	    StringBuilder buf = new StringBuilder();
 	    for(int c=in.read();c != -1;c = in.read()) {
 	        buf.append((char)c);
 	    }

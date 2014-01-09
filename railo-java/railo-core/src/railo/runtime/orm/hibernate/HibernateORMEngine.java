@@ -1,5 +1,6 @@
 package railo.runtime.orm.hibernate;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.query.QueryPlanCache;
 import org.hibernate.event.EventListeners;
 import org.hibernate.event.PostDeleteEventListener;
@@ -22,16 +24,18 @@ import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
+import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextPro;
-import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
@@ -50,7 +54,7 @@ import railo.runtime.orm.hibernate.event.PreUpdateEventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
-import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public class HibernateORMEngine implements ORMEngine {
 	
@@ -64,40 +68,29 @@ public class HibernateORMEngine implements ORMEngine {
 
 	@Override
 	public void init(PageContext pc) throws PageException{
-		getSessionFactory(pc,INIT_CFCS);
+		SessionFactoryData data = getSessionFactoryData(pc, INIT_CFCS);
+		data.init();// init all factories
 	}
 		
 	@Override
 	public ORMSession createSession(PageContext pc) throws PageException {
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
-		Object o=appContext.getORMDataSource();
-		
-		DataSource ds=o instanceof DataSource?
-				(DataSource)o:
-				CommonUtil.getDataSource(pc,CommonUtil.toString(o));
-		
-				
-		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,ds);
-			
 		try{
 			SessionFactoryData data = getSessionFactoryData(pc, INIT_NOTHING);
-			return new HibernateORMSession(data,dc);
+			return new HibernateORMSession(pc,data);
 		}
 		catch(PageException pe){
-			//manager.releaseConnection(pc, dc);// connection is closed when session ends
 			throw pe;
 		}
 	}
 	
 
-	QueryPlanCache getQueryPlanCache(PageContext pc) throws PageException {
+	/*QueryPlanCache getQueryPlanCache(PageContext pc) throws PageException {
 		return getSessionFactoryData(pc,INIT_NOTHING).getQueryPlanCache();
-	}
+	}*/
 
-	@Override
-	public SessionFactory getSessionFactory(PageContext pc) throws PageException{
+	/*public SessionFactory getSessionFactory(PageContext pc) throws PageException{
 		return getSessionFactory(pc,INIT_NOTHING);
-	}
+	}*/
 	
 	public boolean reload(PageContext pc, boolean force) throws PageException {
 		if(force) {
@@ -110,10 +103,6 @@ public class HibernateORMEngine implements ORMEngine {
 		return true;
 	}
 
-	private SessionFactory getSessionFactory(PageContext pc,int initType) throws PageException {
-		return getSessionFactoryData(pc, initType).getFactory();
-	}
-
 	private SessionFactoryData getSessionFactoryData(PageContext pc,int initType) throws PageException {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
@@ -121,16 +110,16 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		// datasource
-		DataSource ds = ORMUtil.getDataSource(pc);
+		//DataSource ds = ORMUtil.getDataSource(pc);
 		ORMConfiguration ormConf=appContext.getORMConfiguration();
-		String key = hash(ormConf,ds);
+		String key = hash(ormConf);
 		SessionFactoryData data = factories.get(key);
 		if(initType==INIT_ALL && data!=null) {
 			data.reset();
 			data=null;
 		}
 		if(data==null) {
-			data=new SessionFactoryData(this,ormConf,ds);
+			data=new SessionFactoryData(this,ormConf);
 			factories.put(key, data);
 		}
 		
@@ -144,25 +133,24 @@ public class HibernateORMEngine implements ORMEngine {
 					if(ormConf.autogenmap()){
 						data.tmpList=HibernateSessionFactory.loadComponents(pc, this, ormConf);
 						
-						data.cfcs.clear();
+						data.clearCFCs();
 					}
 					else 
 						throw ExceptionUtil.createException(data,null,"orm setting autogenmap=false is not supported yet",null);
 				
 					// load entities
-					if(!ArrayUtil.isEmpty(data.tmpList)) {
-						data.getNamingStrategy();// caled here to make sure, it is called in the right context the first one
-						DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds);
-						try {
+					if(data.tmpList!=null && data.tmpList.size()>0) {
+						data.getNamingStrategy();// called here to make sure, it is called in the right context the first one
+						
+						// creates CFCInfo objects
+						{
 							Iterator<Component> it = data.tmpList.iterator();
 							while(it.hasNext()){
-								createMapping(pc,it.next(),dc,ormConf,data);
+								createMapping(pc,it.next(),ormConf,data);
 							}
 						}
-						finally {
-							CommonUtil.releaseDatasourceConnection(pc, dc);
-						}
-						if(data.tmpList.size()!=data.cfcs.size()){
+						
+						if(data.tmpList.size()!=data.sizeCFCs()){
 							Component cfc;
 							String name,lcName;
 							Map<String,String> names=new HashMap<String,String>();
@@ -185,45 +173,43 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 				
 		// already initialized for this application context
-		if(data.getConfiguration()!=null) return data;
-
+		
 		//MUST
 		//cacheconfig
 		//cacheprovider
 		//...
 		
-		String mappings=HibernateSessionFactory.createMappings(ormConf,data);
+		Log log = ((ConfigImpl)pc.getConfig()).getLog("orm");
 		
-		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,ds);
-		try{
-			data.setConfiguration(mappings,dc);
-		} 
-		catch (Exception e) {
-			throw CommonUtil.toPageException(e);
+		Iterator<Entry<DataSource, String>> it = HibernateSessionFactory.createMappings(ormConf,data).entrySet().iterator();
+		Entry<DataSource, String> e;
+		while(it.hasNext()) {
+			e = it.next();
+			if(data.getConfiguration(e.getKey())!=null) continue;
+
+			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,e.getKey());
+			try{
+				data.setConfiguration(log,e.getValue(),dc);
+			} 
+			catch (Exception ex) {
+				throw CommonUtil.toPageException(ex);
+			}
+			finally {
+				CommonUtil.releaseDatasourceConnection(pc, dc);
+			}
+			addEventListeners(pc, data,e.getKey());
+			
+			EntityTuplizerFactory tuplizerFactory = data.getConfiguration(e.getKey()).getEntityTuplizerFactory();
+			tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
+			tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
+			
+			data.buildSessionFactory(e.getKey());
 		}
-		finally {
-			CommonUtil.releaseDatasourceConnection(pc, dc);
-		}
 		
-		addEventListeners(pc, data);
-		
-		EntityTuplizerFactory tuplizerFactory = data.getConfiguration().getEntityTuplizerFactory();
-		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, CFCEntityTuplizer.class);
-		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, MapEntityTuplizer.class);
-		tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
-		tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
-		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
-		
-		//configuration.setEntityResolver(new CFCEntityResolver());
-		//configuration.setEntityNotFoundDelegate(new EntityNotFoundDelegate());
-		
-		
-		
-		data.buildSessionFactory();
 		return data;
 	}
 	
-	private static void addEventListeners(PageContext pc, SessionFactoryData data) throws PageException {
+	private static void addEventListeners(PageContext pc, SessionFactoryData data, DataSource ds) throws PageException {
 		if(!data.getORMConfiguration().eventHandling()) return;
 		String eventHandler = data.getORMConfiguration().eventHandler();
 		AllEventListener listener=null;
@@ -235,28 +221,29 @@ public class HibernateORMEngine implements ORMEngine {
 		        //config.setInterceptor(listener);
 			//}catch (PageException e) {e.printStackTrace();}
 		}
-		data.getConfiguration().setInterceptor(new InterceptorImpl(listener));
-        EventListeners listeners = data.getConfiguration().getEventListeners();
-        
+		Configuration conf = data.getConfiguration(ds);
+		conf.setInterceptor(new InterceptorImpl(listener));
+        EventListeners listeners = conf.getEventListeners();
+        Map<String, CFCInfo> cfcs = data.getCFCs(ds);
         // post delete
 		List<EventListener> 
-		list=merge(listener,data.cfcs,CommonUtil.POST_DELETE);
+		list=merge(listener,cfcs,CommonUtil.POST_DELETE);
 		listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
 		
         // post insert
-		list=merge(listener,data.cfcs,CommonUtil.POST_INSERT);
+		list=merge(listener,cfcs,CommonUtil.POST_INSERT);
 		listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
 		
 		// post update
-		list=merge(listener,data.cfcs,CommonUtil.POST_UPDATE);
+		list=merge(listener,cfcs,CommonUtil.POST_UPDATE);
 		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
 		
 		// post load
-		list=merge(listener,data.cfcs,CommonUtil.POST_LOAD);
+		list=merge(listener,cfcs,CommonUtil.POST_LOAD);
 		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
 		
 		// pre delete
-		list=merge(listener,data.cfcs,CommonUtil.PRE_DELETE);
+		list=merge(listener,cfcs,CommonUtil.PRE_DELETE);
 		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
 		
 		// pre insert
@@ -264,7 +251,7 @@ public class HibernateORMEngine implements ORMEngine {
 		//listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
 		
 		// pre load
-		list=merge(listener,data.cfcs,CommonUtil.PRE_LOAD);
+		list=merge(listener,cfcs,CommonUtil.PRE_LOAD);
 		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
 		
 		// pre update
@@ -310,31 +297,42 @@ public class HibernateORMEngine implements ORMEngine {
 		return list;
 	}
 
-	private static Object hash(PageContext pc) throws PageException {
+	private static Object hash(PageContext pc) {
 		ApplicationContextPro appContext=(ApplicationContextPro) pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
-		DataSource ds;
-		if(o instanceof DataSource) ds=(DataSource) o;
-		else ds=CommonUtil.getDataSource(pc,CommonUtil.toString(o));
-		return hash(appContext.getORMConfiguration(),ds);
+		//DataSource ds;
+		//if(o instanceof DataSource) ds=(DataSource) o;
+		//else ds=CommonUtil.getDataSource(pc,CommonUtil.toString(o));
+		return hash(appContext.getORMConfiguration());
 	}
 	
-	private static String hash(ORMConfiguration ormConf,DataSource ds) {
-		return ds.id()+":"+ormConf.hash();
+	private static String hash(ORMConfiguration ormConf) {
+		/*String id;
+		try{
+			Method m = ds.getClass().getMethod("id", new Class[0]);
+			id=(String) m.invoke(ds, new Object[0]);
+		}
+		catch(Throwable t){
+			id=ds.getClazz()+":"+ds.getDsnTranslated();
+		}
+		return id+":"+ormConf.hash();
+		*/
+		
+		return ormConf.hash();
 	}
 
-	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf,SessionFactoryData data) throws PageException {
-		String id=HibernateUtil.id(HibernateCaster.getEntityName(cfc));
-		CFCInfo info=data.cfcs.get(id);
-		//Long modified=cfcs.get(id);
+	public void createMapping(PageContext pc,Component cfc, ORMConfiguration ormConf,SessionFactoryData data) throws PageException {
+		String entityName=HibernateCaster.getEntityName(cfc);
+		CFCInfo info=data.getCFC(entityName,null);
 		String xml;
 		long cfcCompTime = HibernateUtil.getCompileTime(pc,cfc.getPageSource());
 		if(info==null || (ORMUtil.equals(info.getCFC(),cfc) ))	{//&& info.getModified()!=cfcCompTime
+			DataSource ds = ORMUtil.getDataSource(pc,cfc);
 			StringBuilder sb=new StringBuilder();
 			
 			long xmlLastMod = loadMapping(sb,ormConf, cfc);
 			Element root;
-			// create maaping
+			// create mapping
 			if(true || xmlLastMod< cfcCompTime) {//MUSTMUST
 				data.reset();
 				Document doc=null;
@@ -345,11 +343,14 @@ public class HibernateORMEngine implements ORMEngine {
 				root=doc.createElement("hibernate-mapping");
 				doc.appendChild(root);
 				pc.addPageSource(cfc.getPageSource(), true);
+				DataSourceManager manager = pc.getDataSourceManager();
+				DatasourceConnection dc = manager.getConnection(pc, ds, null, null);
 				try{
 					HBMCreator.createXMLMapping(pc,dc,cfc,root,data);
 				}
 				finally{
 					pc.removeLastPageSource(true);
+					manager.releaseConnection(pc, dc);
 				}
 				xml=XMLCaster.toString(root.getChildNodes(),true,true);
 				saveMapping(ormConf,cfc,root);
@@ -365,7 +366,7 @@ public class HibernateORMEngine implements ORMEngine {
 				print.o("3+++++++++++++++++++++++++++++++++++++++++");*/
 				
 			}
-			data.cfcs.put(id, new CFCInfo(HibernateUtil.getCompileTime(pc,cfc.getPageSource()),xml,cfc));
+			data.addCFC(entityName,new CFCInfo(HibernateUtil.getCompileTime(pc,cfc.getPageSource()),xml,cfc,ds));
 		}
 		
 	}
@@ -439,13 +440,22 @@ public class HibernateORMEngine implements ORMEngine {
 		Component cfc = _create(pc,entityName,unique,data);
 		if(cfc!=null)return cfc;
 		
-		// reinit ORMEngine
-		SessionFactory _old= getSessionFactory(pc,INIT_NOTHING);//_factory;
-		SessionFactory _new = getSessionFactory(pc,INIT_CFCS);
-		if(_old!=_new){
-			session.resetSession(_new);
-			cfc = _create(pc,entityName,unique,data);
-			if(cfc!=null)return cfc;
+		SessionFactoryData oldData = getSessionFactoryData(pc, INIT_NOTHING);
+		Map<DataSource, SessionFactory> oldFactories = oldData.getFactories();
+		SessionFactoryData newData = getSessionFactoryData(pc, INIT_CFCS);
+		Map<DataSource, SessionFactory> newFactories = newData.getFactories();
+		
+		Iterator<Entry<DataSource, SessionFactory>> it = oldFactories.entrySet().iterator();
+		Entry<DataSource, SessionFactory> e;
+		SessionFactory newSF;
+		while(it.hasNext()){
+			e = it.next();
+			newSF = newFactories.get(e.getKey());
+			if(e.getValue()!=newSF){
+				session.resetSession(pc,newSF,e.getKey());
+				cfc = _create(pc,entityName,unique,data);
+				if(cfc!=null)return cfc;
+			}
 		}
 		
 		
@@ -454,7 +464,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Resource[] locations = ormConf.getCfcLocations();
 		
 		throw ExceptionUtil.createException(data,null,
-				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+CommonUtil.toList(data.getEntityNames(), ", ")+"] ",
+				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+ListUtil.listToList(data.getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
 	}
@@ -471,11 +481,11 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	private static Component _create(PageContext pc, String entityName, boolean unique, SessionFactoryData data) throws PageException {
-		CFCInfo info = data.cfcs.get(HibernateUtil.id(entityName));
+		CFCInfo info = data.getCFC(entityName, null);
 		if(info!=null) {
 			Component cfc = info.getCFC();
 			if(unique){
-				cfc=(Component)Duplicator.duplicate(cfc,false);
+				cfc=(Component)cfc.duplicate(false);
 				if(cfc.contains(pc,CommonUtil.INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;
@@ -487,11 +497,13 @@ class CFCInfo {
 	private String xml;
 	private long modified;
 	private Component cfc;
+	private DataSource ds;
 	
-	public CFCInfo(long modified, String xml, Component cfc) {
+	public CFCInfo(long modified, String xml, Component cfc, DataSource ds) {
 		this.modified=modified;
 		this.xml=xml;
 		this.cfc=cfc;
+		this.ds=ds;
 	}
 	/**
 	 * @return the cfc
@@ -510,6 +522,10 @@ class CFCInfo {
 	 */
 	public long getModified() {
 		return modified;
+	}
+	
+	public DataSource getDataSource() {
+		return ds;
 	}
 	
 }

@@ -13,6 +13,9 @@ import railo.commons.lang.ExternalizableUtil;
  */
 public final class FunctionArgumentLight implements FunctionArgument,Externalizable {
 	
+	private static final long serialVersionUID = 817360221819952381L; // do not change
+	
+	
 	private Collection.Key name;
 	private short type;
 	private String strType;

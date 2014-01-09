@@ -1,11 +1,13 @@
 package railo.transformer.bytecode.statement.tag;
 
 import java.util.Map;
+import java.util.Set;
 
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 public interface Tag extends Statement,HasBody {
 
@@ -90,9 +92,9 @@ public interface Tag extends Statement,HasBody {
 	 */
 	public abstract Attribute removeAttribute(String name);
 
-	public abstract void addMissingAttribute(String name, String type);
+	public abstract void addMissingAttribute(TagLibTagAttr attr);
 	
-	public abstract Map getMissingAttributes();
+	public abstract TagLibTagAttr[] getMissingAttributes();
 
 
 	public abstract void setScriptBase(boolean scriptBase);

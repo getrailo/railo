@@ -6,7 +6,7 @@ import java.net.URI;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.text.DateFormat;
-import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -27,6 +27,7 @@ import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Util;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -1300,7 +1301,7 @@ public final class Decision {
 		return type.endsWith("[]");
 	}
 
-	public static boolean isCastableTo(short type,String strType, Object o) {
+	public static boolean isCastableTo(PageContext pc,short type,String strType, Object o) {
 		switch(type){
 		case CFTypes.TYPE_ANY:          return true;
 		case CFTypes.TYPE_STRING:		return isCastableToString(o);
@@ -1326,21 +1327,25 @@ public final class Decision {
             return comp.instanceOf(strType);
         }
         if(isArrayType(strType) && isArray(o)){
-        	String t=strType.substring(0,strType.length()-2);
+        	String _strType=strType.substring(0,strType.length()-2);
+        	short _type=CFTypes.toShort(_strType, false, (short)-1);
         	Array arr = Caster.toArray(o,null);
         	if(arr!=null){
-        		Iterator it = arr.valueIterator();
+        		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(type,t, it.next()))
+        			Object obj = it.next();
+        			if(!isCastableTo(pc,_type,_strType, obj))
         				return false;
-        			
         		}
         		return true;
         	}
         	
         }
         
-		return false;
+        /* custom type (disabled for the moment)
+        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
+        return ct!=null && ct.convert(pc,o,Null.NULL)!=Null.NULL;*/
+        return false;
 	}
 
     public synchronized static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {
@@ -1350,38 +1355,45 @@ public final class Decision {
 
     	// get Calendar
         Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
-        //synchronized(c){
-	        // datetime
-	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
-	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].parse(str);
-		            return true;
-	            }
-	            catch (ParseException e) {}
-	        }
-	        // date
-	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
-	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	df[i].parse(str);
-		            return true;
-	            }
-	            catch (ParseException e) {}
-	        }
+        
+        // datetime
+        ParsePosition pp=new ParsePosition(0);
+        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
+        Date d;
+		for(int i=0;i<df.length;i++) {
+    		pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+        	d = df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+			
+        	return true;
+        }
+        
 	    	
-	        // time
-	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
-	        for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	df[i].parse(str);
-		            return true;
-	            } 
-	            catch (ParseException e) {}
-	        }
-        //} 
+	    // date
+		df=FormatUtil.getDateFormats(locale,tz,false);
+        for(int i=0;i<df.length;i++) {
+    		pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+			d=df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+        	return true;
+        }
+		
+        // time
+        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
+        for(int i=0;i<df.length;i++) {
+        	pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+        	d=df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+        	
+        	return true;
+        }
+        
         if(lenient) return isDateSimple(str, false);
         return false;
     }

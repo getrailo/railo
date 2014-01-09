@@ -9,7 +9,6 @@ import railo.runtime.ext.function.Function;
 public final class XMLFormat implements Function {
 	public static String call(PageContext pc , String xmlString) {
 		int len=xmlString.length();
-		//StringBuffer sb=new StringBuffer(len);
 		int plus=0;
 		
 		for(int pos=0;pos<len;pos++) {

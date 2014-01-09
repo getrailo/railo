@@ -2,11 +2,19 @@ package railo.transformer.library.tag;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
+import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.op.Caster;
+import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -20,6 +28,10 @@ public final class TagLibTagAttr {
 	public static final short SCRIPT_SUPPORT_REQUIRED = 2;
 	
 	private String name="noname";
+	private String[] alias=null;
+	
+
+
 	private String type;
 	private String description="";
 	private boolean required;
@@ -31,17 +43,24 @@ public final class TagLibTagAttr {
 	private boolean noname;
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private short scriptSupport=SCRIPT_SUPPORT_NONE;
+	private String valueList;
+	private char delimiter=',';
+	private Object[] values;
 
 	
 	public TagLibTagAttr duplicate(TagLibTag tag) {
 		TagLibTagAttr tlta=new TagLibTagAttr(tag);
 		tlta.name=name;
+		tlta.alias=alias;
 		tlta.type=type;
 		tlta.description=description;
 		tlta.required=required;
 		tlta.rtexpr=rtexpr;
 		tlta.defaultValue=defaultValue;
 		tlta.hidden=hidden;
+		tlta.valueList=valueList;
+		tlta.values=values;
+		tlta.delimiter=delimiter;
 		tlta.noname=noname;
 		tlta._default=_default;
 		tlta.status=status;
@@ -80,6 +99,20 @@ public final class TagLibTagAttr {
 	public String getName() {
 		return name;
 	}
+	
+
+	public TagLibTag getTag() {
+		return tag;
+	}
+	
+	public String[] getAlias() {
+		return alias;
+	}
+
+
+	public void setAlias(String strAlias) {
+		this.alias = railo.runtime.type.util.ListUtil.trimItems(railo.runtime.type.util.ListUtil.listToStringArray(strAlias.toLowerCase(),','));
+	}
 
 	/**
 	 * Gibt zurueck, ob das Attribut Pflicht ist oder nicht.
@@ -90,13 +123,13 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Gibt den Typ des Attribut zurŸck (query, struct, string usw.)
+	 * Gibt den Typ des Attribut zurï¿½ck (query, struct, string usw.)
 	 * @return Typ des Attribut
 	 */
 	public String getType() {
 	    if(this.type==null) {
 	    	try {
-	        String methodName=  "set"+
+	        String methodName="set"+
 			(name.length()>0?""+Character.toUpperCase(name.charAt(0)):"")+
 			(name.length()>1?name.substring(1):"");
 	        
@@ -265,5 +298,77 @@ public final class TagLibTagAttr {
 		if(scriptSupport==SCRIPT_SUPPORT_REQUIRED) return "required";
 		return "none";
 	}
+
+
+	public void setValueDelimiter(String delimiter) {
+		if(StringUtil.isEmpty(delimiter,true)) return;
+		this.delimiter=delimiter.trim().charAt(0);
+	}
+	
+	public void setValues(String valueList) {
+		if(tag.getName().equalsIgnoreCase("pop"))
+		if(StringUtil.isEmpty(valueList,true)) return;
+		this.valueList=valueList;
+	}
+	
+	public Object[] getValues() {
+		if(valueList==null) return null;
+		if(values!=null) return values;
+		String[] res = ListUtil.trimItems(ListUtil.listToStringArray(valueList, delimiter));
+		short type=CFTypes.toShort(getType(), false, CFTypes.TYPE_ANY);
+		// String
+		if(type==CFTypes.TYPE_STRING || type==CFTypes.TYPE_ANY) {
+			values=res;
+		}
+		// Numeric
+		else if(type==CFTypes.TYPE_NUMERIC) {
+			List<Double> list=new ArrayList<Double>();
+			Double d;
+			for(int i=0;i<res.length;i++){
+				d=Caster.toDouble(res[i],null);
+				if(d!=null)list.add(d);
+			}
+			values=list.toArray(new Double[list.size()]);
+		}
+		// Boolean
+		else if(type==CFTypes.TYPE_BOOLEAN) {
+			List<Boolean> list=new ArrayList<Boolean>();
+			Boolean b;
+			for(int i=0;i<res.length;i++){
+				b=Caster.toBoolean(res[i],null);
+				if(b!=null)list.add(b);
+			}
+			values=list.toArray(new Boolean[list.size()]);
+		}
+		// DateTime
+		else if(type==CFTypes.TYPE_DATETIME) {
+			List<DateTime> list=new ArrayList<DateTime>();
+			DateTime dt;
+			for(int i=0;i<res.length;i++){
+				dt=Caster.toDate(res[i],true,null,null);
+				if(dt!=null)list.add(dt);
+			}
+			values=list.toArray(new DateTime[list.size()]);
+		}
+		// Timespan
+		else if(type==CFTypes.TYPE_TIMESPAN) {
+			List<TimeSpan> list=new ArrayList<TimeSpan>();
+			TimeSpan ts;
+			for(int i=0;i<res.length;i++){
+				ts=Caster.toTimespan(res[i],null);
+				if(ts!=null)list.add(ts);
+			}
+			values=list.toArray(new TimeSpan[list.size()]);
+		}
+		
+		// TODO add support for other types ?
+		else {
+			valueList=null; 
+		}
+		return values;
+		
+	}
+	
+
 
 }

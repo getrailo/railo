@@ -50,7 +50,7 @@ public final class ListQualify implements Function {
 	}
 
     private static String doIt(Array arr, char qualifier, char delimiter, String elements) {
-        StringBuffer rtn=new StringBuffer();
+    	StringBuilder rtn=new StringBuilder();
         int len=arr.size();
         
 		if(StringUtil.toLowerCase(elements).equals("all")) {
@@ -74,7 +74,7 @@ public final class ListQualify implements Function {
 		return rtn.toString();
     }
     private static String doIt(Array arr, char qualifier, String delimiter, String scope) {
-        StringBuffer rtn=new StringBuffer();
+    	StringBuilder rtn=new StringBuilder();
         int len=arr.size();
         
 		if(StringUtil.toLowerCase(scope).equals("all")) {
@@ -98,7 +98,7 @@ public final class ListQualify implements Function {
 		return rtn.toString();
     }
     private static String doIt(Array arr, String qualifier, char delimiter, String scope) {
-        StringBuffer rtn=new StringBuffer();
+    	StringBuilder rtn=new StringBuilder();
         int len=arr.size();
         
 		if(StringUtil.toLowerCase(scope).equals("all")) {
@@ -122,7 +122,7 @@ public final class ListQualify implements Function {
 		return rtn.toString();
     }
     private static String doIt(Array arr, String qualifier, String delimiter, String scope) {
-        StringBuffer rtn=new StringBuffer();
+    	StringBuilder rtn=new StringBuilder();
         int len=arr.size();
         
 		if(StringUtil.toLowerCase(scope).equals("all")) {
@@ -147,7 +147,7 @@ public final class ListQualify implements Function {
     }
     
     
-    private static void qualifyString(StringBuffer rtn,String value,String qualifier) {
+    private static void qualifyString(StringBuilder rtn,String value,String qualifier) {
 		if(Decision.isNumeric(value)) rtn.append(value);
 		else {
 			rtn.append(qualifier);
@@ -155,7 +155,7 @@ public final class ListQualify implements Function {
 			rtn.append(qualifier);
 		}
 	}
-	private static void qualifyString(StringBuffer rtn,String value,char qualifier) {
+	private static void qualifyString(StringBuilder rtn,String value,char qualifier) {
 		if(Decision.isNumeric(value)) rtn.append(value);
 		else {
 			rtn.append(qualifier);

@@ -77,7 +77,7 @@
 	<data key="customtags.archive">Archive</data>
 	<data key="customtags.primary">Primary</data>
 	<data key="customtags.customtagdeepsearch">Search subdirectories</data>
-	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories (not supported for archives)</data>
+	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories.</data>
 	<data key="customtags.archivemissing">Please enter a value for the archive name (row </data>
 	<data key="customtags.customtaglocalsearchdesc">Search in the caller directory for the custom tag</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -178,6 +178,8 @@
 	<data key="menu.server.language">Language</data>
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
+	<data key="menu.server.logging">Logging</data>
+	<data key="menu.server.export">Export</data>
 	<data key="menu.services.label">Services</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -484,7 +486,7 @@
 	<data key="components.trusted">Trusted</data>
 	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
-	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
+	Search for CFCs in the subdirectories of the "Additional Resources" below.</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: {url})</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
@@ -580,6 +582,8 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
 	<data key="debug.settings.tracing"> Tracing </data>
 	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.dump"> Dump </data>
+	<data key="debug.settings.dumpDesc">Select this option to enable output produced with help of the tag cfdump and send to debugging.</data>
 	<data key="debug.settings.timer"> Timer </data>
 	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
 	<data key="debug.settings.timer"> Timer </data>
@@ -659,9 +663,9 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
 	<data key="setting.dotNotationOriginalCase">Keep original case</data>
 	
-	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
+	<data key="setting.suppressWSBeforeArg">Suppress whitespace before cfargument</data>
 
-	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
+	<data key="setting.suppressWSBeforeArgDesc">if set, Railo suppress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Clear template cache</data>
@@ -692,7 +696,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
 
-	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContent">Suppress Content for CFC Remoting</data>
 	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
 	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
 	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>
@@ -760,6 +764,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="buttons.delete">delete</data>
 	<data key="buttons.reset">reset</data>
 	<data key="buttons.repair">repair</data>
+	<data key="buttons.export">export</data>
 	<data key="video.web.installed">The video components are installed on your system.</data>
 	<data key="video.web.installedbut">The video components are installed but they can not be executed properly.Just switch to the Railo Server Administrator, in order to repair it:</data>
 	<data key="video.upload">Upload</data>
@@ -851,6 +856,9 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="schedule.usernamedescription">Username to access the URL if it is protected by authentication</data>
 	<data key="schedule.startdatedesc">Defines the date when the task should be executed the first time.</data>
 	<data key="settings.datasourcesettings">Settings</data>
+	<data key="settings.datasource.databaseName">Database (Name/Version)</data>
+	<data key="settings.datasource.driverName">Driver (Name/Version)</data>
+
 	<data key="settings.readonlydatasources">Global Datasources (Datasources from Server Administrator)</data>
 	<data key="settings.readonlydatasourcesdescription">These datasources have been created in the Server Administrator and are shared with ALL web contexts. You cannot modify these datasources in the Web Administrator, but you can override them by creating your own datasource with the same name.</data>
 	<data key="settings.dbpassdesc">The password for the database</data>
@@ -876,7 +884,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.gateway.buttons.default">set as default</data>
 	<data key="settings.gateway.default">Default</data>
 	<data key="settings.gateway.namemissing">Cancel</data>
-	<data key="settings.gateway.descexisting">List of all existing gateways for ths enviroment</data>
+	<data key="settings.gateway.descexisting">List of all existing gateways for this enviroment</data>
 	<data key="settings.gateway.title">Gateway</data>
 	<data key="settings.dbdatabase">Database</data>
 	<data key="settings.dbhostdesc">Host name where the database server is located</data>
@@ -929,6 +937,10 @@ If the timezone of your Railo instance and your database is different, this can 
 	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
+	<data key="settings.exportAppCFC">Export Application.cfc</data>
+	<data key="settings.exportAppCFCDesc">Export the settings of this Web Context as Application.cfc Template, of course this includes only settings possible in Application.cfc.</data>
+	
+
 	<data key="settings.dbpass">Password</data>
 	<data key="settings.listdatasourcesdescweb"></data>
 	<data key="settings.dbhost">Host/Server</data>
@@ -1103,7 +1115,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.gateway.class">Class</data>
 	<data key="settings.gateway.titleCreate">Create a new Gateway instance</data>
 	<data key="settings.gateway.titleExisting">List of existing gateway instances</data>
-	<data key="settings.gateway.descExisting">List of all existing gateways for ths enviroment</data>
+	<data key="settings.gateway.descExisting">List of all existing gateways for this enviroment</data>
 	<data key="settings.gateway.nameMissing">Cancel</data>
 	<data key="settings.gateway.type">Type</data>
 	<data key="settings.gateway.state">State</data>
@@ -1124,7 +1136,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.class">Class</data>
 	<data key="settings.cache.titleCreate">Create a new cache connection</data>
 	<data key="settings.cache.titleExisting">List of existing cache connections</data>
-	<data key="settings.cache.descExisting">List of all existing connection for ths enviroment</data>
+	<data key="settings.cache.descExisting">List of all existing connection for this enviroment</data>
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>
 	<data key="settings.cache.defaulttypeObject">Object</data>
@@ -1137,6 +1149,9 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaulttypeFunctionDesc">This cache connection is used for caching the results of the tag cffunction/function</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">This cache connection is used for the Ram Resource (ram://...)</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">This cache connection is used for caching the results of the tag cfinclude</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>
@@ -1145,6 +1160,20 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
+
+
+	<data key="settings.logging.name">Name</data>
+	<data key="settings.logging.layout">Layout</data>
+	<data key="settings.logging.level">Level</data>
+	<data key="settings.logging.appender">Appender</data>
+	<data key="settings.logging.titleCreate">Create new Log</data>
+	<data key="settings.logging.readOnlyTitle">Readonly Logs</data>
+	<data key="settings.logging.readOnlyDesc">Readonly Logs are generated within the "server administrator" for all web instances and can not be modified by the "web administrator.</data>
+	<data key="settings.logging.title">Logs</data>
+	<data key="settings.logging.desc">List of existing Logs for this enviroment</data>
+	<data key="settings.logging.detailDesc">Log settings for a specific Log</data>
+	<data key="settings.logging.noDriver">There are no Appender/Layout drivers in that system</data>
+
 	<data key="settings.cache.Buttons.default">set as default</data>
 	<data key="settings.orm.title">Settings</data>
 	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>

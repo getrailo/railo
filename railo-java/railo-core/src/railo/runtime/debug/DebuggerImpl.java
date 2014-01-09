@@ -12,6 +12,7 @@ import java.util.Map;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.util.ResourceSnippet;
 import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.commons.lang.StringUtil;
@@ -64,6 +65,7 @@ public final class DebuggerImpl implements Debugger {
 	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
+	private List<DebugDump> dumps=new ArrayList<DebugDump>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
 	private Map<String,ImplicitAccessImpl> implicitAccesses=new HashMap<String,ImplicitAccessImpl>();
 	
@@ -73,7 +75,7 @@ public final class DebuggerImpl implements Debugger {
 	private Array historyId=new ArrayImpl();
 	private Array historyLevel=new ArrayImpl();
 
-	private DateTimeImpl starttime;
+	private long starttime=System.currentTimeMillis();
 
 	private DebugOutputLog outputLog;
 
@@ -88,6 +90,7 @@ public final class DebuggerImpl implements Debugger {
 		implicitAccesses.clear();
 		timers.clear();
 		traces.clear();
+		dumps.clear();
 		exceptions.clear();
 		historyId.clear();
 		historyLevel.clear();
@@ -492,6 +495,31 @@ public final class DebuggerImpl implements Debugger {
 			}
 			catch(PageException dbe) {}
         }
+        
+     // dumps
+		len=dumps==null?0:dumps.size();
+		if(!((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DUMP))len=0;
+        Query qryDumps=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._output,
+                		KeyConstants._template,
+                		KeyConstants._line},
+                len,"dumps");
+        if(len>0) {
+        	try {
+	        	Iterator<DebugDump> it = dumps.iterator();
+	        	DebugDump dd;
+	        	row=0;
+	        	while(it.hasNext()) {
+	        		dd= it.next();
+	        		row++;
+	        		qryDumps.setAt(KeyConstants._output,row,dd.getOutput());  
+	        		if(!StringUtil.isEmpty(dd.getTemplate()))qryDumps.setAt(KeyConstants._template,row,dd.getTemplate()); 
+	        		if(dd.getLine()>0)qryDumps.setAt(KeyConstants._line,row,new Double(dd.getLine())); 
+	        	}
+			}
+			catch(PageException dbe) {}
+        }
 
 		// traces
 		len=traces==null?0:traces.size();
@@ -516,7 +544,7 @@ public final class DebuggerImpl implements Debugger {
 	        	while(it.hasNext()) {
 	        		trace= it.next();
 	        		row++;
-	        		qryTraces.setAt(KeyConstants._type,row,LogUtil.toStringType(trace.getType(), "INFO"));  
+	        		qryTraces.setAt(KeyConstants._type,row,DebugTraceImpl.toType(trace.getType(), "INFO"));  
 	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
 	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
 	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyConstants._template,row,trace.getTemplate()); 
@@ -570,7 +598,7 @@ public final class DebuggerImpl implements Debugger {
 		
 		if(addAddionalInfo) {
 			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
-			debugging.setEL(KeyImpl.init("starttime"),starttime);
+			debugging.setEL(KeyImpl.init("starttime"),new DateTimeImpl(starttime,false));
 			debugging.setEL(KeyConstants._id,pc.getId());
 		}
 
@@ -579,6 +607,7 @@ public final class DebuggerImpl implements Debugger {
 		debugging.setEL(KeyConstants._queries,qryQueries);
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
+		debugging.setEL("dumps",qryDumps);
 		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
 		//debugging.setEL(OUTPUT_LOG,qryOutputLog);
 		
@@ -666,6 +695,27 @@ public final class DebuggerImpl implements Debugger {
 		return t;
 	}
 	
+	
+	public DebugDump addDump(PageSource ps,String dump) {
+		
+		StackTraceElement[] _traces = new Exception("Stack trace").getStackTrace();
+		String clazz=ps.getFullClassName();
+		int line=0;
+		
+		// line
+		for(int i=0;i<_traces.length;i++) {
+			StackTraceElement trace=_traces[i];
+    		if(trace.getClassName().startsWith(clazz)) {
+    			line=trace.getLineNumber();
+    			break;
+			}
+		}
+		
+		DebugDump dt=new DebugDumpImpl(ps.getDisplayPath(),line,dump);
+		dumps.add(dt);
+		return dt;
+	}
+	
 	@Override
 	public DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue) {
 		
@@ -703,7 +753,7 @@ public final class DebuggerImpl implements Debugger {
 	}
 
 	public void init(Config config) {
-		this.starttime=new DateTimeImpl(config);
+		this.starttime=System.currentTimeMillis()+config.getTimeServerOffset();
 	}
 
 	@Override

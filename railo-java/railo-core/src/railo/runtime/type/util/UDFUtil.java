@@ -104,34 +104,6 @@ public class UDFUtil {
 		
 	}
 
-	public static String callerHash(UDF udf, Object[] args, Struct values) throws ApplicationException {
-		StringBuilder sb=new StringBuilder()
-			.append(HashUtil.create64BitHash(udf.getPageSource().getDisplayPath()))
-			.append(CACHE_DEL)
-			.append(HashUtil.create64BitHash(udf.getFunctionName()))
-			.append(CACHE_DEL);
-		
-		
-		if(values!=null) {
-			Iterator<Entry<Key, Object>> it = values.entryIterator();
-			Entry<Key, Object> e;
-			while(it.hasNext()){
-				e = it.next();
-				if(!Decision.isSimpleValue(e.getValue())) throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
-				sb.append(((KeyImpl)e.getKey()).hash()).append(CACHE_DEL2).append(HashUtil.create64BitHash(e.getValue().toString())).append(CACHE_DEL);
-				
-			}
-		}
-		else if(args!=null){
-			for(int i=0;i<args.length;i++){
-				if(!Decision.isSimpleValue(args[i])) throw new ApplicationException("only simple values are allowed as parameter for a function with cachedWithin");
-				sb.append(HashUtil.create64BitHash(args[i].toString())).append(CACHE_DEL);
-				
-			}
-		}
-		return HashUtil.create64BitHashAsString(sb, Character.MAX_RADIX);
-	}
-
 	public static Object getDefaultValue(PageContext pc, PageSource ps, int udfIndex, int index, Object defaultValue) throws PageException {
 		Page p=ComponentUtil.getPage(pc,ps);
     	if(p instanceof PagePlus) return ((PagePlus)p).udfDefaultValue(pc,udfIndex,index,defaultValue);

@@ -14,10 +14,6 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -72,7 +68,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverFunctionMapping;
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
     
     
@@ -323,16 +318,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			this.gatewayEngine=gatewayEngine;
 		}
 
-	    public LogAndSource getGatewayLogger() {
-	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-			return gatewayLogger;
-	    }
-
-
-	    public void setGatewayLogger(LogAndSource gatewayLogger) {
-	    	this.gatewayLogger=gatewayLogger;
-	    }
-
 		public TagHandlerPool getTagHandlerPool() {
 			return tagHandlerPool;
 		}
@@ -439,14 +424,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.allowRequestTimeout();
 		}
 		
-		public CFMLWriter getCFMLWriter(HttpServletRequest req, HttpServletResponse rsp) {
+		public CFMLWriter getCFMLWriter(PageContext pc, HttpServletRequest req, HttpServletResponse rsp) {
 			// FUTURE  move interface CFMLWriter to Loader and load dynaicly from railo-web.xml
 	        if(writerType==CFML_WRITER_WS)
-	            return new CFMLWriterWS		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWS		(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	        else if(writerType==CFML_WRITER_REFULAR) 
-	            return new CFMLWriterImpl			(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterImpl			(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	        else
-	            return new CFMLWriterWSPref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWSPref	(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	    }
 
 		

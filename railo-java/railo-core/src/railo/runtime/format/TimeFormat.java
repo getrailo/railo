@@ -46,10 +46,13 @@ public final class TimeFormat extends BaseFormat implements Format {
 		return format(dt,mask,null);
 	}
 	
-	
+
 	public String format(DateTime date,String mask, TimeZone tz) {
+		return format(date.getTime(), mask, tz);
+	}
+	public String format(long time,String mask, TimeZone tz) {
 		Calendar calendar = JREDateTimeUtil.getThreadCalendar(getLocale(),tz);
-		calendar.setTimeInMillis(date.getTime());
+		calendar.setTimeInMillis(time);
 
 		String lcMask=StringUtil.toLowerCase(mask);
 		if(lcMask.equals("short"))			return getAsString(calendar,DateFormat.SHORT,tz);
@@ -57,14 +60,14 @@ public final class TimeFormat extends BaseFormat implements Format {
 		else if(lcMask.equals("long")) 		return getAsString(calendar,DateFormat.LONG,tz);
 		else if(lcMask.equals("full"))		return getAsString(calendar,DateFormat.FULL,tz);
 		else if(lcMask.equals("beat"))	{
-			return Caster.toString(Beat.format(date)); 
+			return Caster.toString(Beat.format(time)); 
 		}
 		
 		int len=mask.length();
 		int pos=0;
 		if(len==0) return "";
 		
-		StringBuffer formated=new StringBuffer();
+		StringBuilder formated=new StringBuilder();
 		
 		
 		

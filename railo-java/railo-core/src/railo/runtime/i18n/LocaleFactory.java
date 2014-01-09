@@ -32,7 +32,7 @@ public final class LocaleFactory {
 		
 		
 		String key;
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<ls.length;i++) {
 			key=ls[i].getDisplayName(Locale.US).toLowerCase();
 			locales.put(key, ls[i]);
@@ -220,8 +220,7 @@ public final class LocaleFactory {
 	
 
 	private static String getSupportedLocalesAsString() {
-		//StringBuffer sb=new StringBuffer();
-	    // TODO chnge from ArryObject to string
+		// TODO chnge from ArryObject to string
 		String[] arr = locales.keySet().toArray(new String[locales.size()]);
 		Arrays.sort(arr);
 		return ListUtil.arrayToList(arr,",");

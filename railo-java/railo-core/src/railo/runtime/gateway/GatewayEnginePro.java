@@ -10,6 +10,7 @@ public interface GatewayEnginePro {
 	public static final int LOGLEVEL_WARN=2;
 	public static final int LOGLEVEL_ERROR=3;
 	public static final int LOGLEVEL_FATAL=4;
+	public static final int LOGLEVEL_TRACE=5;
 	
 	
 	/**

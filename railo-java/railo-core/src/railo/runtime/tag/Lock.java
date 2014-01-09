@@ -10,7 +10,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.lock.LockData;
 import railo.runtime.lock.LockManager;
+import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.lock.LockTimeoutException;
+import railo.runtime.lock.LockTimeoutExceptionImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -219,19 +221,21 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		    data = manager.lock(type,name,timeoutInMillis,pageContext.getId());
 		} 
 		catch (LockTimeoutException e) {
+			LockManagerImpl mi = (LockManagerImpl)manager;
+		    Boolean hasReadLock = mi.isReadLocked(name);
+		    Boolean hasWriteLock = mi.isWriteLocked(name);
+		    String msg = LockTimeoutExceptionImpl.createMessage(type, name, lockType, timeoutInMillis, hasReadLock, hasWriteLock);
+		    
 		    _release(pageContext,System.nanoTime()-start);
-			//print.out("LockTimeoutException");
 		    name=null;
-			String errorText=e.getMessage();
-		    if(lockType!=null)errorText=("a timeout occurred on ["+lockType+"] scope lock");
-			
+		    
 		    cflock.set("succeeded",Boolean.FALSE);
-		    cflock.set("errortext",errorText);
+		    cflock.set("errortext",msg);
 
 			if(throwontimeout) throw new LockException(
 	                LockException.OPERATION_TIMEOUT,
 	                this.name,
-	                errorText);
+	                msg);
 			
 			return SKIP_BODY;
 		} 

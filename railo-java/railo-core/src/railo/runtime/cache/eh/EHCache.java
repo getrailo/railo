@@ -276,7 +276,7 @@ public class EHCache extends EHCacheSupport {
 		}
 		
 		
-		StringBuffer xml=new StringBuffer();
+		StringBuilder xml=new StringBuilder();
 		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		xml.append("<ehcache xsi:noNamespaceSchemaLocation=\"ehcache.xsd\">\n");
 				
@@ -324,7 +324,7 @@ public class EHCache extends EHCacheSupport {
 					add+"\"/>\n"); //propertySeparator=\",\" 
 		
 			// listener
-			StringBuffer sb=new StringBuffer();
+			StringBuilder sb=new StringBuilder();
 			
 			String hostName=global.get("listener_hostName","").toString().trim().toLowerCase();
 			if(!Util.isEmpty(hostName)) add(sb,"hostName="+hostName);
@@ -378,7 +378,7 @@ public class EHCache extends EHCacheSupport {
 	
 	
 	
-	private static void add(StringBuffer sb,String str) {
+	private static void add(StringBuilder sb,String str) {
 		if(sb.length()>0)sb.append(", ");
 		sb.append(str);
 	}
@@ -391,7 +391,7 @@ public class EHCache extends EHCacheSupport {
 		return 255;	
 	}
 
-	private static void createCacheXml(StringBuffer xml, String cacheName, Struct arguments, boolean isDistributed) {
+	private static void createCacheXml(StringBuilder xml, String cacheName, Struct arguments, boolean isDistributed) {
 
 		// disk Persistent
 		boolean diskPersistent=toBooleanValue(arguments.get("diskpersistent",Boolean.FALSE),DISK_PERSISTENT);

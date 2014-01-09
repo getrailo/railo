@@ -163,7 +163,6 @@ public class MimeType {
 		*/
 		return new MimeType(type, subtype, properties);
 	}
-
 	
 	/**
 	 * returns a mimetype that match given string
@@ -173,20 +172,26 @@ public class MimeType {
 	public static MimeType getInstance(String strMimeType){
 		if(strMimeType==null) return ALL;
 		strMimeType=strMimeType.trim();
-		if("*".equals(strMimeType) || strMimeType.length()==0) return ALL;
 		
+		if("*".equals(strMimeType) || strMimeType.length()==0) return ALL;
 		String[] arr = ListUtil.listToStringArray(strMimeType, ';');
+		if(arr.length==0) return ALL;
 		
 		String[] arrCT = ListUtil.listToStringArray(arr[0].trim(), '/');
 		
-		String type=arrCT[0].trim();
-		if("*".equals(type)) type=null;
+		// subtype
+		String type=null,subtype=null;
 		
-		if(arrCT.length==1) return getInstance(type,null,null);
-		
-		String subtype=arrCT[1].trim();
-		if("*".equals(subtype)) subtype=null;
-		
+		// type
+		if(arrCT.length>=1) {
+			type=arrCT[0].trim();
+			if("*".equals(type)) type=null;
+			
+			if(arrCT.length>=2) {
+				subtype=arrCT[1].trim();
+				if("*".equals(subtype)) subtype=null;	
+			}
+		}
 		if(arr.length==1) return getInstance(type,subtype,null);
 		
 
@@ -196,11 +201,11 @@ public class MimeType {
 		for(int i=1;i<arr.length;i++){
 			entry=arr[i].trim();
 			_arr = ListUtil.listToStringArray(entry, '=');
-			if(arr.length<2) continue;
-			properties.put(_arr[0].trim().toLowerCase(), _arr[1].trim());
-			//if(_arr[0].equals("q")) quality=Caster.toDoubleValue(_arr[1],1);
-			//if(_arr[0].equals("mxb")) mxb=Caster.toIntValue(_arr[1],100000);
-			//if(_arr[0].equals("mxt")) mxt=Caster.toDoubleValue(_arr[1],5);
+			if(_arr.length>=2)
+				properties.put(_arr[0].trim().toLowerCase(), _arr[1].trim());
+			else if(_arr.length==1 && !_arr[0].trim().toLowerCase().equals("*"))
+				properties.put(_arr[0].trim().toLowerCase(),"");
+				
 		}
 		return getInstance(type,subtype,properties);
 	}

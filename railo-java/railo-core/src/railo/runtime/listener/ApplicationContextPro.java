@@ -2,10 +2,19 @@ package railo.runtime.listener;
 
 import java.nio.charset.Charset;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
+
+import railo.commons.lang.Pair;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
+import railo.runtime.type.CustomType;
+import railo.runtime.type.Struct;
+import railo.runtime.type.dt.TimeSpan;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 // FUTURE move to ApplicationContext
 
@@ -51,5 +60,23 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public Charset getResourceCharset();
 	public void setResourceCharset(Charset charset);
+
+	public boolean getTypeChecking();
+	public void setTypeChecking(boolean typeChecking);
+	
+	Map<Collection.Key, Map<Collection.Key, Object>> getTagAttributeDefaultValues();
+	public Map<Collection.Key, Object> getTagAttributeDefaultValues(String fullName);
+	public void setTagAttributeDefaultValues(Struct sct);
+
+	public TimeSpan getRequestTimeout();
+	public void setRequestTimeout(TimeSpan timeout);
+
+	public CustomType getCustomType(String strType);
+
+	public boolean getAllowCompression();
+	public void setAllowCompression(boolean allowCompression);
+
+	public boolean getSuppressContent();
+	public void setSuppressContent(boolean suppressContent);
 	
 }

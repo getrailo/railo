@@ -18,11 +18,14 @@ import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
@@ -51,6 +54,7 @@ import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
+import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
@@ -488,7 +492,7 @@ public final class ASMUtil {
 		aprint.o(stat);
 		while(true)	{
 			parent=parent.getParent();
-			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getSource());
+			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getPageSource().getDisplayPath());
 			else aprint.o("parent-> "+ parent);
 			if(parent==null) break;
 		}
@@ -832,12 +836,14 @@ public final class ASMUtil {
 	}*/
 
 
-	public static String createOverfowMethod(int id) {
-		return "_call"+StringUtil.addZeros(id,6);
+	public static String createOverfowMethod(String prefix, int id) { // pattern is used in function callstackget
+		if(StringUtil.isEmpty(prefix)) prefix="call";
+		return prefix+"_"+StringUtil.addZeros(id,6);
 	}
 	
 	public static boolean isOverfowMethod(String name) {
-		return name.startsWith("_call") && name.length()>=11;
+		return name.length()>6 && Decision.isNumeric(name.substring(name.length()-6,name.length()));
+		//return name.startsWith("_call") && name.length()>=11;
 	}
 
 
@@ -1058,11 +1064,25 @@ public final class ASMUtil {
 	}
 
 
-	public static long timeSpanToLong(Expression val) throws EvaluatorException {
+	public static Literal cachedWithinValue(Expression val) throws EvaluatorException {
 		if(val instanceof Literal) {
-			Double d = ((Literal)val).getDouble(null);
-			if(d==null) throw cacheWithinException();
-			return TimeSpanImpl.fromDays(d.doubleValue()).getMillis();
+			Literal l=(Literal)val;
+			
+			// double == days
+			Double d = l.getDouble(null);
+			if(d!=null) {
+				return new LitLong(TimeSpanImpl.fromDays(d.doubleValue()).getMillis(), null, null);
+			}
+			
+			// request
+			String str=l.getString();
+			if(str!=null && "request".equalsIgnoreCase(str.trim()))
+				return new LitString("request",null,null);
+			
+			if(str!=null && "smart".equalsIgnoreCase(str.trim()))
+				return new LitString("smart",null,null);
+			
+			throw cacheWithinException();
 		}
 		// createTimespan
 		else if(val instanceof Variable) {
@@ -1080,7 +1100,7 @@ public final class ASMUtil {
 							double minutes=toDouble(args[2].getValue());
 							double seconds=toDouble(args[3].getValue());
 							double millis=len==5?toDouble(args[4].getValue()):0;
-							return new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis();
+							return new LitLong(new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis(),null,null);
 						}
 					}
 				}
@@ -1092,7 +1112,7 @@ public final class ASMUtil {
 
 
 	private static EvaluatorException cacheWithinException() {
-		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4)");
+		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4) or the string \"request\" or the string \"smart\"");
 	}
 
 
@@ -1109,20 +1129,28 @@ public final class ASMUtil {
 	public static void visitLabel(GeneratorAdapter ga, Label label) {
 		if(label!=null) ga.visitLabel(label);
 	}
+	
 
+	
 	public static String getClassName(Resource res) throws IOException{
 		byte[] src=IOUtil.toBytes(res);
 		ClassReader cr = new ClassReader(src);
 		return cr.getClassName();
 	}
-
+	
 	public static String getClassName(byte[] barr){
 		return new ClassReader(barr).getClassName();
 	}
 
 
-	public static String getSourceName(Class clazz) throws IOException {
-		return SourceNameClassVisitor.getSourceName(clazz);
+	public static Pair<String, String> getSourceNameAndPath(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC);
+	}
+	public static String getSourceName(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getName();
+	}
+	public static String getSourcePath(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getValue();
 	}
 
 	public static boolean hasOnlyDataMembers(Variable var) {

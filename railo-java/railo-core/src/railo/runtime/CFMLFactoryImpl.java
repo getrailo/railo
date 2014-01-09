@@ -12,11 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspEngineInfo;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.SystemOut;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
@@ -200,8 +203,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 }
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {
-                    Log log = config.getRequestTimeoutLogger();
-                    if(log!=null)log.warn("controler","downgrade priority of the a thread at "+getPath(pc));
+                    Log log = config.getLog("requesttimeout");
+                    if(log!=null)log.log(Log.LEVEL_WARN,"controler","downgrade priority of the a thread at "+getPath(pc));
                     try {
                     	pc.getThread().setPriority(Thread.MIN_PRIORITY);
                     }
@@ -212,7 +215,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	}
 	
 	public static void terminate(PageContext pc) {
-		Log log = pc.getConfig().getRequestTimeoutLogger();
+		Log log = ((ConfigImpl)pc.getConfig()).getLog("requesttimeout");
         
 		String strLocks="";
 		try{
@@ -223,9 +226,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	        //LockManagerImpl.unlockAll(pc.getId());
 		}
 		catch(Throwable t){}
-        
-        if(log!=null)log.error("controler",
-        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks);
+        if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,"controler",
+        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks,pc.getThread().getStackTrace());
         pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
 	}
@@ -317,11 +319,16 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		this.config=config;
 	}
 
-	public Struct getRunningPageContextes() {
+	public Struct getRunningPageContexts() {
 		return runningPcs;
 	}
+	
+	// exists because it is used in Morpheus
+	public Struct getRunningPageContextes() {
+		return getRunningPageContexts();
+	}
 
-	public long getPageContextesSize() {
+	public long getPageContextsSize() {
 		return SizeOf.size(pcs);
 	}
 	

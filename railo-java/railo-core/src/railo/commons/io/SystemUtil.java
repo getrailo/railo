@@ -3,6 +3,7 @@ package railo.commons.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
@@ -867,7 +868,9 @@ public final class SystemUtil {
 		return null;
 	}
 	
-	public static class TemplateLine {
+	public static class TemplateLine implements Serializable {
+
+		private static final long serialVersionUID = 6610978291828389799L;
 
 		public final String template;
 		public final int line;

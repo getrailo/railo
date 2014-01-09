@@ -26,7 +26,7 @@ public class SQLPrettyfier {
 		ParserString ps=new ParserString(sql.trim());
 		boolean insideString=false;
 		//short insideKlammer=0;
-		StringBuffer sb=new StringBuffer(sql.length());
+		StringBuilder sb=new StringBuilder(sql.length());
 		//char last=0;
 		
 		outer:while(!ps.isAfterLast()) {
@@ -43,7 +43,7 @@ public class SQLPrettyfier {
 		            continue;
 		        }
 		        else if(ps.isCurrent('{')) {
-		        	StringBuffer date=new StringBuffer();
+		        	StringBuilder date=new StringBuilder();
 		        	int pos=ps.getPos();
 		        	while(true) {
 		        		if(ps.isAfterLast()){

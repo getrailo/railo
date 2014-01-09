@@ -39,7 +39,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -60,7 +60,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Argument;
@@ -265,8 +265,8 @@ public final class AxisCaster {
     }
     
     private static Object _toPojo(PageContext pc, TypeMapping tm,Component comp, Class targetClass, Set<Object> done) throws PageException {//print.ds();System.exit(0);
-    	ComponentAccess ca = ComponentUtil.toComponentAccess(comp);
-    	comp=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ca);
+    	Component ca = comp;
+    	comp=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,ca);
 		ComponentScope scope = ca.getComponentScope();
     	
     	Property[] props=comp.getProperties(false);
@@ -565,8 +565,8 @@ public final class AxisCaster {
     	pc=ThreadLocalPageContext.get(pc);
     	if(pc!=null && value instanceof Pojo) {
     		try{
-    			ComponentAccess c = ComponentUtil.toComponentAccess(pc.loadComponent(value.getClass().getName()));
-    			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
+    			Component c = pc.loadComponent(value.getClass().getName());
+    			ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,c);
     		
     			// delete this scope data members
         		Collection.Key[] keys = cw.keys();

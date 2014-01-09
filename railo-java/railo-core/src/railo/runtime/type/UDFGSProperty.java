@@ -197,8 +197,8 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 	
 	
 
-	final Object cast(FunctionArgument arg,Object value, int index) throws PageException {
-		if(value==null || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+	final Object cast(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
+		if(value==null || Decision.isCastableTo(pc,arg.getType(),arg.getTypeAsString(),value)) 
 			return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}

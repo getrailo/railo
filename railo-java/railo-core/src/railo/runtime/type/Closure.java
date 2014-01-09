@@ -20,6 +20,9 @@ import railo.runtime.type.util.UDFUtil;
 public class Closure extends UDFImpl {
 	
 	
+
+	private static final long serialVersionUID = -7200106903813254844L; // do not change
+	
 	private Variables variables;
 
 

@@ -113,6 +113,7 @@ public interface Config {
 	public static final int CACHE_DEFAULT_QUERY = 4;
 	public static final int CACHE_DEFAULT_RESOURCE = 8;
 	public static final int CACHE_DEFAULT_FUNCTION = 16;
+	public static final int CACHE_DEFAULT_INCLUDE = 32;
 
 	
 	
@@ -375,18 +376,18 @@ public interface Config {
     /**
      * @return returns the application logger
      */
-    public abstract LogAndSource getApplicationLogger();
+    public abstract LogAndSource getApplicationLogger();  // FUTURE deprecated, use instead getLogger()
 
 
     /**
      * @return returns the exception logger
      */
-    public abstract LogAndSource getExceptionLogger();
+    public abstract LogAndSource getExceptionLogger();  // FUTURE deprecated, use instead getLogger()
 
     /**
      * @return returns the trace logger
      */
-    public abstract LogAndSource getTraceLogger();
+    public abstract LogAndSource getTraceLogger();  // FUTURE deprecated, use instead getLogger()
     
     /**
      * @param password
@@ -398,17 +399,17 @@ public interface Config {
     /**
      * @return Returns the mailLogger.
      */
-    public abstract LogAndSource getMailLogger();
+    public abstract LogAndSource getMailLogger(); // FUTURE deprecated, use instead getLogger()
     
     /**
      * @return Returns the request timeout Directory.
      */
-    public LogAndSource getRequestTimeoutLogger();
+    public LogAndSource getRequestTimeoutLogger();  // FUTURE deprecated, use instead getLogger()
     
     /**
      * @return returns schedule logger
      */
-    public LogAndSource getScheduleLogger();
+    public LogAndSource getScheduleLogger(); // FUTURE deprecated, use instead getLogger()
     
     /**
      * reload the time offset to a time server 
@@ -697,7 +698,7 @@ public interface Config {
     
     public Resource getRemoteClientDirectory();
     
-	public LogAndSource getRemoteClientLog();
+	public LogAndSource getRemoteClientLog(); // FUTURE deprecated, use instead getLogger()
 	
 	public RemoteClient[] getRemoteClients();
 	

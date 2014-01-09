@@ -77,5 +77,5 @@ public interface Scheduler {
     /**
      * @return Returns the logFile.
      */
-    public abstract LogAndSource getLogger();	
+    public abstract LogAndSource getLogger();// FUTURE deprecated	
 }

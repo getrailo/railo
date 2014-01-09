@@ -580,7 +580,7 @@ public final class SHA1 {
 
       
 
-      StringBuffer buf = new StringBuffer(DIGEST_SIZE * 2);       
+    	StringBuilder buf = new StringBuilder(DIGEST_SIZE * 2);       
 
 
 

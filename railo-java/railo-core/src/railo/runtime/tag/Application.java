@@ -52,9 +52,10 @@ public final class Application extends TagImpl {
 	private String clientstorage;
 	private String sessionstorage;
 	private Boolean setClientManagement;
+	private TimeSpan applicationTimeout;
 	private TimeSpan sessionTimeout;
 	private TimeSpan clientTimeout;
-	private TimeSpan applicationTimeout;
+	private TimeSpan requestTimeout;
 	private Mapping[] mappings;
 	private Mapping[] customTagMappings;
 	private Mapping[] componentMappings;
@@ -62,6 +63,7 @@ public final class Application extends TagImpl {
 	private Boolean bufferOutput;
 	private Boolean secureJson;
 	private String scriptrotect;
+	private Boolean typeChecking;
 	private Object datasource;
 	private Object defaultdatasource;
 	private int loginstorage=Scope.SCOPE_UNDEFINED;
@@ -77,20 +79,24 @@ public final class Application extends TagImpl {
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
+	private Boolean compression;
 
 	private boolean ormenabled;
 	private Struct ormsettings;
+	private Struct tag;
 	private Struct s3;
 	
 	private Boolean triggerDataMember=null;
 	private String cacheFunction;
 	private String cacheQuery;
 	private String cacheTemplate;
+	private String cacheInclude;
 	private String cacheObject;
 	private String cacheResource;
 	private Struct datasources;
 	private UDF onmissingtemplate;
 	private short scopeCascading=-1;
+	private Boolean suppress;
 	
      
     @Override
@@ -104,6 +110,7 @@ public final class Application extends TagImpl {
         setClientManagement=null;
         sessionTimeout=null;
         clientTimeout=null;
+        requestTimeout=null;
         applicationTimeout=null;
         mappings=null;
         customTagMappings=null;
@@ -111,6 +118,8 @@ public final class Application extends TagImpl {
         bufferOutput=null;
         secureJson=null;
         secureJsonPrefix=null;
+        typeChecking=null;
+        suppress=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
         scriptrotect=null;
         datasource=null;
@@ -126,9 +135,11 @@ public final class Application extends TagImpl {
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
+        compression=null;
         
         ormenabled=false;
         ormsettings=null;
+        tag=null;
         s3=null;
         //appContext=null;
         
@@ -139,6 +150,7 @@ public final class Application extends TagImpl {
     	cacheTemplate=null;
     	cacheObject=null;
     	cacheResource=null;
+    	cacheInclude=null;
     	onmissingtemplate=null;
     	scopeCascading=-1;
     }
@@ -270,6 +282,10 @@ public final class Application extends TagImpl {
 		this.clientTimeout=clientTimeout;
 	}
 	
+	public void setRequesttimeout(TimeSpan requestTimeout)	{
+		this.requestTimeout=requestTimeout;
+	}
+	
 
 	public void setCachefunction(String cacheFunction)	{
 		if(StringUtil.isEmpty(cacheFunction,true)) return;
@@ -283,6 +299,10 @@ public final class Application extends TagImpl {
 		if(StringUtil.isEmpty(cacheTemplate,true)) return;
 		this.cacheTemplate=cacheTemplate.trim();
 	}
+	public void setCacheinclude(String cacheInclude)	{
+		if(StringUtil.isEmpty(cacheInclude,true)) return;
+		this.cacheInclude=cacheInclude.trim();
+	}
 	public void setCacheobject(String cacheObject)	{
 		if(StringUtil.isEmpty(cacheObject,true)) return;
 		this.cacheObject=cacheObject.trim();
@@ -290,6 +310,9 @@ public final class Application extends TagImpl {
 	public void setCacheresource(String cacheResource)	{
 		if(StringUtil.isEmpty(cacheResource,true)) return;
 		this.cacheResource=cacheResource.trim();
+	}
+	public void setCompression(boolean compress)	{
+		this.compression=compress;
 	}
 	
 
@@ -312,6 +335,9 @@ public final class Application extends TagImpl {
 	 */
 	public void setOrmsettings(Struct ormsettings) {
 		this.ormsettings = ormsettings;
+	}
+	public void setTag(Struct tag) {
+		this.tag = tag;
 	}
 
 	/**
@@ -389,9 +415,16 @@ public final class Application extends TagImpl {
 	/**
 	 * @param scriptrotect the scriptrotect to set
 	 */			
-	public void setScriptprotect(String strScriptrotect) {
+    public void setScriptprotect(String strScriptrotect) {
 		this.scriptrotect=strScriptrotect;
-		//getAppContext().setScriptProtect(strScriptrotect);
+	}
+    
+    public void setTypechecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
+	}
+    
+    public void setSuppressremotecomponentcontent(boolean suppress) {
+		this.suppress=suppress;
 	}
 
 	public void setOnmissingtemplate(Object oUDF) throws PageException {
@@ -433,6 +466,7 @@ public final class Application extends TagImpl {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
+		if(requestTimeout!=null)				ac.setRequestTimeout(requestTimeout);
 		if(clientstorage!=null)	{
 			ac.setClientstorage(clientstorage);
 		}
@@ -465,6 +499,8 @@ public final class Application extends TagImpl {
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
 		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
+		if(typeChecking!=null)					ac.setTypeChecking(typeChecking.booleanValue());
+		if(suppress!=null)						ac.setSuppressContent(suppress.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());
 		if(setClientManagement!=null)			ac.setSetClientManagement(setClientManagement.booleanValue());
@@ -477,13 +513,14 @@ public final class Application extends TagImpl {
 		if(resourceCharset!=null) 				ac.setResourceCharset(resourceCharset);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
-		
+		if(compression!=null) 						ac.setAllowCompression(compression.booleanValue());
 		if(cacheFunction!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION, cacheFunction);
 		if(cacheObject!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_OBJECT, cacheObject);
 		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);
 		if(cacheResource!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE, cacheResource);
 		if(cacheTemplate!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE, cacheTemplate);
-		
+		if(cacheInclude!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_INCLUDE, cacheInclude);
+		if(tag!=null) ac.setTagAttributeDefaultValues(tag);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));

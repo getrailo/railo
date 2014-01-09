@@ -20,13 +20,13 @@ component extends='mxunit.framework.TestCase' {
 		ObjectSave(nestedStruct);
 		debug('Nested struct saved without error');
 	}
+	
+	
 	public void function triggerUTFDataFormatException() {
 		// Prove that it happens with objects nested deeply
-		var previousLength = 0;
-		for (var i=700;i<7001;i++) {
-			objTest = new Jira2698.TestObject( levels = i );
-			var res=ObjectSave(objTest);
-			ObjectLoad(res);
-		}
+		objTest = new Jira2698.TestObject( 500 );
+		var res=ObjectSave(objTest);
+		ObjectLoad(res);
 	}
+	
 }

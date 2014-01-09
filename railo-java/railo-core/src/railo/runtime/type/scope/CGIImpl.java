@@ -3,16 +3,18 @@ package railo.runtime.type.scope;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
@@ -72,15 +74,27 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	
 	private HttpServletRequest req;
 	private boolean isInit;
-	//private String strBaseFile="fsfd";
-	private PageContext pc;
+	//private PageContext pc;
 	private Struct https;
 	private Struct headers;
 	private int scriptProtected;
-	
+
+	private boolean disconnected;
+	private Map<Key, Object> disconnectedData;
 	
 	public CGIImpl(){
 		this.setReadOnly(true);
+	}
+	
+
+	public void disconnect() {
+		if(disconnected) return;
+		
+		disconnectedData=new HashMap<Key, Object>();
+		for(int i=0;i<keys.length;i++){
+			disconnectedData.put(keys[i], get(keys[i], "")); 
+		}
+		req=null;
 	}
 	
 
@@ -114,8 +128,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		
-		if(req==null) {
-			req=pc.getHttpServletRequest();
+		if(https==null) {
 			https=new StructImpl();
 			headers=new StructImpl();
 			String k,v;
@@ -133,6 +146,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 			}
 			catch(Throwable t){t.printStackTrace();}
 		}
+		
 		String lkey=key.getLowerString();
         
 	    
@@ -143,13 +157,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='c')	{
             	if(key.equals(KeyConstants._context_path))return toString(req.getContextPath());
-            	if(key.equals(KeyConstants._cf_template_path)) {
-					try {
-						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
-					} catch (Throwable t) {
-						return "";
-					}
-            	}
+            	if(key.equals(KeyConstants._cf_template_path)) return getPathTranslated();
             }
             else if(first=='h')	{
             	if(lkey.startsWith("http_")){
@@ -161,7 +169,9 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='r') {
                 if(key.equals(KeyConstants._remote_user))		return toString(req.getRemoteUser());
-                if(key.equals(KeyConstants._remote_addr))		return toString(req.getRemoteAddr());
+                if(key.equals(KeyConstants._remote_addr))		{
+                	return toString(req.getRemoteAddr());
+                }
                 if(key.equals(KeyConstants._remote_host))		return toString(req.getRemoteHost());
                 if(key.equals(KeyConstants._request_method))		return req.getMethod();
                 if(key.equals(KeyConstants._request_url))		return ReqRspUtil.getRequestURL( req, true );
@@ -215,13 +225,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             		if(!StringUtil.isEmpty(pathInfo,true)) return pathInfo;
             	    return "";
             	}
-                if(key.equals(KeyConstants._path_translated))	{
-            		try {
-						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
-					} catch (Throwable t) {
-						return "";
-					}//toString(req.getServletPath());
-            	}
+                if(key.equals(KeyConstants._path_translated)) return getPathTranslated();
             }
             else if(first=='q') {
             	if(key.equals(KeyConstants._query_string))return doScriptProtect(toString(ReqRspUtil.getQueryString(req)));
@@ -235,6 +239,16 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
         return other(key,defaultValue);
 	}
 	
+	private Object getPathTranslated() {
+		try{
+			PageContext pc = ThreadLocalPageContext.get();
+			return pc.getBasePageSource().getResourceTranslated(pc).toString();
+		}
+		catch(Throwable t){}
+		return "";
+	}
+
+
 	private Object other(Collection.Key key, Object defaultValue) {
 		if(staticKeys.containsKey(key)) return "";
 		return defaultValue;
@@ -279,7 +293,8 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	@Override
 	public void initialize(PageContext pc) {
 		isInit=true;
-		this.pc=pc;
+		req=pc.getHttpServletRequest();
+		
 		
         if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_CGI)>0)?
@@ -290,21 +305,16 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	@Override
 	public void release() {
 		isInit=false;
-		this.req=null;
 		scriptProtected=ScriptProtected.UNDEFINED; 
-		pc=null;
+		req=null;
 		https=null;
 		headers=null;
+		
 	}
 	
 	@Override
 	public void release(PageContext pc) {
-		isInit=false;
-		this.req=null;
-		scriptProtected=ScriptProtected.UNDEFINED; 
-		pc=null;
-		https=null;
-		headers=null;
+		release();
 	}
 	
 	@Override

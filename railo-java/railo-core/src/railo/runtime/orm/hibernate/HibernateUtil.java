@@ -22,6 +22,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
@@ -252,7 +253,6 @@ public class HibernateUtil {
 			}
 			
 			if(rows.size()==0)	{
-				//ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
 				return null;
 			}
 			return rows;
@@ -284,7 +284,7 @@ public class HibernateUtil {
 			}
 		}
 		finally {
-			DBUtil.closeEL(columns);
+			CommonUtil.closeEL(columns);
 		}// Table susid defined for cfc susid does not exist.
 		
 		return rows;
@@ -304,7 +304,7 @@ public class HibernateUtil {
 		}
         catch(Throwable t){}
 		finally {
-			DBUtil.closeEL(tables);
+			CommonUtil.closeEL(tables);
 		}
         return null;
         
@@ -327,15 +327,14 @@ public class HibernateUtil {
 
 	
 	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
-		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties,false,false);
+		Property[] props = CommonUtil.getProperties(c,onlyPeristent,includeBaseProperties,false,false);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(CommonUtil.FIELDTYPE,null),"")))
+			if("id".equalsIgnoreCase(CommonUtil.toString(props[i].getDynamicAttributes().get(CommonUtil.FIELDTYPE,null),"")))
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);
 	}
-	
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
 		return c.getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
@@ -345,7 +344,7 @@ public class HibernateUtil {
 		return ComponentUtil.getCompileTime(pc, ps);
 	}
 	
-	public static Object getMetaStructItem(Component cfc,Collection.Key name) throws PageException {
-		return ComponentUtil.toComponentAccess(cfc).getMetaStructItem(name);
+	public static Object getMetaStructItem(Component cfc,Collection.Key name) {
+		return CommonUtil.getMetaStructItem(cfc,name);
 	}
 }

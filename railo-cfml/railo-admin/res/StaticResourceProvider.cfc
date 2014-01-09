@@ -8,11 +8,19 @@ component {
 		this.mimeTypes = {
 
 			  CSS : "text/css"
-			, JS  : "text/js"
+			, JS  : "text/javascript"
 			, GIF : "image/gif"
 			, JPG : "image/jpeg"
 			, PNG : "image/png"
+
+			, SVG : "image/svg+xml"
+			, EOT : "application/vnd.ms-fontobject"
+			, OTF : "application/x-font-opentype"
+			, TTF : "application/x-font-ttf"
+			, WOFF: "application/font-woff"
 		};
+
+		this.basePath = getDirectoryFromPath( expandPath( getCurrentTemplatePath() ) );
 
 		return this;
 	}
@@ -20,11 +28,9 @@ component {
 
 	function onMissingTemplate( target ) {
 
-		var filename = right( target, 4 ) == ".cfm" ? left( target, len( target ) - 4 ) : target;
+		var filename = right( arguments.target, 4 ) == ".cfm" ? left( arguments.target, len( arguments.target ) - 4 ) : arguments.target;
 
 		var resInfo = getResInfo( filename );
-
-//		systemOutput( "\_/--> response.isCommitted: " & getPageContext().getResponse().isCommitted(), true );
 
 		if ( resInfo.exists ) {
 
@@ -45,7 +51,7 @@ component {
 			header statuscode='404' statustext='Not Found';
 		//	header statuscode='404' statustext='Not Found @ #resInfo.path#';
 
-			systemOutput( "static resource #target# was not found @ #resInfo.path#", true, true );
+			systemOutput( "static resource #arguments.target# was not found @ #resInfo.path#", true, true );
 		}
 
 		return resInfo.exists;
@@ -54,19 +60,24 @@ component {
 
 	private function getResInfo( filename ) {
 
-		if ( structKeyExists( this.resources, filename ) )
-			return this.resources[ filename ];
+		if ( structKeyExists( this.resources, arguments.filename ) )
+			return this.resources[ arguments.filename ];
 
-		var result = { path: expandPath( filename ) };
+		var ext = listLast( arguments.filename, '.' );
 
-		result.exists = fileExists( result.path );
+		var result = { path: expandPath( arguments.filename ), exists: false, mimeType: "" };
+
+		if ( this.mimeTypes.keyExists( ext ) )
+			result.mimeType = this.mimeTypes[ ext ];
+
+		if ( isEmpty(result.mimeType) || (find(this.basePath, result.path) != 1) )
+			return result;
+
+		if ( fileExists(result.path) )
+			result.exists = true;
 
 		if ( !result.exists )
 			return result;
-
-		var ext = listLast( filename, '.' );
-
-		result.mimeType = this.mimeTypes.keyExists( ext ) ? this.mimeTypes[ ext ] : "";
 
 		result.isText = left( result.mimeType, 4 ) == "text";
 
@@ -74,7 +85,7 @@ component {
 
 		result.etag = hash( result.contents );
 
-		this.resources[ filename ] = result;
+		this.resources[ arguments.filename ] = result;
 
 		return result;
 	}

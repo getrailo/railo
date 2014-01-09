@@ -44,7 +44,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	public String serialize(Object object, String clientVariableName) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize(clientVariableName,object,sb,new HashSet<Object>());
 		String str = sb.toString().trim();
 		return clientVariableName+"="+str+(StringUtil.endsWith(str, ';')?"":";");
@@ -60,7 +60,7 @@ public final class JSConverter extends ConverterSupport {
 		writer.flush();
 	}
 	private String _serialize(Object object) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize("tmp",object,sb,new HashSet<Object>());
 		String str = sb.toString().trim();
 		return str+(StringUtil.endsWith(str, ';')?"":";");
@@ -69,7 +69,7 @@ public final class JSConverter extends ConverterSupport {
 	
 	
 	
-	private void _serialize(String name,Object object,StringBuffer sb,Set<Object> done) throws ConverterException {
+	private void _serialize(String name,Object object,StringBuilder sb,Set<Object> done) throws ConverterException {
 		// NULL
 		if(object==null) {
 			sb.append(goIn());
@@ -77,7 +77,7 @@ public final class JSConverter extends ConverterSupport {
 			return;
 		}
 		// String
-		if(object instanceof String || object instanceof StringBuffer) {
+		if(object instanceof String || object instanceof StringBuilder) {
 			sb.append(goIn());
 			sb.append("\"");
 			sb.append(StringUtil.escapeJS(object.toString()));
@@ -159,7 +159,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized array
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(String name, Array array, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeArray(String name, Array array, StringBuilder sb, Set<Object> done) throws ConverterException {
 		_serializeList(name,array.toList(),sb,done);
 	}
 	
@@ -172,7 +172,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized list
 	 * @throws ConverterException
 	 */
-	private void _serializeList(String name, List list, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeList(String name, List list, StringBuilder sb, Set<Object> done) throws ConverterException {
 		
 		
 		if(useShortcuts)sb.append("[];");
@@ -198,7 +198,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized struct
 	 * @throws ConverterException
 	 */
-	private String _serializeStruct(String name, Struct struct, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private String _serializeStruct(String name, Struct struct, StringBuilder sb, Set<Object> done) throws ConverterException {
 		if(useShortcuts)sb.append("{};");
 		else sb.append("new Object();");
 		
@@ -228,7 +228,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized map
 	 * @throws ConverterException
 	 */
-	private String _serializeMap(String name, Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private String _serializeMap(String name, Map map, StringBuilder sb, Set<Object> done) throws ConverterException {
 
 		if(useShortcuts)sb.append("{}");
 		else sb.append("new Object();");
@@ -250,12 +250,12 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized query
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeQuery(String name,Query query,StringBuilder sb, Set<Object> done) throws ConverterException {
 		if(useWDDX)_serializeWDDXQuery(name,query,sb,done);
 		else _serializeASQuery(name,query,sb,done);
 	}
 
-	private void _serializeWDDXQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeWDDXQuery(String name,Query query,StringBuilder sb, Set<Object> done) throws ConverterException {
 		Iterator<Key> it = query.keyIterator();
 		Key k;
 		sb.append("new WddxRecordset();");
@@ -280,7 +280,7 @@ public final class JSConverter extends ConverterSupport {
 		}
 	}
 
-	private void _serializeASQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeASQuery(String name,Query query,StringBuilder sb, Set<Object> done) throws ConverterException {
 
 		Collection.Key[] keys = CollectionUtil.keys(query);
 		String[] strKeys = new String[keys.length];
@@ -311,7 +311,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private synchronized void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
+	private synchronized void _serializeDateTime(DateTime dateTime, StringBuilder sb) {
 	   
 		Calendar c = JREDateTimeUtil.getThreadCalendar(ThreadLocalPageContext.getTimeZone());
 		c.setTime(dateTime);
@@ -332,7 +332,7 @@ public final class JSConverter extends ConverterSupport {
 	}
 
 	private String goIn() {
-		//StringBuffer rtn=new StringBuffer(deep);
+		//StringBuilder rtn=new StringBuilder(deep);
 		//for(int i=0;i<deep;i++) rtn.append('\t');
 		return "";//rtn.toString();
 	}

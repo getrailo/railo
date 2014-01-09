@@ -81,7 +81,7 @@ public final class QoQ {
 		}
     // Distinct
         if(selects.isDistinct()) {
-        	order(target,selects.getDistincts());
+        	order(target,selects.getDistincts()); // order to filter
         	//print.e(selects.getDistincts());
         	Key[] _keys = target.getColumnNames();
             QueryColumn[] columns=new QueryColumn[_keys.length];
@@ -104,6 +104,9 @@ public final class QoQ {
                 target.removeRow(row);
             }
         }
+        order(target,orders);
+    	
+        
         return target;
 	}
     

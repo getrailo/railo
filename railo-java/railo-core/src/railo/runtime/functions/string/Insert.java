@@ -12,7 +12,7 @@ public final class Insert implements Function {
 		int p=(int) pos;
 		if(p<0 || p>str.length())
 			throw new ExpressionException("third parameter of the function insert, must be between 0 and "+str.length()+" now ["+(p)+"]");
-		StringBuffer sb=new StringBuffer(str.length()+sub.length());
+		StringBuilder sb=new StringBuilder(str.length()+sub.length());
 		
 		return sb.append(str.substring(0,p)).append(sub).append(str.substring(p)).toString();
 	}

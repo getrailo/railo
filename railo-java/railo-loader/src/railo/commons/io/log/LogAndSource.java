@@ -1,5 +1,6 @@
 package railo.commons.io.log;
 
+// FUTURE remove this class with no replacement
 /**
  * Contains a Log and the source from where is loaded
  */

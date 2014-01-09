@@ -122,7 +122,6 @@ public final class XMLEventParser extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
 		bodies.add(new StringBuilder());
-		//sbBody=new StringBuffer();
 		att = toStruct(attributes);
 		call(startElement,new Object[]{uri,localName,qName,att});
 	}

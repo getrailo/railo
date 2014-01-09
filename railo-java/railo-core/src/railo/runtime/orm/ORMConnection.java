@@ -20,6 +20,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 import railo.runtime.PageContext;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 
 public class ORMConnection implements Connection {
@@ -28,15 +29,17 @@ public class ORMConnection implements Connection {
 	private boolean autoCommit=false;
 	private int isolation=Connection.TRANSACTION_SERIALIZABLE;
 	private ORMTransaction trans;
+	private DataSource ds;
 
 	/**
 	 * Constructor of the class
 	 * @param session
 	 * @throws PageException 
 	 */
-	public ORMConnection(PageContext pc,ORMSession session) {
+	public ORMConnection(PageContext pc,ORMSession session, DataSource ds) throws PageException {
 		this.session=session;
-		trans = session.getTransaction(session.getEngine().getConfiguration(pc).autoManageSession());
+		this.ds=ds;
+		trans = session.getTransaction(ds,session.getEngine().getConfiguration(pc).autoManageSession());
 		trans.begin();
 	}
 	
@@ -109,7 +112,7 @@ public class ORMConnection implements Connection {
 
 	@Override
 	public boolean isClosed() throws SQLException {
-		return !session.isValid();
+		return !session.isValid(ds);
 	}
 
 	@Override

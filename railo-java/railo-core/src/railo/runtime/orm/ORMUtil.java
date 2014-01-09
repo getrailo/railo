@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
@@ -26,6 +27,8 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ComponentProUtil;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -72,10 +75,10 @@ public class ORMUtil {
 	}
 
 	private static void printError(Throwable t, ORMEngine engine,String msg) {
-		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
-		else SystemOut.printDate(msg,SystemOut.ERR);
+		if(engine!=null)SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemUtil.ERR);
+		else SystemOut.printDate(msg, SystemUtil.ERR);
 		if(t==null)t=new Throwable();
-		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
+		t.printStackTrace(SystemOut.getPrinWriter(SystemUtil.ERR));
 	}
 
 	public static boolean equals(Object left, Object right) {
@@ -227,7 +230,7 @@ public class ORMUtil {
 	}*/
 
 	private static Property[] getProperties(Component cfc) {
-		return cfc.getProperties(true,true,false,false);
+		return ComponentProUtil.getProperties(cfc, true,true,false,false);
 	}
 	
 	public static boolean isRelated(Property prop) {
@@ -281,10 +284,6 @@ public class ORMUtil {
 		if(StringUtil.isEmpty(o))
 			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
 		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
-	
-		
-	
-	
 	}
 	
 	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
@@ -298,5 +297,38 @@ public class ORMUtil {
 		catch (PageException e) {
 			return defaultValue;
 		}
+	}
+	
+	
+	public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
+		pc=ThreadLocalPageContext.get(pc);
+		
+		// datasource defined with cfc
+		try{
+			Struct meta = cfc.getMetaData(pc);
+			String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
+			if(!StringUtil.isEmpty(datasourceName,true)) {
+				DataSource ds = ((PageContextImpl)pc).getDataSource(datasourceName,null);
+				if(ds!=null) return ds;
+			}
+		}
+		catch(Throwable t){}
+		
+		
+		return getDataSource(pc, defaultValue);
+	}
+	
+	public static DataSource getDataSource(PageContext pc, Component cfc) throws PageException {
+		pc=ThreadLocalPageContext.get(pc);
+		
+		// datasource defined with cfc
+		Struct meta = cfc.getMetaData(pc);
+		String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
+		if(!StringUtil.isEmpty(datasourceName,true)) {
+			return ((PageContextImpl)pc).getDataSource(datasourceName);
+		}
+		
+		
+		return getDataSource(pc);
 	}
 }

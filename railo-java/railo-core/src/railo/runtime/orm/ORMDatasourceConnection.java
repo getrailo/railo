@@ -20,8 +20,8 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 	private Connection connection;
 	private Boolean supportsGetGeneratedKeys;
 
-	public ORMDatasourceConnection(PageContext pc, ORMSession session) {
-		datasource=session.getDataSource();
+	public ORMDatasourceConnection(PageContext pc, ORMSession session, DataSource ds) throws PageException {
+		datasource=ds;
 		// this should never happen
 		if(datasource==null) {
 			try {
@@ -31,7 +31,7 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 				throw new PageRuntimeException(pe);
 			}
 		}
-		connection=new ORMConnection(pc,session);
+		connection=new ORMConnection(pc,session,datasource);
 	}
 
 	public Connection getConnection() {

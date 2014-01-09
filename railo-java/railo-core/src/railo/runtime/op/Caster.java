@@ -73,6 +73,7 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -86,10 +87,12 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.CollectionStruct;
+import railo.runtime.type.CustomType;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -410,7 +413,9 @@ public final class Caster {
      * @throws PageException
      */
     public static double toDoubleValue(Object o) throws PageException {
-        if(o instanceof Number) return ((Number)o).doubleValue();
+        if(o instanceof Number) {
+        	return ((Number)o).doubleValue();
+        }
         else if(o instanceof Boolean) return ((Boolean)o).booleanValue()?1:0;
         else if(o instanceof String) return toDoubleValue(o.toString(),true);
         //else if(o instanceof Clob) return toDoubleValue(toString(o));
@@ -3429,7 +3434,7 @@ public final class Caster {
     	if(Decision.isURL(str)) return str;
     	
     	try {
-			return HTTPUtil.toURL(str).toExternalForm();
+			return HTTPUtil.toURL(str,true).toExternalForm();
 		} 
     	catch (MalformedURLException e) {
     		throw new ExpressionException("can't cast value ["+str+"] to a URL",e.getMessage());
@@ -3441,7 +3446,7 @@ public final class Caster {
     	if(str==null) return defaultValue;
     	if(Decision.isURL(str)) return str;
     	try {
-			return HTTPUtil.toURL(str).toExternalForm();
+			return HTTPUtil.toURL(str,true).toExternalForm();
 		} 
     	catch (MalformedURLException e) {
     		return defaultValue;
@@ -3521,6 +3526,42 @@ public final class Caster {
             if(comp.instanceOf(strType)) return o;
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
         }
+        
+        if(strType.endsWith("[]") && Decision.isArray(o)){
+	    	String _strType=strType.substring(0,strType.length()-2);
+	    	short _type=CFTypes.toShort(_strType, false, (short)-1);
+	    	Array arr = Caster.toArray(o,null);
+	    	if(arr!=null){
+	    		
+	    		// convert the values
+	    		Iterator<Entry<Key, Object>> it = arr.entryIterator();
+	    		Array _arr=new ArrayImpl();
+	    		Entry<Key, Object> e;
+	    		Object src,trg;
+	    		boolean hasChanged=false;
+	    		while(it.hasNext()){
+	    			e = it.next();
+	    			src=e.getValue();
+	    			trg=castTo(pc, _type, _strType, src);
+	    			_arr.setEL(e.getKey(), trg);
+	    			if(src!=trg) hasChanged=true;
+	    		}
+	    		if(!hasChanged) return arr;
+	    		return _arr;
+	    	}
+	    	
+	    }
+
+	    /* custom type (disabled for the moment)
+        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
+        if(ct!=null) {
+        	Object obj= ct.convert(pc,o,Null.NULL);
+        	if(obj!=Null.NULL) return obj;
+        }
+        */
+
+
+	    
         throw new CasterException(o,strType);
     }   
     
@@ -4263,9 +4304,7 @@ public final class Caster {
 	public static BigDecimal toBigDecimal(Object o) throws PageException {
 		if(o instanceof BigDecimal) return (BigDecimal) o;
 		if(o instanceof Number) {
-			if(o instanceof Integer) return new BigDecimal(((Integer)o).intValue());
-			if(o instanceof Long) return new BigDecimal(((Long)o).longValue());
-			return new BigDecimal(((Number)o).doubleValue());
+			return new BigDecimal(((Number)o).toString());
 		}
         else if(o instanceof Boolean) return new BigDecimal(((Boolean)o).booleanValue()?1:0);
         else if(o instanceof String) return new BigDecimal(o.toString());

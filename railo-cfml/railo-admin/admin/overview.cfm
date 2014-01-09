@@ -235,8 +235,8 @@ Error Output --->
 								</td>
 							</tr>
 							<!---<tr>
-								<th scope="row">#stText.setting.supressWSBeforeArg#</th>
-								<td <cfif !compiler.supressWSBeforeArg>style="color:##cc0000"</cfif>>#yesNoFormat(compiler.supressWSBeforeArg)#</td>
+								<th scope="row">#stText.setting.suppressWSBeforeArg#</th>
+								<td <cfif !compiler.suppressWSBeforeArg>style="color:##cc0000"</cfif>>#yesNoFormat(compiler.suppressWSBeforeArg)#</td>
 							</tr> --->
 							
 							<tr>

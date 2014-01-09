@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
-import railo.commons.io.cache.Cache;
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.runtime.Component;
@@ -17,16 +17,15 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
-import railo.runtime.cache.ram.RamCache;
+import railo.runtime.cache.tag.CacheHandler;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.component.MemberSupport;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.UDFCasterException;
-import railo.runtime.functions.cache.Util;
 import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -47,9 +46,8 @@ import railo.runtime.writer.BodyContentUtil;
  */
 public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externalizable {
 	
-	private static final RamCache DEFAULT_CACHE=new RamCache();
-	
-	
+	//private static final RamCache DEFAULT_CACHE=new RamCache();
+	private static final long serialVersionUID = -7288148349256615519L; // do not change
 	
 	protected Component ownerComponent;
 	protected UDFPropertiesImpl properties;
@@ -95,14 +93,12 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	}
 
 	private final Object castToAndClone(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
-		//if(value instanceof Array)print.out(count++);
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+		if(!((PageContextImpl)pc).getTypeChecking() || Decision.isCastableTo(pc,arg.getType(),arg.getTypeAsString(),value)) 
 			return arg.isPassByReference()?value:Duplicator.duplicate(value,false);
 		throw new UDFCasterException(this,arg,value,index);
-		//REALCAST return Caster.castTo(pc,arg.getType(),arg.getTypeAsString(),value);
 	}
-	private final Object castTo(FunctionArgument arg,Object value, int index) throws PageException {
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) return value;
+	private final Object castTo(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
+		if(Decision.isCastableTo(pc,arg.getType(),arg.getTypeAsString(),value)) return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}
 	
@@ -123,7 +119,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 					if(!NullSupportHelper.full()) newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
 				}
 				else {
-					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));
+					newArgs.setEL(funcArgs[i].getName(),castTo(pc,funcArgs[i],d,i+1));
 				}
 			}
 		}
@@ -163,7 +159,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 				}
 				newArgs.set(name,Argument.NULL);
 			}
-			else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));	
+			else newArgs.set(name,castTo(pageContext,funcArgs[i],defaultValue,i+1));	
 		}
 		
 		
@@ -188,25 +184,25 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 
 	@Override
 	public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
-    	return this.properties.cachedWithin>0?
+    	return this.properties.cachedWithin!=null?
     			_callCachedWithin(pc,null, null, values, doIncludePath):
     			_call(pc,null, null, values, doIncludePath);
     }
 	public Object callWithNamedValues(PageContext pc,Collection.Key calledName, Struct values,boolean doIncludePath) throws PageException {
-    	return this.properties.cachedWithin>0?
+    	return this.properties.cachedWithin!=null?
     			_callCachedWithin(pc,calledName, null, values, doIncludePath):
     			_call(pc,calledName, null, values, doIncludePath);
     }
 
     @Override
 	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
-    	return  this.properties.cachedWithin>0?
+    	return  this.properties.cachedWithin!=null?
     			_callCachedWithin(pc,null, args,null, doIncludePath):
     			_call(pc,null, args,null, doIncludePath);
     }
 
 	public Object call(PageContext pc,Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException {
-    	return  this.properties.cachedWithin>0?
+    	return  this.properties.cachedWithin!=null?
     			_callCachedWithin(pc,calledName, args,null, doIncludePath):
     			_call(pc,calledName, args,null, doIncludePath);
     }
@@ -216,10 +212,9 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 
     private Object _callCachedWithin(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
-    	String id = UDFUtil.callerHash(this,args,values);
-    	
-		Cache cache = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION,DEFAULT_CACHE);	
-		Object o =  cache.getValue(id,null);
+    	String id=CacheHandlerFactory.createId(this,args,values);
+    	CacheHandler ch = CacheHandlerFactory.udf.getInstance(pc.getConfig(), properties.cachedWithin);
+		Object o=ch.get(pc, id);
 		
 		// get from cache
 		if(o instanceof UDFCacheEntry ) {
@@ -242,7 +237,8 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	    try {
 	    	Object rtn = _call(pci,calledName, args, values, doIncludePath);
 	    	String out = bc.getString();
-	    	cache.put(id, new UDFCacheEntry(out, rtn),properties.cachedWithin,properties.cachedWithin);
+	    	ch.set(pc, id,properties.cachedWithin,new UDFCacheEntry(out, rtn));
+			// cache.put(id, new UDFCacheEntry(out, rtn),properties.cachedWithin,properties.cachedWithin);
 	    	return rtn;
 		}
         finally {
@@ -325,7 +321,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	        
 	        
 	        
-	        if(properties.returnType==CFTypes.TYPE_ANY) return returnValue;
+	        if(properties.returnType==CFTypes.TYPE_ANY || !((PageContextImpl)pc).getTypeChecking()) return returnValue;
 	        else if(Decision.isCastableTo(properties.strReturnType,returnValue,false,false,-1)) return returnValue;
 	        else throw new UDFCasterException(this,properties.strReturnType,returnValue);
 			//REALCAST return Caster.castTo(pageContext,returnType,returnValue,false);

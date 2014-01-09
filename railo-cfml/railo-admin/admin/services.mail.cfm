@@ -57,8 +57,6 @@ Defaults --->
 					type="#request.adminType#"
 					password="#session["password"&request.adminType]#"
 					
-					logfile="#form.logFile#"
-					loglevel="#form.loglevel#"
 					spoolEnable="#isDefined("form.spoolenable") and form.spoolenable#"
 					timeout="#form.timeout#"
 					defaultEncoding="#form.defaultEncoding#"
@@ -70,8 +68,6 @@ Defaults --->
 					type="#request.adminType#"
 					password="#session["password"&request.adminType]#"
 					
-					logfile=""
-					loglevel=""
 					spoolEnable=""
 					timeout=""
 					defaultEncoding=""
@@ -197,7 +193,7 @@ Defaults --->
 						<div class="comment">#stText.mail.DefaultEncodingDescription#</div>
 					</td>
 				</tr>
-
+<!---
 				<cfset css = len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0 ? 'Red':'' />
 				<tr>
 					<th scope="row">#stText.Mail.LogFile#</th>
@@ -225,6 +221,7 @@ Defaults --->
 						<div class="comment">#stText.mail.LogLevelDesc#</div>
 					</td>
 				</tr>
+--->
 				<tr>
 					<th scope="row">#stText.Mail.SpoolEnabled#</th>
 					<td>

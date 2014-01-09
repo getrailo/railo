@@ -78,7 +78,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.archive">Archiv</data>
 	<data key="customtags.primary">Primär</data>
 	<data key="customtags.customtagdeepsearch">Untergeordnete Verzeichnisse einbeziehen</data>
-	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach Customtags durchsuchen (für Archive nicht unterstützt)</data>
+	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach custom tags durchsuchen.</data>
 	<data key="customtags.archivemissing">Bitte geben Sie einen Wert für den Archivnamen an. (Zeile </data>
 	<data key="customtags.customtaglocalsearchdesc">Lokales Verzeichnisse aus welchen der Customtag aufgerufen wird, nach dem Customtag durchsuchen</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -115,6 +115,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.language">Sprache</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
+	<data key="menu.server.logging">Logging</data>
+	<data key="menu.server.export">Export</data>
 	<data key="menu.services.label">Dienste</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -462,7 +464,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
 	<data key="components.componentmappingsearch">Mappings einbeziehen</data>
 	<data key="components.componentDeepSearch">Unterverzeichnisse durchsuchen</data>
-	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden. Dies funktioniert nicht für Archive!</data>
+	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden.</data>
 	<data key="components.useshadowdescription">Definiert, ob eine Komponente einen eigenständigen &quot;Variables&quot; Scope parallel zum &quot;this&quot; Scope hat (CFML Standard) oder nicht. Wenn nicht, dann werden alle nicht spezifizierten Variablen in den &quot;this&quot; scope geschrieben.</data>
 	<data key="components.server">Definert Komponenteneinstellungen, die als Standartwert für alle Webs gelten.</data>
 	<data key="components.useshadow">Allow Variable Scope</data>
@@ -563,6 +565,8 @@ Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template
 	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
 	<data key="debug.settings.tracing"> Tracing </data>
 	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.dump"> Dump </data>
+	<data key="debug.settings.dumpDesc">Select this option to enable output produced with help of the tag cfdump and send to debugging.</data>
 	<data key="debug.settings.timer"> Timer </data>
 	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
 	<data key="debug.settings.timer"> Timer </data>
@@ -598,8 +602,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 
 	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
 	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
-	<data key="setting.supressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
-	<data key="setting.supressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
+	<data key="setting.suppressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
+	<data key="setting.suppressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
 	Dieses Setting wird ignoriert wenn es zwischen den Tags ein andere Ausgabe als White-Spaces hat.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Template Cache leeren</data>
@@ -761,6 +765,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.delete">löschen</data>
 	<data key="buttons.reset">zurücksetzen</data>
 	<data key="buttons.repair">reparieren</data>
+	<data key="buttons.export">export</data>
 	<data key="schedule.executiontimedescmonthly">Definert die Zeit bei welcher der Task monatlich ausgeführt werden soll.</data>
 	<data key="schedule.username">Username</data>
 	<data key="schedule.passworddescription">Passwort, um auf eine geschützte URL zuzugreifen.</data>
@@ -835,7 +840,14 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.executiondesconce">Dieser Task wird nur einmal zu einer bestimmten Zeit ausgeführt.</data>
 	<data key="schedule.usernamedescription">Username, um auf eine geschützte URL zuzugreifen.</data>
 	<data key="schedule.startdatedesc">Definert den Tag an welchem der Task zu ersten mal ausgeführt werden soll.</data>
+	
+	<data key="settings.exportAppCFC">Export Application.cfc</data>
+	<data key="settings.exportAppCFCDesc">Einstellungen dieses Web Context als Application.cfc Template exportieren, natürlich beinhaltet dies nur Einstellungen welche im Application.cfc möglich sind.</data>
+	
+
 	<data key="settings.datasourcesettings">Einstellungen</data>
+	<data key="settings.datasource.databaseName">Datenbank (Name/Version)</data>
+	<data key="settings.datasource.driverName">Treiber (Name/Version)</data>
 	<data key="settings.readonlydatasources">Globale Datequellen (Datenquellen vom Server Administrator)</data>
 	<data key="settings.readonlydatasourcesdescription">Diese Datenquellen werden im Server Administrator für alle Web Instanzen erstellt und können im Web Administrator nicht geändert werden, diese können jedoch überschrieben werden indem sie eine Datenquelle mit dem selben Namen unterhalb anlegen.</data>
 	<data key="settings.dbpassdesc">Passwort für den Zugriff auf die Datenbank</data>
@@ -881,6 +893,9 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
 	<data key="settings.cache.defaulttypeFunction">Function</data>
 	<data key="settings.cache.defaulttypeFunctionDesc">Diese Cache Connection wird für für das cachen von cffunction/function Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">Diese Cache Connection wird für für das cachen von cfinclude verwendet.</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>
@@ -889,7 +904,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
-	<data key="settings.cache.Buttons.default">set as default</data>
+	<data key="settings.cache.Buttons.default">als default Wert</data>
+	
 	
 	
 	<data key="settings.dbValidate">Validate</data>

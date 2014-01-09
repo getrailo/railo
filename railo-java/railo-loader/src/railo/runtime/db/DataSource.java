@@ -200,4 +200,5 @@ public interface DataSource extends Cloneable {
 
 	//  public abstract int getMaxConnection();
 
+//	public String getDbDriver();        // FUTURE, for JIRA-569; return the dbdriver used in the Admin to edit this datasource
 }

@@ -5,31 +5,41 @@ import java.io.Serializable;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
-import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.Component;
+import railo.runtime.ComponentPro;
+
+
 
 /**
  * Proxy for "dynamic-map" entity representations.
  * SLOW
  */
-public class CFCHibernateProxy extends ComponentAccessProxy implements HibernateProxy, Serializable {
+public class CFCHibernateProxy extends ComponentProProxy implements HibernateProxy, Serializable {
 
 	private static final long serialVersionUID = 4115236247834562085L;
 	
 	private CFCLazyInitializer li;
-
-	public ComponentAccess getComponentAccess() {
+	
+	@Override
+	public Component getComponent() {
 		return li.getCFC();
+	}
+	
+	@Override
+	public ComponentPro getComponentPro() {
+		return (ComponentPro) li.getCFC();
 	}
 	
 	public CFCHibernateProxy(CFCLazyInitializer li) {
 		this.li = li;
 	}
 
-	
+	@Override
 	public Object writeReplace() {
 		return this;
 	}
 
+	@Override
 	public LazyInitializer getHibernateLazyInitializer() {
 		return li;
 	}

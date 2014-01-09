@@ -2,6 +2,7 @@ package railo.runtime.concurrency;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
 
 import railo.commons.io.IOUtil;
@@ -11,6 +12,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.thread.ThreadUtil;
 
 public abstract class Caller implements Callable<String> { 
@@ -36,13 +38,13 @@ public abstract class Caller implements Callable<String> {
 			try {
 			HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
 			
-			String enc = rsp.getCharacterEncoding();
-			if(enc==null) enc="ISO-8859-1";
+			Charset cs = ReqRspUtil.getCharacterEncoding(pc,rsp);
+			//if(enc==null) enc="ISO-8859-1";
 			
 			pc.getOut().flush(); //make sure content is flushed
 			
 			((ConfigImpl)pc.getConfig()).getFactory().releasePageContext(pc);
-				str=IOUtil.toString((new ByteArrayInputStream(baos.toByteArray())), enc); // TODO add support for none string content
+				str=IOUtil.toString((new ByteArrayInputStream(baos.toByteArray())), cs); // TODO add support for none string content
 			} 
 			catch (Throwable e) {
 				// TODO Auto-generated catch block

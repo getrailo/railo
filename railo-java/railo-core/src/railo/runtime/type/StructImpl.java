@@ -109,7 +109,7 @@ public class StructImpl extends StructSupport {
 		
 		Object rtn=map.get(key);
 		if(rtn!=null) return rtn;
-		throw StructSupport.invalidKey(this,key);
+		throw StructSupport.invalidKey(null,this,key);
 	}
 	
 	@Override

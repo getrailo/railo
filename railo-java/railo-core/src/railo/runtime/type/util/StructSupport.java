@@ -5,10 +5,13 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
@@ -28,9 +31,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @param key Invalid key
 	 * @return returns an invalid key Exception
 	 */
-	public static ExpressionException invalidKey(Struct sct,Key key) {
-
-		StringBuilder sb=new StringBuilder();
+	public static ExpressionException invalidKey(Config config,Struct sct,Key key) {
 		Iterator<Key> it = sct.keyIterator();
 		Key k;
 
@@ -38,11 +39,13 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 			k = it.next();
 			if( k.equals( key ) )
 				return new ExpressionException( "the value from key [" + key.getString() + "] is NULL, which is the same as not existing in CFML" );
-			if(sb.length()>0)sb.append(',');
-			sb.append(k.getString());
 		}
-
-		return new ExpressionException( "key [" + key.getString() + "] doesn't exist (existing keys:" + sb.toString() + ")" );
+		config=ThreadLocalPageContext.getConfig(config);
+		if(config!=null && config.debug())
+			return new ExpressionException(ExceptionUtil.similarKeyMessage(sct, key.getString(), "key", "keys",true));
+		
+		
+		return new ExpressionException( "key [" + key.getString() + "] doesn't exist" );
 	}
 	
 	@Override

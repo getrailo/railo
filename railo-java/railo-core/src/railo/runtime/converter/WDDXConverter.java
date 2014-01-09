@@ -27,13 +27,12 @@ import railo.commons.date.TimeZoneConstants;
 import railo.commons.lang.NumberUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.CoderException;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -50,10 +49,11 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -170,7 +170,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeList(List list, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<array length="+_+list.size()+_+">");
+		StringBuilder sb=new StringBuilder(goIn()+"<array length="+_+list.size()+_+">");
 				
 		ListIterator it=list.listIterator();
 		while(it.hasNext()) {
@@ -189,16 +189,11 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException 
 	 */
 	private String _serializeComponent(Component component, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
-		ComponentAccess ca;
-		try {
-			component=new ComponentWrap(Component.ACCESS_PRIVATE, ca=ComponentUtil.toComponentAccess(component));
-		} catch (ExpressionException e1) {
-			throw toConverterException(e1);
-		}
-		boolean isPeristent=ca.isPersistent();
-		
-		
+		StringBuilder sb=new StringBuilder();
+		Component ca;
+		component=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ca=component);
+		boolean isPeristent=ComponentProUtil.isPersistent(ca);
+
         deep++;
         Object member;
         Iterator<Key> it = component.keyIterator();
@@ -256,7 +251,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeStruct(Struct struct, Set<Object> done) throws ConverterException {
-        StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+		StringBuilder sb=new StringBuilder(goIn()+"<struct>");
         
         Iterator<Key> it = struct.keyIterator();
 
@@ -281,7 +276,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeMap(Map map, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+		StringBuilder sb=new StringBuilder(goIn()+"<struct>");
 		
 		Iterator it=map.keySet().iterator();
 
@@ -308,7 +303,7 @@ public final class WDDXConverter extends ConverterSupport {
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
 		Collection.Key[] keys = CollectionUtil.keys(query);
-		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.util.ListUtil.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
+		StringBuilder sb=new StringBuilder(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.util.ListUtil.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	
 		deep++;
@@ -454,7 +449,7 @@ public final class WDDXConverter extends ConverterSupport {
 	public String serialize(Object object) throws ConverterException {
 		deep=0;
 		
-		StringBuffer sb=new StringBuffer();	
+		StringBuilder sb=new StringBuilder();	
 		if(xmlConform)sb.append("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>");	
 		sb.append("<wddxPacket version="+_+"1.0"+_+">");	
 		deep++;
@@ -605,7 +600,7 @@ public final class WDDXConverter extends ConverterSupport {
 	private Object _deserializeString(Element element) {
 		NodeList childList = element.getChildNodes();
 		int len = childList.getLength();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Node data;
 		String str;
 		for(int i=0;i<len;i++) {
@@ -709,9 +704,9 @@ public final class WDDXConverter extends ConverterSupport {
 		PageContext pc = ThreadLocalPageContext.get();
 		
 		// Load comp
-		ComponentAccess comp=null;
+		Component comp=null;
 		try {
-			comp = ComponentUtil.toComponentAccess(pc.loadComponent(name));
+			comp = pc.loadComponent(name);
 			if(!ComponentUtil.md5(comp).equals(md5)){
 				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
 			}
@@ -826,7 +821,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @return return current blockquote
 	 */
 	private String goIn() {
-		//StringBuffer rtn=new StringBuffer(deep);
+		//StringBuilder rtn=new StringBuilder(deep);
 		//for(int i=0;i<deep;i++) rtn.append('\t');
 		//return rtn.toString();
 		return "";

@@ -74,7 +74,7 @@ public final class NumberFormat implements Function {
         if(value > 3999)
             throw new FunctionException(pc,"numberFormat",1,"number","a roman value can't be greater than 3999");
         
-        StringBuffer roman = new StringBuffer();
+        StringBuilder roman = new StringBuilder();
         
         
         

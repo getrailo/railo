@@ -16,6 +16,8 @@ import railo.runtime.exp.PageException;
 public class WeakHashMapPro<K,V>
     extends AbstractMapPro<K,V>
     implements MapPro<K,V> {
+	
+	private static final long serialVersionUID = -8202939899012593159L; // do not change
 
     /**
      * The default initial capacity -- MUST be a power of two.

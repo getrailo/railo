@@ -944,6 +944,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @param tagClass class to load from ta handler pool
      * @return tag matching class
      * @throws PageException
+     * @deprecated use instead <code>use(String tagClassName)</code>
      */ 
     public abstract Tag use(Class tagClass) throws PageException;
     

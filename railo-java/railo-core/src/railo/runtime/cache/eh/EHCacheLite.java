@@ -250,7 +250,7 @@ public class EHCacheLite extends EHCacheSupport {
 		}
 		
 		
-		StringBuffer xml=new StringBuffer();
+		StringBuilder xml=new StringBuilder();
 		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		xml.append("<ehcache xsi:noNamespaceSchemaLocation=\"ehcache.xsd\">\n");
 				
@@ -283,7 +283,7 @@ public class EHCacheLite extends EHCacheSupport {
 	}
 	
 
-	private static void createCacheXml(StringBuffer xml, String cacheName, Struct arguments) {
+	private static void createCacheXml(StringBuilder xml, String cacheName, Struct arguments) {
 
 		// disk Persistent
 		boolean diskPersistent=toBooleanValue(arguments.get("diskpersistent",Boolean.FALSE),DISK_PERSISTENT);

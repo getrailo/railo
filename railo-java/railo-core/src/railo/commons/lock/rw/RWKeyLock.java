@@ -75,6 +75,28 @@ public class RWKeyLock<K> {
 		}
 		return list;
 	}
+	
+	/**
+	 * Queries if the write lock is held by any thread on given lock token, returns null when lock with this token does not exists
+     * @param token name of the lock to check
+	 * @return
+	 */
+	public Boolean isWriteLocked(K token) {
+		RWLock<K> lock = locks.get(token);
+		if(lock==null) return null;
+		return lock.isWriteLocked();
+	}
+
+	/**
+	 * Queries if one or more read lock is held by any thread on given lock token, returns null when lock with this token does not exists
+     * @param token name of the lock to check
+	 * @return
+	 */
+	public Boolean isReadLocked(K token) {
+		RWLock<K> lock = locks.get(token);
+		if(lock==null) return null;
+		return lock.isReadLocked();
+	}
 
 	public void clean() {
 		Iterator<Entry<K, RWLock<K>>> it = locks.entrySet().iterator();

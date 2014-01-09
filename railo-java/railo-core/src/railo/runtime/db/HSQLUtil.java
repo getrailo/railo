@@ -44,7 +44,7 @@ public final class HSQLUtil {
 		char c=' ';//,last=' ';
 		int len=sql.length();
 		boolean insideString=false;
-		StringBuffer sb=new StringBuffer(len);
+		StringBuilder sb=new StringBuilder(len);
 		
 		
 		

@@ -107,5 +107,3 @@ public interface ORMConfiguration {
 
 	
 }
-
-

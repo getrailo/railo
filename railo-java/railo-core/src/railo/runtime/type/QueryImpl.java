@@ -94,7 +94,7 @@ import railo.runtime.type.util.QueryUtil;
  */
 public class QueryImpl implements Query,Objects {
 
-	private static final long serialVersionUID = 1035795427320192551L;
+	private static final long serialVersionUID = 1035795427320192551L; // do not chnage
 
 
 	/**
@@ -950,7 +950,7 @@ public class QueryImpl implements Query,Objects {
 	 * @return string list
 	 */
 	public String getColumnlist(boolean upperCase) {
-		
+		//if(upperCase)upperCase=((ConfigImpl)ThreadLocalPageContext.getConfig()).getDotNotationUpperCase();
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<columnNames.length;i++) {
 			if(i>0)sb.append(',');

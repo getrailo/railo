@@ -1,10 +1,11 @@
 /**
  * Implements the CFML Function createobject
- * FUTURE neue attr unterstŸtzen
+ * FUTURE neue attr unterstï¿½tzen
  */
 package railo.runtime.functions.other;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -26,7 +27,9 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Array;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.ListUtil;
 
@@ -47,7 +50,7 @@ public final class CreateObject implements Function {
 		// JAVA
 			if(type.equals("java")) {
 			    checkAccess(pc,type);
-				return doJava(pc, className,Caster.toString(context),Caster.toString(serverName));
+				return doJava(pc, className, context, Caster.toString(serverName));
 			}
 		// COM
 			if(type.equals("com")) {
@@ -124,7 +127,7 @@ public final class CreateObject implements Function {
     }
 	
 	 
-    public static Object doJava(PageContext pc,String className, String pathes, String delimiter) throws PageException {
+    public static Object doJava(PageContext pc, String className, Object paths, String delimiter) throws PageException {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
         	PageContextImpl pci = (PageContextImpl)pc;
         	java.util.List<Resource> resources=new ArrayList<Resource>();
@@ -133,15 +136,27 @@ public final class CreateObject implements Function {
         	//java.util.List<Resource> resources=getJavaSettings(pc);
         	
         	// load resources
-        	//Resource[] reses=null;
-        	if(!StringUtil.isEmpty(pathes, true)) {
-        		if(StringUtil.isEmpty(delimiter))delimiter=",";
-        		String[] arrPathes = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
-        		
-        		for(int i=0;i<arrPathes.length;i++) {
-        			resources.add(ResourceUtil.toResourceExisting(pc,arrPathes[i]));
-        		}
-        	}
+	        if (paths instanceof String) {
+
+		        String strp = ((String)paths).trim();
+		        if(!strp.isEmpty()) {
+
+			        if(StringUtil.isEmpty(delimiter))delimiter=",";
+			        String[] arrPaths = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty( strp, delimiter ) ));
+
+			        for(int i=0;i<arrPaths.length;i++) {
+				        resources.add(ResourceUtil.toResourceExisting(pc,arrPaths[i]));
+			        }
+		        }
+	        }
+	        else if (Decision.isArray( paths )) {
+
+				Array arrp = Caster.toArray(paths);
+		        Iterator it = arrp.valueIterator();
+		        while (it.hasNext()) {
+			        resources.add(ResourceUtil.toResourceExisting(pc, Caster.toString( it.next() )));
+		        }
+	        }
         	
         	// load class
         	try	{
@@ -151,7 +166,7 @@ public final class CreateObject implements Function {
     				clazz = ClassUtil.loadClass(cl,className);
     			}
     			catch(ClassException ce) {
-    				// no package defintion, then try java.lang
+    				// try java.lang if no package definition
     				if(className.indexOf('.')==-1) {
     					try{
     	    				clazz = ClassUtil.loadClass(cl,"java.lang."+className);
@@ -160,8 +175,8 @@ public final class CreateObject implements Function {
     	    				throw ce;
     	    			}
     				}
+				    else throw ce;
     			}
-    			
     			
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 
@@ -195,12 +210,12 @@ public final class CreateObject implements Function {
     } 
     
     public static Object doWebService(PageContext pc,String wsdlUrl) throws PageException {
-    	// TODO CF8 impl. alle neuen attribute fŸr wsdl
+    	// TODO CF8 impl. all new attributes for wsdl
     	return new RPCClient(wsdlUrl);
     } 
 
     public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
-    	// TODO CF8 impl. alle neuen attribute fŸr wsdl
+    	// TODO CF8 impl. all new attributes for wsdl
     	return new RPCClient(wsdlUrl,username,password,proxy);
     } 
     public static Object doHTTP(PageContext pc,String httpUrl) throws PageException {

@@ -245,9 +245,11 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		return c;
 	}*/
 
-	void toString(StringBuilder sb,int i, int amount) {
+	static void toString(StringBuilder sb,int i, int amount) {
 		String str = Caster.toString(i);
-		while(str.length()<(amount--)){
+
+		amount = amount - str.length();
+		while( amount-- > 0 ){
 			sb.append( '0');
 		}
 		sb.append(str);

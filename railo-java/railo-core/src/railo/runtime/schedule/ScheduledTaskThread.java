@@ -6,10 +6,8 @@ import java.util.TimeZone;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogUtil;
-import railo.commons.lang.SystemOut;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -32,7 +30,6 @@ public class ScheduledTaskThread extends Thread {
 	private int cIntervall;
 	
 	private Config config;
-	private LogAndSource log;
 	private ScheduleTask task;
 	private String charset;
 	private final CFMLEngineImpl engine;
@@ -42,12 +39,11 @@ public class ScheduledTaskThread extends Thread {
 
 
 	
-	public ScheduledTaskThread(CFMLEngineImpl engine,SchedulerImpl scheduler, Config config, LogAndSource log, ScheduleTask task, String charset) {
+	public ScheduledTaskThread(CFMLEngineImpl engine,SchedulerImpl scheduler, Config config, ScheduleTask task, String charset) {
 		util = DateTimeUtil.getInstance();
 		this.engine=engine;
 		this.scheduler=scheduler;
 		this.config=config;
-		this.log=log;
 		this.task=task;
 		this.charset=charset;
 		timeZone=ThreadLocalPageContext.getTimeZone(config);
@@ -139,9 +135,7 @@ public class ScheduledTaskThread extends Thread {
 	
 	private void log(int level, String msg) {
 		String logName="schedule task:"+task.getTask();
-		if(log!=null) log.log(level,logName, msg);
-		else SystemOut.print(LogUtil.toStringType(level, "INFO").toUpperCase()+":"+msg);
-		
+		((ConfigImpl)config).getLog("scheduler").log(level,logName, msg);
 	}
 
 
@@ -163,7 +157,7 @@ public class ScheduledTaskThread extends Thread {
 	}
 
 	private void execute() {
-		if(config!=null)new ExecutionThread(config,log,task,charset).start();
+		if(config!=null)new ExecutionThread(config,task,charset).start();
 	}
 
 	private long calculateNextExecution(long now, boolean notNow) {

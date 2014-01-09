@@ -33,7 +33,7 @@
 </cfsavecontent>
 
 
-<cf_doc_layout title="Railo Function Reference">
+<cfmodule template="doc_layout.cfm" title="Railo Function Reference">
 
 
 <cfoutput>
@@ -148,4 +148,4 @@
 </cfoutput>
 
 
-</cf_doc_layout>
+</cfmodule><!--- doc_layout !--->

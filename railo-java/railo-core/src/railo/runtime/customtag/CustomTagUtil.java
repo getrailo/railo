@@ -28,7 +28,7 @@ public class CustomTagUtil {
     	 // EXCEPTION
     	ConfigWeb config = pc.getConfig();
         // message
-        StringBuffer msg=new StringBuffer("custom tag \"");
+    	StringBuilder msg=new StringBuilder("custom tag \"");
         msg.append(getDisplayName(config,name));
         msg.append("\" is not defined in directory \"");
         msg.append(ResourceUtil.getResource(pc, pc.getCurrentPageSource()).getParent());
@@ -175,7 +175,7 @@ public class CustomTagUtil {
     		if(extensions[i].equalsIgnoreCase(config.getCFCExtension())) hasCFC=true;
     		else hasCFML=true;
     	}
-    	StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
     	if(!hasCFC)sb.append("Component based Custom Tags are not enabled;");
     	if(!hasCFML)sb.append("CFML based Custom Tags are not enabled;");
     	return sb.toString();
@@ -183,7 +183,7 @@ public class CustomTagUtil {
 	 
 	 public static String toString(Mapping[] ctms) {
 		if(ctms==null) return "";
-    	StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
     	Resource p;
     	for(int i=0;i<ctms.length;i++){
     		if(sb.length()!=0)sb.append(", ");

@@ -1,17 +1,19 @@
 package railo.runtime.tag;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.WildcardPatternFilter;
 
 public class ZipParamSource implements ZipParamAbstr {
 
 	private Resource source;
 	private String entryPath;
-	private WildcardPatternFilter filter;
+	private ResourceFilter filter;
 	private String prefix;
 	private boolean recurse;
 
-	public ZipParamSource(Resource source, String entryPath, WildcardPatternFilter filter,String prefix, boolean recurse) {
+	public ZipParamSource(Resource source, String entryPath, ResourceFilter filter, String prefix, boolean recurse) {
+
 		this.source=source;
 		this.entryPath=entryPath;
 		this.filter=filter;
@@ -36,7 +38,7 @@ public class ZipParamSource implements ZipParamAbstr {
 	/**
 	 * @return the filter
 	 */
-	public WildcardPatternFilter getFilter(){
+	public ResourceFilter getFilter(){
 		return filter;
 	}
 

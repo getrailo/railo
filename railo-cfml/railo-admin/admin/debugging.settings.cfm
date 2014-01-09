@@ -45,6 +45,7 @@
 					database="#isDefined('form.database') && form.database#"
 					exception="#isDefined('form.exception') && form.exception#"
 					tracing="#isDefined('form.tracing') && form.tracing#"
+					dump="#isDefined('form.dump') && form.dump#"
 					timer="#isDefined('form.timer') && form.timer#"
 					implicitAccess="#isDefined('form.implicitAccess') && form.implicitAccess#"
 					queryUsage="#isDefined('form.queryUsage') && form.queryUsage#"
@@ -62,6 +63,7 @@
 					database=""
 					exception=""
 					tracing=""
+					dump=""
 					timer=""
 					implicitAccess=""
 					queryUsage=""
@@ -145,7 +147,7 @@ Redirtect to entry --->
 									<div class="comment">#stText.debug.settings.generalYes#</div>
 									<table class="maintbl autowidth" id="debugoptionstbl">
 									<tbody>
-										<cfloop list="database,exception,tracing,timer,implicitAccess" item="item">
+										<cfloop list="database,exception,tracing,dump,timer,implicitAccess" item="item">
 										<tr>
 											<th scope="row">#stText.debug.settings[item]#</th>
 											<td>
@@ -191,7 +193,7 @@ Redirtect to entry --->
 							<!---<input type="hidden" name="scriptProtect" value="#appSettings.scriptProtect#">--->
 							<b>#lbl#</b>
 							<div class="comment">#_debug.debug?stText.debug.settings.generalYes:stText.debug.settings.generalNo#</div>
-							<cfloop list="database,exception,tracing,timer,implicitAccess" item="item">
+							<cfloop list="database,exception,tracing,dump,timer,implicitAccess" item="item">
 								<cfif _debug[item]>- #stText.debug.settings[item]#<br></cfif>
 							</cfloop>
 							

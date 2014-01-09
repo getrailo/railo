@@ -62,7 +62,7 @@ public final class GetMetaData implements Function {
 	        else if(object instanceof Image) {
 	            return ((Image)object).info();
 	        }
-			
+			if(object==null) throw new FunctionException(pc,"GetMetaData",1,"object","value is null");
 			return object.getClass();
 		}
 		
@@ -75,27 +75,4 @@ public final class GetMetaData implements Function {
 	public static Struct getMetaData(Component cfc, PageContext pc) throws PageException {
 		return cfc.getMetaData(pc);
 	}
-
-	/*private static Map<String,Struct> datas=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
-	
-	public static Struct getMetaData(ComponentPro cfc,PageContext pc) throws PageException {
-		String key=createKey(cfc.getPageSource());
-		Struct meta = key==null?null:datas.get(key);
-		if(meta==null){
-			meta=cfc.getMetaData(pc);
-			datas.put(key, meta);
-		}
-		return meta;
-	}
-	public static String createKey(PageSource ps) throws PageException {
-		Page p = ((PageSourceImpl)ps).getPage();
-		if(p==null) return null;
-		String key=ps.getMapping().getConfig().getId()+":"+p.getSourceLastModified()+":"+ps.getDisplayPath();
-		return key;
-	}
-
-	public static Struct getMetaData(PageSource ps) throws PageException {
-		String key=createKey(ps);
-		return key==null?null:datas.get(key);
-	}*/
 }

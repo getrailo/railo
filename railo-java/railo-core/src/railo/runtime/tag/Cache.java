@@ -28,6 +28,7 @@ import railo.runtime.functions.cache.CachePut;
 import railo.runtime.functions.cache.CacheRemove;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.StructImpl;
@@ -339,7 +340,7 @@ public final class Cache extends BodyTagImpl {
         	
         	OutputStream os=null;
         	try {
-                ci.writeTo(os=getOutputStream(),rsp.getCharacterEncoding());
+                ci.writeTo(os=getOutputStream(),ReqRspUtil.getCharacterEncoding(pageContext,rsp).name());
         		//IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
             } 
             finally {

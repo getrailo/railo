@@ -12,9 +12,7 @@ public final class JSStringFormat implements Function {
 	}
 	public static String invoke(String str) {
 	    int len=str.length();
-		StringBuffer rtn=new StringBuffer(len+10);
-		//char[] arr=str.toCharArray();
-		//StringBuffer rtn=new StringBuffer(arr.length);
+	    StringBuilder rtn=new StringBuilder(len+10);
 		char c;
 		for(int i=0;i<len;i++) {
 		    c=str.charAt(i);
@@ -36,7 +34,6 @@ public final class JSStringFormat implements Function {
 	
 	public static String callx(PageContext pc , String jsString) {// MUST ????
 		int len=jsString.length();
-		//StringBuffer sb=new StringBuffer(len);
 		int plus=0;
 		
 		for(int pos=0;pos<len;pos++) {

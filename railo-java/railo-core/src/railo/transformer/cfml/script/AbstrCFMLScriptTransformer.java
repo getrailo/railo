@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -876,7 +877,9 @@ int pos=data.cfml.getPos();
 			data.insideFunction=oldInsideFunction;
 		}
 		func.setEnd(data.cfml.getPosition());
-		//eval(tlt,data,func);
+		
+		comments(data);
+		
 		return func;
 	}
 	
@@ -1437,7 +1440,7 @@ int pos=data.cfml.getPos();
 		
 		if(attrValue!=null){
 			attrName=attr.getName();
-			TagLibTagAttr tlta = tlt.getAttribute(attr.getName());
+			TagLibTagAttr tlta = tlt.getAttribute(attr.getName(),true);
 			tag.addAttribute(new Attribute(false,attrName,CastOther.toExpression(attrValue,tlta.getType()),tlta.getType()));
 		}
 		else if(ATTR_TYPE_REQUIRED==attrType){
@@ -1753,13 +1756,14 @@ int pos=data.cfml.getPos();
 			int type=tlt.getAttributeType();
 			if(type==TagLibTag.ATTRIBUTE_TYPE_FIXED || type==TagLibTag.ATTRIBUTE_TYPE_MIXED)	{
 				Map<String, TagLibTagAttr> hash = tlt.getAttributes();
-				Iterator<String> it = hash.keySet().iterator();
-				
+				Iterator<Entry<String, TagLibTagAttr>> it = hash.entrySet().iterator();
+				Entry<String, TagLibTagAttr> e;
 				while(it.hasNext())	{
-					TagLibTagAttr att=hash.get(it.next());
-					if(att.isRequired() && !contains(attrs,att.getName()) && att.getDefaultValue()==null && !att.getName().equals(ignoreAttrReqFor))	{
+					e = it.next();
+					TagLibTagAttr att=e.getValue();
+					if(att.isRequired() && !contains(attrs,att) && att.getDefaultValue()==null && !att.getName().equals(ignoreAttrReqFor))	{
 						if(!hasAttributeCollection)throw new TemplateException(data.cfml,"attribute "+att.getName()+" is required for statement "+tlt.getName());
-						if(tag!=null)tag.addMissingAttribute(att.getName(),att.getType());
+						if(tag!=null)tag.addMissingAttribute(att);
 					}
 				}
 			}
@@ -1767,11 +1771,24 @@ int pos=data.cfml.getPos();
 		return attrs.toArray(new Attribute[attrs.size()]);
 	}
 	
-	private final boolean contains(ArrayList<Attribute> attrs, String name) {
+	private final boolean contains(ArrayList<Attribute> attrs, TagLibTagAttr attr) {
+		
 		Iterator<Attribute> it = attrs.iterator();
+		String name;
+		String[] alias;
 		while(it.hasNext()){
-			if(it.next().getName().equals(name)) return true;
+			name=it.next().getName();
+			
+			// check name
+			if(name.equals(attr.getName())) return true;
+			
+			// and aliases
+			alias = attr.getAlias();
+			if(!ArrayUtil.isEmpty(alias)) for(int i=0;i<alias.length;i++){
+				if(alias[i].equals(attr.getName())) return true;
+			}
 		}
+		
 		return false;
 	}
 
@@ -1803,7 +1820,8 @@ int pos=data.cfml.getPos();
     	// Type
     	TagLibTagAttr tlta=null;
 		if(tlt!=null){
-			tlta = tlt.getAttribute(name);
+			tlta = tlt.getAttribute(name,true);
+			if(tlta!=null && tlta.getName()!=null)name=tlta.getName();
 		}
 		return new Attribute(dynamic.toBooleanValue(),name,tlta!=null?CastOther.toExpression(value, tlta.getType()):value,sbType.toString());
     }
@@ -1859,11 +1877,11 @@ int pos=data.cfml.getPos();
 		if(tag==null) return id;
 		int typeDef=tag.getAttributeType();
 		if("attributecollection".equals(id)){
-			dynamic.setValue(tag.getAttribute(id)==null);
+			dynamic.setValue(tag.getAttribute(id,true)==null);
 			sbType.append("struct");
 		}
 		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED || typeDef==TagLibTag.ATTRIBUTE_TYPE_MIXED) {
-			TagLibTagAttr attr=tag.getAttribute(id);
+			TagLibTagAttr attr=tag.getAttribute(id,true);
 			if(attr==null) {
 				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
 					String names=tag.getAttributeNames();

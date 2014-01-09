@@ -20,8 +20,10 @@ import java.util.TimeZone;
 import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
+import org.apache.log4j.Level;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -30,10 +32,8 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.Cache2;
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogResource;
-import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.LoggerAndSourceData;
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -76,6 +76,7 @@ import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -98,7 +99,6 @@ import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.gateway.GatewayUtil;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.instrumentation.InstrumentationUtil;
-import railo.runtime.java.JavaUtil;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.monitor.IntervallMonitor;
@@ -143,6 +143,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterEntryImpl;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.wrap.MapAsStruct;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 
@@ -275,6 +276,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             doGetDebugData();
             return SKIP_BODY;
         }
+        if(action.equals("adddump")) {
+            doAddDump();
+            return SKIP_BODY;
+        }
         if(action.equals("getloginsettings")) {
         	doGetLoginSettings();
             return SKIP_BODY;
@@ -338,7 +343,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         return Tag.SKIP_BODY;
     }
 
-    private short toType(String strType, boolean throwError) throws ApplicationException {
+    private void doAddDump() throws ApplicationException {
+		DebuggerPro debugger=(DebuggerPro) pageContext.getDebugger();
+		PageSource ps = pageContext.getCurrentTemplatePageSource();
+		debugger.addDump(ps, getString("admin",action,"dump",true));
+	}
+
+	private short toType(String strType, boolean throwError) throws ApplicationException {
     	strType=StringUtil.toLowerCase(strType).trim();
     	if("web".equals(strType))return TYPE_WEB;
     	else if("server".equals(strType))return TYPE_SERVER;
@@ -533,17 +544,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getDatasourceSetting",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasourceSetting();
         else if(check("getCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_READ  )) doGetCustomTagSetting();
         else if(check("getDatasource",          ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasource();
+        else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getCacheConnections",    ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheConnections();
         else if(check("getCacheConnection",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheConnection();
         else if(check("getCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheDefaultConnection();
-        else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getRemoteClients",       ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClients();
         else if(check("getRemoteClient",       	ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClient();
         else if(check("hasRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doHasRemoteClientUsage();
         else if(check("getRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClientUsage();
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
-        else if(check("getLogSetting", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSetting();
         else if(check("getLogSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSettings();
         else if(check("getCompilerSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetCompilerSettings();
         else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
@@ -606,6 +616,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
         else if(check("updateLoginSettings", ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateLoginSettings();
+        else if(check("updateLogSettings", ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateLogSettings();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
         else if(check("updateSSLCertificate",ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateSSLCertificate();
         else if(check("updateMonitorEnabled",   ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitorEnabled();
@@ -650,7 +661,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
         else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
-        else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
+        //else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
         else if(check("updateMonitor",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitor();
         else if(check("updateExecutionLog",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExecutionLog();
         
@@ -682,7 +693,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeGatewayEntry",  	ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
         else if(check("removeDebugEntry",  		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDebugEntry();
         else if(check("removeCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCacheDefaultConnection();
-        
+        else if(check("removeLogSetting",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveLogSetting();
+    	
         else if(check("storageGet",             ACCESS_FREE) && check2(ACCESS_READ  )) doStorageGet();
         else if(check("storageSet",             ACCESS_FREE) && check2(ACCESS_WRITE  )) doStorageSet();
         
@@ -1371,6 +1383,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set(KeyConstants._database,Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_DATABASE)));
         sct.set(KeyConstants._exception,Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)));
         sct.set("tracing",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_TRACING)));
+        sct.set("dump",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_DUMP)));
         sct.set("timer",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_TIMER)));
         sct.set("implicitAccess",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS)));
         sct.set("queryUsage",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)));
@@ -1425,6 +1438,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("admin",action,"returnVariable"),
                 pageContext.getConfig().debug()?pageContext.getDebugger().getDebuggingData(pageContext):null);
     }
+    
+    
+    
+    
     private void doGetLoggedDebugData() throws PageException {
     	
     	if(config instanceof ConfigServer) return ;
@@ -1484,10 +1501,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	        sct.set("servlets", srv);
         }
 
-
 	    sct.setEL("javaAgentSupported", Caster.toBoolean(InstrumentationUtil.isSupported()));
-	    sct.setEL("javaAgentPath", JavaUtil.getJarPathForClass("railo.runtime.instrumentation.Agent"));
-
+	    sct.setEL("javaAgentPath", ClassUtil.getSourcePathForClass("railo.runtime.instrumentation.Agent", ""));
     }
 
     /**
@@ -1683,6 +1698,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     			Caster.toBoolean(getString("database",""),null),
     			Caster.toBoolean(getString("exception",""),null),
     			Caster.toBoolean(getString("tracing",""),null),
+    			Caster.toBoolean(getString("dump",""),null),
     			Caster.toBoolean(getString("timer",""),null),
     			Caster.toBoolean(getString("implicitAccess",""),null),
     			Caster.toBoolean(getString("queryUsage",""),null)
@@ -2315,7 +2331,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
     private void doUpdateMailSetting() throws PageException {
-        admin.setMailLog(getString("admin",action,"logfile"),getString("loglevel","ERROR"));
+        //admin.setMailLog(getString("admin",action,"logfile"),getString("loglevel","ERROR"));
         
         admin.setMailSpoolEnable(getBoolObject("admin",action,"spoolenable"));
         
@@ -2427,7 +2443,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private static void fillGetRunningThreads(railo.runtime.type.Query qry, ConfigWeb configWeb) throws PageException {
     	CFMLFactoryImpl factory = ((CFMLFactoryImpl)configWeb.getFactory());
-    	Struct pcs =factory.getRunningPageContextes();
+    	Struct pcs =factory.getRunningPageContexts();
     	Iterator it = pcs.keyIterator();
         PageContextImpl pc;
         Collection.Key key;
@@ -2480,15 +2496,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         
-        LogAndSource ls=config.getMailLogger();
-        railo.commons.io.log.Log log=ls.getLog();
-        String logFile="";
+        //LoggerAndSourceData data = config.getLoggerAndSourceData("mail");
+        //railo.commons.io.log.Log log=ls.getLog();
+        
+        //String logFile="";
         //String logLevel="";
-        if(log instanceof LogResource)logFile=((LogResource)log).getResource().toString();
-        String logLevel=LogUtil.toStringType(log.getLogLevel(),"ERROR");
-        sct.set("strlogfile",ls.getSource());
-        sct.set("logfile",logFile);
-        sct.set("loglevel",logLevel);
+        //if(log instanceof LogResource)logFile=((LogResource)log).getResource().toString();
+        //String logLevel=LogUtil.toStringType(data.getLevel(),"ERROR");
+        //sct.set("strlogfile",ls.getSource());
+        //sct.set("logfile",logFile);
+        //sct.set("loglevel",logLevel);
         int maxThreads=20;
         SpoolerEngine engine = config.getSpoolerEngine();
         if(engine instanceof SpoolerEngineImpl) {
@@ -2656,11 +2673,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         boolean storage=getBoolV("storage",false);
         boolean verify=getBoolV("verify",true);
         Struct custom=getStruct("custom",new StructImpl());
+	    String dbdriver = getString("dbdriver", "");
         
         //config.getDatasourceConnectionPool().remove(name);
         DataSource ds=null;
 		try {
-			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
+			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null, dbdriver);
 		} catch (ClassException e) {
 			throw new DatabaseException(
 					"can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder ("+e.getMessage()+")",null,null,null);
@@ -2687,8 +2705,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 validate,
                 storage,
                 timezone,
-                custom
-                
+                custom,
+		        dbdriver
         );
         store();
         adminSync.broadcast(attributes, config);
@@ -2738,6 +2756,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		if(def.equals("query")) return ConfigImpl.CACHE_DEFAULT_QUERY;
 		if(def.equals("resource")) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
 		if(def.equals("function")) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
+		if(def.equals("include")) return ConfigImpl.CACHE_DEFAULT_INCLUDE;
     	
 		throw new ApplicationException("invalid default type ["+def+"], valid default types are [object,template,query,resource,function]");
 	}
@@ -2748,6 +2767,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY,getString("admin",action,"query"));
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE,getString("admin",action,"resource"));
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION,getString("admin",action,"function"));
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE,getString("admin",action,"include"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2758,10 +2778,20 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE);
         store();
         adminSync.broadcast(attributes, config);
     }
 
+
+	private void doRemoveLogSetting() throws PageException {
+		admin.removeLogSetting(getString("admin", "RemoveLogSettings", "name"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+	
+	
     private void doRemoveResourceProvider() throws PageException {
     	String classname=getString("admin",action,"class");
     	
@@ -2903,7 +2933,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
 
-    private void _doVerifyDatasource(String classname, String dsn, String username, String password) throws PageException {
+    private void _doVerifyDatasource(String classname, String connString, String username, String password) throws PageException {
         try {
         	Class clazz=null;
         	try {
@@ -2912,7 +2942,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 				e.printStackTrace();
 			}
 			if(clazz==null)clazz=ClassUtil.loadClass(config.getClassLoader(),classname);
-            _doVerifyDatasource(clazz, dsn, username, password);
+            _doVerifyDatasource(clazz, connString, username, password);
         } 
         catch (ClassException e) {
             throw Caster.toPageException(e);
@@ -2990,7 +3020,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private static boolean terminateRunningThread(ConfigWeb configWeb,int id) {
 
-    	Struct pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getRunningPageContextes();
+    	Struct pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getRunningPageContexts();
         
         Iterator it = pcs.keyIterator();
         PageContextImpl pc;
@@ -3098,6 +3128,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doUpdatePerformanceSettings() throws SecurityException, PageException {
     	admin.updateInspectTemplate(getString("admin",action,"inspectTemplate"));
+    	
+    	admin.updateTypeChecking(getBoolObject("admin",action,"typeChecking"));
         store();
         adminSync.broadcast(attributes, config);
 	}
@@ -3106,7 +3138,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateCompilerSettings() throws SecurityException, PageException {
     	admin.updateCompilerSettings(
     			getBoolObject("admin", "UpdateCompilerSettings", "dotNotationUpperCase"),
-    			getBoolObject("admin", "UpdateCompilerSettings", "supressWSBeforeArg"),
+    			getBoolObject("admin", "UpdateCompilerSettings", "suppressWSBeforeArg"),
     			getBoolObject("admin", "UpdateCompilerSettings", "nullSupport")
 				);
     	admin.updateTemplateCharset(getString("admin",action,"templateCharset"));
@@ -3116,7 +3148,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
 	}
     
-    private void doGetLogSetting() throws PageException {
+    /*private void doGetLogSetting() throws PageException {
     	String name=getString("admin", "GetLogSetting", "name");
     	name=name.trim().toLowerCase();
     	Query qry=_doGetLogSettings();
@@ -3142,7 +3174,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	}
     	throw new ApplicationException("invalig log name ["+name+"]");
     	
-	}
+	}*/
     
     private void doGetCompilerSettings() throws  PageException {
     	String returnVariable=getString("admin",action,"returnVariable");
@@ -3150,7 +3182,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	pageContext.setVariable(returnVariable,sct);
 
     	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
-    	sct.set("supressWSBeforeArg", config.getSupressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
+    	sct.set("suppressWSBeforeArg", config.getSuppressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("nullSupport", config.getFullNullSupport()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("templateCharset", config.getTemplateCharset());
     }
@@ -3160,47 +3192,39 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		pageContext.setVariable(returnVariable,_doGetLogSettings());
     }
     
-    private Query _doGetLogSettings() throws  PageException {
-    	Query qry=new QueryImpl(
-				new String[]{"name","level","path","virtualpath","class","maxFile","maxFileSize"},
-				new String[]{"varchar","varchar","varchar","varchar","varchar","varchar","varchar"},
-				0,railo.runtime.type.util.ListUtil.last("logs", '.'));
+    private Query _doGetLogSettings() {
+    	Map<String, LoggerAndSourceData> loggers = config.getLoggers();
+        Query qry=new QueryImpl(
+				new String[]{"name","level","appenderClass","appenderArgs","layoutClass","layoutArgs","readonly"},
+				loggers.size(),railo.runtime.type.util.ListUtil.last("logs", '.'));
         int row=0;
-        
-        doGetLogSettings(qry,"application",config.getApplicationLogger(),++row);
-        doGetLogSettings(qry,"scope",config.getScopeLogger(),++row);
-        doGetLogSettings(qry,"exception",config.getExceptionLogger(),++row);
-        if(config instanceof ConfigWeb)doGetLogSettings(qry,"gateway",((ConfigWebImpl)config).getGatewayLogger(),++row);
-        doGetLogSettings(qry,"mail",config.getMailLogger(),++row);
-        doGetLogSettings(qry,"mapping",config.getMappingLogger(),++row);
-        doGetLogSettings(qry,"orm",config.getORMLogger(),++row);
-        doGetLogSettings(qry,"remote-client",config.getRemoteClientLog(),++row);
-        doGetLogSettings(qry,"request-timeout",config.getRequestTimeoutLogger(),++row);
-        if(config instanceof ConfigWeb){
-        	doGetLogSettings(qry,"schedule-task",config.getScheduleLogger(),++row);
-        	doGetLogSettings(qry,"search",config.getSearchEngine().getLogger(),++row);
+        Iterator<Entry<String, LoggerAndSourceData>> it = loggers.entrySet().iterator();
+        Entry<String, LoggerAndSourceData> e;
+        LoggerAndSourceData logger;
+        while(it.hasNext()){
+        	e = it.next();
+        	logger = e.getValue();
+        	row++;
+        	qry.setAtEL("name", row, e.getKey());
+    		qry.setAtEL("level", row,logger.getLevel().toString());
+    		qry.setAtEL("appenderClass", row, logger.getAppender().getClass().getName());
+    		qry.setAtEL("appenderArgs", row, toStruct(logger.getAppenderArgs()));
+    		qry.setAtEL("layoutClass", row, logger.getLayout().getClass().getName());
+    		qry.setAtEL("layoutArgs", row, toStruct(logger.getLayoutArgs()));
+    		qry.setAtEL("readonly", row, logger.getReadOnly());
         }
-        doGetLogSettings(qry,"thread",config.getThreadLogger(),++row);
-        doGetLogSettings(qry,"trace",config.getTraceLogger(),++row);
         return qry;
 	}
-    
 
-	private void doGetLogSettings(Query qry, String name,LogAndSource log, int row) {
-		qry.addRow();
-		qry.setAtEL("name", row, name);
-		qry.setAtEL("level", row, LogUtil.toStringType(log.getLogLevel(), ""));
-		qry.setAtEL("virtualpath", row, log.getSource());
-		qry.setAtEL("class", row, log.getLog().getClass().getName());
-        Log l = log.getLog();
-        if(l instanceof LogResource){
-        	LogResource lr = (LogResource)l;
-        	qry.setAtEL("maxFile", row, Caster.toString(lr.getMaxFiles()));
-        	qry.setAtEL("maxFileSize", row, Caster.toString(lr.getMaxFileSize()));
-        	qry.setAtEL("path", row, lr.getResource().getAbsolutePath());
-        }
-        
-        
+	private Object toStruct(Map<String, String> map) {
+		Iterator<Entry<String, String>> it = map.entrySet().iterator();
+		Entry<String, String> e;
+		Struct sct=new StructImpl();
+		while(it.hasNext()){
+			e = it.next();
+			sct.setEL(e.getKey(), e.getValue());	
+		}
+		return sct;
 	}
 
 	private void doGetPerformanceSettings() throws ApplicationException, PageException {
@@ -3212,6 +3236,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(it==ConfigImpl.INSPECT_ALWAYS)str="always";
         else if(it==ConfigImpl.INSPECT_NEVER)str="never";
         sct.set("inspectTemplate",str);
+        sct.set("typeChecking",config.getTypeChecking());
 	}
     
     
@@ -3408,6 +3433,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         CacheConnection defQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
         CacheConnection defRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
         CacheConnection defUDF=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+        CacheConnection defInc=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE);
+
         int row=0;
         String def;
 		while(it.hasNext()){
@@ -3421,6 +3448,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	if(cc==defQry)def="query";
         	if(cc==defRes)def="resource";
         	if(cc==defUDF)def="function";
+        	if(cc==defInc)def="include";
         	qry.setAtEL("class", row, cc.getClazz().getName());
         	qry.setAtEL("name", row, cc.getName());
         	qry.setAtEL("custom", row, cc.getCustom());
@@ -3447,8 +3475,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	type=ConfigImpl.CACHE_DEFAULT_RESOURCE;
         else if(strType.equals("function"))
         	type=ConfigImpl.CACHE_DEFAULT_FUNCTION;
+        else if(strType.equals("include"))
+        	type=ConfigImpl.CACHE_DEFAULT_INCLUDE;
         else
-        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object, template,query,resource,function]");
+        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object,template,query,resource,function,include]");
 		
         CacheConnection cc = config.getCacheDefaultConnection(type);
         if(cc!=null){
@@ -3476,6 +3506,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		CacheConnection dQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
 		CacheConnection dRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
 		CacheConnection dUDF=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+		CacheConnection dInc=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 		
 		Struct sct;
 		String d;
@@ -3490,6 +3521,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 else if(cc==dQry)d="query";
                 else if(cc==dRes)d="resource";
                 else if(cc==dUDF)d="function";
+                else if(cc==dInc)d="include";
                 sct.setEL(KeyConstants._name,cc.getName());
                 sct.setEL(KeyConstants._class,cc.getClazz().getName());
                 sct.setEL(KeyConstants._custom,cc.getCustom());
@@ -3583,6 +3615,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 sct.setEL("clob",Boolean.valueOf(d.isClob()));
                 sct.setEL("validate",Boolean.valueOf(d.validate()));
                 sct.setEL("storage",Boolean.valueOf(d.isStorage()));
+
+	            if (d instanceof DataSourceImpl) {
+
+		            sct.setEL("dbdriver", Caster.toString( ((DataSourceImpl)d).getDbDriver(), "" ));
+	            }
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;
             }
@@ -3789,9 +3826,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Map ds = config.getDataSourcesAsMap();
         Iterator it = ds.keySet().iterator();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
-                "timezone","username","password","readonly"
+                "timezone","username","password","passwordEncrypted","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
-                ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings"},ds.size(),"query");
+                ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings","metaCacheTimeout"},ds.size(),"query");
         
         int row=0;
 
@@ -3809,6 +3846,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("dsnTranslated",row,d.getDsnTranslated());
             qry.setAt("timezone",row,toStringTimeZone(d.getTimeZone()));
             qry.setAt(KeyConstants._password,row,d.getPassword());
+
+            qry.setAt("passwordEncrypted",row,ConfigWebFactory.encrypt(d.getPassword()));
             qry.setAt(KeyConstants._username,row,d.getUsername());
             qry.setAt(KeyConstants._readonly,row,Caster.toBoolean(d.isReadOnly()));
             qry.setAt(KeyConstants._select,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
@@ -3828,6 +3867,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("clob",row,Boolean.valueOf(d.isClob()));
             qry.setAt("validate",row,Boolean.valueOf(d.validate()));
             qry.setAt("storage",row,Boolean.valueOf(d.isStorage()));
+            qry.setAt("metaCacheTimeout",row,Caster.toDouble(d.getMetaCacheTimeout()));
             
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
@@ -3896,7 +3936,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
     
-    private void doUpdateUpdateLogSettings() throws PageException  {
+    /*private void doUpdateUpdateLogSettings() throws PageException  {
     	int level=LogUtil.toIntType(getString("admin", "updateUpdateLogSettings", "level"), -1);
     	String source=getString("admin", "updateUpdateLogSettings", "path");
     	if(source.indexOf("{")==-1){
@@ -3917,7 +3957,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	);
         store();
         adminSync.broadcast(attributes, config);
-    }
+    }*/
     
 
 
@@ -4257,6 +4297,22 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		boolean captcha = getBool("admin", "UpdateLoginSettings", "captcha");
 		int delay = getInt("admin", "UpdateLoginSettings", "delay");
 		admin.updateLoginSettings(captcha,delay);
+		store();
+	}
+
+	private void doUpdateLogSettings() throws PageException {
+		String str = getString("admin", "UpdateLogSettings", "level", true);
+		Level l = Log4jUtil.toLevel(str,null);
+		if(l==null)throw new ApplicationException("invalid log level name ["+str+"], valid log level names are [INFO,DEBUG,WARN,ERROR,FATAL,TRACE]");
+		
+		admin.updateLogSettings(
+				getString("admin", "UpdateLogSettings", "name", true)
+				,l
+				,getString("admin", "UpdateLogSettings", "appenderClass", true)
+				,Caster.toStruct(getObject("admin", "UpdateLogSettings", "appenderArgs"))
+				,getString("admin", "UpdateLogSettings", "layoutClass", true)
+				,Caster.toStruct(getObject("admin", "UpdateLogSettings", "layoutArgs"))
+		);
 		store();
 	}
     

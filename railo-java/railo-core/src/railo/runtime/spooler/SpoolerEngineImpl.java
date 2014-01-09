@@ -11,6 +11,7 @@ import java.util.List;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
@@ -495,7 +496,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 				task.execute(config);
 			
 			unstore(task);
-			log.info("remote-client", task.subject());
+			log.log(Log.LEVEL_INFO,"remote-client", task.subject());
 			task.setLastExecution(System.currentTimeMillis());
 			task.setNextExecution(-1);
 			
@@ -505,7 +506,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		catch(Throwable t) {
 			task.setLastExecution(System.currentTimeMillis());
 			task.setNextExecution(calculateNextExecution(task));
-			log.error("remote-client", task.subject()+":"+t.getMessage());
+			LogUtil.log(log,Log.LEVEL_ERROR,"remote-client", task.subject(),t);
 			if(task.nextExecution()==-1) {
 				//openTasks.remove(task);
 				//if(!closedTasks.contains(task))closedTasks.add(task);

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -20,10 +20,12 @@ import railo.runtime.type.util.KeyConstants;
 
 public final class EvaluateComponent {
 	public static Object call(PageContext pc, String name, String md5, Struct sctThis) throws PageException {
-		return call(pc, name, md5, sctThis, null);
-	}
+		return invoke(pc, name, md5, sctThis, null);
+		}
 	public static Object call(PageContext pc, String name, String md5, Struct sctThis, Struct sctVariables) throws PageException {
-		
+		return invoke(pc, name, md5, sctThis, sctVariables);
+	}
+	public static Component invoke(PageContext pc, String name, String md5, Struct sctThis, Struct sctVariables) throws PageException {
 		// Load comp
 		Component comp=null;
 		try {
@@ -36,20 +38,14 @@ public final class EvaluateComponent {
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
-		
-		
-		
 		setInternalState(comp,sctThis,sctVariables);
-		
-		
-	
-        return comp;
+		return comp;
 	}
 	public static void setInternalState(Component comp, Struct sctThis, Struct sctVariables) throws PageException {
 		
 		// this	
 		// delete this scope data members
-		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,comp);
+		ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,comp);
 		Collection.Key[] cwKeys = CollectionUtil.keys(cw);
 		Object member;
 		for(int i=0;i<cwKeys.length;i++) {

@@ -21,6 +21,7 @@ import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
@@ -257,7 +258,7 @@ public final class CFMLTransformer {
 
 		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
+		Page page=new Page(source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
 		TagData data = new TagData(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;
@@ -823,11 +824,13 @@ public final class CFMLTransformer {
             
 			// set default values
 			if(tag.hasDefaultValue()) {
-			    Map<String, TagLibTagAttr> hash = tag.getAttributes();
-				Iterator<String> it = hash.keySet().iterator();
-			
+				Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<Entry<String, TagLibTagAttr>> it = hash.entrySet().iterator();
+				Entry<String, TagLibTagAttr> e;
+				TagLibTagAttr att;
 				while(it.hasNext())	{
-					TagLibTagAttr att=hash.get(it.next());
+					e = it.next();
+					att=e.getValue();
 					if(!parent.containsAttribute(att.getName()) && att.hasDefaultValue())	{
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
@@ -851,14 +854,15 @@ public final class CFMLTransformer {
 			
 			// not defined attributes
 			if(type==TagLibTag.ATTRIBUTE_TYPE_FIXED || type==TagLibTag.ATTRIBUTE_TYPE_MIXED)	{
-				Map<String, TagLibTagAttr> hash = tag.getAttributes();
-				Iterator<String> it = hash.keySet().iterator();
+				//Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<TagLibTagAttr> it = tag.getAttributes().values().iterator();
 				
 				while(it.hasNext())	{
-					TagLibTagAttr att=hash.get(it.next());
-					if(att.isRequired() && !args.contains(att.getName()) && att.getDefaultValue()==null)	{
+					
+					TagLibTagAttr att=it.next();
+					if(att.isRequired() && !contains(args,att) && att.getDefaultValue()==null)	{
 						if(!hasAttributeCollection)throw createTemplateException(data.cfml,"attribute "+att.getName()+" is required for tag "+tag.getFullName(),tag);
-						parent.addMissingAttribute(att.getName(),att.getType());
+						parent.addMissingAttribute(att);
 					}
 				}
 			}
@@ -877,7 +881,28 @@ public final class CFMLTransformer {
 		}
 	}
 
-    private static void attrNoName(Tag parent, TagLibTag tag, TagData data,TagLibTagAttr attr) throws TemplateException {
+    private static boolean contains(ArrayList<String> names, TagLibTagAttr attr) {
+		
+		Iterator<String> it = names.iterator();
+		String name;
+		String[] alias;
+		while(it.hasNext()){
+			name=it.next();
+			
+			// check name
+			if(name.equals(attr.getName())) return true;
+			
+			// and aliases
+			alias = attr.getAlias();
+			if(!ArrayUtil.isEmpty(alias)) for(int i=0;i<alias.length;i++){
+				if(alias[i].equals(attr.getName())) return true;
+			}
+		}
+		return false;
+	}
+
+
+	private static void attrNoName(Tag parent, TagLibTag tag, TagData data,TagLibTagAttr attr) throws TemplateException {
     	if(attr==null)attr=tag.getFirstAttribute();
 		String strName="noname";
 		String strType="any";
@@ -978,13 +1003,13 @@ public final class CFMLTransformer {
 		args.add(id);
 		
 		if("attributecollection".equals(id)){
-			dynamic.setValue(tag.getAttribute(id)==null);
+			dynamic.setValue(tag.getAttribute(id,true)==null);
 			sbType.append("struct");
 			parseExpression[0]=true;
 			parseExpression[1]=true;
 		}
 		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED || typeDef==TagLibTag.ATTRIBUTE_TYPE_MIXED) {
-			TagLibTagAttr attr=tag.getAttribute(id);
+			TagLibTagAttr attr=tag.getAttribute(id,true);
 			if(attr==null) {
 				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
 					String names=tag.getAttributeNames();
@@ -1003,6 +1028,7 @@ public final class CFMLTransformer {
 				dynamic.setValue(true);
 			}
 			else {
+				id=attr.getName();
 				sbType.append(attr.getType());
 				parseExpression[0]=attr.getRtexpr();
 			}
@@ -1142,7 +1168,7 @@ public final class CFMLTransformer {
 			if(!attr.isRequired()) tmp.append("[");
 			if(c++>0)pattern.append(" ");
 			tmp.append(attr.getName());
-			tmp.append("\"");
+			tmp.append("=\"");
 			tmp.append(attr.getType());
 			tmp.append("\"");
 			if(!attr.isRequired()) tmp.append("]");

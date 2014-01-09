@@ -9,6 +9,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ListUtil;
 
 public class ExceptionUtil {
 
@@ -52,22 +53,25 @@ public class ExceptionUtil {
 	
 
 	private static void setAddional(PageException pe,SessionFactoryData data) {
-		String[] names = data.getEntityNames();
-		setAdditional(pe,CommonUtil.createKey("Entities"), CommonUtil.toList(names, ", "));
-		setAddional(data.getDataSource(),pe);
+		setAdditional(pe,CommonUtil.createKey("Entities"), ListUtil.listToList2(data.getEntityNames(), ", "));
+		setAddional(pe,data.getDataSources());
 	}
 	
 	private static void setAddional(ORMSession session,PageException pe) {
 		String[] names = session.getEntityNames();
 		
 		setAdditional(pe, CommonUtil.createKey("Entities"),  CommonUtil.toList(names, ", "));
-		setAddional(session.getDataSource(),pe);
+		setAddional(pe,session.getDataSources());
 	}
 	
-	private static void setAddional(DataSource ds,PageException pe) {
-		if(ds!=null){
-			String dsn=ds.getName();
-			if(dsn!=null)setAdditional(pe, CommonUtil.createKey("_Datasource"), dsn);
+	private static void setAddional(PageException pe,DataSource... sources) {
+		if(sources!=null && sources.length>0){
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<sources.length;i++){
+				if(i>0) sb.append(", ");
+				sb.append(sources[i].getName());
+			}
+			setAdditional(pe, CommonUtil.createKey("_Datasource"), sb.toString());
 		}
 	}
 	

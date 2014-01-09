@@ -93,7 +93,7 @@ public final class StructFindKey extends BIF {
         return abort;
     }
 	static String createKey(Collection coll,String path,Collection.Key key) {
-		StringBuffer p=new StringBuffer(path.toString());
+		StringBuilder p=new StringBuilder(path.toString());
         if(isArray(coll)){
         	p.append('[').append(key.getString()).append(']');
         }

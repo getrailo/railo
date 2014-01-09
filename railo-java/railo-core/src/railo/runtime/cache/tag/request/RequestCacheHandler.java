@@ -1,0 +1,69 @@
+package railo.runtime.cache.tag.request;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import railo.print;
+import railo.runtime.PageContext;
+import railo.runtime.cache.tag.CacheHandler;
+import railo.runtime.cache.tag.CacheHandlerFilter;
+
+public class RequestCacheHandler implements CacheHandler {
+	
+	private static ThreadLocal<Map<String,Object>> data=new ThreadLocal<Map<String,Object>>() {
+		@Override 
+		protected Map<String,Object> initialValue() {
+			return new HashMap<String, Object>();
+		}
+	};
+	private final int cacheType;
+
+	public RequestCacheHandler(int cacheType) {
+		this.cacheType=cacheType;
+	}
+
+	@Override
+	public Object get(PageContext pc, String id) {
+		return data.get().get(id);
+	}
+
+	@Override
+	public boolean remove(PageContext pc, String id) {
+		return data.get().remove(id)!=null;
+	}
+
+	@Override
+	public void set(PageContext pc, String id,Object cachedwithin, Object value) {
+		// cachedwithin is ignored in this cache, it should be "request"
+		data.get().put(id,value);
+	}
+
+	@Override
+	public void clear(PageContext pc) {
+		data.get().clear();
+	}
+
+	@Override
+	public void clear(PageContext pc, CacheHandlerFilter filter) {
+		Iterator<Entry<String, Object>> it = data.get().entrySet().iterator();
+		Entry<String, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			if(filter==null || filter.accept(e.getValue()))
+				it.remove();
+		}
+	}
+
+	@Override
+	public int size(PageContext pc) {
+		return data.get().size();
+	}
+
+	@Override
+	public void clean(PageContext pc) {
+		// not necessary
+	}
+
+}

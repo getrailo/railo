@@ -17,14 +17,22 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import railo.commons.digest.Hash;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
+import railo.commons.io.log.LoggerAndSourceData;
+import railo.commons.io.log.log4j.LogAdapter;
+import railo.commons.io.log.log4j.appender.ResourceAppender;
+import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -43,7 +51,6 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.IPRange;
-import railo.commons.net.JarLoader;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
@@ -89,6 +96,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
+import railo.runtime.reflection.Reflector;
 import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.rest.RestSettings;
 import railo.runtime.schedule.Scheduler;
@@ -96,7 +104,6 @@ import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
-import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -119,6 +126,7 @@ import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import flex.messaging.config.ConfigMap;
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 
 /**
@@ -140,6 +148,7 @@ public abstract class ConfigImpl implements Config {
 	public static final int DEBUG_TIMER = 8;
 	public static final int DEBUG_IMPLICIT_ACCESS = 16;
 	public static final int DEBUG_QUERY_USAGE = 32;
+	public static final int DEBUG_DUMP = 64;
 	
 	
 	
@@ -177,12 +186,14 @@ public abstract class ConfigImpl implements Config {
 	private CacheConnection defaultCacheTemplate=null;
 	private CacheConnection defaultCacheQuery=null;
 	private CacheConnection defaultCacheResource=null;
+	private CacheConnection defaultCacheInclude=null;
 
 	private String cacheDefaultConnectionNameFunction=null;
 	private String cacheDefaultConnectionNameObject=null;
 	private String cacheDefaultConnectionNameTemplate=null;
 	private String cacheDefaultConnectionNameQuery=null;
 	private String cacheDefaultConnectionNameResource=null;
+	private String cacheDefaultConnectionNameInclude=null;
 	
     private TagLib[] tlds=new TagLib[1];
     private FunctionLib[] flds=new FunctionLib[1];
@@ -193,6 +204,8 @@ public abstract class ConfigImpl implements Config {
     private boolean _allowImplicidQueryCall=true;
     private boolean _mergeFormAndURL=false;
 
+	private Map<String,LoggerAndSourceData> loggers=new HashMap<String, LoggerAndSourceData>();
+	
     private int _debug;
     private int debugLogOutput=SERVER_BOOLEAN_FALSE;
     private int debugOptions=0;
@@ -264,16 +277,6 @@ public abstract class ConfigImpl implements Config {
     private boolean restList=false;
     //private boolean restAllowChanges=false;
     
-    private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
-    
-    private LogAndSource requestTimeoutLogger=null;
-    private LogAndSource applicationLogger=null;
-    private LogAndSource deployLogger=null;
-    private LogAndSource exceptionLogger=null;
-	private LogAndSource traceLogger=null;
-
     
     private short clientType=CLIENT_SCOPE_TYPE_COOKIE;
     
@@ -347,8 +350,6 @@ public abstract class ConfigImpl implements Config {
 
 	private Resource remoteClientDirectory;
 
-	private LogAndSource remoteClientLog;
-    
 	private boolean allowURLRequestTimeout=false;
 	private CFMLFactory factory;
 	private boolean errorStatusCode=true;
@@ -380,6 +381,7 @@ public abstract class ConfigImpl implements Config {
 	private AMFCaster amfCaster;
 	//private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
+	private boolean typeChecking=true;
 	private String serial="";
 	private String cacheMD5;
 	private boolean executionLogEnabled;
@@ -394,18 +396,20 @@ public abstract class ConfigImpl implements Config {
 	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
 	private boolean componentLocalSearch=true;
 	private boolean componentRootSearch=true;
-	private LogAndSource mappingLogger;
-	private LogAndSource ormLogger;
 	private boolean useComponentPathCache=true;
 	private boolean useCTPathCache=true;
 	private int amfConfigType=AMF_CONFIG_TYPE_XML;
-	private LogAndSource scopeLogger;
 	private railo.runtime.rest.Mapping[] restMappings;
 	
 	protected int writerType=CFML_WRITER_REFULAR;
 	private long configFileLastModified;
 	private boolean checkForChangesInConfigFile;
 	private String apiKey=null;
+	
+	private List<Layout> consoleLayouts=new ArrayList<Layout>();
+	private List<Layout> resourceLayouts=new ArrayList<Layout>();
+
+
 	
 	
 	/**
@@ -678,30 +682,17 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getMailLogger() {
-    	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return mailLogger;
-    }
-    
-
-    public LogAndSource getRestLogger() {
-    	if(restLogger==null)restLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return restLogger;
-    }
-
-    public LogAndSource getThreadLogger() {
-    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return threadLogger;
-    }
-
-
-    public void setThreadLogger(LogAndSource threadLogger) {
-    	this.threadLogger=threadLogger;
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getRequestTimeoutLogger() {
-    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return requestTimeoutLogger;
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    }
+    
+    @Override
+    public LogAndSource getTraceLogger() {
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
 
     @Override
@@ -1074,27 +1065,16 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getScheduleLogger() {
-    	return scheduler.getLogger();
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getApplicationLogger() {
-    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return applicationLogger;
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
-    public LogAndSource getDeployLogger() {
-    	if(deployLogger==null){
-    		deployLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_INFO),"");
-    	}
-		return deployLogger;
-    }
     
-    public LogAndSource getScopeLogger() {
-    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return scopeLogger;
-    }
-
+    
     /**
      * sets the password
      * @param password
@@ -1540,32 +1520,6 @@ public abstract class ConfigImpl implements Config {
     protected void setMailTimeout(int mailTimeout) {
         this.mailTimeout = mailTimeout;
     }
-
-    /**
-     * sets the mail logger
-     * @param mailLogger
-     */
-    protected void setMailLogger(LogAndSource mailLogger) {
-        this.mailLogger = mailLogger;
-    }
-    
-
-    protected void setORMLogger(LogAndSource ormLogger) {
-        this.ormLogger = ormLogger;
-    }
-    public LogAndSource getORMLogger() {
-    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		
-        return ormLogger;
-    }
-
-    /**
-     * sets the request timeout logger
-     * @param requestTimeoutLogger
-     */
-    protected void setRequestTimeoutLogger(LogAndSource requestTimeoutLogger) {
-        this.requestTimeoutLogger=requestTimeoutLogger;
-    }
     
     /**
      * @param psq (preserve single quote) 
@@ -1619,9 +1573,9 @@ public abstract class ConfigImpl implements Config {
      * @param logger
      * @throws PageException
      */
-    protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory, LogAndSource logger) throws PageException {
+    protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory) throws PageException {
         if(scheduleDirectory==null) {
-        	if(this.scheduler==null) this.scheduler=new SchedulerImpl(engine,"<?xml version=\"1.0\"?>\n<schedule></schedule>",this,logger);
+        	if(this.scheduler==null) this.scheduler=new SchedulerImpl(engine,"<?xml version=\"1.0\"?>\n<schedule></schedule>",this);
         	return;
         }
     	
@@ -1629,7 +1583,7 @@ public abstract class ConfigImpl implements Config {
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
-        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset().name());
+        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,SystemUtil.getCharset().name());
         	//else
         		//this.scheduler.reinit(scheduleDirectory,logger);
         } 
@@ -1818,31 +1772,6 @@ public abstract class ConfigImpl implements Config {
         this.baseComponentPageSource=null;
         this.baseComponentTemplate = template;
     }
-    
-    /**
-     * sets the application logger
-     * @param applicationLogger
-     */
-    protected void setApplicationLogger(LogAndSource applicationLogger) {
-        this.applicationLogger=applicationLogger;
-    }
-
-    protected void setDeployLogger(LogAndSource deployLogger) {
-        this.deployLogger=deployLogger;
-    }
-
-    protected void setScopeLogger(LogAndSource scopeLogger) {
-        this.scopeLogger=scopeLogger;
-    }
-
-    protected void setMappingLogger(LogAndSource mappingLogger) {
-        this.mappingLogger=mappingLogger;
-    }
-    
-    protected void setRestLogger(LogAndSource restLogger) {
-        this.restLogger=restLogger;
-    }
-
 
     protected void setRestList(boolean restList) {
         this.restList=restList;
@@ -1850,20 +1779,6 @@ public abstract class ConfigImpl implements Config {
 
     public boolean getRestList() {
         return restList;
-    }
-
-    /*protected void setRestAllowChanges(boolean restAllowChanges) {
-        this.restAllowChanges=restAllowChanges;
-    }
-
-    public boolean getRestAllowChanges() {
-        return restAllowChanges;
-    }*/
-
-    public LogAndSource getMappingLogger() {
-    	if(mappingLogger==null)
-    		mappingLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return mappingLogger;
     }
     
     /**
@@ -2158,7 +2073,7 @@ public abstract class ConfigImpl implements Config {
         Entry<String, DataSource> entry;
         while(it.hasNext()) {
             entry = it.next();
-            if(!entry.getKey().equals("_queryofquerydb"))
+            if(!entry.getKey().equals(QOQ_DATASOURCE_NAME))
                 map.put(entry.getKey(),entry.getValue());
         }        
         return map;
@@ -2284,32 +2199,9 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
-		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return exceptionLogger;
+    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
-
-	/**
-	 * @return the exceptionLogger
-	 */
-	public LogAndSource getTraceLogger() {
-		if(traceLogger==null)traceLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return traceLogger;
-	}
-
-	/**
-	 * @param exceptionLogger the exceptionLogger to set
-	 */
-	protected void setExceptionLogger(LogAndSource exceptionLogger) {
-		this.exceptionLogger = exceptionLogger;
-	}
-
-	/**
-	 * @param traceLogger the traceLogger to set
-	 */
-	protected void setTraceLogger(LogAndSource traceLogger) {
-		this.traceLogger = traceLogger;
-	}
-
+	
 	/**
 	 * @return the scriptProtect
 	 */
@@ -2471,7 +2363,7 @@ public abstract class ConfigImpl implements Config {
 		}
 		
 		// error
-		StringBuffer sb=new StringBuffer(); 
+		StringBuilder sb=new StringBuilder(); 
 		for(int i=0;i<entries.length;i++){
 			if(i>0)sb.append(", ");
 			sb.append(entries[i].getName());
@@ -2608,6 +2500,14 @@ public abstract class ConfigImpl implements Config {
 		this.version=version;
 	}
 
+	protected double setVersion(Document doc) {
+		Element railoConfiguration = doc.getDocumentElement();
+		String strVersion = railoConfiguration.getAttribute("version");
+		return this.version=Caster.toDoubleValue(strVersion, 1.0d);
+	}
+	
+	
+
 	/**
 	 * @return the version
 	 */
@@ -2688,10 +2588,6 @@ public abstract class ConfigImpl implements Config {
 		return remoteClientSpoolerEngine;
 	}
 
-	protected void setRemoteClientLog(LogAndSource remoteClientLog) {
-		this.remoteClientLog=remoteClientLog;
-	}
-
 	protected void setRemoteClientDirectory(Resource remoteClientDirectory) {
 		this.remoteClientDirectory=remoteClientDirectory;
 	}
@@ -2707,7 +2603,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the remoteClientLog
 	 */
 	public LogAndSource getRemoteClientLog() {
-		return remoteClientLog;
+		throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
 
 	protected void setSpoolerEngine(SpoolerEngine spoolerEngine) {
@@ -2987,6 +2883,15 @@ public abstract class ConfigImpl implements Config {
 	public short getInspectTemplate() {
 		return inspectTemplate;
 	}
+	
+
+	public boolean getTypeChecking() {
+		return typeChecking;
+	}
+	protected void setTypeChecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
+	}
+	
 
 	/**
 	 * @param inspectTemplate the inspectTemplate to set
@@ -3026,6 +2931,9 @@ public abstract class ConfigImpl implements Config {
 			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameObject)){
 				defaultCacheObject=cc;
 			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameInclude)){
+				defaultCacheInclude=cc;
+			}
 		}
 	}
 	
@@ -3041,6 +2949,7 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return defaultCacheQuery;
 		if(type==CACHE_DEFAULT_RESOURCE)	return defaultCacheResource;
+		if(type==CACHE_DEFAULT_INCLUDE)		return defaultCacheInclude;
 		return null;
 	}
 
@@ -3050,6 +2959,7 @@ public abstract class ConfigImpl implements Config {
 		else if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_RESOURCE)	cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_INCLUDE)	cacheDefaultConnectionNameInclude=cacheDefaultConnectionName;
 	}
 	
 	@Override
@@ -3059,6 +2969,7 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
 		if(type==CACHE_DEFAULT_RESOURCE)	return cacheDefaultConnectionNameResource;
+		if(type==CACHE_DEFAULT_INCLUDE)	return cacheDefaultConnectionNameInclude;
 		return null;
 	}
 
@@ -3098,27 +3009,33 @@ public abstract class ConfigImpl implements Config {
 		ORMEngine engine = ormengines.get(name);
 		if(engine==null){
 			//try {
-			boolean hasError=false;	
+			Throwable t=null;
+			
 			try {
 				engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
 				engine.init(pc);
 			}
-			catch (ClassException t) {
-				hasError=true;	
+			catch (ClassException ce) {
+				t=ce;	
 			}
-			catch (NoClassDefFoundError t) {
-				hasError=true;	
+			catch (NoClassDefFoundError ncfe) {
+				t=ncfe;
 			}
 			
-			if(hasError) {
+			if(t!=null) {
+				
+				
 				// try to load orm jars
-				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
-					throw new ApplicationException(
-						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
-						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
-				throw new ApplicationException(
-							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
-							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
+				//if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
+				//	throw new ApplicationException(
+				//		"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
+				ApplicationException ae = new ApplicationException(
+							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
+				
+				ae.setStackTrace(t.getStackTrace());
+				ae.setDetail(t.getMessage());
+				
+				
 			
 			}
 				ormengines.put(name,engine);
@@ -3404,13 +3321,13 @@ public abstract class ConfigImpl implements Config {
 		return dotNotationUpperCase;
 	}
 
-	private boolean getSupressWSBeforeArg=true;
-	protected void setSupressWSBeforeArg(boolean getSupressWSBeforeArg) {
-		this.getSupressWSBeforeArg=getSupressWSBeforeArg;
+	private boolean getSuppressWSBeforeArg=true;
+	protected void setSuppressWSBeforeArg(boolean getSuppressWSBeforeArg) {
+		this.getSuppressWSBeforeArg=getSuppressWSBeforeArg;
 	}
 
-	public boolean getSupressWSBeforeArg() {
-		return getSupressWSBeforeArg;
+	public boolean getSuppressWSBeforeArg() {
+		return getSuppressWSBeforeArg;
 	}
 
 	private RestSettings restSetting=new RestSettingImpl(false,UDF.RETURN_FORMAT_JSON);
@@ -3445,6 +3362,10 @@ public abstract class ConfigImpl implements Config {
 
 
 	private int externalizeStringGTE=-1;
+
+
+
+
 	public boolean getBufferOutput() {
 		return bufferOutput;
 	}
@@ -3519,5 +3440,73 @@ public abstract class ConfigImpl implements Config {
 	public int getExternalizeStringGTE() {
 		return externalizeStringGTE;
 	}
+
+	protected void addConsoleLayout(Layout layout) {
+		consoleLayouts.add(layout);
+		
+	}
+	protected void addResourceLayout(Layout layout) {
+		resourceLayouts.add(layout);
+	}
+
+	public Layout[] getConsoleLayouts() {
+		if(consoleLayouts.isEmpty())
+			consoleLayouts.add(new PatternLayout("%d{dd.MM.yyyy HH:mm:ss,SSS} %-5p [%c] %m%n"));
+		return consoleLayouts.toArray(new Layout[consoleLayouts.size()]);
+		
+	}
+	public Layout[] getResourceLayouts() {
+		if(resourceLayouts.isEmpty())
+			resourceLayouts.add(new ClassicLayout());
+		return resourceLayouts.toArray(new Layout[resourceLayouts.size()]);
+	}
+
+
+	protected void clearLoggers() {
+		if(loggers.size()==0) return;
+		Iterator<LoggerAndSourceData> it = loggers.values().iterator();
+		while(it.hasNext()){
+			it.next().getAppender().close();
+		}
+		loggers.clear();
+	}
+	
+	protected LoggerAndSourceData addLogger(String name, Level level,
+			String strAppender, Map<String, String> appenderArgs, 
+			String strLayout, Map<String, String> layoutArgs, boolean readOnly) {
+	
+		LoggerAndSourceData las = new LoggerAndSourceData(this,name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
+		loggers.put(name.toLowerCase(),las);
+		return las;
+	}
+	
+	public Map<String,LoggerAndSourceData> getLoggers(){
+		return loggers;
+	}
+	public Log getLog(String name){
+		return getLog(name, true);
+	}
+	
+	public Log getLog(String name, boolean createIfNecessary){
+		LoggerAndSourceData lsd = getLoggerAndSourceData(name,createIfNecessary);
+		if(lsd==null) return null;
+		return lsd.getLog();
+	}
+	
+	public Logger getLogger(String name, boolean createIfNecessary){
+		LoggerAndSourceData lsd = getLoggerAndSourceData(name,createIfNecessary);
+		if(lsd==null) return null;
+		return ((LogAdapter)lsd.getLog()).getLogger();
+	}
+
+	public LoggerAndSourceData getLoggerAndSourceData(String name, boolean createIfNecessary){
+		LoggerAndSourceData las = loggers.get(name.toLowerCase());
+		if(las==null) {
+			if(!createIfNecessary) return null;
+			return addLogger(name, Level.ERROR, "console", null, "pattern", null,true);
+		}
+		return las;
+	}
+
 	
 }

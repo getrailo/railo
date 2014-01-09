@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
+import railo.runtime.op.Caster;
 
 /**
  * Implementation of a JSpWriter
@@ -32,7 +35,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     private boolean contentLength;
     private CacheItem cacheItem;
 	private HttpServletRequest request;
-	private boolean allowCompression; 
+	private Boolean _allowCompression;
+	private PageContext pc; 
     
     /**
      * constructor of the class
@@ -40,8 +44,9 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @param bufferSize buffer Size
      * @param autoFlush do auto flush Content
      */
-    public CFMLWriterImpl(HttpServletRequest request, HttpServletResponse response, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength,boolean allowCompression) {
+    public CFMLWriterImpl(PageContext pc,HttpServletRequest request, HttpServletResponse response, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength) {
         super(bufferSize, autoFlush);
+        this.pc=pc;
         this.request=request;
         this.response=response;
         this.autoFlush=autoFlush;
@@ -49,7 +54,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         this.closeConn=closeConn;
         this.showVersion=showVersion;
         this.contentLength=contentLength;
-        this.allowCompression=allowCompression;
+        //this.allowCompression=allowCompression;
     }
 
     /* *
@@ -71,7 +76,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      */
     protected void initOut() throws IOException {
         if (out == null) {
-        	out=getOutputStream();
+        	out=getOutputStream(false);
             //out=response.getWriter();
         }
     }
@@ -198,7 +203,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         }
     	initOut();
-    	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
+    	byte[] barr = _toString(true).getBytes(ReqRspUtil.getCharacterEncoding(null,response));
         
     	if(cacheItem!=null && cacheItem.isValid()) {
     		cacheItem.store(barr, flushed);
@@ -265,7 +270,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         		return;
         	}
         	//print.out(_toString());
-        	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
+        	byte[] barr = _toString(true).getBytes(ReqRspUtil.getCharacterEncoding(null,response));
             
         	if(cacheItem!=null)	{
         		cacheItem.store(barr, false);
@@ -274,9 +279,14 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         	if(closeConn)response.setHeader("connection", "close");
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
-            if(barr.length<=512) allowCompression=false;
-            
-            out = getOutputStream();
+        	boolean allowCompression;
+            if(barr.length<=512) 
+            	allowCompression=false;
+            else if(_allowCompression!=null) 
+            	allowCompression=_allowCompression.booleanValue();
+            else
+            	allowCompression=((PageContextImpl)pc).getAllowCompression();
+            out = getOutputStream(allowCompression);
 	        
         	
         	if(contentLength && !(out instanceof GZIPOutputStream))ReqRspUtil.setContentLength(response,barr.length);
@@ -297,15 +307,15 @@ public class CFMLWriterImpl extends CFMLWriter {
     } 
     
 
-    private OutputStream getOutputStream() throws IOException {
+    private OutputStream getOutputStream(boolean allowCompression) throws IOException {
     	
-    	if ( allowCompression && !response.isCommitted() ){
+        if (allowCompression){
     		
-    		String encodings = ReqRspUtil.getHeader(request,"Accept-Encoding",null);
-    	    if(!StringUtil.isEmpty(encodings) && encodings.indexOf("gzip")!=-1) {
+            String encodings = ReqRspUtil.getHeader(request, "Accept-Encoding", "");
+            if( encodings.indexOf("gzip")!=-1 ) {
     	    	boolean inline=HttpServletResponseWrap.get();
     	    	if(!inline) {
-	    	    	ServletOutputStream os = response.getOutputStream();
+    	    		ServletOutputStream os = response.getOutputStream();
 	    	    	response.setHeader("Content-Encoding", "gzip");
 	        		return new GZIPOutputStream(os);
     	    	}
@@ -552,7 +562,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 
 	@Override
 	public void setAllowCompression(boolean allowCompression) {
-		this.allowCompression=allowCompression;
+		this._allowCompression=Caster.toBoolean(allowCompression);
 	}
 	
 	

@@ -228,7 +228,7 @@ public class CFMLExpressionInterpreter {
     private Ref functionArgDeclarationVarString() throws PageException {
         
             cfml.removeSpace();
-            StringBuffer str=new StringBuffer();
+            StringBuilder str=new StringBuilder();
             String id=null;
             while((id=identifier(false))!=null) {
                 if(str.length()>0)str.append('.');

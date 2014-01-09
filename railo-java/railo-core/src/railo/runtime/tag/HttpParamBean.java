@@ -92,7 +92,7 @@ public final class HttpParamBean {
      * Returns the value of encoded.
      * @return value encoded
      */
-    public boolean isEncoded() {
+    public boolean getEncoded() {
         return encoded;
     }
     /**

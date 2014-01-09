@@ -17,6 +17,15 @@ public final class UCFirst implements Function {
 
     public static String call( PageContext pc, String string, boolean doAll ) {
         if ( !doAll ) return StringUtil.ucFirst(string);
+        return StringUtil.capitalize(string, null);
+    }
+
+    public static String call( PageContext pc, String string, boolean doAll, boolean doLowerIfAllUppercase ) {
+	     if (doLowerIfAllUppercase && StringUtil.isAllUpperCase(string))
+		    string = string.toLowerCase();
+
+        if (!doAll) return StringUtil.ucFirst(string);
+
         return StringUtil.capitalize( string, null );
     }
 }

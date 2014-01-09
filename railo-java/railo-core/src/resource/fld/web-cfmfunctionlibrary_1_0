@@ -7,6 +7,25 @@
 	<uri>http://www.railo-technologies.com/cf-fld-3-1</uri>
 	<display-name>Railo Core Function Library</display-name>
 	<description>All build in Functions of Railo</description>
+	
+
+	<!-- AnalyzeSmartEntries -->
+	<function>
+		<name>AnalyzeSmartEntries</name>
+		<class>railo.runtime.functions.other.AnalyzeSmartEntries</class>
+		<description></description>
+		<status>hidden</status>
+		<!-- <argument>
+			<name>number</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>Number to find the absolute value of</description>
+		</argument> -->
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
 	<!-- abs -->
 	<function>
 		<name>abs</name>
@@ -2261,7 +2280,6 @@ the usage of this argument depend on type defined with argument "type":
 - java: java class to load
 - webservice: WSDL url to call
 - component: The CFC name; corresponds to the name of the file that defines the component
-		
 		</description>
     </argument>
 		<argument>
@@ -2271,7 +2289,7 @@ the usage of this argument depend on type defined with argument "type":
 		<description>
 the usage of this argument depend on type defined with argument "type":
 - com: not used (ignored)
-- java: classpath used to load the defined class, this can be a list of multiple pathes (directory containg class files or jar files)
+- java: classpath used to load the defined class, this can be a list of multiple paths (directories containing class files or jar files)
 - webservice: a struct containing the following optional keys (username,password,proxyServer,proxyPort,proxyUser,proxyPassword) 
 - component: not used (ignored)
 </description>
@@ -2283,7 +2301,7 @@ the usage of this argument depend on type defined with argument "type":
 		<description>
 the usage of this argument depend on type defined with argument "type":
 - com: not used (ignored)
-- java: delimter used for the classpath (default comma)
+- java: delimiter used for the classpath (default comma)
 - webservice: not used (ignored)
 - component: not used (ignored)</description>
     </argument>
@@ -3764,6 +3782,7 @@ dec: descending (z to a) sort order.
 		<name>dumpStruct</name>
 		<class>railo.runtime.functions.other.DumpStruct</class>
 		<description>creates out of given object dump infomration as struct</description>
+		<status>hidden</status>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5792,6 +5811,24 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 		</return>
 	</function>
 	
+	<!-- GetPrinterList -->
+	<function>
+		<name>GetPrinterList</name>
+		<class>railo.runtime.functions.system.GetPrinterList</class>
+		<description>Gets a string list of available printers.</description>
+		<argument>
+			<name>delimiters</name>
+			<alias>delimiter</alias>
+			<type>string</type>
+			<required>No</required>
+			<default>,</default>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- GetVFSMetaData -->
 	<function>
 		<name>GetVFSMetaData</name>
@@ -6480,7 +6517,7 @@ if this attribute is not provided all types are returned.</description>
 			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
-		<description>A string or a variable that contains one. A delimited list of delimiters. Elements may consist of multiple characters.
+		<description>A delimited list of delimiters. Elements may consist of multiple characters.
 Default list of delimiters: space character, tab character, newline character; or their codes: "chr(32)", "chr(9)", chr(10).
 Default list delimiter: comma character.</description>
     </argument>
@@ -11098,7 +11135,8 @@ The following things are considered to be empty:
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
-			<description>Characters that separate list elements. The default value is comma.</description>
+			<description>Characters that separate list elements. The default value is comma.
+			If this string contains more than one character, only the first character is used.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -12933,6 +12971,12 @@ ormEvictQueries([cacheName])</description>
 		<name>ORMGetSession</name>
 		<class>railo.runtime.functions.orm.ORMGetSession</class>
 		<description>Returns the current ORM session</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>object</type>
 		</return>
@@ -12942,6 +12986,12 @@ ormEvictQueries([cacheName])</description>
 		<name>ORMGetSessionFactory</name>
 		<class>railo.runtime.functions.orm.ORMGetSessionFactory</class>
 		<description>Returns ORM session factory instance</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>object</type>
 		</return>
@@ -13075,6 +13125,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.PrecisionEvaluate</tte-class>
 		<description>Evaluates one or more string expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
@@ -13261,8 +13312,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
-		<status>unimplemeted</status>
-		<description>Converts query data to a structure that contains a paged subset of the query.</description>
+		<status>deprecated</status>
+		<description>Use instead the function QuerySlice. Converts query data to a structure that contains a paged subset of the query.</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -13330,7 +13381,28 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>array</type>
 		</return>
 	</function>
-	
+	<!-- queryRowData -->
+    	<function>
+    		<name>queryRowData</name>
+    		<class>railo.runtime.functions.query.QueryRowData</class>
+    		<member-name>rowData</member-name>
+    		<description>Returns a struct with the data from a query for a given row number</description>
+    		<argument>
+    			<name>query</name>
+    			<type>query</type>
+    			<required>Yes</required>
+    			<description>query object do get data from</description>
+    	    </argument>
+    		<argument>
+    			<name>rowNumber</name>
+    			<type>number</type>
+    			<required>Yes</required>
+    			<description>position of the row to be returned</description>
+    	    </argument>
+    		<return>
+    			<type>struct</type>
+    		</return>
+    	</function>
 	
 	
 	<!-- queryColumnList -->
@@ -15569,8 +15641,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>data</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>A variable representing data in Base64-encoded format or a PDF document.</description>
-    </argument>
+			<description>A variable representing data in Base64-encoded format or a PDF document.</description>
+		</argument>
+		<argument>
+			<name>charset</name>
+			<type>string</type>
+			<required>false</required>
+			<description>
+			if first argument is a string and this argument is set, the string is not handled as base64 encoded string, 
+			it is simply converted to a binary, with help of the given argument. 
+			the value can be a valid charset name, "web" for the web charset defined with this context or "resource" for the resource charset defined in the context.</description>
+		</argument>
 		<return>
 			<type>binary</type>
 		</return>
@@ -15704,7 +15785,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>doAll</name>
 			<type>boolean</type>
 			<required>false</required>
-		    <description>if true, then every word is capitalized, where a new word is defined as alpha characters that come after whitespace, a dot [.], a dash [-], or (parenthesis)</description>
+		    <description>If true, then every word is capitalized, where a new word is defined as alpha characters that come after whitespace, a dot [.], a dash [-], or (parenthesis).
+		    This is especially useful to clean up user input of names, e.g. converting a string like "susi q. sorgolis" to "Susi Q. Sorgolis"</description>
+		</argument>
+		<argument>
+			<name>doLowerIfAllUppercase</name>
+			<type>boolean</type>
+			<required>false</required>
+		    <description>If true, then if the input string contains letters and they are all UPPERCASE, then the input string is first lowercased.
+		    When combined with the doAll argument, this is especially useful to clean user input of names when they are all UPPERCASE, e.g. converting "SUSI Q. SORGOLIS" to
+		    "Susi Q. Sorgolis" while preserving the CaSe if the input is e.g. "Ronald McDonald"</description>
 		</argument>
 		<return>
 			<type>string</type>

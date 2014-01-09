@@ -19,6 +19,7 @@
                 query="#StructKeyExists(form,'default_query')?form.default_query:''#"
                 resource="#StructKeyExists(form,'default_resource')?form.default_resource:''#"
                 function="#StructKeyExists(form,'default_function')?form.default_function:''#"
+                include="#StructKeyExists(form,'default_include')?form.default_include:''#"
                 remoteClients="#request.getRemoteClients()#">				
 		</cfcase>
 	<!--- delete --->
@@ -250,7 +251,7 @@ function defaultValue(field) {
 			<table class="maintbl">
 				<tbody>
 	<cfset defaults={}>
-    <cfloop index="type" list="object,template,query,resource,function"><!---  --->
+    <cfloop index="type" list="object,template,query,resource,function,include">
 						<tr>
 							<th scope="row">#stText.Settings.cache['defaulttype'& type]#</th>
 							<td>
@@ -266,15 +267,23 @@ function defaultValue(field) {
 					</cfloop>
 						<tr>
 						<td colspan="2">
-
+<cfscript>
+hasObj=!isNull(defaults.object) && len(defaults.object);
+hasTem=!isNull(defaults.template) && len(defaults.template);
+hasQry=!isNull(defaults.query) && len(defaults.query);
+hasRes=!isNull(defaults.resource) && len(defaults.resource);
+hasFun=!isNull(defaults.function) && len(defaults.function);
+hasInc=!isNull(defaults.include) && len(defaults.include);
+</cfscript>
 <cfsavecontent variable="codeSample">
-	this.cache.object = "#isNull(defaults.object) || !len(defaults.object)?"&lt;cache-name>":defaults.object#";
-this.cache.template = "#isNull(defaults.template) || !len(defaults.template)?"&lt;cache-name>":defaults.template#";
-this.cache.query = "#isNull(defaults.query) || !len(defaults.query)?"&lt;cache-name>":defaults.query#";
-this.cache.resource = "#isNull(defaults.resource) || !len(defaults.resource)?"&lt;cache-name>":defaults.resource#";
-this.cache.function = "#isNull(defaults.function) || !len(defaults.function)?"&lt;cache-name>":defaults.function#";
+this.cache.object = "#!hasObj?"&lt;cache-name>":defaults.object#";
+this.cache.template = "#!hasTem?"&lt;cache-name>":defaults.template#";
+this.cache.query = "#!hasQry?"&lt;cache-name>":defaults.query#";
+this.cache.resource = "#!hasRes?"&lt;cache-name>":defaults.resource#";
+this.cache.function = "#!hasFun?"&lt;cache-name>":defaults.function#";
+this.cache.include = "#!hasInc?"&lt;cache-name>":defaults.include#";	
 </cfsavecontent>
-<cf_admin_coding_tip codeSample="#codeSample#">
+<cfset renderCodingTip( codeSample )>
 
 						</td>
 						</tr>

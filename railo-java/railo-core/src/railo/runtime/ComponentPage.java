@@ -58,7 +58,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
-import railo.runtime.type.cfc.ComponentAccess;
+
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
@@ -71,7 +71,7 @@ import railo.runtime.type.util.UDFUtil;
 /**
  * A Page that can produce Components
  */
-public abstract class ComponentPage extends Page  {
+public abstract class ComponentPage extends PagePlus  {
 	
 	public static final Collection.Key ACCEPT_ARG_COLL_FORMATS = KeyImpl.getInstance("acceptedArgumentCollectionFormats");
 
@@ -115,7 +115,7 @@ public abstract class ComponentPage extends Page  {
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
-	            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
+	            		if(!fromGateway)component=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_REMOTE,component);
 	            		
 	            		engine.setPersistentRemoteCFC(strRemotePersisId,component);
 	            	}
@@ -123,7 +123,7 @@ public abstract class ComponentPage extends Page  {
 	            }
 	            else {
 	            	component=newInstance(pc,getPageSource().getComponentName(),false);
-            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
+            		if(!fromGateway)component=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_REMOTE,component);
 	            }
             }
             finally {
@@ -144,7 +144,7 @@ public abstract class ComponentPage extends Page  {
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
-            boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
+            boolean suppressContent = ((PageContextImpl)pc).getSuppressContent();
             if(suppressContent)pc.clear();
             Object method;
             
@@ -202,7 +202,7 @@ public abstract class ComponentPage extends Page  {
             //if(path.size()>1 ) {
             if(path.size()>1 && !(path.size()==3 && ListUtil.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
-            	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ComponentUtil.toComponentAccess(component));
+            	ComponentSpecificAccess c = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,component);
             	Key[] keys = c.keys();
             	Object el;
             	Scope var = pc.variablesScope();
@@ -832,8 +832,7 @@ public abstract class ComponentPage extends Page  {
 	}
 	
 	private void callCFCMetaData(PageContext pc, Component cfc, int format) throws IOException, PageException, ConverterException {
-		ComponentAccess ca = ComponentUtil.toComponentAccess(cfc);
-		ComponentWrap cw = new ComponentWrap(Component.ACCESS_REMOTE,ca);  
+		ComponentSpecificAccess cw = new ComponentSpecificAccess(Component.ACCESS_REMOTE,cfc);
 		ComponentScope scope = cw.getComponentScope();
 		Struct udfs=new StructImpl(),sctUDF,sctArg;
 		Array arrArg;
@@ -936,11 +935,7 @@ public abstract class ComponentPage extends Page  {
 
 	private Charset getCharset(PageContext pc) {
 		HttpServletResponse rsp = pc.getHttpServletResponse();
-        String str = rsp.getCharacterEncoding();
-        
-        if(StringUtil.isEmpty(str)) 
-        	return ((PageContextImpl)pc).getWebCharset();
-        return CharsetUtil.toCharset(str, CharsetUtil.UTF8);
+        return ReqRspUtil.getCharacterEncoding(pc,rsp);
 	}
 
 	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {

@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import railo.runtime.PageContext;
  
 /**
  * JSP Writer that Remove WhiteSpace from given content while preserving pre-formatted spaces 
@@ -49,9 +51,9 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	 * @param bufferSize 
 	 * @param autoFlush 
 	 */
-	public CFMLWriterWSPref(HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
-			boolean showVersion, boolean contentLength, boolean allowCompression) {
-		super(req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength,allowCompression);
+	public CFMLWriterWSPref(PageContext pc, HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
+			boolean showVersion, boolean contentLength) {
+		super(pc,req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength);
 		depths = new int[ EXCLUDE_TAGS.length ];
 	}
 

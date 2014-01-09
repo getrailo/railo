@@ -5,7 +5,9 @@ import java.util.Map;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceLock;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SerializableObject;
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -71,7 +73,7 @@ public final class ResourceLockImpl implements ResourceLock {
 				Config config = ThreadLocalPageContext.getConfig();
 				if(config!=null)
 					SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path);
-				//throw new RuntimeException("conflict in same thread: on "+res);
+				//SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path+"\nStacktrace:\n"+StringUtil.replace(ExceptionUtil.getStacktrace(new Throwable(), false),"java.lang.Throwable\n","",true));
 				return;
 			}
 			// bugfix when lock von totem thread, wird es ignoriert

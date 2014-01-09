@@ -31,14 +31,16 @@ public class Util {
 	 */
 	public static Cache getDefault(PageContext pc, int type,Cache defaultValue) {
 		// get default from application conetx
-		String name=pc!=null?pc.getApplicationContext().getDefaultCacheName(type):null;
+		String name=null;
+		if(pc!=null && pc.getApplicationContext()!=null)
+			name=pc.getApplicationContext().getDefaultCacheName(type);
+		Config config=ThreadLocalPageContext.getConfig(pc);
 		if(!StringUtil.isEmpty(name)){
-			Cache cc = getCache(pc.getConfig(), name, null);
+			Cache cc = getCache(config, name, null);
 			if(cc!=null) return cc;
 		}
 		
 		// get default from config
-		Config config=ThreadLocalPageContext.getConfig(pc);
 		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
 		if(cc==null) return defaultValue;
 		try {
@@ -46,8 +48,6 @@ public class Util {
 		} catch (Throwable t) {
 			return defaultValue;
 		}
-		
-		
 	}
 	
 	/**
@@ -141,6 +141,7 @@ public class Util {
 		if(type==ConfigImpl.CACHE_DEFAULT_QUERY) return "query";
 		if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE) return "resource";
 		if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION) return "function";
+		if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE) return "include";
 		return defaultValue;
 	}
 
@@ -187,6 +188,7 @@ public class Util {
 		if("resource".equals(type)) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
 		if("template".equals(type)) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
 		if("function".equals(type)) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
+		if("include".equals(type)) return ConfigImpl.CACHE_DEFAULT_INCLUDE;
 		return defaultValue;
 	}
 
@@ -196,6 +198,7 @@ public class Util {
 		if(ConfigImpl.CACHE_DEFAULT_RESOURCE==type) return "resource";
 		if(ConfigImpl.CACHE_DEFAULT_TEMPLATE==type) return "template";
 		if(ConfigImpl.CACHE_DEFAULT_FUNCTION==type) return "function";
+		if(ConfigImpl.CACHE_DEFAULT_INCLUDE==type) return "include";
 		return defaultValue;
 	}
 

@@ -303,3 +303,22 @@ ACCESS.CFX_USAGE=securityManager.getAccess(smClass.TYPE_CFX_USAGE);
         
         <cfreturn dest>
     </cffunction>
+
+
+<cffunction name="renderCodingTip" output="true">
+	<cfargument name="codeSample"   default="">
+	<cfargument name="text"         default="">
+	<cfargument name="isExpand"     default="#false#" type="boolean">
+	
+	<cfset var stText= application.stText[session.railo_admin_lang]>
+	<cfset var desc  = len( arguments.text ) ? arguments.text : stText.settings.appcfcdesc>
+
+	<cfif !arguments.isExpand>
+		<div class="coding-tip-trigger-#request.adminType#">&lt;?/&gt;<!--- #stText.settings.tip#---></div>		
+	</cfif>
+	<div class="coding-tip-#request.adminType# #arguments.isExpand ? 'expanded' : ''#">
+		<div><cfif !(isBoolean(desc) && !desc)>#desc#:</cfif></div>
+		<code>#trim( arguments.codeSample )#</code>
+	</div>
+</cffunction>
+

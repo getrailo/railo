@@ -52,29 +52,47 @@ public final class ExceptionUtil {
 		pe.setAdditional(KeyConstants._Hint, hint);
 		return pe;
 	}
-
+	
+	
 	/**
 	 * creates a message for key not found with soundex check for similar key
 	 * @param keys
 	 * @param keyLabel
 	 * @return
 	 */
-	public static String similarKeyMessage(Collection.Key[] _keys,String keySearched, String keyLabel, String keyLabels) {
+	public static String similarKeyMessage(Collection.Key[] _keys,String keySearched, String keyLabel, String keyLabels, boolean listAll) {
+		boolean empty=_keys.length==0;
+		if(listAll && (_keys.length>50 || empty)) {
+			listAll=false;
+		}
 		
-		Arrays.sort(_keys);
-		String list=ListUtil.arrayToList(_keys, ",");
+		String list=null;
+		if(listAll) {
+			Arrays.sort(_keys);
+			list=ListUtil.arrayToList(_keys, ",");
+		}
 		String keySearchedSoundex=StringUtil.soundex(keySearched);
 		
 		for(int i=0;i<_keys.length;i++){
-			if(StringUtil.soundex(_keys[i].getString()).equals(keySearchedSoundex))
-				return keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" ["+_keys[i].getString()+"] available, complete list of all available "+keyLabels+" ["+list+"]";
+			if(StringUtil.soundex(_keys[i].getString()).equals(keySearchedSoundex)) {
+				String appendix;
+				if(listAll) appendix=". Here is a complete list of all available "+keyLabels+": ["+list+"].";
+				else if(empty) appendix=". The structure is empty";
+				else appendix=".";
+				
+				return "The "+keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" with name ["+_keys[i].getString()+"] available"+appendix;
+			}
 		}
-		return keyLabel+" ["+keySearched+"] does not exist, only the followings are available "+keyLabels+" ["+list+"]";
+		String appendix;
+		if(listAll) appendix=", only the following "+keyLabels+" are available: ["+list+"].";
+		else if(empty) appendix=", the structure is empty";
+		else appendix=".";
+		return "The "+keyLabel+" ["+keySearched+"] does not exist"+appendix;
 	}
 	
 
-	public static String similarKeyMessage(Collection coll,String keySearched, String keyLabel, String keyLabels) {
-		return similarKeyMessage(CollectionUtil.keys(coll), keySearched, keyLabel, keyLabels);
+	public static String similarKeyMessage(Collection coll,String keySearched, String keyLabel, String keyLabels, boolean listAll) {
+		return similarKeyMessage(CollectionUtil.keys(coll), keySearched, keyLabel, keyLabels,listAll);
 	}
 
 	public static IOException toIOException(Throwable t) {

@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +32,10 @@ import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
@@ -41,6 +45,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
+import railo.runtime.type.scope.FormImpl;
 
 public final class ReqRspUtil {
 
@@ -214,6 +219,7 @@ public final class ReqRspUtil {
 			return str;
 		}
 	}
+    
     public static String encode(String str,String charset) {
 		try {
 			return URLEncoder.encode(str, charset);
@@ -222,9 +228,16 @@ public final class ReqRspUtil {
 			return str;
 		}
 	}
-    
-    
-    
+
+    public static String encode(String str,Charset charset) {
+		try {
+			return URLEncoder.encode(str, charset);
+		} 
+		catch (UnsupportedEncodingException e) {
+			return str;
+		}
+	}
+
     public static boolean needEncoding(String str, boolean allowPlus){
     	if(StringUtil.isEmpty(str,false)) return false;
     	
@@ -301,7 +314,7 @@ public final class ReqRspUtil {
 
 	public static boolean isThis(HttpServletRequest req, String url) { 
 		try {
-			return isThis(req, HTTPUtil.toURL(url));
+			return isThis(req, HTTPUtil.toURL(url,true));
 		} 
 		catch (Throwable t) {
 			return false;
@@ -385,8 +398,7 @@ public final class ReqRspUtil {
     	
 		MimeType contentType = getContentType(pc);
 		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
-        String strCS = req.getCharacterEncoding();
-        Charset cs = CharsetUtil.toCharset(strCS);
+		Charset cs = getCharacterEncoding(pc,req);
         
         boolean isBinary =!(
         		strContentType == null || 
@@ -513,5 +525,25 @@ public final class ReqRspUtil {
 			right=((HTTPServletRequestWrap)right).getOriginalRequest();
 		if(left==right) return true;
 		return false;
+	}
+
+	public static Charset getCharacterEncoding(PageContext pc, ServletRequest req) {
+		return _getCharacterEncoding(pc,req.getCharacterEncoding());
+	}
+	
+	public static Charset getCharacterEncoding(PageContext pc, ServletResponse rsp) {
+		return _getCharacterEncoding(pc,rsp.getCharacterEncoding());
+	}
+	
+	private static Charset _getCharacterEncoding(PageContext pc, String ce) {
+		if(!StringUtil.isEmpty(ce,true)) {
+			Charset c = CharsetUtil.toCharset(ce,null);
+			if(c!=null) return c;
+		}
+		
+		pc=ThreadLocalPageContext.get(pc);
+		if(pc!=null) return ((PageContextImpl)pc).getWebCharset();
+		Config config = ThreadLocalPageContext.getConfig(pc);
+		return ((ConfigImpl)config)._getWebCharset();
 	}
 }

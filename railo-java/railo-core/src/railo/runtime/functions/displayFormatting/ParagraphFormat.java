@@ -8,7 +8,7 @@ import railo.runtime.ext.function.Function;
 
 public final class ParagraphFormat implements Function {
 	public static String call(PageContext pc , String str) {
-		StringBuffer sb = new StringBuffer(str.length());
+		StringBuilder sb = new StringBuilder(str.length());
 		char[] chars=str.toCharArray();
 		boolean flag = false;
 

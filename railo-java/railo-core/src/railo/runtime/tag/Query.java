@@ -3,11 +3,15 @@ package railo.runtime.tag;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
+import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.cache.tag.CacheHandler;
+import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.request.CacheEntry;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
@@ -80,8 +84,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private int timeout=-1;
 
 	/** This is the age of which the query data can be */
-	private TimeSpan cachedWithin;
-
+	private Object cachedWithin;
+	
 	/** Specifies the maximum number of rows to fetch at a time from the server. The range is 1, 
 	** 		default to 100. This parameter applies to ORACLE native database drivers and to ODBC drivers. 
 	** 		Certain ODBC drivers may dynamically reduce the block factor at runtime. */
@@ -104,7 +108,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private String username;
 
 	/**  */
-	private DateTime cachedafter;
+	private DateTime cachedAfter;
 
 	/** The name query. Must begin with a letter and may consist of letters, numbers, and the underscore 
 	** 		character, spaces are not allowed. The query name is used later in the page to reference the query's 
@@ -140,7 +144,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		timeout=-1;
 		clearCache=false;
 		cachedWithin=null;
-		cachedafter=null;
+		cachedAfter=null;
 		//cachename="";
 		blockfactor=-1;
 		dbtype=null;
@@ -250,7 +254,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	**/
 	public void setCachedafter(DateTime cachedafter)	{
 		//railo.print.ln("cachedafter:"+cachedafter);
-		this.cachedafter=cachedafter;
+		this.cachedAfter=cachedafter;
 	}
 
 	/** set the value cachename
@@ -270,6 +274,21 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(cachedwithin.getMillis()>0)
 			this.cachedWithin=cachedwithin;
 		else clearCache=true;
+	}
+	
+	public void setCachedwithin(Object cachedwithin) throws PageException	{
+		if(cachedwithin instanceof String) {
+			String str=((String)cachedwithin).trim();
+			if("request".equalsIgnoreCase(str)) {
+				this.cachedWithin="request";
+				return;
+			}
+			if("smart".equalsIgnoreCase(str)) {
+				this.cachedWithin="smart";
+				return;
+			}
+		}
+		setCachedwithin(Caster.toTimespan(cachedwithin));
 	}
 	
 	public void setLazy(boolean lazy)	{
@@ -457,15 +476,26 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		railo.runtime.type.Query query=null;
 		long exe=0;
-		boolean hasCached=cachedWithin!=null || cachedafter!=null;
+		boolean hasCached=cachedWithin!=null || cachedAfter!=null;
 		
 		
 		if(clearCache) {
 			hasCached=false;
-			pageContext.getQueryCache().remove(pageContext,sql,datasource!=null?datasource.getName():null,username,password);
+			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
+			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+			ch.remove(pageContext, id);
+			//pageContext.getQueryCache().remove(pageContext,sql,datasource!=null?datasource.getName():null,username,password);
 		}
 		else if(hasCached) {
-			query=pageContext.getQueryCache().getQuery(pageContext,sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
+			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
+			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
+			Object obj=ch.get(pageContext, id);
+			if(obj instanceof CacheEntry) {
+				CacheEntry ce = (CacheEntry) obj;
+				if(ce.isCachedAfter(cachedAfter))
+					query= ce.query;
+			}
+			//query=pageContext.getQueryCache().getQuery(pageContext,sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
 		}
 		
 		
@@ -507,8 +537,12 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			if(cachedWithin!=null) {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
-					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
-	                pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
+				String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
+				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
+				ch.set(pageContext, id,cachedWithin,new CacheEntry(query));
+				
+				//cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
+	            //pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
                 
                 
 			}
@@ -605,6 +639,12 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private Object executeORM(SQL sql, int returnType, Struct ormoptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pageContext);
 		
+		DataSource ds;
+		String dsn = Caster.toString(ormoptions.get(KeyConstants._datasource,null),null);
+		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pageContext);
+		else ds=((PageContextImpl)pageContext).getDataSource(dsn);
+		
+		
 		// params
 		SQLItem[] _items = sql.getItems();
 		Array params=new ArrayImpl();
@@ -620,7 +660,7 @@ offset: Specifies the start index of the resultset from where it has to start th
 cacheable: Whether the result of this query is to be cached in the secondary cache. Default is false.
 cachename: Name of the cache in secondary cache.
 		 */
-		Object res = session.executeQuery(pageContext,sql.getSQLString(),params,unique,ormoptions);
+		Object res = session.executeQuery(pageContext,ds,sql.getSQLString(),params,unique,ormoptions);
 		if(returnType==RETURN_TYPE_ARRAY_OF_ENTITY) return res;
 		return session.toQuery(pageContext, res, null);
 		
@@ -628,12 +668,18 @@ cachename: Name of the cache in secondary cache.
 	
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
+		DataSource ds;
+		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
+		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pc);
+		else ds=((PageContextImpl)pc).getDataSource(dsn);
+		
+		
 		if(Decision.isCastableToArray(params))
-			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))
-			return session.executeQuery(pc,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
 		else
-			return session.executeQuery(pc,hql,(Array)params,unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,(Array)params,unique,queryOptions);
 	}
 	
 
@@ -651,7 +697,7 @@ cachename: Name of the cache in secondary cache.
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		
 		try {
-			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
+			if(lazy && !createUpdateData && cachedWithin==null && cachedAfter==null && result==null)
 				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),tz);
 			
 			

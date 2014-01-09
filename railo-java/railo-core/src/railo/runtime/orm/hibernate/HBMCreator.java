@@ -63,7 +63,9 @@ public class HBMCreator {
 		
 		StringBuilder comment=new StringBuilder();
 		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
-		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(HibernateUtil.getCompileTime(pc,cfc.getPageSource()))).append("\n");
+		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(HibernateUtil.getCompileTime(pc,cfc.getPageSource())));
+		comment.append("\ndatasource:").append(dc.getDatasource().getName());
+		comment.append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
 		
@@ -804,22 +806,6 @@ public class HBMCreator {
     	}
 		return defaultValue;
 	}
-	
-	/*private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine) throws PageException {
-		if(columnsInfo!=null) {
-	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(columnName,null);
-			if(info==null) {
-				String msg="table ["+tableName+"] has no column with name ["+columnName+"]";
-				if(columnsInfo!=null)
-					msg+=", column names are ["+List.arrayToList(columnsInfo.keys(), ", ")+"]";
-				ORMUtil.printError(msg, engine);
-				
-				//throw new ORMException(msg);
-			}
-			return info;
-    	}
-		return null;
-	}*/
 
 	private static String createXMLMappingGenerator(Element id,Component cfc,Property prop,StringBuilder foreignCFC, SessionFactoryData data) throws PageException {
 		Struct meta = prop.getDynamicAttributes();

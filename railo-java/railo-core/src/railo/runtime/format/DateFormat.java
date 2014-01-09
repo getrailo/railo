@@ -38,8 +38,11 @@ public final class DateFormat extends BaseFormat implements Format {
 		return format(date,mask,null);
 	}
 	public String format(Date date,String mask, TimeZone tz) {
+		return format(date.getTime(), mask, tz);
+	}
+	public String format(long time,String mask, TimeZone tz) {
 		Calendar calendar = JREDateTimeUtil.getThreadCalendar(getLocale(),tz);
-		calendar.setTimeInMillis(date.getTime());
+		calendar.setTimeInMillis(time);
 
 		String lcMask=StringUtil.toLowerCase(mask);
 		if(lcMask.equals("short"))			return getAsString(calendar,java.text.DateFormat.SHORT,tz);
@@ -51,7 +54,7 @@ public final class DateFormat extends BaseFormat implements Format {
 		int pos=0;
 		if(len==0) return "";
 		
-		StringBuffer formated=new StringBuffer();
+		StringBuilder formated=new StringBuilder();
 		
 		
 		
