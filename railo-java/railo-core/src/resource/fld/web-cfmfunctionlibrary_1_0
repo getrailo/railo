@@ -4477,8 +4477,7 @@ EntitySave(entity, [forceinsert])</description>
 	<function>
 		<name>ContractPath</name>
 		<class>railo.runtime.functions.system.ContractPath</class>
-		<description>Does the opposite of the function expandPath(), tries to match given absolute path, to the mappings in the enviroment, when no mapping match, railo creates a relatie path from the current position,</description>
-		<argument>
+			<description>Does the opposite of the function expandPath(). Tries to match given absolute path to the mappings in the enviroment.  When no mappings match, railo creates a relative path from the current position.</description>		<argument>
 			<name>path</name>
 			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
