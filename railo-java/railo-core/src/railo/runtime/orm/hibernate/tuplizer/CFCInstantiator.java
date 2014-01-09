@@ -55,7 +55,7 @@ public class CFCInstantiator implements Instantiator {
 			HibernateORMSession session=HibernateUtil.getORMSession(pc,true);
 			HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 			Component c = engine.create(pc, session, entityName, true);
-			CommonUtil.setEntity(c,true);
+			c.setEntity(true);
 			return c;//new CFCProxy(c);
 		} 
 		catch (PageException pe) {

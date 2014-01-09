@@ -1,5 +1,8 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import java.nio.charset.Charset;
+
+import railo.commons.io.CharsetUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
@@ -33,14 +36,16 @@ public final class ProcessingDirective extends EvaluatorSupport {
     	}
 
     	// page encoding
-    	String encoding=null;
+    	Charset cs=null;
     	if(tag.containsAttribute("pageencoding")) {
-            encoding=ASMUtil.getAttributeString(tag, "pageencoding",null);
-            if(encoding==null)
+    		String str=ASMUtil.getAttributeString(tag, "pageencoding",null);
+            if(str==null)
             	throw new TemplateException(data.cfml,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
             
-            if(encoding.equalsIgnoreCase(data.cfml.getCharset()) || "UTF-8".equalsIgnoreCase(data.cfml.getCharset())) {
-	        	encoding=null;
+            cs = CharsetUtil.toCharset(str);
+            
+            if(cs.equals(data.cfml.getCharset()) || CharsetUtil.UTF8.equals(data.cfml.getCharset())) {
+	        	cs=null;
 	        }
         }
 
@@ -56,11 +61,11 @@ public final class ProcessingDirective extends EvaluatorSupport {
         }
     	
     	
-    	if(encoding!=null || exeLog!=null || dotNotationUpperCase!=null){
-    		if(encoding==null)	encoding=data.cfml.getCharset();
+    	if(cs!=null || exeLog!=null || dotNotationUpperCase!=null){
+    		if(cs==null)	cs=data.cfml.getCharset();
     		if(exeLog==null)exeLog=data.cfml.getWriteLog()?Boolean.TRUE:Boolean.FALSE;
     		if(dotNotationUpperCase==null)dotNotationUpperCase=data.settings.dotNotationUpper;
-	    	throw new ProcessingDirectiveException(data.cfml,encoding,dotNotationUpperCase,exeLog);
+	    	throw new ProcessingDirectiveException(data.cfml,cs,dotNotationUpperCase,exeLog);
     	}
     	
     	

@@ -1,24 +1,26 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import java.nio.charset.Charset;
+
 import railo.runtime.exp.TemplateException;
 import railo.transformer.util.CFMLString;
 
 public final class ProcessingDirectiveException extends TemplateException {
 
-	private String charset;
+	private Charset charset;
 	private Boolean writeLog;
 	private Boolean dotNotationUpperCase;
 
-	public ProcessingDirectiveException(CFMLString cfml, String charset,Boolean dotNotationUpperCase, Boolean writeLog) {
+	public ProcessingDirectiveException(CFMLString cfml, Charset charset,Boolean dotNotationUpperCase, Boolean writeLog) {
 		super(cfml, createMessage(cfml,charset,writeLog));
 		this.charset=charset;
 		this.writeLog=writeLog;
 		this.dotNotationUpperCase=dotNotationUpperCase;
 	}
 
-	private static String createMessage(CFMLString cfml, String charset,boolean writeLog) {
+	private static String createMessage(CFMLString cfml, Charset charset,boolean writeLog) {
 		StringBuffer msg=new StringBuffer();
-		if(!(cfml.getCharset()+"").equalsIgnoreCase(charset))
+		if(!cfml.getCharset().equals(charset))
 			msg.append("change charset from ["+cfml.getCharset()+"] to ["+charset+"].");
 		
 		if(cfml.getWriteLog()!=writeLog)
@@ -27,7 +29,7 @@ public final class ProcessingDirectiveException extends TemplateException {
 		return msg.toString();
 	}
 
-	public String getCharset() {
+	public Charset getCharset() {
 		return charset;
 	}
 

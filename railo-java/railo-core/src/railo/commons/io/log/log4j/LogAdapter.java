@@ -19,9 +19,16 @@ public class LogAdapter implements Log {
 		
 	}
 
+	@Override
 	public void log(int level, String application, String message, Throwable t) {
 		if(StringUtil.isEmpty(message))logger.log(Log4jUtil.toLevel(level), application,t);
 		else logger.log(Log4jUtil.toLevel(level), application+"->"+message,t);
+	}
+
+
+	@Override
+	public void log(int level, String application, Throwable t) {
+		logger.log(Log4jUtil.toLevel(level), application,t);
 	}
 
 	@Override

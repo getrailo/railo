@@ -64,7 +64,7 @@ public final class Hash implements Function {
     	
     	
 		
-    	if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset();
+    	if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset().name();
 		byte[] data = null;
 		
 		try {			

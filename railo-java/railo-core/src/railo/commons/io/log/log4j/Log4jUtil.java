@@ -130,7 +130,7 @@ public class Log4jUtil {
 				// charset
 				Charset charset = CharsetUtil.toCharset(Caster.toString(appenderArgs.get("charset"),null),null);
 				if(charset==null){
-					charset=((ConfigImpl)config)._getResourceCharset();
+					charset=((ConfigImpl)config).getResourceCharset();
 					appenderArgs.put("charset",charset.name());
 				}
 				
@@ -328,7 +328,7 @@ public class Log4jUtil {
 		case Log.LEVEL_WARN: return Level.WARN;
 		case Log.LEVEL_DEBUG: return Level.DEBUG;
 		case Log.LEVEL_INFO: return Level.INFO;
-		case LogUtil.LEVEL_TRACE: return Level.TRACE;
+		case Log.LEVEL_TRACE: return Level.TRACE;
 		}
 		return Level.INFO;
 	}
@@ -339,7 +339,7 @@ public class Log4jUtil {
 		if(Level.WARN.equals(level)) return Log.LEVEL_WARN;
 		if(Level.DEBUG.equals(level)) return Log.LEVEL_DEBUG;
 		if(Level.INFO.equals(level)) return Log.LEVEL_INFO;
-		if(Level.TRACE.equals(level)) return LogUtil.LEVEL_TRACE;
+		if(Level.TRACE.equals(level)) return Log.LEVEL_TRACE;
 		return Log.LEVEL_INFO;
 	}
 	

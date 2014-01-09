@@ -1,6 +1,7 @@
 package railo.transformer.cfml.tag;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -129,7 +130,7 @@ public final class CFMLTransformer {
 		CFMLString cfml;
 		
 		boolean writeLog=config.getExecutionLogEnabled();
-		String charset=config.getTemplateCharset();
+		Charset charset=config.getTemplateCharset();
 		boolean dotUpper = ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
 		
 		

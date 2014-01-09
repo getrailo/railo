@@ -30,7 +30,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -46,7 +45,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
-import railo.runtime.orm.hibernate.tuplizer.proxy.ComponentProProxy;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -577,7 +575,7 @@ public class CommonUtil {
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		return ComponentProProxy.getProperties(c, onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
+		return c.getProperties( onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
 	}
 
 	public static void write(Resource res, String string, Charset cs, boolean append) throws IOException {
@@ -618,9 +616,6 @@ public class CommonUtil {
 		return Operator.equalsComplexEL(left, right, false,true);
 	}
 
-	public static void setEntity(Component c, boolean entity) { 
-		ComponentProProxy.setEntity(c,entity);
-	}
 
 	public static PageContext pc() {
 		//return CFMLEngineFactory.getInstance().getThreadPageContext();
@@ -630,14 +625,6 @@ public class CommonUtil {
 	public static Config config() { 
 		//return CFMLEngineFactory.getInstance().getThreadPageContext().getConfig();
 		return ThreadLocalPageContext.getConfig();
-	}
-
-	public static boolean isPersistent(Component c) {
-		return ComponentProProxy.isPersistent(c);
-	}
-
-	public static Object getMetaStructItem(Component c, Key name) {
-		return ComponentProProxy.getMetaStructItem(c,name);
 	}
 	
 	public static void closeEL(OutputStream os) {

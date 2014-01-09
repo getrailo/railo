@@ -14,7 +14,7 @@ public interface CFXTagPool {
     /**
      * @return Returns the classes.
      */
-    public abstract Map getClasses();
+    public abstract Map<String,CFXTagClass> getClasses();
 
     /**
      * return custom tag that match the name

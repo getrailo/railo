@@ -1,8 +1,14 @@
 package railo.runtime;
 
 
+import java.util.Iterator;
+import java.util.Set;
+
 import railo.commons.lang.types.RefBoolean;
+import railo.runtime.component.Member;
 import railo.runtime.component.Property;
+import railo.runtime.dump.DumpData;
+import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Objects;
@@ -101,6 +107,20 @@ public interface Component extends Struct,Objects,CFObject {
      */
     public abstract boolean isValidAccess(int access);
     
+    /**
+     * is a persistent component (orm)
+     * @return
+     */
+    public boolean isPersistent();
+    
+    
+    /**
+     * has accessors set
+     * @return
+     */
+    public boolean isAccessors();
+	
+    
 
     /**
      * returns Meta Data to the Component
@@ -108,7 +128,10 @@ public interface Component extends Struct,Objects,CFObject {
      * @return meta data to component
      * @throws PageException
      */
-    public abstract Struct getMetaData(PageContext pc) throws PageException;
+    public Struct getMetaData(PageContext pc) throws PageException;
+
+    public Object getMetaStructItem(Collection.Key name);
+    
     
     /**
      * call a method of the component with no named arguments
@@ -144,7 +167,7 @@ public interface Component extends Struct,Objects,CFObject {
 	 * @return
 	 */
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly);
-
+	
 
 	public void setProperty(Property property) throws PageException;
 	
@@ -163,7 +186,10 @@ public interface Component extends Struct,Objects,CFObject {
 	
 	public String getWSDLFile();
 	
-
+	public void setEntity(boolean entity);
+	public boolean isEntity();
+	public Component getBaseComponent();
+	
 	
 
     public void registerUDF(String key, UDF udf);
@@ -173,4 +199,26 @@ public interface Component extends Struct,Objects,CFObject {
     public void registerUDF(String key, UDFProperties props);
     
     public void registerUDF(Collection.Key key, UDFProperties props);
+    
+    
+
+	// access
+    Set<Key> keySet(int access);
+    Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException;
+	Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException;
+	int size(int access);
+	Collection.Key[] keys(int access);
+
+	Iterator<Collection.Key> keyIterator(int access);
+	Iterator<String> keysAsStringIterator(int access);
+	
+
+	Iterator<Entry<Key, Object>> entryIterator(int access);
+	Iterator<Object> valueIterator(int access);
+	
+	Object get(int access, Collection.Key key) throws PageException;
+	Object get(int access, Collection.Key key, Object defaultValue);
+	DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access);
+	boolean contains(int access,Key name);
+	Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess);
 }

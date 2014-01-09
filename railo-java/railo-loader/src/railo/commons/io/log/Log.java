@@ -25,6 +25,8 @@ public interface Log {
      * Field <code>LEVEL_FATAL</code>
      */
     public static final int LEVEL_FATAL=4;
+    
+    public static final int LEVEL_TRACE=5;
 
     /**
      * log one line
@@ -34,8 +36,9 @@ public interface Log {
      */
     public void log(int level, String application, String message);
 
-    // FUTURE public void log(int level, String application, String message,Throwable t);
-    // FUTURE public void log(int level, String application,Throwable t);
+    public void log(int level, String application, String message,Throwable t);
+    
+    public void log(int level, String application,Throwable t);
     
     /**
      * log level info

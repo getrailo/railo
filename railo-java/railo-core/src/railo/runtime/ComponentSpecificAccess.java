@@ -20,14 +20,13 @@ import railo.runtime.type.UDFProperties;
 import railo.runtime.type.Collection.Key;
 
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentSpecificAccess extends StructSupport implements ComponentPro, Objects {
+public final class ComponentSpecificAccess extends StructSupport implements Component, Objects {
    
     private int access;
-    private ComponentPro component;
+    private Component component;
 
     /**
      * constructor of the class
@@ -37,7 +36,7 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
      */
     public ComponentSpecificAccess(int access, Component component) {
     	this.access=access;
-        this.component=ComponentProUtil.toComponentPro(component);
+        this.component=component;
     }
     
     public static ComponentSpecificAccess  toComponentSpecificAccess(int access, Component component) {
@@ -296,7 +295,7 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
     
     @Override
     public Collection duplicate(boolean deepCopy) {
-    	return new ComponentSpecificAccess(access,(ComponentPro)component.duplicate(deepCopy));
+    	return new ComponentSpecificAccess(access,(Component)component.duplicate(deepCopy));
     }
 
     /*public Object set(PageContext pc, String propertyName, Object value) throws PageException {
@@ -337,7 +336,7 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
 
 	@Override
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return ComponentProUtil.getProperties(component, onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+		return component.getProperties( onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 
 	@Override
@@ -483,5 +482,10 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
 	@Override
 	public boolean contains(int access, Key name) {
 		return component.contains(access, name);
+	}
+
+	@Override
+	public Class getJavaAccessClass(PageContext pc, RefBoolean isNew, boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
+		return component.getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
 	}
 }

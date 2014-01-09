@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.net.HTTPUtil;
 import railo.transformer.util.CFMLString;
 
@@ -40,7 +41,7 @@ public final class HTMLUtil {
 	public List getURLS(String html, URL url) {
 		
 	    ArrayList urls=new ArrayList();
-		CFMLString cfml=new CFMLString(html,"UTF-8");
+		CFMLString cfml=new CFMLString(html,CharsetUtil.UTF8);
 		while(!cfml.isAfterLast()) {
 			if(cfml.forwardIfCurrent('<')) {
 				for(int i=0;i<tags.length;i++) {

@@ -46,7 +46,6 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -156,7 +155,7 @@ public final class XMLConverter extends ConverterSupport {
 		StringBuilder sb=new StringBuilder();
 		Component ca;
 		component=new ComponentSpecificAccess(Component.ACCESS_PRIVATE, ca=component);
-		boolean isPeristent=ComponentProUtil.isPersistent(ca);
+		boolean isPeristent=ca.isPersistent();
 
         deep++;
         Object member;

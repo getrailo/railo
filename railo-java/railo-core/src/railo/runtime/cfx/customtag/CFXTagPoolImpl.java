@@ -30,8 +30,8 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 	}
 
     @Override
-    public Map<String,CFXTagClass> getClasses() {// FUTURE add generic type to interface
-        return classes;
+    public Map<String,CFXTagClass> getClasses() {
+    	return classes;
     }
     
 	@Override

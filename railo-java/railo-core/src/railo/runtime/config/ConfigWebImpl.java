@@ -156,12 +156,13 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     	return configServer;
     }
     
-    // FUTURE add to public interface
+    @Override
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
     	configServer.checkAccess(key,timeNonce);
     	return configServer;
     }
     
+    @Override
     public String getServerId() {
         return configServer.getId();
     }

@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import railo.runtime.gateway.Gateway;
-import railo.runtime.gateway.GatewayEnginePro;
-import railo.runtime.gateway.GatewayPro;
+import railo.runtime.gateway.GatewayEngine;
 
-public class GatewayProxy implements GatewayPro {
+public class GatewayProxy implements Gateway {
 	
 	private final Gateway gateway;
 
@@ -16,8 +15,8 @@ public class GatewayProxy implements GatewayPro {
 	}
 	
 	@Override
-	public void init(GatewayEnginePro engine, String id, String cfcPath, Map config) throws IOException {
-		gateway.init(GatewayProFactory.toGatewayEngine(engine), id, cfcPath, config);
+	public void init(GatewayEngine engine, String id, String cfcPath, Map config) throws IOException {
+		gateway.init(engine, id, cfcPath, config);
 	}
 
 

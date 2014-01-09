@@ -20,9 +20,9 @@ import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 
-public class SocketGateway implements GatewayPro {
+public class SocketGateway implements Gateway {
 
-	private GatewayEnginePro engine;
+	private GatewayEngine engine;
 	private int port;
 	private String welcomeMessage="Welcome to the Railo Socket Gateway";
     
@@ -37,7 +37,7 @@ public class SocketGateway implements GatewayPro {
 
 
 	@Override
-	public void init(GatewayEnginePro engine, String id, String cfcPath, Map config)throws GatewayException {
+	public void init(GatewayEngine engine, String id, String cfcPath, Map config)throws GatewayException {
 		this.engine=engine;
 		cfmlEngine=CFMLEngineFactory.getInstance();
 		caster=cfmlEngine.getCastUtil();
@@ -265,11 +265,11 @@ public class SocketGateway implements GatewayPro {
 
 
 	public void info(String msg) {
-		engine.log(this,GatewayEnginePro.LOGLEVEL_INFO,msg);
+		engine.log(this,GatewayEngine.LOGLEVEL_INFO,msg);
 	}
 	
 	public void error(String msg) {
-		engine.log(this,GatewayEnginePro.LOGLEVEL_ERROR,msg);
+		engine.log(this,GatewayEngine.LOGLEVEL_ERROR,msg);
 	}
 	    
 

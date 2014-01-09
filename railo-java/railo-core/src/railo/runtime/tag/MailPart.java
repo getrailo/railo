@@ -1,5 +1,7 @@
 package railo.runtime.tag;
 
+import java.nio.charset.Charset;
+
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.runtime.exp.ApplicationException;
@@ -35,7 +37,7 @@ public final class MailPart extends BodyTagImpl {
     /**
      * @param charset The charset to set.
      */
-    public void setCharset(String charset) {
+    public void setCharset(Charset charset) {
         part.setCharset(charset);
     }
     

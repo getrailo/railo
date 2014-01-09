@@ -103,7 +103,7 @@ public final class Trace extends BodyTagImpl {
 		else if("debug".equals(strType)) 				type=Log.LEVEL_DEBUG;
 		else if("debugging".equals(strType)) 			type=Log.LEVEL_DEBUG;
 		else if("debuging".equals(strType)) 			type=Log.LEVEL_DEBUG;
-		else if("trace".equals(strType)) 			type=LogUtil.LEVEL_TRACE;
+		else if("trace".equals(strType)) 			type=Log.LEVEL_TRACE;
 		else throw new ApplicationException("invalid value ["+strType+"] for attribute [type], valid values are [Debug, Information, Warning, Error, Fatal Information]");
 	}
 

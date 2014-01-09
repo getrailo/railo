@@ -10,7 +10,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
-import railo.runtime.gateway.proxy.GatewayProFactory;
+import railo.runtime.gateway.proxy.GatewayFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
@@ -23,12 +23,12 @@ public class GatewayEntryImpl implements GatewayEntry {
 	private boolean readOnly;
 	private String listenerCfcPath;
 	private int startupMode;
-	private GatewayPro gateway;
+	private Gateway gateway;
 	private String cfcPath;
 	private String className;
-	private GatewayEnginePro engine;
+	private GatewayEngine engine;
 
-	public GatewayEntryImpl(GatewayEnginePro engine,String id, String className, String cfcPath, String listenerCfcPath, String startupMode,Struct custom, boolean readOnly) {
+	public GatewayEntryImpl(GatewayEngine engine,String id, String className, String cfcPath, String listenerCfcPath, String startupMode,Struct custom, boolean readOnly) {
 		this.engine=engine;
 		this.id=id;
 		this.listenerCfcPath=listenerCfcPath;
@@ -53,7 +53,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 			if(!StringUtil.isEmpty(className)){
 				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
 				
-				gateway=GatewayProFactory.toGatewayPro(ClassUtil.loadInstance(clazz));
+				gateway=GatewayFactory.toGateway(ClassUtil.loadInstance(clazz));
 			}
 			else if(!StringUtil.isEmpty(cfcPath)){
 				gateway=new CFCGateway(cfcPath);
@@ -79,7 +79,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	}
 	
 	@Override
-	public GatewayPro getGateway() {
+	public Gateway getGateway() {
 		return gateway;
 	}
 	

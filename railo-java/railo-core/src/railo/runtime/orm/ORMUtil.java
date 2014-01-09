@@ -17,7 +17,6 @@ import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
@@ -27,7 +26,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
@@ -230,7 +228,7 @@ public class ORMUtil {
 	}*/
 
 	private static Property[] getProperties(Component cfc) {
-		return ComponentProUtil.getProperties(cfc, true,true,false,false);
+		return cfc.getProperties(true,true,false,false);
 	}
 	
 	public static boolean isRelated(Property prop) {
@@ -279,7 +277,7 @@ public class ORMUtil {
 	
 	public static DataSource getDataSource(PageContext pc) throws PageException{
 		pc=ThreadLocalPageContext.get(pc);
-		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
+		Object o=pc.getApplicationContext().getORMDataSource();
 		
 		if(StringUtil.isEmpty(o))
 			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
@@ -288,7 +286,7 @@ public class ORMUtil {
 	
 	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
 		pc=ThreadLocalPageContext.get(pc);
-		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
+		Object o=pc.getApplicationContext().getORMDataSource();
 		if(StringUtil.isEmpty(o))
 			return defaultValue;
 		try {

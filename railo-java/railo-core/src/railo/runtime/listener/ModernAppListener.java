@@ -21,7 +21,6 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.ComponentPage;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -74,7 +73,7 @@ public class ModernAppListener extends AppListenerSupport {
 	
 	
 	//private ComponentImpl app;
-	private Map<String,ComponentPro> apps=new HashMap<String,ComponentPro>();
+	private Map<String,Component> apps=new HashMap<String,Component>();
 	protected int mode=MODE_CURRENT2ROOT;
 	
 	@Override
@@ -92,7 +91,7 @@ public class ModernAppListener extends AppListenerSupport {
 			String callPath=appPS.getComponentName();
 			
 			
-			ComponentPro app = ComponentLoader.loadComponent(pci,null,appPS, callPath, false,false);
+			Component app = ComponentLoader.loadComponent(pci,null,appPS, callPath, false,false);
 			
 			// init
 			initApplicationContext(pci,app);
@@ -231,7 +230,7 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 	
 
-	private PageException handlePageException(PageContextImpl pci, ComponentPro app, PageException pe, PageSource requestedPage, String targetPage, RefBoolean goon) throws PageException {
+	private PageException handlePageException(PageContextImpl pci, Component app, PageException pe, PageSource requestedPage, String targetPage, RefBoolean goon) throws PageException {
 		PageException _pe=pe;
 		if(pe instanceof ModernAppListenerException) {
 			_pe=((ModernAppListenerException) pe).getPageException();
@@ -263,7 +262,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public boolean onApplicationStart(PageContext pc) throws PageException {
-		ComponentPro app = apps.get(pc.getApplicationContext().getName());
+		Component app = apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_APPLICATION_START)) {
 			Object rtn = call(app,pc, ON_APPLICATION_START, ArrayUtil.OBJECT_EMPTY,true);
 			return Caster.toBooleanValue(rtn,true);
@@ -273,7 +272,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public void onApplicationEnd(CFMLFactory factory, String applicationName) throws PageException {
-		ComponentPro app = apps.get(applicationName);
+		Component app = apps.get(applicationName);
 		if(app==null || !app.containsKey(ON_APPLICATION_END)) return;
 		
 		PageContextImpl pc=(PageContextImpl) ThreadLocalPageContext.get();
@@ -291,7 +290,7 @@ public class ModernAppListener extends AppListenerSupport {
 	
 	@Override
 	public void onSessionStart(PageContext pc) throws PageException {
-		ComponentPro app = apps.get(pc.getApplicationContext().getName());
+		Component app = apps.get(pc.getApplicationContext().getName());
 		if(hasOnSessionStart(pc,app)) {
 			call(app,pc, ON_SESSION_START, ArrayUtil.OBJECT_EMPTY,true);
 		}
@@ -299,7 +298,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public void onSessionEnd(CFMLFactory factory, String applicationName, String cfid) throws PageException {
-		ComponentPro app = apps.get(applicationName);
+		Component app = apps.get(applicationName);
 		if(app==null || !app.containsKey(ON_SESSION_END)) return;
 		
 		PageContextImpl pc=null;
@@ -314,7 +313,7 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private PageContextImpl createPageContext(CFMLFactory factory, ComponentPro app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
+	private PageContextImpl createPageContext(CFMLFactory factory, Component app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
 		Resource root = factory.getConfig().getRootDirectory();
 		String path = app.getPageSource().getFullRealpath();
 		
@@ -352,7 +351,7 @@ public class ModernAppListener extends AppListenerSupport {
 	@Override
 	public void onDebug(PageContext pc) throws PageException {
 		if(((PageContextImpl)pc).isGatewayContext() || !pc.getConfig().debug()) return;
-		ComponentPro app = apps.get(pc.getApplicationContext().getName());
+		Component app = apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
 			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)},true);
 			return;
@@ -367,7 +366,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public void onError(PageContext pc, PageException pe) {
-		ComponentPro app =  apps.get(pc.getApplicationContext().getName());
+		Component app =  apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.containsKey(ON_ERROR) && !Abort.isSilentAbort(pe)) {
 			try {
 				String eventName="";
@@ -400,7 +399,7 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private void initApplicationContext(PageContextImpl pc, ComponentPro app) throws PageException {
+	private void initApplicationContext(PageContextImpl pc, Component app) throws PageException {
 		
 		// use existing app context
 		RefBoolean throwsErrorWhileInit=new RefBooleanImpl(false);
@@ -430,7 +429,7 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 
 
-	private static Object get(ComponentPro app, Key name,String defaultValue) {
+	private static Object get(Component app, Key name,String defaultValue) {
 		Member mem = app.getMember(Component.ACCESS_PRIVATE, name, true, false);
 		if(mem==null) return defaultValue;
 		return mem.getValue();
@@ -456,7 +455,7 @@ public class ModernAppListener extends AppListenerSupport {
 	public boolean hasOnSessionStart(PageContext pc) {
 		return hasOnSessionStart(pc, apps.get(pc.getApplicationContext().getName()));
 	}
-	private boolean hasOnSessionStart(PageContext pc,ComponentPro app) {
+	private boolean hasOnSessionStart(PageContext pc,Component app) {
 		return app!=null && app.contains(pc,ON_SESSION_START);
 	}
 }

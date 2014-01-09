@@ -73,7 +73,6 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;

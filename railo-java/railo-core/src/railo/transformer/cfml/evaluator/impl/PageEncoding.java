@@ -1,5 +1,8 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import java.nio.charset.Charset;
+
+import railo.commons.io.CharsetUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.statement.tag.Tag;
@@ -15,18 +18,19 @@ public final class PageEncoding extends EvaluatorSupport {
     public TagLib execute(Config config, Tag tag, TagLibTag libTag, FunctionLib[] flibs, Data data) throws TemplateException {
     	
     	// encoding
-    	String encoding=ASMUtil.getAttributeString(tag, "charset",null);
-        if(encoding==null)
+    	String str=ASMUtil.getAttributeString(tag, "charset",null);
+        if(str==null)
         	throw new TemplateException(data.cfml,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
         
-        if(encoding.equalsIgnoreCase(data.cfml.getCharset()) || "UTF-8".equalsIgnoreCase(data.cfml.getCharset())) {
-        	encoding=null;
+        Charset cs=CharsetUtil.toCharset(str);
+        if(cs.equals(data.cfml.getCharset()) || CharsetUtil.UTF8.equals(data.cfml.getCharset())) {
+        	cs=null;
         }
         
         // 
     	
-    	if(encoding!=null){
-    		throw new ProcessingDirectiveException(data.cfml,encoding,null,data.cfml.getWriteLog());
+    	if(cs!=null){
+    		throw new ProcessingDirectiveException(data.cfml,cs,null,data.cfml.getWriteLog());
     	}
     	
     	

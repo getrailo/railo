@@ -7,9 +7,6 @@ import railo.commons.lang.ExceptionUtil;
  * Helper class for the logs
  */
 public final class LogUtil {
-	
-	public static final int LEVEL_TRACE=5; // FUTURE add to Log interface, if log interface not get removed
-    
 
 	public static void log(Log log, int level, String logName, Throwable t) { 
 		log(log,level,logName,"",t);

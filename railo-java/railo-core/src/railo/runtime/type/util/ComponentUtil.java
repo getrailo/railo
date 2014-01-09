@@ -24,7 +24,6 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
 import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
@@ -129,7 +128,7 @@ public final class ComponentUtil {
     	java.util.List<LitString> _keys=new ArrayList<LitString>();
     
         // remote methods
-        Collection.Key[] keys = ComponentProUtil.keys(component,Component.ACCESS_REMOTE);
+        Collection.Key[] keys = component.keys(Component.ACCESS_REMOTE);
         int max;
         for(int i=0;i<keys.length;i++){
         	max=-1;
@@ -418,7 +417,7 @@ public final class ComponentUtil {
 
 		// create file
 		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(
-				ComponentProUtil.getProperties(component, false, true, false, false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+				component.getProperties(false, true, false, false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(true);
@@ -580,7 +579,7 @@ public final class ComponentUtil {
 		if(member==null) {
 			String strAccess = toStringAccess(access,"");
 			
-			Collection.Key[] other=ComponentProUtil.keys(c,access);
+			Collection.Key[] other=c.keys(access);
 			
 			if(other.length==0)
 				return new ExpressionException(

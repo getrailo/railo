@@ -211,13 +211,13 @@ public abstract class PageExceptionImpl extends PageException {
 				}
 				 
 				if(res.exists())	
-					content=IOUtil.toStringArray(IOUtil.getReader(res,CharsetUtil.toCharset(config.getTemplateCharset())));
+					content=IOUtil.toStringArray(IOUtil.getReader(res,config.getTemplateCharset()));
 				else {
 					if(sources.size()>index)ps = sources.get(index);
 					else ps=null;
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
-							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), CharsetUtil.toCharset(config.getTemplateCharset())));
+							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), config.getTemplateCharset()));
 						template=ps.getDisplayPath();
 					}
 				}	

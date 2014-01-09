@@ -2272,7 +2272,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public long getRequestTimeout() {
 		if(requestTimeout==-1) {
 			if(applicationContext!=null) {
-				return ((ApplicationContextPro)applicationContext).getRequestTimeout().getMillis();
+				return applicationContext.getRequestTimeout().getMillis();
 			}
 			requestTimeout=config.getRequestTimeout().getMillis();
 		}
@@ -2443,7 +2443,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         currentTag.setPageContext(this);
         currentTag.setParent(parentTag);
         if(attrType>=0 && fullname!=null) {
-	        Map<Collection.Key, Object> attrs = ((ApplicationContextPro)applicationContext).getTagAttributeDefaultValues(fullname);
+	        Map<Collection.Key, Object> attrs = applicationContext.getTagAttributeDefaultValues(fullname);
 	        if(attrs!=null) {
 	        	TagUtil.setAttributes(this,currentTag, attrs, attrType);
 	        }
@@ -3138,13 +3138,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public Charset getResourceCharset() {
 		Charset cs = getApplicationContext().getResourceCharset();
 		if(cs!=null) return cs;
-		return config._getResourceCharset();
+		return config.getResourceCharset();
 	}
 
 	public Charset getWebCharset() {
 		Charset cs = getApplicationContext().getWebCharset();
 		if(cs!=null) return cs;
-		return config._getWebCharset();
+		return config.getWebCharset();
 	}
 
 	public short getScopeCascadingType() {
@@ -3154,7 +3154,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	public boolean getTypeChecking() {
-		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		ApplicationContext ac = getApplicationContext();
 		if(ac==null) return config.getTypeChecking();
 		return ac.getTypeChecking();
 	}
@@ -3162,13 +3162,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 
 	public boolean getAllowCompression() {
-		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		ApplicationContext ac = getApplicationContext();
 		if(ac==null) return config.allowCompression();
 		return ac.getAllowCompression();
 	}
 
 	public boolean getSuppressContent() {
-		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
+		ApplicationContext ac = getApplicationContext();
 		if(ac==null) return config.isSuppressContent();
 		return ac.getSuppressContent();
 	}

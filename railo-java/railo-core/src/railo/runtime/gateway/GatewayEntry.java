@@ -20,7 +20,7 @@ public interface GatewayEntry {
 	 */
 	public void createGateway(Config config) throws ClassException,PageException;
 	
-	public GatewayPro getGateway() ;
+	public Gateway getGateway() ;
 
 	
 	/**

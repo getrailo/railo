@@ -54,7 +54,7 @@ public final class Hash40 implements Function {
 		
     	if(StringUtil.isEmpty(algorithm))algorithm="md5";
 		else algorithm=algorithm.trim().toLowerCase();
-		if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset();
+		if(StringUtil.isEmpty(encoding))encoding=config.getWebCharset().name();
 		
 		boolean isDefaultAlgo = numIterations == 1 && ("md5".equals(algorithm) || "cfmx_compat".equals(algorithm));
 		byte[] arrBytes = null;

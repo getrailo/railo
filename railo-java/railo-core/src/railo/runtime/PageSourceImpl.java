@@ -677,7 +677,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
         InputStream is = getSourceAsInputStream();
         if(is==null) return null;
         try {
-        	return IOUtil.toStringArray(IOUtil.getReader(is,CharsetUtil.toCharset(getMapping().getConfig().getTemplateCharset())));
+        	return IOUtil.toStringArray(IOUtil.getReader(is,getMapping().getConfig().getTemplateCharset()));
         }
         finally {
         	IOUtil.closeEL(is);

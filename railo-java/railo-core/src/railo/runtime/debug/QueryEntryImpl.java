@@ -74,7 +74,7 @@ public final class QueryEntryImpl implements QueryEntry {
         return datasource;
     }
 	
-	// FUTURE add to interface
+	@Override
 	public long getStartTime() {
         return startTime;
     }

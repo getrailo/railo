@@ -3,6 +3,7 @@ package railo.runtime.config;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -326,20 +327,22 @@ public interface Config {
     /**
      * @return returns the charset for the response and request
      */
-    public abstract String getWebCharset(); // FUTURE return Charset
+    public abstract Charset getWebCharset();
     /**
      * @return returns the charset used to read cfml files
      */
-    public abstract String getTemplateCharset(); // FUTURE return Charset
+    public abstract Charset getTemplateCharset();
     /**
      * @return returns the charset used to read and write resources
      */
-    public abstract String getResourceCharset(); // FUTURE return Charset
+    public abstract Charset getResourceCharset();
 
     /**
-     * @return returns the default encoding for mail
+     * @return returns the default charset for mail
      */
-    public String getMailDefaultEncoding(); // FUTURE return Charset?
+    public Charset getMailDefaultCharset(); 
+    
+    
     
     /**
      * @return returns update type (auto or manual)
@@ -394,7 +397,9 @@ public interface Config {
      * @return ConfigServer
      * @throws PageException
      */ 
-    public abstract ConfigServer getConfigServer(String password) throws PageException;
+    public ConfigServer getConfigServer(String password) throws PageException;
+    
+    public ConfigServer getConfigServer(String key, long timeNonce) throws PageException;
     
     /**
      * @return Returns the mailLogger.

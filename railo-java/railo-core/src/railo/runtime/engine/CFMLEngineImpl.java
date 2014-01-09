@@ -160,13 +160,13 @@ public final class CFMLEngineImpl implements CFMLEngine {
         }        
     }
     
-    // FUTURE add to public interface
+    @Override
     public ConfigServer getConfigServer(String password) throws PageException {
     	getConfigServerImpl().checkAccess(password);
     	return getConfigServerImpl();
     }
 
-    // FUTURE add to public interface
+    @Override
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
     	configServer.checkAccess(key,timeNonce);
     	return configServer;
@@ -625,7 +625,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return servletConfigs.toArray(new ServletConfig[servletConfigs.size()]);
 	}
 
-	// FUTURE add to interface
+	@Override
 	public long uptime() {
 		return uptime;
 	}

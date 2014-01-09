@@ -2516,7 +2516,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("spoolInterval",Caster.toInteger(config.getMailSpoolInterval()));
         sct.set("maxThreads",Caster.toDouble(maxThreads));
         sct.set("timeout",Caster.toInteger(config.getMailTimeout()));
-		sct.set("defaultencoding", config.getMailDefaultEncoding());
+		sct.set("defaultencoding", config.getMailDefaultCharset().name());
         
     }
     
@@ -4682,10 +4682,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private void doGetCharset() throws PageException {
 		Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("resourceCharset",config.getResourceCharset());
-        sct.set("templateCharset",config.getTemplateCharset());
-        sct.set("webCharset",((PageContextImpl)pageContext).getWebCharset());
-        sct.set("jreCharset",SystemUtil.getCharset());
+        sct.set("resourceCharset",config.getResourceCharset().name());
+        sct.set("templateCharset",config.getTemplateCharset().name());
+        sct.set("webCharset",((PageContextImpl)pageContext).getWebCharset().name());
+        sct.set("jreCharset",SystemUtil.getCharset().name());
 	}
 
     /**

@@ -3,6 +3,7 @@ package railo.runtime.config;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -330,7 +331,7 @@ public class DeployHandler {
 
 	private static Manifest toManifest(Config config,InputStream is, Manifest defaultValue) {
 		try {
-			String cs = config.getResourceCharset();
+			Charset cs = config.getResourceCharset();
 			String str = IOUtil.toString(is,cs);
 			if(StringUtil.isEmpty(str,true)) return defaultValue;
 			str=str.trim()+"\n";

@@ -18,7 +18,6 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
@@ -97,7 +96,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	
 	
-	private ComponentPro component;
+	private Component component;
 	
 	private String name=null;
 	
@@ -191,7 +190,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private short scopeCascading=-1;
 		
-	public ModernApplicationContext(PageContext pc, ComponentPro cfc, RefBoolean throwsErrorWhileInit) {
+	public ModernApplicationContext(PageContext pc, Component cfc, RefBoolean throwsErrorWhileInit) {
 		super(pc.getConfig());
 		ConfigImpl ci = ((ConfigImpl)config);
     	setClientCookies=config.isClientCookies();
@@ -209,8 +208,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.localMode=config.getLocalMode();
         this.locale=config.getLocale();
         this.timeZone=config.getTimeZone();
-        this.webCharset=ci._getWebCharset();
-        this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
+        this.webCharset=config.getWebCharset();
+        this.resourceCharset=config.getResourceCharset();
         this.bufferOutput=ci.getBufferOutput();
         suppressContent=ci.isSuppressContent();
         this.sessionType=config.getSessionType();
@@ -870,7 +869,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 
-	private static Object get(ComponentPro app, Key name,String defaultValue) {
+	private static Object get(Component app, Key name,String defaultValue) {
 		Member mem = app.getMember(Component.ACCESS_PRIVATE, name, true, false);
 		if(mem==null) return defaultValue;
 		return mem.getValue();

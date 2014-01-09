@@ -336,15 +336,7 @@ public class HibernateUtil {
 		return tmp.toArray(new Property[tmp.size()]);
 	}
 
-	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		return c.getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
-	}
-	
 	public static long getCompileTime(PageContext pc, PageSource ps) throws PageException {
 		return ComponentUtil.getCompileTime(pc, ps);
-	}
-	
-	public static Object getMetaStructItem(Component cfc,Collection.Key name) {
-		return CommonUtil.getMetaStructItem(cfc,name);
 	}
 }

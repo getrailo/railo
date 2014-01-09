@@ -1325,7 +1325,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		FunctionLib[] flds = config.getFLDs();
 
 		// charset
-		StringBuilder sb = new StringBuilder(config.getTemplateCharset());
+		StringBuilder sb = new StringBuilder(config.getTemplateCharset().name());
 		sb.append(';');
 
 		// dot notation upper case
@@ -3589,7 +3589,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!StringUtil.isEmpty(strEncoding) && hasAccess)
 			config.setMailDefaultEncoding(strEncoding);
 		else if (hasCS)
-			config.setMailDefaultEncoding(configServer.getMailDefaultEncoding());
+			config.setMailDefaultEncoding(configServer.getMailDefaultCharset());
 
 		// Spool Enable
 		String strSpoolEnable = mail.getAttribute("spool-enable");

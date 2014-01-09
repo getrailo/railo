@@ -115,6 +115,11 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     public ConfigServer getConfigServer(String password) {
         return this;
     }
+    
+    @Override
+    public ConfigServer getConfigServer(String key, long timeNonce) {
+        return this;
+    }
 
     @Override
     public ConfigWeb[] getConfigWebs() {
@@ -359,7 +364,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		return actionMonitorCollector;
 	}
 	
-	public Object getActionMonitor(String name) { // FUTURE return ActionMonitor
+	public Object getActionMonitor(String name) { 
+		// FUTURE return ActionMonitor
 		return actionMonitorCollector.getActionMonitor(name);
 	}
 

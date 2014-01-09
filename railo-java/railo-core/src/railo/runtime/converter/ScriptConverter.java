@@ -38,7 +38,6 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -270,7 +269,7 @@ public final class ScriptConverter extends ConverterSupport {
 	        deep--;
 		}
         {
-        	boolean isPeristent = ComponentProUtil.isPersistent(c);
+        	boolean isPeristent = c.isPersistent();
     		
         	ComponentScope scope = c.getComponentScope();
         	Iterator<Entry<Key, Object>> it = scope.entryIterator();

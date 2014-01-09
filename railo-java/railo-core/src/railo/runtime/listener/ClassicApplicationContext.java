@@ -111,8 +111,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.timeZone=config.getTimeZone();
         this.scopeCascading=config.getScopeCascadingType();
 
-        this.webCharset=((ConfigImpl)config)._getWebCharset();
-        this.resourceCharset=((ConfigImpl)config)._getResourceCharset();
+        this.webCharset=((ConfigImpl)config).getWebCharset();
+        this.resourceCharset=((ConfigImpl)config).getResourceCharset();
         this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         suppressRemoteComponentContent=((ConfigImpl)config).isSuppressContent();
         this.sessionType=config.getSessionType();

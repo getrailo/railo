@@ -45,7 +45,6 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
@@ -252,7 +251,7 @@ public final class JSONConverter extends ConverterSupport {
         	Boolean remotingFetch;
         	Component cfc = (Component)struct;
         	boolean isPeristent=false;
-        	isPeristent=ComponentProUtil.isPersistent(cfc);
+        	isPeristent=cfc.isPersistent();
 			
         	Property[] props = cfc.getProperties(false);
         	ComponentScope scope = cfc.getComponentScope();

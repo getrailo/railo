@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.digest.MD5;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
@@ -92,17 +94,15 @@ public final class SMTPClient implements Serializable  {
 	private int timeout=-1;
 	
 	private String plainText;
-	private String plainTextCharset;
+	private Charset plainTextCharset;
 	
 	private String htmlText;
-	
-
-	private String htmlTextCharset;
+	private Charset htmlTextCharset;
 
 	private Attachment[] attachmentz;
 
 	private String[] host;
-	private String charset="UTF-8";
+	private Charset charset=CharsetUtil.UTF8;
 	private InternetAddress from;
 	private InternetAddress[] tos;
 	private InternetAddress[] bccs;
@@ -156,7 +156,7 @@ public final class SMTPClient implements Serializable  {
 	/**
 	 * @param charset the charset to set
 	 */
-	public void setCharset(String charset) {
+	public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
 
@@ -419,7 +419,7 @@ public final class SMTPClient implements Serializable  {
 	    
 	// Subject and headers
 	    try {
-			msg.setSubject(MailUtil.encode(subject, charset));
+			msg.setSubject(MailUtil.encode(subject, charset.name()));
 		} catch (UnsupportedEncodingException e) {
 			throw new MessagingException("the encoding "+charset+" is not supported");
 		}
@@ -517,15 +517,15 @@ public final class SMTPClient implements Serializable  {
 	    }
 	}
 
-	private void checkAddress(InternetAddress[] ias,String charset) { // DIFF 23
+	private void checkAddress(InternetAddress[] ias,Charset charset) { // DIFF 23
 		for(int i=0;i<ias.length;i++) {
 			checkAddress(ias[i], charset);
 		}
 	}
-	private void checkAddress(InternetAddress ia,String charset) { // DIFF 23
+	private void checkAddress(InternetAddress ia,Charset charset) { // DIFF 23
 		try {
 			if(!StringUtil.isEmpty(ia.getPersonal())) {
-				String personal = MailUtil.encode(ia.getPersonal(), charset);
+				String personal = MailUtil.encode(ia.getPersonal(), charset.name());
 				if(!personal.equals(ia.getPersonal()))
 					ia.setPersonal(personal);
 			}
@@ -544,7 +544,7 @@ public final class SMTPClient implements Serializable  {
 	 * @param plainText
 	 * @param plainTextCharset
 	 */
-	public void setPlainText(String plainText, String plainTextCharset) {
+	public void setPlainText(String plainText, Charset plainTextCharset) {
 		this.plainText=plainText;
 		this.plainTextCharset=plainTextCharset;
 	}
@@ -571,7 +571,7 @@ public final class SMTPClient implements Serializable  {
 	 * @param htmlText
 	 * @param htmlTextCharset
 	 */
-	public void setHTMLText(String htmlText, String htmlTextCharset) {
+	public void setHTMLText(String htmlText, Charset htmlTextCharset) {
 		this.htmlText=htmlText;
 		this.htmlTextCharset=htmlTextCharset;
 	}

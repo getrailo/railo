@@ -201,14 +201,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return ucKey.hashCode();
 	}
 	
-	// FUTURE add to interface
+	@Override
 	public long hash() {
 		return h64;
-	}
-
-	@Override
-	public int getId() {// set to deprecated, use instead hash()
-		return hashCode();
 	}
 
 	@Override

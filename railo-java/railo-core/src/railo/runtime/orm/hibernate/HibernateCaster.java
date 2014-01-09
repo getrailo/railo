@@ -82,7 +82,7 @@ public class HibernateCaster {
 		
 		String name=null;
 		try {
-			name=CommonUtil.toString(HibernateUtil.getMetaStructItem(cfc,CommonUtil.ENTITY_NAME),null);
+			name=CommonUtil.toString(cfc.getMetaStructItem(CommonUtil.ENTITY_NAME),null);
 		} 
 		catch (Throwable t) {
 			try {

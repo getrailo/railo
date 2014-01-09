@@ -3,6 +3,7 @@ package railo.runtime.listener;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import railo.commons.io.res.Resource;
@@ -13,6 +14,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
+import railo.runtime.type.Collection;
+import railo.runtime.type.CustomType;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
@@ -231,4 +235,26 @@ public interface ApplicationContext extends Serializable {
 	
 	public void setScopeCascading(short scopeCascading);
 	public short getScopeCascading();
+	
+	
+
+
+	public boolean getTypeChecking();
+	public void setTypeChecking(boolean typeChecking);
+	
+	Map<Collection.Key, Map<Collection.Key, Object>> getTagAttributeDefaultValues();
+	public Map<Collection.Key, Object> getTagAttributeDefaultValues(String fullName);
+	public void setTagAttributeDefaultValues(Struct sct);
+
+	public TimeSpan getRequestTimeout();
+	public void setRequestTimeout(TimeSpan timeout);
+
+	public CustomType getCustomType(String strType);
+
+	public boolean getAllowCompression();
+	public void setAllowCompression(boolean allowCompression);
+
+	public boolean getSuppressContent();
+	public void setSuppressContent(boolean suppressContent);
+	
 }

@@ -52,5 +52,7 @@ public interface QueryEntry extends Serializable {
      * @return Returns the datasource.
      */
     public abstract String getDatasource();
+    
+    public long getStartTime();
 
 }

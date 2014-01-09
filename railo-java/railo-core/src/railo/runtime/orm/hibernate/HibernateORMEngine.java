@@ -35,7 +35,6 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
@@ -104,7 +103,7 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	private SessionFactoryData getSessionFactoryData(PageContext pc,int initType) throws PageException {
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext appContext = pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
 			throw ExceptionUtil.createException((ORMSession)null,null,"ORM is not enabled","");
 		
@@ -298,7 +297,7 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	private static Object hash(PageContext pc) {
-		ApplicationContextPro appContext=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext appContext= pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
 		//DataSource ds;
 		//if(o instanceof DataSource) ds=(DataSource) o;

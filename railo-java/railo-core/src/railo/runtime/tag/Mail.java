@@ -1,8 +1,11 @@
 package railo.runtime.tag;
 
 
+import java.nio.charset.Charset;
+
 import javax.mail.internet.InternetAddress;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -53,7 +56,7 @@ public final class Mail extends BodyTagImpl {
 	private SMTPClient smtp=new SMTPClient();
 	private railo.runtime.net.mail.MailPart part=null;//new railo.runtime.mail.MailPart("UTF-8");
 
-	private String charset;
+	private Charset charset;
 
 	private int priority;
 
@@ -335,7 +338,7 @@ public final class Mail extends BodyTagImpl {
 	/**
 	 * @param charset The charset to set.
 	 */
-	public void setCharset(String charset) {
+	public void setCharset(Charset charset) {
 		this.charset=charset;
 	}
 
@@ -531,7 +534,7 @@ public final class Mail extends BodyTagImpl {
 		else {
 			if(name.equalsIgnoreCase("bcc"))			setBcc(value);
 			else if(name.equalsIgnoreCase("cc"))		setCc(value);
-			else if(name.equalsIgnoreCase("charset"))	setCharset(value);
+			else if(name.equalsIgnoreCase("charset"))	setCharset(CharsetUtil.toCharset(value,null));
 			else if(name.equalsIgnoreCase("failto"))	setFailto(value);
 			else if(name.equalsIgnoreCase("from"))		setFrom(value);
 			else if(name.equalsIgnoreCase("mailerid"))	setMailerid(value);
@@ -546,7 +549,7 @@ public final class Mail extends BodyTagImpl {
 	}	
 	
 	private railo.runtime.net.mail.MailPart getPart() {
-		if(part==null)part=new railo.runtime.net.mail.MailPart(pageContext.getConfig().getMailDefaultEncoding());
+		if(part==null)part=new railo.runtime.net.mail.MailPart(pageContext.getConfig().getMailDefaultCharset());
 		return part;
 	}
 
@@ -554,8 +557,8 @@ public final class Mail extends BodyTagImpl {
 	/**
 	 * @return the charset
 	 */
-	public String getCharset() {
-		if(charset==null)charset=pageContext.getConfig().getMailDefaultEncoding();
+	public Charset getCharset() {
+		if(charset==null)charset=pageContext.getConfig().getMailDefaultCharset();
 		return charset;
 	}
 }

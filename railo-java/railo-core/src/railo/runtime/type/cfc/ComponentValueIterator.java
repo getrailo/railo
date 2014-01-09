@@ -5,7 +5,6 @@ import java.util.Iterator;
 import railo.runtime.Component;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.ValueIterator;
-import railo.runtime.type.util.ComponentProUtil;
 
 public class ComponentValueIterator extends ValueIterator implements Iterator<Object> {
 
@@ -22,6 +21,6 @@ public class ComponentValueIterator extends ValueIterator implements Iterator<Ob
 	public Object next() {
 		Key key = keys[pos++];
 		if(key==null) return null;
-		return ComponentProUtil.get(cfc,access,key,null);
+		return cfc.get(access,key,null);
 	}
 }

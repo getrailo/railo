@@ -42,7 +42,6 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
@@ -462,7 +461,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 
 	private static TagLibTag getAttributeRequirments(Component cfc, boolean runtime) {
 		Struct meta=null;
-    	Member mem = ComponentProUtil.getMember(cfc,Component.ACCESS_PRIVATE, KeyConstants._metadata,true,false);
+    	Member mem = cfc.getMember(Component.ACCESS_PRIVATE, KeyConstants._metadata,true,false);
     	if(mem!=null)meta = Caster.toStruct(mem.getValue(),null,false);
 		if(meta==null) return null;
     	

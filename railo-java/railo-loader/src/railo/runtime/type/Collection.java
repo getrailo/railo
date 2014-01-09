@@ -188,10 +188,7 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	 */
     	public boolean equalsIgnoreCase(Collection.Key key);
     	
-    	/**
-    	 * @return return id for this key, this key is unique for the system but ignore case of input
-    	 */
-    	public int getId();
+    	public long hash();
     	
     	/**
     	 * Returns the length of this string.

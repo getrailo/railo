@@ -6,16 +6,6 @@ public final class DebugTraceImpl implements DebugTrace {
 
 	private static final long serialVersionUID = -3619310656845433643L;
 
-	// FUTURE move the following types to interface
-    public static final int TYPE_INFO=0;
-    public static final int TYPE_DEBUG=1;
-    public static final int TYPE_WARN=2;
-    public static final int TYPE_ERROR=3;
-    public static final int TYPE_FATAL=4;
-    public static final int TYPE_TRACE=5;
-
-	
-	
 	private int type;
 	private String category;
 	private String text;

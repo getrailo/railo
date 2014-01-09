@@ -12,7 +12,6 @@ import railo.runtime.config.Config;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
@@ -166,7 +165,7 @@ public final class DatabaseException extends PageExceptionImpl {
 		List<String> list=new ArrayList<String>();
 		
 		// application based datasources
-		DataSource[] datasources = ((ApplicationContextPro)pc.getApplicationContext()).getDataSources();
+		DataSource[] datasources = pc.getApplicationContext().getDataSources();
 		if(datasources!=null)for(int i=0;i<datasources.length;i++){
 			list.add(datasources[i].getName());
 		}
@@ -182,10 +181,5 @@ public final class DatabaseException extends PageExceptionImpl {
 		de.setDetail(ExceptionUtil.createSoundexDetail(datasource,list.iterator(),"datasource names"));
 		de.setAdditional(KeyConstants._Datasource,datasource);
 		return de;
-	}
-
-	private static ApplicationContextPro getApplicationContext() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

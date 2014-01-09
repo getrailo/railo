@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import railo.runtime.Component;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.util.ComponentProUtil;
 
 public class ComponentEntryIterator extends EntryIterator implements Iterator<Entry<Key, Object>> {
 
@@ -39,7 +38,7 @@ public class ComponentEntryIterator extends EntryIterator implements Iterator<En
 
 		@Override
 		public Object getValue() {
-			return ComponentProUtil.get(cfc,access,key,null);
+			return cfc.get(access,key,null);
 		}
 
 		@Override

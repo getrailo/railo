@@ -35,7 +35,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
 
-public class GatewayEngineImpl implements GatewayEnginePro {
+public class GatewayEngineImpl implements GatewayEngine {
 
 	private static final Object OBJ = new Object();
 
@@ -62,7 +62,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	public void addEntry(Config config,GatewayEntry ge) throws ClassException, PageException,IOException {
 		String id=ge.getId().toLowerCase().trim();
 		GatewayEntry existing=entries.get(id);
-		GatewayPro g=null;
+		Gateway g=null;
 		
 		// does not exist
 		if(existing==null) {
@@ -71,7 +71,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		// exist but changed
 		else if(!existing.equals(ge)){
 			g=existing.getGateway();
-			if(g.getState()==GatewayPro.RUNNING) g.doStop();
+			if(g.getState()==Gateway.RUNNING) g.doStop();
 			entries.put(id,load(config,ge));
 		}
 		// not changed
@@ -93,13 +93,13 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	public void remove(GatewayEntry ge) {
 		String id=ge.getId().toLowerCase().trim();
 		GatewayEntry existing=entries.remove(id);
-		GatewayPro g=null;
+		Gateway g=null;
 		
 		// does not exist
 		if(existing!=null) {
 			g=existing.getGateway();
 			try{
-				if(g.getState()==GatewayPro.RUNNING) g.doStop();
+				if(g.getState()==Gateway.RUNNING) g.doStop();
 			}
 			catch(Throwable t){}
 		}
@@ -133,8 +133,8 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	 * @throws PageException
 	 */
 	public String sendMessage(String gatewayId, Struct data) throws PageException,IOException {
-		GatewayPro g = getGateway(gatewayId);
-		if(g.getState()!=GatewayPro.RUNNING) throw new GatewayException("Gateway ["+gatewayId+"] is not running");
+		Gateway g = getGateway(gatewayId);
+		if(g.getState()!=Gateway.RUNNING) throw new GatewayException("Gateway ["+gatewayId+"] is not running");
 		return g.sendMessage(data);
 	}
 	
@@ -146,7 +146,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	public void start(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.START);
 	}
-	private void start(GatewayPro gateway) {
+	private void start(Gateway gateway) {
 		executeThread(gateway,GatewayThread.START);
 	}
 
@@ -158,7 +158,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	public void stop(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.STOP);
 	}
-	private void stop(GatewayPro gateway) {
+	private void stop(Gateway gateway) {
 		executeThread(gateway,GatewayThread.STOP);
 	}
 	
@@ -169,12 +169,12 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		Entry<String, GatewayEntry> entry;
 		GatewayEntry ge;
-		GatewayPro g;
+		Gateway g;
 		while(it.hasNext()){
 			entry = it.next();
 			ge = entry.getValue();
 			g=ge.getGateway();
-			if(g.getState()==GatewayPro.RUNNING) {
+			if(g.getState()==Gateway.RUNNING) {
 				try {
 					g.doStop();
 				} catch (IOException e) {
@@ -192,7 +192,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		Entry<String, GatewayEntry> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			if(entry.getValue().getGateway().getState()==GatewayPro.RUNNING) 
+			if(entry.getValue().getGateway().getState()==Gateway.RUNNING) 
 				stop(entry.getValue().getGateway());
 		}
 		entries.clear();
@@ -207,7 +207,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		executeThread(gatewayId,GatewayThread.RESTART);
 	}
 	
-	private GatewayPro getGateway(String gatewayId) throws PageException {
+	private Gateway getGateway(String gatewayId) throws PageException {
 		return getGatewayEntry(gatewayId).getGateway();
 	}
 	
@@ -226,7 +226,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		
 		throw new ExpressionException("there is no gateway instance with id ["+gatewayId+"], available gateway instances are ["+sb+"]");
 	}
-	private GatewayEntry getGatewayEntry(GatewayPro gateway)  {
+	private GatewayEntry getGatewayEntry(Gateway gateway)  {
 		String gatewayId=gateway.getId();
 		// it must exist, because it only can come from here
 		return entries.get(gatewayId);
@@ -236,7 +236,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		new GatewayThread(this,getGateway(gatewayId),action).start();
 	}
 
-	private void executeThread(GatewayPro g, int action) {
+	private void executeThread(Gateway g, int action) {
 		new GatewayThread(this,g,action).start();
 	}
 	
@@ -245,29 +245,29 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 
 	public static int toIntState(String state, int defaultValue) {
 		state=state.trim().toLowerCase();
-		if("running".equals(state))	return GatewayPro.RUNNING;
-		if("started".equals(state)) return GatewayPro.RUNNING;
-		if("run".equals(state)) 	return GatewayPro.RUNNING;
+		if("running".equals(state))	return Gateway.RUNNING;
+		if("started".equals(state)) return Gateway.RUNNING;
+		if("run".equals(state)) 	return Gateway.RUNNING;
 		
-		if("failed".equals(state)) 	return GatewayPro.FAILED;
-		if("starting".equals(state))return GatewayPro.STARTING;
-		if("stopped".equals(state)) return GatewayPro.STOPPED;
-		if("stopping".equals(state))return GatewayPro.STOPPING;
+		if("failed".equals(state)) 	return Gateway.FAILED;
+		if("starting".equals(state))return Gateway.STARTING;
+		if("stopped".equals(state)) return Gateway.STOPPED;
+		if("stopping".equals(state))return Gateway.STOPPING;
 		
 		return defaultValue;
 	}
 	
 	public static String toStringState(int state, String defaultValue) {
-		if(GatewayPro.RUNNING==state)	return "running";
-		if(GatewayPro.FAILED==state)	return "failed";
-		if(GatewayPro.STOPPED==state)	return "stopped";
-		if(GatewayPro.STOPPING==state)	return "stopping";
-		if(GatewayPro.STARTING==state)	return "starting";
+		if(Gateway.RUNNING==state)	return "running";
+		if(Gateway.FAILED==state)	return "failed";
+		if(Gateway.STOPPED==state)	return "stopped";
+		if(Gateway.STOPPING==state)	return "stopping";
+		if(Gateway.STARTING==state)	return "starting";
 			
 		return defaultValue;
 	}
 
-	public boolean invokeListener(GatewayPro gateway, String method, Map data) {// FUTUTE add generic type to interface
+	public boolean invokeListener(Gateway gateway, String method, Map data) {// FUTUTE add generic type to interface
 		return invokeListener(gateway.getId(), method, data);
 	}
 
@@ -395,7 +395,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	}
 
 	@Override
-	public void log(GatewayPro gateway, int level, String message) {
+	public void log(Gateway gateway, int level, String message) {
 		log(gateway.getId(), level, message);
 	}
 	
@@ -412,7 +412,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		break;
 		case LOGLEVEL_WARN:l=Log.LEVEL_WARN;
 		break;
-		case LOGLEVEL_TRACE:l=LogUtil.LEVEL_TRACE;
+		case LOGLEVEL_TRACE:l=Log.LEVEL_TRACE;
 		break;
 		}
 		log.log(l, "Gateway:"+gatewayId, message);

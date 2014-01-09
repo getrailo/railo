@@ -14,6 +14,8 @@ import javax.servlet.jsp.JspException;
 
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigServer;
+import railo.runtime.exp.PageException;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
@@ -245,5 +247,20 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	@Override
 	public void registerThreadPageContext(PageContext pc) {
 		engine.registerThreadPageContext(pc);
+	}
+
+	@Override
+	public ConfigServer getConfigServer(String password) throws PageException {
+		return engine.getConfigServer(password);
+	}
+
+	@Override
+	public ConfigServer getConfigServer(String key, long timeNonce)throws PageException {
+		return engine.getConfigServer(key, timeNonce);
+	}
+
+	@Override
+	public long uptime() {
+		return engine.uptime();
 	}
 }

@@ -3,12 +3,14 @@ package railo.runtime.orm.hibernate.tuplizer.proxy;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -21,6 +23,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
 
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
 public abstract class ComponentProxy implements Component {
@@ -411,10 +414,7 @@ public abstract class ComponentProxy implements Component {
     	getComponent().registerUDF(key, props);
     }
 
-	@Override
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return getComponent().getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
-	}
+	
 	
 	@Override
 	public java.util.Iterator<String> getIterator() {
@@ -434,5 +434,100 @@ public abstract class ComponentProxy implements Component {
 	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return getComponent().duplicate(deepCopy);
+	}
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
+		return getComponent().getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+	}
+	
+	public boolean isPersistent() {
+		return getComponent().isPersistent();
+	}
+
+	public static boolean isPersistent(Component c) {
+		return c.isPersistent();
+	}
+
+	public boolean isAccessors() {
+		return getComponent().isAccessors();
+	}
+
+	public Object getMetaStructItem(Key name) {
+		return getComponent().getMetaStructItem(name);
+	}
+	public static Object getMetaStructItem(Component c,Key name) {
+		return c.getMetaStructItem(name);
+	}
+
+	public Set<Key> keySet(int access) {
+		return getComponent().keySet(access);
+	}
+
+	public Object call(PageContext pc, int access, Key name, Object[] args) throws PageException {
+		return getComponent().call(pc, access, name, args);
+	}
+
+	public Object callWithNamedValues(PageContext pc, int access, Key name, Struct args) throws PageException {
+		return getComponent().callWithNamedValues(pc, access, name, args);
+	}
+
+	public int size(int access) {
+		return getComponent().size(access);
+	}
+
+	public Key[] keys(int access) {
+		return getComponent().keys(access);
+	}
+
+	public Iterator<Entry<Key, Object>> entryIterator(int access) {
+		return getComponent().entryIterator(access);
+	}
+
+	public Iterator<Object> valueIterator(int access) {
+		return getComponent().valueIterator(access);
+	}
+
+	public Object get(int access, Key key) throws PageException {
+		return getComponent().get(access, key);
+	}
+
+	public Object get(int access, Key key, Object defaultValue) {
+		return getComponent().get(access, key, defaultValue);
+	}
+
+	public Iterator<Key> keyIterator(int access) {
+		return getComponent().keyIterator(access);
+	}
+	
+	public Iterator<String> keysAsStringIterator(int access) {
+		return getComponent().keysAsStringIterator(access);
+	}
+
+	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
+		return getComponent().toDumpData(pageContext, maxlevel, dp, access);
+	}
+
+	public boolean contains(int access, Key name) {
+		return getComponent().contains(access, name);
+	}
+
+	public Member getMember(int access, Key key, boolean dataMember, boolean superAccess) {
+		return getComponent().getMember(access, key, dataMember, superAccess);
+	}
+	
+	public void setEntity(boolean entity) {
+		getComponent().setEntity(entity);
+	}
+	
+	public static void setEntity(Component c,boolean entity) {
+		c.setEntity(entity);
+	}
+
+	public boolean isEntity() {
+		return getComponent().isEntity();
+	}
+
+	public Component getBaseComponent() {
+		return getComponent().getBaseComponent();
 	}
 }

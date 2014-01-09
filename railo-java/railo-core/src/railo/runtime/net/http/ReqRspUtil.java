@@ -544,6 +544,6 @@ public final class ReqRspUtil {
 		pc=ThreadLocalPageContext.get(pc);
 		if(pc!=null) return ((PageContextImpl)pc).getWebCharset();
 		Config config = ThreadLocalPageContext.getConfig(pc);
-		return ((ConfigImpl)config)._getWebCharset();
+		return config.getWebCharset();
 	}
 }

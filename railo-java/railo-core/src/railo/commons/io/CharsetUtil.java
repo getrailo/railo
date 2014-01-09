@@ -49,7 +49,7 @@ public class CharsetUtil {
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) return ((PageContextImpl)pc).getWebCharset();
 		Config config = ThreadLocalPageContext.getConfig();
-		if(config!=null) return ((ConfigImpl)config)._getWebCharset();
+		if(config!=null) return config.getWebCharset();
 		
 		return CharsetUtil.ISO88591;
 	}

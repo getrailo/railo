@@ -298,7 +298,7 @@ public abstract class ConfigImpl implements Config {
     private Charset templateCharset=SystemUtil.getCharset();
     private Charset webCharset=CharsetUtil.UTF8;
 
-	private String mailDefaultEncoding = "UTF-8";
+	private Charset mailDefaultCharset = CharsetUtil.UTF8;
 	
 	private Resource tldFile;
 	private Resource fldFile;
@@ -1989,10 +1989,7 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	@Override
-	public String getTemplateCharset() {
-		return templateCharset.name();
-	}
-	public Charset _getTemplateCharset() {
+	public Charset getTemplateCharset() {
 		return templateCharset;
 	}
 	
@@ -2003,12 +2000,12 @@ public abstract class ConfigImpl implements Config {
 	protected void setTemplateCharset(String templateCharset) {
 		this.templateCharset = CharsetUtil.toCharset(templateCharset, this.templateCharset);
 	}
+	protected void setTemplateCharset(Charset templateCharset) {
+		this.templateCharset = templateCharset;
+	}
 
 	@Override
-	public String getWebCharset() {
-		return webCharset.name();
-	}
-	public Charset _getWebCharset() {
+	public Charset getWebCharset() {
 		return webCharset;
 	}
 	
@@ -2019,12 +2016,12 @@ public abstract class ConfigImpl implements Config {
 	protected void setResourceCharset(String resourceCharset) {
 		this.resourceCharset = CharsetUtil.toCharset(resourceCharset, this.resourceCharset);
 	}
+	protected void setResourceCharset(Charset resourceCharset) {
+		this.resourceCharset = resourceCharset;
+	}
 
 	@Override
-	public String getResourceCharset() {
-		return resourceCharset.name();
-	}
-	public Charset _getResourceCharset() {
+	public Charset getResourceCharset() {
 		return resourceCharset;
 	}
 	
@@ -2033,7 +2030,10 @@ public abstract class ConfigImpl implements Config {
 	 * @param webCharset
 	 */
 	protected void setWebCharset(String webCharset) {
-		this.webCharset = CharsetUtil.toCharset(webCharset, this.webCharset);;
+		this.webCharset = CharsetUtil.toCharset(webCharset, this.webCharset);
+	}
+	protected void setWebCharset(Charset webCharset) {
+		this.webCharset = webCharset;
 	}
 
 	public SecurityManager getSecurityManager() {
@@ -2082,15 +2082,18 @@ public abstract class ConfigImpl implements Config {
 	/**
 	 * @return the mailDefaultCharset
 	 */
-	public String getMailDefaultEncoding() {
-		return mailDefaultEncoding;
+	public Charset getMailDefaultCharset() {
+		return mailDefaultCharset;
 	}
 
 	/**
 	 * @param mailDefaultEncoding the mailDefaultCharset to set
 	 */
-	protected void setMailDefaultEncoding(String mailDefaultEncoding) {
-		this.mailDefaultEncoding = mailDefaultEncoding;
+	protected void setMailDefaultEncoding(String mailDefaultCharset) {
+		this.mailDefaultCharset = CharsetUtil.toCharset(mailDefaultCharset,this.mailDefaultCharset);
+	}
+	protected void setMailDefaultEncoding(Charset mailDefaultCharset) {
+		this.mailDefaultCharset = mailDefaultCharset;
 	}
 
 	protected void setDefaultResourceProvider(String strDefaultProviderClass, Map arguments) throws ClassException {

@@ -1,6 +1,7 @@
 package railo.runtime.net.mail;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -22,7 +23,7 @@ public final class MailPart implements Serializable {
 	private int wraptext=-1;
 
 	/** The character encoding in which the part text is encoded */
-	private String charset;
+	private Charset charset;
 
     private String body;
 	private String type;
@@ -49,7 +50,7 @@ public final class MailPart implements Serializable {
     /**
      * @param charset
      */
-    public MailPart(String charset) {
+    public MailPart(Charset charset) {
         this.charset = charset;
     }
     /**
@@ -67,13 +68,13 @@ public final class MailPart implements Serializable {
     /**
      * @return Returns the charset.
      */
-    public String getCharset() {
+    public Charset getCharset() {
         return charset;
     }
     /**
      * @param charset The charset to set.
      */
-    public void setCharset(String charset) {
+    public void setCharset(Charset charset) {
         this.charset = charset;
     }
     /**

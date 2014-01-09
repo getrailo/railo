@@ -31,7 +31,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContextPro;
 
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;

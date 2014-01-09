@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import javax.activation.DataSource;
 
@@ -11,9 +12,9 @@ public final class StringDataSource implements DataSource {
 
 	private String text;
 	private String ct;
-	private String charset;
+	private Charset charset;
 
-	public StringDataSource(String text, String ct, String charset) {
+	public StringDataSource(String text, String ct, Charset charset) {
 		this.text=text;
 		this.ct=ct;
 		this.charset=charset;
