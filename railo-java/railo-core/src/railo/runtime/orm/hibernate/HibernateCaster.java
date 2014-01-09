@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
@@ -14,11 +15,13 @@ import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -465,13 +468,14 @@ public class HibernateCaster {
 
 	private static Query populateQuery(PageContext pc,HibernateORMSession session,Component cfc,Query qry) throws PageException {
 		Property[] properties = CommonUtil.getProperties(cfc,true,true,false,false);
+		DataSource ds = ORMUtil.getDataSource(pc, cfc);
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 		
 		// init
 		if(qry==null){
-			ClassMetadata md = ((HibernateORMEngine)session.getEngine()).getSessionFactory(pc).getClassMetadata(getEntityName(cfc));
-			//Struct columnsInfo= engine.getTableInfo(session.getDatasourceConnection(),toEntityName(engine, cfc),session.getEngine());
+			SessionFactory factory = session.getRawSessionFactory(ds);
+			ClassMetadata md = factory.getClassMetadata(getEntityName(cfc));
 			Array names=CommonUtil.createArray();
 			Array types=CommonUtil.createArray();
 			String name;

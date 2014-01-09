@@ -2,6 +2,7 @@ package railo.runtime.orm.hibernate;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,23 +24,30 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.naming.CFCNamingStrategy;
 import railo.runtime.orm.hibernate.naming.DefaultNamingStrategy;
 import railo.runtime.orm.naming.NamingStrategy;
 import railo.runtime.orm.hibernate.naming.SmartNamingStrategy;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public class SessionFactoryData {
 
 	public List<Component> tmpList;
-	public Map<String, CFCInfo> cfcs=new HashMap<String, CFCInfo>();
-	private final ORMConfiguration ormConf;
-	private final DataSource datasource;
-	private Configuration configuration=null;
-	private SessionFactory factory;
+	//private final Map<String, CFCInfo> cfcs=new HashMap<String, CFCInfo>();
+	private final Map<DataSource,Map<String, CFCInfo>> cfcs=new HashMap<DataSource, Map<String,CFCInfo>>();
+	private final Map<DataSource,Configuration> configurations=new HashMap<DataSource,Configuration>();
+	private final Map<DataSource,SessionFactory> factories=new HashMap<DataSource,SessionFactory>();
+	private final Map<DataSource,QueryPlanCache> queryPlanCaches=new HashMap<DataSource,QueryPlanCache>();
 	
-	private QueryPlanCache queryPlanCache;
+	private final ORMConfiguration ormConf;
+	//private final DataSource datasource;
+	//private Configuration configuration=null;
+	//private SessionFactory factory;
+	
+	//private QueryPlanCache queryPlanCache;
 	private NamingStrategy namingStrategy;
 	private final HibernateORMEngine engine;
 	private Struct tableInfo=CommonUtil.createStruct();
@@ -47,56 +55,26 @@ public class SessionFactoryData {
 
 	
 	
-	public SessionFactoryData(HibernateORMEngine engine,ORMConfiguration ormConf, DataSource datasource) {
+	public SessionFactoryData(HibernateORMEngine engine,ORMConfiguration ormConf) {
 		this.engine=engine;
 		this.ormConf=ormConf;
-		this.datasource=datasource;
-	}
-
-	public Configuration getConfiguration(){
-		return configuration;
-	}
-	public DataSource getDataSource(){
-		return datasource;
 	}
 	
 	public ORMConfiguration getORMConfiguration(){
 		return ormConf;
 	}
-	
-	public SessionFactory getFactory(){
-		if(factory==null && configuration!=null) buildSessionFactory();// this should never be happen
-		return factory;
-	}
 	public HibernateORMEngine getEngine(){
 		return engine;
 	}
 	
-	public QueryPlanCache getQueryPlanCache()  {
-		if(queryPlanCache==null){
-			queryPlanCache=new QueryPlanCache((SessionFactoryImplementor) factory);
+	public QueryPlanCache getQueryPlanCache(DataSource ds) {
+		QueryPlanCache qpc = queryPlanCaches.get(ds);
+		if(qpc==null){
+			queryPlanCaches.put(ds, qpc=new QueryPlanCache((SessionFactoryImplementor) getFactory(ds)));
 		}
-		return queryPlanCache;
+		return qpc;
 	}
 
-	public void reset() {
-		configuration=null;
-		if(factory!=null) {
-			factory.close();
-			factory=null;
-		}
-		//namingStrategy=null; because the ormconf not change, this has not to change as well
-		tableInfo=CommonUtil.createStruct();
-	}
-
-	public void buildSessionFactory() {
-		if(configuration==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
-		factory=configuration.buildSessionFactory();
-	}
-
-	public void setConfiguration(Log log,String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
-		this.configuration=HibernateSessionFactory.createConfiguration(log,mappings,dc,this);
-	}
 	
 	public NamingStrategy getNamingStrategy() throws PageException {
 		if(namingStrategy==null) {
@@ -122,27 +100,23 @@ public class SessionFactoryData {
 		return namingStrategy;
 	}
 	
-	public Struct getTableInfo(DatasourceConnection dc, String tableName) throws PageException {
-		Collection.Key keyTableName=CommonUtil.createKey(tableName);
-		Struct columnsInfo = (Struct) tableInfo.get(keyTableName,null);
-		if(columnsInfo!=null) return columnsInfo;
+	
+	public CFCInfo checkExistent(PageContext pc,Component cfc) throws PageException {
+		CFCInfo info = getCFC(HibernateCaster.getEntityName(cfc), null);
+		if(info!=null) return info;
 		
-		columnsInfo = HibernateUtil.checkTable(dc,tableName,this);
-    	tableInfo.setEL(keyTableName,columnsInfo);
-    	return columnsInfo;
+		throw ExceptionUtil.createException(this,null,"there is no mapping definition for component ["+cfc.getAbsName()+"]","");
 	}
 	
-	public void checkExistent(PageContext pc,Component cfc) throws PageException {
-		if(!cfcs.containsKey(HibernateUtil.id(HibernateCaster.getEntityName(cfc))))
-            throw ExceptionUtil.createException(this,null,"there is no mapping definition for component ["+cfc.getAbsName()+"]","");
-	}
-	
-	public String[] getEntityNames() {
-		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
-		String[] names=new String[cfcs.size()];
-		int index=0;
+	public List<String> getEntityNames() {
+		Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
+		List<String> names=new ArrayList<String>();
+		Iterator<CFCInfo> _it;
 		while(it.hasNext()){
-			names[index++]=HibernateCaster.getEntityName(it.next().getValue().getCFC());
+			_it = it.next().values().iterator();
+			while(_it.hasNext()){
+				names.add(HibernateCaster.getEntityName(_it.next().getCFC()));
+			}
 		}
 		return names;
 	}
@@ -150,11 +124,14 @@ public class SessionFactoryData {
 	public Component getEntityByEntityName(String entityName,boolean unique) throws PageException {
 		Component cfc;
 		
-		CFCInfo info = cfcs!=null? cfcs.get(entityName.toLowerCase()):null;
+		// first check cfcs for this entity
+		CFCInfo info = getCFC(entityName,null);
 		if(info!=null) {
 			cfc=info.getCFC();
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
+		
+		// if parsing is in progress, the cfc can be found here
 		if(tmpList!=null){
 			Iterator<Component> it = tmpList.iterator();
 			while(it.hasNext()){
@@ -166,6 +143,7 @@ public class SessionFactoryData {
 		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+entityName+"] does not exist","");
 	}
 	
+
 
 	public Component getEntityByCFCName(String cfcName,boolean unique) throws PageException {
 		String name=cfcName;
@@ -179,45 +157,151 @@ public class SessionFactoryData {
 		
 		
 		Component cfc;
-		String[] names=null;
-		// search array (array exist when cfcs is in generation)
+		List<String> names=new ArrayList<String>();
 		
 		List<Component> list = tmpList;
 		if(list!=null){
-			names=new String[list.size()];
 			int index=0;
 			Iterator<Component> it2 = list.iterator();
 			while(it2.hasNext()){
 				cfc=it2.next();
-				names[index++]=cfc.getName();
+				names.add(cfc.getName());
 				if(HibernateUtil.isEntity(ormConf,cfc,cfcName,name)) //if(cfc.equalTo(name))
 					return unique?(Component)cfc.duplicate(false):cfc;
 			}
 		}
 		else {
 			// search cfcs
-			Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
-			Entry<String, CFCInfo> entry;
+			Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
+			Map<String, CFCInfo> _cfcs;
 			while(it.hasNext()){
-				entry=it.next();
-				cfc=entry.getValue().getCFC();
-				if(HibernateUtil.isEntity(ormConf,cfc,cfcName,name)) //if(cfc.instanceOf(name))
-					return unique?(Component)cfc.duplicate(false):cfc;
-				
-				//if(name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
-				//	return cfc;
+				_cfcs = it.next();
+				Iterator<CFCInfo> _it = _cfcs.values().iterator();
+				while(_it.hasNext()){
+					cfc=_it.next().getCFC();
+					names.add(cfc.getName());
+					if(HibernateUtil.isEntity(ormConf,cfc,cfcName,name)) //if(cfc.instanceOf(name))
+						return unique?(Component)cfc.duplicate(false):cfc;
+				}
 			}
-			names=cfcs.keySet().toArray(new String[cfcs.size()]);
 		}
 		
-		// search by entityname //TODO is this ok?
-		CFCInfo info = cfcs.get(name.toLowerCase());
+		CFCInfo info = getCFC(name,null);
 		if(info!=null) {
 			cfc=info.getCFC();
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
-		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+name+"] "+(Util.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+CommonUtil.toList(names, ", ")+"]","");
+		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+name+"] "+(Util.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+ListUtil.listToList(names, ", ")+"]","");
 		
+	}
+
+	// Datasource specific
+	public Configuration getConfiguration(DataSource ds){
+		return configurations.get(ds);
+	}
+
+	public void setConfiguration(Log log,String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
+		configurations.put(dc.getDatasource(),HibernateSessionFactory.createConfiguration(log,mappings,dc,this));
+	}
+
+
+	public void buildSessionFactory(DataSource ds) {
+		Configuration conf = getConfiguration(ds);
+		if(conf==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
+		factories.put(ds, conf.buildSessionFactory());
+	}
+
+	public SessionFactory getFactory(DataSource ds){
+		SessionFactory factory = factories.get(ds);
+		if(factory==null && getConfiguration(ds)!=null) buildSessionFactory(ds);// this should never be happen
+		return factory;
+	}
+	
+
+	public void reset() {
+		configurations.clear();
+		Iterator<SessionFactory> it = factories.values().iterator();
+		while(it.hasNext()){
+			it.next().close();
+		}
+		factories.clear();
+		//namingStrategy=null; because the ormconf not change, this has not to change as well
+		tableInfo=CommonUtil.createStruct();
+	}
+	
+
+	public Struct getTableInfo(DatasourceConnection dc, String tableName) throws PageException {
+		Collection.Key keyTableName=CommonUtil.createKey(tableName);
+		Struct columnsInfo = (Struct) tableInfo.get(keyTableName,null);
+		if(columnsInfo!=null) return columnsInfo;
+		
+		columnsInfo = HibernateUtil.checkTable(dc,tableName,this);
+    	tableInfo.setEL(keyTableName,columnsInfo);
+    	return columnsInfo;
+	}
+
+	
+	// CFC methods
+	public void addCFC(String entityName, CFCInfo info) {
+		DataSource ds = info.getDataSource();
+		Map<String, CFCInfo> map = cfcs.get(ds);
+		if(map==null) cfcs.put(ds, map=new HashMap<String, CFCInfo>());
+		map.put(HibernateUtil.id(entityName), info);
+	}
+	
+
+	CFCInfo getCFC(String entityName, CFCInfo defaultValue) {
+		Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
+		while(it.hasNext()){
+			CFCInfo info = it.next().get(HibernateUtil.id(entityName));
+			if(info!=null) return info;
+		}
+		return defaultValue;
+	}
+
+	public Map<DataSource, Map<String, CFCInfo>> getCFCs() {
+		return cfcs;
+	}
+
+	public Map<String, CFCInfo> getCFCs(DataSource ds) {
+		Map<String, CFCInfo> rtn = cfcs.get(ds);
+		if(rtn==null) return new HashMap<String, CFCInfo>();
+		return rtn;
+	}
+	
+	public void clearCFCs() {
+		cfcs.clear();
+	}
+
+	public int sizeCFCs() {
+		Iterator<Map<String, CFCInfo>> it = cfcs.values().iterator();
+		int size=0;
+		while(it.hasNext()){
+			size+=it.next().size();
+		}
+		return size;
+	}
+
+	public DataSource[] getDataSources() {
+		return cfcs.keySet().toArray(new DataSource[cfcs.size()]);
+	}
+
+	public void init() {
+		Iterator<DataSource> it = cfcs.keySet().iterator();
+		while(it.hasNext()){
+			getFactory(it.next());
+		}
+	}
+	
+	public Map<DataSource, SessionFactory> getFactories() {
+		Iterator<DataSource> it = cfcs.keySet().iterator();
+		Map<DataSource,SessionFactory> map=new HashMap<DataSource, SessionFactory>();
+		DataSource ds;
+		while(it.hasNext()){
+			ds = it.next();
+			map.put(ds, getFactory(ds));
+		}
+		return map;
 	}
 }

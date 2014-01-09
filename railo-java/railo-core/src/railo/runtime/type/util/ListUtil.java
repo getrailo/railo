@@ -993,6 +993,20 @@ public final class ListUtil {
 		return sb.toString();
 	}
 	
+	public static String listToList2(java.util.List<String> list, String delimiter) {
+		if(list.size()==0) return "";
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = list.iterator();
+		
+		if(it.hasNext()) sb.append(it.next());
+			
+		while(it.hasNext()) {
+			sb.append(delimiter);
+			sb.append(it.next());
+		}
+		return sb.toString();
+	}
+	
 	
 	/**
 	 * trims a string array, removes all empty array positions at the start and the end of the array

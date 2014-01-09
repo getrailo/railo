@@ -1,6 +1,9 @@
 package railo.runtime.functions.orm;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -9,6 +12,7 @@ import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 public class ORMExecuteQuery {
 	
@@ -36,16 +40,21 @@ public class ORMExecuteQuery {
 	}
 	private static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
+		DataSource ds;
+		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
+		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pc);
+		else ds=((PageContextImpl)pc).getDataSource(dsn);
+		
 		if(params==null)
-			return session.executeQuery(pc,hql,new ArrayImpl(),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,new ArrayImpl(),unique,queryOptions);
 		else if(Decision.isStruct(params))
-			return session.executeQuery(pc,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
 		else if(Decision.isArray(params))
-			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))
-			return session.executeQuery(pc,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
 		else if(Decision.isCastableToArray(params))
-			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
 		else
 			throw new FunctionException(pc, "ORMExecuteQuery", 2, "params", "cannot convert the params to a array or a struct");
 	}

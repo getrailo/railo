@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.property.Getter;
@@ -12,7 +13,10 @@ import org.hibernate.type.Type;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
+import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
@@ -46,11 +50,13 @@ public class CFCGetter implements Getter {
 	public Object get(Object trg) throws HibernateException {
 		try {
 			// MUST cache this, perhaps when building xml
-			HibernateORMEngine engine = getHibernateORMEngine();
 			PageContext pc = CommonUtil.pc();
+			ORMSession session = ORMUtil.getSession(pc);
 			Component cfc = CommonUtil.toComponent(trg);
+			DataSource ds = ORMUtil.getDataSource(pc, cfc);
 			String name = HibernateCaster.getEntityName(cfc);
-			ClassMetadata metaData = engine.getSessionFactory(pc).getClassMetadata(name);
+			SessionFactory sf=(SessionFactory) session.getRawSessionFactory(ds);
+			ClassMetadata metaData = sf.getClassMetadata(name);
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 
 			Object rtn = cfc.getComponentScope().get(key,null);

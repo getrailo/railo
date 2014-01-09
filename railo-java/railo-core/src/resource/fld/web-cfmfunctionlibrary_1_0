@@ -12862,6 +12862,12 @@ ormEvictQueries([cacheName])</description>
 		<name>ORMGetSession</name>
 		<class>railo.runtime.functions.orm.ORMGetSession</class>
 		<description>Returns the current ORM session</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>object</type>
 		</return>
@@ -12871,6 +12877,12 @@ ormEvictQueries([cacheName])</description>
 		<name>ORMGetSessionFactory</name>
 		<class>railo.runtime.functions.orm.ORMGetSessionFactory</class>
 		<description>Returns ORM session factory instance</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>object</type>
 		</return>

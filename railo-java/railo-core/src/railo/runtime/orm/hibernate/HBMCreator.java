@@ -63,7 +63,9 @@ public class HBMCreator {
 		
 		StringBuilder comment=new StringBuilder();
 		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
-		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(HibernateUtil.getCompileTime(pc,cfc.getPageSource()))).append("\n");
+		comment.append("\ncompilation-time:").append(CommonUtil.createDateTime(HibernateUtil.getCompileTime(pc,cfc.getPageSource())));
+		comment.append("\ndatasource:").append(dc.getDatasource().getName());
+		comment.append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
 		

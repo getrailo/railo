@@ -5,6 +5,7 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
+import railo.runtime.orm.hibernate.SessionFactoryData;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
@@ -153,9 +154,9 @@ public interface ORMSession {
 	
 	public void evictQueries(PageContext pc,String cacheName) throws PageException;
 
-	public Object executeQuery(PageContext pc,String hql, Array params, boolean unique,Struct queryOptions) throws PageException;
+	public Object executeQuery(PageContext pc, DataSource ds,String hql, Array params, boolean unique,Struct queryOptions) throws PageException;
 
-	public Object executeQuery(PageContext pc,String hql, Struct params, boolean unique,Struct queryOptions) throws PageException;
+	public Object executeQuery(PageContext pc, DataSource ds,String hql, Struct params, boolean unique,Struct queryOptions) throws PageException;
 
 	/**
 	 * close the session
@@ -168,6 +169,7 @@ public interface ORMSession {
 	 * is session valid or not
 	 * @return is session valid
 	 */
+	public boolean isValid(DataSource ds);
 	public boolean isValid();
 	
 	/**
@@ -176,12 +178,12 @@ public interface ORMSession {
 	 */
 	public ORMEngine getEngine();
 	
-	public Object getRawSession();
+	public Object getRawSession(DataSource ds) throws PageException;
+	public Object getRawSessionFactory(DataSource ds) throws PageException;
 
-	public ORMTransaction getTransaction(boolean autoManage);
-	
+	public ORMTransaction getTransaction(DataSource ds,boolean autoManage) throws PageException;
 
-	public DataSource getDataSource();
+	public String[] getEntityNames();
 
-	public String[] getEntityNames(); 
+	public DataSource[] getDataSources(); 
 }

@@ -6,9 +6,11 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -257,25 +259,31 @@ public class HibernateSessionFactory {
     }
 
 
-	public static String createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
-		
-		Set<String> done=new HashSet<String>();
-		StringBuffer mappings=new StringBuffer();
-		mappings.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		mappings.append(HIBERNATE_3_DOCTYPE_DEFINITION+"\n");
-		mappings.append("<hibernate-mapping>\n");
-		Iterator<Entry<String, CFCInfo>> it = data.cfcs.entrySet().iterator();
-		Entry<String, CFCInfo> entry;
+	public static Map<DataSource,String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
+		Map<DataSource,String> mappings=new HashMap<DataSource,String>();
+		Iterator<Entry<DataSource, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
 		while(it.hasNext()){
-			entry = it.next();
-			createMappings(ormConf,entry.getKey(),entry.getValue(),done,mappings,data);
+			Entry<DataSource, Map<String, CFCInfo>> e = it.next();
 			
+			Set<String> done=new HashSet<String>();
+			StringBuilder mapping=new StringBuilder();
+			mapping.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			mapping.append(HIBERNATE_3_DOCTYPE_DEFINITION+"\n");
+			mapping.append("<hibernate-mapping>\n");
+			Iterator<Entry<String, CFCInfo>> _it = e.getValue().entrySet().iterator();
+			Entry<String, CFCInfo> entry;
+			while(_it.hasNext()){
+				entry = _it.next();
+				createMappings(ormConf,entry.getKey(),entry.getValue(),done,mapping,data);
+				
+			}
+			mapping.append("</hibernate-mapping>");
+			mappings.put(e.getKey(), mapping.toString());
 		}
-		mappings.append("</hibernate-mapping>");
-		return mappings.toString();
+		return mappings;
 	}
 
-	private static void createMappings(ORMConfiguration ormConf, String key, CFCInfo value,Set<String> done,StringBuffer mappings, SessionFactoryData data) {
+	private static void createMappings(ORMConfiguration ormConf, String key, CFCInfo value,Set<String> done,StringBuilder mappings, SessionFactoryData data) {
 		if(done.contains(key)) return;
 		CFCInfo v;
 		String ext = value.getCFC().getExtends();
@@ -288,7 +296,7 @@ public class HibernateSessionFactory {
 			
 			ext=HibernateUtil.id(CommonUtil.last(ext, '.').trim());
 			if(!done.contains(ext)) {
-				v = data.cfcs.get(ext);
+				v = data.getCFC(ext,null);
 				if(v!=null)createMappings(ormConf, ext, v, done, mappings,data);
 			}
 		}

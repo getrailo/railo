@@ -284,10 +284,6 @@ public class ORMUtil {
 		if(StringUtil.isEmpty(o))
 			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
 		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
-	
-		
-	
-	
 	}
 	
 	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
@@ -301,5 +297,38 @@ public class ORMUtil {
 		catch (PageException e) {
 			return defaultValue;
 		}
+	}
+	
+	
+	public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
+		pc=ThreadLocalPageContext.get(pc);
+		
+		// datasource defined with cfc
+		try{
+			Struct meta = cfc.getMetaData(pc);
+			String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
+			if(!StringUtil.isEmpty(datasourceName,true)) {
+				DataSource ds = ((PageContextImpl)pc).getDataSource(datasourceName,null);
+				if(ds!=null) return ds;
+			}
+		}
+		catch(Throwable t){}
+		
+		
+		return getDataSource(pc, defaultValue);
+	}
+	
+	public static DataSource getDataSource(PageContext pc, Component cfc) throws PageException {
+		pc=ThreadLocalPageContext.get(pc);
+		
+		// datasource defined with cfc
+		Struct meta = cfc.getMetaData(pc);
+		String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
+		if(!StringUtil.isEmpty(datasourceName,true)) {
+			return ((PageContextImpl)pc).getDataSource(datasourceName);
+		}
+		
+		
+		return getDataSource(pc);
 	}
 }
