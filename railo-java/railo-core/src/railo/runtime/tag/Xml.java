@@ -29,9 +29,7 @@ public final class Xml extends BodyTagImpl {
 	private String strXML;
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		variable=null;
@@ -57,16 +55,12 @@ public final class Xml extends BodyTagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return EVAL_BODY_BUFFERED;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		try {
 			InputSource vis = StringUtil.isEmpty(validator)?null:XMLUtil.toInputSource(pageContext,validator);
@@ -79,16 +73,12 @@ public final class Xml extends BodyTagImpl {
 		return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		strXML=bodyContent.getString().trim();
 		return SKIP_BODY;

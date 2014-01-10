@@ -9,6 +9,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Local;
+import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
@@ -17,7 +18,8 @@ import railo.runtime.type.scope.Variables;
  * Implements the CFML Function evaluate
  */
 public final class Evaluate implements Function {
-	
+
+	private static final long serialVersionUID = 2259041678381553989L;
 
 	public static Object call(PageContext pc , Object[] objs) throws PageException {
 		return call(pc, objs, false);
@@ -28,20 +30,32 @@ public final class Evaluate implements Function {
 			
 			// Variables Scope
 			Variables var=null;
+			Local lcl=null,cLcl=null;
+			Argument arg=null,cArg=null;
 			if(objs[objs.length-1] instanceof Variables){
 				var=(Variables) objs[objs.length-1];
 			}
 			else if(objs[objs.length-1] instanceof CallerImpl){
-				var=((CallerImpl) objs[objs.length-1]).getVariablesScope();
+				CallerImpl ci = ((CallerImpl) objs[objs.length-1]);
+				var=ci.getVariablesScope();
+				lcl = ci.getLocalScope();
+				arg = ci.getArgumentsScope();
 			}
+			
 			if(var!=null){
-				Variables current=pc.variablesScope();
+				Variables cVar=pc.variablesScope();
 				pc.setVariablesScope(var);
+				if(lcl!=null && !(lcl instanceof LocalNotSupportedScope)) {
+					cLcl = pc.localScope();
+					cArg=pc.argumentsScope();
+					pc.setFunctionScopes(lcl, arg);
+				}
 		        try{
 		        	return _call(pc, objs,objs.length-1,preciseMath);
 		        }
 		        finally{
-		        	pc.setVariablesScope(current);
+		        	pc.setVariablesScope(cVar);
+		        	if(cLcl!=null) pc.setFunctionScopes(cLcl, cArg);
 		        }
 			}
 			

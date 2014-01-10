@@ -39,10 +39,7 @@ public final class PDFParam extends TagImpl {
 	}
 	
 	
-	/**
-	* @throws ApplicationException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws ApplicationException	{
         
         
@@ -62,16 +59,12 @@ public final class PDFParam extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		param=new PDFParamBean();

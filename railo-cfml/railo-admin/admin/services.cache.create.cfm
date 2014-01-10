@@ -25,7 +25,6 @@
 					<cfset custom[mid(key,8,10000)]=form[key]>
 				</cfif>
 			</cfloop>
-			
 			<cfadmin 
 				action="updateCacheConnection"
 				type="#request.adminType#"
@@ -34,7 +33,8 @@
 				
 				name="#trim(form.name)#" class="#trim(form.class)#" 
 				storage="#isDefined('form.storage') and form.storage#"
-				default="#StructKeyExists(form,'default')?form.default:""#" custom="#custom#"
+				default="#StructKeyExists(form,'default')?form.default:""#" 
+				custom="#custom#"
 				
 				remoteClients="#request.getRemoteClients()#">
 					
@@ -237,7 +237,7 @@ Redirtect to entry --->
 					<td>
 						<select name="default">
 							<option value="">------</option>
-							<cfloop index="type" list="object,template,query,resource">
+							<cfloop index="type" list="function,object,template,query,resource">
 								<option <cfif connection.default EQ type>selected="selected"</cfif> value="#type#">#stText.Settings.cache['defaultType'& type]#</option>
 							</cfloop>
 						</select>

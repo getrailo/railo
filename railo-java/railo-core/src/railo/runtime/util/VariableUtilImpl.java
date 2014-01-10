@@ -16,12 +16,14 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStructFactory;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -33,11 +35,8 @@ import railo.runtime.type.wrap.MapAsStruct;
  */
 public final class VariableUtilImpl implements VariableUtil {
 
-    
-	/**
-     * @see railo.runtime.util.VariableUtil#getCollectionEL(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
-    public Object getCollection(PageContext pc, Object coll, String key, Object defaultValue) {
+    @Override
+	public Object getCollection(PageContext pc, Object coll, String key, Object defaultValue) {
         if(coll instanceof Query) {
         	// TODO sollte nicht null sein
             return ((Query)coll).getColumn(key,null);
@@ -45,18 +44,16 @@ public final class VariableUtilImpl implements VariableUtil {
         return get(pc,coll,key,defaultValue);
     }
     
-    public Object getCollection(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {
+    public Object getCollection(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {// FUTURE add to interface
         if(coll instanceof Query) {
-        	// TODO sollte nicht null sein
-            return ((Query)coll).getColumn(key,null);
+        	QueryColumn qc = ((Query)coll).getColumn(key,null);
+        	if(qc==null) return defaultValue;
+        	return qc;
         }
         return get(pc,coll,key,defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, java.lang.String, java.lang.Object)
-	 */
+    @Override
 	public Object get(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
@@ -100,9 +97,8 @@ public final class VariableUtilImpl implements VariableUtil {
 		
 	}
 	
-	/**
-	 * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+    
+    @Override
 	public Object get(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {
         // Objects
 		//print.out("key:"+key.getString());
@@ -184,9 +180,7 @@ public final class VariableUtilImpl implements VariableUtil {
 		return defaultValue;
 	}
 	
-	/**
-     * @see railo.runtime.util.VariableUtil#getLightEL(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
+	@Override
 	public Object getLight(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
@@ -221,10 +215,8 @@ public final class VariableUtilImpl implements VariableUtil {
 		return defaultValue;
 	}
 	
-    /**
-     * @see railo.runtime.util.VariableUtil#getCollection(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
-    public Object getCollection(PageContext pc, Object coll, String key) throws PageException {
+	@Override
+	public Object getCollection(PageContext pc, Object coll, String key) throws PageException {
         if(coll instanceof Query) {
             return ((Query)coll).getColumn(key);
         }
@@ -304,10 +296,8 @@ public final class VariableUtilImpl implements VariableUtil {
 	
     }
     
-    /**
-     * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
-    public Object get(PageContext pc, Object coll, String key) throws PageException {
+    @Override
+	public Object get(PageContext pc, Object coll, String key) throws PageException {
         // Objects
         if(coll instanceof Objects) {
             return ((Objects)coll).get(pc,KeyImpl.init(key));
@@ -724,8 +714,8 @@ public final class VariableUtilImpl implements VariableUtil {
         }
         // call UDF
 	    Object prop=getLight(pc,coll,key,null);	
-	    if(prop instanceof UDF) {
-	    	return ((UDF)prop).call(pc,args,false);
+	    if(prop instanceof UDFPlus) {
+	    	return ((UDFPlus)prop).call(pc,key,args,false);
 		}
         // call Object Wrapper      
 	    if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
@@ -750,8 +740,8 @@ public final class VariableUtilImpl implements VariableUtil {
         }
         // call UDF
 		Object prop=getLight(pc,coll,key,null);	
-        if(prop instanceof UDF) 		{
-            return ((UDF)prop).callWithNamedValues(pc,Caster.toFunctionValues(args),false);
+        if(prop instanceof UDFPlus) 		{
+            return ((UDFPlus)prop).callWithNamedValues(pc,key,Caster.toFunctionValues(args),false);
         }
         throw new ExpressionException("No matching Method/Function ["+key+"] for call with named arguments found ");
 	}
@@ -763,8 +753,8 @@ public final class VariableUtilImpl implements VariableUtil {
         }
         // call UDF
 		Object prop=getLight(pc,coll,key,null);	
-        if(prop instanceof UDF) 		{
-            return ((UDF)prop).callWithNamedValues(pc,args,false);
+        if(prop instanceof UDFPlus) 		{
+            return ((UDFPlus)prop).callWithNamedValues(pc,key,args,false);
         }
         throw new ExpressionException("No matching Method/Function for call with named arguments found");
 	}
@@ -782,12 +772,15 @@ public final class VariableUtilImpl implements VariableUtil {
 	// used by generated bytecode
 	public static Object columnlist(PageContext pc,Object obj) throws PageException{
 		if(obj instanceof Query) {
-			String[] columnNames = ((Query)obj).getColumnNamesAsString();
+			Key[] columnNames = ((Query)obj).getColumnNames();
 			
-			StringBuffer sb=new StringBuffer();
+			boolean upperCase=true;//((ConfigImpl)ThreadLocalPageContext.getConfig()).getDotNotationUpperCase();
+			
+			
+			StringBuilder sb=new StringBuilder();
 			for(int i=0;i<columnNames.length;i++) {
 				if(i>0)sb.append(',');
-				sb.append(columnNames[i].toUpperCase());
+				sb.append(upperCase?columnNames[i].getUpperString():columnNames[i].getString());
 			}
 			return sb.toString();
 			

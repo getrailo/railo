@@ -1,9 +1,6 @@
 package railo.runtime.functions.query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
@@ -11,40 +8,50 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.QueryUtil;
 
 /**
  * Implements the CFML Function querynew
  */
-public final class QueryNew implements Function {
+public final class QueryNew extends BIF {
+
+	private static final long serialVersionUID = -4313766961671090938L;
+	
 	public static railo.runtime.type.Query call(PageContext pc , String columnList) throws DatabaseException {
-	    return new QueryImpl(List.listToArrayTrim(columnList,","),0,"query");
+	    return new QueryImpl(ListUtil.listToArrayTrim(columnList,","),0,"query");
 	}
 	public static railo.runtime.type.Query call(PageContext pc , String columnList, String columnTypeList) throws PageException {
 		if(StringUtil.isEmpty(columnTypeList)) return call(pc, columnList);
-		return new QueryImpl(List.listToArrayTrim(columnList,","),List.listToArrayTrim(columnTypeList,","),0,"query");
+		return new QueryImpl(ListUtil.listToArrayTrim(columnList,","),ListUtil.listToArrayTrim(columnTypeList,","),0,"query");
 	}
 	
 	public static railo.runtime.type.Query call(PageContext pc , String strColumnList, String strColumnTypeList, Object data) throws PageException {
-		Array columnList = List.listToArrayTrim(strColumnList,",");
+		Array columnList = ListUtil.listToArrayTrim(strColumnList,",");
 		railo.runtime.type.Query qry;
 		if(StringUtil.isEmpty(strColumnTypeList))
 			qry= new QueryImpl(columnList,0,"query");
 		else
-			qry= new QueryImpl(columnList,List.listToArrayTrim(strColumnTypeList,","),0,"query");
+			qry= new QueryImpl(columnList,ListUtil.listToArrayTrim(strColumnTypeList,","),0,"query");
 		
 		if(data==null) return qry;
 		return populate(pc, qry, data);	
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==1)return call(pc,Caster.toString(args[0]));
+		if(args.length==2)return call(pc,Caster.toString(args[0]),Caster.toString(args[1]));
+		return call(pc,Caster.toString(args[0]),Caster.toString(args[1]),args[2]);
 	}
 	
 	public static Query populate(PageContext pc, Query qry,Object data) throws PageException {

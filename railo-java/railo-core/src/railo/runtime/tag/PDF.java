@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,9 +34,9 @@ import railo.runtime.text.pdf.PDFDocument;
 import railo.runtime.text.pdf.PDFUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
@@ -128,9 +127,7 @@ public class PDF extends BodyTagImpl  {
 	private String imagePrefix=null;
 	private int type=TYPE_XML;
 	
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		action=ACTION_PROCESSDDX;
@@ -543,10 +540,7 @@ public class PDF extends BodyTagImpl  {
 				"[1.1, 1.2, 1.3, 1.4, 1.5, 1.6]");
 	}
 	
-	/**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		// RR SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -555,26 +549,17 @@ public class PDF extends BodyTagImpl  {
 	    return EVAL_BODY_BUFFERED;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 	
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
 	
-	/**
-	 *
-	 * @throws IOException 
-	 * @throws InvalidParameterException 
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		try {
 
@@ -927,7 +912,7 @@ public class PDF extends BodyTagImpl  {
 				}
 			}
 			else if(source instanceof String) {
-				String[] sources = List.toStringArrayTrim(List.listToArrayRemoveEmpty((String)source, ','));
+				String[] sources = ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty((String)source, ','));
 				for(int i=0;i<sources.length;i++) {
 					docs.add(doc=toPDFDocument(sources[i],password,null));
 					doc.setPages(pages);

@@ -20,9 +20,7 @@ public final class Flush extends TagImpl {
 	** 		the count. */
 	private double interval=-1;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		interval=-1;
@@ -39,9 +37,7 @@ public final class Flush extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
         try {
 			if(interval==-1)((PageContextImpl)pageContext).getRootOut().flush();
@@ -52,9 +48,7 @@ public final class Flush extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

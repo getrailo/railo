@@ -144,9 +144,7 @@ public final class RSSHandler extends DefaultHandler {
 		  } 
 		}
 
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	 */
+	@Override
 	public void startElement(String uri, String name, String qName, Attributes atts) {
 		inside = KeyImpl.getInstance(qName);
 		lcInside=qName.toLowerCase();
@@ -197,12 +195,7 @@ public final class RSSHandler extends DefaultHandler {
 		//<enclosure url="http://www.scripting.com/mp3s/weatherReportDicksPicsVol7.mp3" length="6182912" type="audio/mpeg"/>
 	}
     
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim auftreten eines End-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#endElement(String, String, String)
-	 */
+	@Override
 	public void endElement(String uri, String name, String qName) {
 		setContent(content.toString().trim());
 		content=new StringBuffer();
@@ -214,12 +207,7 @@ public final class RSSHandler extends DefaultHandler {
 	}
 	
 	
-    /** 
-     * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, zum einlesen des Content eines Body Element aufgerufen.
-	 * 
-	 * @see org.xml.sax.ContentHandler#characters(char[], int, int)
-	 */
+    @Override
 	public void characters (char ch[], int start, int length)	{
 		content.append(new String(ch,start,length));
 	}

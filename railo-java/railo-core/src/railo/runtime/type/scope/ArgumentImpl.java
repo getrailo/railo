@@ -10,6 +10,7 @@ import java.util.Set;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -23,9 +24,10 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.wrap.ArrayAsList;
@@ -48,32 +50,26 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.scope.ScopeSupport#release()
-	 */
+	@Override
 	public void release() {
-		functionArgumentNames=null;
-		super.release();
+		release(null);
 	}
 	
 	@Override
 	public void release(PageContext pc) {
 		functionArgumentNames=null;
-		super.release(pc);
+		if(pc==null)super.release();
+		else super.release(pc);
 	}
 	
 	
 	
-     /**
-     * @see railo.runtime.type.scope.Argument#setBind(boolean)
-     */ 
+     @Override 
     public void setBind(boolean bind) { 
             this.bind=bind; 
     }       
     
-    /**
-     * @see railo.runtime.type.scope.Argument#isBind()
-     */ 
+    @Override 
     public boolean isBind() { 
         return this.bind; 
     } 
@@ -87,59 +83,62 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.scope.ArgumentPro#containsFunctionArgumentKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsFunctionArgumentKey(Key key) {
 		return super.containsKey(key);//functionArgumentNames!=null && functionArgumentNames.contains(key);
 	}
 	
 	
 	
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		Object o=super.get(key,null);
-		if(o!=null)return o;
+		/*if(NullSupportHelper.full()) {
+			Object o=super.get(key,NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+			
+			o=get(Caster.toIntValue(key.getString(),-1),NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+			return defaultValue;
+		}*/
 		
-		//char c = key.charAt(0);
-    	//if(!Character.isDigit(c) && c!='+') return defaultValue; // it make sense to have this step between
-    	
-		
-		
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
+		Object o=super.g(key,Null.NULL);
+		if(o!=Null.NULL)return o;
+
+		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
+		if(o!=Null.NULL)return o;
 		return defaultValue;
 	}
+	
+	
 
-
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
-		Object o=super.get(key,null);
-		if(o!=null)return o;
-
-		//char c = key.charAt(0);
-    	//if(Character.isDigit(c) || c=='+') {
-    		o=get(Caster.toIntValue(key.getString(),-1),null);
-    		if(o!=null)return o;
-    	//}
-    	if(super.containsKey(key)) return null;// that is only for compatibility to neo
-    	throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
-			railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
-			+"]");
+		/*if(NullSupportHelper.full()) {
+			Object o=super.get(key,NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+	
+			o=get(Caster.toIntValue(key.getString(),-1),NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+			throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+					railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+					+"]");
+		}*/
 		
-	}
+		// null is supported as returned value with argument scope
+		Object o=super.g(key,Null.NULL);
+		if(o!=Null.NULL)return o;
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
+		if(o!=Null.NULL)return o;
+		
+		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+				railo.runtime.type.util.ListUtil.arrayToList(CollectionUtil.keys(this),", ")
+				+"]");
+	}
+	
+	
+
+	@Override
 	public Object get(int intKey, Object defaultValue) {
 		Iterator<Object> it = valueIterator(); //keyIterator();//getMap().keySet().iterator();
 		int count=0;
@@ -172,9 +171,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		throw new ExpressionException("invalid index ["+intKey+"] for argument scope");	
 	}
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable htmlBox = new DumpTable("struct","#9999ff","#ccccff","#000000");
 		htmlBox.setTitle("Scope Arguments");
@@ -182,13 +179,13 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	    
 		maxlevel--;
 		//Map mapx=getMap();
-		Iterator it=keyIterator();//mapx.keySet().iterator();
+		Iterator<Key> it = keyIterator();//mapx.keySet().iterator();
 		int count=0;
 		Collection.Key key;
 		int maxkeys=dp.getMaxKeys();
 		int index=0;
 		while(it.hasNext()) {
-			key=KeyImpl.toKey(it.next(), null);//it.next();
+			key=it.next();//it.next();
 			
 			if(DumpUtil.keyValid(dp, maxlevel,key)){
 				if(maxkeys<=index++)break;
@@ -203,16 +200,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#getDimension()
-	 */
+	@Override
 	public int getDimension() {
 		return 1;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int intKey, Object value) {
 		int count=0;
 		
@@ -230,9 +223,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
-	 */
+	@Override
 	public Object setE(int intKey, Object value) throws PageException {
 
 		if(intKey>size()) {
@@ -249,9 +240,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#intKeys()
-	 */
+	@Override
 	public int[] intKeys() {
 		int[] ints=new int[size()];
 		for(int i=0;i<ints.length;i++)ints[i]=i+1;
@@ -259,16 +248,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#insert(int, java.lang.Object)
-	 */
+	@Override
 	public boolean insert(int index, Object value) throws ExpressionException {
 		return insert(index, ""+index, value);
 	}
 	
-	/**
-     * @see railo.runtime.type.scope.Argument#insert(int, java.lang.String, java.lang.Object)
-     */
+	@Override
 	public boolean insert(int index, String key, Object value) throws ExpressionException {
 		int len=size();
 		if(index<1 || index>len)
@@ -300,16 +285,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
 	public Object append(Object o) throws PageException {
 		return set(Caster.toString(size()+1),o);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#appendEL(java.lang.Object)
-	 */
+	@Override
 	public Object appendEL(Object o) {
 		try {
 			return append(o);
@@ -319,9 +300,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
-	 */
+	@Override
 	public Object prepend(Object o) throws PageException {
 		for(int i=size();i>0;i--) {
 			setE(i+1,getE(i));
@@ -331,9 +310,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#resize(int)
-	 */
+	@Override
 	public void resize(int to) throws PageException {
 		for(int i=size(); i<to; i++) {
 			append(null);
@@ -343,9 +320,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
 
 
-	/**
-	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void sort(String sortType, String sortOrder) throws ExpressionException {
 		// TODO Impl.
 		throw new ExpressionException("can't sort ["+sortType+"-"+sortOrder+"] Argument Scope","not Implemnted Yet");
@@ -356,9 +331,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		throw new ExpressionException("can't sort Argument Scope","not Implemnted Yet");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		Iterator it = keyIterator();//getMap().keySet().iterator();
 		Object[] arr=new Object[size()];
@@ -377,10 +350,10 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		if(Decision.isStruct(obj)) {
 			clear(); // TODO bessere impl. anstelle vererbung wrao auf struct
 			Struct sct=Caster.toStruct(obj);
-			Iterator it = sct.keyIterator();
-			String key;
+			Iterator<Key> it = sct.keyIterator();
+			Key key;
 			while(it.hasNext()) {
-				key=it.next().toString();
+				key=it.next();
 				setEL(key, sct.get(key,null));
 			}
 			return obj;
@@ -389,9 +362,6 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#toArrayList()
-	 */
 	public ArrayList toArrayList() {
 		ArrayList list = new ArrayList();
 		Object[] arr = toArray();
@@ -401,9 +371,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		return list;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
+	@Override
 	public Object removeE(int intKey) throws PageException {
 		Key[] keys = keys();
 		for(int i=0;i<keys.length;i++) {
@@ -414,9 +382,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		throw new ExpressionException("can't remove argument number ["+intKey+"], argument doesn't exist");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int intKey) {
 		Key[] keys = keys();
 		for(int i=0;i<keys.length;i++) {
@@ -427,42 +393,30 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		return null;
 	}
 
-    /**
-     * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
-     * /
-    public boolean containsKeyX(Collection.Key key) {
-    	if(super.containsKey(key)) return true;
-    	char c = key.charAt(0);
-    	if(!Character.isDigit(c) && c!='+') return false; // it make sense to have this step between
+    @Override
+    public boolean containsKey(Collection.Key key) {
+    	if(NullSupportHelper.full()) return super.containsKey(key);
     	
-    	return containsKey(Caster.toIntValue(key.getString(),-1));
-    }*/
-    
-	/**
-     * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
-     */
+		return super.g(key,null)!=null;
+    	// return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL() && super.containsKey(key);
+    }
+    /*
     public boolean containsKey(Collection.Key key) {
     	return get(key,null)!=null && super.containsKey(key);
-    }
+    }*/
 
-    /**
-     * @see railo.runtime.type.Array#containsKey(int)
-     */
+    @Override
     public boolean containsKey(int key) {
     	return key>0 && key<=size();
     }
 
-	/**
-	 * @see railo.runtime.type.Array#toList()
-	 */
+	@Override
 	public List toList() {
 		return ArrayAsList.toList(this);
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		ArgumentImpl trg=new ArgumentImpl();
 		trg.bind=false;
@@ -533,8 +487,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	@Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).call(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).call(pc,methodName,args,false);
 		}
 		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
 	}
@@ -542,8 +496,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	@Override
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
 		}
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
 	}

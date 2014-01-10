@@ -8,7 +8,7 @@ import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 
 
 /**
- * <p>Analyzer for Dutch language</p>
+ * <p>Analyzer for Italian language</p>
  */
 public final class ItalianAnalyzer extends Analyzer {
 
@@ -71,9 +71,7 @@ public final class ItalianAnalyzer extends Analyzer {
 		analyzer = new SnowballAnalyzer("Italian", stopWords);
 	}
 
-	/**
-	 * @see org.apache.lucene.analysis.Analyzer#tokenStream(java.lang.String, java.io.Reader)
-	 */
+	@Override
 	public TokenStream tokenStream(String fieldName, Reader reader) {
 		return analyzer.tokenStream(fieldName, reader);
 	}

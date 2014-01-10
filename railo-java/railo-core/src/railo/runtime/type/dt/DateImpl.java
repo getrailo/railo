@@ -49,9 +49,7 @@ public final class DateImpl extends  Date implements SimpleValue {
 		else timezone=ThreadLocalPageContext.getTimeZone();*/
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() {
 		synchronized (railoFormatter) {
         	railoFormatter.setTimeZone(ThreadLocalPageContext.getTimeZone());
@@ -59,30 +57,22 @@ public final class DateImpl extends  Date implements SimpleValue {
         }
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
+    @Override
     public String castToString(String defaultValue) {
         return castToString();
     }
 
-    /**
-     * @see railo.runtime.type.dt.DateTime#toDoubleValue()
-     */
+    @Override
     public double toDoubleValue() {
         return DateTimeUtil.getInstance().toDoubleValue(this);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return DateTimeUtil.getInstance().toDoubleValue(this);
     }
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString("");
         DumpTable table=new DumpTable("date","#ff9900","#ffcc00","#000000");
@@ -90,67 +80,49 @@ public final class DateImpl extends  Date implements SimpleValue {
         return table;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return DateTimeUtil.getInstance().toBooleanValue(this);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() {
         return DateTimeUtil.getInstance().toDoubleValue(this);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() {
         return this;
     }
     
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return this;
     }
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) {
 		return Operator.compare(castToDoubleValue(), b?1D:0D);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((java.util.Date)this, (java.util.Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) {
 		return Operator.compare(castToString(), str);
 	}

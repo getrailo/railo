@@ -11,10 +11,10 @@ import railo.runtime.security.Credential;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -26,9 +26,7 @@ public final class Login extends BodyTagImpl {
     private String applicationtoken;
     private String cookiedomain;
     
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         idletimeout=1800;
@@ -56,10 +54,7 @@ public final class Login extends BodyTagImpl {
     }
     
 
-    /**
-     * @throws PageException
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException  {
     	
     	ApplicationContext ac=pageContext.getApplicationContext();
@@ -92,7 +87,7 @@ public final class Login extends BodyTagImpl {
                         
                         //print.ln("encoded:"+encoded);
                         //print.ln("decoded:"+Base64Util.decodeBase64(encoded));
-                        Array arr=List.listToArray(dec,":");
+                        Array arr=ListUtil.listToArray(dec,":");
                         if(arr.size()<3) {
                             if(arr.size()==1) setCFLogin(arr.get(1,null),"");
                             else setCFLogin(arr.get(1,null),arr.get(2,null));
@@ -120,9 +115,7 @@ public final class Login extends BodyTagImpl {
         pageContext.undefinedScope().setEL(CFLOGIN,sct);
     }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-     */
+    @Override
     public int doEndTag() {
         pageContext.undefinedScope().removeEL(CFLOGIN);
         return EVAL_PAGE;

@@ -50,9 +50,7 @@ public final class HTTPException extends ApplicationException {
     	return url;
     }
 
-    /**
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
-	 */
+    @Override
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock sct = super.getCatchBlock(config);
         sct.setEL("statusCode",statusCode+"");

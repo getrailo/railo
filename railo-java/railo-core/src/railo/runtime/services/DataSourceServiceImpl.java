@@ -70,48 +70,36 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 		//return pass;
 	}
 
-	/**
-	 * @see coldfusion.server.DataSourceService#getDbdir()
-	 */
+	@Override
 	public String getDbdir() {
 		Resource db = config().getConfigDir().getRealResource("db");
 		if(!db.exists())db.createNewFile();
 		return db.getPath();
 	}
 
-	/**
-	 * @see coldfusion.server.DataSourceService#getCachedQuery(java.lang.String)
-	 */
+	@Override
 	public Object getCachedQuery(String key) {
 		throw new PageRuntimeException(new ServiceException("method [getQueryCache] is not supported for datasource service"));
 		//pageContext.getQueryCache().getQuery(sql,datasource,username,password,cachedafter)
 		// return null;
 	}
 
-	/**
-	 * @see coldfusion.server.DataSourceService#setCachedQuery(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public void setCachedQuery(String arg0, Object arg1) {
 		throw new PageRuntimeException(new ServiceException("method [setQueryCache] is not supported for datasource service"));
 	}
 
-	/**
-	 * @see coldfusion.server.DataSourceService#purgeQueryCache()
-	 */
+	@Override
 	public void purgeQueryCache() throws IOException {
 		PageContext pc = pc();
 		if(pc!=null)pc.getQueryCache().clearUnused(pc);
 
 	}
 
-	/**
-	 * @see coldfusion.server.DataSourceService#disableConnection(java.lang.String)
-	 */
+	@Override
 	public boolean disableConnection(String name) {return false;}
 
-	/**
-	 * @see coldfusion.server.DataSourceService#isJadoZoomLoaded()
-	 */
+	@Override
 	public boolean isJadoZoomLoaded() {return false;}
 
 

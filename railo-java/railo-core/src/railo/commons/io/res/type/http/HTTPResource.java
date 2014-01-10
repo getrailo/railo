@@ -112,16 +112,12 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParent()
-	 */
+	@Override
 	public String getParent() {
 		if(isRoot()) return null;
 		return provider.getProtocol().concat("://").concat(data.key()).concat(path.substring(0,path.length()-1));
@@ -131,62 +127,46 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		return StringUtil.isEmpty(name);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		if(isRoot()) return null;
 		return new HTTPResource(provider,
 				new HTTPConnectionData(data.username,data.password,data.host,data.port,path,data.proxyData,data.userAgent));
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getPath()
-	 */
+	@Override
 	public String getPath() {
 		return provider.getProtocol().concat("://").concat(data.key()).concat(path).concat(name);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(path.concat(name), realpath);
 		if(realpath.startsWith("../"))return null;
 		return new HTTPResource(provider,new HTTPConnectionData(data.username,data.password,data.host,data.port,realpath,data.proxyData,data.userAgent));
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return false;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return exists();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		return exists();
 	}

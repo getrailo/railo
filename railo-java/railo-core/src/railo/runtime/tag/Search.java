@@ -18,11 +18,11 @@ import railo.runtime.search.SearchException;
 import railo.runtime.search.SuggestionItem;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public final class Search extends TagImpl {
 
@@ -68,9 +68,7 @@ public final class Search extends TagImpl {
 	//private int spellCheckMaxLevel=10;
 	//private String result=null;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		type=SearchCollection.SEARCH_TYPE_SIMPLE;
@@ -141,7 +139,7 @@ public final class Search extends TagImpl {
 	 * @throws PageException
 	**/
 	public void setCollection(String collection) throws PageException	{
-		String[] collNames=List.toStringArrayTrim(List.listToArrayRemoveEmpty(collection,','));
+		String[] collNames=ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty(collection,','));
 	    collections=new SearchCollection[collNames.length];
 	    SearchEngine se = pageContext.getConfig().getSearchEngine();
 	    try { 
@@ -185,7 +183,7 @@ public final class Search extends TagImpl {
 	 */
 	public void setCategory(String listCategories)  {
 		if(StringUtil.isEmpty(listCategories)) return;
-		this.category = List.trimItems(List.listToStringArray(listCategories, ','));
+		this.category = ListUtil.trimItems(ListUtil.listToStringArray(listCategories, ','));
 	}
 
 
@@ -272,9 +270,7 @@ public final class Search extends TagImpl {
 		
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    //SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -388,9 +384,7 @@ public final class Search extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

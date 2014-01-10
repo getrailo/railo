@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,7 +16,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -26,8 +27,8 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
- * Die Klasse TagLibFactory liest die XML Repräsentation einer TLD ein 
- * und lädt diese in eine Objektstruktur. 
+ * Die Klasse TagLibFactory liest die XML Repraesentation einer TLD ein 
+ * und laedt diese in eine Objektstruktur. 
  * Sie tut dieses mithilfe eines Sax Parser.
  * Die Klasse kann sowohl einzelne Files oder gar ganze Verzeichnisse von TLD laden.
  */
@@ -50,7 +51,7 @@ public final class TagLibFactory extends DefaultHandler {
 	
 	private XMLReader xmlReader;
 	
-	private static Map hashLib=new HashTable();
+	private static Map<String,TagLib> hashLib=MapFactory.<String,TagLib>getConcurrentMap();
 	private static TagLib systemTLD;
 	private TagLib lib=new TagLib();
 	
@@ -69,7 +70,7 @@ public final class TagLibFactory extends DefaultHandler {
 		
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws TagLibException
@@ -78,7 +79,7 @@ public final class TagLibFactory extends DefaultHandler {
 	private TagLibFactory(String saxParser,Resource res) throws TagLibException {
 		Reader r=null;
 		try {
-			InputSource is=new InputSource(r=IOUtil.getReader(res.getInputStream(), null));
+			InputSource is=new InputSource(r=IOUtil.getReader(res.getInputStream(), (Charset)null));
 			is.setSystemId(res.getPath());
 			init(saxParser,is);
 		} catch (IOException e) {
@@ -90,7 +91,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws TagLibException
@@ -204,6 +205,10 @@ public final class TagLibFactory extends DefaultHandler {
     			// description?
     			// Name
     			if(inside.equals("name")) att.setName(value);
+    			// Values
+    			if(inside.equals("values")) att.setValues(value);
+    			// Value Delimiter
+    			if(inside.equals("value-delimiter")) att.setValueDelimiter(value);
 				// Required
 				else if(inside.equals("required")) 
 					att.setRequired(Caster.toBooleanValue(value,false));
@@ -218,6 +223,8 @@ public final class TagLibFactory extends DefaultHandler {
 				else if(inside.equals("status")) att.setStatus(toStatus(value));
     			// Description
 				else if(inside.equals("description")) att.setDescription(value);
+    			// No-Name
+				else if(inside.equals("noname")) att.setNoname(Caster.toBooleanValue(value,false));
 				// default
 				else if(inside.equals("default")) att.isDefault(Caster.toBooleanValue(value,false));
 				else if(inside.equals("script-support")) att.setScriptSupport(value);
@@ -317,6 +324,8 @@ public final class TagLibFactory extends DefaultHandler {
             // display-name
             else if(inside.equals("display-name")) lib.setDisplayName(value);
             else if(inside.equals("displayname")) lib.setDisplayName(value);
+    	    // ignore-unknow-tags
+            else if(inside.equals("ignore-unknow-tags")) lib.setIgnoreUnknowTags(Caster.toBooleanValue(value,false));
             
     	    
             else if(inside.equals("uri")) { 
@@ -379,8 +388,8 @@ public final class TagLibFactory extends DefaultHandler {
     }
 
 	/**
-	 * Gibt die interne TagLib zurück.
-	 * @return Interne Repräsentation der zu erstellenden TagLib.
+	 * Gibt die interne TagLib zurueck.
+	 * @return Interne Repraesentation der zu erstellenden TagLib.
 	 */
 	private TagLib getLib() {
 		return lib;
@@ -389,18 +398,18 @@ public final class TagLibFactory extends DefaultHandler {
 	/**
 	 * TagLib werden innerhalb der Factory in einer HashMap gecacht,
 	 * so das diese einmalig von der Factory geladen werden. 
-	 * Diese Methode gibt eine gecachte TagLib anhand dessen key zurück, 
-	 * falls diese noch nicht im Cache existiert, gibt die Methode null zurück.
+	 * Diese Methode gibt eine gecachte TagLib anhand dessen key zurueck, 
+	 * falls diese noch nicht im Cache existiert, gibt die Methode null zurueck.
 	 * 
 	 * @param key Absoluter Filepfad zur TLD.
 	 * @return TagLib
 	 */
 	private static TagLib getHashLib(String key) {
-		return (TagLib)hashLib.get(key);
+		return hashLib.get(key);
 	}
 	
 	/**
-	 * Lädt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
+	 * Laedt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
 	 * @param dir Verzeichnis im dem die TagLib's liegen.
 	 * @return TagLib's als Array
 	 * @throws TagLibException
@@ -410,7 +419,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
+	 * Laedt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
 	 * @param dir Verzeichnis im dem die TagLib's liegen.
 	 * @param saxParser Definition des Sax Parser mit dem die TagLib's eingelesen werden sollen.
 	 * @return TagLib's als Array
@@ -430,7 +439,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Lädt eine einzelne TagLib.
+	 * Laedt eine einzelne TagLib.
 	 * @param file TLD die geladen werden soll.
 	 * @return TagLib
 	 * @throws TagLibException
@@ -440,7 +449,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Lädt eine einzelne TagLib.
+	 * Laedt eine einzelne TagLib.
 	 * @param file TLD die geladen werden soll.
 	 * @return TagLib
 	 * @throws TagLibException
@@ -450,7 +459,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Lädt eine einzelne TagLib.
+	 * Laedt eine einzelne TagLib.
 	 * @param file TLD die geladen werden soll.
 	 * @param saxParser Definition des Sax Parser mit dem die TagLib eingelsesen werden soll.
 	 * @return TagLib
@@ -479,7 +488,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt die Systeminterne TLD.
+	 * Laedt die Systeminterne TLD.
 	 * @return FunctionLib
 	 * @throws TagLibException
 	 */
@@ -488,7 +497,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt die Systeminterne TLD.
+	 * Laedt die Systeminterne TLD.
 	 * @param saxParser Definition des Sax Parser mit dem die FunctionLib eingelsesen werden soll.
 	 * @return FunctionLib
 	 * @throws TagLibException

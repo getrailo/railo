@@ -1,12 +1,18 @@
 package railo.runtime.tag;
 
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.debug.ActiveLock;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.LockException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.lock.LockData;
 import railo.runtime.lock.LockManager;
+import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.lock.LockTimeoutException;
+import railo.runtime.lock.LockTimeoutExceptionImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -65,10 +71,9 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	
 	private LockManager manager;
     private LockData data=null;
+	private long start;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release() {
 		super.release();
 		type = LockManager.TYPE_EXCLUSIVE;
@@ -165,10 +170,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		if(name.length()==0)throw new ApplicationException("invalid attribute definition","attribute [name] can't be a empty string");
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException {
 		//if(timeoutInMillis==0)timeoutInMillis=30000;
 		//print.out("doStartTag");
@@ -213,28 +215,32 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	    cflock.set("succeeded",Boolean.TRUE);
 	    cflock.set("errortext","");
 	    pageContext.variablesScope().set("cflock",cflock);
-        
-		try {
+        start=System.nanoTime();
+        try {
+		    ((PageContextImpl)pageContext).setActiveLock(new ActiveLock(type,name,timeoutInMillis)); // this has to be first, otherwise LockTimeoutException has nothing to release
 		    data = manager.lock(type,name,timeoutInMillis,pageContext.getId());
 		} 
 		catch (LockTimeoutException e) {
-			//print.out("LockTimeoutException");
+			LockManagerImpl mi = (LockManagerImpl)manager;
+		    Boolean hasReadLock = mi.isReadLocked(name);
+		    Boolean hasWriteLock = mi.isWriteLocked(name);
+		    String msg = LockTimeoutExceptionImpl.createMessage(type, name, lockType, timeoutInMillis, hasReadLock, hasWriteLock);
+		    
+		    _release(pageContext,System.nanoTime()-start);
 		    name=null;
-			String errorText=e.getMessage();
-		    if(lockType!=null)errorText=("a timeout occurred on ["+lockType+"] scope lock");
-			
+		    
 		    cflock.set("succeeded",Boolean.FALSE);
-		    cflock.set("errortext",errorText);
+		    cflock.set("errortext",msg);
 
 			if(throwontimeout) throw new LockException(
 	                LockException.OPERATION_TIMEOUT,
 	                this.name,
-	                errorText);
+	                msg);
 			
 			return SKIP_BODY;
 		} 
 		catch (InterruptedException e) {
-		    
+			_release(pageContext,System.nanoTime()-start);
 		    cflock.set("succeeded",Boolean.FALSE);
 		    cflock.set("errortext",e.getMessage());
 		    
@@ -248,12 +254,19 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		return EVAL_BODY_INCLUDE;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.TryCatchFinally#doFinally()
-	 */
+	private void _release(PageContext pc, long exe) {
+		ActiveLock al = ((PageContextImpl)pc).releaseActiveLock();
+	    // listener
+		((ConfigWebImpl)pc.getConfig()).getActionMonitorCollector()
+			.log(pageContext, "lock", "Lock", exe, al.name+":"+al.timeoutInMillis);
+		
+	}
+
+
+	@Override
 	public void doFinally() {
-		//print.out("unlock:"+data.getName()+":"+pageContext.getId());
-        if(name!=null)manager.unlock(data);
+		_release(pageContext,System.nanoTime()-start);
+	    if(name!=null)manager.unlock(data);
 	}
 	
 	

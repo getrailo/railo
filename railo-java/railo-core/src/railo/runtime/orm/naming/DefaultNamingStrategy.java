@@ -4,23 +4,17 @@ public class DefaultNamingStrategy implements NamingStrategy {
 
 	public static final NamingStrategy INSTANCE = new DefaultNamingStrategy();
 
-	/**
-	 * @see railo.runtime.orm.NamingStrategy#convertTableName(java.lang.String)
-	 */
+	@Override
 	public String convertTableName(String tableName) {
 		return tableName;
 	}
 
-	/**
-	 * @see railo.runtime.orm.NamingStrategy#convertColumnName(java.lang.String)
-	 */
+	@Override
 	public String convertColumnName(String columnName) {
 		return columnName;
 	}
 
-	/**
-	 * @see railo.runtime.orm.NamingStrategy#getType()
-	 */
+	@Override
 	public String getType() {
 		return "default";
 	}

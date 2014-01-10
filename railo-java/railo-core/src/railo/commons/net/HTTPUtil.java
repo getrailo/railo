@@ -34,7 +34,7 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -113,13 +113,13 @@ public final class HTTPUtil {
      * @return url from string
      * @throws MalformedURLException
      */
-	 public static URL toURL(String strUrl) throws MalformedURLException {
-		 return toURL(strUrl,-1);
+	 public static URL toURL(String strUrl,boolean encodeIfNecessary) throws MalformedURLException {
+		 return toURL(strUrl,-1,encodeIfNecessary);
 	 }
 	 
-	 public static URL toURL(String strUrl,URL defaultValue){
+	 public static URL toURL(String strUrl,boolean encodeIfNecessary,URL defaultValue){
 		 try {
-			return toURL(strUrl,-1);
+			return toURL(strUrl,-1,encodeIfNecessary);
 		} catch (MalformedURLException e) {
 			return defaultValue;
 		}
@@ -128,7 +128,7 @@ public final class HTTPUtil {
 
 	 public static String validateURL(String strUrl,String defaultValue){
 		 try {
-			return toURL(strUrl,-1).toExternalForm();
+			return toURL(strUrl,-1,true).toExternalForm();
 		} catch (MalformedURLException e) {
 			return defaultValue;
 		}
@@ -141,25 +141,24 @@ public final class HTTPUtil {
      * @throws MalformedURLException
      */
 
-	  public static URL toURL(String strUrl, int port) throws MalformedURLException {
-		  URL url;
-		  try {
-	            url=new URL(strUrl);
-	        }
-	        catch(MalformedURLException mue) {
-	            url=new URL("http://"+strUrl);
-	        }
-		  return toURL(url, port);
-	  }
-	 
-	 
-    private static URL toURL(URL url, int port) throws MalformedURLException {
+	public static URL toURL(String strUrl, int port, boolean encodeIfNecessary) throws MalformedURLException {
+		URL url;
+		try {
+			url=new URL(strUrl);
+		}
+		catch(MalformedURLException mue) {
+			url=new URL("http://"+strUrl);
+		}
+		if(!encodeIfNecessary) return url;
+		return encodeURL(url, port);
+	}
+
+    public static URL encodeURL(URL url) throws MalformedURLException {
+    	return encodeURL(url, -1);
     	
+    }
+    public static URL encodeURL(URL url, int port) throws MalformedURLException {
     	
-        
-        
-        
-        
         // file
         String path=url.getPath();
         //String file=url.getFile();
@@ -179,7 +178,7 @@ public final class HTTPUtil {
         	
         	StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toListTrim(path, '/');
+        	StringList list = ListUtil.toListTrim(path, '/');
         	String str;
         	
         	while(list.hasNext()){
@@ -196,7 +195,6 @@ public final class HTTPUtil {
         	if(sqIndex!=-1) {
         		path+=decodeQuery(q,';');
         	}
-        	
         }
         
         // decode query	
@@ -238,7 +236,7 @@ public final class HTTPUtil {
     	if(!StringUtil.isEmpty(query)) {
     		StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toList(query, '&');
+        	StringList list = ListUtil.toList(query, '&');
         	String str;
         	int index;
         	char del=startDelimiter;
@@ -293,7 +291,7 @@ public final class HTTPUtil {
         	
         	StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toListTrim(path, '/');
+        	StringList list = ListUtil.toListTrim(path, '/');
         	String str;
         	
         	while(list.hasNext()){
@@ -590,7 +588,7 @@ public final class HTTPUtil {
 			
         	disp.include(req,hsrw);
 	        if(!hsrw.isCommitted())hsrw.flushBuffer();
-	        pc.write(IOUtil.toString(baos.toByteArray(), hsrw.getCharacterEncoding()));
+	        pc.write(IOUtil.toString(baos.toByteArray(), ReqRspUtil.getCharacterEncoding(pc,hsrw)));
         }
         finally{
         	HttpServletResponseWrap.release();
@@ -630,7 +628,7 @@ public final class HTTPUtil {
         // query
         if(!StringUtil.isEmpty(query)){
         	
-        	StringList list = List.toList(query, '&');
+        	StringList list = ListUtil.toList(query, '&');
         	String str;
         	int index;
         	char del='?';
@@ -695,7 +693,7 @@ public final class HTTPUtil {
 	public static Map<String, String> parseParameterList(String _str, boolean decode,String charset) {
 		//return railo.commons.net.HTTPUtil.toURI(strUrl,port);
 		Map<String,String> data=new HashMap<String, String>();
-		StringList list = List.toList(_str, '&');
+		StringList list = ListUtil.toList(_str, '&');
     	String str;
     	int index;
     	while(list.hasNext()){
@@ -756,7 +754,7 @@ public final class HTTPUtil {
 	
 
 	public static String[] splitTypeAndSubType(String mimetype) {
-		String[] types=List.listToStringArray(mimetype, '/');
+		String[] types=ListUtil.listToStringArray(mimetype, '/');
 		String[] rtn=new String[2];
     	
     	if(types.length>0){
@@ -775,7 +773,8 @@ public final class HTTPUtil {
     	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  ||  
-    	StringUtil.startsWithIgnoreCase(mimetype,"application/json")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/json")  ||  
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/cfml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
     	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 

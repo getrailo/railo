@@ -24,78 +24,58 @@ public final class BlobImpl implements java.sql.Blob, Serializable {
          binaryData = data;
      }
  
-     /**
-     * @see java.sql.Blob#length()
-     */
+     @Override
     public long length() throws SQLException {
          return binaryData.length;
      }
  
-     /**
-     * @see java.sql.Blob#getBytes(long, int)
-     */
+     @Override
     public byte[] getBytes(long pos, int length) throws SQLException   {
          byte[] newData = new byte[length]; 
          System.arraycopy(binaryData, (int) (pos - 1), newData, 0, length);
          return newData;
      }
  
-     /**
-     * @see java.sql.Blob#getBinaryStream()
-     */
+     @Override
     public java.io.InputStream getBinaryStream() throws SQLException	{
         return new ByteArrayInputStream(binaryData);
     }
     
-    /**
-     * @see java.sql.Blob#getBinaryStream(long, long)
-     */
+    @Override
     public java.io.InputStream getBinaryStream(long pos, long length)	{
     	// TODO impl this
     	return new ByteArrayInputStream(binaryData);
     }
 
-     /**
-     * @see java.sql.Blob#position(byte[], long)
-     */
+     @Override
     public long position(byte pattern[], long start) throws SQLException	{
          return (new String(binaryData)).indexOf(new String(pattern), (int) start);
      }
  
-     /**
-     * @see java.sql.Blob#position(java.sql.Blob, long)
-     */
+     @Override
     public long position(java.sql.Blob pattern, long start) throws SQLException	{
          return position(pattern.getBytes(0, (int) pattern.length()), start);
      }
  
-     /**
-     * @see java.sql.Blob#setBytes(long, byte[])
-     */
+     @Override
     public int setBytes(long pos, byte[] bytes) throws SQLException	{
          // TODO impl.
          throw new SQLException("JDBC 3.0 Method setBytes not implemented");
      }
 
-     /**
-     * @see java.sql.Blob#setBytes(long, byte[], int, int)
-     */
+     @Override
     public int setBytes(long pos, byte[] bytes, int offset, int len)	throws SQLException	{
          // TODO impl.
          throw new SQLException("JDBC 3.0 Method setBytes not implemented");
      }
  
-     /**
-     * @see java.sql.Blob#setBinaryStream(long)
-     */
+     @Override
     public java.io.OutputStream setBinaryStream(long pos) throws SQLException	{
          // TODO impl.
          throw new SQLException("JDBC 3.0 Method setBinaryStream not implemented");
      }
  
-     /**
-     * @see java.sql.Blob#truncate(long)
-     */
+     @Override
     public void truncate(long len) throws SQLException	{
          // TODO impl.
          throw new SQLException("JDBC 3.0 Method truncate not implemented");

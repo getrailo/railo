@@ -21,10 +21,7 @@ public class ValueNumber extends ValueSupport implements Literal {
 		this.value=Caster.toDoubleValue(strValue,0);
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return getString();
 		return getString()+" as "+getAlias();

@@ -1,22 +1,30 @@
 package railo.runtime.listener;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * 
@@ -40,17 +48,20 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
+	private boolean bufferOutput;
 	private boolean secureJson;
 	private String secureJsonPrefix="//";
 	private boolean isDefault;
-	private String defaultDataSource;
+	private Object defaultDataSource;
 	private boolean ormEnabled;
-	private String ormdatasource;
+	private Object ormdatasource;
 	private ORMConfiguration config;
 	private Properties s3;
 	
 
 	private int localMode;
+	private Locale locale; 
+	private TimeZone timeZone; 
 	private short sessionType;
     private boolean sessionCluster;
     private boolean clientCluster;
@@ -64,6 +75,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Resource[] restCFCLocations;
 
 	private JavaSettingsImpl javaSettings;
+
+	private DataSource[] dataSources;
+
+	private UDF onMissingTemplate;
 
     
     /**
@@ -84,13 +99,21 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.isDefault=isDefault;
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
+        this.locale=config.getLocale();
+        this.timeZone=config.getTimeZone();
+
+        this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
+        this.clientstorage=((ConfigImpl)config).getClientStorage();
+        this.sessionstorage=((ConfigImpl)config).getSessionStorage();
+        
         this.source=source;
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSettings=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
+        
     }
     
     /**
@@ -118,8 +141,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.sessionstorage=sessionstorage;
 		dbl.scriptProtect=scriptProtect;
 		dbl.mappings=mappings;
+		dbl.dataSources=dataSources;
 		dbl.ctmappings=ctmappings;
 		dbl.cmappings=cmappings;
+		dbl.bufferOutput=bufferOutput;
 		dbl.secureJson=secureJson;
 		dbl.secureJsonPrefix=secureJsonPrefix;
 		dbl.isDefault=isDefault;
@@ -128,6 +153,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.cookiedomain=cookiedomain;
 		dbl.idletimeout=idletimeout;
 		dbl.localMode=localMode;
+		dbl.locale=locale;
+		dbl.timeZone=timeZone;
 		dbl.sessionType=sessionType;
 		dbl.triggerComponentDataMember=triggerComponentDataMember;
 		dbl.restSettings=restSettings;
@@ -145,9 +172,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
     
     
-    /**
-     * @see railo.runtime.util.IApplicationContext#getApplicationTimeout()
-     */
+    @Override
     public TimeSpan getApplicationTimeout() {
         return applicationTimeout;
     }
@@ -157,9 +182,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setApplicationTimeout(TimeSpan applicationTimeout) {
         this.applicationTimeout = applicationTimeout;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#getLoginStorage()
-     */
+    @Override
     public int getLoginStorage() {
         return loginStorage;
     }
@@ -176,9 +199,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     
     
     
-    /**
-     * @see railo.runtime.util.IApplicationContext#getFullName()
-     */
+    @Override
     public String getName() {
         return name;
     }
@@ -188,9 +209,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setName(String name) {
         this.name = name;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#getSessionTimeout()
-     */
+    @Override
     public TimeSpan getSessionTimeout() {
         return sessionTimeout;
     }
@@ -214,9 +233,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.clientTimeout = clientTimeout;
     }
     
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetClientCookies()
-     */
+    @Override
     public boolean isSetClientCookies() {
         return setClientCookies;
     }
@@ -226,9 +243,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetClientCookies(boolean setClientCookies) {
         this.setClientCookies = setClientCookies;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetClientManagement()
-     */
+    @Override
     public boolean isSetClientManagement() {
         return setClientManagement;
     }
@@ -238,9 +253,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetClientManagement(boolean setClientManagement) {
         this.setClientManagement = setClientManagement;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetDomainCookies()
-     */
+    @Override
     public boolean isSetDomainCookies() {
         return setDomainCookies;
     }
@@ -250,9 +263,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetDomainCookies(boolean setDomainCookies) {
         this.setDomainCookies = setDomainCookies;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetSessionManagement()
-     */
+    @Override
     public boolean isSetSessionManagement() {
         return setSessionManagement;
     }
@@ -262,9 +273,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetSessionManagement(boolean setSessionManagement) {
         this.setSessionManagement = setSessionManagement;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#getClientstorage()
-     */
+    @Override
     public String getClientstorage() {
         return clientstorage;
     }
@@ -275,15 +284,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
      * @param clientstorage The clientstorage to set.
      */
     public void setClientstorage(String clientstorage) {
+    	if(StringUtil.isEmpty(clientstorage,true)) return;
         this.clientstorage = clientstorage;
     }
     public void setSessionstorage(String sessionstorage) {
+    	if(StringUtil.isEmpty(sessionstorage,true)) return;
         this.sessionstorage = sessionstorage;
     }
 
-    /**
-     * @see railo.runtime.util.IApplicationContext#hasName()
-     */
+    @Override
     public boolean hasName() {
         return name!=null;
     }
@@ -295,9 +304,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		this.scriptProtect=scriptProtect;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getScriptProtect()
-	 */
+	@Override
 	public int getScriptProtect() {
 		//if(isDefault)print.err("get:"+scriptProtect);
 		return scriptProtect;
@@ -336,16 +343,24 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	public void setSecureJson(boolean secureJson) {
 		this.secureJson=secureJson;
 	}
-	
-	public void setSecureJsonPrefix(String secureJsonPrefix) {
-		this.secureJsonPrefix=secureJsonPrefix;
-	}
 
 	/**
 	 * @return the secureJson
 	 */
 	public boolean getSecureJson() {
 		return secureJson;
+	}
+	
+	public boolean getBufferOutput(){
+		return bufferOutput;
+	}
+	
+	public void setBufferOutput(boolean bufferOutput){
+		this.bufferOutput= bufferOutput;
+	}
+	
+	public void setSecureJsonPrefix(String secureJsonPrefix) {
+		this.secureJsonPrefix=secureJsonPrefix;
 	}
 
 	/**
@@ -355,22 +370,24 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		return secureJsonPrefix;
 	}
 
-	 /**
-	 * @return the defaultDataSource
-	 */
+	@Override
 	public String getDefaultDataSource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+	
+	@Override
+	public Object getDefDataSource() {
 		return defaultDataSource;
 	}
 
-	/**
-	 * @param defaultDataSource the defaultDataSource to set
-	 */
+	@Override
 	public void setDefaultDataSource(String defaultDataSource) {
 		this.defaultDataSource = defaultDataSource;
 	}
-	
-	public void setORMDataSource(String ormdatasource) {
-		this.ormdatasource = ormdatasource;
+
+	@Override
+	public void setDefDataSource(Object defaultDataSource) {
+		this.defaultDataSource = defaultDataSource;
 	}
 
 	public boolean isORMEnabled() {
@@ -378,6 +395,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
 
 	public String getORMDatasource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+
+	public Object getORMDataSource() {
 		return ormdatasource;
 	}
 
@@ -400,12 +421,21 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		return s3;
 	}
 
-	/**
-	 * @return the localMode
-	 */
+	@Override
 	public int getLocalMode() {
 		return localMode;
 	}
+
+	@Override
+	public Locale getLocale() {
+		return locale;
+	}
+
+	@Override
+	public TimeZone getTimeZone() {
+		return timeZone;
+	}
+	
 
 
 	/**
@@ -413,6 +443,16 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	 */
 	public void setLocalMode(int localMode) {
 		this.localMode = localMode;
+	}
+
+	@Override
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	@Override
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone = timeZone;
 	}
 
 
@@ -468,10 +508,13 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		this.s3=s3;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#setORMDatasource(java.lang.String)
-	 */
+	@Override
 	public void setORMDatasource(String ormdatasource) {
+		this.ormdatasource=ormdatasource;
+	}
+
+	@Override
+	public void setORMDataSource(Object ormdatasource) {
 		this.ormdatasource=ormdatasource;
 	}
 
@@ -540,5 +583,23 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public JavaSettings getJavaSettings() {
 		return javaSettings;
+	}
+
+	@Override
+	public DataSource[] getDataSources() {
+		return dataSources;
+	}
+
+	@Override
+	public void setDataSources(DataSource[] dataSources) {
+		if(!ArrayUtil.isEmpty(dataSources))this.dataSources=dataSources;
+	}
+
+	public void setOnMissingTemplate(UDF onMissingTemplate) {
+		this.onMissingTemplate=onMissingTemplate;
+	}
+
+	public UDF getOnMissingTemplate() { 
+		return onMissingTemplate;
 	}
 }

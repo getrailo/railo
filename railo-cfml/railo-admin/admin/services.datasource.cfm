@@ -1,16 +1,26 @@
 <cfset error.message="">
 <cfset error.detail="">
-<cfset driverNames=ComponentListPackage("dbdriver")>
 
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.dbdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.dbdriver",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("dbdriver",driverNames)>
 
 <cfset variables.drivers=struct()>
-<cfloop array="#driverNames#" item="n">
+<cfset variables.selectors	= struct()>
+<cfloop collection="#driverNames#" index="n" item="fn">
+	
 	<cfif n NEQ "Driver" and n NEQ "IDriver">
-		<cfset variables.drivers[n]=createObject("component","dbdriver."&n)>
+		<cfset obj = createObject("component",fn)>
+		<cfif isInstanceOf( obj, "types.IDriverSelector" )>
+			<cfset variables.selectors[n] = obj>
+		<cfelseif isInstanceOf( obj, "types.IDatasource" )>
+			<cfset variables.drivers[n] = obj>
+		</cfif>
 	</cfif>
 </cfloop>
 
-<cffunction name="getTypeName">
+<cffunction name="getDbDriverTypeName">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
 	<cfset var key="">
@@ -24,7 +34,7 @@
     <cfreturn variables.drivers['other'].getName()>
 </cffunction>
 
-<cffunction name="getType">
+<cffunction name="getDbDriverType">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
 	<cfset var key="">

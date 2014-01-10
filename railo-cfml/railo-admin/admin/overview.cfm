@@ -4,9 +4,17 @@ Defaults --->
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
 
+<!--- load asynchron all extension providers  --->
+<cfparam name="application[request.admintype].preloadedExtensionProviders" default="false" type="boolean">
+<cfif !application[request.admintype].preloadedExtensionProviders>
+	<cfinclude template="extension.functions.cfm">
+	<cfset loadAllProvidersData(0,false)>
+	<cfset application[request.admintype].preloadedExtensionProviders=true>
+</cfif>
+
 <cftry>
 	<cfswitch expression="#form.mainAction#">
-	<!--- UPDATE --->
+	<!--- UPDATE Label --->
 		<cfcase value="#stText.Buttons.Update#">
 			<cfset data.label=toArrayFromForm("label")>
 			<cfset data.hash=toArrayFromForm("hash")>
@@ -22,6 +30,14 @@ Defaults --->
                     hash="#data.hash[idx]#">
                  </cfif>
             </cfloop>
+		</cfcase>
+	<!--- UPDATE API Key --->
+		<cfcase value="#stText.Buttons.OK#">
+			<cfadmin 
+                    action="updateApiKey"
+                    type="#request.adminType#"
+                    password="#session["password"&request.adminType]#"
+                    key="#trim(form.apiKey)#">
 		</cfcase>
 	</cfswitch>
 	<cfcatch>
@@ -40,7 +56,6 @@ Redirtect to entry --->
 <!--- 
 Error Output --->
 <cfset printError(error)>
-
 
 
 
@@ -88,7 +103,7 @@ Error Output --->
         <cfset arguments.usage=qry>
 		<cfset var ret = "" />
 		<cfsavecontent variable="ret"><cfoutput>
-   			<h3>#pool[usage.type]#</h3>
+   			<b>#pool[usage.type]#</b>
 			<cfloop query="usage">
        			<cfset local._used=int(width/arguments.usage.max*arguments.usage.used)>
         		<cfset local._free=width-_used> 
@@ -122,6 +137,37 @@ Error Output --->
 		type="#request.adminType#"
 		password="#session["password"&request.adminType]#"
 		returnVariable="info">
+		
+	<cfadmin 
+		action="getAPIKey"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		returnVariable="apiKey">
+		
+<cfadmin 
+	action="getCompilerSettings"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="compiler">
+	
+
+<cfadmin 
+	action="getScope"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="scope">
+	
+<cfadmin 
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	action="getPerformanceSettings"
+	returnVariable="performance">
+
+<cfadmin 
+	action="getContexts"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="contexts">
 	
 	<cfif request.adminType EQ "server">
 		<cfset names=StructKeyArray(info.servlets)>
@@ -132,10 +178,99 @@ Error Output --->
 			</div>
 		</cfif>	
 	</cfif>
+
+
+	<cfif !info.javaAgentSupported>
+		<div class="warning nofocus">
+			There is no Java Agent defined in this enviroment. 
+			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
+			To enable the Java Agent follow this instructions:
+			<ul>
+				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar in your lib directory
+				<br>
+				<cfif !isNull(info.javaAgentPath) && len( info.javaAgentPath )>
+					in this environment that would be: <em>-javaagent=#replace( info.javaAgentPath, server.java.executionPath, "" )#</em>
+				<cfelse>
+
+					if the railo-inst.jar is not present in your lib folder you can download it from <a href="http://www.getrailo.org/download" target="new">here</a>.					
+				</cfif>
+                </li>
+			</ul>			
+		</div>
+	</cfif>
 	
 	<table>
 		<tr>
 			<td valign="top" width="65%">
+				
+				<h2>#stText.overview.langPerf#</h2>
+				<table class="maintbl">
+					<tbody>
+							<tr>
+								<th scope="row">#stText.setting.inspectTemplate#</th>
+								<td <cfif performance.inspectTemplate EQ "always">style="color:##cc0000"</cfif>>
+									<cfif performance.inspectTemplate EQ "never">
+										#stText.setting.inspectTemplateNever#
+									<cfelseif performance.inspectTemplate EQ "once">
+										#stText.setting.inspectTemplateOnce#
+									<cfelseif performance.inspectTemplate EQ "always">
+										#stText.setting.inspectTemplateAlways#
+									</cfif>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.compiler.nullSupport#</th>
+								<td <cfif !compiler.nullSupport>style="color:##cc0000"</cfif>>
+									<cfif compiler.nullSupport>
+										#stText.compiler.nullSupportFull#
+									<cfelse>
+										#stText.compiler.nullSupportPartial#
+									</cfif>
+							</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.setting.dotNotation#</th>
+								<td <cfif compiler.DotNotationUpperCase>style="color:##cc0000"</cfif>>
+									<cfif compiler.DotNotationUpperCase>#stText.setting.dotNotationUpperCase#<cfelse>#stText.setting.dotNotationOriginalCase#</cfif>
+								</td>
+							</tr>
+							<!---<tr>
+								<th scope="row">#stText.setting.supressWSBeforeArg#</th>
+								<td <cfif !compiler.supressWSBeforeArg>style="color:##cc0000"</cfif>>#yesNoFormat(compiler.supressWSBeforeArg)#</td>
+							</tr> --->
+							
+							<tr>
+								<th scope="row">#stText.Scopes.LocalMode#</th>
+								<td <cfif scope.localMode EQ "classic">style="color:##cc0000"</cfif>>
+									<cfif scope.localMode EQ "modern">#stText.Scopes.LocalModeModern#<cfelse>#stText.Scopes.LocalModeClassic#</cfif>
+								</td>
+							</tr>
+							
+					</tbody>
+				</table>
+				<cfset stText.io.title="Railo IO">
+				<cfset stText.io.desc="Railo.io is your one stop shop to all that is Railo. From managing your Extension Store licenses, to monitoring your servers and keeping all your settings in sync and everything in between.">
+				<cfset stText.io.id="Railo.ID">
+				<cfset stText.io.idDesc="To interact with RailoIO, you need a Railo.ID, you can get this ID from <a target=""top"" href=""http://beta.railo.io/index.cfm/account"">here</a>">
+				<h2>#stText.io.title#</h2>
+				#stText.io.desc#
+				
+				<table class="maintbl">
+					<tbody>
+						<!--- has api key --->
+						<cfif !isNull(apiKey) && len(apiKey)>
+							<tr>
+								<cfform onerror="customError" action="#request.self#" method="post">
+								<th scope="row">#stText.io.id#</th>
+								<td><input type="text" style="width:250px" name="apiKey" value="#apiKey#"/><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.ok#"><br>
+								<span class="comment">#stText.io.idDesc#</span></td>
+								</cfform>
+							</tr>
+						</cfif>
+						
+					</tbody>
+				</table>
+				
 				<h2>#stText.Overview.Info#</h2>
 				<table class="maintbl">
 					<tbody>
@@ -221,6 +356,12 @@ Error Output --->
 							<th scope="row">#stText.overview.railoID#</th>
 							<td>#getRailoId().server.id#</td>
 						</tr>
+						<!---
+						<tr>
+							<th scope="row">#stText.overview.railoID#</th>
+							<td>#getRailoId().server.ioid#</td>
+						</tr>
+						--->
 						<cfif request.adminType EQ "web">
 							<tr>
 								<th scope="row">#stText.Overview.InstalledTLs#</th>
@@ -286,34 +427,30 @@ Error Output --->
 			</td>
 			<td width="2%"></td>
 			<td valign="top" width="33%">
-				<script type="text/javascript">
-					function updateBindError()
-					{
-						//console.log(arguments);
-						$('##updateinfo').after('<div class=""error"">Update info could not be retrieved</div>');
-					}
-				</script>
-				<h2 id="updateinfo">Update Info</h2>
-				<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
-				<cfdiv onBindError="updateBindError"
-				bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
+				<br><br>
+				<div id="updateInfoDesc"><div style="text-align: center;"><img src="../res/img/spinner16.gif.cfm"></div></div>
 
-				<!--- Memory Usage --->
-				<cftry>
-					<cfsavecontent variable="memoryInfo">
-						<h2>Memory Usage</h2>
-						
-						#printMemory(getmemoryUsage("heap"))#
+				<cfsavecontent variable="Request.htmlBody" append="true">
+					<script type="text/javascript">
 
-						#printMemory(getmemoryUsage("non_heap"))#
-					</cfsavecontent>
-					#memoryInfo#
-					<cfcatch></cfcatch>
-				</cftry>
+						$( function() {
+
+							$('##updateInfoDesc').load('update.cfm?#session.urltoken#&adminType=#request.admintype#');
+						} );
+					</script>
+				</cfsavecontent>
+
+					<!--- Memory Usage --->
+					<cftry>
+						<cfsavecontent variable="memoryInfo">
+							<h3>Memory Usage</h3>
+							#printMemory(getmemoryUsage("heap"))#
+							#printMemory(getmemoryUsage("non_heap"))#
+						</cfsavecontent>
+						#memoryInfo#
+						<cfcatch></cfcatch>
+					</cftry>
 	
-				<!--- Support --->
-				<h2>#stText.Overview.Support#</h2>
-				<div class="txt">
 					<!--- Professional --->
 					<h3>
 						<a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">#stText.Overview.Professional#</a>
@@ -339,13 +476,13 @@ Error Output --->
 					<h3>
 						<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">#stText.Overview.issueTracker#</a>
 					</h3>
-					<div class="comment">#stText.Overview.bookDesc#</div>
+					<div class="comment">#stText.Overview.issuetrackerDesc#</div>
 					
 					<!--- Blog --->
 					<h3>
 						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
-					<div class="comment">#stText.Overview.bookDesc#</div>
+					<div class="comment">#stText.Overview.blogDesc#</div>
 					
 					
 					
@@ -354,18 +491,13 @@ Error Output --->
 						<a href="https://twitter.com/##!/railo" target="_blank">#stText.Overview.twitter#</a>
 					</h3>
 					<div class="comment">#stText.Overview.twitterDesc#</div>
-				</div>
+				
 			</td>
 		</tr>
 	</table>
 	
 	<cfif request.admintype EQ "server">
-		<cfadmin 
-			action="getContexts"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
-			returnVariable="rst">
-	
+		
 		<h2>#stText.Overview.contexts.title#</h2>
 		<div class="itemintro">
 			You can label your web contexts here, so they are more clearly distinguishable for use with extensions etc.
@@ -381,7 +513,8 @@ Error Output --->
 					</tr>
 				</thead>
 				<tbody>
-					<cfloop query="rst">
+					<cfset rst=contexts>
+					<cfloop query="contexts">
 						<tr>
 							<td>
 								<input type="hidden" name="hash_#rst.currentrow#" value="#rst.hash#"/>
@@ -391,6 +524,22 @@ Error Output --->
 							<td><input type="text" class="xlarge" name="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
 							<td><input type="text" class="xlarge" style="width:99%" name="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
 						</tr>
+
+						<cfset filesThreshold = 100000>
+						<cfif ( contexts.clientElements GT filesThreshold ) || ( contexts.sessionElements GT filesThreshold )>
+
+							<tr>
+								<td colspan="4" style="background-color:##FCC;" align="center">
+									Warning:
+									<cfif ( contexts.clientElements GT filesThreshold )>
+										<b>#numberFormat( contexts.clientElements, "," )#</b> Client files
+									</cfif>
+									<cfif ( contexts.sessionElements GT filesThreshold )>
+										<b>#numberFormat( contexts.sessionElements, "," )#</b> Session files
+									</cfif>
+								</td>
+							</tr>
+						</cfif>
 					</cfloop>
 				</tbody>
 				<tfoot>

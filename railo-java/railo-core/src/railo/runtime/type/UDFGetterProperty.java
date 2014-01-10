@@ -18,51 +18,39 @@ public final class UDFGetterProperty extends UDFGSProperty {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");
 		this.prop=prop;
 		this.propName=KeyImpl.getInstance(prop.getName());
+		
 	} 
 
-	/**
-	 * @see railo.runtime.type.UDF#duplicate()
-	 */
-	public UDF duplicate(ComponentImpl c) {
-		return new UDFGetterProperty(c,prop);
-	}
-	
-
 	public UDF duplicate() {
-		return duplicate(component);
+		return new UDFGetterProperty(component,prop);
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-	 */
+	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		return component.getComponentScope().get(pageContext, propName,null);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
 		return component.getComponentScope().get(pageContext,propName,null);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		return component.getComponentScope().get(pageContext,propName,null);
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public Object getDefaultValue(PageContext pc, int index) throws PageException {
 		return null;
 	}
+	
+	@Override
+	public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException {
+		return defaultValue;
+	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		return prop.getType();
 	}

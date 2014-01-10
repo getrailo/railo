@@ -19,7 +19,7 @@ import railo.transformer.cfml.ExprTransformer;
 
 
 /**
- * Die Klasse TagLib repäsentiert eine Komplette TLD, 
+ * Die Klasse TagLib repaesentiert eine Komplette TLD, 
  * mit ihrer Hilfe kann man alle Informationen, zu einer TLD Abfragen. 
  */
 public class TagLib implements Cloneable {
@@ -55,10 +55,11 @@ public class TagLib implements Cloneable {
 
 	private String description;
 	private TagLibTag[] scriptTags;
+	private boolean ignoreUnknowTags;
 
 	
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 */
 	protected TagLib(boolean isCore) {
 		this.isCore=isCore;
@@ -75,7 +76,7 @@ public class TagLib implements Cloneable {
 	}
 	
 	/**
-	 * Gibt den Name-Space einer TLD als String zurück.
+	 * Gibt den Name-Space einer TLD als String zurueck.
 	 * @return String Name der TLD.
 	 */
 	public String getNameSpace() {
@@ -84,7 +85,7 @@ public class TagLib implements Cloneable {
 	}
 
 	/**
-	 * Gibt den Trenner zwischen Name-Space und Name einer TLD zurück.
+	 * Gibt den Trenner zwischen Name-Space und Name einer TLD zurueck.
 	 * @return Name zwischen Name-Space und Name.
 	 */
 	public String getNameSpaceSeparator() {
@@ -92,7 +93,7 @@ public class TagLib implements Cloneable {
 	}
     
     /**
-     * Gibt den Name-Space inkl. dem Seperator zurück.
+     * Gibt den Name-Space inkl. dem Seperator zurueck.
      * @return String
      */
     public String getNameSpaceAndSeparator() {
@@ -100,7 +101,7 @@ public class TagLib implements Cloneable {
     }
     
     /**
-     * Gibt den Name-Space inkl. dem Seperator zurück.
+     * Gibt den Name-Space inkl. dem Seperator zurueck.
      * @return String
      */
     public char[] getNameSpaceAndSeperatorAsCharArray() {
@@ -111,9 +112,9 @@ public class TagLib implements Cloneable {
     }
 	
 	/**
-	 * Gibt einen Tag (TagLibTag)zurück, dessen Name mit dem übergebenen Wert übereinstimmt,
-	 * falls keine Übereinstimmung gefunden wird, wird null zurück gegeben.
-	 * @param name Name des Tag das zurück gegeben werden soll.
+	 * Gibt einen Tag (TagLibTag)zurueck, dessen Name mit dem uebergebenen Wert uebereinstimmt,
+	 * falls keine Übereinstimmung gefunden wird, wird null zurueck gegeben.
+	 * @param name Name des Tag das zurueck gegeben werden soll.
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
 	public TagLibTag getTag(String name)	{
@@ -121,11 +122,11 @@ public class TagLib implements Cloneable {
 	}
 	
 	/**
-	 * Gibt einen Tag (TagLibTag)zurück, welches definiert hat, dass es einen Appendix besitzt.
+	 * Gibt einen Tag (TagLibTag)zurueck, welches definiert hat, dass es einen Appendix besitzt.
 	 * D.h. dass der Name des Tag mit weiteren Buchstaben erweitert sein kann, 
-	 * also muss nur der erste Teil des Namen vom Tag mit dem übergebenen Namen übereinstimmen.
-	 * Wenn keine Übereinstimmung gefunden wird, wird null zurück gegeben.
-	 * @param name Name des Tag inkl. Appendix das zurück gegeben werden soll.
+	 * also muss nur der erste Teil des Namen vom Tag mit dem uebergebenen Namen uebereinstimmen.
+	 * Wenn keine Übereinstimmung gefunden wird, wird null zurueck gegeben.
+	 * @param name Name des Tag inkl. Appendix das zurueck gegeben werden soll.
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
 	public TagLibTag getAppendixTag(String name)	{
@@ -141,7 +142,7 @@ public class TagLib implements Cloneable {
 	}
 	
 	/**
-	 * Gibt alle Tags (TagLibTag) als HashMap zurück.
+	 * Gibt alle Tags (TagLibTag) als HashMap zurueck.
 	 * @return Alle Tags als HashMap.
 	 */
 	public Map<String,TagLibTag> getTags() {
@@ -149,7 +150,7 @@ public class TagLib implements Cloneable {
 	}
 
 	/**
-	 * Gibt die Klasse des ExprTransformer als Zeichenkette zurück.
+	 * Gibt die Klasse des ExprTransformer als Zeichenkette zurueck.
 	 * @return String
 	 */
 	public String getELClass() {
@@ -178,7 +179,7 @@ public class TagLib implements Cloneable {
 	}
 	
 	/**
-	 * Fügt der TagLib einen weiteren Tag hinzu.
+	 * Fuegt der TagLib einen weiteren Tag hinzu.
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param tag Neuer Tag.
 	 */
@@ -193,7 +194,7 @@ public class TagLib implements Cloneable {
 	}
 	
 	/**
-	 * Fügt der TagLib die Evaluator Klassendefinition als Zeichenkette hinzu.
+	 * Fuegt der TagLib die Evaluator Klassendefinition als Zeichenkette hinzu.
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param eLClass Zeichenkette der Evaluator Klassendefinition.
 	 */
@@ -202,7 +203,7 @@ public class TagLib implements Cloneable {
 	}
 
 	/**
-	 * Fügt der TagLib die die Definition des Name-Space hinzu.
+	 * Fuegt der TagLib die die Definition des Name-Space hinzu.
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param nameSpace Name-Space der TagLib.
 	 */
@@ -211,7 +212,7 @@ public class TagLib implements Cloneable {
 	}
 
 	/**
-	 * Fügt der TagLib die die Definition des Name-Space-Seperator hinzu.
+	 * Fuegt der TagLib die die Definition des Name-Space-Seperator hinzu.
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param nameSpaceSeperator Name-Space-Seperator der TagLib.
 	 */
@@ -245,6 +246,16 @@ public class TagLib implements Cloneable {
         this.shortName = shortName;
         if(nameSpace==null)nameSpace=shortName.toLowerCase();
     }
+    
+
+	public void setIgnoreUnknowTags(boolean ignoreUnknowTags) {
+		this.ignoreUnknowTags=ignoreUnknowTags;
+	}
+	public boolean getIgnoreUnknowTags() {
+		return ignoreUnknowTags;
+	}
+    
+    
     /**
      * @return Returns the type.
      */
@@ -316,6 +327,7 @@ public class TagLib implements Cloneable {
 		tl.tags=duplicate(this.tags,deepCopy);
 		tl.type=this.type;
 		tl.source=this.source;
+		tl.ignoreUnknowTags=this.ignoreUnknowTags;
 		
 		return tl;
 	}

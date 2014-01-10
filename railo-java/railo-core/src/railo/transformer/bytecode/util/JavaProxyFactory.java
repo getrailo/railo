@@ -24,13 +24,11 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.KeyGenerator;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.runtime.Component;
-import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaProxy;
-import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
@@ -439,7 +437,7 @@ public class JavaProxyFactory {
 			}
 			Arrays.sort(arr);
 			
-			sb.append(railo.runtime.type.List.arrayToList(arr, ";"));
+			sb.append(railo.runtime.type.util.ListUtil.arrayToList(arr, ";"));
 		}
 		
 		String key = KeyGenerator.createVariable(sb.toString());

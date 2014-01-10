@@ -17,6 +17,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
@@ -69,11 +70,11 @@ public class CFFunction {
 		
 		// execute UDF
 		if(namedArguments==null){
-			return udf.call(pc, arguments, false);
+			return ((UDFPlus)udf).call(pc,name, arguments, false);
 		}
 		
 		
-		return udf.callWithNamedValues(pc, namedArguments, false);
+		return ((UDFPlus)udf).callWithNamedValues(pc,name, namedArguments, false);
 	}
 
 	public static synchronized UDF loadUDF(PageContext pc, String filename,Collection.Key name,boolean isweb) throws PageException {

@@ -5,18 +5,20 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 
@@ -29,25 +31,32 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @param key Invalid key
 	 * @return returns an invalid key Exception
 	 */
-	protected ExpressionException invalidKey(Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+CollectionUtil.getKeyList(this, ",")+")");
+	public static ExpressionException invalidKey(Config config,Struct sct,Key key) {
+		StringBuilder sb=new StringBuilder();
+		Iterator<Key> it = sct.keyIterator();
+		Key k;
+
+		while(it.hasNext()){
+			k = it.next();
+			if( k.equals( key ) )
+				return new ExpressionException( "the value from key [" + key.getString() + "] is NULL, which is the same as not existing in CFML" );
+			if(sb.length()>0)sb.append(',');
+			sb.append(k.getString());
+		}
+		config=ThreadLocalPageContext.getConfig(config);
+		if(config!=null && config.debug())
+			return new ExpressionException(ExceptionUtil.similarKeyMessage(sct, key.getString(), "key", "keys",true));
+		
+		
+		return new ExpressionException( "key [" + key.getString() + "] doesn't exist (existing keys:" + sb.toString() + ")" );
 	}
-	public static ExpressionException invalidKey(String[] keys, Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keys, ",")+")");
-	}
-	public static ExpressionException invalidKey(Collection.Key[] keys, Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keys, ",")+")");
-	}
-	
 	
 	@Override
 	public long sizeOf() {
 		return StructUtil.sizeOf(this);
 	}
 	
-	/**
-	 * @see java.util.Map#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
 		return StructUtil.entrySet(this);
 	}
@@ -68,13 +77,11 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	}
 
 	@Override
-	public final Object put(Object key, Object value) {
+	public Object put(Object key, Object value) {
 		return setEL(KeyImpl.toKey(key,null), value);
 	}
 
-	/**
-	 * @see java.util.Map#putAll(java.util.Map)
-	 */
+	@Override
 	public final void putAll(Map t) {
 		StructUtil.putAll(this, t);
 	}
@@ -190,9 +197,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return LazyConverter.serialize(this);
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return StructUtil.values(this);
 	}
@@ -230,8 +235,8 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     @Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).call(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).call(pc,methodName,args,false);
 		}
 		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_STRUCT, "struct");
 	}
@@ -239,24 +244,24 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     @Override
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		Object obj = get(methodName,null);
-		if(obj instanceof UDF) {
-			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
 		}
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_STRUCT, "struct");
 	}
     
     public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
-    }
-	
+    } 
+
     @Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
-	
-	@Override
+
+    /*@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
-	} 
+	}*/
 }

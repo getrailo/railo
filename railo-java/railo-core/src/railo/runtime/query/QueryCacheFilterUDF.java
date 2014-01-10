@@ -14,9 +14,7 @@ public class QueryCacheFilterUDF extends UDFFilterSupport implements QueryCacheF
 		super(udf);
 	}
 	
-    /**
-     * @see railo.runtime.query.QueryCacheFilter#accept(java.lang.String)
-     */
+    @Override
     public boolean accept(String sql) {
     	args[0]=sql;
     	try {

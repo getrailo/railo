@@ -65,9 +65,7 @@ public class FeedStruct extends StructImpl {
 		return content.toString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		FeedStruct trg=new FeedStruct(path,inside,uri);
 		trg.hasAttribute=hasAttribute;

@@ -69,27 +69,6 @@ public class URLEncoder {
     	return s;
     }
 
-    /**
-     * Translates a string into <code>application/x-www-form-urlencoded</code>
-     * format using a specific encoding scheme. This method uses the
-     * supplied encoding scheme to obtain the bytes for unsafe
-     * characters.
-     * <p>
-     * <em><strong>Note:</strong> The <a href=
-     * "http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
-     * World Wide Web Consortium Recommendation</a> states that
-     * UTF-8 should be used. Not doing so may introduce
-     * incompatibilites.</em>
-     *
-     * @param   s   <code>String</code> to be translated.
-     * @param   enc   The name of a supported 
-     *    <a href="../lang/package-summary.html#charenc">character
-     *    encoding</a>.
-     * @return  the translated <code>String</code>.
-     * @exception  UnsupportedEncodingException
-     *             If the named encoding is not supported
-     * @see URLDecoder#decode(java.lang.String, java.lang.String)
-     */
     public static String encode(String s, String enc) throws UnsupportedEncodingException {
     	s= java.net.URLEncoder.encode(s, enc);
     	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);

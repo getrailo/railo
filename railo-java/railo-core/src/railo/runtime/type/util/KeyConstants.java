@@ -1,13 +1,28 @@
 package railo.runtime.type.util;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
 
+import railo.commons.collection.ConcurrentHashMapPro;
+import railo.commons.collection.MapPro;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 
 public class KeyConstants {
 	public static final Key _A=KeyImpl._const("A");
+	public static final Key _G=KeyImpl._const("G");
+	public static final Key _H=KeyImpl._const("H");
+	public static final Key _K=KeyImpl._const("K");
+	public static final Key _L=KeyImpl._const("L");
+	public static final Key _O=KeyImpl._const("O");
+	public static final Key _P=KeyImpl._const("P");
+	public static final Key _R=KeyImpl._const("R");
+	public static final Key _S=KeyImpl._const("S");
+	public static final Key _T=KeyImpl._const("T");
+	public static final Key _U=KeyImpl._const("U");
+	public static final Key _V=KeyImpl._const("V");
+	public static final Key _W=KeyImpl._const("W");
+	public static final Key _Y=KeyImpl._const("Y");
+	public static final Key _Z=KeyImpl._const("Z");
 	public static final Key _AAA=KeyImpl._const("AAA");
 	public static final Key _ABC=KeyImpl._const("ABC");
 	public static final Key _ACCESS=KeyImpl._const("ACCESS");
@@ -539,7 +554,10 @@ public class KeyConstants {
 	public static final Key _sql=KeyImpl._const("sql");
 	public static final Key _src=KeyImpl._const("src");
 	public static final Key _start=KeyImpl._const("start");
-	public static final Key _end=KeyImpl._const("end");
+    public static final Key _end=KeyImpl._const("end");
+    public static final Key _startLine=KeyImpl._const("startLine");
+    public static final Key _endLine=KeyImpl._const("endLine");
+	public static final Key _snippet=KeyImpl._const("snippet");
 	public static final Key _startwith=KeyImpl._const("startwith");
 	public static final Key _state=KeyImpl._const("state");
 	public static final Key _status=KeyImpl._const("status");
@@ -593,6 +611,7 @@ public class KeyConstants {
 	public static final Key _v_pages=KeyImpl._const("v_pages");
 	public static final Key _validate=KeyImpl._const("validate");
 	public static final Key _value=KeyImpl._const("value");
+	public static final Key _values=KeyImpl._const("values");
 	public static final Key _valueOf=KeyImpl._const("valueOf");
 	public static final Key _var=KeyImpl._const("var");
 	public static final Key _varname=KeyImpl._const("varname");
@@ -652,11 +671,14 @@ public class KeyConstants {
 
 	public static final Key _executionTime = KeyImpl._const("executionTime");
 	public static final Key _executionTimeNano = KeyImpl._const("executionTimeNano");
-	
+
 	public static final Key _RECORDCOUNT = KeyImpl._const("RECORDCOUNT");
+	public static final Key _recordcount = KeyImpl._const("recordcount");
 	public static final Key _cached = KeyImpl._const("cached");
 	public static final Key _COLUMNLIST = KeyImpl._const("COLUMNLIST");
+	public static final Key _columnlist = KeyImpl._const("columnlist");
 	public static final Key _CURRENTROW = KeyImpl._const("CURRENTROW");
+	public static final Key _currentrow = KeyImpl._const("currentrow");
 	public static final Key _IDENTITYCOL =  KeyImpl._const("IDENTITYCOL");
 	public static final Key _dateLastModified =  KeyImpl._const("dateLastModified");
 	public static final Key _statuscode =  KeyImpl._const("statuscode");
@@ -695,6 +717,7 @@ public class KeyConstants {
 	public static final Key _remote_addr = KeyImpl._const("remote_addr");
 	public static final Key _remote_host = KeyImpl._const("remote_host");
 	public static final Key _request_method = KeyImpl._const("request_method");
+	public static final Key _request_url = KeyImpl._const("request_url");
 	public static final Key _REDIRECT_URL = KeyImpl._const("REDIRECT_URL");
 	public static final Key _request_uri = KeyImpl._const("request_uri");
 	public static final Key _REDIRECT_QUERY_STRING = KeyImpl._const("REDIRECT_QUERY_STRING");
@@ -725,6 +748,7 @@ public class KeyConstants {
 	public static final Key _server_software = KeyImpl._const("server_software");
 	public static final Key _application = KeyImpl._const("application");
 	public static final Key _cookie = KeyImpl._const("cookie");
+	public static final Key _cookies = KeyImpl._const("cookies");
 	public static final Key _cluster = KeyImpl._const("cluster");
 	public static final Key _form = KeyImpl._const("form");
 	public static final Key _request = KeyImpl._const("request");
@@ -817,41 +841,60 @@ public class KeyConstants {
 	public static final Key _produces = KeyImpl._const("produces");
 	public static final Key _ref = KeyImpl._const("ref");
 	public static final Key _script = KeyImpl._const("script");
+	public static final Key _applicationTimeout = KeyImpl._const("applicationTimeout");
+	public static final Key _clientManagement = KeyImpl._const("clientManagement");
+	public static final Key _queries = KeyImpl._const("queries");
+	public static final Key _history = KeyImpl._const("history");
+	public static final Key _group = KeyImpl._const("group");
+	public static final Key _orm = KeyImpl._const("orm");
+	public static final Key _create = KeyImpl._const("create");
+	public static final Key _drop = KeyImpl._const("drop");
+	public static final Key _grant = KeyImpl._const("grant");
+	public static final Key _revoke = KeyImpl._const("revoke");
+	public static final Key _select = KeyImpl._const("select");
+	public static final Key _update = KeyImpl._const("update");
+	public static final Key _alter = KeyImpl._const("alter");
 	public static final Key _database = KeyImpl._const("database");
 	public static final Key _exception = KeyImpl._const("exception");
 	public static final Key _parsebody = KeyImpl._const("parsebody");
+	public static final Key _extended_info = KeyImpl._const("extended_info");
+	public static final Key _codePrintHTML = KeyImpl._const("codePrintHTML");
+	public static final Key _codePrintPlain = KeyImpl._const("codePrintPlain");
+	public static final Key _locale = KeyImpl._const("locale");
+	public static final Key _timezone = KeyImpl._const("timezone");
+	public static final Key _mapping = KeyImpl._const("mapping");
+	public static final Key _cfsqltype = KeyImpl._const("cfsqltype");
+	public static final Key _sqltype = KeyImpl._const("sqltype");
+	public static final Key _nulls = KeyImpl._const("nulls");
+	public static final Key _scale = KeyImpl._const("scale");
 	
-	private static HashSet<String> _____keys;
+	private static MapPro<String,Key> _____keys;
 	
 	public static String getFieldName(String key) {
+		init();
+		return _____keys.containsKey(key)?"_"+key:null;
+	}
+
+	public static Key getKey(String key) {
+		init();
+		Key k = _____keys.get(key);
+		if(k==null) return new KeyImpl(key);
+		return k;
+	}
+
+	public static void init() {
 		if(_____keys==null) {
 			Field[] fields = KeyConstants.class.getFields();
-			_____keys=new HashSet<String>();
+			_____keys=new ConcurrentHashMapPro<String,Key>();
 			for(int i=0;i<fields.length;i++){
-				if(fields[i].getType()!=Key.class) continue;
-				_____keys.add(fields[i].getName());
+				if(fields[i].getType()!=Key.class || !fields[i].getName().startsWith("_")) continue;
+				try {
+					_____keys.put(fields[i].getName().substring(1),(Key)fields[i].get(null));
+				}
+				catch (Throwable t) {
+					t.printStackTrace();
+				}
 			}
 		}
-		key="_"+key;
-		//if(!_____keys.contains(key))print.e(key);
-		return _____keys.contains(key)?key:null;
 	}
-	
-	/*public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, PageException {
-	
-		
-			Field[] fields = KeyConstants.class.getFields();
-			String name;
-			String value;
-			for(int i=0;i<fields.length;i++){
-				if(fields[i].getType()!=Key.class) continue;
-				name=fields[i].getName().substring(1);
-				value=Caster.toString(fields[i].get(null));
-				if(!name.equals(value))print.e(name+":"+value);
-			}
-		
-	}*/
-	
-	
-	
 }

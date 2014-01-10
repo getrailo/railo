@@ -4,15 +4,17 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.rest.path.Path;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public class RestUtil {
 	
 	public static String[] splitPath(String path) {
-		return List.listToStringArray(path, '/');
+		return ListUtil.listToStringArray(path, '/');
 	}
 	
 	
@@ -53,6 +55,14 @@ public class RestUtil {
 		for(int i=0;i<mappings.length;i++){
 			mappings[i].release();
 		}
+	}
+
+	public static boolean isMatch(PageContext pc,Mapping mapping, Resource res) {
+		Resource p = mapping.getPhysical();
+		if(p!=null){
+			return p.equals(res);
+		}
+		return ResourceUtil.toResourceNotExisting(pc, mapping.getStrPhysical()).equals(res);
 	}
 
 	/*public static void main(String[] args) {

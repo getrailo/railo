@@ -21,7 +21,7 @@ import com.intergral.fusiondebug.server.IFDStackFrame;
 
 public class FDCollection extends FDValueSupport {
 
-	private static final int INTERVALL = 10;
+	private static final int INTERVAL = 10;
 	private ArrayList children;
 	private Collection coll;
 	private String name;
@@ -48,19 +48,19 @@ public class FDCollection extends FDValueSupport {
 		//Key[] keys = coll.keys();
 		children=new ArrayList();
 		
-		int intervall=INTERVALL;
-		while(intervall*intervall<keys.length)
-			intervall*=intervall;
+		int interval=INTERVAL;
+		while(interval*interval<keys.length)
+			interval*=interval;
 		
-		if(keys.length>intervall){
+		if(keys.length>interval){
 			FDCollection node;
 			
 			
 			int len=keys.length;
 			
 			int max;
-			for(int i=0;i<len;i+=intervall)	{
-				max=(i+(intervall))<len?(intervall):len-i;
+			for(int i=0;i<len;i+=interval)	{
+				max=(i+(interval))<len?(interval):len-i;
 				Key[] skeys=new Key[max];
 				for(int y=0;y<max;y++)	{
 					skeys[y]=keys[i+y];
@@ -86,9 +86,7 @@ public class FDCollection extends FDValueSupport {
 		return keys;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getChildren()
-	 */
+	@Override
 	public List getChildren() {
 		return children;
 	}
@@ -99,9 +97,7 @@ public class FDCollection extends FDValueSupport {
 		return null;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#isMutable()
-	 */
+	@Override
 	public boolean isMutable() {
 		return false;
 	}
@@ -110,25 +106,13 @@ public class FDCollection extends FDValueSupport {
 		throw new FDMutabilityException();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return true;
 	}
 	
 
-	/* *
-	 * @see java.lang.Object#toString()
-	 * /
-	public String toString() {
-		return "<CFML "+StringUtil.ucFirst(Caster.toTypeName(coll))+">";
-	}*/
-	
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(coll instanceof Array)
 			return "["+fromto()+"]";
@@ -152,9 +136,7 @@ public class FDCollection extends FDValueSupport {
 	}
 
 
-	/**
-	 * @see railo.intergral.fusiondebug.server.type.FDValueSupport#getName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}

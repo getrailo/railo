@@ -35,31 +35,23 @@ public class TagMetaDataAttrImpl extends MissingAttribute implements TagMetaData
 		this.isRuntimeExpressionValue = isRuntimeExpressionValue;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaDataAttr#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaDataAttr#isRequired()
-	 */
+	@Override
 	public boolean isRequired() {
 		return required;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaDataAttr#isRuntimeExpressionValue()
-	 */
+	@Override
 	public boolean isRuntimeExpressionValue() {
 		return isRuntimeExpressionValue;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaDataAttr#getDefaultVaue()
-	 */
+	@Override
 	public String getDefaultVaue() {
 		return defaultValue;
 	}

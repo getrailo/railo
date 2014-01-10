@@ -26,65 +26,47 @@ public class RamCacheEntry implements CacheEntry {
 		hitCount=1;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#created()
-	 */
+	@Override
 	public Date created() {
 		return new Date(created);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getCustomInfo()
-	 */
+	@Override
 	public Struct getCustomInfo() {
 		return CacheUtil.getInfo(this);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getKey()
-	 */
+	@Override
 	public String getKey() {
 		return key;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return value;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#hitCount()
-	 */
+	@Override
 	public int hitCount() {
 		return hitCount;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#idleTimeSpan()
-	 */
+	@Override
 	public long idleTimeSpan() {
 		return idleTime;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#lastHit()
-	 */
+	@Override
 	public Date lastHit() {
 		return new Date(accessed);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#lastModified()
-	 */
+	@Override
 	public Date lastModified() {
 		return new Date(modifed);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#liveTimeSpan()
-	 */
+	@Override
 	public long liveTimeSpan() {
 		return until;
 	}

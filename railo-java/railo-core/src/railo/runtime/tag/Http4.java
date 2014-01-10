@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
@@ -51,6 +52,7 @@ import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.Header;
 import railo.commons.net.http.httpclient4.CachingGZIPInputStream;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
+import railo.commons.net.http.httpclient4.HTTPPatchFactory;
 import railo.commons.net.http.httpclient4.HTTPResponse4Impl;
 import railo.commons.net.http.httpclient4.ResourceBody;
 import railo.runtime.config.Config;
@@ -72,11 +74,13 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -94,9 +98,11 @@ public final class Http4 extends BodyTagImpl implements Http {
 
 	public static final String MULTIPART_RELATED = "multipart/related";
 	public static final String MULTIPART_FORM_DATA = "multipart/form-data";
-
+	
+	
+	
     /**
-     * Maximal count of redirects (5)
+     * Maximum redirect count (5)
      */
     public static final short MAX_REDIRECT=15;
     
@@ -128,6 +134,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static final short METHOD_DELETE=4;
 	private static final short METHOD_OPTIONS=5;
 	private static final short METHOD_TRACE=6;
+	private static final short METHOD_PATCH=7;
 	
 	private static final String NO_MIMETYPE="Unable to determine MIME type of file.";
 	
@@ -257,12 +264,13 @@ public final class Http4 extends BodyTagImpl implements Http {
     private short authType=AUTH_TYPE_BASIC;
     private String workStation=null;
     private String domain=null;
-	private boolean preauth=true; 
+	private boolean preauth=true;
+	private boolean encoded=true; 
+	
+	private boolean compression=true;
 
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 	    params.clear();
@@ -300,6 +308,8 @@ public final class Http4 extends BodyTagImpl implements Http {
         workStation=null;
         domain=null;
         preauth=true; 
+        encoded=true;
+        compression=true;
 	}
 	
 	/**
@@ -308,6 +318,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 	public void setFirstrowasheaders(boolean firstrowasheaders)	{
 		this.firstrowasheaders=firstrowasheaders;
 	}
+	
+
+	public void setEncoded(boolean encoded)	{
+		this.encoded=encoded;
+	}
+
 
 	/** set the value password
 	*  When required by a server, a valid password.
@@ -411,7 +427,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	 * @throws PageException
 	**/
 	public void setColumns(String columns) throws PageException	{
-		this.columns=List.toStringArray(List.listToArrayRemoveEmpty(columns,","));
+		this.columns=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(columns,","));
 	}
 
 	/** set the value port
@@ -528,13 +544,22 @@ public final class Http4 extends BodyTagImpl implements Http {
 	    else if(method.equals("put")) this.method=METHOD_PUT;
 	    else if(method.equals("trace")) this.method=METHOD_TRACE;
 	    else if(method.equals("options")) this.method=METHOD_OPTIONS;
-	    else throw new ApplicationException("invalid method type ["+(method.toUpperCase())+"], valid types are POST,GET,HEAD,DELETE,PUT,TRACE,OPTIONS");
+	    else if(method.equals("patch")) this.method=METHOD_PATCH;
+	    else throw new ApplicationException("invalid method type ["+(method.toUpperCase())+"], valid types are POST,GET,HEAD,DELETE,PUT,TRACE,OPTIONS,PATCH");
+	}
+	
+	public void setCompression(String strCompression) throws ApplicationException {
+		if(StringUtil.isEmpty(strCompression,true)) return;
+		Boolean b = Caster.toBoolean(strCompression,null);
+		
+		if(b!=null) compression=b.booleanValue();
+		else if(strCompression.trim().equalsIgnoreCase("none")) compression=false;
+	    else throw new ApplicationException("invalid value for attribute compression ["+strCompression+"], valid values are: true,false or none");
+		
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag()	{
 		if(addtoken) {
 			setParam("cookie","cfid",pageContext.getCFID());
@@ -554,10 +579,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		setParam(hpb);
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 	    Struct cfhttp=new StructImpl();
 		cfhttp.setEL(ERROR_DETAIL,"");
@@ -598,7 +620,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     	// check if has fileUploads	
     		boolean doUploadFile=false;
     		for(int i=0;i<this.params.size();i++) {
-    			if((this.params.get(i)).getType().equals("file")) {
+    			if((this.params.get(i)).getType().equalsIgnoreCase("file")) {
     				doUploadFile=true;
     				break;
     			}
@@ -613,15 +635,15 @@ public final class Http4 extends BodyTagImpl implements Http {
     		// URL
     			if(type.equals("url")) {
     				if(sbQS.length()>0)sbQS.append('&');
-    				sbQS.append(translateEncoding(param.getName(), charset));
+    				sbQS.append(param.getEncoded()?urlenc(param.getName(),charset):param.getName());
     				sbQS.append('=');
-    				sbQS.append(translateEncoding(param.getValueAsString(), charset));
+    				sbQS.append(param.getEncoded()?urlenc(param.getValueAsString(), charset):param.getValueAsString());
     			}
     		}
     		String host=null;
     		HttpHost httpHost;
     		try {
-    			URL _url = HTTPUtil.toURL(url,port);
+    			URL _url = HTTPUtil.toURL(url,port,encoded);
     			httpHost = new HttpHost(_url.getHost(),_url.getPort());
     			host=_url.getHost();
     			url=_url.toExternalForm();
@@ -633,11 +655,9 @@ public final class Http4 extends BodyTagImpl implements Http {
     				else {
     					url+="&"+sbQS;
     				}
-    					
     			}
-    			
-    			
-    		} catch (MalformedURLException mue) {
+    		} 
+    		catch (MalformedURLException mue) {
     			throw Caster.toPageException(mue);
     		}
     		
@@ -674,6 +694,11 @@ public final class Http4 extends BodyTagImpl implements Http {
     			isBinary=true;
     		    req=new HttpOptions(url);
     		}
+    		else if(this.method==METHOD_PATCH) {
+    			isBinary=true;
+    			eem = HTTPPatchFactory.getHTTPPatch(url);
+    		    req=(HttpRequestBase) eem;
+    		}
     		else {
     			isBinary=true;
     			post=new HttpPost(url);
@@ -703,7 +728,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     				hasForm=true;
     				if(this.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
     				if(post!=null){
-    					if(doMultiPart){
+    					if(doMultiPart)	{
     						parts.add(
     							new FormBodyPart(
     								param.getName(),
@@ -722,10 +747,10 @@ public final class Http4 extends BodyTagImpl implements Http {
     			}
     		// CGI
     			else if(type.equals("cgi")) {
-    				if(param.isEncoded())
-    				    req.addHeader(
-                                translateEncoding(param.getName(),charset),
-                                translateEncoding(param.getValueAsString(),charset));
+    				if(param.getEncoded())
+    					req.addHeader(
+    							urlenc(param.getName(),charset),
+    							urlenc(param.getValueAsString(),charset));
                     else
                         req.addHeader(param.getName(),param.getValueAsString());
     			}
@@ -814,7 +839,16 @@ public final class Http4 extends BodyTagImpl implements Http {
     		if(postParam!=null && postParam.size()>0)
     			post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(postParam,charset));
     		
-    		req.setHeader("Accept-Encoding",acceptEncoding.append("gzip").toString());
+    		if(compression){
+    			acceptEncoding.append("gzip");
+    		}
+    		else {
+    			acceptEncoding.append("deflate;q=0");
+    			req.setHeader("TE", "deflate;q=0");
+    		}
+			req.setHeader("Accept-Encoding",acceptEncoding.toString());
+    		
+    		
     		
     		// multipart
     		if(doMultiPart && eem!=null) {
@@ -825,8 +859,9 @@ public final class Http4 extends BodyTagImpl implements Http {
     				if(body instanceof StringBody){
     					StringBody sb=(StringBody)body;
     					try {
+    						org.apache.http.entity.ContentType ct=org.apache.http.entity.ContentType.create(sb.getMimeType(),sb.getCharset());
     						String str = IOUtil.toString(sb.getReader());
-    						StringEntity entity = new StringEntity(str,sb.getMimeType(),sb.getCharset());
+    						StringEntity entity = new StringEntity(str,ct);
     						eem.setEntity(entity);
     						
     					} catch (IOException e) {
@@ -836,10 +871,11 @@ public final class Http4 extends BodyTagImpl implements Http {
     				}
     			}
     			if(doIt) {
-    				MultipartEntity mpe = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,null,CharsetUtil.toCharset(charset));
+    				MultipartEntity mpe = new MultipartEntity(HttpMultipartMode.STRICT);
     				Iterator<FormBodyPart> it = parts.iterator();
     				while(it.hasNext()) {
-    					mpe.addPart(it.next());
+    					FormBodyPart part = it.next();
+    					mpe.addPart(part.getName(),part.getBody());
     				}
     				eem.setEntity(mpe);
     			}
@@ -951,7 +987,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		}
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
-		String responseCharset=rsp.getCharset();
+		Charset responseCharset=CharsetUtil.toCharset(rsp.getCharset());
 	// Write Response Scope
 		//String rawHeader=httpMethod.getStatusLine().toString();
 			String mimetype=null;
@@ -967,15 +1003,19 @@ public final class Http4 extends BodyTagImpl implements Http {
 			railo.commons.net.http.Header[] headers = rsp.getAllHeaders();
 			StringBuffer raw=new StringBuffer(rsp.getStatusLine()+" ");
 			Struct responseHeader = new StructImpl();
+			Struct cookie;
 			Array setCookie = new ArrayImpl();
+			Query cookies=new QueryImpl(new String[]{"name","value","path","domain","expires","secure","httpOnly"},0,"cookies");
 			
 	        for(int i=0;i<headers.length;i++) {
 	        	railo.commons.net.http.Header header=headers[i];
 	        	//print.ln(header);
 		        
 	        	raw.append(header.toString()+" ");
-	        	if(header.getName().equalsIgnoreCase("Set-Cookie"))
+	        	if(header.getName().equalsIgnoreCase("Set-Cookie")) {
 	        		setCookie.append(header.getValue());
+	        		parseCookie(cookies,header.getValue());
+	        	}
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
 	        		Object value=responseHeader.get(KeyImpl.getInstance(header.getName()),null);
@@ -1007,6 +1047,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	
 	        }
 	        cfhttp.set(RESPONSEHEADER,responseHeader);
+	        cfhttp.set(KeyConstants._cookies,cookies);
 	        responseHeader.set(STATUS_CODE,new Double(rsp.getStatusCode()));
 	        responseHeader.set(EXPLANATION,(rsp.getStatusText()));
 	        if(setCookie.size()>0)responseHeader.set(SET_COOKIE,setCookie);
@@ -1055,17 +1096,17 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        
 	        
 	        // filecontent
-	        //try {
-	        //print.ln(">> "+responseCharset);
-
-		    InputStream is=null;
+	        InputStream is=null;
 		    if(isText && getAsBinary!=GET_AS_BINARY_YES) {
 		    	String str;
                 try {
-                	is = rsp.getContentAsStream();
-                    if(is!=null &&isGzipEncoded(contentEncoding))
-                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
-                        	
+                	
+                	// read content
+                	if(method!=METHOD_HEAD) {
+                		is = rsp.getContentAsStream();
+	                    if(is!=null &&isGzipEncoded(contentEncoding))
+	                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
+                	}  	
                     try {
                     	try{
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
@@ -1078,7 +1119,7 @@ public final class Http4 extends BodyTagImpl implements Http {
                     	}
                     }
                     catch (UnsupportedEncodingException uee) {
-                    	str = IOUtil.toString(is,null);
+                    	str = IOUtil.toString(is,(Charset)null);
                     }
                 }
                 catch (IOException ioe) {
@@ -1100,9 +1141,9 @@ public final class Http4 extends BodyTagImpl implements Http {
                     }
                 } 
 		        catch (IOException e1) {}
-		        
+
 		        if(name!=null) {
-		        	Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
+                    Query qry = CSVParser.toQuery( str, delimiter, textqualifier, columns, firstrowasheaders  );
                     pageContext.setVariable(name,qry);
 		        }
 		    }
@@ -1110,11 +1151,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 		    else {
 		    	byte[] barr=null;
 		        if(isGzipEncoded(contentEncoding)){
-		        	is=rsp.getContentAsStream();
-		        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
+		        	if(method!=METHOD_HEAD) {
+			        	is=rsp.getContentAsStream();
+			        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
+		        	}
+		        	
 		        	try {
 		        		try{
-		        			barr = IOUtil.toBytes(is);
+		        			barr = is==null?new byte[0]: IOUtil.toBytes(is);
 		        		}
 		        		catch(EOFException eof){
 		        			if(is instanceof CachingGZIPInputStream)
@@ -1131,18 +1175,24 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        }
 		        else {
 		        	try {
-		        		barr = rsp.getContentAsByteArray();
+		        		if(method!=METHOD_HEAD) barr = rsp.getContentAsByteArray();
+		        		else barr=new byte[0];
 					} 
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);
 					}
 		        }
 		        //IF Multipart response get file content and parse parts
-			    if(isMultipart) {
-			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
-			    } else {
-			    	cfhttp.set(FILE_CONTENT,barr);
-			    }
+		        if(barr!=null) {
+				    if(isMultipart) {
+				    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+				    } else {
+				    	cfhttp.set(FILE_CONTENT,barr);
+				    }
+		        }
+		        else 
+			    	cfhttp.set(FILE_CONTENT,"");
+		        
 		        
 		        if(file!=null) {
 		        	try {
@@ -1168,6 +1218,54 @@ public final class Http4 extends BodyTagImpl implements Http {
 			//rsp.release();
 		}
 	    
+	}
+
+	private void parseCookie(Query cookies,String raw) {
+		String[] arr =ListUtil.trimItems(ListUtil.trim(ListUtil.listToStringArray(raw, ';')));
+		if(arr.length==0) return;
+		int row = cookies.addRow();
+		String item;
+		
+		int index;
+		// name/value
+		if(arr.length>0) {
+			item=arr[0];
+			index=item.indexOf('=');
+			if(index==-1)  // only name
+				cookies.setAtEL(KeyConstants._name,row, dec(item));
+			else { // name and value
+				cookies.setAtEL(KeyConstants._name,row, dec(item.substring(0,index)));
+				cookies.setAtEL(KeyConstants._value,row, dec(item.substring(index+1)));
+			}
+			
+		}
+		String n,v;
+		cookies.setAtEL("secure",row, Boolean.FALSE);
+		cookies.setAtEL("httpOnly",row, Boolean.FALSE);
+		for(int i=1;i<arr.length;i++){
+			item=arr[i];
+			index=item.indexOf('=');
+			if(index==-1)  // only name
+				cookies.setAtEL(dec(item),row, Boolean.TRUE);
+			else { // name and value
+				n=dec(item.substring(0,index));
+				v=dec(item.substring(index+1));
+				if(n.equalsIgnoreCase("expires")) {
+					DateTime d = Caster.toDate(v, false, null,null);
+					
+					if(d!=null) {
+						cookies.setAtEL(n,row, d);
+						continue;
+					}
+				}
+				cookies.setAtEL(n,row, v);
+			}
+			
+		}
+	}
+	
+	public String dec(String str) {
+    	return ReqRspUtil.decode(str, charset, false);
 	}
 
 	public static boolean isStatusOK(int statusCode) {
@@ -1543,12 +1641,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static String headerValue(String value) {
 		if(value==null) return null;
 		value=value.trim();
-		int len=value.length();
+		value=value.replace('\n', ' ');
+		value=value.replace('\r', ' ');
+		/*int len=value.length();
 		char c;
 		for(int i=0;i<len;i++){
 			c=value.charAt(i);
 			if(c=='\n' || c=='\r') return value.substring(0,i);
-		}
+		}*/
 		return value;
 	}
 
@@ -1565,21 +1665,17 @@ public final class Http4 extends BodyTagImpl implements Http {
         return sb.toString();
     }
 
-    private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
+    private static String urlenc(String str, String charset) throws UnsupportedEncodingException {
     	if(!ReqRspUtil.needEncoding(str,false)) return str;
     	return URLEncoder.encode(str,charset);
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+    @Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
@@ -1631,7 +1727,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     	//else if("related".equals(multiPartType)) 		this.multiPartType=MultipartRequestEntityFlex.MULTIPART_RELATED;
     	else
 			throw new ApplicationException("invalid value for attribute multiPartType ["+multiPartType+"]",
-					"attribute must have one of the folloing values [form-data]");
+					"attribute must have one of the following values [form-data]");
 			
     }
 

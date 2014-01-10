@@ -22,19 +22,19 @@ public class Command {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String execute(String cmdline,boolean translate) throws IOException, InterruptedException {
+    public static CommandResult execute(String cmdline,boolean translate) throws IOException, InterruptedException {
     	if(!translate)return execute(Runtime.getRuntime().exec(cmdline));
     	return execute(Runtime.getRuntime().exec(toArray(cmdline)));
     }
     
-	public static String execute(String[] cmdline) throws IOException, InterruptedException {
+	public static CommandResult execute(String[] cmdline) throws IOException, InterruptedException {
 		return execute(Runtime.getRuntime().exec(cmdline));
     }
-    public static String execute(String cmd,String[] args) throws IOException, InterruptedException {
+    public static CommandResult execute(String cmd,String[] args) throws IOException, InterruptedException {
     	return execute(StringUtil.merge(cmd,args));
     }
 
-    public static String execute(Process p) throws IOException, InterruptedException {
+    public static CommandResult execute(Process p) throws IOException, InterruptedException {
     	InputStream is=null;
     	InputStream es=null;
     	IOException ioe;
@@ -52,7 +52,8 @@ public class Command {
 	        }
     		in.join();
     		if((ioe=in.getException())!=null) throw ioe;
-			return in.getString();
+
+			return new CommandResult( in.getString(), err.getString() );
     	}
     	finally {
     		IOUtil.closeEL(is);
@@ -129,6 +130,7 @@ public class Command {
 	}
 }
 
+
 class StreamGobbler extends Thread {
   
 
@@ -140,9 +142,7 @@ class StreamGobbler extends Thread {
         this.is = is;
     }
     
-    /**
-     * @see java.lang.Thread#run()
-     */
+    @Override
     public void run() {
         try {
 			str=IOUtil.toString(is,SystemUtil.getCharset());

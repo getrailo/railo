@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
@@ -15,8 +19,13 @@ import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.db.DataSource;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -34,14 +43,15 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
 public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private static final long serialVersionUID = -8230105685329758613L;
 
-	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.intern("applicationTimeout");
-	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.intern("clientManagement");
+	private static final Collection.Key APPLICATION_TIMEOUT = KeyConstants._applicationTimeout;
+	private static final Collection.Key CLIENT_MANAGEMENT = KeyConstants._clientManagement;
 	private static final Collection.Key CLIENT_STORAGE = KeyImpl.intern("clientStorage");
 	private static final Collection.Key SESSION_STORAGE = KeyImpl.intern("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.intern("loginStorage");
@@ -54,12 +64,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.intern("setClientCookies");
 	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.intern("setDomainCookies");
 	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.intern("scriptProtect");
-	private static final Collection.Key MAPPINGS = KeyConstants._mappings;
 	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.intern("customtagpaths");
 	private static final Collection.Key COMPONENT_PATHS = KeyImpl.intern("componentpaths");
 	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.intern("secureJsonPrefix");
 	private static final Collection.Key SECURE_JSON = KeyImpl.intern("secureJson");
 	private static final Collection.Key LOCAL_MODE = KeyImpl.intern("localMode");
+	private static final Collection.Key BUFFER_OUTPUT = KeyImpl.intern("bufferOutput");
 	private static final Collection.Key SESSION_CLUSTER = KeyImpl.intern("sessionCluster");
 	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.intern("clientCluster");
 	
@@ -86,8 +96,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private TimeSpan applicationTimeout;
 	private int loginStorage=Scope.SCOPE_COOKIE;
 	private int scriptProtect;
-	private String defaultDataSource;
-	private int localMode;
+	private Object defaultDataSource;
+	private boolean bufferOutput;
 	private short sessionType;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -100,6 +110,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
+	private DataSource[] dataSources;
+	
 	private Properties s3;
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches;
@@ -123,11 +135,14 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSessionType;
 	private boolean initTriggerComponentDataMember;
 	private boolean initMappings;
+	private boolean initDataSources;
 	private boolean initDefaultCaches;
 	private boolean initSameFieldAsArrays;
 	private boolean initCTMappings;
 	private boolean initCMappings;
+	private int localMode;
 	private boolean initLocalMode;
+	private boolean initBufferOutput;
 	private boolean initS3;
 	private boolean ormEnabled;
 	private ORMConfiguration ormConfig;
@@ -135,8 +150,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private RestSettings restSetting;
 	private boolean initJavaSettings;
 	private JavaSettings javaSettings;
-	private String ormDatasource;
-
+	private Object ormDatasource;
+	private Locale locale;
+	private boolean initLocale;
+	private TimeZone timeZone;
+	private boolean initTimeZone;
+	
 	private Resource[] restCFCLocations;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
@@ -151,9 +170,15 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         scriptProtect=config.getScriptProtect();
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
+        this.locale=config.getLocale();
+        this.timeZone=config.getTimeZone();
+        this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
+        this.sessionStorage=((ConfigImpl)config).getSessionStorage();
+        this.clientStorage=((ConfigImpl)config).getClientStorage();
+        
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSetting=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
@@ -185,19 +210,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		// datasource
 		Object o = get(component,KeyConstants._datasource,null);
 		if(o!=null) {
-			String ds;
-			if(Decision.isStruct(o)) {
-				Struct sct = Caster.toStruct(o);
-				ds=Caster.toString(sct.get(KeyConstants._name));
-			}
-			else ds = Caster.toString(o);
-			this.defaultDataSource = ds;
-			this.ormDatasource = ds;
+			
+			this.ormDatasource=this.defaultDataSource = toDefaultDatasource(o);
 		}
 
 		// default datasource
 		o=get(component,DEFAULT_DATA_SOURCE,null);
-		if(o!=null) this.defaultDataSource =Caster.toString(o);
+		if(o!=null) this.defaultDataSource =toDefaultDatasource(o);
 		
 		// ormenabled
 		o = get(component,ORM_ENABLED,null);
@@ -215,16 +234,42 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#hasName()
-	 */
+	public static Object toDefaultDatasource(Object o) throws PageException {
+		if(Decision.isStruct(o)) {
+			Struct sct=(Struct) o;
+			
+			// fix for Jira ticket RAILO-1931
+			if(sct.size()==1) {
+				Key[] keys = CollectionUtil.keys(sct);
+				if(keys.length==1 && keys[0].equalsIgnoreCase(KeyConstants._name)) {
+					return Caster.toString(sct.get(KeyConstants._name));
+				}
+			}
+			
+			try {
+				return AppListenerUtil.toDataSource("__default__",sct);
+			} 
+			catch (PageException pe) { 
+				// again try fix for Jira ticket RAILO-1931
+				String name= Caster.toString(sct.get(KeyConstants._name,null),null);
+				if(!StringUtil.isEmpty(name)) return name;
+				throw pe;
+			}
+			catch (ClassException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return Caster.toString(o);
+	}
+
+
+
+	@Override
 	public boolean hasName() {
 		return true;//!StringUtil.isEmpty(getName());
 	}
 	
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getName()
-	 */
+	@Override
 	public String getName() {
 		if(this.name==null) {
 			this.name=Caster.toString(get(component,KeyConstants._name,""),"");
@@ -232,9 +277,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return name;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getLoginStorage()
-	 */
+	@Override
 	public int getLoginStorage() {
 		if(!initLoginStorage) {
 			String str=null;
@@ -248,9 +291,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return loginStorage;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getApplicationTimeout()
-	 */
+	@Override
 	public TimeSpan getApplicationTimeout() {
 		if(!initApplicationTimeout) {
 			Object o=get(component,APPLICATION_TIMEOUT,null);
@@ -260,9 +301,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return applicationTimeout;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getSessionTimeout()
-	 */
+	@Override
 	public TimeSpan getSessionTimeout() {
 		if(!initSessionTimeout) {
 			Object o=get(component,SESSION_TIMEOUT,null);
@@ -272,9 +311,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return sessionTimeout;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getClientTimeout()
-	 */
+	@Override
 	public TimeSpan getClientTimeout() {
 		if(!initClientTimeout) {
 			Object o=get(component,CLIENT_TIMEOUT,null);
@@ -284,9 +321,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return clientTimeout;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetClientCookies()
-	 */
+	@Override
 	public boolean isSetClientCookies() {
 		if(!initSetClientCookies) {
 			Object o = get(component,SET_CLIENT_COOKIES,null);
@@ -296,9 +331,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setClientCookies;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetClientManagement()
-	 */
+	@Override
 	public boolean isSetClientManagement() {
 		if(!initSetClientManagement) {
 			Object o = get(component,CLIENT_MANAGEMENT,null);
@@ -308,9 +341,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setClientManagement;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetDomainCookies()
-	 */
+	@Override
 	public boolean isSetDomainCookies() {
 		if(!initSetDomainCookies) {
 			Object o = get(component,SET_DOMAIN_COOKIES,null);
@@ -320,9 +351,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setDomainCookies;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetSessionManagement()
-	 */
+	@Override
 	public boolean isSetSessionManagement() {
 		if(!initSetSessionManagement) {
 			Object o = get(component,SESSION_MANAGEMENT,null);
@@ -332,21 +361,17 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setSessionManagement;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getClientstorage()
-	 */
+	@Override
 	public String getClientstorage() {
 		if(!initClientStorage) {
-			Object o=get(component,CLIENT_STORAGE,null);
-			if(o!=null)clientStorage=Caster.toString(o,clientStorage);
+			String str=Caster.toString(get(component,CLIENT_STORAGE,null),null);
+			if(!StringUtil.isEmpty(str))clientStorage=str;
 			initClientStorage=true;
 		}
 		return clientStorage;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getScriptProtect()
-	 */
+	@Override
 	public int getScriptProtect() {
 		if(!initScriptProtect) {
 			String str=null;
@@ -360,9 +385,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return scriptProtect;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getSecureJsonPrefix()
-	 */
+	@Override
 	public String getSecureJsonPrefix() {
 		if(!initSecureJsonPrefix) {
 			Object o=get(component,SECURE_JSON_PREFIX,null);
@@ -372,9 +395,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return secureJsonPrefix;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getSecureJson()
-	 */
+	@Override
 	public boolean getSecureJson() {
 		if(!initSecureJson) {
 			Object o = get(component,SECURE_JSON,null);
@@ -384,21 +405,17 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return secureJson;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSessionstorage()
-	 */
+	@Override
 	public String getSessionstorage() {
 		if(!initSessionStorage) {
-			Object o=get(component,SESSION_STORAGE,null);
-			if(o!=null)sessionStorage=Caster.toString(o,sessionStorage);
+			String str=Caster.toString(get(component,SESSION_STORAGE,null),null);
+			if(!StringUtil.isEmpty(str))sessionStorage=str;
 			initSessionStorage=true;
 		}
 		return sessionStorage;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSessionCluster()
-	 */
+	@Override
 	public boolean getSessionCluster() {
 		if(!initSessionCluster) {
 			Object o = get(component,SESSION_CLUSTER,null);
@@ -408,9 +425,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return sessionCluster;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getClientCluster()
-	 */
+	@Override
 	public boolean getClientCluster() {
 		if(!initClientCluster) {
 			Object o = get(component,CLIENT_CLUSTER,null);
@@ -420,9 +435,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return clientCluster;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSessionType()
-	 */
+	@Override
 	public short getSessionType() {
 		if(!initSessionType) {
 			String str=null;
@@ -547,21 +560,17 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getMappings()
-	 */
+	@Override
 	public Mapping[] getMappings() {
 		if(!initMappings) {
-			Object o = get(component,MAPPINGS,null);
+			Object o = get(component,KeyConstants._mappings,null);
 			if(o!=null)mappings=AppListenerUtil.toMappings(config,o,mappings,getSource());
 			initMappings=true; 
 		}
 		return mappings;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getCustomTagMappings()
-	 */
+	@Override
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
@@ -571,9 +580,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return ctmappings;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getComponentMappings()
-	 */
+	@Override
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
@@ -583,9 +590,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return cmappings;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getLocalMode()
-	 */
+	@Override
 	public int getLocalMode() {
 		if(!initLocalMode) {
 			Object o = get(component,LOCAL_MODE,null);
@@ -595,9 +600,48 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return localMode;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getS3()
-	 */
+	@Override
+	public Locale getLocale() {
+		if(!initLocale) {
+			Object o = get(component,KeyConstants._locale,null);
+			if(o!=null){
+				String str = Caster.toString(o,null);
+				if(!StringUtil.isEmpty(str))locale=LocaleFactory.getLocale(str,locale);
+			}
+			initLocale=true; 
+		}
+		return locale;
+	}
+
+	@Override
+	public TimeZone getTimeZone() {
+		if(!initTimeZone) {
+			Object o = get(component,KeyConstants._timezone,null);
+			if(o!=null){
+				String str = Caster.toString(o,null);
+				if(!StringUtil.isEmpty(str))timeZone=TimeZoneUtil.toTimeZone(str,timeZone);
+			}
+			initTimeZone=true; 
+		}
+		return timeZone;
+	}
+	
+
+	public boolean getBufferOutput() {
+		boolean bo = _getBufferOutput();
+		return bo;
+	}
+	
+	public boolean _getBufferOutput() {
+		if(!initBufferOutput) {
+			Object o = get(component,BUFFER_OUTPUT,null);
+			if(o!=null)bufferOutput=Caster.toBooleanValue(o, bufferOutput);
+			initBufferOutput=true; 
+		}
+		return bufferOutput;
+	}
+
+	@Override
 	public Properties getS3() {
 		if(!initS3) {
 			Object o = get(component,KeyConstants._s3,null);
@@ -607,11 +651,30 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return s3;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getDefaultDataSource()
-	 */
+	@Override
 	public String getDefaultDataSource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+	
+	@Override
+	public Object getDefDataSource() {
 		return defaultDataSource;
+	}
+
+	@Override
+	public DataSource[] getDataSources() {
+		if(!initDataSources) {
+			Object o = get(component,KeyConstants._datasources,null);
+			// if "this.datasources" does not exists, check if "this.datasource" exists and contains a struct
+			if(o==null){
+				o = get(component,KeyConstants._datasource,null);
+				if(!Decision.isStruct(o)) o=null;
+			}
+			
+			if(o!=null)dataSources=AppListenerUtil.toDataSources(o,dataSources);
+			initDataSources=true; 
+		}
+		return dataSources;
 	}
 
 	@Override
@@ -621,6 +684,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public String getORMDatasource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+
+	@Override
+	public Object getORMDataSource() {
 		return ormDatasource;
 	}
 
@@ -629,16 +697,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return ormConfig;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getComponent()
-	 */
 	public ComponentAccess getComponent() {
 		return component;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getCustom(railo.runtime.type.Collection.Key)
-	 */
 	public Object getCustom(Key key) {
 		try {
 			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, component); 
@@ -712,6 +774,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		initMappings=true;
 		this.mappings=mappings;
 	}
+	public void setDataSources(DataSource[] dataSources) {
+		initDataSources=true;
+		this.dataSources=dataSources;
+	}
 
 	@Override
 	public void setLoginStorage(int loginStorage) {
@@ -721,6 +787,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public void setDefaultDataSource(String datasource) {
+		this.defaultDataSource=datasource;
+	}
+
+	@Override
+	public void setDefDataSource(Object datasource) {
 		this.defaultDataSource=datasource;
 	}
 
@@ -773,6 +844,23 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	@Override
+	public void setLocale(Locale locale) {
+		initLocale=true;
+		this.locale=locale;
+	}
+
+	@Override
+	public void setTimeZone(TimeZone timeZone) {
+		initTimeZone=true;
+		this.timeZone=timeZone;
+	}
+	
+	public void setBufferOutput(boolean bufferOutput) {
+		initBufferOutput=true;
+		this.bufferOutput=bufferOutput;
+	}
+
+	@Override
 	public void setSessionType(short sessionType) {
 		initSessionType=true;
 		this.sessionType=sessionType;
@@ -808,6 +896,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public void setORMDatasource(String ormDatasource) {
+		this.ormDatasource=ormDatasource;
+	}
+
+	@Override
+	public void setORMDataSource(Object ormDatasource) {
 		this.ormDatasource=ormDatasource;
 	}
 
@@ -902,7 +995,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 						}
 					}
 					else {
-						arr=railo.runtime.type.List.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
+						arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
 					}
 					Iterator<Object> it = arr.valueIterator();
 					String ext;

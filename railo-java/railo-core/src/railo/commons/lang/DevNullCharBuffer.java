@@ -5,38 +5,24 @@ import java.io.Writer;
 
 public final class DevNullCharBuffer extends CharBuffer {
 
-	/**
-	 * @see railo.commons.lang.CharBuffer#append(char[])
-	 */
+	@Override
 	public void append(char[] c) {}
-	/**
-	 * @see railo.commons.lang.CharBuffer#append(java.lang.String)
-	 */
+	@Override
 	public void append(String str) {}
-	/**
-	 * @see railo.commons.lang.CharBuffer#clear()
-	 */
+	@Override
 	public void clear() {}
-	/**
-	 * @see railo.commons.lang.CharBuffer#size()
-	 */
+	@Override
 	public int size() {
 		return 0;
 	}
-	/**
-	 * @see railo.commons.lang.CharBuffer#toCharArray()
-	 */
+	@Override
 	public char[] toCharArray() {
 		return new char[0];
 	}
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "";
 	}
-	/**
-	 * @see railo.commons.lang.CharBuffer#writeOut(java.io.Writer)
-	 */
+	@Override
 	public void writeOut(Writer writer) throws IOException {}
 }

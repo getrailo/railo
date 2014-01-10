@@ -39,23 +39,25 @@ public final class Execute extends BodyTagImpl {
 	/** The file to which to direct the output of the program. If not specified, the output is 
 	** 		displayed on the page from which it was called. */
 	private Resource outputfile;
+	private Resource errorFile;
 
     private String variable;
+    private String errorVariable;
 
 	private String body;
 
 	private boolean terminateOnTimeout=false;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		arguments=null;
 		timeout=0L;
 		name=null;
 		outputfile=null;
+		errorFile=null;
 		variable=null;
+		errorVariable=null;
 		body=null;
 		terminateOnTimeout=false;
 	}
@@ -120,7 +122,12 @@ public final class Execute extends BodyTagImpl {
 	public void setVariable(String variable) throws PageException	{
 		this.variable=variable;
 		pageContext.setVariable(variable,"");
-	}	
+	}
+
+	public void setErrorvariable(String errorVariable) throws PageException	{
+		this.errorVariable = errorVariable;
+		pageContext.setVariable(errorVariable, "");
+	}
 
 	/** set the value outputfile
 	*  The file to which to direct the output of the program. If not specified, the output is 
@@ -152,10 +159,28 @@ public final class Execute extends BodyTagImpl {
 	}
 
 
-	/**
-	* @throws ApplicationException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	public void setErrorfile(String errorfile)	{
+
+		try {
+			this.errorFile = ResourceUtil.toResourceExistingParent(pageContext,errorfile);
+			pageContext.getConfig().getSecurityManager().checkFileLocation(this.errorFile);
+		}
+		catch (PageException e) {
+
+			this.errorFile = pageContext.getConfig().getTempDirectory().getRealResource(errorfile);
+
+			if(!this.errorFile.getParentResource().exists())
+				this.errorFile=null;
+			else if(!this.errorFile.isFile())
+				this.errorFile=null;
+			else if(!this.errorFile.exists()) {
+				ResourceUtil.createFileEL(this.errorFile, false);
+			}
+		}
+	}
+
+
+	@Override
 	public int doStartTag() throws PageException	{
 		return EVAL_BODY_BUFFERED;
 	}
@@ -175,10 +200,9 @@ public final class Execute extends BodyTagImpl {
 	    	if(arguments==null)command=name;
 	    	else command=name+arguments;
 	    }
-	    
-	    
-	    
-	    _Execute execute=new _Execute(pageContext,monitor,command,outputfile,variable,body);
+
+
+	    _Execute execute=new _Execute(pageContext, monitor, command, outputfile, variable, errorFile, errorVariable);
 	    
 	    //if(timeout<=0)execute._run();
 	    //else {
@@ -202,10 +226,7 @@ public final class Execute extends BodyTagImpl {
 	    
 	}
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		if(pageContext.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_TAG_EXECUTE)==SecurityManager.VALUE_NO) 
 			throw new SecurityException("can't access tag [execute]","access is prohibited by security manager");
@@ -221,16 +242,12 @@ public final class Execute extends BodyTagImpl {
 	    return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		body=bodyContent.getString();
 		if(!StringUtil.isEmpty(body))body=body.trim();

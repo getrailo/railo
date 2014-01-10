@@ -13,6 +13,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -23,36 +24,39 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public class ORMConfigurationImpl implements ORMConfiguration {
 	public static final int DBCREATE_NONE=0;
 	public static final int DBCREATE_UPDATE=1;
 	public static final int DBCREATE_DROP_CREATE=2;
 	
-	public static final Collection.Key AUTO_GEN_MAP = KeyImpl.intern("autogenmap");
-	public static final Collection.Key CATALOG = KeyImpl.intern("catalog");
-	public static final Collection.Key IS_DEFAULT_CFC_LOCATION = KeyImpl.intern("isDefaultCfclocation");
-	public static final Collection.Key DB_CREATE = KeyImpl.intern("dbCreate");
-	public static final Collection.Key DIALECT = KeyImpl.intern("dialect");
-	public static final Collection.Key FLUSH_AT_REQUEST_END = KeyImpl.intern("flushAtRequestEnd");
-	public static final Collection.Key LOG_SQL = KeyImpl.intern("logSql");
-	public static final Collection.Key SAVE_MAPPING = KeyImpl.intern("savemapping");
-	public static final Collection.Key SCHEMA = KeyImpl.intern("schema");
-	public static final Collection.Key SECONDARY_CACHE_ENABLED = KeyImpl.intern("secondarycacheenabled");
-	public static final Collection.Key SQL_SCRIPT = KeyImpl.intern("sqlscript");
-	public static final Collection.Key USE_DB_FOR_MAPPING = KeyImpl.intern("useDBForMapping");
-	public static final Collection.Key CACHE_CONFIG = KeyImpl.intern("cacheconfig");
-	public static final Collection.Key CACHE_PROVIDER = KeyImpl.intern("cacheProvider");
-	public static final Collection.Key ORM_CONFIG = KeyImpl.intern("ormConfig");
-	public static final Collection.Key EVENT_HANDLING = KeyImpl.intern("eventHandling");
-	public static final Collection.Key EVENT_HANDLER = KeyImpl.intern("eventHandler");
-	public static final Collection.Key AUTO_MANAGE_SESSION = KeyImpl.intern("autoManageSession");
-	public static final Collection.Key NAMING_STRATEGY = KeyImpl.intern("namingstrategy");
+
+	public static final Key AUTO_GEN_MAP = KeyImpl.init("autogenmap");
+	public static final Key CATALOG = KeyImpl.init("catalog");
+	public static final Key IS_DEFAULT_CFC_LOCATION = KeyImpl.init("isDefaultCfclocation");
+	public static final Key DB_CREATE = KeyImpl.init("dbCreate");
+	public static final Key DIALECT = KeyImpl.init("dialect");
+	public static final Key FLUSH_AT_REQUEST_END = KeyImpl.init("flushAtRequestEnd");
+	public static final Key LOG_SQL = KeyImpl.init("logSql");
+	public static final Key SAVE_MAPPING = KeyImpl.init("savemapping");
+	public static final Key SCHEMA = KeyImpl.init("schema");
+	public static final Key SECONDARY_CACHE_ENABLED = KeyImpl.init("secondarycacheenabled");
+	public static final Key SQL_SCRIPT = KeyImpl.init("sqlscript");
+	public static final Key USE_DB_FOR_MAPPING = KeyImpl.init("useDBForMapping");
+	public static final Key CACHE_CONFIG = KeyImpl.init("cacheconfig");
+	public static final Key CACHE_PROVIDER = KeyImpl.init("cacheProvider");
+	public static final Key ORM_CONFIG = KeyImpl.init("ormConfig");
+	public static final Key EVENT_HANDLING = KeyImpl.init("eventHandling");
+	public static final Key EVENT_HANDLER = KeyImpl.init("eventHandler");
+	public static final Key AUTO_MANAGE_SESSION = KeyImpl.init("autoManageSession");
+	public static final Key NAMING_STRATEGY = KeyImpl.init("namingstrategy");
+	public static final Key CFC_LOCATION = KeyImpl.init("cfcLocation");
 	
 	
 	private boolean autogenmap=true;
@@ -216,7 +220,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		if(!Decision.isArray(obj)){
 			String list = Caster.toString(obj,null);
 			if(!StringUtil.isEmpty(list)) {
-				obj=List.listToArray(list, ',');
+				obj=ListUtil.listToArray(list, ',');
 			}
 		}
 		
@@ -264,11 +268,17 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 			// abs path
 			if(path.startsWith("/")){
 				ConfigWebImpl cwi=(ConfigWebImpl) config;
-				res=cwi.getPhysicalResourceExisting(
-						pc, 
-						ac==null?null:ac.getMappings(), path, 
-						false, false, true);
-				if(res!=null && (!onlyDir || res.isDirectory())) return res;
+				PageSource ps = cwi.getPageSourceExisting(
+						pc, ac==null?null:ac.getMappings(), path, false, false, true, false);
+				//res=cwi.getPhysicalResourceExistingX(
+				//		pc, 
+				//		ac==null?null:ac.getMappings(), path, 
+				//		false, false, true);
+				if(ps!=null){
+					res=ps.getResource();
+					if(res!=null && (!onlyDir || res.isDirectory())) return res;
+				}
+				
 			}
 			// real path
 			else {
@@ -516,7 +526,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		Struct sct=new StructImpl();
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
 		sct.setEL(CATALOG,StringUtil.emptyIfNull(getCatalog()));
-		sct.setEL(KeyConstants._cfcLocation,arrLocs);
+		sct.setEL(CFC_LOCATION,arrLocs);
 		sct.setEL(IS_DEFAULT_CFC_LOCATION,isDefaultCfcLocation());
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
 		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
@@ -533,6 +543,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		sct.setEL(CACHE_CONFIG,getAbsolutePath(getCacheConfig()));
 		sct.setEL(CACHE_PROVIDER,StringUtil.emptyIfNull(getCacheProvider()));
 		sct.setEL(ORM_CONFIG,getAbsolutePath(getOrmConfig()));
+		
 		
 		
 		return sct;

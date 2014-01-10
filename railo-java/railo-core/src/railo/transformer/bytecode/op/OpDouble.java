@@ -5,21 +5,15 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.runtime.exp.TemplateException;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Operator;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
 
 public final class OpDouble extends ExpressionBase implements ExprDouble {
-
 
 	private static final Method DIV_REF=new Method("divRef",Types.DOUBLE,new Type[]{Types.OBJECT,Types.OBJECT});
 	private static final Method INTDIV_REF=new Method("intdivRef",Types.DOUBLE,new Type[]{Types.OBJECT,Types.OBJECT});
@@ -42,17 +36,26 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
     private int operation;
 	private Expression left;
 	private Expression right;
-
-
     
-    // TODO weitere operatoren
-    
-    private OpDouble(Expression left, Expression right, int operation)  {
+    OpDouble(Expression left, Expression right, int operation)  {
         super(left.getStart(),right.getEnd());
         this.left=	left;
         this.right=	right;   
         this.operation=operation;
     }
+    
+
+	public Expression getLeft() {
+		return left;
+	}
+
+	public Expression getRight() {
+		return right;
+	}
+	
+	public int getOperation() {
+		return operation;
+	}
     
     /**
      * Create a String expression from a Expression
@@ -64,35 +67,8 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
      * @throws TemplateException 
      */
     public static ExprDouble toExprDouble(Expression left, Expression right,int operation)  {
-    	
-        if(left instanceof Literal && right instanceof Literal) {
-        	Double l = ((Literal)left).getDouble(null);
-            Double r = ((Literal)right).getDouble(null);
-        	
-            if(l!=null && r !=null) {
-                switch(operation) {
-                case PLUS: return toLitDouble(		l.doubleValue()+r.doubleValue(),left.getStart(),right.getEnd());
-                case MINUS: return toLitDouble(		l.doubleValue()-r.doubleValue(),left.getStart(),right.getEnd());
-                case MODULUS: return toLitDouble(	l.doubleValue()%r.doubleValue(),left.getStart(),right.getEnd());
-                case DIVIDE: {
-                	if(r.doubleValue()!=0d)
-                		return toLitDouble(	l.doubleValue()/r.doubleValue(),left.getStart(),right.getEnd());
-                	break;
-                }
-                case MULTIPLY: return toLitDouble(	l.doubleValue()*r.doubleValue(),left.getStart(),right.getEnd());
-                case EXP: return LitDouble.toExprDouble(Operator.exponent(l.doubleValue(),r.doubleValue()),left.getStart(),right.getEnd());
-                case INTDIV: return LitDouble.toExprDouble(l.intValue()/r.intValue(),left.getStart(),right.getEnd());
-                
-                }
-            }
-        }
-        return new OpDouble(left,right,operation);
+    	return new OpDouble(left,right,operation);
     }
-    
-    
-    private static ExprDouble toLitDouble(double d, Position start, Position end) {
-    	return LitDouble.toExprDouble(Caster.toDoubleValue(Caster.toString(d),0),start,end);
-	}
 
 	/**
      *

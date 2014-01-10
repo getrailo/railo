@@ -12,6 +12,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a named function value for a functions
@@ -63,29 +64,23 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 		name=null;
 	} 
 	
-	/**
-     * @see railo.runtime.type.FunctionValue#getName()
-     */
+	@Override
 	public String getName() {
 		return getNameAsString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.FunctionValue#getNameAsString()
-	 */
+	@Override
 	public String getNameAsString() {
 		if(name==null){
-			return List.arrayToList(names, ".");
+			return ListUtil.arrayToList(names, ".");
 		}
 		return name.getString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.FunctionValue#getNameAsKey()
-	 */
+	@Override
 	public Collection.Key getNameAsKey() {
 		if(name==null){
-			return KeyImpl.init(List.arrayToList(names, "."));
+			return KeyImpl.init(ListUtil.arrayToList(names, "."));
 		}
 		return name;
 	}
@@ -96,93 +91,67 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 		return names;
 	}
 	
-	/**
-     * @see railo.runtime.type.FunctionValue#getValue()
-     */
+	@Override
 	public Object getValue() {
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return Caster.toString(value);
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
+    @Override
     public String castToString(String defaultValue) {
         return Caster.toString(value,defaultValue);
     }
     
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(value);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return Caster.toBoolean(value,defaultValue);
     }
 	
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return Caster.toDoubleValue(value);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return Caster.toDoubleValue(value,defaultValue);
     }
     
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return DateCaster.toDateSimple(value,true,true,null);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return DateCaster.toDateSimple(value,true,true,null,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(value, b?1D:0D);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(value, (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(value, d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(value, str);
 	}
@@ -191,9 +160,7 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 		return DumpUtil.toDumpData(value, pageContext, maxlevel, properties);
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return name+":"+value;
 	}

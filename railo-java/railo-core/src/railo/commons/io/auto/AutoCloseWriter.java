@@ -18,59 +18,42 @@ public final class AutoCloseWriter extends Writer {
 		this.writer=writer;
 	}
 
-	/**
-	 * @see java.io.Writer#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		writer.close();
 	}
 
-	/**
-	 * @see java.io.Writer#flush()
-	 */
+	@Override
 	public void flush() throws IOException {
 		writer.flush();
 	}
 
-	/**
-	 * @see java.io.Writer#write(char[], int, int)
-	 */
+	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
 		writer.write(cbuf,off,len);
 	}
 
-	/**
-	 * @see java.io.Writer#write(char[])
-	 */
+	@Override
 	public void write(char[] cbuf) throws IOException {
 		writer.write(cbuf);
 	}
 
-	/**
-	 * @see java.io.Writer#write(int)
-	 */
+	@Override
 	public void write(int c) throws IOException {
 		writer.write(c);
 	}
 
-	/**
-	 * @see java.io.Writer#write(java.lang.String, int, int)
-	 */
+	@Override
 	public void write(String str, int off, int len) throws IOException {
 		writer.write(str,off,len);
 	}
 
-	/**
-	 * @see java.io.Writer#write(java.lang.String)
-	 */
+	@Override
 	public void write(String str) throws IOException {
 		writer.write(str);
 	}
 	
-	/**
-	 * @throws Throwable 
-	 * @see java.lang.Object#finalize()
-	 */
+	@Override
 	public void finalize() throws Throwable {
 		super.finalize();
 		try {

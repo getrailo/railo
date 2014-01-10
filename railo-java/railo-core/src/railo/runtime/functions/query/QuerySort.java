@@ -7,23 +7,27 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
+import railo.runtime.type.util.ListUtil;
 
-public final class QuerySort implements Function {
+public final class QuerySort extends BIF {
+
+	private static final long serialVersionUID = -6566120440638749819L;
+
 	public static boolean call(PageContext pc , Query query, String columnName) throws PageException {
 		return call(pc,query,columnName,null);
 	}
 	public static boolean call(PageContext pc , Query query, String columnNames, String directions) throws PageException {
 		// column names
-		String[] arrColumnNames = List.trimItems(List.listToStringArray(columnNames, ','));
+		String[] arrColumnNames = ListUtil.trimItems(ListUtil.listToStringArray(columnNames, ','));
 		int[] dirs = new int[arrColumnNames.length];
 		
 		// directions
 		if(!StringUtil.isEmpty(directions)) {
-			String[] arrDirections = List.trimItems(List.listToStringArray(directions, ','));
+			String[] arrDirections = ListUtil.trimItems(ListUtil.listToStringArray(directions, ','));
 			if(arrColumnNames.length!=arrDirections.length)throw new DatabaseException("column names and directions has not the same count",null,null,null);
 			
 			String direction;
@@ -50,5 +54,11 @@ public final class QuerySort implements Function {
 		
 		
 		return true;		
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]));
+		return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]),Caster.toString(args[2]));
 	}
 }

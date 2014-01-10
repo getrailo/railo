@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -22,7 +23,6 @@ import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -32,7 +32,6 @@ import javax.mail.internet.MimePart;
 import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
-import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
@@ -42,11 +41,11 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.net.mail.EmailNamePair;
 import railo.runtime.net.mail.MailException;
 import railo.runtime.net.mail.MailPart;
 import railo.runtime.net.mail.MailUtil;
@@ -58,8 +57,8 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool.SessionAndTransport;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.mail.MailSpoolerTask;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -115,7 +114,7 @@ public final class SMTPClient implements Serializable  {
 	private InternetAddress[] fts;
 	private String subject="";
 	private String xmailer="Railo Mail";
-	private Map<String,String> headers=new HashTable();
+	private Map<String,String> headers=new HashMap<String,String>();
 	private int port=-1;
 
 	private String username;
@@ -196,14 +195,8 @@ public final class SMTPClient implements Serializable  {
 		return srv;
 	}
 	
-	
-	/**
-	 * @throws PageException 
-	 * @throws MailException 
-	 * @see mail.Mail#setHost(java.lang.String)
-	 */
 	public void setHost(String host) throws PageException {
-		if(!StringUtil.isEmpty(host,true))this.host = List.toStringArray(List.listToArrayRemoveEmpty(host, ','));
+		if(!StringUtil.isEmpty(host,true))this.host = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(host, ','));
 	} 
 
 	/**
@@ -225,112 +218,60 @@ public final class SMTPClient implements Serializable  {
 		headers.put(name, value);
 	}
 
-	/**
-	 * @see mail.Mail#addTo(javax.mail.internet.InternetAddress)
-	 */
 	public void addTo(InternetAddress to) {
 		tos=add(tos,to);
 	}
 
-	/** 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @throws MailException 
-	 * @see mail.Mail#addTo(java.lang.String)
-	 */
-	public void addTo(Object to) throws AddressException, UnsupportedEncodingException, PageException, MailException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(to);
+	public void addTo(Object to) throws UnsupportedEncodingException, PageException, MailException {
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(to);
 		for(int i=0;i<tmp.length;i++) {
 			addTo(tmp[i]);
 		}
 	}
 
-	/**
-	 * @see mail.Mail#setFrom(javax.mail.internet.InternetAddress)
-	 */
 	public void setFrom(InternetAddress from) {
 		this.from=from;
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#setFrom(java.lang.String)
-	 */
-	public void setFrom(Object from) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] addrs = EmailNamePair.toInternetAddresses(from);
+	public void setFrom(Object from) throws UnsupportedEncodingException, MailException, PageException {
+		InternetAddress[] addrs = MailUtil.toInternetAddresses(from);
 		if(addrs.length==0) return;
 		setFrom(addrs[0]);
 	}
-	/**
-	 * @see mail.Mail#addBCC(javax.mail.internet.InternetAddress)
-	 */
+	
 	public void addBCC(InternetAddress bcc) {
 		bccs=add(bccs,bcc);
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addBCC(java.lang.String)
-	 */
-	public void addBCC(Object bcc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(bcc);
+	public void addBCC(Object bcc) throws UnsupportedEncodingException, MailException, PageException {
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(bcc);
 		for(int i=0;i<tmp.length;i++) {
 			addBCC(tmp[i]);
 		}
 	}
 
-	/**
-	 * @see mail.Mail#addCC(javax.mail.internet.InternetAddress)
-	 */
 	public void addCC(InternetAddress cc) {
 		ccs=add(ccs,cc);
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addCC(java.lang.String)
-	 */
-	public void addCC(Object cc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(cc);
+	public void addCC(Object cc) throws UnsupportedEncodingException, MailException, PageException {
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(cc);
 		for(int i=0;i<tmp.length;i++) {
 			addCC(tmp[i]);
 		}
 	}
 	
-	/**
-	 * @see mail.Mail#addReplyTo(javax.mail.internet.InternetAddress)
-	 */
 	public void addReplyTo(InternetAddress rt) {
 		rts=add(rts,rt);
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addReplyTo(java.lang.String)
-	 */
-	public void addReplyTo(Object rt) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(rt);
+	public void addReplyTo(Object rt) throws UnsupportedEncodingException, MailException, PageException {
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(rt);
 		for(int i=0;i<tmp.length;i++) {
 			addReplyTo(tmp[i]);
 		}
 	}
 	
-	/**
-	 * @see mail.Mail#addFailTo(javax.mail.internet.InternetAddress)
-	 */
 	public void addFailTo(InternetAddress ft) {
 		fts=add(fts,ft);
 	}
@@ -342,15 +283,8 @@ public final class SMTPClient implements Serializable  {
 		return plainText;
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addFailTo(java.lang.String)
-	 */
-	public void addFailTo(Object ft) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(ft);
+	public void addFailTo(Object ft) throws UnsupportedEncodingException, MailException, PageException {
+		InternetAddress[] tmp = MailUtil.toInternetAddresses(ft);
 		for(int i=0;i<tmp.length;i++) {
 			addFailTo(tmp[i]);
 		}
@@ -363,16 +297,10 @@ public final class SMTPClient implements Serializable  {
 		this.timeout = timeout;
 	}
 	
-	/**
-	 * @see mail.Mail#setSubject(java.lang.String)
-	 */
 	public void setSubject(String subject) {
 		this.subject=subject;
 	}
 	
-	/**
-	 * @see mail.Mail#setXMailer(java.lang.String)
-	 */
 	public void setXMailer(String xmailer) {
 		this.xmailer=xmailer;
 	}
@@ -422,10 +350,11 @@ public final class SMTPClient implements Serializable  {
 			boolean tls,boolean ssl) throws MessagingException {
 		
 	      Properties props = (Properties) System.getProperties().clone();
+	      String strTimeout = Caster.toString(getTimeout(config));
 	      
 	      props.put("mail.smtp.host", hostName);
-	      props.put("mail.smtp.timeout", Caster.toString(timeout));
-	      props.put("mail.smtp.connectiontimeout", Caster.toString(timeout));
+	      props.put("mail.smtp.timeout", strTimeout);
+	      props.put("mail.smtp.connectiontimeout", strTimeout);
 	      if(port>0){
 	    	  props.put("mail.smtp.port", Caster.toString(port));
 	      }
@@ -559,7 +488,6 @@ public final class SMTPClient implements Serializable  {
 	    
 		return new MimeMessageAndSession(msg,sat);
 	}
-	
 
 	private static String hash(Properties props) {
 		Enumeration<?> e = props.propertyNames();
@@ -687,7 +615,7 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 	/**
-	 * @param is
+	 * @param file
 	 * @throws MessagingException
 	 * @throws FileNotFoundException 
 	 */
@@ -698,15 +626,14 @@ public final class SMTPClient implements Serializable  {
 
 	
 	
-	public void send(ConfigImpl config) throws MailException {
+	public void send(ConfigWeb config) throws MailException {
 		if(ArrayUtil.isEmpty(config.getMailServers()) && ArrayUtil.isEmpty(host))
 			throw new MailException("no SMTP Server defined");
 		
 		if(plainText==null && htmlText==null)
 			throw new MailException("you must define plaintext or htmltext");
 		
-		if(timeout<1)timeout=config.getMailTimeout()*1000;
-		
+		///if(timeout<1)timeout=config.getMailTimeout()*1000;
 		if(spool==SPOOL_YES || (spool==SPOOL_UNDEFINED && config.isMailSpoolEnable())) {
         	config.getSpoolerEngine().add(new MailSpoolerTask(this));
         }
@@ -715,7 +642,9 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 
-	public void _send(railo.runtime.config.Config config) throws MailException {
+	public void _send(railo.runtime.config.ConfigWeb config) throws MailException {
+		long start=System.nanoTime();
+		long _timeout = getTimeout(config);
 		try {
 
         	Proxy.start(proxyData);
@@ -778,7 +707,8 @@ public final class SMTPClient implements Serializable  {
 				try {
 					msgSess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
 				} catch (MessagingException e) {
-					log.error("mail",LogUtil.toMessage(e));
+					// listener
+					listener(config,server,log,e,System.nanoTime()-start);
 					MailException me = new MailException(e.getMessage());
 					me.setStackTrace(e.getStackTrace());
 					throw me;
@@ -787,7 +717,7 @@ public final class SMTPClient implements Serializable  {
 	            	SerializableObject lock = new SerializableObject();
 	            	SMTPSender sender=new SMTPSender(lock,msgSess,server.getHostName(),server.getPort(),_username,_password);
             		sender.start();
-            		SystemUtil.wait(lock, timeout);
+            		SystemUtil.wait(lock, _timeout);
             		
             		if(!sender.hasSended()) {
                 		Throwable t = sender.getThrowable();
@@ -801,21 +731,19 @@ public final class SMTPClient implements Serializable  {
                 		
                 		// after thread s stopped check send flag again
                 		if(!sender.hasSended()){
-                			throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
+                			throw new MessagingException("timeout occurred after "+(_timeout/1000)+" seconds while sending mail message");
                 		}
                 	}
                 	clean(config,attachmentz);
                 	
-	            	log.info("mail","send mail");
-					break;
+                	listener(config,server,log,null,System.nanoTime()-start);
+                	break;
 				} 
 	            catch (Exception e) {e.printStackTrace();
 					if(i+1==servers.length) {
-						String msg=e.getMessage();
-						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(e);
 						
-						log.error("mail spooler",msg);
-						MailException me = new MailException(server.getHostName()+" "+msg+":"+i);
+						listener(config,server,log,e,System.nanoTime()-start);
+						MailException me = new MailException(server.getHostName()+" "+LogUtil.toMessage(e)+":"+i);
 						me.setStackTrace(e.getStackTrace());
 						
 						throw me;
@@ -828,6 +756,53 @@ public final class SMTPClient implements Serializable  {
         	Proxy.end();
 		}
 	}
+
+	private void listener(ConfigWeb config,Server server, LogAndSource log, Exception e, long exe) {
+		StringBuilder sbTos=new StringBuilder();
+		for(int i=0;i<tos.length;i++){
+			if(sbTos.length()>0)sbTos.append(", ");
+			sbTos.append(tos[i].toString());
+		}
+
+		if(e==null) log.info("mail","mail sended (from:"+from.toString()+"; to:"+sbTos+" subject:"+subject+")");
+		else log.error("mail",LogUtil.toMessage(e));
+		
+		// listener
+		
+		Map<String,Object> props=new HashMap<String,Object>();
+		props.put("attachments", this.attachmentz);
+		props.put("bccs", this.bccs);
+		props.put("ccs", this.ccs);
+		props.put("charset", this.charset);
+		props.put("from", this.from);
+		props.put("fts", this.fts);
+		props.put("headers", this.headers);
+		props.put("host", server.getHostName());
+		props.put("htmlText", this.htmlText);
+		props.put("htmlTextCharset", this.htmlTextCharset);
+		props.put("parts", this.parts);
+		props.put("password", this.password);
+		props.put("plainText", this.plainText);
+		props.put("plainTextCharset", this.plainTextCharset);
+		props.put("port", server.getPort());
+		props.put("proxyData", this.proxyData);
+		props.put("rts", this.rts);
+		props.put("subject", this.subject);
+		props.put("timeout", getTimeout(config));
+		props.put("timezone", this.timeZone);
+		props.put("tos", this.tos);
+		props.put("username", this.username);
+		props.put("xmailer", this.xmailer);
+		((ConfigWebImpl)config).getActionMonitorCollector()
+			.log(config, "mail", "Mail", exe, props);
+		
+	}
+
+
+	private long getTimeout(Config config) {
+		return timeout>0?timeout:config.getMailTimeout()*1000L;
+	}
+
 
 	// remove all atttachements that are marked to remove
 	private static void clean(Config config, Attachment[] attachmentz) {

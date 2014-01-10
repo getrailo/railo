@@ -33,9 +33,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
 
 	private boolean ignore=false;
     
-    /**
-     * @see railo.runtime.ext.tag.BodyTagImpl#release()
-     */
+    @Override
     public void release() {
         //hasBody=false;
         isolation=Connection.TRANSACTION_NONE;
@@ -76,9 +74,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         else throw new DatabaseException("transaction has an invalid isolation level (attribute isolation, valid values are [read_uncommitted,read_committed,repeatable_read,serializable])",null,null,null);
     }
 
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException {
     	DataSourceManager manager = pageContext.getDataSourceManager();
         // first transaction
@@ -115,9 +111,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         return EVAL_BODY_INCLUDE;
     }
     
-    /**
-     * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
-     */
+    @Override
     public void doCatch(Throwable t) throws Throwable {
     	if(innerTag || ignore) throw t;
         
@@ -137,9 +131,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         //this.hasBody=hasBody;
     }
 
-    /**
-     * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
-     */
+    @Override
     public void doFinally() {
     	if(!ignore && !innerTag) {
         	pageContext.getDataSourceManager().end();
@@ -147,9 +139,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         super.doFinally();
     }
 
-    /**
-     * @see railo.runtime.ext.tag.BodyTagImpl#doAfterBody()
-     */
+    @Override
     public int doAfterBody() throws JspException {
     	
         if(!ignore && !innerTag) {

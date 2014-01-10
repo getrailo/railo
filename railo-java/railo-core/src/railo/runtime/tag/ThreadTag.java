@@ -26,10 +26,10 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Threads;
+import railo.runtime.type.util.ListUtil;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
 
@@ -65,9 +65,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	private Struct attrs;
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		action=ACTION_RUN;
@@ -226,10 +224,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		attrs.setEL(key,value);
 	}
 
-	/**
-	 * @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException	{
 		pc=pageContext;
 		switch(action) {
@@ -252,10 +247,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		this.pc=pageContext;
 		//if(ACTION_RUN==action) doRun();
@@ -310,24 +302,30 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
     	if(lcName==null) {
     		names=mpc.getThreadScopeNames();
     	}
-    	else names=List.listToStringArray(lcName, ',');
+    	else names=ListUtil.listToStringArray(lcName, ',');
     	
     	ChildThread ct;
     	Threads ts;
+    	long start=System.currentTimeMillis(),_timeout=timeout>0?timeout:-1;
+    	
     	for(int i=0;i<names.length;i++) {
     		if(StringUtil.isEmpty(names[i],true))continue;
     		//PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
     		ts = mpc.getThreadScope(names[i]);
     		if(ts==null)
-    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+List.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
+    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+ListUtil.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
     		ct=ts.getChildThread();
     		
     		if(ct.isAlive()) {
     			try {
-					if(timeout>0)ct.join(timeout);
+					if(_timeout!=-1)ct.join(_timeout);
 					else ct.join();
 				} 
     			catch (InterruptedException e) {}
+    		}
+    		if(_timeout!=-1){
+    			_timeout=_timeout-(System.currentTimeMillis()-start);
+    			if(_timeout<1) break;
     		}
     	}
     	
@@ -354,16 +352,12 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		return pc.getParentPageContext();
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

@@ -9,10 +9,7 @@ public final class Chartdata extends TagImpl {
 
 	private ChartDataBean data=new ChartDataBean();
 	
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		data=new ChartDataBean();
@@ -32,10 +29,7 @@ public final class Chartdata extends TagImpl {
 		data.setValue(value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws JspException {
 
 		//print.out("do start tag");

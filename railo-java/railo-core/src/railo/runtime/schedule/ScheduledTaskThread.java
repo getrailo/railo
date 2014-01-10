@@ -16,8 +16,9 @@ import railo.runtime.type.dt.DateTimeImpl;
 
 public class ScheduledTaskThread extends Thread {
 
+
 	private static final long DAY=24*3600000;
-	private Calendar calendar;
+	//private Calendar calendar;
 	
 	private long startDate;
 	private long startTime;
@@ -175,10 +176,9 @@ public class ScheduledTaskThread extends Thread {
 			startDate=nowDate;
 		
 		// init calendar
-		if(calendar==null){
-			calendar=JREDateTimeUtil.newInstance(timeZone);
-			calendar.setTimeInMillis(startDate+startTime);
-		}
+		Calendar calendar = JREDateTimeUtil.getThreadCalendar(timeZone);
+		calendar.setTimeInMillis(startDate+startTime);
+		
 		long time;
 		while(true) {
 			time=getMilliSecondsInDay(calendar);
@@ -213,4 +213,14 @@ public class ScheduledTaskThread extends Thread {
                     (c.get(Calendar.MILLISECOND));
         
     }
+	
+
+	public Config getConfig() {
+		return config;
+	}
+
+
+	public ScheduleTask getTask() {
+		return task;
+	}
 }

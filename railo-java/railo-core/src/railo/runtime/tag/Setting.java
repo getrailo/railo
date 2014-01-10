@@ -21,7 +21,7 @@ public final class Setting extends BodyTagImpl {
 	* @param showdebugoutput value to set
 	**/
 	public void setShowdebugoutput(boolean showdebugoutput)	{
-		pageContext.getDebugger().setOutput(showdebugoutput);
+		if(pageContext.getConfig().debug())pageContext.getDebugger().setOutput(showdebugoutput);
 	}
 
 	/** set the value enablecfoutputonly
@@ -47,16 +47,12 @@ public final class Setting extends BodyTagImpl {
         pageContext.setCFOutputOnly(enablecfoutputonly);
     }
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

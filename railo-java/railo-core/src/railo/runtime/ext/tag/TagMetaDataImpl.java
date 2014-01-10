@@ -22,7 +22,7 @@ public class TagMetaDataImpl implements TagMetaData {
 	 * Constructor of the class
 	 * @param attrType TagMetaData.ATTRIBUTE_TYPE_FIX,TagMetaData.ATTRIBUTE_TYPE_DYNAMIC,TagMetaData.ATTRIBUTE_TYPE_MIXED
 	 * @param attrMin minimal count of attributes needed for tag
-	 * @param attrMax maximal count of attributes or -1 for infinity attributes
+	 * @param attrMax maximum count of attributes or -1 for infinity attributes
 	 * @param bodyContent TagMetaData.BODY_CONTENT_EMPTY,TagMetaData.BODY_CONTENT_FREE,TagMetaData.BODY_CONTENT_MUST
 	 * @param isBodyRE is the body of the tag parsed like inside a cfoutput
 	 * @param description A description of the tag.
@@ -39,30 +39,22 @@ public class TagMetaDataImpl implements TagMetaData {
 		this.hasBody = hasBody;
 	}
 	
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#getAttributeMax()
-	 */
+	@Override
 	public int getAttributeMax() {
 		return attrMax;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#getAttributeMin()
-	 */
+	@Override
 	public int getAttributeMin() {
 		return attrMin;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#getAttributeType()
-	 */
+	@Override
 	public int getAttributeType() {
 		return attrType;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#getAttributes()
-	 */
+	@Override
 	public TagMetaDataAttr[] getAttributes() {
 		return (TagMetaDataAttr[]) attrs.toArray(new TagMetaDataAttr[attrs.size()]);
 	}
@@ -75,44 +67,32 @@ public class TagMetaDataImpl implements TagMetaData {
 		attrs.add(attr);
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#getBodyContent()
-	 */
+	@Override
 	public int getBodyContent() {
 		return bodyContent;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#isBodyRuntimeExpressionValue()
-	 */
+	@Override
 	public boolean isBodyRuntimeExpressionValue() {
 		return isBodyRE;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#handleException()
-	 */
+	@Override
 	public boolean handleException() {
 		return handleException;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#hasAppendix()
-	 */
+	@Override
 	public boolean hasAppendix() {
 		return hasAppendix;
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagMetaData#hasBody()
-	 */
+	@Override
 	public boolean hasBody() {
 		return hasBody;
 	}

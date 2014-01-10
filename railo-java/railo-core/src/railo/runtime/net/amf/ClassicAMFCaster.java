@@ -65,9 +65,7 @@ public class ClassicAMFCaster implements AMFCaster {
 
 	private int methodAccessLevel;
 
-	/**
-	 * @see railo.runtime.net.amf.AMFCaster#init(java.util.Map)
-	 */
+	@Override
 	public void init(Map arguments){
 		forceCFCLower=Caster.toBooleanValue(arguments.get("force-cfc-lowercase"),false);
 		forceQueryLower=Caster.toBooleanValue(arguments.get("force-query-lowercase"),false);
@@ -82,9 +80,7 @@ public class ClassicAMFCaster implements AMFCaster {
 	}
 	
 
-	/**
-	 * @see railo.runtime.net.amf.AMFCaster#toAMFObject(java.lang.Object)
-	 */
+	@Override
 	public Object toAMFObject(Object cf) throws PageException {
 		if(cf instanceof Node) return toAMFObject((Node)cf);
 		if(cf instanceof List) return toAMFObject((List)cf);
@@ -206,9 +202,7 @@ public class ClassicAMFCaster implements AMFCaster {
     }
 	
 
-	/**
-	 * @see railo.runtime.net.amf.AMFCaster#toCFMLObject(java.lang.Object)
-	 */
+	@Override
 	public Object toCFMLObject(Object amf) throws PageException {
 		if(amf instanceof Node) return toCFMLObject((Node)amf);
 		if(amf instanceof List) return toCFMLObject((List)amf);

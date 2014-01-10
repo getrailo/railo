@@ -7,6 +7,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import coldfusion.sql.DataSourceDef;
 
 public class DatSourceDefImpl implements DataSourceDef {
@@ -24,36 +25,30 @@ public class DatSourceDefImpl implements DataSourceDef {
 
 	public Struct getAllowedSQL() {
 		Struct allow=new StructImpl();
-		allow.setEL("alter", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_ALTER)));
-		allow.setEL("create", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_CREATE)));
-		allow.setEL("delete", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_DELETE)));
-		allow.setEL("drop", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_DROP)));
-		allow.setEL("grant", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_GRANT)));
-		allow.setEL("insert", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_INSERT)));
-		allow.setEL("revoke", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_REVOKE)));
-		allow.setEL("select", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_SELECT)));
+		allow.setEL(KeyConstants._alter, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_ALTER)));
+		allow.setEL(KeyConstants._create, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_CREATE)));
+		allow.setEL(KeyConstants._delete, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_DELETE)));
+		allow.setEL(KeyConstants._drop, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_DROP)));
+		allow.setEL(KeyConstants._grant, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_GRANT)));
+		allow.setEL(KeyConstants._insert, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_INSERT)));
+		allow.setEL(KeyConstants._revoke, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_REVOKE)));
+		allow.setEL(KeyConstants._select, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_SELECT)));
 		allow.setEL("storedproc", Caster.toBoolean(true));// TODO
-		allow.setEL("update", Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_UPDATE)));
+		allow.setEL(KeyConstants._update, Caster.toBoolean(ds.hasAllow(DataSource.ALLOW_UPDATE)));
 		return allow;
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getClassName()
-	 */
+	@Override
 	public String getClassName() {
 		return ds.getClazz().getName();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getDatabase()
-	 */
+	@Override
 	public String getDatabase() {
 		return ds.getDatabase();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getDesc()
-	 */
+	@Override
 	public String getDesc() {
 		return "";
 	}
@@ -97,10 +92,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return rtn;
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#getHost()
-	 */
+	@Override
 	public String getHost() {
 		return ds.getHost();
 	}
@@ -117,9 +109,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return "";
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getJndiName()
-	 */
+	@Override
 	public String getJndiName() {
 		return getJNDIName();
 	}
@@ -132,9 +122,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return ds.getConnectionTimeout();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getLogintimeout()
-	 */
+	@Override
 	public int getLogintimeout() {
 		return getLoginTimeout();
 	}
@@ -159,9 +147,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return getMaxConnections();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getPort()
-	 */
+	@Override
 	public int getPort() {
 		return ds.getPort();
 	}
@@ -186,40 +172,27 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return 0;
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getUrl()
-	 */
+	@Override
 	public String getUrl() {
 		return ds.getDsnTranslated();
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#getUsername()
-	 */
+	@Override
 	public String getUsername() {
 		return ds.getUsername();
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#getVendor()
-	 */
+	@Override
 	public String getVendor() {
 		return "";
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#isBlobEnabled()
-	 */
+	@Override
 	public boolean isBlobEnabled() {
 		return ds.isBlob();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#isClobEnabled()
-	 */
+	@Override
 	public boolean isClobEnabled() {
 		return ds.isClob();
 	}

@@ -13,6 +13,9 @@ import railo.commons.lang.ExternalizableUtil;
  */
 public final class FunctionArgumentLight implements FunctionArgument,Externalizable {
 	
+	private static final long serialVersionUID = 817360221819952381L; // do not change
+	
+	
 	private Collection.Key name;
 	private short type;
 	private String strType;
@@ -47,53 +50,38 @@ public final class FunctionArgumentLight implements FunctionArgument,Externaliza
 	}
 
 
-	/**
-     * @see railo.runtime.type.FunctionArgument#getName()
-     */
+	@Override
 	public Collection.Key getName() {
 		return name;
 	}
 
-	/**
-     * @see railo.runtime.type.FunctionArgument#isRequired()
-     */
+	@Override
 	public boolean isRequired() {
 		return false;
 	}
 
-	/**
-     * @see railo.runtime.type.FunctionArgument#getType()
-     */
+	@Override
 	public short getType() {
 		return type;
 	}
 
-	/**
-     * @see railo.runtime.type.FunctionArgument#getTypeAsString()
-     */
+	@Override
 	public String getTypeAsString() {
 		return strType;
 	}
 
-	/**
-     * @see railo.runtime.type.FunctionArgument#getHint()
-     */
+	@Override
 	public String getHint() {
 		return "";
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.FunctionArgument#getDisplayName()
-	 */
+	@Override
 	public String getDisplayName() {
 		return "";
 	}
 	
-	/**
-	 * @see railo.runtime.type.FunctionArgument#getMetaData()
-	 */
+	@Override
 	public Struct getMetaData() {
 		return null;
 	}

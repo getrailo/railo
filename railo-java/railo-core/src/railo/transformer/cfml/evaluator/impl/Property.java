@@ -9,7 +9,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag mailparam.
+ * Prueft den Kontext des Tag mailparam.
  * Das Tag <code>mailParam</code> darf nur innerhalb des Tag <code>mail</code> liegen.
  */
 public final class Property extends EvaluatorSupport {

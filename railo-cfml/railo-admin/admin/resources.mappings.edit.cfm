@@ -48,31 +48,22 @@
 					<th scope="row">#stText.setting.inspecttemplate#</th>
 					<td>
 						<cfif mapping.readOnly>
-							<cfif mapping.Trusted>
-								#stText.setting.inspecttemplatenever#
-								<div class="comment">#stText.setting.inspecttemplateneverdesc#</div>
-							<cfelse>
-								#stText.setting.inspecttemplatealways#
-								<div class="comment">#stText.setting.inspecttemplatealwaysdesc#</div>
+							<cfloop list="never,once,always,inherit" item="type">
+							<cfif mapping.inspect EQ type or (type EQ "inherit" and mapping.inspect EQ "")>
+							#stText.setting['inspectTemplate'&type]#
+							<div class="comment">#stText.setting['inspectTemplate'&type&"Desc"]#</div>
 							</cfif>
+							</cfloop>
 						<cfelse>
 							<ul class="radiolist">
-								<li>
-									<label>
-										<!--- never --->
-										<input class="radio" type="radio" name="trusted_#mapping.id#" value="true"<cfif mapping.Trusted> checked="checked"</cfif>>
-										<b>#stText.setting.inspectTemplateNever#</b>
+								<cfloop list="never,once,always,inherit" item="type">
+									<li><label>
+										<input class="radio" type="radio" name="inspect_#mapping.id#" value="#type EQ "inherit"?"":type#" <cfif mapping.inspect EQ type or (type EQ "inherit" and mapping.inspect EQ "")> checked="checked"</cfif>>
+										<b>#stText.setting['inspectTemplate'&type]#</b>
 									</label>
-									<div class="comment">#stText.setting.inspectTemplateNeverDesc#</div>
-								</li>
-								<li>
-									<label>
-										<!--- always --->
-										<input class="radio" type="radio" name="trusted_#mapping.id#" value="false"<cfif not mapping.Trusted> checked="checked"</cfif>>
-										<b>#stText.setting.inspectTemplateAlways#</b>
-									</label>
-									<div class="comment">#stText.setting.inspectTemplateAlwaysDesc#</div>
-								</li>
+									<div class="comment">#stText.setting['inspectTemplate'&type&"Desc"]#</div>
+									</li>
+								</cfloop>
 							</ul>
 						</cfif>
 					</td>
@@ -136,9 +127,18 @@
 		<table class="maintbl">
 			<tbody>
 				<tr>
-					<th scope="row">#stText.Mappings.archiveSecure#</th>
-					<td nowrap><input 
-					type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes" checked> <div class="comment">#stText.Mappings.archiveSecureDesc#</div></td>
+					<th scope="row">#stText.mappings.addCFMLFiles#</th>
+					<td nowrap>
+						<input type="checkbox" class="checkbox" name="addCFMLFiles_#mapping.id#" value="yes" checked>
+						<div class="comment">#stText.mappings.addCFMLFilesDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.mappings.addNonCFMLFiles#</th>
+					<td nowrap>
+						<input type="checkbox" class="checkbox" name="addNonCFMLFiles_#mapping.id#" value="yes" checked> 
+						<div class="comment">#stText.mappings.addNonCFMLFilesDesc#</div>
+					</td>
 				</tr>
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2" attention="#htmleditformat(stText.remote.downloadArchive)#">
@@ -147,7 +147,7 @@
 			<tfoot>
 				<tr>
 					<td colspan="2">
-						<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.downloadArchive#">
+						<input type="submit" class="button cancel" name="subAction" value="#stText.Buttons.downloadArchive#">
 						<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.addArchive#">
 						<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 					</td>

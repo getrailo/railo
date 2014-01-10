@@ -1,0 +1,2 @@
+the subfolders in this directory cotnains  templates for creating testcases for specfic jobs (http calls, file interaction, datsource interaction ...).
+to use this test case templates, rename "XXXX" to your Jira ticket number and copy to folder ../tickets/.

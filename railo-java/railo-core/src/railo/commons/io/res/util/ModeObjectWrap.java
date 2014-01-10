@@ -19,24 +19,17 @@ public final class ModeObjectWrap implements ObjectWrap,Castable {
 		this.res=res;
 	}
 
-	/**
-	 * @see railo.runtime.type.ObjectWrap#getEmbededObject()
-	 */
+	@Override
 	public Object getEmbededObject() {
 		return toString();
 	}
 
-	/**
-	 * @see railo.runtime.type.ObjectWrap#getEmbededObject(java.lang.Object)
-	 */
+	@Override
 	public Object getEmbededObject(Object def) {
 		return toString();
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		//print.dumpStack();
 		if(mode==null) mode=ModeUtil.toStringMode(res.getMode());
@@ -47,86 +40,62 @@ public final class ModeObjectWrap implements ObjectWrap,Castable {
 		return toString();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(toString());
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return Caster.toBoolean(toString(),defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return Caster.toDatetime(toString(),null);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return DateCaster.toDateAdvanced(toString(),true,null,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return Caster.toDoubleValue(toString());
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return Caster.toDoubleValue(toString(),defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return toString();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return toString();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(toString(), str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(toString(), dt.castToString());
 	}

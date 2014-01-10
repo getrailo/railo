@@ -29,9 +29,7 @@ public final class NumberSortRegisterComparator implements ExceptionComparator {
 		return pageException;
 	}
 	
-	/**
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 */
+	@Override
 	public int compare(Object oLeft, Object oRight) {
 		try {
 			if(pageException!=null) return 0;

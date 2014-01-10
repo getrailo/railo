@@ -58,9 +58,7 @@ public final class VariableReference implements Reference {
             this(Caster.toCollection(o),key); 
         } 
         
-        /**
-         * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-         */
+        @Override
         public Object get(PageContext pc) throws PageException { 
             return get(); 
         } 
@@ -71,10 +69,7 @@ public final class VariableReference implements Reference {
             return coll.get(key); 
         } 
         
-        /**
-         *
-         * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-         */
+        @Override
         public Object get(PageContext pc, Object defaultValue) { 
             return get(defaultValue); 
         } 
@@ -88,9 +83,7 @@ public final class VariableReference implements Reference {
         } 
         
         
-		/**
-		 * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-		 */
+		@Override
 		public Object set(PageContext pc, Object value) throws PageException { 
 			return coll.set(key,value); 
 		} 
@@ -98,16 +91,12 @@ public final class VariableReference implements Reference {
 			coll.set(key,Caster.toDouble(value)); 
 		} 
 
-		/**
-		 * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
-		 */
+		@Override
 		public Object setEL(PageContext pc, Object value) { 
 				return coll.setEL(key,value); 
 		} 
         
-        /**
-         * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-         */
+        @Override
         public Object touch(PageContext pc) throws PageException {
             Object o;
             if(coll instanceof Query) {
@@ -120,9 +109,7 @@ public final class VariableReference implements Reference {
             return set(pc,new StructImpl());
         } 
         
-        /**
-         * @see railo.runtime.type.ref.Reference#touchEL(railo.runtime.PageContext)
-         */
+        @Override
         public Object touchEL(PageContext pc) {
             Object o;
             if(coll instanceof Query) {
@@ -135,23 +122,17 @@ public final class VariableReference implements Reference {
             return setEL(pc,new StructImpl());
         } 
         
-        /**
-         * @see railo.runtime.type.ref.Reference#remove(PageContext pc)
-         */
+        @Override
         public Object remove(PageContext pc) throws PageException { 
                 return coll.remove(key); 
         } 
         
-        /**
-         * @see railo.runtime.type.ref.Reference#removeEL(railo.runtime.PageContext)
-         */
+        @Override
         public Object removeEL(PageContext pc) { 
             return coll.removeEL(key); 
         } 
 
-        /**
-         * @see railo.runtime.type.ref.Reference#getParent()
-         */
+        @Override
         public Object getParent() { 
             return coll; 
 	    }
@@ -163,25 +144,17 @@ public final class VariableReference implements Reference {
             return coll; 
 	    }
 
-		/**
-		 *
-		 * @see railo.runtime.type.ref.Reference#getKeyAsString()
-		 */
+		@Override
 		public String getKeyAsString() {
 			return key.getString();
 		}
 		
-		/**
-		 *
-		 * @see railo.runtime.type.ref.Reference#getKey()
-		 */
+		@Override
 		public Collection.Key getKey() {
 			return key;
 		}
 
-        /**
-         * @see java.lang.Object#toString()
-         */
+        @Override
         public String toString() {
             try {
                 return Caster.toString(get());

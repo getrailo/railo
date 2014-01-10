@@ -31,9 +31,7 @@ public final class Col extends TagImpl {
 	/** The text for the column's header. */
 	private String header="";
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		text="";
@@ -87,9 +85,7 @@ public final class Col extends TagImpl {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws ExpressionException, ApplicationException	{
 		Tag parent=getParent();
 		while(parent!=null && !(parent instanceof Table)) {
@@ -105,9 +101,7 @@ public final class Col extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -28,6 +28,7 @@ import railo.runtime.functions.cache.CachePut;
 import railo.runtime.functions.cache.CacheRemove;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.StructImpl;
@@ -35,7 +36,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
-import railo.runtime.writer.CFMLWriterImpl;
 
 /**
 * Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
@@ -114,9 +114,7 @@ public final class Cache extends BodyTagImpl {
     private static final int GET=5;
     private static final int PUT=6;
     
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
         directory=null;
@@ -268,10 +266,7 @@ public final class Cache extends BodyTagImpl {
     }
     
     
-    /**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+    @Override
 	public int doStartTag() throws PageException	{
 		now = new DateTimeImpl(pageContext.getConfig());
 		try {
@@ -293,32 +288,19 @@ public final class Cache extends BodyTagImpl {
 		}
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		//print.out("doAfterBody");
 		if(bodyContent!=null)body=bodyContent.getString();
 		return SKIP_BODY;
 	}
-    
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
-	
 
-    /**
-     * @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag() throws PageException	{//print.out("doEndTag"+doCaching+"-"+body);
 		if(doCaching && body!=null) {
     		try {
@@ -345,7 +327,7 @@ public final class Cache extends BodyTagImpl {
 		if(hasBody)hasBody=!StringUtil.isEmpty(body);
 		
         // call via cfcache disable debugger output
-            pageContext.getDebugger().setOutput(false);
+            if(pageContext.getConfig().debug())pageContext.getDebugger().setOutput(false);
 		
         HttpServletResponse rsp = pageContext.getHttpServletResponse();
         
@@ -358,7 +340,7 @@ public final class Cache extends BodyTagImpl {
         	
         	OutputStream os=null;
         	try {
-                ci.writeTo(os=getOutputStream(),rsp.getCharacterEncoding());
+                ci.writeTo(os=getOutputStream(),ReqRspUtil.getCharacterEncoding(pageContext,rsp));
         		//IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
             } 
             finally {
@@ -373,7 +355,7 @@ public final class Cache extends BodyTagImpl {
         //MetaData.getInstance(getDirectory()).add(ci.getName(), ci.getRaw());
         
         PageContextImpl pci = (PageContextImpl)pageContext;
-        ((CFMLWriterImpl)pci.getRootOut()).doCache(ci);
+        pci.getRootOut().doCache(ci);
         	
     }
 

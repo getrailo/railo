@@ -28,9 +28,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 		super(true,"url",SCOPE_URL);
 	}
 
-    /**
-     * @see railo.runtime.type.scope.URL#getEncoding()
-     */
+    @Override
     public String getEncoding() {
         return encoding;
     }
@@ -43,9 +41,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
         if(isInitalized())fillDecoded(raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(SCOPE_URL));
     }
 
-	/**
-	 * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
         if(encoding==null)encoding=pc.getConfig().getWebCharset();
         if(scriptProtected==ScriptProtected.UNDEFINED) {
@@ -97,10 +93,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#isScriptProtected()
-	 */
+	@Override
 	public boolean isScriptProtected() {
 		return scriptProtected==ScriptProtected.YES;
 	}

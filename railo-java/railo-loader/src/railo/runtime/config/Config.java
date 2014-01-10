@@ -98,6 +98,7 @@ public interface Config {
 	public static final short INSPECT_ALWAYS = 0;
 	public static final short INSPECT_ONCE = 1;
 	public static final short INSPECT_NEVER = 2;
+	// Hibernate Extension has hardcoded this 4, do not change!!!!
 
     /*public static final int CUSTOM_TAG_MODE_NONE = 0;
     public static final int CUSTOM_TAG_MODE_CLASSIC = 1;
@@ -324,20 +325,20 @@ public interface Config {
     /**
      * @return returns the charset for the response and request
      */
-    public abstract String getWebCharset();
+    public abstract String getWebCharset(); // FUTURE return Charset
     /**
      * @return returns the charset used to read cfml files
      */
-    public abstract String getTemplateCharset();
+    public abstract String getTemplateCharset(); // FUTURE return Charset
     /**
      * @return returns the charset used to read and write resources
      */
-    public abstract String getResourceCharset();
+    public abstract String getResourceCharset(); // FUTURE return Charset
 
     /**
      * @return returns the default encoding for mail
      */
-    public String getMailDefaultEncoding();
+    public String getMailDefaultEncoding(); // FUTURE return Charset?
     
     /**
      * @return returns update type (auto or manual)

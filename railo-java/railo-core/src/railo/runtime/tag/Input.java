@@ -16,10 +16,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 // FUTURE tag input 
 //attr validateAt impl tag atrr
@@ -128,9 +128,7 @@ public class Input extends TagImpl {
 	String mask;
 	
     
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         input=new InputBean();
@@ -407,7 +405,7 @@ public class Input extends TagImpl {
      * @throws ApplicationException 
      */
     public void setDaynames(String listDaynames) throws ApplicationException {
-    	String[] arr = List.listToStringArray(listDaynames, ',');
+    	String[] arr = ListUtil.listToStringArray(listDaynames, ',');
     	if(arr.length==7)
     		throw new ApplicationException("value of attribute [daynames] must contain a string list with 7 values, now there are "+arr.length+" values");
     	this.daynames=arr;
@@ -426,7 +424,7 @@ public class Input extends TagImpl {
      * @throws ApplicationException 
      */
     public void setMonthnames(String listMonthNames) throws ApplicationException {
-    	String[] arr = List.listToStringArray(listMonthNames, ',');
+    	String[] arr = ListUtil.listToStringArray(listMonthNames, ',');
     	if(arr.length==12)
     		throw new ApplicationException("value of attribute [MonthNames] must contain a string list with 12 values, now there are "+arr.length+" values");
     	this.monthnames=arr;
@@ -542,7 +540,7 @@ public class Input extends TagImpl {
         String errMessage="attribute range has an invalid value ["+range+"], must be string list with numbers";
         String errDetail="Example: [number_from,number_to], [number_from], [number_from,], [,number_to]";
         
-        Array arr=List.listToArray(range,',');
+        Array arr=ListUtil.listToArray(range,',');
         
         if(arr.size()==1) {
             double from=Caster.toDoubleValue(arr.get(1,null),Double.NaN);
@@ -588,10 +586,7 @@ public class Input extends TagImpl {
         if(!StringUtil.isEmpty(message))input.setMessage(message);
     }
 
-    /**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+    @Override
 	public int doEndTag() throws PageException {
 		try {
             _doEndTag();

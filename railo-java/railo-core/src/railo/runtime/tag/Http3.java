@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -64,12 +65,12 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -87,7 +88,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	
 
     /**
-     * Maximal count of redirects (5)
+     * maximum redirect count (5)
      */
     public static final short MAX_REDIRECT=15;
     
@@ -247,9 +248,7 @@ public final class Http3 extends BodyTagImpl implements Http {
     private boolean addtoken=false;
 
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 	    params.clear();
@@ -387,7 +386,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	 * @throws PageException
 	**/
 	public void setColumns(String columns) throws PageException	{
-		this.columns=List.toStringArray(List.listToArrayRemoveEmpty(columns,","));
+		this.columns=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(columns,","));
 	}
 
 	/** set the value port
@@ -491,9 +490,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag()	{
 		if(addtoken) {
 			setParam("cookie","cfid",pageContext.getCFID());
@@ -513,10 +510,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 		setParam(hpb);
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 	    Struct cfhttp=new StructImpl();
 		cfhttp.setEL(ERROR_DETAIL,"");
@@ -715,7 +709,7 @@ public final class Http3 extends BodyTagImpl implements Http {
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
                     }
                     catch (UnsupportedEncodingException uee) {
-                    	str = IOUtil.toString(is,null);
+                    	str = IOUtil.toString(is,(Charset)null);
                     }
                 }
                 catch (IOException ioe) {
@@ -740,7 +734,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 		        catch (IOException e1) {}
 		        
 		        if(name!=null) {
-		        	Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
+                    Query qry = CSVParser.toQuery( str, delimiter, textqualifier, columns, firstrowasheaders  );
                     pageContext.setVariable(name,qry);
 		        }
 		    }
@@ -902,7 +896,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	// parse url (also query string)
 		URL _url=null;
 		try {
-			_url = HTTPUtil.toURL(url,port);
+			_url = HTTPUtil.toURL(url,port,true);
 			url=_url.toExternalForm();
 			
 			
@@ -914,7 +908,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	// QS
 		String strQS=_url.getQuery();
 		if(strQS!=null) {
-			arrQS=List.toStringArray(List.listToArray(List.trim(strQS,"&"),"&"));
+			arrQS=ListUtil.toStringArray(ListUtil.listToArray(ListUtil.trim(strQS,"&"),"&"));
 		}
 		
 	// select best matching method (get,post, post multpart (file))
@@ -986,7 +980,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 			}
 		// CGI
 			else if(type.equals("cgi")) {
-				if(param.isEncoded())
+				if(param.getEncoded())
 				    httpMethod.addRequestHeader(
                             translateEncoding(param.getName(),http.charset),
                             translateEncoding(param.getValueAsString(),http.charset));
@@ -1117,7 +1111,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 		for(int i=0;i<arrQS.length;i++) {
 			if(StringUtil.isEmpty(arrQS[i])) continue;
 			
-			String[] pair=List.toStringArray(List.listToArray(arrQS[i],'='));
+			String[] pair=ListUtil.toStringArray(ListUtil.listToArray(arrQS[i],'='));
 			if(ArrayUtil.isEmpty(pair)) continue;
 			
 			String name=pair[0];
@@ -1206,16 +1200,12 @@ public final class Http3 extends BodyTagImpl implements Http {
     	return URLEncoder.encode(str,charset);
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+    @Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
@@ -1410,9 +1400,7 @@ class MultipartRequestEntityFlex extends MultipartRequestEntity {
 		this.multipartType=multipartType;
 	}
 	
-	/**
-	 * @see org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity#getContentType()
-	 */
+	@Override
 	public String getContentType() {
 	   StringBuilder builder = new StringBuilder(multipartType);
 	   builder.append("; boundary=");

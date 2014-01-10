@@ -49,10 +49,7 @@ public class ClientDatasource extends StorageScopeDatasource implements Client {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientDatasource(this,deepCopy);
 	}

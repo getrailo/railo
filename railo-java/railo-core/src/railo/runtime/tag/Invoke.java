@@ -47,9 +47,7 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	private ProxyData proxy=new ProxyDataImpl();
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		data.clear();
@@ -166,16 +164,12 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		// CFC
 		if(component!=null){

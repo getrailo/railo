@@ -6,9 +6,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 
 import com.allaire.cfx.Query;
 import com.allaire.cfx.Request;
@@ -20,8 +20,8 @@ import com.allaire.cfx.Request;
  */
 public final class RequestImpl implements Request {
 	
-	private static final Collection.Key QUERY = KeyImpl.intern("query");
-	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
+	private static final Collection.Key QUERY = KeyConstants._query;
+	private static final Collection.Key DEBUG = KeyConstants._debug;
 	private Struct attributes;
 	private Struct settings;
 	private Query query;
@@ -64,53 +64,39 @@ public final class RequestImpl implements Request {
 		this.settings=settings;
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#attributeExists(java.lang.String)
-	 */
+	@Override
 	public boolean attributeExists(String key) {
 		return attributes.get(key,null)!=null;
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#debug()
-	 */
+	@Override
 	public boolean debug() {
 		Object o=attributes.get(DEBUG,Boolean.FALSE);
 		if(o==null) return false;
 		return Caster.toBooleanValue(o,false);
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getAttribute(java.lang.String)
-	 */
+	@Override
 	public String getAttribute(String key) {
 		return getAttribute(key, "");
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getAttribute(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public String getAttribute(String key, String defaultValue) {
 		return Caster.toString(attributes.get(key,defaultValue),defaultValue);
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getAttributeList()
-	 */
+	@Override
 	public String[] getAttributeList() {
 		return CollectionUtil.keysAsString(attributes);
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getIntAttribute(java.lang.String)
-	 */
+	@Override
 	public int getIntAttribute(String key) throws NumberFormatException {
 		return getIntAttribute(key, -1);
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getIntAttribute(java.lang.String, int)
-	 */
+	@Override
 	public int getIntAttribute(String key, int defaultValue) {
 		Object o=attributes.get(key,null);
 		if(o==null) return defaultValue;
@@ -121,16 +107,12 @@ public final class RequestImpl implements Request {
 		}
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getQuery()
-	 */
+	@Override
 	public Query getQuery() {
 		return query;
 	}
 
-	/**
-	 * @see com.allaire.cfx.Request#getSetting(java.lang.String)
-	 */
+	@Override
 	public String getSetting(String key) {
 		return settings==null?"":Caster.toString(settings.get(key,""),"");
 	}

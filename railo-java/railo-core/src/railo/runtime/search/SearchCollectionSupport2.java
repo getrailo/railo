@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
@@ -22,13 +22,14 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a single Collection
@@ -42,7 +43,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 	private DateTime lastUpdate;
     private SearchEngineSupport searchEngine;
 	//TODO change visibility to private
-    protected Map indexes=new HashTable();
+    protected Map<String,SearchIndex> indexes=MapFactory.<String,SearchIndex>getConcurrentMap();
 
     private DateTime created;
 
@@ -70,9 +71,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 		this.log = searchEngine.getLogger();
 	}
 
-	/**
-     * @see railo.runtime.search.SearchCollection#create()
-     */
+	@Override
 	public final void create() throws SearchException {
 		Lock l = lock();
 		try {
@@ -89,9 +88,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 	 */
 	protected abstract void _create() throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#optimize()
-     */
+    @Override
     public final void optimize() throws SearchException  {
     	Lock l = lock();
          try {
@@ -109,9 +106,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      */
     protected abstract void _optimize() throws SearchException ;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#map(railo.commons.io.res.Resource)
-     */
+    @Override
     public final void map(Resource path) throws SearchException  {
     	Lock l = lock();
     	try {
@@ -130,9 +125,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      */ 
     protected abstract void _map(Resource path) throws SearchException ;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#repair()
-     */
+    @Override
     public final void repair() throws SearchException  {
     	Lock l = lock();
     	try {
@@ -150,10 +143,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      */
     protected abstract void _repair() throws SearchException ;
     
-    /**
-     * @return 
-     * @see railo.runtime.search.SearchCollection#index(railo.runtime.PageContext, java.lang.String, short, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], java.lang.String, boolean, java.lang.String, java.lang.String[], java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
+    @Override
     public IndexResult index(PageContext pc, String key, short type, String urlpath, String title, String body, String language, 
             String[] extensions, String query, boolean recurse,String categoryTree, String[] categories,
             String custom1, String custom2, String custom3, String custom4) throws PageException, MalformedURLException, SearchException {
@@ -203,16 +193,16 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             // populate query with a single row
                 qv=new QueryImpl(columns,1,"query");
                 // body
-                qv.setAt("key", 1, key);
+                qv.setAt(KeyConstants._key, 1, key);
                 key="key";
 
                 // body
-                qv.setAt("body", 1, body);
+                qv.setAt(KeyConstants._body, 1, body);
                 body="body";
 
                 // title
                 if(!StringUtil.isEmpty(title)){
-                	qv.setAt("title", 1, title);
+                	qv.setAt(KeyConstants._title, 1, title);
                 	title="title";
                 }
 
@@ -224,22 +214,22 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 
                 // custom1
                 if(!StringUtil.isEmpty(custom1)){
-                	qv.setAt("custom1", 1, custom1);
+                	qv.setAt(KeyConstants._custom1, 1, custom1);
                 	custom1="custom1";
                 }
                 // custom2
                 if(!StringUtil.isEmpty(custom2)){
-                	qv.setAt("custom2", 1, custom2);
+                	qv.setAt(KeyConstants._custom2, 1, custom2);
                 	custom2="custom2";
                 }
                 // custom3
                 if(!StringUtil.isEmpty(custom3)){
-                	qv.setAt("custom3", 1, custom3);
+                	qv.setAt(KeyConstants._custom3, 1, custom3);
                 	custom3="custom3";
                 }
                 // custom4
                 if(!StringUtil.isEmpty(custom4)){
-                	qv.setAt("custom4", 1, custom4);
+                	qv.setAt(KeyConstants._custom4, 1, custom4);
                 	custom4="custom4";
                 }
             }
@@ -247,7 +237,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             
         	QueryColumn keyColumn=qv.getColumn(key);
             
-            String[] strBodies=List.toStringArrayTrim(List.listToArrayRemoveEmpty(body,','));
+            String[] strBodies=ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty(body,','));
             QueryColumn[] bodyColumns=new QueryColumn[strBodies.length];
             for(int i=0;i<bodyColumns.length;i++) {
                 bodyColumns[i]=qv.getColumn(strBodies[i]);
@@ -279,9 +269,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
         return query.getColumn(column,null);
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexFile(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String)
-     */
+    @Override
     public final IndexResult indexFile(String id,String title, Resource res, String language) throws SearchException {
     	throw new SearchException("method indexFile(...) no longer supported use index(...) instead");
     }
@@ -294,9 +282,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 
     protected abstract IndexResult _indexFile(SearchIndex si, Resource file)  throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexPath(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String[], boolean, java.lang.String)
-     */
+    @Override
     public final IndexResult indexPath(String id, String title, Resource dir, String[] extensions, boolean recurse, String language) throws SearchException {
     	throw new SearchException("method indexPath(...) no longer supported use index(...) instead");
     }
@@ -323,9 +309,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      */
     protected abstract IndexResult _indexPath(SearchIndex si, Resource dir, boolean recurse) throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexURL(java.lang.String, java.lang.String, java.net.URL, java.lang.String[], boolean, java.lang.String)
-     */
+    @Override
     public final IndexResult indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language) throws SearchException {
     	return indexURL(id, title, url, extensions, recurse, language, 10000);
     }
@@ -344,9 +328,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 
     protected abstract IndexResult _indexURL(SearchIndex si, URL url, boolean recurse, long timeout) throws SearchException ;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexCustom(java.lang.String, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn[], java.lang.String, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn)
-     */
+    @Override
     public final IndexResult indexCustom(String id, QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, 
     		QueryColumn custom1, QueryColumn custom2, QueryColumn custom3, QueryColumn custom4) throws SearchException {
     	throw new SearchException("method indexCustom(...) no longer supported use index(...) instead");
@@ -389,13 +371,13 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      * @throws SearchException
      */
     private void createIndex(SearchIndex index) throws SearchException {
-        Iterator it = indexes.keySet().iterator();
+        Iterator<String> it = indexes.keySet().iterator();
         SearchIndex otherIndex=null;
         
         while(it.hasNext()) {
             Object key=it.next();
             if(key.equals(index.getId())) {
-                otherIndex=(SearchIndex) indexes.get(key);
+                otherIndex=indexes.get(key);
                 break;
             }
         }
@@ -423,16 +405,12 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
         indexes.put(index.getId(),index);
     }
 
-	/**
-     * @see railo.runtime.search.SearchCollection#getLanguage()
-     */
+	@Override
 	public final String getLanguage() {
 		return language;
 	}
     
-	/**
-     * @see railo.runtime.search.SearchCollection#purge()
-     */
+	@Override
 	public final IndexResult purge() throws SearchException {
 		Lock l = lock();
 	try {
@@ -453,9 +431,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 	 */
 	protected abstract IndexResult _purge() throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#delete()
-     */
+    @Override
     public final IndexResult delete() throws SearchException {
     	Lock l = lock();
     	try {
@@ -474,16 +450,14 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      */
     protected abstract IndexResult _delete() throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#deleteIndex(railo.runtime.PageContext, java.lang.String, short, java.lang.String)
-     */
+    @Override
     public final IndexResult deleteIndex(PageContext pc,String key,short type,String queryName) throws SearchException {
         Iterator it = indexes.keySet().iterator();
         
         while(it.hasNext()) {
             Object id = it.next();
             if(id.equals(SearchIndex.toId(type,key,queryName))) {
-                SearchIndex index=(SearchIndex) indexes.get(id);
+                SearchIndex index = indexes.get(id);
 
                 IndexResult ir=_deleteIndex(index.getId());
                 Element indexEl=searchEngine.getIndexElement(searchEngine.getCollectionElement(name),index.getId());
@@ -502,44 +476,32 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
      */ 
     protected abstract IndexResult _deleteIndex(String id) throws SearchException;
     
-	/**
-     * @see railo.runtime.search.SearchCollection#getPath()
-     */
+	@Override
 	public final Resource getPath() {
 		return path;
 	}
 
-    /**
-     * @see railo.runtime.search.SearchCollection#getCreated()
-     */
+    @Override
     public DateTime getCreated() {
         return created;
     }
     
-	/**
-     * @see railo.runtime.search.SearchCollection#getLastUpdate()
-     */
+	@Override
 	public final DateTime getLastUpdate() {
 		return lastUpdate;
 	}
 
-	/**
-     * @see railo.runtime.search.SearchCollection#getName()
-     */
+	@Override
 	public final String getName() {
 		return name;
 	} 
 	
-    /**
-     * @see railo.runtime.search.SearchCollection#getLogger()
-     */
+    @Override
     public final Log getLogger() {
         return log;
     }
     
-    /**
-     * @see railo.runtime.search.SearchCollection#getSearchEngine()
-     */
+    @Override
     public final SearchEngine getSearchEngine() {
         return searchEngine;
     }
@@ -553,16 +515,12 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
         searchEngine.store();
     }
     
-    /**
-     * @see railo.runtime.search.SearchCollection#created()
-     */
+    @Override
     public Object created() {
         return created;
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#search(railo.runtime.search.SearchData, railo.runtime.type.Query, java.lang.String, java.lang.String, short, int, int, java.lang.String, java.lang.String[])
-     */
+    @Override
     public final int search(SearchData data, Query qry,String criteria, String language, short type,int startrow,int maxrow,String categoryTree, String[] categories) throws SearchException, PageException {
         int len=qry.getRecordcount();
         SearchResulItem[] records;
@@ -619,7 +577,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             		
                 int row=len+y+1;
                 record = records[y];
-            	si=(SearchIndex)indexes.get(record.getId());
+            	si=indexes.get(record.getId());
 
                 title=record.getTitle();
                 custom1=record.getCustom1();
@@ -628,24 +586,24 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 custom4=record.getCustom4();
                 url=record.getUrl();
                 
-                qry.setAt("title",row,title);
-                qry.setAt("custom1",row,custom1);
-                qry.setAt("custom2",row,custom2);
-                qry.setAt("custom3",row,custom3);
-                qry.setAt("custom4",row,custom4);
+                qry.setAt(KeyConstants._title,row,title);
+                qry.setAt(KeyConstants._custom1,row,custom1);
+                qry.setAt(KeyConstants._custom2,row,custom2);
+                qry.setAt(KeyConstants._custom3,row,custom3);
+                qry.setAt(KeyConstants._custom4,row,custom4);
                 qry.setAt("categoryTree",row,record.getCategoryTree());
-                qry.setAt("category",row,record.getCategory());
-                qry.setAt("type",row,record.getMimeType());
-                qry.setAt("author",row,record.getAuthor());
-                qry.setAt("size",row,record.getSize());
+                qry.setAt(KeyConstants._category,row,record.getCategory());
+                qry.setAt(KeyConstants._type,row,record.getMimeType());
+                qry.setAt(KeyConstants._author,row,record.getAuthor());
+                qry.setAt(KeyConstants._size,row,record.getSize());
 
-                qry.setAt("summary",row,record.getSummary());
-                qry.setAt("context",row,record.getContextSummary());
-                qry.setAt("score",row,new Float(record.getScore()));
-                qry.setAt("key",row,record.getKey());
-                qry.setAt("url",row,url);
-                qry.setAt("collection",row,getName());
-                qry.setAt("rank",row,new Double(row));
+                qry.setAt(KeyConstants._summary,row,record.getSummary());
+                qry.setAt(KeyConstants._context,row,record.getContextSummary());
+                qry.setAt(KeyConstants._score,row,new Float(record.getScore()));
+                qry.setAt(KeyConstants._key,row,record.getKey());
+                qry.setAt(KeyConstants._url,row,url);
+                qry.setAt(KeyConstants._collection,row,getName());
+                qry.setAt(KeyConstants._rank,row,new Double(row));
                 String rootPath,file;
                 String urlPath;
                 if(si!=null) {
@@ -655,7 +613,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 		rootPath=rootPath.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
                 		file=record.getKey();
                 		file=file.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
-                		qry.setAt("url",row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyConstants._url,row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
@@ -668,21 +626,21 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 		catch (MalformedURLException e) {}
                 		if(StringUtil.isEmpty(urlPath))urlPath=rootPath;
                 		file=record.getKey();
-                		qry.setAt("url",row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyConstants._url,row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
                 	default:
-                		qry.setAt("url",row,toURL(si.getUrlpath(),url));
+                		qry.setAt(KeyConstants._url,row,toURL(si.getUrlpath(),url));
                 	break;
                 	}
                 	
                 	
-                    if(StringUtil.isEmpty(title))      qry.setAt("title",row,si.getTitle());
-                    if(StringUtil.isEmpty(custom1))    qry.setAt("custom1",row,si.getCustom1());
-                    if(StringUtil.isEmpty(custom2))    qry.setAt("custom2",row,si.getCustom2());
-                    if(StringUtil.isEmpty(custom3))    qry.setAt("custom3",row,si.getCustom3());
-                    if(StringUtil.isEmpty(custom4))    qry.setAt("custom4",row,si.getCustom4());
+                    if(StringUtil.isEmpty(title))      qry.setAt(KeyConstants._title,row,si.getTitle());
+                    if(StringUtil.isEmpty(custom1))    qry.setAt(KeyConstants._custom1,row,si.getCustom1());
+                    if(StringUtil.isEmpty(custom2))    qry.setAt(KeyConstants._custom2,row,si.getCustom2());
+                    if(StringUtil.isEmpty(custom3))    qry.setAt(KeyConstants._custom3,row,si.getCustom3());
+                    if(StringUtil.isEmpty(custom4))    qry.setAt(KeyConstants._custom4,row,si.getCustom4());
                     
                 }
             }
@@ -733,12 +691,13 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 	
 
     protected SearchIndex[] getIndexes() {
-    	Iterator it = indexes.keySet().iterator();
+    	//Iterator<Entry<String, SearchIndex>> it = indexes.entrySet().iterator();
+    	Iterator<SearchIndex> it = indexes.values().iterator();
 		int len=indexes.size();
 		SearchIndex[] rtn=new SearchIndex[len];
 		int count=0;
 		while(it.hasNext()) {
-			rtn[count++]=(SearchIndex) indexes.get(it.next());
+			rtn[count++]=it.next();
 		}
 		return rtn;
 	}
@@ -767,7 +726,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
 
 	// FUTURE
 	public Object getIndexesAsQuery() {
-		Iterator it = indexes.entrySet().iterator();
+		Iterator<Entry<String, SearchIndex>> it = indexes.entrySet().iterator();
 		
 		final String v="VARCHAR";
         Query query=null;
@@ -783,33 +742,32 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             query=new QueryImpl(cols, 0,"query");
         }
         
-	    
-        Map.Entry entry;
+        Entry<String, SearchIndex> entry;
         SearchIndex index;
         int row=0;
 		while(it.hasNext()) {
 			query.addRow();
 			row++;
-        	entry=(Entry) it.next();
-        	index=(SearchIndex) entry.getValue();
+        	entry = it.next();
+        	index=entry.getValue();
         	if(index==null)continue;
 	        try {
 		        
-                query.setAt("categories",row,List.arrayToList(index.getCategories(),""));
+                query.setAt("categories",row,ListUtil.arrayToList(index.getCategories(),""));
                 query.setAt("categoryTree",row,index.getCategoryTree());
                 
-                query.setAt("custom1",row,index.getCustom1());
-                query.setAt("custom2",row,index.getCustom2());
-                query.setAt("custom3",row,index.getCustom3());
-                query.setAt("custom4",row,index.getCustom4());
+                query.setAt(KeyConstants._custom1,row,index.getCustom1());
+                query.setAt(KeyConstants._custom2,row,index.getCustom2());
+                query.setAt(KeyConstants._custom3,row,index.getCustom3());
+                query.setAt(KeyConstants._custom4,row,index.getCustom4());
                 
-                query.setAt("extensions",row,List.arrayToList(index.getExtensions(),","));
-                query.setAt("key",row,index.getKey());
-                query.setAt("language",row,index.getLanguage());
-                query.setAt("query",row,index.getQuery());
-                query.setAt("title",row,index.getTitle());
+                query.setAt(KeyConstants._extensions,row,ListUtil.arrayToList(index.getExtensions(),","));
+                query.setAt(KeyConstants._key,row,index.getKey());
+                query.setAt(KeyConstants._language,row,index.getLanguage());
+                query.setAt(KeyConstants._query,row,index.getQuery());
+                query.setAt(KeyConstants._title,row,index.getTitle());
                 query.setAt("urlpath",row,index.getUrlpath());
-                query.setAt("type",row,SearchIndex.toStringTypeEL(index.getType()));
+                query.setAt(KeyConstants._type,row,SearchIndex.toStringTypeEL(index.getType()));
                 
 	        }
 		    catch(PageException pe) {}

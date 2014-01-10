@@ -218,23 +218,16 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.thread.ChildThread#getTagName()
-	 */
+	@Override
 	public String getTagName() {
 		return tagName;
 	}
 
-	/**
-	 * @see railo.runtime.thread.ChildThread#getStartTime()
-	 */
+	@Override
 	public long getStartTime() {
 		return start;
 	}
 
-	/**
-	 * @see railo.runtime.thread.ChildThread#getThreadScope()
-	 */
 	public Threads getThreadScope() {
 		if(scope==null) scope=new ThreadsImpl(this);
 		return scope;

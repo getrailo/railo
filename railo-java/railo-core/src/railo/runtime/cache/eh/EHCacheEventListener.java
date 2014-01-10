@@ -19,23 +19,17 @@ public class EHCacheEventListener implements net.sf.ehcache.event.CacheEventList
 	}
 	
 
-	/**
-	 * @see net.sf.ehcache.event.CacheEventListener#notifyElementExpired(net.sf.ehcache.Ehcache, net.sf.ehcache.Element)
-	 */
+	@Override
 	public void notifyElementExpired(Ehcache cache, Element element) {
 		listener.onExpires(new EHCacheEntry(element));
 	}
 
-	/**
-	 * @see net.sf.ehcache.event.CacheEventListener#notifyElementPut(net.sf.ehcache.Ehcache, net.sf.ehcache.Element)
-	 */
+	@Override
 	public void notifyElementPut(Ehcache cache, Element element) throws CacheException {
 		listener.onPut(new EHCacheEntry(element));
 	}
 
-	/**
-	 * @see net.sf.ehcache.event.CacheEventListener#notifyElementRemoved(net.sf.ehcache.Ehcache, net.sf.ehcache.Element)
-	 */
+	@Override
 	public void notifyElementRemoved(Ehcache cache, Element element) throws CacheException {
 		listener.onRemove(new EHCacheEntry(element));
 	}
@@ -67,9 +61,7 @@ public class EHCacheEventListener implements net.sf.ehcache.event.CacheEventList
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone(){
 		return new EHCacheEventListener(listener.duplicate()); 
 	}

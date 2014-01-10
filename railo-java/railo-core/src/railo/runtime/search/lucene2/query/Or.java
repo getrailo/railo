@@ -10,9 +10,7 @@ public final class Or implements Op {
 		this.right=right;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return left+" OR "+right;
 	}

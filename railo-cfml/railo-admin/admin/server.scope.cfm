@@ -46,6 +46,8 @@ Defaults --->
 					clientManagement="#isDefined("form.clientManagement") and form.clientManagement#"
 					clientCookies="#isDefined("form.clientCookies") and form.clientCookies#"
 					domaincookies="#isDefined("form.domaincookies") and form.domaincookies#"
+					sessionStorage="#form.sessionStorage#"
+					clientStorage="#form.clientStorage#"
 					remoteClients="#request.getRemoteClients()#">
 				
 			</cfcase>
@@ -68,6 +70,8 @@ Defaults --->
 					clientCookies=""
 					domaincookies=""
 					clientTimeout=""
+					sessionStorage=""
+					clientStorage=""
 					remoteClients="#request.getRemoteClients()#">
 				
 			</cfcase>
@@ -133,7 +137,8 @@ Error Output --->
 						<div class="comment">#stText.Scopes.CascadeToResultSetDescription#</div>
 					</td>
 				</tr>
-				
+				<!---
+				Session Type---->
 				<tr>
 					<th scope="row">#stText.Scopes.SessionType#</th>
 					<td>
@@ -146,7 +151,12 @@ Error Output --->
 							<b>#scope.sessionType#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.SessionTypeDescription#</div>
-					</td>
+						
+						<cfsavecontent variable="codeSample">
+							this.sessionType = "#scope.sessionType#";
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
+					 </td>
 				</tr>
 				
 				
@@ -164,6 +174,7 @@ Error Output --->
 						<div class="comment">#stText.Scopes.mergeUrlFormDescription#</div>
 					</td>
 				</tr>
+				<!--- Session Management --->
 				<tr>
 					<th scope="row">#stText.Scopes.SessionManagement#</th>
 					<td>
@@ -174,6 +185,11 @@ Error Output --->
 							<b>#iif(scope.sessionManagement,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.SessionManagementDescription#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.sessionManagement = #scope.sessionManagement#;
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<tr>
@@ -186,8 +202,14 @@ Error Output --->
 							<b>#iif(scope.clientManagement,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.ClientManagementDescription#</div>
+
+						<cfsavecontent variable="codeSample">
+							this.clientManagement = #scope.clientManagement#;
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
+				<!--- Domain Cookies --->
 				<tr>
 					<th scope="row">#stText.Scopes.DomainCookies#</th>
 					<td>
@@ -198,8 +220,14 @@ Error Output --->
 							<b>#iif(scope.domainCookies,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.DomainCookiesDescription#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.setDomainCookies = #scope.domainCookies#;
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
+				<!--- Client Cookies --->
 				<tr>
 					<th scope="row">#stText.Scopes.ClientCookies#</th>
 					<td>
@@ -210,24 +238,54 @@ Error Output --->
 							<b>#iif(scope.clientCookies,de('Yes'),de('No'))#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.ClientCookiesDescription#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.setClientCookies = #scope.clientCookies#;
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
-				</tr>
+				</tr>		
 				
+				
+				<!--- Local Mode --->
 				<tr>
 					<th scope="row">#stText.Scopes.LocalMode#</th>
 					<td>
+						<div class="comment">#stText.scopes.localmodeDesc#</div>
 						<cfif hasAccess>
-							<select name="LocalMode" class="medium">
-								<option value="always" <cfif scope.LocalMode EQ "always">selected</cfif>>#stText.Scopes.LocalModeAlways#</option>
-								<option value="update" <cfif scope.LocalMode EQ "update">selected</cfif>>#stText.Scopes.LocalModeUpdate#</option>
-							</select>
+							<ul class="radiolist">
+								<li>
+									<!--- modern --->
+									<label>
+										<input class="radio" type="radio" name="LocalMode" value="modern"<cfif scope.LocalMode EQ "modern"> checked="checked"</cfif>>
+										<b>#stText.Scopes.LocalModeModern#</b>
+									</label>
+									<div class="comment">#stText.scopes.localmodeModernDesc#</div>
+								</li>
+								<li>
+									<!--- classic --->
+									<label>
+										<input class="radio" type="radio" name="LocalMode" value="classic"<cfif scope.LocalMode EQ "classic"> checked="checked"</cfif>>
+										<b>#stText.Scopes.LocalModeClassic#</b>
+									</label>
+									<div class="comment">#stText.scopes.localmodeClassicDesc#</div>
+								</li>
+							</ul>
 						<cfelse>
-							<b>#scope.localMode#</b>
-							<!---<input type="hidden"  name="LocalMode" value="#scope.localMode#">--->
+							<input type="hidden" name="localMode" value="#scope.LocalMode#">
+							<b>#stText.Scopes["LocalMode"& scope.LocalMode]#</b><br />
+							<div class="comment">#stText.Scopes["LocalMode"& scope.LocalMode&"desc"]#</div>
 						</cfif>
-						<div class="comment">#stText.Scopes.LocalModeDesc#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.localMode = "#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"
+// or as part of a function declaration
+function test() localMode="#scope.LocalMode#" {}
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
+				<!--- Session Timeout --->
 				<tr>
 					<th scope="row">#stText.Scopes.SessionTimeout#</th>
 					<td>
@@ -260,8 +318,14 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.SessionTimeoutDescription#</div>
+
+						<cfsavecontent variable="codeSample">
+							this.sessionTimeout = createTimeSpan( #scope.sessionTimeout_day#, #scope.sessionTimeout_hour#, #scope.sessionTimeout_minute#, #scope.sessionTimeout_second# );
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
+				<!--- Application Timeout --->
 				<tr>
 					<th scope="row">#stText.Scopes.ApplicationTimeout#</th>
 					<td>
@@ -294,8 +358,14 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.ApplicationTimeoutDescription#</div>
+
+						<cfsavecontent variable="codeSample">
+							this.applicationTimeout = createTimeSpan( #scope.applicationTimeout_day#, #scope.applicationTimeout_hour#, #scope.applicationTimeout_minute#, #scope.applicationTimeout_second# );
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
+				<!--- Client Timeout --->
 				<tr>
 					<th scope="row">#stText.Scopes.ClientTimeout#</th>
 					<td>
@@ -328,8 +398,58 @@ Error Output --->
 							</tbody>
 						</table>
 						<div class="comment">#stText.Scopes.ClientTimeoutDescription#</div>
+					
+						<cfsavecontent variable="codeSample">
+							this.clientTimeout = createTimeSpan( #scope.clientTimeout_day#, #scope.clientTimeout_hour#, #scope.clientTimeout_minute#, #scope.clientTimeout_second# );
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
+				
+				<cfset stText.Scopes.SessionStorage="Session Storage">
+				<cfset stText.Scopes.ClientStorage="Client Storage">
+				<cfset stText.Scopes.SessionStorageDesc="Default Storage for Session, possible values are:<br>
+						- memory: the data are only in the memory, so in fact no persistent storage<br>
+						- file: the data are stored in the local filesystem<br>
+						- cookie: the data are stored in the users cookie<br>
+						- &lt;cache-name&gt;: name of a cache instane that has ""Storage"" enabled<br>
+						- &lt;datasource-name&gt;: name of a datasource instane that has ""Storage"" enabled">
+				<cfset stText.Scopes.ClientStorageDesc="Default Storage for Session, possible values are:<br>
+						- memory: the data are only in the memory, so in fact no persistent storage<br>
+						- file: the data are stored in the local filesystem<br>
+						- cookie: the data are stored in the users cookie<br>
+						- &lt;cache-name&gt;: name of a cache instane that has ""Storage"" enabled<br>
+						- &lt;datasource-name&gt;: name of a datasource instane that has ""Storage"" enabled">
+							
+				
+				<!--- session storage --->
+				<tr>
+					<th scope="row">#stText.Scopes.sessionStorage#</th>
+					<td>
+						<cfinput type="text" name="sessionStorage" value="#scope.sessionStorage#">
+						<div class="comment">#stText.Scopes.sessionStorageDesc#</div>
+
+						<cfsavecontent variable="codeSample">
+							this.sessionStorage = "#scope.sessionStorage#";
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
+					</td>
+				</tr>
+				
+				<!--- client storage --->
+				<tr>
+					<th scope="row">#stText.Scopes.clientStorage#</th>
+					<td>
+						<cfinput type="text" name="clientStorage" value="#scope.clientStorage#">
+						<div class="comment">#stText.Scopes.clientStorageDesc#</div>
+
+						<cfsavecontent variable="codeSample">
+							this.clientStorage = "#scope.clientStorage#";
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
+					</td>
+				</tr>
+				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">
 				</cfif>
@@ -349,4 +469,19 @@ Error Output --->
 			</cfif>
 		</table>
 	</cfform>
+	
+<!--- Tip
+<div class="tip">
+	#stText.settings.appcfcdesc#:
+	<pre>	this.sessionType="#scope.sessionType#"; // or "#scope.sessionType=="cfml"?"j2ee":"cfml"#"
+	this.SessionManagement=#scope.sessionManagement#; // or #scope.sessionManagement?false:true#
+	this.clientManagement=#scope.clientManagement#; // or #scope.clientManagement?false:true#
+	this.setDomainCookies=#scope.domainCookies#; // or #scope.domainCookies?false:true#
+	this.setClientCookies=#scope.clientCookies#; // or #scope.clientCookies?false:true#
+	this.localMode="#scope.LocalMode#"; // or "#scope.localMode=="modern"?"classic":"modern"#"
+	this.sessionTimeout=createTimeSpan(#scope.sessionTimeout_day#,#scope.sessionTimeout_hour#,#scope.sessionTimeout_minute#,#scope.sessionTimeout_second#);
+	this.applicationTimeout=createTimeSpan(#scope.applicationTimeout_day#,#scope.applicationTimeout_hour#,#scope.applicationTimeout_minute#,#scope.applicationTimeout_second#);
+	this.clientTimeout=createTimeSpan(#scope.clientTimeout_day#,#scope.clientTimeout_hour#,#scope.clientTimeout_minute#,#scope.clientTimeout_second#);
+	this.sessionStorage="#scope.sessionStorage#";
+	this.clientStorage="#scope.clientStorage#";</pre></div> --->
 </cfoutput>

@@ -9,9 +9,12 @@ import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,21 +30,24 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.loader.TP;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 import com.jezhumble.javasysmon.CpuTimes;
 import com.jezhumble.javasysmon.JavaSysMon;
@@ -80,7 +86,7 @@ public final class SystemUtil {
     private static Resource tempFile;
     private static Resource homeFile;
     private static Resource[] classPathes;
-    private static String charset=System.getProperty("file.encoding");
+    private static Charset charset;
     private static String lineSeparator=System.getProperty("line.separator","\n");
     private static MemoryPoolMXBean permGenSpaceBean;
 
@@ -88,8 +94,13 @@ public final class SystemUtil {
 	public static int jreArch=-1;
 	
 	static {
-		if(charset==null || charset.equalsIgnoreCase("MacRoman"))
-			charset="cp1252";
+		String strCharset=System.getProperty("file.encoding");
+		if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
+			strCharset="cp1252";
+
+		if(strCharset.equalsIgnoreCase("utf-8")) charset=CharsetUtil.UTF8;
+		else if(strCharset.equalsIgnoreCase("iso-8859-1")) charset=CharsetUtil.ISO88591;
+		else charset=CharsetUtil.toCharset(strCharset,null);
 		
 		// Perm Gen
 		permGenSpaceBean=getPermGenSpaceBean();
@@ -146,6 +157,8 @@ public final class SystemUtil {
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
 	private static Boolean isCLI;
+	private static double loaderVersion=0D;
+	private static String macAddress; 
 
     /**
      * returns if the file system case sensitive or not
@@ -174,7 +187,23 @@ public final class SystemUtil {
         isFSCaseSensitive=temp.exists()?Boolean.FALSE:Boolean.TRUE; 
         f.delete(); 
     }
-	
+
+
+	/**
+	 * fixes a java canonical path to a Windows path
+	 * e.g. /C:/Windows/System32 will be changed to C:\Windows\System32
+	 *
+	 * @param path
+	 * @return
+	 */
+	public static String fixWindowsPath(String path) {
+		if ( isWindows && path.length() > 3 && path.charAt(0) == '/' && path.charAt(2) == ':' ) {
+			path = path.substring(1).replace( '/', '\\' );
+		}
+		return path;
+	}
+
+
     /**
      * @return is local machine a Windows Machine
      */
@@ -196,7 +225,7 @@ public final class SystemUtil {
         String pathes=System.getProperty("java.library.path");
         ResourceProvider fr = ResourcesImpl.getFileResourceProvider();
         if(pathes!=null) {
-            String[] arr=List.toStringArrayEL(List.listToArray(pathes,File.pathSeparatorChar));
+            String[] arr=ListUtil.toStringArrayEL(ListUtil.listToArray(pathes,File.pathSeparatorChar));
             for(int i=0;i<arr.length;i++) {    
                 if(arr[i].toLowerCase().indexOf("windows\\system")!=-1) {
                     Resource file = fr.getResource(arr[i]);
@@ -278,6 +307,24 @@ public final class SystemUtil {
         return tempFile;
     }
     
+
+    /**
+     * returns the a unique temp file (with no auto delete)
+     * @param extension 
+     * @return temp directory
+     * @throws IOException 
+     */
+    public static Resource getTempFile(String extension, boolean touch) throws IOException {
+    	String filename=CreateUniqueId.invoke();
+    	if(!StringUtil.isEmpty(extension,true)){
+    		if(extension.startsWith("."))filename+=extension;
+    		else filename+="."+extension;
+    	}
+		Resource file = getTempDirectory().getRealResource(filename);
+		if(touch)ResourceUtil.touch(file);
+		return file;
+	}
+    
     /**
      * returns the Hoome Directory of the System
      * @return home directory
@@ -293,6 +340,10 @@ public final class SystemUtil {
             homeFile=ResourceUtil.getCanonicalResourceEL(homeFile);
         }
         return homeFile;
+    }
+    
+    public static Resource getClassLoadeDirectory(){
+    	return ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
     }
 
     /**
@@ -336,7 +387,7 @@ public final class SystemUtil {
     // pathes from system properties
         String strPathes=System.getProperty("java.class.path");
         if(strPathes!=null) {
-            Array arr=List.listToArrayRemoveEmpty(strPathes,pathSeperator);
+            Array arr=ListUtil.listToArrayRemoveEmpty(strPathes,pathSeperator);
             int len=arr.size();
             for(int i=1;i<=len;i++) {
                 Resource file=frp.getResource(Caster.toString(arr.get(i,""),"").trim());
@@ -388,6 +439,12 @@ public final class SystemUtil {
             if(path.startsWith("}",5)) path=getHomeDirectory().getRealResource(path.substring(6)).toString();
             else if(path.startsWith("-dir}",5)) path=getHomeDirectory().getRealResource(path.substring(10)).toString();
             else if(path.startsWith("-directory}",5)) path=getHomeDirectory().getRealResource(path.substring(16)).toString();
+        }
+        // ClassLoaderDir
+        else if(path.startsWith("{classloader")) {
+            if(path.startsWith("}",12)) path=getClassLoadeDirectory().getRealResource(path.substring(13)).toString();
+            else if(path.startsWith("-dir}",12)) path=getClassLoadeDirectory().getRealResource(path.substring(17)).toString();
+            else if(path.startsWith("-directory}",12)) path=getClassLoadeDirectory().getRealResource(path.substring(23)).toString();
         }
         return path;
     }
@@ -494,11 +551,14 @@ public final class SystemUtil {
 		return id;
     }
 
-    public static String getCharset() {
+    public static Charset getCharset() {
     	return charset;
     }
 
 	public static void setCharset(String charset) {
+		SystemUtil.charset = CharsetUtil.toCharset(charset);
+	}
+	public static void setCharset(Charset charset) {
 		SystemUtil.charset = charset;
 	}
 
@@ -862,5 +922,39 @@ public final class SystemUtil {
     		isCLI=Caster.toBoolean(System.getProperty("railo.cli.call"),Boolean.FALSE);
     	}
     	return isCLI.booleanValue();
+	}
+	
+	public static double getLoaderVersion() {
+		// this is done via reflection to make it work in older version, where the class railo.loader.Version does not exist
+		if(loaderVersion==0D) {
+			loaderVersion=4D;
+			Class cVersion = ClassUtil.loadClass(TP.class.getClassLoader(),"railo.loader.Version",null);
+			if(cVersion!=null) {
+				try {
+					Field f = cVersion.getField("VERSION");
+					loaderVersion=f.getDouble(null);
+				} 
+				catch (Throwable t) {t.printStackTrace();}
+			}
+		}
+		return loaderVersion;
+	}
+	public static String getMacAddress() {
+		if(macAddress==null) {
+			try{
+				InetAddress ip = InetAddress.getLocalHost();
+				NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+				byte[] mac = network.getHardwareAddress();
+		  
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < mac.length; i++) {
+					sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));		
+				}
+				macAddress= sb.toString();
+			}
+			catch(Throwable t){}
+			
+		}
+		return macAddress;
 	}
 }

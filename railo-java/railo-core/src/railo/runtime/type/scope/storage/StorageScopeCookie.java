@@ -103,9 +103,7 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 		catch (Throwable t) {}
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorageType()
-	 */
+	@Override
 	public String getStorageType() {
 		return "Cookie";
 	}

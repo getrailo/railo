@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.listener.ApplicationContext;
@@ -46,7 +47,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		KeyConstants._http_host, KeyConstants._http_user_agent, KeyConstants._http_referer, KeyConstants._https, KeyConstants._https_keysize, 
 		KeyConstants._https_secretkeysize, KeyConstants._https_server_issuer, KeyConstants._https_server_subject, KeyConstants._path_info,
 		KeyConstants._path_translated, KeyConstants._query_string, KeyConstants._remote_addr, KeyConstants._remote_host, KeyConstants._remote_user, 
-		KeyConstants._request_method, KeyConstants._script_name, KeyConstants._server_name, KeyConstants._server_port, KeyConstants._server_port_secure, 
+		KeyConstants._request_method, KeyConstants._request_url, KeyConstants._script_name, KeyConstants._server_name, KeyConstants._server_port, KeyConstants._server_port_secure,
 		KeyConstants._server_protocol, KeyConstants._server_software, KeyConstants._web_server_api, KeyConstants._context_path, KeyConstants._local_addr, 
 		KeyConstants._local_host
 	};
@@ -83,23 +84,17 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return staticKeys.containsKey(key);
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		// TODO Auto-generated method stub
 		return super.containsValue(value);
 	}
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImpl();
 		copy(this,sct,deepCopy);
@@ -107,9 +102,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return keys.length;
 	}
@@ -118,10 +111,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return keys;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		
 		if(req==null) {
@@ -163,10 +153,10 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='h')	{
             	if(lkey.startsWith("http_")){
-        	    	Object o = https.get(key,null);
-                    if(o==null && key.equals(KeyConstants._http_if_modified_since))
-                    	o = https.get(KeyConstants._last_modified,null);
-                    if(o!=null)return doScriptProtect((String)o);
+        	    	Object o = https.get(key,NullSupportHelper.NULL());
+                    if(o==NullSupportHelper.NULL() && key.equals(KeyConstants._http_if_modified_since))
+                    	o = https.get(KeyConstants._last_modified,NullSupportHelper.NULL());
+                    if(o!=NullSupportHelper.NULL())return doScriptProtect((String)o);
             }
             }
             else if(first=='r') {
@@ -174,6 +164,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
                 if(key.equals(KeyConstants._remote_addr))		return toString(req.getRemoteAddr());
                 if(key.equals(KeyConstants._remote_host))		return toString(req.getRemoteHost());
                 if(key.equals(KeyConstants._request_method))		return req.getMethod();
+                if(key.equals(KeyConstants._request_url))		return ReqRspUtil.getRequestURL( req, true );
                 if(key.equals(KeyConstants._request_uri))		return toString(req.getAttribute("javax.servlet.include.request_uri"));
                 if(key.getUpperString().startsWith("REDIRECT_")){
                 	// from attributes (key sensitive)
@@ -258,19 +249,14 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return StringUtil.toStringEmptyIfNull(str);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) {
 		Object value=get(key,"");
 		if(value==null)value= "";
 		return value;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
@@ -285,16 +271,12 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return new EntryIterator(this, keys());
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return isInit;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		isInit=true;
 		this.pc=pc;
@@ -325,23 +307,17 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		headers=null;
 	}
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, "CGI Scope", pageContext, maxlevel, dp);
 	}
     
-    /**
-     * @see railo.runtime.type.scope.Scope#getType()
-     */
+    @Override
     public int getType() {
         return SCOPE_CGI;
     }
     
-    /**
-     * @see railo.runtime.type.scope.Scope#getTypeAsString()
-     */
+    @Override
     public String getTypeAsString() {
         return "cgi";
     }
@@ -355,16 +331,6 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		scriptProtected=scriptProtecting?ScriptProtected.YES:ScriptProtected.NO;
 	}
 
-	public static String getCurrentURL(HttpServletRequest req) { // DIFF 23
-		StringBuffer sb=new StringBuffer();
-		sb.append(req.isSecure()?"https://":"http://");
-		sb.append(req.getServerName());
-		sb.append(':');
-		sb.append(req.getServerPort());
-		if(!StringUtil.isEmpty(req.getContextPath()))sb.append(req.getContextPath());
-		sb.append(req.getServletPath());
-		return sb.toString();
-	}
 	
 	public static String getDomain(HttpServletRequest req) { // DIFF 23
 		StringBuffer sb=new StringBuffer();
@@ -375,7 +341,5 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		if(!StringUtil.isEmpty(req.getContextPath()))sb.append(req.getContextPath());
 		return sb.toString();
 	}
-	
-	
-	
+
 }

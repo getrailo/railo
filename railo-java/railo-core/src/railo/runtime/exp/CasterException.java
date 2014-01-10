@@ -20,7 +20,7 @@ public class CasterException extends ExpressionException {
     }
 	
 	public CasterException(Object o,Class clazz) {
-        super(createMessage(o, clazz.getName()),createDetail(o));
+        super(createMessage(o, Caster.toTypeName(clazz)),createDetail(o));
     }
 
     /**

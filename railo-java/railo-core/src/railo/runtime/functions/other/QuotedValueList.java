@@ -30,7 +30,7 @@ public final class QuotedValueList extends ValueList {
 		
 		for(int i=1;i<=size;i++) {
 			if(i>1)sb.append(delimiter);
-			sb.append("'"+Caster.toString(column.get(i))+"'");
+			sb.append("'"+Caster.toString(column.get(i,null))+"'");
 		}
 		return sb.toString();
 	}

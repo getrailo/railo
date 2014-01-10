@@ -20,7 +20,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * cast a Expression to a Double
  */
-public final class CastDouble extends ExpressionBase implements ExprDouble {
+public final class CastDouble extends ExpressionBase implements ExprDouble,Cast {
     
     private Expression expr;
     
@@ -105,12 +105,10 @@ public final class CastDouble extends ExpressionBase implements ExprDouble {
         return Types.DOUBLE;
     }
 
-    /* *
-     * @see railo.transformer.bytecode.expression.Expression#getType()
-     * /
-    public int getType() {
-        return Types._DOUBLE;
-    }*/
+	@Override
+	public Expression getExpr() {
+		return expr;
+	}
 
 }
 

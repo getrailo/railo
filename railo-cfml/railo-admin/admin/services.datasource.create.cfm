@@ -6,7 +6,15 @@
 		<cfset DatasourceFlushMetaCache(form.name)>
 		
 	<cfelseif StructKeyExists(form,"run") and form.run EQ "create2">
-		<cfset driver=createObject("component","dbdriver."&form.type)>
+		
+		<cfset dbdriver = form.type>
+
+		<cfset driver=createObject("component", drivernames[ dbdriver ])>
+		<cfif dbdriver == "Other">
+			
+			<cfset driver.className = form.custom_class>
+		</cfif>
+
 		<cfset driver.onBeforeUpdate()>
 		<cfset custom=struct()>
 		<cfloop collection="#form#" item="key">
@@ -16,21 +24,18 @@
 			</cfif>
 		</cfloop>
 		<cfif form.password EQ "****************">
-			<cfadmin 
-				action="getDatasource"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
+			
+			<cfadmin action="getDatasource" type="#request.adminType#" password="#session["password"&request.adminType]#"
 				name="#form.name#"
 				returnVariable="existing">
 			<cfset form.password=existing.password>
 		</cfif>
 		<cfset verify=getForm('verify',false)>
 		<cfparam name="form.metaCacheTimeout" default="60000">
+
 		
-		<cfadmin 
-			action="updateDatasource"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
+
+		<cfadmin action="updateDatasource" type="#request.adminType#" password="#session["password"&request.adminType]#"
 			
 			classname="#driver.getClass()#"
 			dsn="#driver.getDSN()#"
@@ -53,7 +58,6 @@
 			validate="#getForm('validate',false)#"
 			storage="#getForm('storage',false)#"
 			
-			
 			allowed_select="#getForm('allowed_select',false)#"
 			allowed_insert="#getForm('allowed_insert',false)#"
 			allowed_update="#getForm('allowed_update',false)#"
@@ -65,18 +69,21 @@
 			allowed_grant="#getForm('allowed_grant',false)#"
 			verify="#verify#"
 			custom="#custom#"
+			dbdriver="#dbdriver#"
 			remoteClients="#request.getRemoteClients()#">
 			<cfset form.mark="update">
 		<cfset v="">
 		<cfif verify>
 			<cfset v="&verified="&form.name>
 		</cfif>
+
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
 	<cfcatch>
 		<cfset driver.onBeforeError(cfcatch)>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
+		<cfset error.exception = cfcatch>
 	</cfcatch>
 </cftry>
 
@@ -87,55 +94,73 @@
 	<cfset isInsert=structKeyExists(form,'mark') and form.mark EQ "create">
 	
 	<cfif isInsert>
+
 		<cfset actionType="create">
 		<cfset datasource=struct()>
-		<cfset datasource.type=form.type>
+		<cfset dbdriver = form.type>
 		<cfset datasource.name=form.name>
 		<cfset datasource.storage=false>
 		<cfset datasource.validate=false>
-		
+		<cfset datasource.passwordEncrypted="">	
+
+		<cfset driver = createObject("component",drivernames[ dbdriver ])>	
 	<cfelse>
+
 		<cfset actionType="update">
-		
-		<cfadmin 
-		action="getDatasource"
-		type="#request.adminType#"
-		password="#session["password"&request.adminType]#"
-		name="#structKeyExists(url,'name')?url.name:form.name#"
-		returnVariable="datasource">
+		<cfset _name="#structKeyExists(url,'name')?url.name:form.name#">
+
+		<cfadmin action="getDatasource"	type="#request.adminType#" password="#session["password"&request.adminType]#"
+			name="#_name#"
+			returnVariable="datasource">
+
+		<cftry>
+			<cfdbinfo type="Version" datasource="#_name#" name='dbinfo'>
+			<cfcatch></cfcatch>
+		</cftry>
 		
 		<cfset datasource._password=datasource.password>
 		<cfset datasource.password="****************">
-		<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
+		<cfset dbdriver = datasource.dbdriver ?: "">
+
+		<cfif isEmpty( dbdriver )>
+			<cfset dbdriver = getDbDriverType( datasource.classname, datasource.dsn )>
+		</cfif>
+
+		<cfset driver = createObject("component",drivernames[ dbdriver ])>
+		<cfif dbdriver == "Other">
+			<cfset driver.className = datasource.className>
+		</cfif>
 	</cfif>
-	
-	<cfset driver=createObject("component","dbdriver."&datasource.type)>
+
+	<cfset driver = createObject("component",drivernames[ dbdriver ])>
 
 	<cfif isInsert>
-		<cfset datasource.host=driver.getValue('host')>
-		<cfset datasource.database=driver.getValue('database')>
-		<cfset datasource.port=driver.getValue('port')>
-		<cfset datasource.timezone="">
-		<cfset datasource.username=driver.getValue('username')>
-		<cfset datasource.password=driver.getValue('password')>
-		<cfset datasource.ConnectionLimit=driver.getValue('ConnectionLimit')>
-		<cfset datasource.ConnectionTimeout=driver.getValue('ConnectionTimeout')>
-		<cfset datasource.blob=driver.getValue('blob')>
-		<cfset datasource.clob=driver.getValue('clob')>
+
+		<cfset datasource.className= driver.getClass()>
+		<cfset datasource.host     = driver.getValue('host')>
+		<cfset datasource.database = driver.getValue('database')>
+		<cfset datasource.port     = driver.getValue('port')>
+		<cfset datasource.timezone = "">
+		<cfset datasource.username = driver.getValue('username')>
+		<cfset datasource.password = driver.getValue('password')>
+		<cfset datasource.ConnectionLimit   = driver.getValue('ConnectionLimit')>
+		<cfset datasource.ConnectionTimeout = driver.getValue('ConnectionTimeout')>
+		<cfset datasource.blob     = driver.getValue('blob')>
+		<cfset datasource.clob     = driver.getValue('clob')>
 		
-		<cfset datasource.select=driver.getValue('allowed_select')>
-		<cfset datasource.insert=driver.getValue('allowed_insert')>
-		<cfset datasource.update=driver.getValue('allowed_update')>
-		<cfset datasource.delete=driver.getValue('allowed_delete')>
-		<cfset datasource.create=driver.getValue('allowed_create')>
-		<cfset datasource.drop=driver.getValue('allowed_drop')>
-		<cfset datasource.revoke=driver.getValue('allowed_revoke')>
-		<cfset datasource.alter=driver.getValue('allowed_alter')>
-		<cfset datasource.grant=driver.getValue('allowed_grant')>
+		<cfset datasource.select   = driver.getValue('allowed_select')>
+		<cfset datasource.insert   = driver.getValue('allowed_insert')>
+		<cfset datasource.update   = driver.getValue('allowed_update')>
+		<cfset datasource.delete   = driver.getValue('allowed_delete')>
+		<cfset datasource.create   = driver.getValue('allowed_create')>
+		<cfset datasource.drop     = driver.getValue('allowed_drop')>
+		<cfset datasource.revoke   = driver.getValue('allowed_revoke')>
+		<cfset datasource.alter    = driver.getValue('allowed_alter')>
+		<cfset datasource.grant    = driver.getValue('allowed_grant')>
 		<cfset datasource.metaCacheTimeout=60000>
 	</cfif>
 	
-	<cfif not structKeyExists(datasource,'metaCacheTimeout')>
+	<cfif !structKeyExists(datasource,'metaCacheTimeout')>
 		<cfset datasource.metaCacheTimeout=60000>
 	</cfif>
 
@@ -148,63 +173,32 @@
 	<cfset driver.init(datasource)>
 	<cfset fields=driver.getFields()>
 
-	<cfadmin 
-		action="getTimeZones"
+	<cfadmin action="getTimeZones"
 		locale="#stText.locale#"
 		returnVariable="timezones">
+
 </cfsilent>
 
 <cfoutput>
-	<h2>
-		<cfif actionType EQ "update">
-			#stText.Settings.DatasourceDescriptionUpdate#
-		<cfelse>
-			#stText.Settings.DatasourceDescriptionCreate#
-		</cfif>
-		#driver.getName()#
-	</h2>
+	<h2>#stText.Settings[ "DatasourceDescription" & ( actionType == "update" ? "Update" : "Create" ) ]# #driver.getName()#</h2>
+
 	<div class="pageintro">#driver.getDescription()#</div>
 	
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-		<input type="hidden" name="name" value="#datasource.name#">
-		<input type="hidden" name="type" value="#datasource.type#">
-		
-		<cfif actionType EQ "update">
-		
-			<h3>JDBC Connection Data</h3>
-			Based on the data below.
-			<table class="maintbl">
-				<tbody>
-					<tr>
-						<th scope="row">Driver Class</th>
-						<td>#datasource.classname#</td>
-					</tr>
-					<tr>
-						<th scope="row">Connection String</th>
-						<td>
-							<cfif len(datasource._password)>
-								#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#
-							<cfelse>
-								#datasource.dsnTranslated#
-							</cfif>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<br>
-		</cfif>
 
-		<cfsilent>
-			<cfset TYPE_HIDDEN=0>
-			<cfset TYPE_FREE=1>
-			<cfset TYPE_REQUIRED=2>
-			
-			<cfset typeHost=driver.getType('host')>
-			<cfset typeDatabase=driver.getType('database')>
-			<cfset typePort=driver.getType('port')>
-			<cfset typeUsername=driver.getType('username')>
-			<cfset typePassword=driver.getType('password')>
-		</cfsilent>
+		<input type="hidden" name="name" value="#datasource.name#">
+		<input type="hidden" name="type" value="#dbdriver#">
+
+		<cfset TYPE_HIDDEN=0>
+		<cfset TYPE_FREE=1>
+		<cfset TYPE_REQUIRED=2>
+		
+		<cfset typeHost=driver.getType('host')>
+		<cfset typeDatabase=driver.getType('database')>
+		<cfset typePort=driver.getType('port')>
+		<cfset typeUsername=driver.getType('username')>
+		<cfset typePassword=driver.getType('password')>
+
 		<cfif typeHost EQ TYPE_HIDDEN><input type="hidden" name="host" value="#datasource.host#"></cfif>
 		<cfif typeDatabase EQ TYPE_HIDDEN><input type="hidden" name="database" value="#datasource.database#"></cfif>
 		<cfif typePort EQ TYPE_HIDDEN><input type="hidden" name="port" value="#datasource.port#"></cfif>
@@ -215,12 +209,27 @@
 		<h3>Datasource configuration</h3>
 		<table class="maintbl">
 			<tbody>
+				<cfif isDefined("dbInfo")>
+				<tr>
+					<th scope="row">#stText.settings.datasource.databaseName#</th>
+					<td class="comment">
+						#dbInfo.DATABASE_PRODUCTNAME# #dbInfo.DATABASE_VERSION#
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.settings.datasource.driverName#</th>
+					<td class="comment">
+						#dbInfo.DRIVER_NAME# #dbInfo.DRIVER_VERSION# (JDBC #dbInfo.JDBC_MAJOR_VERSION#.#dbInfo.JDBC_MINOR_VERSION#)
+					</td>
+				</tr>
+				</cfif>
 				<tr>
 					<th scope="row">Name</th>
 					<td>
 						<cfinput type="text" name="newName" value="#datasource.name#" class="large">
 					</td>
 				</tr>
+				
 				<!--- Host --->
 				<cfif typeHost NEQ TYPE_HIDDEN>
 					<tr>
@@ -267,12 +276,12 @@
 							</cfoutput>
 						</select>
 						<div class="comment">#stText.Settings.dbtimezoneDesc#</div>
-						<div class="warning nofocus">
+						<!--- <div class="warning nofocus">
 							This feature is currently in Beta State.
 							If you have any problems while using this Implementation,
 							please post the bugs and errors in our
 							<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">bugtracking system</a>. 
-						</div>
+						</div>--->
 					</td>
 				</tr>
 				<!--- Username --->
@@ -337,7 +346,7 @@
 				</tr>
 
 				<!--- Meta Cache--->
-				<cfif datasource.type EQ "oracle">
+				<cfif dbdriver EQ "oracle">
 					<tr>
 						<th scope="row">#stText.Settings.dbMetaCacheTimeout#</th>
 						<td>
@@ -410,6 +419,7 @@
 					</td>
 				</tr>
 
+				<!--- custom !--->
 				<cfif arrayLen(fields)>
 						</tbody>
 					</table>
@@ -418,13 +428,35 @@
 						<tbody>
 				</cfif>
 				<cfloop collection="#fields#" item="idx">
-					<cfset field=fields[idx]>
-					<cfif StructKeyExists(datasource,"custom") and StructKeyExists(datasource.custom,field.getName())>
-						<cfset default=datasource.custom[field.getName()]>
+					
+					<cfset field = fields[idx]>
+					<cfset type  = field.getType()>
+					<cfset fname = field.getName()>
+
+					<cfset isOther = ( dbdriver == "Other" )>
+
+					<cfif isOther>
+						<cfswitch expression="#fname#">
+							
+							<cfcase value="Class">
+								
+								<cfset default = datasource.className>
+							</cfcase>
+							<cfcase value="DSN">
+								
+								<cfset default = datasource.dsn>
+							</cfcase>
+						</cfswitch>
 					<cfelse>
-						<cfset default=field.getDefaultValue()>
+						<cfif datasource.keyExists( "custom" ) && datasource.custom.keyExists( fname )>
+							
+							<cfset default=datasource.custom[ fname ]>
+						<cfelse>
+
+							<cfset default=field.getDefaultValue()>
+						</cfif>
 					</cfif>
-					<cfset type=field.getType()>
+
 					<tr>
 						<th scope="row">#field.getDisplayName()#</th>
 						<td>
@@ -445,13 +477,14 @@
 								</select>
 							<!--- @todo type checkbox --->
 							<cfelseif type EQ "radio">
-								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
+								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listGetAt(default,field.getDefaultValueIndex())></cfif>
 								<cfloop index="item" list="#field.getDefaultValue()#">
 									<cfinput type="radio" class="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 									#item#
 								</cfloop>
 							<!--- @todo type checkbox,radio --->
 							</cfif>
+								<cfif len(trim(field.getDescription()))><br><div class="comment">#field.getDescription()#</div></cfif>
 						</td>
 					</tr>
 				</cfloop>
@@ -473,4 +506,40 @@
 			</tfoot>
 		</table>
 	</cfform>
+	
+		
+		<cfif actionType EQ "update">
+<!--- optional settings --->
+<cfscript>
+optional=[];
+// not supported yet optional.append('default:false // default: false');
+if(datasource.blob) optional.append('blob:#datasource.blob# // default: false');
+if(datasource.clob) optional.append('clob:#datasource.clob# // default: false');
+if(isNumeric(datasource.connectionLimit))optional.append('connectionLimit:#datasource.connectionLimit# // default:-1');
+if(datasource.connectionTimeout NEQ 1)optional.append('connectionTimeout:#datasource.connectionTimeout# // default: 1; unit: seconds');
+if(datasource.metaCacheTimeout NEQ 60000)optional.append(',metaCacheTimeout:#datasource.metaCacheTimeout# // default: 60000; unit: milliseconds');
+if(len(datasource.timezone))optional.append("timezone:'#replace(datasource.timezone,"'","''","all")#'");
+if(datasource.storage) optional.append('storage:#datasource.storage# // default: false');
+if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // default: false');
+</cfscript>
+
+
+
+<cfsavecontent variable="codeSample">
+	this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif> = {
+	  class: '#datasource.classname#'
+	, connectionString: '#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
+	, username: '#replace(datasource.username,"'","''","all")#'
+	, password: "#datasource.passwordEncrypted#"</cfif><cfif optional.len()>
+	
+	// optional settings
+	<cfloop array="#optional#" index="i" item="value">, #value#<cfif i LT optional.len()>
+	</cfif></cfloop></cfif>
+};
+</cfsavecontent>
+<cfset renderCodingTip( codeSample, "", true )>
+
+
+
+		</cfif>
 </cfoutput>

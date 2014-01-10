@@ -2,10 +2,11 @@ package railo.runtime.op;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.text.DateFormat;
-import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.mail.MailUtil;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.text.xml.XMLCaster;
@@ -57,11 +59,9 @@ import railo.runtime.type.dt.DateTime;
 public final class Decision {
 
 	private static final String STRING_DEFAULT_VALUE = "this is a unique string";
-	
-	private static Pattern emailPattern; 
+
 	private static Pattern ssnPattern;
 	private static Pattern phonePattern;
-	private static Pattern urlPattern;
 	private static Pattern zipPattern; 
 
 	/**
@@ -212,7 +212,7 @@ public final class Decision {
 	}
 
 	/** tests if String value is UUID Value
-	 * @param str value to test
+	 * @param obj value to test
 	 * @return is value numeric
 	 * @deprecated use instead <code>isUUId(Object obj)</code>
 	 */
@@ -221,7 +221,7 @@ public final class Decision {
 	}
 	
 	 /** tests if String value is UUID Value
-	 * @param str value to test
+	 * @param obj value to test
 	 * @return is value numeric
 	 */
 	public static boolean isUUId(Object obj) { 
@@ -422,7 +422,7 @@ public final class Decision {
 		if(StringUtil.isEmpty(str)) return false;
 		
 		for(int i=0;i<DATE_DEL.length;i++) {
-			Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(str,DATE_DEL[i]);
+			Array arr = railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(str,DATE_DEL[i]);
 			if(arr.size()!=3) continue;
 
 			int month=Caster.toIntValue(	arr.get(isEuro?2:1,Constants.INTEGER_0),Integer.MIN_VALUE);
@@ -689,7 +689,7 @@ public final class Decision {
 	}
 
 	/**
-	 * @param string
+	 * @param obj
 	 * @return returns if string represent a variable name
 	 */
 	public static boolean isVariableName(Object obj) {
@@ -756,7 +756,7 @@ public final class Decision {
 	}
 	
 	/**
-	 * @param string
+	 * @param key
 	 * @return returns if string represent a variable name
 	 */
 	public static boolean isSimpleVariableName(Collection.Key key) {
@@ -836,14 +836,8 @@ public final class Decision {
 	 * @return
 	 */
 	public static boolean isEmail(Object value) {
-		String str = Caster.toString(value,null);
-		if(str==null)return false;
-		
-		if(emailPattern==null) {
-			String prefix="\\%\\+a-zA-Z_0-9-'~";
-			emailPattern=Pattern.compile("^["+prefix+"]+(\\.["+prefix+"]+)*@([a-zA-Z_0-9-]+\\.)+[a-zA-Z]{2,7}$");
-		}	
-		return emailPattern.matcher(str).matches();
+
+        return MailUtil.isValidEmail(value);
 	}	
 	
 	
@@ -880,18 +874,57 @@ public final class Decision {
 	}	
 
 	/**
-	 * returns if given object is a URL
+	 * returns true if the given object is a valid URL
 	 * @param value
 	 * @return
 	 */
-	public static boolean isURL(Object value) {
-		String str = Caster.toString(value,null);
-		if(str==null)return false;
-		
-		if(urlPattern==null)
-			urlPattern=Pattern.compile("^((http|https|ftp|file)\\:\\/\\/([a-zA-Z0-0]*:[a-zA-Z0-0]*(@))?[a-zA-Z0-9-\\.]+(\\.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?\\/?([a-zA-Z0-9-\\._\\? \\,\\'\\/\\+&amp;%\\$#\\=~])*)|((mailto)\\:[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*@([a-zA-Z0-9-]+\\.)+[a-zA-Z0-9]{2,7})|((news)\\: [a-zA-Z0-9\\.]*)$");
-		return urlPattern.matcher(str.trim()).matches();
-	}
+    public static boolean isURL( Object value ) {
+
+        String str = Caster.toString( value, null );
+
+        if ( str == null )                      return false;
+        if ( str.indexOf( ':' ) == -1 )         return false;
+
+        str = str.toLowerCase().trim();
+
+        if ( !str.startsWith( "http://" )
+          && !str.startsWith( "https://" )
+          && !str.startsWith( "file://" )
+          && !str.startsWith( "ftp://" )
+          && !str.startsWith( "mailto:" )
+          && !str.startsWith( "news:" )
+          && !str.startsWith( "urn:" ) )        return false;
+
+        try {
+
+            URI uri = new URI( str );
+            String proto = uri.getScheme();
+
+            if ( proto == null )                return false;
+
+            if ( proto.equals( "http" ) || proto.equals( "https" ) || proto.equals( "file" ) || proto.equals( "ftp" ) ) {
+
+                if ( uri.getHost() == null )    return false;
+
+                String path = uri.getPath();
+                if ( path != null ) {
+
+                    int len = path.length();
+                    for ( int i=0; i<len; i++ ) {
+
+                        if ( "?<>:*|\"".indexOf( path.charAt( i ) ) > -1 )
+                            return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+        catch ( Exception ex ) {
+
+            return false;
+        }
+    }
 	
 	/**
 	 * returns if given object is a zip code
@@ -1293,14 +1326,15 @@ public final class Decision {
             return comp.instanceOf(strType);
         }
         if(isArrayType(strType) && isArray(o)){
-        	String t=strType.substring(0,strType.length()-2);
+        	String _strType=strType.substring(0,strType.length()-2);
+        	short _type=CFTypes.toShort(_strType, false, (short)-1);
         	Array arr = Caster.toArray(o,null);
         	if(arr!=null){
-        		Iterator it = arr.valueIterator();
+        		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(type,t, it.next()))
+        			Object obj = it.next();
+        			if(!isCastableTo(_type,_strType, obj))
         				return false;
-        			
         		}
         		return true;
         	}
@@ -1316,45 +1350,46 @@ public final class Decision {
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=JREDateTimeUtil.getCalendar(locale);
-        //synchronized(c){
-	        // datetime
-	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
-	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	synchronized(c) {
-		            	df[i].parse(str);
-		            	return true;
-	            	}
-	            }
-	            catch (ParseException e) {}
-	        }
-	        // date
-	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
-	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	df[i].parse(str);
-		            	return true;
-	            	}
-	        }
-	            catch (ParseException e) {}
-	        }
+        Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
+        
+        // datetime
+        ParsePosition pp=new ParsePosition(0);
+        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
+        Date d;
+		for(int i=0;i<df.length;i++) {
+    		pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+        	d = df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+			
+        	return true;
+        }
+        
 	    	
-	        // time
-	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
-	        for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	df[i].parse(str);
-		            	return true;
-	            	}
-	            } 
-	            catch (ParseException e) {}
-	        }
-        //} 
+	    // date
+		df=FormatUtil.getDateFormats(locale,tz,false);
+        for(int i=0;i<df.length;i++) {
+    		pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+			d=df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+        	return true;
+        }
+		
+        // time
+        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
+        for(int i=0;i<df.length;i++) {
+        	pp.setErrorIndex(-1);
+			pp.setIndex(0);
+			df[i].setTimeZone(tz);
+        	d=df[i].parse(str,pp);
+        	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+        	
+        	return true;
+        }
+        
         if(lenient) return isDateSimple(str, false);
         return false;
     }

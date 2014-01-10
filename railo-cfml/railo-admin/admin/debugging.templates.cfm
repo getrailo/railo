@@ -51,13 +51,18 @@ You can define IPv4 or IPv6 IPs, a IPv4 can not be converted to a IPv6 and visa 
 
     
 <!--- load available drivers --->
-	<cfset drivers=struct()>
-    <cfdirectory directory="./debug" action="list" name="dir" recurse="no" filter="*.cfc">
-    <cfloop query="dir">
-    	<cfif dir.name EQ "Debug.cfc" or dir.name EQ "Field.cfc" or dir.name EQ "Group.cfc">
+<cfset driverNames=structnew("linked")>
+<cfset driverNames=ComponentListPackageAsStruct("railo-server-context.admin.debug",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("railo-context.admin.debug",driverNames)>
+<cfset driverNames=ComponentListPackageAsStruct("debug",driverNames)>
+
+
+<cfset drivers={}>
+    <cfloop collection="#driverNames#" index="n" item="fn">
+    	<cfif n EQ "Debug" or n EQ "Field" or n EQ "Group">
         	<cfcontinue>
         </cfif>
-    	<cfset tmp=createObject('component','debug/#ReplaceNoCase(dir.name,'.cfc','')#')>
+    	<cfset tmp=createObject('component',fn)>
         <cfset drivers[trim(tmp.getId())]=tmp>
     </cfloop>	
 <!--- 

@@ -49,57 +49,39 @@ public final class FTPConnectionImpl implements FTPConnection {
         this.proxyuser=proxyuser;
         this.proxypassword=proxypassword;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getName()
-     */
+    @Override
     public String getName() {
         return name;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getPassword()
-     */
+    @Override
     public String getPassword() {
         return password;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getServer()
-     */
+    @Override
     public String getServer() {
         return server;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getUsername()
-     */
+    @Override
     public String getUsername() {
         return username;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#hasLoginData()
-     */
+    @Override
     public boolean hasLoginData() {
         return server!=null;// && username!=null && password!=null;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#hasName()
-     */
+    @Override
     public boolean hasName() {
         return name!=null;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getPort()
-     */
+    @Override
     public int getPort() {
         return port;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getTimeout()
-     */
+    @Override
     public int getTimeout() {
         return timeout;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#getTransferMode()
-     */
+    @Override
     public short getTransferMode() {
         return transferMode;
     }
@@ -109,15 +91,11 @@ public final class FTPConnectionImpl implements FTPConnection {
 		this.transferMode=transferMode;
 	}
     
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#isPassive()
-     */
+    @Override
     public boolean isPassive() {
         return passive;
     }
-    /**
-     * @see railo.runtime.net.ftp.FTPConnection#loginEquals(railo.runtime.net.ftp.FTPConnection)
-     */
+    @Override
     public boolean loginEquals(FTPConnection conn) {
         return 
         	server.equalsIgnoreCase(conn.getServer()) && 
@@ -125,30 +103,22 @@ public final class FTPConnectionImpl implements FTPConnection {
         	password.equals(conn.getPassword());
     }
     
-	/**
-	 * @see railo.runtime.net.ftp.FTPConnection#getProxyPassword()
-	 */
+	@Override
 	public String getProxyPassword() {
 		return proxypassword;
 	}
 	
-	/**
-	 * @see railo.runtime.net.ftp.FTPConnection#getProxyPort()
-	 */
+	@Override
 	public int getProxyPort() {
 		return proxyport;
 	}
 	
-	/**
-	 * @see railo.runtime.net.ftp.FTPConnection#getProxyServer()
-	 */
+	@Override
 	public String getProxyServer() {
 		return proxyserver;
 	}
 	
-	/**
-	 * @see railo.runtime.net.ftp.FTPConnection#getProxyUser()
-	 */
+	@Override
 	public String getProxyUser() {
 		return proxyuser;
 	}

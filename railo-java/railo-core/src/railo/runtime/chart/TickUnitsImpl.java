@@ -19,23 +19,17 @@ public class TickUnitsImpl implements TickUnitSource, Cloneable, Serializable {
 		this.labelFormat=labelFormat;
 	}
 	
-	/**
-	 * @see org.jfree.chart.axis.TickUnitSource#getCeilingTickUnit(org.jfree.chart.axis.TickUnit)
-	 */
+	@Override
 	public TickUnit getCeilingTickUnit(TickUnit unit) {
 		return new TickUnitWrap(tus.getCeilingTickUnit(unit),labelFormat);
 	}
 
-	/**
-	 * @see org.jfree.chart.axis.TickUnitSource#getCeilingTickUnit(double)
-	 */
+	@Override
 	public TickUnit getCeilingTickUnit(double size) {
 		return new TickUnitWrap(tus.getCeilingTickUnit(size),labelFormat);
 	}
 
-	/**
-	 * @see org.jfree.chart.axis.TickUnitSource#getLargerTickUnit(org.jfree.chart.axis.TickUnit)
-	 */
+	@Override
 	public TickUnit getLargerTickUnit(TickUnit unit) {
 		return new TickUnitWrap(tus.getLargerTickUnit(unit),labelFormat);
 	}

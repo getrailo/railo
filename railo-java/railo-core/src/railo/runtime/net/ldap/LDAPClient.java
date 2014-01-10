@@ -16,7 +16,6 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 
 import railo.commons.lang.ClassException;
@@ -26,12 +25,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.ListUtil;
 
-import com.sun.jndi.ldap.ctl.SortControl;
-import com.sun.jndi.ldap.ctl.SortKey;
 import com.sun.net.ssl.internal.ssl.Provider;
 
 
@@ -281,21 +278,6 @@ public final class LDAPClient {
 
         InitialLdapContext context = new InitialLdapContext(env, null);
         
-        
-        // Sort
-        if(sort!=null && sort.length>0) {
-            boolean isSortAsc=sortDirection==SORT_DIRECTION_ASC;
-            
-            SortKey keys[] = new SortKey[sort.length];
-            for(int i=0;i<sort.length;i++) {
-                String item=sort[i].equalsIgnoreCase("dn")?"name":sort[i];
-                if(item.indexOf(' ')!=-1)item=List.first(item," ",true);
-                keys[i] = new SortKey(item,isSortAsc ,sortType==LDAPClient.SORT_TYPE_CASE?null/*"CASE"*/:null);
-                //keys[i] = new SortKey(item);
-            }
-            context.setRequestControls(new Control[]{new SortControl(keys, Control.CRITICAL)});
-        }        
-        
         // Search
         Query qry=new QueryImpl(attributes,0,"query");
         try {
@@ -362,12 +344,21 @@ public final class LDAPClient {
         finally {
             context.close();
         }
-        
+        // Sort
+        if(sort!=null && sort.length>0) {
+            int order = sortDirection==SORT_DIRECTION_ASC ? Query.ORDER_ASC : Query.ORDER_DESC;
+            for(int i=sort.length-1;i>=0;i--) {
+                String item=sort[i];
+                if(item.indexOf(' ')!=-1)item=ListUtil.first(item," ",true);
+                qry.sort(KeyImpl.getInstance(item),order);
+                //keys[i] = new SortKey(item);
+            }
+        }    
         return qry;
     }
 
     private static String[] toStringAttributes(String strAttributes,String delimiter) throws PageException {
-		return List.toStringArrayTrim(List.listToArrayRemoveEmpty(strAttributes,delimiter));		
+		return ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty(strAttributes,delimiter));		
 	}
 	
 	private static Attributes toAttributes(String strAttributes,String delimiter, String separator) throws PageException {
@@ -384,7 +375,7 @@ public final class LDAPClient {
             
             // Value
             String strValue = (eqIndex!=-1)?strAttr.substring( eqIndex+ 1):strAttr;
-            String[] arrValue=List.toStringArray(List.listToArrayRemoveEmpty(strValue,separator));
+            String[] arrValue=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(strValue,separator));
             
             // Fill
             for(int y=0; y<arrValue.length; y++) {
@@ -405,7 +396,7 @@ public final class LDAPClient {
     private String[] getAttributesValues(String attribute, String separator) throws PageException {
         String strValue = attribute.substring(attribute.indexOf("=") + 1);
         if(strValue.length() == 0) return null;
-        return List.toStringArray(List.listToArrayRemoveEmpty(strValue,separator.equals(", ") ? "," : separator));
+        return ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(strValue,separator.equals(", ") ? "," : separator));
     }
 		
 }

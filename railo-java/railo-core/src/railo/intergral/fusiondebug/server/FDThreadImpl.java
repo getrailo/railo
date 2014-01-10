@@ -31,16 +31,12 @@ public class FDThreadImpl implements IFDThread {
 		this.pc=pc;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getName()
-	 */
+	@Override
 	public String getName() {
 		return name+":"+pc.getCFID();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#id()
-	 */
+	@Override
 	public int id() {
 		return pc.getId();
 	}
@@ -49,31 +45,22 @@ public class FDThreadImpl implements IFDThread {
 		return pc.getId();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#stop()
-	 */
+	@Override
 	public void stop() {
 		pc.getThread().stop();
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getThread()
-	 */
+	@Override
 	public Thread getThread() {
 		return pc.getThread();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getOutputBuffer()
-	 */
+	@Override
 	public String getOutputBuffer() {
 		return pc.getRootOut().toString();
 	}
 
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getStack()
-	 */
 	public List getStackFrames() {
 		return getStack();
 	}
@@ -96,7 +83,7 @@ public class FDThreadImpl implements IFDThread {
 			
 			if(index>0)ps=(PageSource) stack.get(--index);
 			// inside the if is the old way, that only work when the cfm is inside the mapping, but i'm not shure woth the new way 
-			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getPhyscalFile().getAbsolutePath().equals(template))){
+			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getDisplayPath().equals(template))){
 				res = ResourceUtil.toResourceNotExisting(pc, template);
 				ps = pc.toPageSource(res, null);
 			}
@@ -108,13 +95,12 @@ public class FDThreadImpl implements IFDThread {
 		return list;
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getTopStackFrame()
-	 */
 	public IFDStackFrame getTopStack(){
 		return getTopStackFrame();
 	}
-	public IFDStackFrame getTopStackFrame(){
+	
+	@Override
+    public IFDStackFrame getTopStackFrame(){
 		PageSource ps = pc.getCurrentPageSource();
 		
 		StackTraceElement[] traces = pc.getThread().getStackTrace();
@@ -128,7 +114,7 @@ public class FDThreadImpl implements IFDThread {
 			template=trace.getFileName();
 			if(template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			
-			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getPhyscalFile().getAbsolutePath().equals(template))){
+			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getResource().getAbsolutePath().equals(template))){
 				res = ResourceUtil.toResourceNotExisting(pc, template);
 				ps = pc.toPageSource(res, null);
 			}

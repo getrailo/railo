@@ -11,14 +11,14 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 
-public final class ArraySort implements Function {
+public final class ArraySort extends BIF {
 
 	private static final long serialVersionUID = -747941236369495141L;
 
@@ -41,6 +41,13 @@ public final class ArraySort implements Function {
 			array.sort(ArrayUtil.toComparator(pc,Caster.toString(sortTypeOrClosure), sortorder,localeSensitive));
 		}
 		return true;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toArray(args[0]),args[1]);
+		if(args.length==3)return call(pc,Caster.toArray(args[0]),args[1],Caster.toString(args[2]));
+		return call(pc,Caster.toArray(args[0]),args[1],Caster.toString(args[2]),Caster.toBooleanValue(args[3]));
 	}
 }
 

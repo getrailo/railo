@@ -180,32 +180,6 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			Types.INT_VALUE,
 			new Type[]{Types.INT_VALUE});
 
-	// double range(double number, double from)
-	/*private static final Method RANGE = new Method(
-			"range",
-			Types.DOUBLE_VALUE,
-			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
-
-	
-	// Undefined us()
-	private static final Type UNDEFINED = Type.getType(Undefined.class);
-	private static final Method US = new Method(
-			"us",
-			UNDEFINED,
-			new Type[]{});
-
-	// void addQuery(Query coll)
-	private static final Method ADD_QUERY = new Method(
-			"addQuery",
-			Types.VOID,
-			new Type[]{Types.QUERY});
-
-	// void removeCollection()
-	private static final Method REMOVE_QUERY = new Method(
-			"removeQuery",
-			Types.VOID,
-			new Type[]{});*/
-
 	static final Method GO = new Method(
 			"go",
 			Types.BOOLEAN_VALUE,
@@ -229,6 +203,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	
 	private int type;
 	private LoopVisitor loopVisitor;
+	private String label;
 
 	public TagLoop(Position start,Position end) {
 		super(start,end);
@@ -245,6 +220,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		boolean old;
+
 		switch(type) {
 		case TYPE_COLLECTION:
 			writeOutTypeCollection(bc);
@@ -477,12 +453,27 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 
 		
 		//VariableReference index=VariableInterpreter.getVariableReference(pc,@index);
-		int index = adapter.newLocal(Types.VARIABLE_REFERENCE);
-		adapter.loadArg(0);
+		int index=-1,item=-1;
 		
-		getAttribute("index").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
-		adapter.storeLocal(index);
+		// item
+		Attribute attrItem = getAttribute("item");
+		if(attrItem!=null) {
+			item = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrItem.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(item);
+		}
+
+		// index
+		Attribute attrIndex = getAttribute("index");
+		if(attrIndex!=null) {
+			index = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrIndex.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(index);
+		}
 		
 		//java.io.File file=FileUtil.toResourceExisting(pc,@file);
 		int resource=adapter.newLocal(Types.RESOURCE);
@@ -595,12 +586,48 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 					adapter.visitLabel(end3);
 				adapter.visitLabel(end2);
 				
-				// index.set(pc,line); 
-				adapter.loadLocal(index);
-				adapter.loadArg(0);
-				adapter.loadLocal(line);
-				adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
-				adapter.pop();
+				// index and item
+				if(index!=-1 && item!=-1) {
+					// index.set(pc,line); 
+					adapter.loadLocal(index);
+					adapter.loadArg(0);
+					adapter.loadLocal(count);
+					adapter.cast(Types.INT_VALUE,Types.DOUBLE_VALUE);
+					adapter.invokeStatic(Types.CASTER, Methods.METHOD_TO_DOUBLE_FROM_DOUBLE);
+					
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+					
+					// item.set(pc,line); 
+					adapter.loadLocal(item);
+					adapter.loadArg(0);
+					adapter.loadLocal(line);
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+					
+				}
+				// only index
+				else if(index!=-1) {
+					// index.set(pc,line); 
+					adapter.loadLocal(index);
+					adapter.loadArg(0);
+					adapter.loadLocal(line);
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+					
+				}
+				// only item
+				else {
+					// item.set(pc,line); 
+					adapter.loadLocal(item);
+					adapter.loadArg(0);
+					adapter.loadLocal(line);
+					adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+					adapter.pop();
+				}
+				
+				
+				
 				
 				getBody().writeOut(bc);
 				
@@ -774,12 +801,12 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			getAttribute("list").getValue().writeOut(bc, Expression.MODE_REF);
 			if(containsAttribute("delimiters")) {
 				getAttribute("delimiters").getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.invokeStatic(Types.LIST, LIST_TO_ARRAY_REMOVE_EMPTY_SS);
+				adapter.invokeStatic(Types.LIST_UTIL, LIST_TO_ARRAY_REMOVE_EMPTY_SS);
 			}
 			else {
 				adapter.visitIntInsn(Opcodes.BIPUSH, 44);// ','
 				//adapter.push(',');
-				adapter.invokeStatic(Types.LIST, LIST_TO_ARRAY_REMOVE_EMPTY_SC);
+				adapter.invokeStatic(Types.LIST_UTIL, LIST_TO_ARRAY_REMOVE_EMPTY_SC);
 			}
 		}
 		adapter.storeLocal(array);
@@ -1038,5 +1065,12 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		return null;
 	}
 
+	public void setLabel(String label) {
+		this.label=label;
+	}
 
+	@Override
+	public String getLabel() {
+		return label;
+	}
 }

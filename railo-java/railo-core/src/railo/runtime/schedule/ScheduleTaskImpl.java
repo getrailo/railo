@@ -150,119 +150,77 @@ public final class ScheduleTaskImpl implements ScheduleTask {
      * @throws MalformedURLException
      */
     private static URL toURL(String url, int port) throws MalformedURLException {
-        URL u = HTTPUtil.toURL(url);
+        URL u = HTTPUtil.toURL(url,true);
         if(port==-1) return u;
         return new URL(u.getProtocol(), u.getHost(), port, u.getFile());
     }    
 
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getCredentials()
-     */
+    @Override
     public Credentials getCredentials() {	return credentials;	}
 
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#hasCredentials()
-     */
+    @Override
     public boolean hasCredentials() {	return credentials!=null;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getResource()
-     */
+    @Override
     public Resource getResource() {	
     	return file;
     }
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getInterval()
-     */
+    @Override
     public int getInterval() {	return interval;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getOperation()
-     */
+    @Override
     public short getOperation() {	return operation;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getProxyHost()
-     */
+    @Override
     public ProxyData getProxyData() {	return proxy;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#isResolveURL()
-     */
+    @Override
     public boolean isResolveURL() {	return resolveURL;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getTask()
-     */
+    @Override
     public String getTask() {	return task;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getTimeout()
-     */
+    @Override
     public long getTimeout() {	return timeout;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getUrl()
-     */
+    @Override
     public URL getUrl() {	
         return url;	
     }
 
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#setNextExecution(java.util.Calendar)
-     */
+    @Override
     public void setNextExecution(long nextExecution) {	this.nextExecution=nextExecution;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getNextExecution()
-     */
+    @Override
     public long getNextExecution() {	return nextExecution;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getEndDate()
-     */
+    @Override
     public Date getEndDate() {	return endDate;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getStartDate()
-     */
+    @Override
     public Date getStartDate() {	return startDate;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getEndTime()
-     */
+    @Override
     public Time getEndTime() {	return endTime;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getStartTime()
-     */
+    @Override
     public Time getStartTime() {	return startTime;	}
 
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getIntervalAsString()
-     */
+    @Override
     public String getIntervalAsString() {	return strInterval;	}
     
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getStringInterval()
-     */
+    @Override
     public String getStringInterval() {	return strInterval;	}
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#isPublish()
-     */
+    @Override
     public boolean isPublish() {
         return publish;
     }
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#isValid()
-     */
+    @Override
     public boolean isValid() {
         return valid;
     }
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#setValid(boolean)
-     */
+    @Override
     public void setValid(boolean valid) {
         this.valid = valid;
     }
@@ -305,9 +263,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 
 
 
-	/**
-	 * @see railo.runtime.schedule.ScheduleTask#isPaused()
-	 */
+	@Override
 	public boolean isPaused() {
 		return paused;
 	}

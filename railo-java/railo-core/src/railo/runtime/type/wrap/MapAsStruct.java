@@ -24,7 +24,7 @@ import railo.runtime.type.util.StructSupport;
 /**
  * 
  */
-public  class MapAsStruct extends StructSupport implements Struct {
+public class MapAsStruct extends StructSupport implements Struct {
     
     Map map;
 	private boolean caseSensitive;
@@ -49,16 +49,12 @@ public  class MapAsStruct extends StructSupport implements Struct {
 		return new MapAsStruct(map,caseSensitive);
 	}
     
-    /**
-     * @see railo.runtime.type.Collection#size()
-     */
+    @Override
     public int size() {
        return map.size();
     }
 
-    /**
-     * @see railo.runtime.type.Collection#keys()
-     */
+    @Override
     public synchronized Collection.Key[] keys() {
         int len=size();
         Collection.Key[] k=new Collection.Key[len];
@@ -80,12 +76,11 @@ public  class MapAsStruct extends StructSupport implements Struct {
 		return null;
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#remove(java.lang.String)
-     */
+    @Override
     public synchronized Object remove(Collection.Key key) throws ExpressionException {
         Object obj= map.remove(key.getString());
         if(obj==null) {
+        	if(map.containsKey(key.getString())) return null;
         	if(!caseSensitive){
         		String csKey = getCaseSensitiveKey(map,key.getString());
         		if(csKey!=null)obj= map.remove(csKey);
@@ -96,9 +91,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
         return obj;
     }
     
-    /**
-     * @see railo.runtime.type.Collection#removeEL(java.lang.String)
-     */
+    @Override
     public synchronized Object removeEL(Collection.Key key) {
     	Object obj= map.remove(key.getString());
         if(!caseSensitive && obj==null) {
@@ -108,55 +101,47 @@ public  class MapAsStruct extends StructSupport implements Struct {
         return obj;
     }
 
-    /**
-     * @see railo.runtime.type.Collection#clear()
-     */
+    @Override
     public synchronized void clear() {
         map.clear();
     }
 
-    /**
-     * @see railo.runtime.type.Collection#get(java.lang.String)
-     */
+    @Override
     public synchronized Object get(Collection.Key key) throws ExpressionException {
         Object o=map.get(key.getString());
         if(o==null) {
+        	if(map.containsKey(key.getString())) return null;
         	if(!caseSensitive){
         		String csKey = getCaseSensitiveKey(map,key.getString());
         		if(csKey!=null)o= map.get(csKey);
-        		if(o!=null) return o;
+        		if(o!=null || map.containsKey(csKey)) return o;
         	}
         	throw new ExpressionException("key "+key.getString()+" doesn't exist in "+Caster.toClassName(map));
         }
         return o;
     }
 
-    /**
-     * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public synchronized Object get(Collection.Key key, Object defaultValue) {
         Object obj=map.get(key.getString());
         if(obj==null) {
+        	if(map.containsKey(key.getString())) return null;
         	if(!caseSensitive){
         		String csKey = getCaseSensitiveKey(map,key.getString());
         		if(csKey!=null)obj= map.get(csKey);
-        		if(obj!=null) return obj; 
+        		if(obj!=null || map.containsKey(csKey)) return obj; 
         	}
             return defaultValue;
         }
         return obj;
     }
 
-    /**
-     * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-     */
+    @Override
     public synchronized Object set(Collection.Key key, Object value) throws PageException {
         return map.put(key.getString(),value);
     }
 
-    /**
-     * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-     */
+    @Override
     public synchronized Object setEL(Collection.Key key, Object value) {
         return map.put(key.getString(),value);
     }
@@ -183,25 +168,19 @@ public  class MapAsStruct extends StructSupport implements Struct {
 	
 	
     
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    return DumpUtil.toDumpData(map, pageContext,maxlevel,dp); 
     }
    
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     */
+    @Override
     public synchronized Collection duplicate(boolean deepCopy) {
         return new MapAsStruct(Duplicator.duplicateMap(map,deepCopy),caseSensitive);
     }
 
 	
 
-    /**
-     * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-     */
+    @Override
     public boolean containsKey(Collection.Key key) {
     	
     	//return map.containsKey(key.getString());
@@ -212,110 +191,76 @@ public  class MapAsStruct extends StructSupport implements Struct {
     	return false;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct ["+getClass().getName()+"] to String",
           "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct ["+getClass().getName()+"] to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct ["+getClass().getName()+"] to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct ["+getClass().getName()+"] to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Complex Object Type Struct ["+getClass().getName()+"] with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct ["+getClass().getName()+"] with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct ["+getClass().getName()+"] with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct ["+getClass().getName()+"] with a String");
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return map.containsValue(value);
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return map.values();
 	}
 }
-
-
-
-
-
-

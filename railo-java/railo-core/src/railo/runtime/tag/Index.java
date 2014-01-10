@@ -10,7 +10,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.search.IndexResult;
@@ -20,9 +19,9 @@ import railo.runtime.search.SearchException;
 import railo.runtime.search.SearchIndex;
 import railo.runtime.search.lucene2.LuceneSearchCollection;
 import railo.runtime.tag.util.DeprecatedUtil;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Populates collections with indexed data.
@@ -104,9 +103,7 @@ public final class Index extends TagImpl {
 
 	private boolean throwontimeout=false;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		action=null;
@@ -239,7 +236,7 @@ public final class Index extends TagImpl {
 	**/
 	public void setExtensions(String extensions) throws PageException	{
 		if(extensions==null) return;
-		this.extensions=List.toStringArrayTrim(List.listToArray(extensions,','));
+		this.extensions=ListUtil.toStringArrayTrim(ListUtil.listToArray(extensions,','));
 	}
 
 	/** set the value key
@@ -321,7 +318,7 @@ public final class Index extends TagImpl {
 	 */
 	public void setCategory(String listCategories)  {
 		if(listCategories==null) return;
-		this.category = List.trimItems(List.listToStringArray(listCategories, ','));
+		this.category = ListUtil.trimItems(ListUtil.listToStringArray(listCategories, ','));
 	}
 
 
@@ -355,10 +352,7 @@ public final class Index extends TagImpl {
 	}
 
 
-	/**
-	* @throws SecurityException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    // SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -471,9 +465,7 @@ public final class Index extends TagImpl {
     }
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

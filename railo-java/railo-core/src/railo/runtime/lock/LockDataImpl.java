@@ -23,23 +23,17 @@ class LockDataImpl implements LockData {
         this.readOnly=readOnly;
     }
 
-	/**
-     * @see railo.runtime.lock.LockData#isReadOnly()
-     */
+	@Override
     public boolean isReadOnly() {
         return readOnly;
     }
 
-    /**
-     * @see railo.runtime.lock.LockData#getId()
-     */
+    @Override
     public int getId() {
         return id;
     }
 
-    /**
-     * @see railo.runtime.lock.LockData#getName()
-     */
+    @Override
     public String getName() {
         return name;
     }

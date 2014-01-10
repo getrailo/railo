@@ -50,15 +50,13 @@ public final class Zip extends BodyTagImpl {
 	private boolean showDirectory;
 	private boolean storePath=true;
 	private String variable;
-	private List<Object> params;
+	private List<ZipParamAbstr> params;
 	private Set<String> alreadyUsed;
 	private Resource source;
 	private static int id=0;
 	
 	
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
         action="zip";
@@ -226,10 +224,7 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	/**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		return EVAL_BODY_INCLUDE;
 	}
@@ -490,7 +485,7 @@ public final class Zip extends BodyTagImpl {
 			}
 		}
 		finally {
-			ZipUtil.cloeseEL(zos);
+			ZipUtil.close(zos);
 			if(existing!=null)existing.delete();
 			
 		}
@@ -521,26 +516,29 @@ public final class Zip extends BodyTagImpl {
 
 
 	private void actionZip(ZipOutputStream zos, ZipParamSource zps) throws IOException {
+		// prefix
+		String p=zps.getPrefix();
+		if(StringUtil.isEmpty(p))
+			p=this.prefix;
+		
+		if(!StringUtil.isEmpty(p)){
+			if(!StringUtil.endsWith(p, '/'))p+="/";
+		}
+		else 
+			p="";
+		
+		
+		
 		if(zps.getSource().isFile()){
 			
 			String ep = zps.getEntryPath();
 			if(ep==null)ep=zps.getSource().getName();
+			if(!StringUtil.isEmpty(p)) ep=p+ep;
+			
 			add(zos,zps.getSource().getInputStream(),ep,zps.getSource().lastModified(),true);
 		}	
 		else {
 			
-			// prefix
-			String p=zps.getPrefix();
-			if(StringUtil.isEmpty(p))
-				p=this.prefix;
-			
-			if(!StringUtil.isEmpty(p)){
-				if(!StringUtil.endsWith(p, '/'))p+="/";
-			}
-			else 
-				p="";
-			
-			// recurse
 			
 			
 			// filter
@@ -595,24 +593,17 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
     
-    /**
-     * @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag() throws PageException	{//print.out("doEndTag"+doCaching+"-"+body);
 		try {
 			if(action.equals("delete")) actionDelete();
@@ -679,9 +670,9 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	public void setParam(Object param) {
+	public void setParam(ZipParamAbstr param) {
 		if(params==null) {
-			params=new ArrayList<Object>();
+			params=new ArrayList<ZipParamAbstr>();
 			alreadyUsed=new HashSet<String>();
 		}
 		params.add(param);

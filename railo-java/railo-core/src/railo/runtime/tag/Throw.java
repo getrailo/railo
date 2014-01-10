@@ -42,9 +42,9 @@ public final class Throw extends TagImpl {
 
 	private Object object;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	private int level=1;
+
+	@Override
 	public void release()	{
 		super.release();
 		extendedinfo=null;
@@ -53,6 +53,7 @@ public final class Throw extends TagImpl {
 		message=null;
 		errorcode="";
 		object=null;
+		level=1;
 	}
 
 
@@ -111,6 +112,9 @@ public final class Throw extends TagImpl {
 		this.object=object;	
 	}
 
+	public void setContextlevel(double level){
+		this.level=(int)level;
+	}
 
 	private PageException toPageException(Object object, PageException defaultValue) throws PageException {
 		if((object instanceof ObjectWrap))
@@ -170,15 +174,13 @@ public final class Throw extends TagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		_doStartTag(message);
 		_doStartTag(object);
 		
-		throw new CustomTypeException( "",detail,errorcode,type,extendedinfo);
+		throw new CustomTypeException( "",detail,errorcode,type,extendedinfo,level);
 	}
 
 	private void _doStartTag(Object obj) throws PageException {
@@ -186,16 +188,14 @@ public final class Throw extends TagImpl {
 			PageException pe = toPageException(obj,null);
 			if(pe!=null) throw pe;
 			
-			CustomTypeException exception = new CustomTypeException(Caster.toString(obj),detail,errorcode,type,extendedinfo);
+			CustomTypeException exception = new CustomTypeException(Caster.toString(obj),detail,errorcode,type,extendedinfo,level);
 			throw exception;
 		}
 	}
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

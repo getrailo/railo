@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
@@ -39,6 +41,7 @@ import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
+import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.ReqRspUtil;
@@ -46,6 +49,10 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
 import railo.runtime.type.scope.Cluster;
+import railo.runtime.writer.CFMLWriter;
+import railo.runtime.writer.CFMLWriterImpl;
+import railo.runtime.writer.CFMLWriterWS;
+import railo.runtime.writer.CFMLWriterWSPref;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLibException;
 
@@ -58,7 +65,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private ConfigServerImpl configServer;
     private SecurityManager securityManager;
     private static final LockManager lockManager= LockManagerImpl.getInstance(false);
-    private Resource rootDir;
+	private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;
 	private MappingImpl serverTagMapping;
@@ -67,7 +74,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
-	
+    
+    
 
     //private File deployDirectory;
 
@@ -98,6 +106,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     	super.reset();
     	tagHandlerPool.reset();
     	contextLock=null;
+    	baseComponentPage=null;
     }
     
     /* *
@@ -122,54 +131,48 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     
     
 
-    /**
-     * @see javax.servlet.ServletConfig#getServletName()
-     */
+    @Override
     public String getServletName() {
         return config.getServletName();
     }
 
-    /**
-     * @see javax.servlet.ServletConfig#getServletContext()
-     */
+    @Override
     public ServletContext getServletContext() {
         return config.getServletContext();
     }
 
-    /**
-     * @see javax.servlet.ServletConfig#getInitParameter(java.lang.String)
-     */
+    @Override
     public String getInitParameter(String name) {
         return config.getInitParameter(name);
     }
 
-    /**
-     * @see javax.servlet.ServletConfig#getInitParameterNames()
-     */
+    @Override
     public Enumeration getInitParameterNames() {
         return config.getInitParameterNames();
     }
 
-    /**
-     * @see railo.runtime.config.ConfigImpl#getConfigServerImpl()
-     */
     protected ConfigServerImpl getConfigServerImpl() {
         return configServer;
     }
     
-    /**
-     * @see railo.runtime.config.ConfigImpl#getConfigServer(java.lang.String)
-     */
+    @Override
     public ConfigServer getConfigServer(String password) throws ExpressionException {
-        if(!configServer.hasPassword())
-            throw new ExpressionException("Cannot access, no password is defined");
-        if(!configServer.getPassword().equalsIgnoreCase(password))
-            throw new ExpressionException("No access, password is invalid");
-        return configServer;
+        configServer.checkAccess(password);
+    	return configServer;
+    }
+    
+    // FUTURE add to public interface
+    public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
+    	configServer.checkAccess(key,timeNonce);
+    	return configServer;
     }
     
     public String getServerId() {
         return configServer.getId();
+    }
+    
+    public String getServerIdPro() {
+        return configServer.getIdPro();
     }
 
     public String getServerSecurityKey() {
@@ -196,10 +199,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         this.securityManager = securityManager;
     }
     
-    /**
-     * @throws SecurityException 
-     * @see railo.runtime.config.ConfigImpl#getCFXTagPool()
-     */
+    @Override
     public CFXTagPool getCFXTagPool() throws SecurityException {
         if(securityManager.getAccess(SecurityManager.TYPE_CFX_USAGE)==SecurityManager.VALUE_YES) return super.getCFXTagPool();
         throw new SecurityException("no access to cfx functionality", "disabled by security settings");
@@ -212,23 +212,17 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return rootDir;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateType()
-     */
+    @Override
     public String getUpdateType() {
         return configServer.getUpdateType();
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateLocation()
-     */
+    @Override
     public URL getUpdateLocation() {
         return configServer.getUpdateLocation();
     }
 
-    /**
-     * @see railo.runtime.config.ConfigWeb#getLockManager()
-     */
+    @Override
     public LockManager getLockManager() {
         return lockManager;
     }
@@ -268,7 +262,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return serverFunctionMapping;
 		}
 	    private Map<String,Mapping> applicationMappings=new ReferenceMap();
-		private TagHandlerPool tagHandlerPool=new TagHandlerPool();
+		private TagHandlerPool tagHandlerPool=new TagHandlerPool(this);
 		public Mapping getApplicationMapping(String virtual, String physical) {
 			return getApplicationMapping(virtual, physical, null);
 		}
@@ -280,7 +274,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				m=new MappingImpl(this,
 					virtual,
 					physical,
-					archive,false,true,false,false,false,true,false
+					archive,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,false,null
 					);
 				applicationMappings.put(key, m);
 			}
@@ -329,9 +323,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			this.gatewayEngine=gatewayEngine;
 		}
 
-	    /**
-	     * @see railo.runtime.config.Config#getMailLogger()
-	     */
 	    public LogAndSource getGatewayLogger() {
 	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 			return gatewayLogger;
@@ -413,12 +404,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.hasPassword();
 		}
 		
-		public void setPassword(boolean server, String passwordOld, String passwordNew) 
+		public void setPassword(boolean server, String passwordOld, String passwordNew, boolean oldPasswordIsHashed, boolean newPasswordIsHashed) 
 			throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
 	    	ConfigImpl config=server?configServer:this;
-	    	    
-		    if(!config.hasPassword()) { 
-		        config.setPassword(passwordNew);
+	    	if(!oldPasswordIsHashed)passwordOld=ConfigWebFactory.hash(passwordOld);
+	    	if(!newPasswordIsHashed)passwordNew=ConfigWebFactory.hash(passwordNew);
+	    	
+	    	if(!config.hasPassword()) { 
+		    	config.setPassword(passwordNew);
 		        
 		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordNew);
 		        admin.setPassword(passwordNew);
@@ -426,7 +419,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		    }
 		    else {
 		    	ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
-		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
+		    	ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
 		        admin.setPassword(passwordNew);
 		        admin.store();
 		    }
@@ -445,4 +438,30 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean allowRequestTimeout() {
 			return configServer.allowRequestTimeout();
 		}
+		
+		public CFMLWriter getCFMLWriter(HttpServletRequest req, HttpServletResponse rsp) {
+			// FUTURE  move interface CFMLWriter to Loader and load dynaicly from railo-web.xml
+	        if(writerType==CFML_WRITER_WS)
+	            return new CFMLWriterWS		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	        else if(writerType==CFML_WRITER_REFULAR) 
+	            return new CFMLWriterImpl			(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	        else
+	            return new CFMLWriterWSPref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	    }
+
+		
+		public ActionMonitorCollector getActionMonitorCollector() {
+			return configServer.getActionMonitorCollector();
+		}
+
+		@Override
+		public boolean getFullNullSupport() {
+			return configServer.getFullNullSupport();
+		}
+		public boolean hasIndividualSecurityManager() {
+			return configServer.hasIndividualSecurityManager(getId());
+	    }
+		public String getServerApiKey() {
+			return configServer.getApiKey();
+	    }
 }

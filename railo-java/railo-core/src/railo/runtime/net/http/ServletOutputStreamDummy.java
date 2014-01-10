@@ -18,167 +18,109 @@ public final class ServletOutputStreamDummy extends ServletOutputStream {
 		this.os=os;
 	}
 	
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(boolean)
-	 */
+	@Override
 	public void print(boolean b) throws IOException {
 		write(b?"true".getBytes():"false".getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(char)
-	 */
+	@Override
 	public void print(char c) throws IOException {
 		print(new String(new char[]{c}));
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(double)
-	 */
+	@Override
 	public void print(double d) throws IOException {
 		write(Caster.toString(d).getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(float)
-	 */
+	@Override
 	public void print(float f) throws IOException {
 		write(Caster.toString(f).getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(int)
-	 */
+	@Override
 	public void print(int i) throws IOException {
 		write(Caster.toString(i).getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(long)
-	 */
+	@Override
 	public void print(long l) throws IOException {
 		write(Caster.toString(l).getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#print(java.lang.String)
-	 */
+	@Override
 	public void print(String str) throws IOException {
 		write(str.getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println()
-	 */
+	@Override
 	public void println() throws IOException {
 		write("\\".getBytes());
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(boolean)
-	 */
+	@Override
 	public void println(boolean b) throws IOException {
 		print(b);
 		println();
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(char)
-	 */
+	@Override
 	public void println(char c) throws IOException {
 		print(c);
 		println();
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(double)
-	 */
+	@Override
 	public void println(double d) throws IOException {
 		print(d);
 		println();
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(float)
-	 */
+	@Override
 	public void println(float f) throws IOException {
 		print(f);
 		println();
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(int)
-	 */
+	@Override
 	public void println(int i) throws IOException {
 		print(i);
 		println();
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(long)
-	 */
+	@Override
 	public void println(long l) throws IOException {
 		print(l);
 		println();
 	}
 
-	/**
-	 *
-	 * @see javax.servlet.ServletOutputStream#println(java.lang.String)
-	 */
+	@Override
 	public void println(String str) throws IOException {
 		print(str);
 		println();
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[])
-	 */
+	@Override
 	public void write(byte[] b) throws IOException {
 		write(b,0,b.length);
 	}
 
-	/**
-	 * @see java.io.OutputStream#write(byte[], int, int)
-	 */
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		os.write(b, off, len);
 	}
 
-	/**
-	 * @see java.io.OutputStream#write(int)
-	 */
+	@Override
 	public void write(int b) throws IOException {
 		os.write(b);
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		os.close();
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#flush()
-	 */
+	@Override
 	public void flush() throws IOException {
 		os.flush();
 	}

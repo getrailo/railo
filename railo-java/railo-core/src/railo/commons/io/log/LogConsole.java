@@ -39,54 +39,38 @@ public final class LogConsole implements Log {
     	return singeltons[logLevel];
     }
     
-    /**
-     * @see railo.commons.io.log.Log#log(int, java.lang.String, java.lang.String)
-     */
+    @Override
     public void log(int level, String application, String message) {
     	if(level>=logLevel)SystemOut.print(writer, LogUtil.getLine(level,application,message));
     }
 
-    /**
-     * @see railo.commons.io.log.Log#info(java.lang.String, java.lang.String)
-     */
+    @Override
     public void info(String application, String message) {
         log(LEVEL_INFO,application,message);
     }
-    /**
-     * @see railo.commons.io.log.Log#debug(java.lang.String, java.lang.String)
-     */
+    @Override
     public void debug(String application, String message) {
         log(LEVEL_DEBUG,application,message);    
     }
-    /**
-     * @see railo.commons.io.log.Log#warn(java.lang.String, java.lang.String)
-     */
+    @Override
     public void warn(String application, String message) {
         log(LEVEL_WARN,application,message);
     }
-    /**
-     * @see railo.commons.io.log.Log#error(java.lang.String, java.lang.String)
-     */
+    @Override
     public void error(String application, String message) {
         log(LEVEL_ERROR,application,message);
     }
-    /**
-     * @see railo.commons.io.log.Log#fatal(java.lang.String, java.lang.String)
-     */
+    @Override
     public void fatal(String application, String message) {
         log(LEVEL_FATAL,application,message);
     }
 
-    /**
-     * @see railo.commons.io.log.Log#getLogLevel()
-     */
+    @Override
     public int getLogLevel() {
         return logLevel;
     }
 
-    /**
-     * @see railo.commons.io.log.Log#setLogLevel(int)
-     */
+    @Override
     public void setLogLevel(int level) {
         this.logLevel=level;
     }

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.w3c.dom.Node;
@@ -24,7 +25,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.functions.displayFormatting.TimeFormat;
 import railo.runtime.op.Caster;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -39,6 +40,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * class to serialize and desirilize WDDX Packes
@@ -173,7 +175,7 @@ public final class ScriptConverter extends ConverterSupport {
     public String serializeStruct(Struct struct, Set<Collection.Key> ignoreSet) throws ConverterException {
     	StringBuffer sb =new StringBuffer();
         sb.append(goIn());
-        sb.append("struct(");
+        sb.append("{");
         boolean hasIgnores=ignoreSet!=null;
         Iterator<Key> it = struct.keyIterator();
         boolean doIt=false;
@@ -192,7 +194,7 @@ public final class ScriptConverter extends ConverterSupport {
         }
         deep--;
         
-        return sb.append(')').toString();
+        return sb.append('}').toString();
     }
 
     /**
@@ -203,8 +205,12 @@ public final class ScriptConverter extends ConverterSupport {
      * @throws ConverterException
      */
     private void _serializeMap(Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
-        sb.append(goIn());
-        sb.append("struct(");
+        if(map instanceof Serializable) {
+        	_serializeSerializable((Serializable)map,sb);
+        	return;
+        }
+    	sb.append(goIn());
+        sb.append("{");
         
         Iterator it=map.keySet().iterator();
         boolean doIt=false;
@@ -221,7 +227,7 @@ public final class ScriptConverter extends ConverterSupport {
         }
         deep--;
         
-        sb.append(')');
+        sb.append('}');
     }
     /**
      * serialize a Component
@@ -243,51 +249,57 @@ public final class ScriptConverter extends ConverterSupport {
     	
     	sb.append(goIn());
         try {
-        	sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(ci)+"',struct(");
+        	sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(ci)+"',{");
 		} catch (Exception e) {
 			throw toConverterException(e);
 		}
-        
+		
 		boolean doIt=false;
-        Iterator it=cw.keyIterator();
-        Object member;
-        deep++;
-        while(it.hasNext()) {
-            String key=Caster.toString(it.next(),"");
-            member = cw.get(key,null);
-            if(member instanceof UDF)continue;
-            if(doIt)sb.append(',');
-            doIt=true;
-            sb.append('\'');
-            sb.append(escape(key));
-            sb.append('\'');
-            sb.append(':');
-            _serialize(member,sb,done);
-        }
-        sb.append(")");
-        deep--;
-        
-        if(true){
+		Object member;
+	    {
+			
+			Iterator<Entry<Key, Object>> it = cw.entryIterator();
+	        deep++;
+	        Entry<Key, Object> e;
+	        while(it.hasNext()) {
+	            e = it.next();
+	            member = e.getValue();
+	            if(member instanceof UDF)continue;
+	            if(doIt)sb.append(',');
+	            doIt=true;
+	            sb.append('\'');
+	            sb.append(escape(e.getKey().getString()));
+	            sb.append('\'');
+	            sb.append(':');
+	            _serialize(member,sb,done);
+	        }
+	        sb.append("}");
+	        deep--;
+		}
+        {
         	boolean isPeristent=ci.isPersistent();
     		
         	ComponentScope scope = ci.getComponentScope();
-        	it=scope.keyIterator();
-            sb.append(",struct(");
+        	Iterator<Entry<Key, Object>> it = scope.entryIterator();
+            sb.append(",{");
         	deep++;
         	doIt=false;
         	Property p;
             Boolean remotingFetch;
         	Struct props = ignoreRemotingFetch?null:ComponentUtil.getPropertiesAsStruct(ci,false);
-            while(it.hasNext()) {
-                String key=Caster.toString(it.next(),"");
-                if("this".equalsIgnoreCase(key))continue;
-                
+        	Entry<Key, Object> e;
+        	Key k;
+        	while(it.hasNext()) {
+        		e = it.next();
+        		k = e.getKey();
+                //String key=Caster.toString(it.next(),"");
+                if(KeyConstants._THIS.equalsIgnoreCase(k))continue;
                 if(!ignoreRemotingFetch) {
-            		p=(Property) props.get(key,null);
+                	p=(Property) props.get(k,null);
                 	if(p!=null) {
                 		remotingFetch=Caster.toBoolean(p.getDynamicAttributes().get(REMOTING_FETCH,null),null);
     	            	if(remotingFetch==null){
-        					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+        					if(isPeristent  && ORMUtil.isRelated(p)) continue;
     	    			}
     	    			else if(!remotingFetch.booleanValue()) continue;
                 	}
@@ -295,17 +307,17 @@ public final class ScriptConverter extends ConverterSupport {
                 
                 
                 
-                member = scope.get(key,null);
+                member = e.getValue();
                 if(member instanceof UDF)continue;
                 if(doIt)sb.append(',');
                 doIt=true;
                 sb.append('\'');
-                sb.append(escape(key));
+                sb.append(escape(k.getString()));
                 sb.append('\'');
                 sb.append(':');
                 _serialize(member,sb,done);
             }
-            sb.append(")");
+            sb.append("}");
             deep--;
         }
         
@@ -389,7 +401,7 @@ public final class ScriptConverter extends ConverterSupport {
 			// Number
 			if(object instanceof Number) {
 			    sb.append(goIn());
-			    sb.append(Caster.toString(((Number)object).doubleValue()));
+			    sb.append(Caster.toString(((Number)object)));
 			    deep--;
 			    return;
 			}

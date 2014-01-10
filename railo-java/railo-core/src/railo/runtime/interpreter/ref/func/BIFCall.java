@@ -9,6 +9,8 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.interpreter.InterpreterException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.cast.Casting;
@@ -16,7 +18,6 @@ import railo.runtime.interpreter.ref.literal.LFunctionValue;
 import railo.runtime.interpreter.ref.util.RefUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.util.ArrayUtil;
@@ -75,7 +76,7 @@ public final class BIFCall extends RefSupport implements Ref {
         		}
         		arguments=tmp.toArray();
         	}
-        	arguments=new Object[]{pc,arguments};
+        	arguments=new Object[]{arguments};
         }
         else {
         	if(isNamed(pc,refArgs)){
@@ -84,9 +85,8 @@ public final class BIFCall extends RefSupport implements Ref {
         		
         		ArrayList<FunctionLibFunctionArg> list = flf.getArg();
 				Iterator<FunctionLibFunctionArg> it = list.iterator();
-				arguments=new Object[list.size()+1];
-				arguments[0]=pc;
-                
+				arguments=new Object[list.size()];
+				
 				
 				FunctionLibFunctionArg flfa;
 				int index=0;
@@ -96,12 +96,12 @@ public final class BIFCall extends RefSupport implements Ref {
 					vt = getMatchingValueAndType(flfa,fvalues,names);
 					if(vt.index!=-1) 
 						names[vt.index]=null;
-					arguments[++index]=new Casting( vt.type, CFTypes.toShort(vt.type, false, CFTypes.TYPE_UNKNOW), vt.value).getValue(pc);	
+					arguments[index++]=new Casting( vt.type, CFTypes.toShort(vt.type, false, CFTypes.TYPE_UNKNOW), vt.value).getValue(pc);	
 				}
 				
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
-						ExpressionException ee = new ExpressionException("argument ["+names[y]+"] is not allowed for function ["+flf.getName()+"]");
+						ExpressionException ee = new InterpreterException("argument ["+names[y]+"] is not allowed for function ["+flf.getName()+"]");
 						UDFUtil.addFunctionDoc(ee, flf);
 						throw ee;
 					}
@@ -110,22 +110,15 @@ public final class BIFCall extends RefSupport implements Ref {
         	}
         	else {
         		arguments = RefUtil.getValue(pc,refArgs);
-                Object[] newAttr = new Object[arguments.length+1];
-                newAttr[0]=pc;
-                for(int i=0;i<arguments.length;i++) {
-                    newAttr[i+1]=arguments[i];
-                }
-                arguments=newAttr;
         	}
         }
-        Class clazz=flf.getCazz();
-        if(clazz==null)throw new ExpressionException("class "+clazz+" not found");
+        BIF bif=flf.getBIF();
         
         if(flf.getMemberChaining() && obj!=null) {
-        	Reflector.callStaticMethod(clazz,"call",arguments);
+        	bif.invoke(pc, arguments);
         	return obj;
         }
-        return Caster.castTo(pc,flf.getReturnTypeAsString(),Reflector.callStaticMethod(clazz,"call",arguments),false);
+        return Caster.castTo(pc,flf.getReturnTypeAsString(),bif.invoke(pc, arguments),false);
 	}
 	
 
@@ -144,7 +137,7 @@ public final class BIFCall extends RefSupport implements Ref {
 		String alias=flfa.getAlias();
 		if(!StringUtil.isEmpty(alias)) {
 			for(int i=0;i<names.length;i++){
-				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
+				if(names[i]!=null && railo.runtime.type.util.ListUtil.listFindNoCase(alias, names[i])!=-1){
 					return new VT(fvalues[i].getValue(),flfa.getTypeAsString(),i);
 				}
 			}
@@ -165,7 +158,7 @@ public final class BIFCall extends RefSupport implements Ref {
 			return new VT(defaultValue,type,-1);
 			
 		}
-		ExpressionException ee = new ExpressionException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]");
+		ExpressionException ee = new InterpreterException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]");
 		UDFUtil.addFunctionDoc(ee, flfa.getFunction());
 		throw ee;
 	}
@@ -199,7 +192,7 @@ public final class BIFCall extends RefSupport implements Ref {
 			}
 		}
 		if(count!=0 && count!=refArgs.length){
-			ExpressionException ee = new ExpressionException("invalid argument for function "+flf.getName()+", you can not mix named and unnamed arguments");
+			ExpressionException ee = new InterpreterException("invalid argument for function "+flf.getName()+", you can not mix named and unnamed arguments");
 			UDFUtil.addFunctionDoc(ee, flf);
 			throw ee;
 		}

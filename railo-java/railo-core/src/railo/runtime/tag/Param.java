@@ -27,9 +27,7 @@ public final class Param extends TagImpl {
 	private double max;
 	private String pattern;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		type="any";
@@ -94,9 +92,7 @@ public final class Param extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		if("range".equals(type))
 			pageContext.param(type, name, _default,min,max);

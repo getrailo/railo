@@ -4,35 +4,39 @@ import java.util.ArrayList;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceManagerImpl;
 import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.AppListenerUtil;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.tag.util.QueryParamConverter;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -42,6 +46,7 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.query.SimpleQuery;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 
 
@@ -54,7 +59,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private static final Collection.Key CFQUERY = KeyImpl.intern("cfquery");
 	private static final Collection.Key GENERATEDKEY = KeyImpl.intern("generatedKey");
 	private static final Collection.Key MAX_RESULTS = KeyImpl.intern("maxResults");
-	private static final Collection.Key TIMEOUT = KeyImpl.intern("timeout");
+	private static final Collection.Key TIMEOUT = KeyConstants._timeout;
 	
 	private static final int RETURN_TYPE_QUERY = 1;
 	private static final int RETURN_TYPE_ARRAY_OF_ENTITY = 2;
@@ -120,12 +125,11 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private TimeZone timezone;
 	private TimeZone tmpTZ;
 	private boolean lazy;
+	private Object params;
 	
 	
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		items.clear();
@@ -153,6 +157,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		timezone=null;
 		tmpTZ=null;
 		lazy=false;
+		params=null;
 	}
 	
 	
@@ -210,9 +215,20 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	/** set the value datasource
 	*  The name of the data source from which this query should retrieve data.
 	* @param datasource value to set
+	 * @throws ClassException 
 	**/
-	public void setDatasource(String datasource) throws PageException	{
-		this.datasource=pageContext.getConfig().getDataSource(datasource);
+
+	public void setDatasource(Object datasource) throws PageException, ClassException	{
+		if (Decision.isStruct(datasource)) {
+			this.datasource=AppListenerUtil.toDataSource("__temp__", Caster.toStruct(datasource));
+		} 
+		else if (Decision.isString(datasource)) {
+			this.datasource=((PageContextImpl)pageContext).getDataSource(Caster.toString(datasource));
+		} 
+		else {
+			throw new ApplicationException("attribute [datasource] must be datasource name or a datasource definition(struct)");
+			
+		}
 	}
 
 	/** set the value timeout
@@ -377,27 +393,28 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
     public void setParam(SQLItem item) {
         items.add(item);
     }
+    
+    public void setParams(Object params) {
+        this.params=params;
+    }
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		// default datasource
 		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
-			String str = pageContext.getApplicationContext().getDefaultDataSource();
-			if(StringUtil.isEmpty(str))
+			Object obj = ((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
+			if(StringUtil.isEmpty(obj))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 			
-			datasource=pageContext.getConfig().getDataSource(str);
+			datasource=obj instanceof DataSource?(DataSource)obj:((PageContextImpl)pageContext).getDataSource(Caster.toString(obj));
 		}
 		
 		
 		// timezone
-		if(timezone!=null || (datasource!=null && (timezone=((DataSourceImpl)datasource).getTimeZone())!=null)) {
+		if(timezone!=null || (datasource!=null && (timezone=datasource.getTimeZone())!=null)) {
 			tmpTZ=pageContext.getTimeZone();
 			pageContext.setTimeZone(timezone);
 		}
@@ -406,9 +423,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		return EVAL_BODY_BUFFERED;
 	}
 	
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
-	 */
+	@Override
 	public void doFinally() {
 		if(tmpTZ!=null) {
 			pageContext.setTimeZone(tmpTZ);
@@ -416,15 +431,27 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		super.doFinally();
 	}
 
-	/**
-	* @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{		
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
-		if(strSQL.length()==0) throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
-		SQL sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
+		// no SQL String defined
+		if(strSQL.length()==0) 
+			throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
+		// cannot use attribute params and queryparam tag
+		if(items.size()>0 && params!=null)
+			throw new DatabaseException("you cannot use the attribute params and sub tags queryparam at the same time",null,null,null);
+		// create SQL
+		SQL sql;
+		if(params!=null) {
+			if(Decision.isArray(params))
+				sql=QueryParamConverter.convert(strSQL, Caster.toArray(params));
+			else if(Decision.isStruct(params))
+				sql=QueryParamConverter.convert(strSQL, Caster.toStruct(params));
+			else
+				throw new DatabaseException("value of the attribute [params] has to be a struct or a array",null,null,null);
+		}
+		else sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
 		
 		railo.runtime.type.Query query=null;
 		long exe=0;
@@ -472,7 +499,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					return EVAL_PAGE;
 				}
 			}
-			else query=executeDatasoure(sql,result!=null);
+			else query=executeDatasoure(sql,result!=null,pageContext.getTimeZone());
 			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
 			
 			if(cachedWithin!=null) {
@@ -490,10 +517,11 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(pageContext.getConfig().debug() && debug) {
 			boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 			if(logdb){
-				boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+				boolean debugUsage=DebuggerUtil.debugQueryUsage(pageContext,query);
 				((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 			}
 		}
+		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {
 			pageContext.setVariable(name,query);
 		}
@@ -503,7 +531,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			
 			Struct sct=new StructImpl();
 			sct.setEL(KeyConstants._cached, Caster.toBoolean(query.isCached()));
-			if(!query.isEmpty())sct.setEL(KeyConstants._COLUMNLIST, List.arrayToList(query.getColumnNamesAsString(),","));
+			if(!query.isEmpty())sct.setEL(KeyConstants._COLUMNLIST, ListUtil.arrayToList(query.getColumnNamesAsString(),","));
 			int rc=query.getRecordcount();
 			if(rc==0)rc=query.getUpdateCount();
 			sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(rc));
@@ -526,7 +554,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 						int size=column.size();
 						for(int row=1;row<=size;row++) {
 							if(row>1)sb.append(',');
-							sb.append(Caster.toString(column.get(row)));
+							sb.append(Caster.toString(column.get(row,null)));
 						}
 						if(sb.length()>0){
 							sct.setEL(columnNames[c], sb.toString());
@@ -558,7 +586,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		
 		
-		
+		// listener
+		((ConfigWebImpl)pageContext.getConfig()).getActionMonitorCollector()
+			.log(pageContext, "query", "Query", exe, query);
 		
 		return EVAL_PAGE;
 	}
@@ -596,7 +626,6 @@ cachename: Name of the cache in secondary cache.
 	
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		if(Decision.isCastableToArray(params))
 			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))
@@ -615,13 +644,13 @@ cachename: Name of the cache in secondary cache.
 		} 
 	}
 	
-	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
+	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData,TimeZone tz) throws PageException {
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		
 		try {
 			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
-				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
+				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),tz);
 			
 			
 			return new QueryImpl(pageContext,dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData,true);
@@ -632,16 +661,12 @@ cachename: Name of the cache in secondary cache.
 	}
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

@@ -9,11 +9,13 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -31,7 +33,6 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Caller;
@@ -42,6 +43,7 @@ import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.Type;
 import railo.runtime.util.QueryStack;
 import railo.runtime.util.QueryStackImpl;
@@ -118,9 +120,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.ORIGINAL_CASE);
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
 
@@ -148,9 +148,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         //filename = appendix+'.'+pageContext.getConfig().getCFMLExtension();
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-    */
+    @Override
     public int doStartTag() throws PageException    {
     	PageContextImpl pci=(PageContextImpl) pageContext;
 		boolean old=pci.useSpecialMappings(true);
@@ -165,9 +163,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		}
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-    */
+    @Override
     public int doEndTag()   {
     	PageContextImpl pci=(PageContextImpl) pageContext;
 		boolean old=pci.useSpecialMappings(true);
@@ -180,25 +176,19 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		}
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-    */
+    @Override
     public void doInitBody()    {
         
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-    */
+    @Override
     public int doAfterBody() throws PageException   {
     	if(source.isCFC())return cfcEndTag();
         return cfmlEndTag();
     }
     
 
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
-	 */
+	@Override
     public void doCatch(Throwable t) throws Throwable {
     	if(source.isCFC()){
 	    	String source=isEndTag?"end":"body";
@@ -334,8 +324,28 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private int cfcStartTag() throws PageException {
     	
     	callerScope.initialize(pageContext);
-        cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
-        validateAttributes(cfc,attributesScope,StringUtil.ucFirst(List.last(source.getPageSource().getComponentName(),'.')));
+        try {
+			cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+		}
+		catch (PageException e) {
+			Mapping m = source.getPageSource().getMapping();
+			ConfigWebImpl c=(ConfigWebImpl) pageContext.getConfig();
+			if(m==c.getTagMapping()) m=c.getServerTagMapping();
+			else m=null;
+			// is te page source from a tag mapping, so perhaps it was moved from server to web context
+			if(m!=null){
+				PageSource ps = m.getPageSource(source.getFilename());
+				try {
+					cfc = ComponentLoader.loadComponent(pageContext,null,ps, source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+				}
+				catch (PageException e1) {
+					throw e;
+				}
+				
+			}
+		}
+        
+        validateAttributes(cfc,attributesScope,StringUtil.ucFirst(ListUtil.last(source.getPageSource().getComponentName(),'.')));
         
         boolean exeBody = false;
         try	{
@@ -451,9 +461,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	TagLibTag tag=new TagLibTag(null);
     // TAG
-    	
-    	// type
-    	
+
+    	// type    	
     	String type=Caster.toString(meta.get(ATTRIBUTE_TYPE,"dynamic"),"dynamic");
     	
     	if("fixed".equalsIgnoreCase(type))tag.setAttributeType(TagLibTag.ATTRIBUTE_TYPE_FIXED);

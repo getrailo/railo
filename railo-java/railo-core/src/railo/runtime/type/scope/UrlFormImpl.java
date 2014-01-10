@@ -1,6 +1,3 @@
-/**
- * 
- */
 package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
@@ -20,15 +17,12 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
-/**
- * 
- */
 public final class UrlFormImpl extends StructSupport implements URLForm {
 
 	private static final long serialVersionUID = -5709431392572723178L;
 
-	private FormImpl form;
-	private URLImpl url;
+	private final FormImpl form;
+	private final URLImpl url;
 	private boolean isInit;
 
 	public UrlFormImpl(FormImpl form, URLImpl url) {
@@ -36,21 +30,13 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		this.url=url;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		if(isInit) return;
 		isInit=true;
 		form.initialize(pc);
 		url.initialize(pc);
-		//print.ln(">>>"+List.arrayToList(url.keys(),","));
 		form.addRaw(pc.getApplicationContext(),url.getRaw());
-		
-		/*String[] keys = url.keys();
-		for(int i=0;i<keys.length;i++) {
-			form.setEL(keys[i], url.get(keys[i],null));
-		}*/
 	}
 	
 	@Override
@@ -63,30 +49,11 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	@Override
 	public void release(PageContext pc) {
 		isInit=false;
-		form.release();
-		url.release();
+		form.release(pc);
+		url.release(pc);
 	}
 
-
-	/* *
-	 * @see railo.runtime.type.scope.URLForm#getForm()
-	 * /
-	public Form getForm() {
-		return form;
-	}*/
-
-	/* *
-	 *
-	 * @see railo.runtime.type.scope.URLForm#getURL()
-	 * /
-	public URL getURL() {
-		return url;
-	}*/
-
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#getEncoding()
-	 */
+	@Override
 	public String getEncoding() {
 		return form.getEncoding();
 	}
@@ -96,66 +63,43 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		form.setEncoding(ac,encoding);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Scope#getType()
-	 */
+	@Override
 	public int getType() {
 		return form.getType();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return form.getTypeAsString();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return isInit;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		form.clear();
 		url.clear();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
 		return form.containsKey(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
 		return form.get(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		return form.get(key, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return form.keyIterator();
 	}
@@ -190,143 +134,97 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		return form.removeEL(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		return form.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return form.setEL(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return form.size();
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return form.toDumpData(pageContext, maxlevel,dp);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return form.castToBooleanValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return form.castToBoolean(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return form.castToDateTime();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return form.castToDateTime(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return form.castToDoubleValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return form.castToDoubleValue(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return form.castToString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return form.castToString(defaultValue);
 	}
 
 
-	/**
-	 * @throws PageException 
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return form.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return form.compareTo(dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return form.compareTo(d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return form.compareTo(str);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Form#getFileUpload(java.lang.String)
-	 */
 	public DiskFileItem getFileUpload(String key) {
 		return form.getFileUpload(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Form#getInitException()
-	 */
+	@Override
 	public PageException getInitException() {
 		return form.getInitException();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return (Collection) Duplicator.duplicate(form,deepCopy);
 	}
@@ -336,28 +234,35 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		form.setScriptProtecting(ac,b);
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return form.containsValue(value);
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection<Object> values() {
 		return form.values();
 	}
 
+	@Override
 	public FormItem getUploadResource(String key) {
 		return form.getUploadResource(key);
 	}
 
+	@Override
 	public FormItem[] getFileItems() {
 		return form.getFileItems();
 	}
 
+	public FormImpl getForm() {
+		return form;
+	}
+
+	public URLImpl getURL() {
+		return url;
+	}
+
+	@Override
 	public ServletInputStream getInputStream() {
 		return form.getInputStream();
 	}

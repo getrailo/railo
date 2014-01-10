@@ -66,9 +66,7 @@ public final class RamResource extends ResourceSupport {
 	}
 	
 
-	/**
-	 * @see res.Resource#getPath()
-	 */
+	@Override
 	public String getPath() {
 		return provider.getScheme().concat("://").concat(getInnerPath());
 	}
@@ -77,38 +75,28 @@ public final class RamResource extends ResourceSupport {
 		return parent.concat(name);
 	}
 
-	/**
-	 * @see res.Resource#getFullName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see res.Resource#getParent()
-	 */
+	@Override
 	public String getParent() {
 		if(isRoot()) return null;
 		return provider.getScheme().concat("://").concat(ResourceUtil.translatePath(parent, true, false));
 	}
 
-	/**
-	 * @see res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		return ModeUtil.isReadable(getMode());
 	}
 
-	/**
-	 * @see res.Resource#isWriteable()
-	 */
+	@Override
 	public boolean isWriteable() {
 		return ModeUtil.isWritable(getMode());
 	}
 
-	/**
-	 * @see res.Resource#removeE(boolean)
-	 */
+	@Override
 	public void remove(boolean force) throws IOException {
 		if(isRoot()) 
 			throw new IOException("can't remove root resource ["+getPath()+"]");
@@ -130,9 +118,7 @@ public final class RamResource extends ResourceSupport {
 		removeCore();
 	}
 
-	/**
-	 * @see res.Resource#exists()
-	 */
+	@Override
 	public boolean exists() {
 		try {
 			provider.read(this);
@@ -142,9 +128,7 @@ public final class RamResource extends ResourceSupport {
 		return getCore()!=null;
 	}
 
-	/**
-	 * @see res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		return getParentRamResource();
 	}
@@ -162,38 +146,28 @@ public final class RamResource extends ResourceSupport {
 		return new RamResource(provider,realpath);
 	}
 
-	/**
-	 * @see res.Resource#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		return true;
 	}
 
-	/**
-	 * @see res.Resource#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return exists() && getCore().getType()==RamResourceCore.TYPE_DIRECTORY;
 	}
 
-	/**
-	 * @see res.Resource#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return exists() && getCore().getType()==RamResourceCore.TYPE_FILE;
 	}
 
-	/**
-	 * @see res.Resource#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		if(!exists()) return 0;
 		return getCore().getLastModified();
 	}
 
-	/**
-	 * @see res.Resource#length()
-	 */
+	@Override
 	public long length() {
 		if(!exists()) return 0;
 		byte[] data= getCore().getData();
@@ -201,9 +175,7 @@ public final class RamResource extends ResourceSupport {
 		return data.length;
 	}
 
-	/**
-	 * @see res.Resource#list()
-	 */
+	@Override
 	public String[] list() {
 		if(!exists()) return null;
 		RamResourceCore core = getCore();
@@ -225,9 +197,7 @@ public final class RamResource extends ResourceSupport {
 		return children;*/
 	}
 
-	/**
-	 * @see res.Resource#listResources()
-	 */
+	@Override
 	public Resource[] listResources() {
 		String[] list = list();
 		if(list==null)return null;
@@ -241,26 +211,19 @@ public final class RamResource extends ResourceSupport {
 		return children;
 	}
 
-	/**
-	 * @see res.Resource#setLastModified(long)
-	 */
+	@Override
 	public boolean setLastModified(long time) {
 		if(!exists()) return false;
 		getCore().setLastModified(time);
 		return true;
 	}
 
-	/**
-	 * @see res.Resource#setReadOnly()
-	 */
+	@Override
 	public boolean setReadOnly() {
 		return setWritable(false);
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see res.Resource#createFile(boolean)
-	 */
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateFileOK(this,createParentWhenNotExists);
 		provider.lock(this);
@@ -273,9 +236,7 @@ public final class RamResource extends ResourceSupport {
 	}
 
 
-	/**
-	 * @see res.Resource#createDirectory(boolean)
-	 */
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateDirectoryOK(this,createParentWhenNotExists);
 		provider.lock(this);
@@ -288,9 +249,7 @@ public final class RamResource extends ResourceSupport {
 		
 	}
 
-	/**
-	 * @see res.Resource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		ResourceUtil.checkGetInputStreamOK(this);
 
@@ -309,23 +268,15 @@ public final class RamResource extends ResourceSupport {
 		return new RamOutputStream(this,append);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#getContentType()
-	 */
 	public ContentType getContentType() {
 		return ResourceUtil.getContentType(this);
 	}
 
-	/**
-	 * @see res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return getPath();
 	}
@@ -348,9 +299,7 @@ public final class RamResource extends ResourceSupport {
 			this.res=res;
 		}
 
-		/**
-		 * @see java.io.ByteArrayOutputStream#close()
-		 */
+		@Override
 		public void close() throws IOException {
 			try {
 				super.close();
@@ -365,9 +314,7 @@ public final class RamResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setReadable(boolean)
-	 */
+	@Override
 	public boolean setReadable(boolean value) {
 		if(!exists())return false;
 		try {
@@ -379,9 +326,7 @@ public final class RamResource extends ResourceSupport {
 		
 	}
 	
-	/**
-	 * @see railo.commons.io.res.Resource#setWritable(boolean)
-	 */
+	@Override
 	public boolean setWritable(boolean value) {
 		if(!exists())return false;
 		try {
@@ -405,18 +350,12 @@ public final class RamResource extends ResourceSupport {
 		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exist");
 		getCore().setMode(mode);
 	}
-	/**
-	 *
-	 * @see railo.commons.io.res.util.ResourceSupport#getAttribute(short)
-	 */
+	@Override
 	public boolean getAttribute(short attribute) {
 		if(!exists())return false;
 		return (getCore().getAttributes()&attribute)>0;
 	}
-	/**
-	 *
-	 * @see railo.commons.io.res.util.ResourceSupport#setAttribute(short, boolean)
-	 */
+	@Override
 	public void setAttribute(short attribute, boolean value) throws IOException {
 		if(!exists())throw new IOException("can't get attributes on resource ["+this+"], resource does not exist");
 		int attr = getCore().getAttributes();

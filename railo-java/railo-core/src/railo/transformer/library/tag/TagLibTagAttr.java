@@ -2,16 +2,23 @@ package railo.transformer.library.tag;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
+import railo.runtime.op.Caster;
+import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
- * Die Klasse TagLibTagAttr repräsentiert ein einzelnes Attribute eines Tag 
- * und hält sämtliche Informationen zu diesem Attribut.
+ * Die Klasse TagLibTagAttr repraesentiert ein einzelnes Attribute eines Tag 
+ * und haelt saemtliche Informationen zu diesem Attribut.
  */
 public final class TagLibTagAttr {
 
@@ -28,8 +35,12 @@ public final class TagLibTagAttr {
     private TagLibTag tag;
 	private boolean hidden;
 	private boolean _default;
+	private boolean noname;
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private short scriptSupport=SCRIPT_SUPPORT_NONE;
+	private String valueList;
+	private char delimiter=',';
+	private Object[] values;
 
 	
 	public TagLibTagAttr duplicate(TagLibTag tag) {
@@ -41,6 +52,10 @@ public final class TagLibTagAttr {
 		tlta.rtexpr=rtexpr;
 		tlta.defaultValue=defaultValue;
 		tlta.hidden=hidden;
+		tlta.valueList=valueList;
+		tlta.values=values;
+		tlta.delimiter=delimiter;
+		tlta.noname=noname;
 		tlta._default=_default;
 		tlta.status=status;
 		
@@ -65,14 +80,14 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 */
 	public TagLibTagAttr(TagLibTag tag) {
 	    this.tag=tag;
 	}
 
 	/**
-	 * Gibt den Namen des Attribut zurück.
+	 * Gibt den Namen des Attribut zurueck.
 	 * @return Name des Attribut.
 	 */
 	public String getName() {
@@ -80,7 +95,7 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Gibt zurück, ob das Attribut Pflicht ist oder nicht.
+	 * Gibt zurueck, ob das Attribut Pflicht ist oder nicht.
 	 * @return Ist das Attribut Pflicht.
 	 */
 	public boolean isRequired() {
@@ -125,8 +140,8 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Gibt zurück ob das Attribute eines Tag, mithilfe des ExprTransformer, übersetzt werden soll oder nicht.
-	 * @return Soll das Attribut übbersetzt werden
+	 * Gibt zurueck ob das Attribute eines Tag, mithilfe des ExprTransformer, uebersetzt werden soll oder nicht.
+	 * @return Soll das Attribut uebbersetzt werden
 	 */
 	public boolean getRtexpr() {
 		return rtexpr;
@@ -149,8 +164,8 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Setzt, ob das Attribute eines Tag, mithilfe des ExprTransformer, übersetzt werden soll oder nicht.
-	 * @param rtexpr Soll das Attribut übbersetzt werden
+	 * Setzt, ob das Attribute eines Tag, mithilfe des ExprTransformer, uebersetzt werden soll oder nicht.
+	 * @param rtexpr Soll das Attribut uebbersetzt werden
 	 */
 	public void setRtexpr(boolean rtexpr) {
 		this.rtexpr = rtexpr;
@@ -207,6 +222,13 @@ public final class TagLibTagAttr {
 		return hidden;
 	}
 
+	public void setNoname(boolean noname) {
+		this.noname=noname;
+	}
+	public boolean getNoname() {
+		return noname;
+	}
+
 	public String getHash() {
 		StringBuffer sb=new StringBuffer();
 		sb.append(this.getDefaultValue());
@@ -256,5 +278,77 @@ public final class TagLibTagAttr {
 		if(scriptSupport==SCRIPT_SUPPORT_REQUIRED) return "required";
 		return "none";
 	}
+
+
+	public void setValueDelimiter(String delimiter) {
+		if(StringUtil.isEmpty(delimiter,true)) return;
+		this.delimiter=delimiter.trim().charAt(0);
+	}
+	
+	public void setValues(String valueList) {
+		if(tag.getName().equalsIgnoreCase("pop"))
+		if(StringUtil.isEmpty(valueList,true)) return;
+		this.valueList=valueList;
+	}
+	
+	public Object[] getValues() {
+		if(valueList==null) return null;
+		if(values!=null) return values;
+		String[] res = ListUtil.trimItems(ListUtil.listToStringArray(valueList, delimiter));
+		short type=CFTypes.toShort(getType(), false, CFTypes.TYPE_ANY);
+		// String
+		if(type==CFTypes.TYPE_STRING || type==CFTypes.TYPE_ANY) {
+			values=res;
+		}
+		// Numeric
+		else if(type==CFTypes.TYPE_NUMERIC) {
+			List<Double> list=new ArrayList<Double>();
+			Double d;
+			for(int i=0;i<res.length;i++){
+				d=Caster.toDouble(res[i],null);
+				if(d!=null)list.add(d);
+			}
+			values=list.toArray(new Double[list.size()]);
+		}
+		// Boolean
+		else if(type==CFTypes.TYPE_BOOLEAN) {
+			List<Boolean> list=new ArrayList<Boolean>();
+			Boolean b;
+			for(int i=0;i<res.length;i++){
+				b=Caster.toBoolean(res[i],null);
+				if(b!=null)list.add(b);
+			}
+			values=list.toArray(new Boolean[list.size()]);
+		}
+		// DateTime
+		else if(type==CFTypes.TYPE_DATETIME) {
+			List<DateTime> list=new ArrayList<DateTime>();
+			DateTime dt;
+			for(int i=0;i<res.length;i++){
+				dt=Caster.toDate(res[i],true,null,null);
+				if(dt!=null)list.add(dt);
+			}
+			values=list.toArray(new DateTime[list.size()]);
+		}
+		// Timespan
+		else if(type==CFTypes.TYPE_TIMESPAN) {
+			List<TimeSpan> list=new ArrayList<TimeSpan>();
+			TimeSpan ts;
+			for(int i=0;i<res.length;i++){
+				ts=Caster.toTimespan(res[i],null);
+				if(ts!=null)list.add(ts);
+			}
+			values=list.toArray(new TimeSpan[list.size()]);
+		}
+		
+		// TODO add support for other types ?
+		else {
+			valueList=null; 
+		}
+		return values;
+		
+	}
+	
+
 
 }

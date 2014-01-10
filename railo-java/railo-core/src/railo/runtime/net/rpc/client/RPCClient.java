@@ -69,7 +69,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
@@ -78,6 +77,7 @@ import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.UDFUtil;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMPropertyImpl;
 
@@ -148,10 +148,7 @@ public final class RPCClient implements Objects, Iteratorable{
         }
     }
 
-    /**
-     * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
-	public Object callWithNamedValues(PageContext pc, String methodName, Struct arguments) throws PageException {
+    public Object callWithNamedValues(PageContext pc, String methodName, Struct arguments) throws PageException {
         try {
             return (_callMethod(pc,pc.getConfig(),methodName,arguments,null));
         } 
@@ -169,16 +166,11 @@ public final class RPCClient implements Objects, Iteratorable{
         }
     }
 
-	/**
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
 		return callWithNamedValues(pc, methodName.getString(), args);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
     public Object call(PageContext pc, String methodName,Object[] arguments) throws PageException {
         try {
             return _callMethod(pc,pc.getConfig(),methodName,null,arguments);
@@ -197,10 +189,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		} 
     }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
-	 */
+	@Override
 	public Object call(PageContext pc, Collection.Key methodName, Object[] arguments) throws PageException {
 		return call(pc, methodName.getString(), arguments);
 	}
@@ -309,7 +298,7 @@ public final class RPCClient implements Objects, Iteratorable{
     		}
         }
         else {
-            UDFImpl.argumentCollection(namedArguments);
+        	UDFUtil.argumentCollection(namedArguments);
             if(inNames.size() != namedArguments.size())
                 throw new RPCException("Invalid arguments count for operation " + methodName+" ("+namedArguments.size()+" instead of "+inNames.size()+")");
             
@@ -431,7 +420,7 @@ public final class RPCClient implements Objects, Iteratorable{
 	            if(els!=null) {
 	            	clazz=mapComplex(pc,secondChanceConfig, call, tm, t);
 	            }
-	        	name=railo.runtime.type.List.last(el.getQName().getLocalPart(), '>');
+	        	name=railo.runtime.type.util.ListUtil.last(el.getQName().getLocalPart(), '>');
 	        	
 	        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
 	        	if(clazz==null)clazz=Object.class;
@@ -516,7 +505,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		StringBuffer sb=new StringBuffer();
 		String[] arr=null;
 		try {
-			arr = railo.runtime.type.List.toStringArray(railo.runtime.type.List.listToArray(raw, "./&="));
+			arr = railo.runtime.type.util.ListUtil.toStringArray(railo.runtime.type.util.ListUtil.listToArray(raw, "./&="));
 		} catch (PageException e) {}
 		String el;
 		for(int i=0;i<arr.length;i++){
@@ -553,7 +542,7 @@ public final class RPCClient implements Objects, Iteratorable{
             }
             if(!found) {
                 if(names.length>1)
-                    return "missing argument with name ["+name+"], needed argument are ["+railo.runtime.type.List.arrayToList(names,", ")+"]";
+                    return "missing argument with name ["+name+"], needed argument are ["+railo.runtime.type.util.ListUtil.arrayToList(names,", ")+"]";
                 return "missing argument with name ["+name+"]";
             }
         }
@@ -617,82 +606,39 @@ public final class RPCClient implements Objects, Iteratorable{
         return o;
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String propertyName) throws PageException {
-        return call(pc,"get"+propertyName, ArrayUtil.OBJECT_EMPTY);
-    }
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
-		return get(pc, key.getString());
+        return call(pc,"get"+key.getString(), ArrayUtil.OBJECT_EMPTY);
 	}
 
-    /**
-     *
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object get(PageContext pc, String propertyName, Object defaultValue) {
-        try {
-            return call(pc,"get"+StringUtil.ucFirst(propertyName), ArrayUtil.OBJECT_EMPTY);
+	@Override
+	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
+		try {
+            return call(pc,"get"+StringUtil.ucFirst(key.getString()), ArrayUtil.OBJECT_EMPTY);
         } catch (PageException e) {
             return defaultValue;
         }
-    }
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
-	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
-		return get(pc, key.getString(), defaultValue); 
 	}
-
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-        return call(pc,"set"+propertyName, new Object[]{value});
-    }
-
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	
+	@Override
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
-		return set(pc, propertyName.toString(), value);
+        return call(pc,"set"+propertyName.getString(), new Object[]{value});
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String propertyName, Object value) {
-        try {
-            return call(pc,"set"+propertyName, new Object[]{value});
+	@Override
+	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
+		try {
+            return call(pc,"set"+propertyName.getString(), new Object[]{value});
         } catch (PageException e) {
             return null;
         }
-    }
-
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
-	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
-		return setEL(pc, propertyName.toString(), value);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
     public boolean isInitalized() {
         return true;
     }
 
-    /**
-     *
-     * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-     */
+    @Override
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
@@ -704,10 +650,10 @@ public final class RPCClient implements Objects, Iteratorable{
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable box = new DumpTable("webservice","#ccccff","#cccc00","#000000");
-        box.setTitle("Web Service");
-        if(dp.getMetainfo())box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
-        DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
+    	DumpTable functions = new DumpTable("webservice","#ccccff","#cccc00","#000000");
+    	functions.setTitle("Web Service (WSDL/Soap)");
+        if(dp.getMetainfo())functions.setComment(wsdlUrl);
+        //DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
         
         
         javax.wsdl.Service service = getWSDLService();
@@ -741,8 +687,8 @@ public final class RPCClient implements Objects, Iteratorable{
             		_toHTMLOperation(doc.toString(),(Parameters)bEntry.getParameters().get(tmpOp)));
         }
         
-        box.appendRow(1,new SimpleDumpData(""),functions);
-        return box;
+        //box.appendRow(1,new SimpleDumpData(""),functions);
+        return functions;
     }
 
     private DumpData _toHTMLOperation(String doc, Parameters parameters) {
@@ -796,93 +742,67 @@ public final class RPCClient implements Objects, Iteratorable{
         return strType;
 	}
 
-	/**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+	@Override
     public String castToString() throws ExpressionException {
         throw new RPCException("can't cast Webservice to a string");
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new RPCException("can't cast Webservice to a boolean");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new RPCException("can't cast Webservice to a number");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws RPCException {
         throw new RPCException("can't cast Webservice to a Date Object");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Webservice Object with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Webservice Object with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Webservice Object with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Webservice Object with a String");
 	}
 
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
+    @Override
     public Iterator<Collection.Key> keyIterator() {
     	List<Collection.Key> list=new ArrayList<Collection.Key>();
     	javax.wsdl.Service service = null;
@@ -916,9 +836,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		return new KeyAsStringIterator(keyIterator());
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		return new ObjectsIterator(keyIterator(),this);
 	}

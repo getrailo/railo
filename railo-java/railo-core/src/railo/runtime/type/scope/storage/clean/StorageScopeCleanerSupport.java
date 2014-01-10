@@ -30,9 +30,7 @@ public abstract class StorageScopeCleanerSupport implements StorageScopeCleaner 
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeCleaner#init(railo.runtime.type.scope.storage.StorageScopeEngine)
-	 */
+	@Override
 	public void init(StorageScopeEngine engine){
 		this.engine=engine;
 	}

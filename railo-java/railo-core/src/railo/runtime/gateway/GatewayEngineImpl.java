@@ -8,10 +8,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opencfml.eventgateway.Gateway;
-import org.opencfml.eventgateway.GatewayEngine;
-import org.opencfml.eventgateway.GatewayException;
-
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
 import railo.commons.lang.ClassException;
@@ -29,6 +25,7 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.Collection;
@@ -37,7 +34,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
 
-public class GatewayEngineImpl implements GatewayEngine {
+public class GatewayEngineImpl implements GatewayEnginePro {
 
 	private static final Object OBJ = new Object();
 
@@ -54,17 +51,17 @@ public class GatewayEngineImpl implements GatewayEngine {
 		
 	}
 	
-	public void addEntries(Config config,Map<String, GatewayEntry> entries) throws ClassException, PageException,GatewayException {
+	public void addEntries(Config config,Map<String, GatewayEntry> entries) throws ClassException, PageException,IOException {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		while(it.hasNext()){
 			addEntry(config,it.next().getValue());
 		}
 	}
 
-	public void addEntry(Config config,GatewayEntry ge) throws ClassException, PageException,GatewayException {
+	public void addEntry(Config config,GatewayEntry ge) throws ClassException, PageException,IOException {
 		String id=ge.getId().toLowerCase().trim();
 		GatewayEntry existing=entries.get(id);
-		Gateway g=null;
+		GatewayPro g=null;
 		
 		// does not exist
 		if(existing==null) {
@@ -73,7 +70,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		// exist but changed
 		else if(!existing.equals(ge)){
 			g=existing.getGateway();
-			if(g.getState()==Gateway.RUNNING) g.doStop();
+			if(g.getState()==GatewayPro.RUNNING) g.doStop();
 			entries.put(id,load(config,ge));
 		}
 		// not changed
@@ -95,13 +92,13 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void remove(GatewayEntry ge) {
 		String id=ge.getId().toLowerCase().trim();
 		GatewayEntry existing=entries.remove(id);
-		Gateway g=null;
+		GatewayPro g=null;
 		
 		// does not exist
 		if(existing!=null) {
 			g=existing.getGateway();
 			try{
-				if(g.getState()==Gateway.RUNNING) g.doStop();
+				if(g.getState()==GatewayPro.RUNNING) g.doStop();
 			}
 			catch(Throwable t){}
 		}
@@ -134,9 +131,9 @@ public class GatewayEngineImpl implements GatewayEngine {
 	 * @return
 	 * @throws PageException
 	 */
-	public String sendMessage(String gatewayId, Struct data) throws PageException,GatewayException {
-		Gateway g = getGateway(gatewayId);
-		if(g.getState()!=Gateway.RUNNING) throw new GatewayException("Gateway ["+gatewayId+"] is not running");
+	public String sendMessage(String gatewayId, Struct data) throws PageException,IOException {
+		GatewayPro g = getGateway(gatewayId);
+		if(g.getState()!=GatewayPro.RUNNING) throw new GatewayException("Gateway ["+gatewayId+"] is not running");
 		return g.sendMessage(data);
 	}
 	
@@ -148,7 +145,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void start(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.START);
 	}
-	private void start(Gateway gateway) {
+	private void start(GatewayPro gateway) {
 		executeThread(gateway,GatewayThread.START);
 	}
 
@@ -160,7 +157,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void stop(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.STOP);
 	}
-	private void stop(Gateway gateway) {
+	private void stop(GatewayPro gateway) {
 		executeThread(gateway,GatewayThread.STOP);
 	}
 	
@@ -171,15 +168,15 @@ public class GatewayEngineImpl implements GatewayEngine {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		Entry<String, GatewayEntry> entry;
 		GatewayEntry ge;
-		Gateway g;
+		GatewayPro g;
 		while(it.hasNext()){
 			entry = it.next();
 			ge = entry.getValue();
 			g=ge.getGateway();
-			if(g.getState()==Gateway.RUNNING) {
+			if(g.getState()==GatewayPro.RUNNING) {
 				try {
 					g.doStop();
-				} catch (GatewayException e) {
+				} catch (IOException e) {
 					log(g, LOGLEVEL_ERROR, e.getMessage());
 				}
 			}
@@ -194,7 +191,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		Entry<String, GatewayEntry> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			if(entry.getValue().getGateway().getState()==Gateway.RUNNING) 
+			if(entry.getValue().getGateway().getState()==GatewayPro.RUNNING) 
 				stop(entry.getValue().getGateway());
 		}
 		entries.clear();
@@ -209,7 +206,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		executeThread(gatewayId,GatewayThread.RESTART);
 	}
 	
-	private Gateway getGateway(String gatewayId) throws PageException {
+	private GatewayPro getGateway(String gatewayId) throws PageException {
 		return getGatewayEntry(gatewayId).getGateway();
 	}
 	
@@ -228,7 +225,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		
 		throw new ExpressionException("there is no gateway instance with id ["+gatewayId+"], available gateway instances are ["+sb+"]");
 	}
-	private GatewayEntry getGatewayEntry(Gateway gateway)  {
+	private GatewayEntry getGatewayEntry(GatewayPro gateway)  {
 		String gatewayId=gateway.getId();
 		// it must exist, because it only can come from here
 		return entries.get(gatewayId);
@@ -238,7 +235,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		new GatewayThread(this,getGateway(gatewayId),action).start();
 	}
 
-	private void executeThread(Gateway g, int action) {
+	private void executeThread(GatewayPro g, int action) {
 		new GatewayThread(this,g,action).start();
 	}
 	
@@ -247,47 +244,57 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	public static int toIntState(String state, int defaultValue) {
 		state=state.trim().toLowerCase();
-		if("running".equals(state))	return Gateway.RUNNING;
-		if("started".equals(state)) return Gateway.RUNNING;
-		if("run".equals(state)) 	return Gateway.RUNNING;
+		if("running".equals(state))	return GatewayPro.RUNNING;
+		if("started".equals(state)) return GatewayPro.RUNNING;
+		if("run".equals(state)) 	return GatewayPro.RUNNING;
 		
-		if("failed".equals(state)) 	return Gateway.FAILED;
-		if("starting".equals(state))return Gateway.STARTING;
-		if("stopped".equals(state)) return Gateway.STOPPED;
-		if("stopping".equals(state))return Gateway.STOPPING;
+		if("failed".equals(state)) 	return GatewayPro.FAILED;
+		if("starting".equals(state))return GatewayPro.STARTING;
+		if("stopped".equals(state)) return GatewayPro.STOPPED;
+		if("stopping".equals(state))return GatewayPro.STOPPING;
 		
 		return defaultValue;
 	}
 	
 	public static String toStringState(int state, String defaultValue) {
-		if(Gateway.RUNNING==state)	return "running";
-		if(Gateway.FAILED==state)	return "failed";
-		if(Gateway.STOPPED==state)	return "stopped";
-		if(Gateway.STOPPING==state)	return "stopping";
-		if(Gateway.STARTING==state)	return "starting";
+		if(GatewayPro.RUNNING==state)	return "running";
+		if(GatewayPro.FAILED==state)	return "failed";
+		if(GatewayPro.STOPPED==state)	return "stopped";
+		if(GatewayPro.STOPPING==state)	return "stopping";
+		if(GatewayPro.STARTING==state)	return "starting";
 			
 		return defaultValue;
 	}
 
-	public boolean invokeListener(Gateway gateway, String method, Map data) {// FUTUTE add generic type to interface
+	public boolean invokeListener(GatewayPro gateway, String method, Map data) {// FUTUTE add generic type to interface
+		return invokeListener(gateway.getId(), method, data);
+	}
+
+	public boolean invokeListener(String gatewayId, String method, Map data) {// do not add this method to loade, it can be removed with Railo 5
 		data=GatewayUtil.toCFML(data);
 		
-		GatewayEntry entry = getGatewayEntry(gateway);
+		GatewayEntry entry;
+		try {
+			entry = getGatewayEntry(gatewayId);
+		}
+		catch (PageException pe) {
+			throw new PageRuntimeException(pe);
+		}
 		String cfcPath = entry.getListenerCfcPath();
 		if(!Util.isEmpty(cfcPath,true)){
 			try {
-				if(!callOneWay(cfcPath,gateway.getId(), method, Caster.toStruct(data,null,false), false))
-					log(gateway,LOGLEVEL_ERROR, "function ["+method+"] does not exist in cfc ["+toRequestURI(cfcPath)+"]");
+				if(!callOneWay(cfcPath,gatewayId, method, Caster.toStruct(data,null,false), false))
+					log(gatewayId,LOGLEVEL_ERROR, "function ["+method+"] does not exist in cfc ["+toRequestURI(cfcPath)+"]");
 				else
 					return true;
 			} 
 			catch (PageException e) {
 				e.printStackTrace();
-				log(gateway,LOGLEVEL_ERROR, e.getMessage());
+				log(gatewayId,LOGLEVEL_ERROR, e.getMessage());
 			}
 		}
 		else
-			log(gateway,LOGLEVEL_ERROR, "there is no listener cfc defined");
+			log(gatewayId,LOGLEVEL_ERROR, "there is no listener cfc defined");
 		return false;
 	}
 	
@@ -382,14 +389,16 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return pc;
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.GatewayEngine#toRequestURI(java.lang.String)
-	 */
 	public String toRequestURI(String cfcPath) {
 		return GatewayUtil.toRequestURI(cfcPath);
 	}
 
-	public void log(Gateway gateway, int level, String message) {
+	@Override
+	public void log(GatewayPro gateway, int level, String message) {
+		log(gateway.getId(), level, message);
+	}
+	
+	public void log(String gatewayId, int level, String message) {
 		int l=level;
 		switch(level){
 		case LOGLEVEL_INFO:l=Log.LEVEL_INFO;
@@ -403,7 +412,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		case LOGLEVEL_WARN:l=Log.LEVEL_WARN;
 		break;
 		}
-		log.log(l, "Gateway:"+gateway.getId(), message);
+		log.log(l, "Gateway:"+gatewayId, message);
 	}
 	
 

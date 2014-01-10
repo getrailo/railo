@@ -1,6 +1,7 @@
-<cfsetting showdebugoutput="no" enablecfoutputonly="yes">
+<cfsetting showdebugoutput="false">
 
-<cfparam name="session.alwaysNew" default="false" type="boolean">
+<cfparam name="session.alwaysNew" default="true" type="boolean">
+
 
 <cffunction name="getAviableVersion" output="false">
 	<cfargument name="update">
@@ -18,22 +19,28 @@
 	</cftry>
 </cffunction>
 
-<cfset adminType=url.adminType>
-<cfset password=session["password"&adminType]>
-<cfset id="rai:"&hash(adminType&":"&password)>
-<cfif not structKeyExists(session,id)>
-	<cfset session[id]={}>
-</cfif>
+
+
 <cftry>
-	<cfif not structKeyExists(session[id],"content") or not structKeyExists(session[id],"last") or DateDiff("m",session[id].last,now()) GT 5
-	or session.alwaysNew>
+
+	<cfset adminType=url.adminType>
+	<cfset password=session["password"&adminType]>
+	<cfset id="rai:"&hash(adminType&":"&password)>
+	<cfif not structKeyExists(session,id)>
+		<cfset session[id]={}>
+	</cfif>
+
+	<cfif true or !structKeyExists(session[id],"content") 
+		|| !structKeyExists(session[id],"last") 
+		|| DateDiff("m",session[id].last,now()) GT 5
+		|| session.alwaysNew>
 		<cfinclude template="web_functions.cfm">
 		
 		<cfset self = adminType & ".cfm">
-		<cfset stText.services.update.update="A patch {avaiable} is available for your current version {current}.">
+		<cfset stText.services.update.update="A patch <b>({available})</b> is available for your current version <b>({current})</b>.">
 
-		<!--- Core --->
-		<cfif adminType eq "server">
+	<!--- Core --->
+		<cfif adminType == "server">
 			<cfadmin 
 				action="getUpdate"
 				type="#adminType#"
@@ -44,7 +51,7 @@
 			<cfset hasUpdate=curr LT avi>
 		</cfif>
 
-		<!--- Extensions --->
+	<!--- Extensions --->
 		<cfparam name="err" default="#struct(message:"",detail:"")#">
 		<cfinclude template="extension.functions.cfm">
 		<cfadmin 
@@ -52,6 +59,7 @@
 			type="#adminType#"
 			password="#password#"
 			returnVariable="extensions"><!--- #session["password"&url.adminType]# --->
+		
 		<cfif extensions.recordcount GT 0>
 			<cfadmin 
 				action="getExtensionProviders"
@@ -70,40 +78,82 @@
 					<cfset dn="">
 					<cfset link="#self#?action=extension.applications&action2=detail&uid=#uid#">
 					<cfoutput>
-						<a href="#link#" style="text-decoration:none;">- #extensions.label#</a><br />
+						<a href="#link#" style="text-decoration:none;">- #extensions.label#</a><br>
 					</cfoutput>
 				</cfloop>
 			</cfsavecontent>
 		</cfif>
 
+	<!--- Promotion --->
+		<cfset existingExtensions={}>
+		<cfloop query="#extensions#">
+			<cfset existingExtensions[createId(extensions.provider,extensions.id)]=extensions.id>
+		</cfloop>
+		<cfset promotion={level:0}>
+		
+		<cfset request.adminType=url.adminType>
+		<cfinclude template="extension.functions.cfm">
+		<cfset data=loadAllProvidersData(50000,false)>
+						
+		<cfloop collection="#data#" item="provider" index="providerURL">
+			<cfif not isSimpleValue(provider)>
+				<cfset qry=provider.listApplications>
+				<cfloop query="#provider.listApplications#">
+					<cfset uid=createId(providerURL,qry.id)>
+					<cfif	(qry.type EQ request.admintype or  qry.type EQ "all") and
+							!structKeyExists(existingExtensions,uid) and
+							isDefined('qry.promotionLevel') and 
+							isNumeric(qry.promotionLevel) and
+							qry.promotionLevel GT promotion.level>
+						<cfset promotion.txt=qry.promotionText>
+						<cfset promotion.uri="server.cfm?action=extension.applications&action2=detail&uid=#uid#">
+						<cfset promotion.uid=uid>
+						<cfset promotion.level=qry.promotionLevel>
+						<cfset promotion.label=qry.label>
+						<cfset promotion.price=qry.price>
+						<cfif len(qry.image)><cfset promotion.img=getDumpNail(qry.image,230,100)><cfelse><cfset promotion.img=""></cfif>
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfloop>
+
+
+
+
 		<cfsavecontent variable="content" trim="true">
 			<cfoutput>
-				<cfif adminType eq "server">
-					<h3>
-						<a href="server.cfm?action=services.update" style="text-decoration:none;">Core</a>
-					</h3>
-					<div class="comment">
-						<cfif hasUpdate>
-							#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#<br />
-						<cfelse>
-							Your core is up to date!
-						</cfif>
+				
+				<!--- Core --->
+				<cfif adminType == "server" and hasUpdate>
+					<div class="error">
+						<a href="server.cfm?action=services.update" style="color:red;text-decoration:none;">
+						#replace( stText.services.update.update, { '{available}': avi, '{current}': curr } )#
+						</a>
 					</div>
 				</cfif>
-
-				<h3>
-					<a href="#self#?action=extension.applications" style="text-decoration:none;">Extensions</a>
-				</h3>
-				<div class="comment">
-					<cfif not extensions.recordcount>
-						You have no extensions installed yet.
-					<cfelseif len(ext)>
-					   There are some updates available for your installed Extensions.<br />
-					   #ext#
-					<cfelse>
-						All your Extensions are up to date!
-					</cfif>
+				
+				<!--- Extension --->
+				<cfif extensions.recordcount and len(ext)>
+				<div class="error">
+					<a href="#self#?action=extension.applications" style="color:red;text-decoration:none;">
+						There are some updates available for your installed Extensions.<br>
+						#ext#
+					</a>
 				</div>
+				</cfif>
+				
+				<!--- Promotion<div class="normal"></div> --->
+				<cfif promotion.level GT 0>
+					
+					<h3><a href="#promotion.uri#">#promotion.label#</a></h3>
+					<cfif len(promotion.img)>
+						<img src="#promotion.img#"  /><br>
+					</cfif>
+					<span class="comment">#promotion.txt#</span>
+					
+				</cfif>
+				
+				
 			</cfoutput>
 		</cfsavecontent>
 		<cfset session[id].content=content>
@@ -115,9 +165,11 @@
 	<cfoutput>#content#</cfoutput>
 	
 	<cfcatch>
-		<div class="error">
-			An error occured while retrieving update information:
-			<cfoutput>#cfcatch.message# #cfcatch.detail#</cfoutput>
-		</div>
+		<cfoutput>
+			<div class="error">
+				Failed to retrieve update information:
+				#cfcatch.message# #cfcatch.detail#
+			</div>
+		</cfoutput>
 	</cfcatch>
 </cftry>

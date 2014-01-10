@@ -14,6 +14,7 @@ import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.IgnoreSystemFiles;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.http.HTTPResource;
@@ -21,12 +22,13 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public final class ResourceUtil {
 
@@ -179,17 +181,18 @@ public final class ResourceUtil {
 	        if(StringUtil.startsWith(path,'/')) {
 	        	PageContextImpl pci=(PageContextImpl) pc;
 	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
-	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),path,false,pci.useSpecialMappings(),true);
-	        	if(!ArrayUtil.isEmpty(reses)) {
-	        		for(int i=0;i<reses.length;i++){
-	        			res=reses[i];
-	        			if(res.exists()) return res;
+	        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), path, false, pci.useSpecialMappings(), true);
+	        	//Resource[] reses = cwi.getPhysicalResourcesX(pc,pc.getApplicationContext().getMappings(),path,false,pci.useSpecialMappings(),true);
+	        	if(!ArrayUtil.isEmpty(sources)) {
+	        		
+	        		for(int i=0;i<sources.length;i++){
+	        			if(sources[i].exists()) return sources[i].getResource();
 	        		}
 	        	}
 	        	//res = pc.getPhysical(path,true);
 	            //if(res!=null && res.exists()) return res;
 	        }
-	        res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(path));
+	        res=getRealResource(pc, path, res);
 	        if(res.exists()) return res;
     	//}
         
@@ -243,24 +246,25 @@ public final class ResourceUtil {
         if(res.isAbsolute() && (res.exists() || parentExists(res))) {
         	return res;
         }
-        //if(allowRealpath){
-	        if(StringUtil.startsWith(destination,'/')) {
-	        	PageContextImpl pci=(PageContextImpl) pc;
-	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
-	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
-	        	if(!ArrayUtil.isEmpty(reses)) {
-	        		for(int i=0;i<reses.length;i++){
-	        			res=reses[i];
-	        			if(res.exists() || parentExists(res)) return res;
-	        		}
-	        	}
-	            //res = pc.getPhysical(destination,true);
-	            //if(res!=null && (res.exists() || parentExists(res))) return res;
-	        }
-	    	res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination));
-	        if(res!=null && (res.exists() || parentExists(res))) return res;
-        //}
-    
+        
+        if(StringUtil.startsWith(destination,'/')) {
+        	PageContextImpl pci=(PageContextImpl) pc;
+        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), destination, 
+        			false, pci.useSpecialMappings(),true);
+        	//Resource[] reses = cwi.getPhysicalResourcesX(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
+        	if(!ArrayUtil.isEmpty(sources)) {
+        		for(int i=0;i<sources.length;i++){
+        			if(sources[i].exists() || parentExists(sources[i])) {
+        				res=sources[i].getResource();
+        				if(res!=null) return res;
+        			}
+        		}
+        	}
+        }
+        res=getRealResource(pc, destination, res);
+        if(res!=null && (res.exists() || parentExists(res))) return res;
+        
         throw new ExpressionException("parent directory "+res.getParent()+"  for file "+destination+" doesn't exist");
            
     }
@@ -291,8 +295,15 @@ public final class ResourceUtil {
         if(!(isUNC=isUNCPath(destination)) && StringUtil.startsWith(destination,'/')) {
         	PageContextImpl pci=(PageContextImpl) pc;
         	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
-        	Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
-        	if(!ArrayUtil.isEmpty(arr)) return arr[0];
+        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), destination, false, 
+        			pci.useSpecialMappings(), SystemUtil.isWindows());
+        	//Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
+        	if(!ArrayUtil.isEmpty(sources)) {
+        		for(int i=0;i<sources.length;i++){
+        			res=sources[i].getResource();
+        			if(res!=null) return res;
+        		}
+        	}
         	//Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
             //if(res2!=null) return res2;
         }
@@ -302,18 +313,25 @@ public final class ResourceUtil {
         else res=pc.getConfig().getResource(destination);
         if(res.isAbsolute()) return res;
         
-        
-        try {
-        	return pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination).getCanonicalResource();
-        } 
-        catch (IOException e) {}
-        return res;
+        return getRealResource(pc,destination,res);
     }
-    
-	
 
-    private static boolean isUNCPath(String path) {
-        return SystemUtil.isWindows() && path.startsWith("//") ;
+    private static Resource getRealResource(PageContext pc, String destination, Resource defaultValue) {
+    	PageSource ps = pc.getCurrentPageSource();
+    	if(ps!=null) {
+    		ps=ps.getRealPage(destination);
+    		
+    		if(ps!=null){
+    			Resource res = ps.getResource();
+    			if(res!=null)return getCanonicalResourceEL(res);
+    		}
+    		
+    	}
+    	return defaultValue;
+	}
+    
+	public static boolean isUNCPath(String path) {
+        return SystemUtil.isWindows() && ( path.startsWith("//") || path.startsWith( "\\\\" ) );
 	}
     
     /**
@@ -450,7 +468,7 @@ public final class ResourceUtil {
         
         String[] arr;
 		try {
-			arr = List.toStringArray(List.listToArrayRemoveEmpty(attributes.toLowerCase(),','));
+			arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(attributes.toLowerCase(),','));
 		} 
 		catch (PageException e) {
 			arr=new String[0];
@@ -950,6 +968,10 @@ public final class ResourceUtil {
         res=res.getParentResource();
         return res!=null && res.exists();
     }
+    private static boolean parentExists(PageSource ps) {
+    	PageSource p = ((PageSourceImpl)ps).getParent();
+    	return p!=null && p.exists();
+    }
 
 	public static void removeChildren(Resource res) throws IOException {
 		removeChildren(res, (ResourceFilter)null);
@@ -1035,19 +1057,27 @@ public final class ResourceUtil {
 		}
 	}
 	
-	public static void moveTo(Resource src, Resource dest) throws IOException {
+	public static void moveTo(Resource src, Resource dest, boolean useResourceMethod) throws IOException {
 		ResourceUtil.checkMoveToOK(src, dest);
 		
 		if(src.isFile()){
-			if(!dest.exists()) dest.createFile(false);
-			IOUtil.copy(src,dest);
-			src.remove(false);
+			try{
+				if(useResourceMethod)src.moveTo(dest);
+			}
+			catch(IOException e){
+				useResourceMethod=false;
+			}
+			if(!useResourceMethod) {
+				if(!dest.exists()) dest.createFile(false);
+				IOUtil.copy(src,dest);
+				src.remove(false);
+			}
 		}
 		else {
 			if(!dest.exists()) dest.createDirectory(false);
 			Resource[] children = src.listResources();
 			for(int i=0;i<children.length;i++){
-				moveTo(children[i],dest.getRealResource(children[i].getName()));
+				moveTo(children[i],dest.getRealResource(children[i].getName()),useResourceMethod);
 			}
 			src.remove(false);
 		}
@@ -1084,6 +1114,26 @@ public final class ResourceUtil {
 		return 0;
 	}
 
+	public static int getChildCount(Resource res) {
+		return getChildCount(res, null);
+	}
+	
+	public static int getChildCount(Resource res, ResourceFilter filter) {
+		if(res.isFile()) {
+			return 1;
+		}
+		else if(res.isDirectory()) {
+			int size=0;
+			Resource[] children = filter==null?res.listResources():res.listResources(filter);
+			for(int i=0;i<children.length;i++) {
+				size+=getChildCount(children[i]);
+			}
+			return size;
+		}
+		
+		return 0;
+	}
+
 
 	/**
 	 * return if Resource is empty, means is directory and has no children or a empty file,
@@ -1092,15 +1142,26 @@ public final class ResourceUtil {
 	 * @return
 	 */
 	public static boolean isEmpty(Resource res) {
-		return isEmptyDirectory(res) || isEmptyFile(res);
+		return isEmptyDirectory(res,null) || isEmptyFile(res);
 	}
 
-	public static boolean isEmptyDirectory(Resource res) {
+	/**
+	 * return Boolean.True when directory is empty, Boolean.FALSE when directory s not empty and null if directory does not exists
+	 * @param res
+	 * @return
+	 */
+	public static boolean isEmptyDirectory(Resource res, ResourceFilter filter) {
 		if(res.isDirectory()) {
-			String[] children = res.list();
-			return children==null || children.length==0;
+			Resource[] children = filter==null? res.listResources(): res.listResources(filter);
+			if(children==null || children.length==0) return true;
+			
+			for(int i=0;i<children.length;i++){
+				if(children[i].isFile()) return false;
+				if(children[i].isDirectory() &&  !isEmptyDirectory(children[i], filter)) return false;
+			}
+			
 		}
-		return false;
+		return true;
 	}
 	
 	public static boolean isEmptyFile(Resource res) {
@@ -1181,7 +1242,7 @@ public final class ResourceUtil {
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
-				else throw new IOException("can't create file ["+resource.getPath()+"], missng parent directory");
+				else throw new IOException("can't create file ["+resource.getPath()+"], missing parent directory");
 			}
 			else if(parent.isFile()) {
 				throw new IOException("can't create directory ["+resource.getPath()+"], parent is a file");
@@ -1209,7 +1270,7 @@ public final class ResourceUtil {
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
-				else throw new IOException("can't create file ["+resource.getPath()+"], missng parent directory");
+				else throw new IOException("can't create file ["+resource.getPath()+"], missing parent directory");
 			}
 			else if(parent.isFile()) {
 				throw new IOException("can't create file ["+resource.getPath()+"], parent is a file");
@@ -1355,6 +1416,26 @@ public final class ResourceUtil {
     		}
     	}
     	return list.toArray(new Resource[list.size()]);
+	}
+	public static void removeEmptyFolders(Resource dir) throws IOException {
+		if(!dir.isDirectory()) return;
+		
+		Resource[] children = dir.listResources(IgnoreSystemFiles.INSTANCE);
+		
+		if(!ArrayUtil.isEmpty(children)) {
+			boolean hasFiles=false;
+			for(int i=0;i<children.length;i++){
+				if(children[i].isDirectory()) removeEmptyFolders(children[i]);
+				else if(children[i].isFile()) {
+					hasFiles=true;
+				}
+			}
+			if(!hasFiles){
+				children = dir.listResources(IgnoreSystemFiles.INSTANCE);
+			}
+			
+		}
+		if(ArrayUtil.isEmpty(children)) dir.remove(true);
 	}
 
 }

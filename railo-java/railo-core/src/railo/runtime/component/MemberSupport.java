@@ -21,9 +21,7 @@ public abstract class MemberSupport implements Serializable,Member,Duplicable {
         //this.component=component;
     }
     
-	/**
-	 * @see railo.runtime.component.Member#getAccess()
-	 */
+	@Override
 	public int getAccess() {
 		return access;
 	}

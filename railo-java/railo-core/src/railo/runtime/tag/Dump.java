@@ -40,9 +40,7 @@ public final class Dump extends TagImpl {
 	private boolean abort=false;
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 	    super.release();
 		var=null;
@@ -137,9 +135,7 @@ public final class Dump extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    if(var==null && eval!=null) {
 	        var=Evaluate.call(pageContext,new Object[]{eval});
@@ -151,9 +147,7 @@ public final class Dump extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

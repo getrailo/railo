@@ -1,6 +1,6 @@
 /**
  * Implements the CFML Function createobject
- * FUTURE neue attr unterstŸtzen
+ * FUTURE neue attr unterstï¿½tzen
  */
 package railo.runtime.functions.other;
 
@@ -8,27 +8,27 @@ import java.util.ArrayList;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.com.COMObject;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionNotSupported;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
-import railo.runtime.listener.JavaSettings;
+import railo.runtime.net.http.HTTPClient;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public final class CreateObject implements Function {
 	public static Object call(PageContext pc , String cfcName) throws PageException {
@@ -54,7 +54,7 @@ public final class CreateObject implements Function {
 				return doCOM(pc,className);
 			}
         // Component
-            if(type.equals("component")) {
+            if(type.equals("component") || type.equals("cfc")) {
                 return doComponent(pc,className);
             }
         // Webservice
@@ -81,6 +81,30 @@ public final class CreateObject implements Function {
             		
             	}
                 return doWebService(pc,className,user,pass,proxy);
+            }
+            if(type.equals("http")) {
+            	String user=null;
+            	String pass=null;
+            	ProxyDataImpl proxy=null;
+            	if(context!=null){
+            		Struct args=(serverName!=null)?Caster.toStruct(serverName):Caster.toStruct(context);
+            		// basic security
+            		user=Caster.toString(args.get("username",null));
+            		pass=Caster.toString(args.get("password",null));
+            		
+            		// proxy
+            		String proxyServer=Caster.toString(args.get("proxyServer",null));
+            		String proxyPort=Caster.toString(args.get("proxyPort",null));
+            		String proxyUser=Caster.toString(args.get("proxyUser",null));
+            		if(StringUtil.isEmpty(proxyUser)) proxyUser=Caster.toString(args.get("proxyUsername",null));
+            		String proxyPassword=Caster.toString(args.get("proxyPassword",null));
+            		
+            		if(!StringUtil.isEmpty(proxyServer)){
+            			proxy=new ProxyDataImpl(proxyServer,Caster.toIntValue(proxyPort,-1),proxyUser,proxyPassword);
+            		}            		
+            		
+            	}
+                return doHTTP(pc,className,user,pass,proxy);
             }
         // .net
             if(type.equals(".net") || type.equals("dotnet")) {
@@ -113,7 +137,7 @@ public final class CreateObject implements Function {
         	//Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
         		if(StringUtil.isEmpty(delimiter))delimiter=",";
-        		String[] arrPathes = List.trimItems(List.toStringArray(List.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
+        		String[] arrPathes = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
         		
         		for(int i=0;i<arrPathes.length;i++) {
         			resources.add(ResourceUtil.toResourceExisting(pc,arrPathes[i]));
@@ -123,7 +147,23 @@ public final class CreateObject implements Function {
         	// load class
         	try	{
         		ClassLoader cl = resources.size()==0?pci.getClassLoader():pci.getClassLoader(resources.toArray(new Resource[resources.size()]));
-    			Class clazz = ClassUtil.loadClass(cl,className);
+        		Class clazz=null;
+        		try{
+    				clazz = ClassUtil.loadClass(cl,className);
+    			}
+    			catch(ClassException ce) {
+    				// try java.lang if no package definition
+    				if(className.indexOf('.')==-1) {
+    					try{
+    	    				clazz = ClassUtil.loadClass(cl,"java.lang."+className);
+    	    			}
+    	    			catch(ClassException e) {
+    	    				throw ce;
+    	    			}
+    				}
+				    else throw ce;
+    			}
+    			
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 
 			catch (Exception e) {
@@ -156,12 +196,18 @@ public final class CreateObject implements Function {
     } 
     
     public static Object doWebService(PageContext pc,String wsdlUrl) throws PageException {
-    	// TODO CF8 impl. alle neuen attribute fŸr wsdl
+    	// TODO CF8 impl. all new attributes for wsdl
     	return new RPCClient(wsdlUrl);
     } 
-    
+
     public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
-    	// TODO CF8 impl. alle neuen attribute fŸr wsdl
+    	// TODO CF8 impl. all new attributes for wsdl
     	return new RPCClient(wsdlUrl,username,password,proxy);
+    } 
+    public static Object doHTTP(PageContext pc,String httpUrl) throws PageException {
+    	return new HTTPClient(httpUrl,null,null,null);
+    } 
+    public static Object doHTTP(PageContext pc,String httpUrl,String username,String password, ProxyData proxy) throws PageException {
+    	return new HTTPClient(httpUrl,username,password,proxy);
     } 
 }

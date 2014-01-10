@@ -21,13 +21,14 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
+import railo.transformer.bytecode.statement.FlowControlRetry;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
-public final class TagTry extends TagBase {
+public final class TagTry extends TagBase implements FlowControlRetry {
 
 	private static final ExprString ANY=LitString.toExprString("any");
 
@@ -40,12 +41,6 @@ public final class TagTry extends TagBase {
 			"toPageException",
 			Types.PAGE_EXCEPTION,
 			new Type[]{Types.THROWABLE});
-	
-	// PageException setCatch(Throwable t)
-	/*private static final Method SET_CATCH_T = new Method(
-			"setCatch",
-			Types.PAGE_EXCEPTION,
-			new Type[]{Types.THROWABLE});*/
 	
 	
 	public static final Method SET_CATCH_PE = new Method(
@@ -72,6 +67,7 @@ public final class TagTry extends TagBase {
 	private FlowControlFinal fcf;
 
 	private boolean checked;
+	private Label begin = new Label();
 
 	
 	public TagTry(Position start,Position end) {
@@ -84,6 +80,7 @@ public final class TagTry extends TagBase {
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
+		adapter.visitLabel(begin);
 		Body tryBody=new BodyBase();
 		List<Tag> catches=new ArrayList<Tag>();
 		Tag tmpFinal=null;
@@ -196,7 +193,7 @@ public final class TagTry extends TagBase {
 				adapter.invokeVirtual(Types.PAGE_EXCEPTION, TYPE_EQUAL);
 				
 				adapter.ifZCmp(Opcodes.IFEQ, endIf);
-					catchBody(bc,adapter,tag,pe,true);
+					catchBody(bc,adapter,tag,pe,true,true);
 					
 	            adapter.visitJumpInsn(Opcodes.GOTO, endAllIfs);
 	            
@@ -206,7 +203,7 @@ public final class TagTry extends TagBase {
 			}
 			// else 
 			if(tagElse!=null){
-				catchBody(bc, adapter, tagElse, pe, true);
+				catchBody(bc, adapter, tagElse, pe, true,true);
 			}
 			else{
 				// pc.setCatch(pe,true);
@@ -232,12 +229,12 @@ public final class TagTry extends TagBase {
 	}
 	
 
-	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth) throws BytecodeException {
+	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth, boolean store) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
         adapter.loadLocal(pe);
         adapter.push(caugth);
-        adapter.push(true);
+        adapter.push(store);
         adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
 		tag.getBody().writeOut(bc);
     	
@@ -270,6 +267,16 @@ public final class TagTry extends TagBase {
 		}
 			
 		return fcf;
+	}
+
+	@Override
+	public Label getRetryLabel() {
+		return begin;
+	}
+
+	@Override
+	public String getLabel() {
+		return null;
 	}
 
 

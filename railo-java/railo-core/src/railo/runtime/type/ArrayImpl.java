@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -80,43 +81,31 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return dimension;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws ExpressionException {
         return getE(Caster.toIntValue(key));
 	}	
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
         return getE(Caster.toIntValue(key.getString()));
 	}	
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		double index=Caster.toIntValue(key,Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return defaultValue;
 	    return get((int)index,defaultValue);
 	}	
 	
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		double index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return defaultValue;
 	    return get((int)index,defaultValue);
 	}		
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+	@Override
 	public synchronized Object get(int key, Object defaultValue) {
 		if(key>size || key<1) {
 			if(dimension>1) {
@@ -134,14 +123,12 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 				ai.dimension=dimension-1;
 				return setEL(key,ai);
 			}
-			return defaultValue;
+			if(!NullSupportHelper.full())  return defaultValue;
 		}
 		return o;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
+	@Override
 	public synchronized Object getE(int key) throws ExpressionException {
 		if(key<1) {
 			throw invalidPosition(key);
@@ -152,6 +139,11 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		}
 		
 		Object o=arr[(offset+key)-1];
+		
+		if(NullSupportHelper.full())  {
+			if(o==null && dimension>1) return setE(key,new ArrayImpl(dimension-1));
+			return o;
+		}
 		
 		if(o==null) {
 			if(dimension>1) return setE(key,new ArrayImpl(dimension-1));
@@ -169,9 +161,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return new ExpressionException("Element at position ["+pos+"] doesn't exist in array");
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		try {
 			return setEL(Caster.toIntValue(key), value);
@@ -180,9 +170,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#_setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		try {
 			return setEL(Caster.toIntValue(key.getString()), value);
@@ -191,23 +179,17 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws ExpressionException {
 		return setE(Caster.toIntValue(key),value);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#_set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws ExpressionException {
 		return setE(Caster.toIntValue(key.getString()),value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public synchronized Object setEL(int key, Object value) {
 		if(offset+key>arr.length)enlargeCapacity(key);
 		if(key>size)size=key;
@@ -307,16 +289,12 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return size;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public synchronized Collection.Key[] keys() {
 		
 		ArrayList<Collection.Key> lst=new ArrayList<Collection.Key>();
@@ -329,9 +307,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return lst.toArray(new Collection.Key[lst.size()]);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#intKeys()
-	 */
+	@Override
 	public synchronized int[] intKeys() {
 		ArrayList<Integer> lst=new ArrayList<Integer>();		
 		int count=0;
@@ -349,9 +325,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return ints;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws ExpressionException {
 		return removeE(Caster.toIntValue(key.getString()));
 	}
@@ -360,9 +334,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return removeEL(Caster.toIntValue(key.getString(),-1));
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
+	@Override
 	public synchronized Object removeE(int key) throws ExpressionException {
 		if(key>size || key<1) throw invalidPosition(key);
 		Object obj=get(key,null);
@@ -373,9 +345,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return obj;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public synchronized Object removeEL(int key) {
 	    if(key>size || key<1) return null;
 		Object obj=get(key,null);
@@ -387,9 +357,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return obj;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public synchronized void clear() {
 	    if(size()>0) {
 			arr=new Object[cap];
@@ -399,9 +367,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	    }
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#insert(int, java.lang.Object)
-	 */
+	@Override
 	public synchronized boolean insert(int key, Object value) throws ExpressionException {
 		if(key<1 || key>size+1) {
 			throw new ExpressionException("can't insert value to array at position "+key+", array goes from 1 to "+size());
@@ -429,9 +395,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
     public synchronized Object append(Object o) throws ExpressionException {
         if(offset+size+1>arr.length)enlargeCapacity(size+1);
         arr[offset+size]=checkValue(o);
@@ -516,23 +480,31 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return al;
 	}*/
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table = new DumpTable("array","#99cc33","#ccff33","#000000");
 		table.setTitle("Array");
-		//if(size()>10)table.setComment("Size:"+size());
+
+		int top = dp.getMaxlevel();
+
+		if( size() > top )
+			table.setComment("Rows: " + size() + " (showing top " + top + ")");
+
 		int length=size();
-		maxlevel--;
+
 		for(int i=1;i<=length;i++) {
 			Object o=null;
 			try {
 				o = getE(i);
 			} 
 			catch (Exception e) {}
-			table.appendRow(1,new SimpleDumpData(i),DumpUtil.toDumpData(o, pageContext,maxlevel,dp));
+
+			table.appendRow( 1, new SimpleDumpData(i), DumpUtil.toDumpData(o, pageContext, maxlevel, dp) );
+
+			if ( i == top )
+				break;
 		}
+
 		return table;
 	}
 	
@@ -553,9 +525,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return sb.toString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public synchronized Collection duplicate(boolean deepCopy) {
 		return duplicate(new ArrayImpl(),deepCopy);
 	}
@@ -598,17 +568,12 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
 		return new ListIteratorImpl(this,0);
 	}
 
-	/**
-	 * @see railo.runtime.engine.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(arr)
 		+SizeOf.size(dimension)

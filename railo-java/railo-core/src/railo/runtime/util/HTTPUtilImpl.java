@@ -91,18 +91,22 @@ public class HTTPUtilImpl implements HTTPUtil {
 		return HTTPEngine.put(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, mimetype, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers, body);
 	}
 
-	/**
-	 * @see railo.commons.net.HTTPUtil#toURL(java.lang.String, int)
-	 */
+	@Override
 	public URL toURL(String strUrl, int port) throws MalformedURLException {
-		return railo.commons.net.HTTPUtil.toURL(strUrl, port);
+		return toURL(strUrl, port, true);
+	}
+	
+	public URL toURL(String strUrl, int port, boolean encodeIfNecessary) throws MalformedURLException {
+		return railo.commons.net.HTTPUtil.toURL(strUrl, port,encodeIfNecessary);
 	}
 
+	
+	
 	/**
 	 * @see railo.commons.net.HTTPUtil#toURL(java.lang.String)
 	 */
 	public URL toURL(String strUrl) throws MalformedURLException {
-		return railo.commons.net.HTTPUtil.toURL(strUrl);
+		return railo.commons.net.HTTPUtil.toURL(strUrl,true);
 	}
 	
 	public URI toURI(String strUrl) throws URISyntaxException {

@@ -8,12 +8,15 @@ import java.util.Map.Entry;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
+import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.UDF;
 
 public class ObjectEquals {
 	public static boolean call(PageContext pc , Object left, Object right) {
-		return _equals(new HashSet<Object>(), left, right);
+		return Operator.equalsComplexEL(left, right, false, false);
+		//return _equals(new HashSet<Object>(), left, right);
 	}
 	
 	private static boolean _equals(HashSet<Object> done,Object left, Object right) {
@@ -43,6 +46,12 @@ public class ObjectEquals {
 				return _equals(done,(Collection)left, (Collection)right);
 			}
 			
+			if(left instanceof UDF) {
+				if(!(right instanceof UDF)) return false;
+				
+				
+			}
+			
 			// other
 			return left.equals(right);
 		}
@@ -68,9 +77,11 @@ public class ObjectEquals {
 	
 	private static boolean _equals(HashSet<Object> done,Component left, Component right) {
 		if(left==null || right==null) return false;
+		
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		
 		if(!_equals(done,left.getComponentScope(),right.getComponentScope())) return false;
+		
 		if(!_equals(done,(Collection)left,(Collection)right)) return false;
 
 		return true;

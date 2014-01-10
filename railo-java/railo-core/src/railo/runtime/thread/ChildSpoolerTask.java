@@ -16,9 +16,7 @@ public class ChildSpoolerTask extends SpoolerTaskSupport {
 		this.ct=ct;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#detail()
-	 */
+	@Override
 	public Struct detail() {
 		StructImpl detail = new StructImpl();
 		detail.setEL("template", ct.getTemplate());

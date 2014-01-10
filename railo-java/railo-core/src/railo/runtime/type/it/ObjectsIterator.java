@@ -25,9 +25,7 @@ public class ObjectsIterator implements Iterator<Object> {
 		return keys.hasNext();
 	}
 
-	/**
-	 * @see java.util.Iterator#next()
-	 */
+	@Override
 	public Object next() {
 		return objs.get(ThreadLocalPageContext.get(),KeyImpl.toKey(keys.next(),null),null);
 	}

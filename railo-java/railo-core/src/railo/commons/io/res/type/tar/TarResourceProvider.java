@@ -10,30 +10,22 @@ public final class TarResourceProvider extends CompressResourceProvider {
 		scheme="tar";
 	}
 	
-	/**
-	 * @see railo.commons.io.res.type.compress.CompressResourceProvider#getCompress(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public Compress getCompress(Resource file) {
 		return Compress.getInstance(file,Compress.FORMAT_TAR,caseSensitive);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
-	 */
+	@Override
 	public boolean isAttributesSupported() {
 		return false;
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isCaseSensitive()
-	 */
+	@Override
 	public boolean isCaseSensitive() {
 		return caseSensitive;
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isModeSupported()
-	 */
+	@Override
 	public boolean isModeSupported() {
 		return true;
 	}

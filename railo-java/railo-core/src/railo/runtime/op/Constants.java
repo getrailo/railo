@@ -5,6 +5,10 @@ package railo.runtime.op;
  * Constant Values
  */
 public final class Constants {
+	
+	public static final Object[] EMPTY_OBJECT_ARRAY=new Object[0];
+	
+	
 	/**
 	 * Field <code>INTEGER_ZERO</code> equals Integer.valueOf(0)
 	 */

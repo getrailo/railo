@@ -88,9 +88,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#release()
-	 */ 
+	@Override 
 	public void release() {
 		super.release();
 		video=null;
@@ -236,10 +234,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		this.height = Caster.toIntValue(strHeight,-1);
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException {
 		return EVAL_BODY_INCLUDE;
 	}

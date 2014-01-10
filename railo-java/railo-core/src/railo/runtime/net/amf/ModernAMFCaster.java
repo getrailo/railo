@@ -35,17 +35,15 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
 	private boolean doGetters=true;
 	private boolean doRemoteValues=true;
 	
-	/**
-	 * @see railo.runtime.net.amf.ClassicAMFCaster#init(java.util.Map)
-	 */
+	@Override
 	public void init(Map arguments){
 		super.init(arguments);
 		
 		String strValues = Caster.toString(arguments.get("component-values"),null);
 		if(!StringUtil.isEmpty(strValues)){
-			doProperties = railo.runtime.type.List.listFindNoCase(strValues, "properties")!=-1;
-			doGetters=railo.runtime.type.List.listFindNoCase(strValues, "getters")!=-1;
-			doRemoteValues=railo.runtime.type.List.listFindNoCase(strValues, "remote-values")!=-1;
+			doProperties = railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "properties")!=-1;
+			doGetters=railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "getters")!=-1;
+			doRemoteValues=railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "remote-values")!=-1;
 		}
 	}
 

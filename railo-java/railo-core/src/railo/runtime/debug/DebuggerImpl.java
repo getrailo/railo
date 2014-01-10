@@ -2,7 +2,6 @@ package railo.runtime.debug;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,6 +12,8 @@ import java.util.Map;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.res.util.ResourceSnippet;
+import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.Page;
@@ -22,7 +23,6 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
@@ -49,17 +49,17 @@ import railo.runtime.type.util.KeyConstants;
  */
 public final class DebuggerImpl implements DebuggerPro {
 	private static final long serialVersionUID = 3957043879267494311L;
-	
-	
-	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
+
 	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
 	private static final Collection.Key PAGE_PARTS= KeyImpl.intern("pageParts");
-
+	//private static final Collection.Key OUTPUT_LOG= KeyImpl.intern("outputLog");
 
 	private static final int MAX_PARTS = 100;
 
 	private Map<String,DebugEntryTemplateImpl> entries=new HashMap<String,DebugEntryTemplateImpl>();
 	private Map<String,DebugEntryTemplatePartImpl> partEntries;
+	private ResourceSnippetsMap snippetsMap = new ResourceSnippetsMap( 1024, 128 );
+
 	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
@@ -72,7 +72,12 @@ public final class DebuggerImpl implements DebuggerPro {
 	private Array historyId=new ArrayImpl();
 	private Array historyLevel=new ArrayImpl();
 
-	private DateTimeImpl starttime;
+	private long starttime=System.currentTimeMillis();
+
+	private DebugOutputLog outputLog;
+
+	final static Comparator DEBUG_ENTRY_TEMPLATE_COMPARATOR = new DebugEntryTemplateComparator();
+	final static Comparator DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR = new DebugEntryTemplatePartComparator();
 
 	@Override
 	public void reset() {
@@ -86,6 +91,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		historyId.clear();
 		historyLevel.clear();
 		output=true;
+		outputLog=null;
 	}
 
 	public DebuggerImpl() {	
@@ -114,11 +120,10 @@ public final class DebuggerImpl implements DebuggerPro {
 		historyLevel.appendEL(Caster.toInteger(pc.getCurrentLevel()));
         return de;
     }
-	
 
 
 	@Override
-	public DebugEntryTemplatePart getEntry(PageContext pc,PageSource source, int startPos, int endPos) {
+	public DebugEntryTemplatePart getEntry(PageContext pc, PageSource source, int startPos, int endPos) {
     	String src=DebugEntryTemplatePartImpl.getSrc(source==null?"":source.getDisplayPath(),startPos,endPos);
     	DebugEntryTemplatePartImpl de=null;
     	if(partEntries!=null){
@@ -131,7 +136,9 @@ public final class DebuggerImpl implements DebuggerPro {
     	else {
     		partEntries=new HashMap<String, DebugEntryTemplatePartImpl>();
     	}
-        de=new DebugEntryTemplatePartImpl(source,startPos,endPos);
+
+		ResourceSnippet snippet = snippetsMap.getSnippet( source, startPos, endPos, pc.getConfig().getResourceCharset() );
+        de=new DebugEntryTemplatePartImpl(source, startPos, endPos, snippet.getStartLine(), snippet.getEndLine(), snippet.getContent());
         partEntries.put(src,de);
         return de;
     }
@@ -145,7 +152,7 @@ public final class DebuggerImpl implements DebuggerPro {
             arrPages.add(page);
             
         }
-        Collections.sort(arrPages,new DebugEntryTemplateComparator());
+        Collections.sort(arrPages, DEBUG_ENTRY_TEMPLATE_COMPARATOR);
         
 
         // Queries
@@ -221,11 +228,42 @@ public final class DebuggerImpl implements DebuggerPro {
 		} catch (PageException e1) {}
 		
 		try {
-			PageSource[] arr = ((PageContextImpl)pc).getPageSources(debugEntry.getPath());
-			Page p = PageSourceImpl.loadPage(pc, arr);
+			String path = debugEntry.getPath();
+			PageSource[] arr = ((PageContextImpl)pc).getPageSources(path);
+			Page p = PageSourceImpl.loadPage(pc, arr,null);
+			
+			// patch for old path
+			String fullname = debugEntry.getFullname();
+			if(p==null) {
+				if(path!=null) {
+					boolean changed=false;
+					if(path.endsWith("/Modern.cfc") || path.endsWith("\\Modern.cfc")) {
+						path="/railo-server-context/admin/debug/Modern.cfc";
+						fullname="railo-server-context.admin.debug.Modern";
+						changed=true;
+					}
+					else if(path.endsWith("/Classic.cfc") || path.endsWith("\\Classic.cfc")) {
+						path="/railo-server-context/admin/debug/Classic.cfc";
+						fullname="railo-server-context.admin.debug.Classic";
+						changed=true;
+					}
+					else if(path.endsWith("/Comment.cfc") || path.endsWith("\\Comment.cfc")) {
+						path="/railo-server-context/admin/debug/Comment.cfc";
+						fullname="railo-server-context.admin.debug.Comment";
+						changed=true;
+					}
+					if(changed)pc.write("<span style='color:red'>Please update your debug template defintions in the railo admin by going into the detail view and hit the \"update\" button.</span>");
+					
+				}
+				
+				arr = ((PageContextImpl)pc).getPageSources(path);
+				p = PageSourceImpl.loadPage(pc, arr);
+			}
+			
+			
 			pc.addPageSource(p.getPageSource(), true);
 			try{
-				Component cfc = pc.loadComponent(debugEntry.getFullname());
+				Component cfc = pc.loadComponent(fullname);
 				cfc.callWithNamedValues(pc, "output", args);
 			}
 			finally {
@@ -278,9 +316,7 @@ public final class DebuggerImpl implements DebuggerPro {
                 
                 Struct usage = getUsage(qe);
                 if(usage!=null) qryQueries.setAt(KeyConstants._usage,row,usage);
-                
-                
-                
+
 		        Object o=qryExe.get(KeyImpl.init(qe.getSrc()),null);
 		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(qe.getExecutionTime()));
 		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(((Long)o).longValue()+qe.getExecutionTime()));
@@ -324,45 +360,61 @@ public final class DebuggerImpl implements DebuggerPro {
                 qryPage.setAt(KeyConstants._app,row,_toString(de.getExeTime()-de.getQueryTime()));
                 qryPage.setAt(KeyConstants._load,row,_toString(de.getFileLoadTime()));
 		        qryPage.setAt(KeyConstants._query,row,_toString(de.getQueryTime()));
-                qryPage.setAt(KeyConstants._total,row,_toString( de.getFileLoadTime() + de.getExeTime() + de.getQueryTime() ));
+                qryPage.setAt(KeyConstants._total,row,_toString( de.getFileLoadTime() + de.getExeTime()));
 		        qryPage.setAt(KeyConstants._src,row,de.getSrc());    
 			}
 		}
 		catch(PageException dbe) {}
-		
 
-		
+
 	    // Pages Parts
-		boolean hasParts=partEntries!=null && !partEntries.isEmpty();
+		List<DebugEntryTemplatePart> filteredPartEntries = null;
+		boolean hasParts=partEntries!=null && !partEntries.isEmpty() && !arrPages.isEmpty();
 		int qrySize=0;
+
 		if(hasParts) {
-			qrySize=partEntries.size()<MAX_PARTS?partEntries.size():MAX_PARTS;
+
+			String slowestTemplate = arrPages.get( 0 ).getPath();
+
+			filteredPartEntries = new ArrayList();
+
+			java.util.Collection<DebugEntryTemplatePartImpl> col = partEntries.values();
+			for ( DebugEntryTemplatePart detp : col ) {
+
+				if ( detp.getPath().equals( slowestTemplate ) )
+					filteredPartEntries.add( detp );
+			}
+
+			qrySize = Math.min( filteredPartEntries.size(), MAX_PARTS );
 		}
-		
-		Query qryPart=new QueryImpl(
-                new Collection.Key[]{
-                		KeyConstants._id
-                		,KeyConstants._count,
-                		KeyConstants._min,
-                		KeyConstants._max,
-                		KeyConstants._avg,
-                		KeyConstants._total,
-                		KeyConstants._path,
-                		KeyConstants._start,
-                		KeyConstants._end},
-                qrySize,"query");
+
+		Query qryPart = new QueryImpl(
+            new Collection.Key[]{
+                 KeyConstants._id
+                ,KeyConstants._count
+                ,KeyConstants._min
+                ,KeyConstants._max
+                ,KeyConstants._avg
+                ,KeyConstants._total
+                ,KeyConstants._path
+                ,KeyConstants._start
+                ,KeyConstants._end
+                ,KeyConstants._startLine
+                ,KeyConstants._endLine
+                ,KeyConstants._snippet
+            }, qrySize, "query" );
+
 		if(hasParts) {
 			row=0;
-			DebugEntryTemplatePart[] tmp = partEntries.values().toArray(new DebugEntryTemplatePart[partEntries.size()]);
-	        Arrays.sort(tmp,new DebugEntryTemplatePartComparator());
-	       
-	        len=tmp.length<MAX_PARTS?tmp.length:MAX_PARTS;
-	        DebugEntryTemplatePart[] parts=new DebugEntryTemplatePart[len];
-	        for(int i=0;i<len;i++) {
-	        	parts[i]=tmp[i];
-	        }
-	        
-	
+	        Collections.sort( filteredPartEntries, DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR );
+
+			DebugEntryTemplatePart[] parts = new DebugEntryTemplatePart[ qrySize ];
+
+			if ( filteredPartEntries.size() > MAX_PARTS )
+				parts = filteredPartEntries.subList(0, MAX_PARTS).toArray( parts );
+			else
+				parts = filteredPartEntries.toArray( parts );
+
 			try {
 	            DebugEntryTemplatePart de;
 	            //PageSource ps;
@@ -378,7 +430,14 @@ public final class DebuggerImpl implements DebuggerPro {
 			        qryPart.setAt(KeyConstants._start,row,_toString(de.getStartPosition()));
 			        qryPart.setAt(KeyConstants._end,row,_toString(de.getEndPosition()));
 			        qryPart.setAt(KeyConstants._total,row,_toString(de.getExeTime()));
-			        qryPart.setAt(KeyConstants._path,row,de.getPath());    
+			        qryPart.setAt(KeyConstants._path,row,de.getPath());
+
+                    if ( de instanceof DebugEntryTemplatePartImpl ) {
+
+                        qryPart.setAt( KeyConstants._startLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getStartLine() ) );
+                        qryPart.setAt( KeyConstants._endLine, row, _toString( ((DebugEntryTemplatePartImpl)de).getEndLine() ));
+                        qryPart.setAt( KeyConstants._snippet, row, ((DebugEntryTemplatePartImpl)de).getSnippet() );
+                    }
 				}
 			}
 			catch(PageException dbe) {}
@@ -399,6 +458,11 @@ public final class DebuggerImpl implements DebuggerPro {
 	        	}
 			
         }
+
+		// output log
+        //Query qryOutputLog=getOutputText();
+        
+        
 
 		// timers
 		len=timers==null?0:timers.size();
@@ -498,18 +562,22 @@ public final class DebuggerImpl implements DebuggerPro {
 		
 		if(addAddionalInfo) {
 			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
-			debugging.setEL(KeyImpl.init("starttime"),starttime);
+			debugging.setEL(KeyImpl.init("starttime"),new DateTimeImpl(starttime,false));
 			debugging.setEL(KeyConstants._id,pc.getId());
 		}
 
 		debugging.setEL(KeyConstants._pages,qryPage);
 		debugging.setEL(PAGE_PARTS,qryPart);
-		debugging.setEL(QUERIES,qryQueries);
+		debugging.setEL(KeyConstants._queries,qryQueries);
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
 		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
+		//debugging.setEL(OUTPUT_LOG,qryOutputLog);
 		
-		debugging.setEL(KeyImpl.intern("history"),history);
+		
+		
+		
+		debugging.setEL(KeyConstants._history,history);
 		debugging.setEL(KeyConstants._exceptions,arrExceptions);
 		
 		return debugging;
@@ -626,18 +694,8 @@ public final class DebuggerImpl implements DebuggerPro {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}
 
-	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
-		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
-			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
-				((QueryImpl)query).enableShowQueryUsage();
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void init(Config config) {
-		this.starttime=new DateTimeImpl(config);
+		this.starttime=System.currentTimeMillis()+config.getTimeServerOffset();
 	}
 
 	@Override
@@ -659,13 +717,48 @@ public final class DebuggerImpl implements DebuggerPro {
 	public ImplicitAccess[] getImplicitAccesses(int scope, String name) {
 		return implicitAccesses.values().toArray(new ImplicitAccessImpl[implicitAccesses.size()]);
 	}
+
+	public void setOutputLog(DebugOutputLog outputLog) { 
+		this.outputLog=outputLog;
+	}
+	
+	public DebugTextFragment[] getOutputTextFragments() { 
+		return this.outputLog.getFragments();
+	}
+	
+	public Query getOutputText() throws DatabaseException { 
+		DebugTextFragment[] fragments = outputLog.getFragments();
+		int len = fragments==null?0:fragments.length;
+		Query qryOutputLog=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._line
+                		,KeyConstants._template,
+                		KeyConstants._text},
+                len,"query");
+		
+		
+        if(len>0) {
+	        	for(int i=0;i<fragments.length;i++) {
+	        		qryOutputLog.setAtEL(KeyConstants._line,i+1,fragments[i].line);
+	        		qryOutputLog.setAtEL(KeyConstants._template,i+1,fragments[i].template);
+	        		qryOutputLog.setAtEL(KeyConstants._text,i+1,fragments[i].text);  
+	        	}
+        }
+        return qryOutputLog;
+        
+	}
+
+	public void resetTraces() {
+		traces.clear();
+	}
+
 }
 
 final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
     
 	public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
 		long result = ((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
-        // we do this addional step to try to avoid ticket RAILO-2076
+        // we do this additional step to try to avoid ticket RAILO-2076
         return result>0L?1:(result<0L?-1:0);
     }
 }
@@ -675,7 +768,7 @@ final class DebugEntryTemplatePartComparator implements Comparator<DebugEntryTem
 	@Override
 	public int compare(DebugEntryTemplatePart de1,DebugEntryTemplatePart de2) {
 		long result=de2.getExeTime()-de1.getExeTime();
-		// we do this addional step to try to avoid ticket RAILO-2076
+		// we do this additional step to try to avoid ticket RAILO-2076
         return result>0L?1:(result<0L?-1:0);
     }
 }

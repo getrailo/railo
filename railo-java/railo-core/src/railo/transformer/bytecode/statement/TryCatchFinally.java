@@ -33,7 +33,7 @@ import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 /**
  * produce  try-catch-finally
  */
-public final class TryCatchFinally extends StatementBase implements Opcodes,HasBodies {
+public final class TryCatchFinally extends StatementBase implements Opcodes,HasBodies,FlowControlRetry {
 
 	//private static LitString ANY=LitString.toExprString("any", -1);
 	
@@ -79,6 +79,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	private Position finallyLine;
 
 
+	private Label begin = new Label();
 
 	private FlowControlFinal fcf;
 
@@ -131,6 +132,9 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
+		
+		adapter.visitLabel(begin);
+		
 		// Reference ref=null;
 		final int lRef=adapter.newLocal(Types.REFERENCE);
 		adapter.visitInsn(Opcodes.ACONST_NULL);
@@ -254,7 +258,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 				Label endIf = new Label();
 	            adapter.ifZCmp(Opcodes.IFEQ, endIf);
 	            
-	            catchBody(bc,adapter,ct,pe,lRef,true);
+	            catchBody(bc,adapter,ct,pe,lRef,true,true);
 	            
 	            adapter.visitJumpInsn(Opcodes.GOTO, endAllIf);
 	            adapter.visitLabel(endIf);
@@ -264,7 +268,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			}
 			
 			if(ctElse!=null){
-				catchBody(bc,adapter,ctElse,pe,lRef,true);
+				catchBody(bc,adapter,ctElse,pe,lRef,true,true);
 			}
 			else{
 			// pc.setCatch(pe,true);
@@ -287,12 +291,12 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			
 	}
 
-	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth) throws BytecodeException {
+	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth,boolean store) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
         adapter.loadLocal(pe);
         adapter.push(caugth);
-        adapter.push(false);
+        adapter.push(store);
         adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH3);
         
         
@@ -376,5 +380,15 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	public FlowControlFinal getFlowControlFinal() {
 		if(fcf==null) fcf=new FlowControlFinalImpl();
 		return fcf;
+	}
+
+	@Override
+	public Label getRetryLabel() {
+		return begin;
+	}
+
+	@Override
+	public String getLabel() {
+		return null;
 	}
 }

@@ -17,9 +17,7 @@ public class StructMapEntry implements Map.Entry<String,Object> {
 		this.value=value;
 	}
 	
-	/**
-	 * @see java.util.Map$Entry#getKey()
-	 */
+	@Override
 	public String getKey() {
 		return key.getString();
 	}

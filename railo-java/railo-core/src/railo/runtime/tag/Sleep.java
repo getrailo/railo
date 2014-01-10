@@ -16,9 +16,7 @@ public final class Sleep extends TagImpl {
 	/** Expressed in milli seconds. */
 	private long time;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		time=0;
@@ -33,10 +31,7 @@ public final class Sleep extends TagImpl {
 	}
 
 
-	/**
-	* @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		if(time>=0) {
 			SystemUtil.sleep(time);
@@ -45,9 +40,7 @@ public final class Sleep extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -10,23 +10,26 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.List;
+import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.op.Caster;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Inserts records in data sources.
@@ -62,9 +65,7 @@ public final class Insert extends TagImpl {
 	** 	qualifier refers to the directory where the DBF files are located. */
 	private String tablequalifier="";
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		password=null;
@@ -137,24 +138,21 @@ public final class Insert extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
-		datasource=getDatasource(pageContext,datasource);
+		Object ds=getDatasource(pageContext,datasource);
 		
 		
 		
 		DataSourceManager manager = pageContext.getDataSourceManager();
-	    DatasourceConnection dc=manager.getConnection(pageContext,datasource,username,password);
+	    DatasourceConnection dc=ds instanceof DataSource?
+	    		manager.getConnection(pageContext,(DataSource)ds,username,password):
+	    		manager.getConnection(pageContext,Caster.toString(ds),username,password);
 	    try {
 	    	
 	    	Struct meta =null;
@@ -171,10 +169,11 @@ public final class Insert extends TagImpl {
 				railo.runtime.type.Query query = new QueryImpl(pageContext,dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
+					String dsn=ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
 					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
 					if(logdb) {
-						boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+						boolean debugUsage=DebuggerUtil.debugQueryUsage(pageContext,query);
+						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 					}
 				}
 			}
@@ -188,14 +187,15 @@ public final class Insert extends TagImpl {
 	
 	
 
-	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
+	public static Object getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			datasource=pageContext.getApplicationContext().getDefaultDataSource();
+			Object ds = ((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
 
-			if(StringUtil.isEmpty(datasource))
+			if(StringUtil.isEmpty(ds))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
+			return ds;
 		}
 		return datasource;
 	}
@@ -227,7 +227,7 @@ public final class Insert extends TagImpl {
     private SQL createSQL(Struct meta) throws PageException {
         String[] fields=null; 
         Form form = pageContext.formScope();
-        if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
+        if(formfields!=null) fields=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(formfields,','));
         else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer names=new StringBuffer();
@@ -316,9 +316,7 @@ class    ColumnInfo {
 		this.nullable=nullable;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(){
 		return name+"-"+type+"-"+nullable;
 	}

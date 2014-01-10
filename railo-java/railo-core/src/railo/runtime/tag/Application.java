@@ -1,19 +1,28 @@
 package railo.runtime.tag;
 
+import java.util.Locale;
+import java.util.TimeZone;
+
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ClassicApplicationContext;
+import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 
@@ -46,16 +55,19 @@ public final class Application extends TagImpl {
 	private Mapping[] customTagMappings;
 	private Mapping[] componentMappings;
 	private String secureJsonPrefix;
+	private Boolean bufferOutput;
 	private Boolean secureJson;
 	private String scriptrotect;
-	private String datasource;
-	private String defaultdatasource;
+	private Object datasource;
+	private Object defaultdatasource;
 	private int loginstorage=Scope.SCOPE_UNDEFINED;
 	
 	//ApplicationContextImpl appContext;
     private String name="";
 	private int action=ACTION_CREATE;
 	private int localMode=-1;
+	private Locale locale;
+	private TimeZone timeZone;
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -70,11 +82,11 @@ public final class Application extends TagImpl {
 	private String cacheTemplate;
 	private String cacheObject;
 	private String cacheResource;
+	private Struct datasources;
+	private UDF onmissingtemplate;
 	
      
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         setClientCookies=null;
@@ -89,15 +101,19 @@ public final class Application extends TagImpl {
         mappings=null;
         customTagMappings=null;
         componentMappings=null;
+        bufferOutput=null;
         secureJson=null;
         secureJsonPrefix=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
         scriptrotect=null;
         datasource=null;
         defaultdatasource=null;
+        datasources=null;
         this.name="";
         action=ACTION_CREATE;
         localMode=-1;
+        locale=null;
+        timeZone=null;
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
@@ -114,6 +130,7 @@ public final class Application extends TagImpl {
     	cacheTemplate=null;
     	cacheObject=null;
     	cacheResource=null;
+    	onmissingtemplate=null;
     }
     
     /** set the value setclientcookies
@@ -152,14 +169,31 @@ public final class Application extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setDatasource(Object datasource) throws PageException {
-		this.datasource = Caster.toString(datasource);
+		this.datasource = ModernApplicationContext.toDefaultDatasource(datasource);
 	}
-	public void setDefaultdatasource(String defaultdatasource) {
-		this.defaultdatasource = defaultdatasource;
+	
+	public void setDefaultdatasource(Object defaultdatasource) throws PageException {
+		this.defaultdatasource =  ModernApplicationContext.toDefaultDatasource(defaultdatasource);
+	}
+	
+	public void setDatasources(Struct datasources) {
+		this.datasources = datasources;
 	}
 	
 	public void setLocalmode(String strLocalMode) throws ApplicationException {
 		this.localMode = AppListenerUtil.toLocalMode(strLocalMode);
+		
+	}
+	
+	public void setTimezone(String strTimeZone) throws ExpressionException {
+		if(StringUtil.isEmpty(strTimeZone)) return;
+		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
+		
+	}
+	
+	public void setLocale(String strLocale) throws ExpressionException {
+		if(StringUtil.isEmpty(strLocale)) return;
+		this.locale = LocaleFactory.getLocale(strLocale);
 		
 	}
 
@@ -307,6 +341,10 @@ public final class Application extends TagImpl {
 		this.secureJson=secureJson?Boolean.TRUE:Boolean.FALSE;
 	    //getAppContext().setSecureJson(secureJson);
 	}
+	public void setBufferoutput(boolean bufferOutput) 	{
+		this.bufferOutput=bufferOutput?Boolean.TRUE:Boolean.FALSE;
+	    //getAppContext().setSecureJson(secureJson);
+	}
 	
     /**
      * @param loginstorage The loginstorage to set.
@@ -326,22 +364,23 @@ public final class Application extends TagImpl {
 		//getAppContext().setScriptProtect(strScriptrotect);
 	}
 
+	public void setOnmissingtemplate(Object oUDF) throws PageException {
+		this.onmissingtemplate=Caster.toFunction(oUDF);
+	}
 
-	/**
-	 * @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
         
-        ApplicationContext ac;
+        ApplicationContextPro ac;
         boolean initORM;
         if(action==ACTION_CREATE){
-        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,getSource());
+        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,
+        			pageContext.getCurrentPageSource().getResourceTranslated(pageContext));
         	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }
         else {
-        	ac= pageContext.getApplicationContext();
+        	ac=(ApplicationContextPro) pageContext.getApplicationContext();
         	initORM=set(ac);
         }
         
@@ -354,7 +393,7 @@ public final class Application extends TagImpl {
 		return ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource());
 	}
 
-	private boolean set(ApplicationContext ac) throws PageException {
+	private boolean set(ApplicationContextPro ac) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
@@ -369,11 +408,26 @@ public final class Application extends TagImpl {
 		if(mappings!=null)						ac.setMappings(mappings);
 		if(loginstorage!=Scope.SCOPE_UNDEFINED)	ac.setLoginStorage(loginstorage);
 		if(!StringUtil.isEmpty(datasource))		{
-			ac.setDefaultDataSource(datasource);
-			ac.setORMDatasource(datasource);
+			ac.setDefDataSource(datasource);
+			ac.setORMDataSource(datasource);
 		}
-		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefaultDataSource(defaultdatasource);
+		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefDataSource(defaultdatasource);
+		if(datasources!=null){
+			try {
+				ac.setDataSources(AppListenerUtil.toDataSources(datasources));
+			} 
+			catch (ClassException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		
+		if(onmissingtemplate!=null && ac instanceof ClassicApplicationContext){
+			((ClassicApplicationContext)ac).setOnMissingTemplate(onmissingtemplate);
+		}
+		
+		
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
+		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());
@@ -381,6 +435,8 @@ public final class Application extends TagImpl {
 		if(setDomainCookies!=null)				ac.setSetDomainCookies(setDomainCookies.booleanValue());
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
+		if(locale!=null) 						ac.setLocale(locale);
+		if(timeZone!=null) 						ac.setTimeZone(timeZone);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
 		
@@ -406,9 +462,7 @@ public final class Application extends TagImpl {
 		return initORM;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

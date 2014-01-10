@@ -11,6 +11,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
@@ -23,33 +24,48 @@ public final class ExpandPath implements Function {
 	private static final long serialVersionUID = 6192659914120397912L;
 
 	public static String call(PageContext pc , String realPath) throws PageException {
-		
 		ConfigWeb config=pc.getConfig();
 		realPath=realPath.replace('\\','/');
+
+        String contextPath = pc.getHttpServletRequest().getContextPath();
+        if ( !StringUtil.isEmpty( contextPath ) && realPath.startsWith( contextPath ) ) {
+            boolean sws=StringUtil.startsWith(realPath, '/');
+        	realPath = realPath.substring( contextPath.length() );
+            if(sws && !StringUtil.startsWith(realPath, '/'))
+            	realPath="/"+realPath;
+        }
+
         Resource res;
         
         if(StringUtil.startsWith(realPath,'/')) {
         	PageContextImpl pci=(PageContextImpl) pc;
         	ConfigWebImpl cwi=(ConfigWebImpl) config;
-        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),realPath,false,pci.useSpecialMappings(),true);
-        	if(!ArrayUtil.isEmpty(reses)) {
+        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), realPath, 
+        			false, pci.useSpecialMappings(), true);
+        	
+        	if(!ArrayUtil.isEmpty(sources)) {
         		// first check for existing
-	        	for(int i=0;i<reses.length;i++){
-	        		if(reses[i].exists()) {
-	        			return toReturnValue(realPath,reses[i]);
+	        	for(int i=0;i<sources.length;i++){
+	        		if(sources[i].exists()) {
+	        			return toReturnValue(realPath,sources[i].getResource());
 	        		}
 	        	}
 	        	
 	        	// no expand needed
-	        	if(!SystemUtil.isWindows() && !reses[0].exists()) {
+	        	if(!SystemUtil.isWindows() && !sources[0].exists()) {
 	        		res=pc.getConfig().getResource(realPath);
 	                if(res.exists()) {
 	                	return toReturnValue(realPath,res);
 	                }
 	        	}
-	        	return toReturnValue(realPath,reses[0]);
+	        	for(int i=0;i<sources.length;i++){
+	        		res=sources[i].getResource();
+	        		if(res!=null) {
+	        			return toReturnValue(realPath,res);
+	        		}
+	        	}
         	}
-        	
+
         	// no expand needed
         	else if(!SystemUtil.isWindows()) {
         		res=pc.getConfig().getResource(realPath);
@@ -57,6 +73,9 @@ public final class ExpandPath implements Function {
                 	return toReturnValue(realPath,res);
                 }
         	}
+        	
+        	
+        	//Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),realPath,false,pci.useSpecialMappings(),true);
         	
         }
         realPath=ConfigWebUtil.replacePlaceholder(realPath, config);

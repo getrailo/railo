@@ -23,37 +23,27 @@ public class EmptyHttpEntity extends AbstractHttpEntity implements Entity4 {
 		strContentType=contentType;
 	}
 	
-	/**
-	 * @see org.apache.http.HttpEntity#getContentLength()
-	 */
+	@Override
 	public long getContentLength() {
 		return 0;
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#isRepeatable()
-	 */
+	@Override
 	public boolean isRepeatable() {
 		return true;
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#writeTo(java.io.OutputStream)
-	 */
+	@Override
 	public void writeTo(OutputStream os) {
 		// do nothing
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#getContent()
-	 */
+	@Override
 	public InputStream getContent() throws IOException, IllegalStateException {
 		return new ByteArrayInputStream(new byte[0]);
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#isStreaming()
-	 */
+	@Override
 	public boolean isStreaming() {
 		return false;
 	}

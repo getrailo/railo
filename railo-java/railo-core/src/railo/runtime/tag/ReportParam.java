@@ -16,10 +16,7 @@ public final class ReportParam extends TagImpl {
 		throw new TagNotSupported("ReportParam");
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		this.param=new ReportParamBean();
 		super.release();

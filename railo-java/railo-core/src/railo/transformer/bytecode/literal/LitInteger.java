@@ -8,7 +8,6 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprInt;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
@@ -20,10 +19,10 @@ public final class LitInteger extends ExpressionBase implements Literal,ExprInt 
     
     private int i;
 
-	public static Expression toExpr(int i, Position start,Position end) {
+	public static ExprInt toExpr(int i, Position start,Position end) {
 		return new LitInteger(i,start,end);
 	}
-	public static Expression toExpr(int i) {
+	public static ExprInt toExpr(int i) {
 		return new LitInteger(i,null,null);
 	}
     

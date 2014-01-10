@@ -4,6 +4,7 @@ import javax.mail.internet.InternetAddress;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.mail.MailException;
 import railo.runtime.net.smtp.SMTPClient;
@@ -35,9 +36,7 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 	}
 	
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#getType()
-	 */
+	@Override
 	public String getType() {
 		return "mail";
 	}
@@ -89,7 +88,7 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 	}
 	public Object execute(Config config) throws PageException {
 		try {
-			client._send(config);
+			client._send((ConfigWeb)config);
 		} 
 		catch (MailException e) {
 			throw Caster.toPageException(e);

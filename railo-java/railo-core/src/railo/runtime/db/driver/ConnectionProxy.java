@@ -1,5 +1,6 @@
 package railo.runtime.db.driver;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -17,6 +18,10 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 
 public class ConnectionProxy implements Connection {
 	
@@ -276,5 +281,68 @@ public class ConnectionProxy implements Connection {
 	@Override
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
 		conn.setTypeMap(map);
+	}
+
+
+
+
+	public void setSchema(String schema) throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			conn.getClass().getMethod("setSchema", new Class[]{String.class}).invoke(conn, new Object[]{schema});
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
+	}
+
+	public String getSchema() throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			return Caster.toString(conn.getClass().getMethod("getSchema", new Class[]{}).invoke(conn, new Object[]{}));
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
+	}
+
+	public void abort(Executor executor) throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			conn.getClass().getMethod("abort", new Class[]{Executor.class}).invoke(conn, new Object[]{executor});
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
+	}
+
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			conn.getClass().getMethod("setNetworkTimeout", new Class[]{Executor.class,int.class}).invoke(conn, new Object[]{executor,milliseconds});
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
+	}
+
+	public int getNetworkTimeout() throws SQLException {
+		// used reflection to make sure this work with Java 5 and 6
+		try {
+			return Caster.toIntValue(conn.getClass().getMethod("getNetworkTimeout", new Class[]{}).invoke(conn, new Object[]{}));
+		}
+		catch (Throwable t) {
+			if(t instanceof InvocationTargetException && ((InvocationTargetException)t).getTargetException() instanceof SQLException)
+				throw (SQLException)((InvocationTargetException)t).getTargetException();
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
 	}
 }

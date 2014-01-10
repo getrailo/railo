@@ -6,8 +6,10 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Constants;
+import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.UDF;
 
 public final class ClassicAppListener extends AppListenerSupport {
 
@@ -25,7 +27,7 @@ public final class ClassicAppListener extends AppListenerSupport {
 	static void _onRequest(PageContext pc,PageSource requestedPage,PageSource application, RequestListener rl) throws PageException {
 		
 		// on requestStart
-		if(application!=null)pc.doInclude(application);
+		if(application!=null)pc.doInclude(new PageSource[]{application},false);
 		
 		if(rl!=null) {
 			requestedPage=rl.execute(pc, requestedPage);
@@ -33,12 +35,27 @@ public final class ClassicAppListener extends AppListenerSupport {
 		}
 		
 		// request
-		pc.doInclude(requestedPage);
+		try{
+			pc.doInclude(new PageSource[]{requestedPage},false);
+		}
+		catch(MissingIncludeException mie){
+			ApplicationContext ac = pc.getApplicationContext();
+			boolean rethrow=true;
+			if(ac instanceof ClassicApplicationContext) {
+				ClassicApplicationContext cfc=(ClassicApplicationContext) ac;
+				UDF udf = cfc.getOnMissingTemplate();
+				if(udf!=null) {
+					String targetPage=requestedPage.getFullRealpath();
+					rethrow=(!Caster.toBooleanValue(udf.call(pc, new Object[]{targetPage}, true),true));
+				}
+			}
+			if(rethrow)throw mie;
+		}
 		
 		// on Request End
 		if(application!=null){
 			PageSource onReqEnd = application.getRealPage("OnRequestEnd.cfm");
-	        if(onReqEnd.exists())pc.doInclude(onReqEnd);
+	        if(onReqEnd.exists())pc.doInclude(new PageSource[]{onReqEnd},false);
 		}
 	}
 
@@ -66,7 +83,7 @@ public final class ClassicAppListener extends AppListenerSupport {
 	@Override
 	public void onDebug(PageContext pc) throws PageException {
 		try {
-			pc.getDebugger().writeOut(pc);
+			if(pc.getConfig().debug())pc.getDebugger().writeOut(pc);
 		} 
 		catch (IOException e) {
 			throw Caster.toPageException(e);

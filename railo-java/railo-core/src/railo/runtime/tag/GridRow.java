@@ -4,7 +4,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Lets you define a cfgrid that does not use a query as source for row data. If a query attribute is
@@ -24,9 +24,7 @@ public final class GridRow extends TagImpl {
 	** 	it must be escaped with a second comma character. */
 	private String[] data;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		data=null;
@@ -38,13 +36,11 @@ public final class GridRow extends TagImpl {
 	* @param data value to set
 	**/
 	public void setData(String data)	{
-		this.data=List.listToStringArray(data, ',');
+		this.data=ListUtil.listToStringArray(data, ',');
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		// provide to parent
 		Tag parent=this;
@@ -60,9 +56,7 @@ public final class GridRow extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

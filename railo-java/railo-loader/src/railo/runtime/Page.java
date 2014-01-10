@@ -89,10 +89,15 @@ public abstract class Page implements Serializable{
     
     public void threadCall(PageContext pageContext, int threadIndex) throws Throwable {
     }
-
+    
+    // FUTURE @deprecated use instead <code>udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex, Object defaultValue)</code>
 	public Object udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex) {
 		return null;
 	}
+	
+	/*FUTURE public Object udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex, Object defaultValue) {
+		return null;
+	}*/
 
 
 

@@ -13,10 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opencfml.eventgateway.Gateway;
-import org.opencfml.eventgateway.GatewayEngine;
-import org.opencfml.eventgateway.GatewayException;
-
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.exp.PageException;
@@ -24,9 +20,9 @@ import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 
-public class SocketGateway implements Gateway {
+public class SocketGateway implements GatewayPro {
 
-	private GatewayEngine engine;
+	private GatewayEnginePro engine;
 	private int port;
 	private String welcomeMessage="Welcome to the Railo Socket Gateway";
     
@@ -40,10 +36,8 @@ public class SocketGateway implements Gateway {
 	private String cfcPath;
 
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#init(org.opencfml.eventgateway.GatewayEngine, java.lang.String, java.lang.String, java.util.Map)
-	 */
-	public void init(GatewayEngine engine, String id, String cfcPath, Map config)throws GatewayException {
+	@Override
+	public void init(GatewayEnginePro engine, String id, String cfcPath, Map config)throws GatewayException {
 		this.engine=engine;
 		cfmlEngine=CFMLEngineFactory.getInstance();
 		caster=cfmlEngine.getCastUtil();
@@ -244,9 +238,7 @@ public class SocketGateway implements Gateway {
     }
 	
 	
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doRestart()
-	 */
+	@Override
 	public void doRestart() {
 		doStop();
 		doStart();
@@ -254,36 +246,30 @@ public class SocketGateway implements Gateway {
 	
 	
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 	
-	 /**
-	 * @see org.opencfml.eventgateway.Gateway#getState()
-	 */
+	 @Override
 	public int getState() {
 		return state;
 	 }
 	
 	
 
-    /**
-     * @see org.opencfml.eventgateway.Gateway#getHelper()
-     */
+    @Override
     public Object getHelper() {
     	return null;
     }
 
 
 	public void info(String msg) {
-		engine.log(this,GatewayEngine.LOGLEVEL_INFO,msg);
+		engine.log(this,GatewayEnginePro.LOGLEVEL_INFO,msg);
 	}
 	
 	public void error(String msg) {
-		engine.log(this,GatewayEngine.LOGLEVEL_ERROR,msg);
+		engine.log(this,GatewayEnginePro.LOGLEVEL_ERROR,msg);
 	}
 	    
 

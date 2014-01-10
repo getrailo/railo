@@ -33,9 +33,10 @@ Defaults --->
 					type="#request.adminType#"
 					password="#session["password"&request.adminType]#"
 					
-					suppressWhiteSpace="#isDefined('form.suppressWhitespace') and form.suppressWhitespace#"
+					cfmlWriter="#form.cfmlWriter#"
 					suppressContent="#isDefined('form.suppressContent') and form.suppressContent#"
 					allowCompression="#isDefined('form.allowCompression') and form.allowCompression#"
+					bufferOutput="#isDefined('form.bufferOutput') and form.bufferOutput#"
 					contentLength=""
 					remoteClients="#request.getRemoteClients()#">
 		
@@ -48,10 +49,11 @@ Defaults --->
 					type="#request.adminType#"
 					password="#session["password"&request.adminType]#"
 					
-					suppressWhiteSpace=""
+					cfmlWriter=""
 					suppressContent=""
 					showVersion=""
 					allowCompression=""
+					bufferOutput=""
 					contentLength=""
 					
 					remoteClients="#request.getRemoteClients()#">
@@ -65,13 +67,10 @@ Defaults --->
 	</cftry>
 </cfif>
 
-<!--- 
-Error Output --->
+<!--- Error Output --->
 <cfset printError(error)>
-
-
-<!--- 
-Redirtect to entry --->
+				
+<!--- Redirtect to entry --->
 <cfif cgi.request_method EQ "POST" and error.message EQ "">
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 </cfif>
@@ -92,13 +91,21 @@ Redirtect to entry --->
 				<tr>
 					<th scope="row">#stText.setting.whitespace#</th>
 					<td>
+						<cfset desc={
+								'regular':stText.setting.cfmlWriterReg,
+								'white-space':stText.setting.cfmlWriterWS,
+								'white-space-pref':stText.setting.cfmlWriterWSPref
+									}>
+						
 						<cfif hasAccess>
-							<input type="checkbox" name="suppressWhitespace" class="checkbox" value="true" <cfif setting.suppressWhitespace>checked="checked"</cfif>>
+							<cfloop list="regular,white-space,white-space-pref" index="k">
+								<input type="radio" class="checkbox" name="cfmlWriter" value="#k#" <cfif setting.cfmlWriter EQ k>checked="checked"</cfif>>
+								<div class="comment">#desc[k]#</div><br> 
+							</cfloop>
 						<cfelse>
-							<b>#yesNoFormat(setting.suppressWhitespace)#</b>
-							<!---<input type="hidden" name="suppressWhitespace" value="#setting.suppressWhitespace#">--->
+							<b>#desc[setting.cfmlWriter]#
+							<input type="hidden" name="cfmlWriter" value="#setting.cfmlWriter#">
 						</cfif>
-						<div class="comment">#stText.setting.whitespaceDescription#</div>
 					</td>
 				</tr>
 				<!--- Allow Compression --->
@@ -115,8 +122,6 @@ Redirtect to entry --->
 					</td>
 				</tr>
 
-				<cfset stText.setting.suppressContent="Supress Content for CFC Remoting">
-				<cfset stText.setting.suppressContentDescription="Suppress content written to response stream when a Component is invoked remotely. Only work when content not was flushed before.">
 				<!--- Supress Content when CFC Remoting --->
 				<tr>
 					<th scope="row">#stText.setting.suppressContent#</th>
@@ -128,6 +133,26 @@ Redirtect to entry --->
 							<!---<input type="hidden" name="suppressContent" value="#setting.suppressContent#">--->
 						</cfif>
 						<div class="comment">#stText.setting.suppressContentDescription#</div>
+					</td>
+				</tr>
+
+				<!--- Buffer Output --->
+				<tr>
+					<th scope="row">#stText.setting.bufferOutput#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="checkbox" name="bufferOutput" class="checkbox" value="true" <cfif setting.bufferOutput>checked="checked"</cfif>>
+						<cfelse>
+							<b>#iif(setting.bufferOutput,de('Yes'),de('No'))#</b>
+							<!---<input type="hidden" name="suppressContent" value="#setting.suppressContent#">--->
+						</cfif>
+						<div class="comment">#stText.setting.bufferOutputDescription#</div>
+
+
+						<cfsavecontent variable="codeSample">
+							this.bufferOutput = "#setting.bufferOutput#";
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
 					</td>
 				</tr>
 				<cfif hasAccess>

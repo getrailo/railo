@@ -21,9 +21,7 @@ public final class Forward extends TagImpl {
         this.template = template;
     }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-    */
+    @Override
     public int doStartTag() throws PageException {
     	try {
 			pageContext.forward(template);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.runtime.Component;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.other.CreateUniqueId;
@@ -38,10 +39,12 @@ import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.op.OPDecision;
 import railo.transformer.bytecode.op.OpBool;
 import railo.transformer.bytecode.op.OpContional;
 import railo.transformer.bytecode.op.OpDouble;
+import railo.transformer.bytecode.op.OpElvis;
 import railo.transformer.bytecode.op.OpNegate;
 import railo.transformer.bytecode.op.OpNegateNumber;
 import railo.transformer.bytecode.op.OpString;
@@ -50,6 +53,7 @@ import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.Data;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.script.DocComment;
@@ -172,23 +176,23 @@ public abstract class AbstrCFMLExprTransformer {
 
 
 	protected static EndCondition SEMI_BLOCK=new EndCondition() {
-		public boolean isEnd(Data data) {
+		public boolean isEnd(ExprData data) {
 			return data.cfml.isCurrent('{') || data.cfml.isCurrent(';');
 		}
 	};
 	protected static EndCondition SEMI=new EndCondition() {
-		public boolean isEnd(Data data) {
+		public boolean isEnd(ExprData data) {
 			return data.cfml.isCurrent(';');
 		}
 	};
 	protected static EndCondition COMMA_ENDBRACKED=new EndCondition() {
-		public boolean isEnd(Data data) {
+		public boolean isEnd(ExprData data) {
 			return data.cfml.isCurrent(',') || data.cfml.isCurrent(')');
 		}
 	};
 
 	public static interface EndCondition {
-		public boolean isEnd(Data data);
+		public boolean isEnd(ExprData data);
 	}
 	
 	/*private short mode=0;
@@ -197,36 +201,25 @@ public abstract class AbstrCFMLExprTransformer {
 	private boolean ignoreScopes=false;
 	private boolean allowLowerThan;*/
 	
-	public class Data {
+	public class ExprData extends Data {
 		
 		private short mode=0;
-		public final CFMLString cfml;
-		public final FunctionLib[] fld;
 		private boolean ignoreScopes=false;
 		private boolean allowLowerThan;
 		public boolean insideFunction;
 		public String tagName;
 		public boolean isCFC;
 		public boolean isInterface;
-		public final EvaluatorPool ep;
 		public short context=CTX_NONE; 
-		public final TagLibTag[] scriptTags;
 		public DocComment docComment;
-		public final Page page;
-		public final TransfomerSettings settings; 
 		
-		public Data(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
-			this.page=page;
-			this.ep=ep;
-			this.cfml=cfml;
-			this.fld=fld;
+		public ExprData(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
+			super(page,cfml,ep,settings,flibs,scriptTags);
 			this.allowLowerThan=allowLowerThan;
-			this.settings=settings;
-			this.scriptTags=scriptTags;
 		}
 	}
 	
-	protected Expression transformAsString(Data data,String[] breakConditions) throws TemplateException {
+	protected Expression transformAsString(ExprData data,String[] breakConditions) throws TemplateException {
 		Expression el=null;
 		
 		// parse the houle Page String
@@ -251,11 +244,10 @@ public abstract class AbstrCFMLExprTransformer {
 	/**
 	 * Initialmethode, wird aufgerufen um den internen Zustand des Objektes zu setzten.
 	 * @param fld Function Libraries zum validieren der Funktionen
-	 * @param doc XML Document des aktuellen CFXD
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
-		Data data = new Data(page,ep,cfml,fld,settings,allowLowerThan,scriptTags);
+	protected ExprData init(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
+		ExprData data = new ExprData(page,ep,cfml,fld,settings,allowLowerThan,scriptTags);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
 		return data;
@@ -270,7 +262,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @return Element
 	 * @throws TemplateException
 	 */
-	protected Expression expression(Data data) throws TemplateException {
+	protected Expression expression(ExprData data) throws TemplateException {
 		return assignOp(data);
 	}
 
@@ -279,20 +271,19 @@ public abstract class AbstrCFMLExprTransformer {
 	* <br />
 	* EBNF:<br />
 	* <code>assignOp [":" spaces assignOp];</code>
-	 * @param type 
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Argument functionArgument(Data data, boolean varKeyUpperCase) throws TemplateException {
+	private Argument functionArgument(ExprData data, boolean varKeyUpperCase) throws TemplateException {
 		return functionArgument(data,null,varKeyUpperCase);
 	}
 	
-	private Argument functionArgument(Data data,String type, boolean varKeyUpperCase) throws TemplateException {
+	private Argument functionArgument(ExprData data,String type, boolean varKeyUpperCase) throws TemplateException {
 		Expression expr = assignOp(data);
 		try{
 			if (data.cfml.forwardIfCurrent(":")) {
 				comments(data);
-	            return new NamedArgument(expr,assignOp(data),type,varKeyUpperCase);
+				return new NamedArgument(expr,assignOp(data),type,varKeyUpperCase);
 			}
 			else if(expr instanceof DynAssign){
 				DynAssign da=(DynAssign) expr;
@@ -320,7 +311,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression assignOp(Data data) throws TemplateException {
+	protected Expression assignOp(ExprData data) throws TemplateException {
         
 		Expression expr = conditionalOp(data);
         if (data.cfml.forwardIfCurrent('=')) {
@@ -330,6 +321,9 @@ public abstract class AbstrCFMLExprTransformer {
 			else {
 				if(expr instanceof Variable)
 					expr=new Assign((Variable)expr,assignOp(data));
+				else if(expr instanceof Null) {
+					expr=new Assign(((Null)expr).toVariable(),assignOp(data));
+				}
 				else
 					throw new TemplateException(data.cfml,"invalid assignment left-hand side ("+expr.getClass().getName()+")");
 			}
@@ -337,11 +331,22 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;
 	}
 	
-	private Expression conditionalOp(Data data) throws TemplateException {
+	private Expression conditionalOp(ExprData data) throws TemplateException {
         
 		Expression expr = impOp(data);
         if (data.cfml.forwardIfCurrent('?')) {
         	comments(data);
+        	// Elvis
+        	if(data.cfml.forwardIfCurrent(':')) {
+        		comments(data);
+            	Expression right = assignOp(data);
+        		
+        		if(!(expr instanceof Variable) )
+        			throw new TemplateException(data.cfml,"left operant of the Elvis operator has to be a variable or a function call");
+        		
+        		return OpElvis.toExpr((Variable)expr, right);
+        	}
+        	
         	Expression left = assignOp(data);
         	comments(data);
         	if(!data.cfml.forwardIfCurrent(':'))throw new TemplateException("invalid conditional operator");
@@ -361,7 +366,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression impOp(Data data) throws TemplateException {
+	private Expression impOp(ExprData data) throws TemplateException {
 		Expression expr = eqvOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
 			comments(data);
@@ -378,7 +383,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression eqvOp(Data data) throws TemplateException {
+	private Expression eqvOp(ExprData data) throws TemplateException {
 		Expression expr = xorOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
 			comments(data);
@@ -395,7 +400,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression xorOp(Data data) throws TemplateException {
+	private Expression xorOp(ExprData data) throws TemplateException {
 		Expression expr = orOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
 			comments(data);
@@ -413,7 +418,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression orOp(Data data) throws TemplateException {
+	private Expression orOp(ExprData data) throws TemplateException {
 		Expression expr = andOp(data);
 		
 		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
@@ -432,7 +437,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression andOp(Data data) throws TemplateException {
+	private Expression andOp(ExprData data) throws TemplateException {
 		Expression expr = notOp(data);
 		
 		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
@@ -451,7 +456,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression notOp(Data data) throws TemplateException {
+	private Expression notOp(ExprData data) throws TemplateException {
 		// And Operation
 		Position line = data.cfml.getPosition();
 		if (data.cfml.isCurrent('!') && !data.cfml.isCurrent("!=")) {
@@ -476,7 +481,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression decsionOp(Data data) throws TemplateException {
+	private Expression decsionOp(ExprData data) throws TemplateException {
 
 		Expression expr = concatOp(data);
 		boolean hasChanged=false;
@@ -630,7 +635,7 @@ public abstract class AbstrCFMLExprTransformer {
 		while(hasChanged);
 		return expr;
 	}
-	private Expression decisionOpCreate(Data data,int operation, Expression left) throws TemplateException {
+	private Expression decisionOpCreate(ExprData data,int operation, Expression left) throws TemplateException {
         comments(data);
         return OPDecision.toExprBoolean(left, concatOp(data), operation);
 	}
@@ -644,7 +649,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression concatOp(Data data) throws TemplateException {
+	private Expression concatOp(ExprData data) throws TemplateException {
 		Expression expr = plusMinusOp(data);
 		
 		while(data.cfml.isCurrent('&') && !data.cfml.isCurrent("&&")) {
@@ -675,7 +680,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression plusMinusOp(Data data) throws TemplateException {
+	private Expression plusMinusOp(ExprData data) throws TemplateException {
 		Expression expr = modOp(data);
 		
 		while(!data.cfml.isLast()) {
@@ -691,7 +696,7 @@ public abstract class AbstrCFMLExprTransformer {
 	
 	
 
-	private Expression _plusMinusOp(Data data,Expression expr,int opr) throws TemplateException {
+	private Expression _plusMinusOp(ExprData data,Expression expr,int opr) throws TemplateException {
 		// +=
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
@@ -726,7 +731,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression modOp(Data data) throws TemplateException {
+	private Expression modOp(ExprData data) throws TemplateException {
 		Expression expr = divMultiOp(data);
 		
 		// Modulus Operation
@@ -738,7 +743,7 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;
 	}
 	
-	private Expression _modOp(Data data,Expression expr) throws TemplateException {
+	private Expression _modOp(ExprData data,Expression expr) throws TemplateException {
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
 			comments(data);
@@ -758,7 +763,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression divMultiOp(Data data) throws TemplateException {
+	private Expression divMultiOp(ExprData data) throws TemplateException {
 		Expression expr = expoOp(data);
 
 		while (!data.cfml.isLast()) {
@@ -791,7 +796,7 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;
 	}
 
-	private Expression _divMultiOp(Data data,Expression expr, int iOp) throws TemplateException {
+	private Expression _divMultiOp(ExprData data,Expression expr, int iOp) throws TemplateException {
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
 			comments(data);
@@ -812,7 +817,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression expoOp(Data data) throws TemplateException {
+	private Expression expoOp(ExprData data) throws TemplateException {
 		Expression expr = unaryOp(data);
 
 		// Modulus Operation
@@ -823,7 +828,7 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;
 	}
 	
-	private Expression unaryOp(Data data) throws TemplateException {
+	private Expression unaryOp(ExprData data) throws TemplateException {
 		Expression expr = negatePlusMinusOp(data);
 		
 		// Plus Operation
@@ -835,7 +840,7 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;
 	}
 	
-	private Expression _unaryOp(Data data,Expression expr,int opr) throws TemplateException {
+	private Expression _unaryOp(ExprData data,Expression expr,int opr) throws TemplateException {
 		Position leftEnd = expr.getEnd(),start=null,end=null;
 		comments(data);
 		if(leftEnd!=null){
@@ -856,7 +861,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression negatePlusMinusOp(Data data) throws TemplateException {
+	private Expression negatePlusMinusOp(ExprData data) throws TemplateException {
 		// And Operation
 		Position line=data.cfml.getPosition();
 		if (data.cfml.forwardIfCurrent('-')) {
@@ -891,7 +896,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression clip(Data data) throws TemplateException {
+	private Expression clip(ExprData data) throws TemplateException {
 	    return checker(data);
 	}
 	/**
@@ -903,7 +908,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression checker(Data data) throws TemplateException {
+	private Expression checker(ExprData data) throws TemplateException {
 		Expression expr=null;
 			// String
 			if((expr=string(data))!=null) {
@@ -972,7 +977,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression string(Data data) throws TemplateException {
+	protected Expression string(ExprData data) throws TemplateException {
 		
 		// check starting character for a string literal
 		if(!data.cfml.isCurrent('"')&& !data.cfml.isCurrent('\''))
@@ -1046,6 +1051,12 @@ public abstract class AbstrCFMLExprTransformer {
 			expr = OpString.toExprString(expr, new LitString(str.toString(),line,data.cfml.getPosition()));
 		}
         comments(data);
+        
+        if(expr instanceof Variable) {
+        	Variable var=(Variable) expr;
+        	var.setFromHash(true);
+        }
+        
 		return expr;
 		
 	}
@@ -1061,7 +1072,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private LitDouble number(Data data) throws TemplateException {
+	private LitDouble number(ExprData data) throws TemplateException {
 		// check first character is a number literal representation
 		if(!(data.cfml.isCurrentBetween('0','9') || data.cfml.isCurrent('.'))) return null;
 		
@@ -1115,7 +1126,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* <code>"0"|..|"9";</code>
 	* @return digit Ausgelesene Zahlen als Zeichenkette.
 	*/
-	private String digit(Data data) {
+	private String digit(ExprData data) {
 		String rtn="";
 		while (data.cfml.isValidIndex()) {
 			if(!data.cfml.isCurrentBetween('0','9'))break;
@@ -1136,7 +1147,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression dynamic(Data data) throws TemplateException {
+	private Expression dynamic(ExprData data) throws TemplateException {
 		// Die Implementation weicht ein wenig von der Grammatik ab, 
 		// aber nicht in der Logik sondern rein wie es umgesetzt wurde.
 		
@@ -1172,6 +1183,10 @@ public abstract class AbstrCFMLExprTransformer {
 			comments(data);
 			return new LitBoolean(false,line,data.cfml.getPosition());
 		}
+		else if(NullSupportHelper.full() && id.getString().equalsIgnoreCase("NULL"))	{
+			comments(data);
+			return new Null(line,data.cfml.getPosition());
+		}
 		
 		// Extract Scope from the Variable
 		//int c=data.cfml.getColumn();
@@ -1184,13 +1199,13 @@ public abstract class AbstrCFMLExprTransformer {
 	
 
 	
-	private Expression json(Data data,FunctionLibFunction flf, char start, char end) throws TemplateException {
+	private Expression json(ExprData data,FunctionLibFunction flf, char start, char end) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent(start))return null;
 		
 		Position line = data.cfml.getPosition();
 		BIF bif=new BIF(flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
-		bif.setClassName(flf.getCls());
+		bif.setClass(flf.getClazz());
 		bif.setReturnType(flf.getReturnTypeAsString());
 		
 		do {
@@ -1211,26 +1226,26 @@ public abstract class AbstrCFMLExprTransformer {
 		return var;
 	}
 	
-	private Expression closure(Data data) throws TemplateException {
+	private Expression closure(ExprData data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("function",'('))return null;
 		data.cfml.previous();
 		return new ClosureAsExpression((Closure) closurePart(data, "closure_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.cfml.getPosition(),true));
 	}
 	
-	protected  abstract Function closurePart(Data data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException;
+	protected  abstract Function closurePart(ExprData data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException;
 
 	
-	protected FunctionLibFunction getFLF(Data data,String name) {
+	protected FunctionLibFunction getFLF(ExprData data,String name) {
 		FunctionLibFunction flf=null;
-		for (int i = 0; i < data.fld.length; i++) {
-			flf = data.fld[i].getFunction(name);
+		for (int i = 0; i < data.flibs.length; i++) {
+			flf = data.flibs[i].getFunction(name);
 			if (flf != null)
 				break;
 		}
 		return flf;
 	}
 
-	private Expression subDynamic(Data data,Expression expr) throws TemplateException {
+	private Expression subDynamic(ExprData data,Expression expr) throws TemplateException {
 		
 		
 		
@@ -1304,7 +1319,7 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;  
 	}
 	
-	private Expression newOp(Data data,Expression expr) throws TemplateException {
+	private Expression newOp(ExprData data,Expression expr) throws TemplateException {
 		if(!(expr instanceof Variable)) return expr;
 		Variable var=(Variable) expr;
 		Member m= var.getFirstMember();
@@ -1389,7 +1404,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Variable startElement(Data data,Identifier name, Position line) throws TemplateException {
+	private Variable startElement(ExprData data,Identifier name, Position line) throws TemplateException {
 		
 		
 		
@@ -1424,12 +1439,12 @@ public abstract class AbstrCFMLExprTransformer {
 	* <br />
 	* EBNF:<br />
 	* <code>"variable" | "cgi" | "url" | "form" | "session" | "application" | "arguments" | "cookie" | " client";</code>
-	 * @param idStr String identifier, 
+	 * @param id String identifier,
 	 * wird aus Optimierungszwechen nicht innerhalb dieser Funktion ausgelsen.
 	 * @return CFXD Variable Element oder null
 	 * @throws TemplateException 
 	*/
-	private Variable scope(Data data,Identifier id, Position line) throws TemplateException {
+	private Variable scope(ExprData data,Identifier id, Position line) throws TemplateException {
 		String idStr=id.getUpper();
 		if(data.ignoreScopes)return null;
 		if (idStr.equals("CGI")) 				return new Variable(Scope.SCOPE_CGI,line,data.cfml.getPosition());
@@ -1466,10 +1481,10 @@ public abstract class AbstrCFMLExprTransformer {
 	* EBNF:<br />
 	* <code>(letter | "_") {letter | "_"|digit};</code>
 	 * @param firstCanBeNumber 
-	 * @param lowerCase 
+	 * @param upper
 	* @return Identifier.
 	*/
-	protected Identifier identifier(Data data,boolean firstCanBeNumber,boolean upper) {
+	protected Identifier identifier(ExprData data,boolean firstCanBeNumber,boolean upper) {
 		Position start = data.cfml.getPosition();
 		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
 		    if(!firstCanBeNumber) return null;
@@ -1488,7 +1503,7 @@ public abstract class AbstrCFMLExprTransformer {
 				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start,data.cfml.getPosition());
 	}
 	
-	protected String identifier(Data data,boolean firstCanBeNumber) {
+	protected String identifier(ExprData data,boolean firstCanBeNumber) {
 		int start = data.cfml.getPos();
 		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
 		    if(!firstCanBeNumber) return null;
@@ -1514,7 +1529,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private ExprString structElement(Data data) throws TemplateException {
+	private ExprString structElement(ExprData data) throws TemplateException {
         comments(data);
         ExprString name = CastString.toExprString(assignOp(data));
 		if(name instanceof LitString)((LitString)name).fromBracket(true);
@@ -1532,24 +1547,23 @@ public abstract class AbstrCFMLExprTransformer {
 	* <code>[impOp{"," impOp}];</code>
 	* @param name Identifier der Funktion als Zeichenkette
 	* @param checkLibrary Soll gepr￼ft werden ob die Funktion innerhalb der Library existiert.
-	* @param nameProp Identifier als CFXD Element, wenn dieses null ist wird es ignoriert.
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private FunctionMember getFunctionMember(Data data,
+	private FunctionMember getFunctionMember(ExprData data,
 			final ExprString name,
 		boolean checkLibrary)
 		throws TemplateException {
 
 		// get Function Library
-		checkLibrary=checkLibrary && data.fld!=null;
+		checkLibrary=checkLibrary && data.flibs!=null;
 		FunctionLibFunction flf = null;
 		if (checkLibrary) {
 			if(!(name instanceof Literal))
 				throw new TemplateException(data.cfml,"syntax error"); // should never happen!
 			
-			for (int i = 0; i < data.fld.length; i++) {
-				flf = data.fld[i].getFunction(((Literal)name).getString());
+			for (int i = 0; i < data.flibs.length; i++) {
+				flf = data.flibs[i].getFunction(((Literal)name).getString());
 				if (flf != null)break;
 			}
 			if (flf == null) {
@@ -1561,7 +1575,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if(checkLibrary) {
 			BIF bif=new BIF(name,flf);
 			bif.setArgType(flf.getArgType());
-			bif.setClassName(flf.getCls());
+			bif.setClass(flf.getClazz());
 			bif.setReturnType(flf.getReturnTypeAsString());
 			fm=bif;
 			
@@ -1686,7 +1700,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @return CFXD Element
 	 * @throws TemplateException 
 	*/
-	private Expression sharp(Data data) throws TemplateException {
+	private Expression sharp(ExprData data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent('#'))
 			return null;
 		Expression expr;
@@ -1709,7 +1723,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @return parsed Element
 	 * @throws TemplateException
 	 */
-	private Expression simple(Data data,String[] breakConditions) throws TemplateException {
+	private Expression simple(ExprData data,String[] breakConditions) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
 		Position line = data.cfml.getPosition();
 		outer:while(data.cfml.isValidIndex()) {
@@ -1739,7 +1753,7 @@ public abstract class AbstrCFMLExprTransformer {
      * @param data 
      * @throws TemplateException
      */
-    protected void comments(Data data) throws TemplateException {
+    protected void comments(ExprData data) throws TemplateException {
         data.cfml.removeSpace();
         while(comment(data)){data.cfml.removeSpace();}
     }
@@ -1752,7 +1766,7 @@ public abstract class AbstrCFMLExprTransformer {
      * @return bool Wurde ein Kommentar entfernt?
      * @throws TemplateException
      */
-    private boolean comment(Data data) throws TemplateException {
+    private boolean comment(ExprData data) throws TemplateException {
         if(singleLineComment(data.cfml) || multiLineComment(data) || CFMLTransformer.comment(data.cfml)) return true;
         return false;
     }
@@ -1765,7 +1779,7 @@ public abstract class AbstrCFMLExprTransformer {
      * @return bool Wurde ein Kommentar entfernt?
      * @throws TemplateException
      */
-    private boolean multiLineComment(Data data) throws TemplateException {
+    private boolean multiLineComment(ExprData data) throws TemplateException {
        CFMLString cfml = data.cfml;
     	if(!cfml.forwardIfCurrent("/*")) return false;
         int pos=cfml.getPos();

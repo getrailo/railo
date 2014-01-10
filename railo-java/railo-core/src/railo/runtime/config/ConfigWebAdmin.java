@@ -1,13 +1,19 @@
 package railo.runtime.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -32,6 +38,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
@@ -46,7 +53,6 @@ import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.WDDXConverter;
-import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -54,6 +60,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
+import railo.runtime.extension.RHExtension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
 import railo.runtime.functions.other.URLEncodedFormat;
@@ -76,7 +83,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -87,6 +93,7 @@ import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.video.VideoExecuter;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLibException;
@@ -128,17 +135,22 @@ public final class ConfigWebAdmin {
     
     /**
      * @param password
+     * @throws IOException 
+     * @throws DOMException 
      * @throws ExpressionException 
      */
-    public void setPassword(String password) throws SecurityException {
+    public void setPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        if(password==null || password.length()==0) {
-            if(root.getAttribute("password")!=null)
-                root.removeAttribute("password");
+        
+        if(root.hasAttribute("password")) root.removeAttribute("password");
+        
+        
+        if(StringUtil.isEmpty(password)) {
+            if(root.hasAttribute("pw")) root.removeAttribute("pw");
         }
         else {
-            root.setAttribute("password",new BlowfishEasy("tpwisgh").encryptString(password));
+            root.setAttribute("pw",password);
         }
     }
 
@@ -179,7 +191,7 @@ public final class ConfigWebAdmin {
         else { 
             ConfigServerImpl cs=(ConfigServerImpl)config;
             ConfigWebImpl cw=cs.getConfigWebImpl(contextPath);
-            if(cw!=null)cw.setPassword(false,cw.getPassword(),password);
+            if(cw!=null)cw.setPassword(false,cw.getPassword(),password,true,false);
         }
     }
     
@@ -232,8 +244,28 @@ public final class ConfigWebAdmin {
     		
     	}
     	setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
-    	store(config);
+    	_store(config);
     }
+    
+    public static void checkForChangesInConfigFile(Config config) {
+    	ConfigImpl ci=(ConfigImpl) config;
+		if(!ci.checkForChangesInConfigFile()) return;
+		
+		Resource file = config.getConfigFile();
+		long diff=file.lastModified()-ci.lastModified();
+		if(diff<10 && diff>-10) return; 
+		// reload
+		try {
+			ConfigWebAdmin admin = ConfigWebAdmin.newInstance(ci, null);
+			admin.reload(ci, false);
+			SystemOut.printDate(ci.getOutWriter(), "reloaded the configuration ["+file+"] automaticly");
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
+    
+    
 
     private void addResourceProvider(String scheme,String clazz,String arguments) throws SecurityException {
     	checkWriteAccess();
@@ -284,26 +316,30 @@ public final class ConfigWebAdmin {
 	    return parser.getDocument();
     }
     
-    /**
-     * store changes back to railo xml
-     * @throws PageException
-     * @throws SAXException
-     * @throws ClassNotFoundException
-     * @throws IOException
-     * @throws TagLibException
-     * @throws FunctionLibException
-     */
-    public void store() throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
-    	store(config);
+    private static synchronized void _store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	admin._reload(config, true);
+    }
+
+    private synchronized void _store() throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	_reload(config, true);
     }
     
-    private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    public synchronized void store() throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	reload(config, true);
+    }
+    
+    private synchronized void reload(ConfigImpl config, boolean storeInMemoryData) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	if(storeInMemoryData)checkWriteAccess();
+    	_reload(config, storeInMemoryData);
+    }
+
+    private synchronized void _reload(ConfigImpl config, boolean storeInMemoryData) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	renameOldstyleCFX();
     	
-    	checkWriteAccess();
-        createAbort();
+    	createAbort();
         if(config instanceof ConfigServerImpl) {
-        	XMLCaster.writeTo(doc,config.getConfigFile());
+        	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             
             ConfigServerImpl cs=(ConfigServerImpl) config;
             ConfigServerFactory.reloadInstance(cs);
@@ -313,13 +349,14 @@ public final class ConfigWebAdmin {
             }
         }
         else {
-            XMLCaster.writeTo(doc,config.getConfigFile());
+        	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             //SystemUtil.sleep(10);
             ConfigServerImpl cs=((ConfigWebImpl)config).getConfigServerImpl();
             
             ConfigWebFactory.reloadInstance(cs,(ConfigWebImpl)config,false);
         }
     }
+    
     
     
 
@@ -329,6 +366,16 @@ public final class ConfigWebAdmin {
     	}
     	catch(Throwable t) {}
     }
+
+
+	public void setTaskMaxThreads(Integer maxThreads) throws SecurityException {
+		checkWriteAccess();
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        if(!hasAccess)
+            throw new SecurityException("no access to update task settings");
+        Element mail=_getRootElement("remote-clients");
+        mail.setAttribute("max-threads",Caster.toString(maxThreads,""));
+	}
 
 	/**
      * sets Mail Logger to Config
@@ -365,12 +412,14 @@ public final class ConfigWebAdmin {
         mail.setAttribute("spool-enable",Caster.toString(spoolEnable,""));
         //config.setMailSpoolEnable(spoolEnable);
     }
+    
+    
 
-    /**
+    /* *
      * sets if er interval is enable or not
      * @param interval
      * @throws SecurityException
-     */
+     * /
     public void setMailSpoolInterval(Integer interval) throws SecurityException {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAIL);
@@ -379,7 +428,7 @@ public final class ConfigWebAdmin {
         Element mail=_getRootElement("mail");
         mail.setAttribute("spool-interval",Caster.toString(interval,""));
         //config.setMailSpoolInterval(interval);
-    }
+    }*/
 
     /**
      * sets the timeout for the spooler for one job
@@ -497,6 +546,26 @@ public final class ConfigWebAdmin {
 	      	}
         }
     }
+    
+    static void updateMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws SAXException, IOException, PageException {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	admin._updateMapping(virtual, physical, archive, primary, inspect, toplevel);
+    	admin._store();
+    }
+    
+
+    static void updateComponentMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect) throws SAXException, IOException, PageException {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	admin._updateComponentMapping(virtual, physical, archive, primary, inspect);
+    	admin._store();
+    }
+    
+
+    static void updateCustomTagMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect) throws SAXException, IOException, PageException {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	admin._updateCustomTag(virtual, physical, archive, primary, inspect);
+    	admin._store();
+    }
 
     /**
      * insert or update a mapping on system
@@ -509,13 +578,18 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateMapping(String virtual, String physical,String archive,String primary, boolean trusted, boolean toplevel) throws ExpressionException, SecurityException {
+    public void updateMapping(String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws ExpressionException, SecurityException {
     	checkWriteAccess();
+    	_updateMapping(virtual, physical, archive, primary, inspect, toplevel);
+    }
+    private void _updateMapping(String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws ExpressionException, SecurityException {
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAPPING);
         
         virtual=virtual.trim(); 
-        physical=physical.trim();
-        archive=archive.trim();
+        if(physical==null) physical="";
+        else physical=physical.trim();
+        if(archive==null) archive="";
+        else archive=archive.trim();
         primary=primary.trim();
         if(!hasAccess)
             throw new SecurityException("no access to update mappings");
@@ -533,7 +607,7 @@ public final class ConfigWebAdmin {
         boolean isArchive=primary.equalsIgnoreCase("archive");
         
         if((physical.length()+archive.length())==0)
-            throw new ExpressionException("physical or archive must gave a value");
+            throw new ExpressionException("physical or archive must have a value");
         
         if(isArchive && archive.length()==0 ) isArchive=false;
         //print.ln("isArchive:"+isArchive);
@@ -544,7 +618,6 @@ public final class ConfigWebAdmin {
         
         
         Element mappings=_getRootElement("mappings");
-        
         // Update
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
       	for(int i=0;i<children.length;i++) {
@@ -568,7 +641,8 @@ public final class ConfigWebAdmin {
                         el.removeAttribute("archive");
                     }
 		      		el.setAttribute("primary",isArchive?"archive":"physical");
-		      		el.setAttribute("trusted",Caster.toString(trusted));
+		      		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+		      		el.removeAttribute("trusted");
 		      		el.setAttribute("toplevel",Caster.toString(toplevel));
 		      		return ;
 	  			}
@@ -582,7 +656,7 @@ public final class ConfigWebAdmin {
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",isArchive?"archive":"physical");
-  		el.setAttribute("trusted",Caster.toString(trusted));
+  		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
   		el.setAttribute("toplevel",Caster.toString(toplevel));
   		
   		// set / to the end
@@ -737,7 +811,7 @@ public final class ConfigWebAdmin {
         Element mappings=_getRootElement("custom-tag");
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
       	for(int i=0;i<children.length;i++) {
-      	    if(virtual.equals("/"+i))mappings.removeChild(children[i]);
+      	    if(virtual.equals(createVirtual(children[i])))mappings.removeChild(children[i]);
       	}
     }
     
@@ -746,8 +820,10 @@ public final class ConfigWebAdmin {
     	
         Element mappings=_getRootElement("component");
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+        String v;
       	for(int i=0;i<children.length;i++) {
-      	    if(virtual.equals("/"+i))mappings.removeChild(children[i]);
+      		v=createVirtual(children[i]);
+        	if(virtual.equals(v))mappings.removeChild(children[i]);
       	}
     }
     
@@ -764,13 +840,19 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateCustomTag(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
+    public void updateCustomTag(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException, SecurityException {
     	checkWriteAccess();
+    	_updateCustomTag(virtual, physical, archive, primary, inspect);
+    }
+    private void _updateCustomTag(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException, SecurityException {
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
         if(!hasAccess)
             throw new SecurityException("no access to change custom tag settings");
+        if(physical==null)physical="";
+        if(archive==null)archive="";
         
         //virtual="/custom-tag";
+        if(StringUtil.isEmpty(virtual))virtual=createVirtual(physical,archive);
         
         boolean isArchive=primary.equalsIgnoreCase("archive");
         if(isArchive && archive.length()==0 ) {
@@ -783,14 +865,18 @@ public final class ConfigWebAdmin {
         Element mappings=_getRootElement("custom-tag");
         
         // Update
+        String v;
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
         for(int i=0;i<children.length;i++) {
-      	    if(("/"+i).equals(virtual)) {
-	      		Element el=children[i];
-	      		el.setAttribute("physical",physical);
+        	Element el=children[i];
+      		v=createVirtual(el);
+        	if(v.equals(virtual)) {
+        		el.setAttribute("virtual",v);
+        		el.setAttribute("physical",physical);
 	      		el.setAttribute("archive",archive);
 	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-	      		el.setAttribute("trusted",Caster.toString(trusted));
+	      		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+	      		el.removeAttribute("trusted");
 	      		return ;
   			}
       	}
@@ -801,18 +887,21 @@ public final class ConfigWebAdmin {
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-  		el.setAttribute("trusted",Caster.toString(trusted));
+  		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+  		el.setAttribute("virtual",virtual);
     }
     
-
-    public void updateComponentMapping(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
+    public void updateComponentMapping(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException, SecurityException {
     	checkWriteAccess();
-    	//boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
-        //if(!hasAccess)
-        //    throw new SecurityException("no access to change custom tag settings");
-        
-        //virtual="/custom-tag";
+    	_updateComponentMapping(virtual, physical, archive, primary, inspect);
+    }	
+    private void _updateComponentMapping(String virtual,String physical,String archive,String primary, short inspect) throws ExpressionException {
     	primary=primary.equalsIgnoreCase("archive")?"archive":"physical";
+        if(physical==null)physical="";
+        else physical=physical.trim();
+        
+    	if(archive==null)archive="";
+        else archive=archive.trim();
         
         boolean isArchive=primary.equalsIgnoreCase("archive");
         if(isArchive && archive.length()==0 ) {
@@ -826,7 +915,7 @@ public final class ConfigWebAdmin {
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
         Element el;
         
-        // ignore when exists
+        /* ignore when exists
         for(int i=0;i<children.length;i++) {
       		el=children[i];
       	    if(el.getAttribute("physical").equals(physical) &&
@@ -835,17 +924,21 @@ public final class ConfigWebAdmin {
       	    		el.getAttribute("trusted").equals(Caster.toString(trusted))){
       	    	return;
   			}
-      	}
+      	}*/
         
         
         // Update
+        String v;
         for(int i=0;i<children.length;i++) {
-      	    if(("/"+i).equals(virtual)) {
-	      		el=children[i];
-	      		el.setAttribute("physical",physical);
+        	el=children[i];
+        	v=createVirtual(el); // if there is no virtual defintion (old records), we use the position
+      		if(v.equals(virtual)) {
+      			el.setAttribute("virtual",v); // set to make sure it exists for the future
+      			el.setAttribute("physical",physical);
 	      		el.setAttribute("archive",archive);
 	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-	      		el.setAttribute("trusted",Caster.toString(trusted));
+	      		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+	      		el.removeAttribute("trusted");
 	      		return ;
   			}
       	}
@@ -856,13 +949,25 @@ public final class ConfigWebAdmin {
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-  		el.setAttribute("trusted",Caster.toString(trusted));
+  		el.setAttribute("inspect-template",ConfigWebUtil.inspectTemplate(inspect, ""));
+  		el.setAttribute("virtual",virtual);
     }
 
     
 
 
-    /**
+    public static String createVirtual(Element el) {
+    	String str = el.getAttribute("virtual");
+    	if(!StringUtil.isEmpty(str)) return str;
+    	
+    	return  createVirtual(el.getAttribute("physical"),el.getAttribute("archive"));
+	}
+    public static String createVirtual(String physical,String archive) {
+    	return  "/"+MD5.getDigestAsString(physical+":"+archive,"");
+	}
+
+
+	/**
      * insert or update a Java CFX Tag
      * @param name
      * @param strClass
@@ -1130,9 +1235,9 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
-            String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,boolean validate,boolean storage,String timezone, Struct custom) throws ExpressionException, SecurityException {
+    public void updateDataSource(String name, String newName, String clazzName, String dsn, String username, String password,
+            String host, String database, int port, int connectionLimit, int connectionTimeout, long metaCacheTimeout,
+            boolean blob, boolean clob, int allow, boolean validate, boolean storage, String timezone, Struct custom, String dbdriver) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1201,13 +1306,16 @@ public final class ConfigWebAdmin {
                 el.setAttribute("validate",Caster.toString(validate));
                 el.setAttribute("storage",Caster.toString(storage));
                 el.setAttribute("custom",toStringURLStyle(custom));
-                
-	      		return ;
+
+	            if (!StringUtil.isEmpty( dbdriver ))
+		            el.setAttribute("dbdriver", Caster.toString(dbdriver));
+
+	      		return;
   			}
       	}
       	
       	if(!hasInsertAccess)
-            throw new SecurityException("no access to add datsource connections, the maximum count of ["+maxLength+"] datasources is reached");
+            throw new SecurityException("no access to add datasource connections, the maximum count of ["+maxLength+"] datasources is reached");
       	
       	// Insert
       	Element el=doc.createElement("data-source");
@@ -1229,14 +1337,16 @@ public final class ConfigWebAdmin {
         if(connectionTimeout>-1)el.setAttribute("connectionTimeout",Caster.toString(connectionTimeout));
         if(metaCacheTimeout>-1)el.setAttribute("metaCacheTimeout",Caster.toString(metaCacheTimeout));
         
-        
-        
         el.setAttribute("blob",Caster.toString(blob));
         el.setAttribute("clob",Caster.toString(clob));
         el.setAttribute("validate",Caster.toString(validate));
         el.setAttribute("storage",Caster.toString(storage));
         if(allow>-1)el.setAttribute("allow",Caster.toString(allow));
         el.setAttribute("custom",toStringURLStyle(custom));
+
+	    if (!StringUtil.isEmpty( dbdriver ))
+		    el.setAttribute("dbdriver", Caster.toString(dbdriver));
+
         /*
   		    String host,String database,int port,String connectionLimit, String connectionTimeout,
             boolean blob,boolean clob,int allow,Struct custom
@@ -1335,6 +1445,8 @@ public final class ConfigWebAdmin {
     		parent.removeAttribute("default-query");
         if(name.equalsIgnoreCase(parent.getAttribute("default-resource")))
     		parent.removeAttribute("default-resource");
+        if(name.equalsIgnoreCase(parent.getAttribute("default-function")))
+    		parent.removeAttribute("default-function");
         
         
         if(_default==ConfigImpl.CACHE_DEFAULT_OBJECT){
@@ -1605,7 +1717,7 @@ public final class ConfigWebAdmin {
   			if(providers[i].getClass().getName().equals(clazz)){
   				if(providers[i].isAttributesSupported())support.append("attributes");
   	            if(providers[i].isModeSupported())support.append("mode");
-  	            qry.setAt("support",row,List.arrayToList(support, ","));
+  	            qry.setAt("support",row,ListUtil.arrayToList(support, ","));
   	            qry.setAt("scheme",row,providers[i].getScheme());
   	            qry.setAt("caseSensitive",row,Caster.toBoolean(providers[i].isCaseSensitive()));
   	            qry.setAt("default",row,def);
@@ -1668,8 +1780,8 @@ public final class ConfigWebAdmin {
       	for(int i=0;i<children.length;i++) {
       	    String n=children[i].getAttribute("name"); 
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
-  	    		Map conns = config.getCacheConnections();
-  	    		CacheConnection cc=(CacheConnection) conns.get(n);
+  	    		Map<String, CacheConnection> conns = config.getCacheConnections();
+  	    		CacheConnection cc= conns.get(n.toLowerCase());
   	    		if(cc!=null)Util.removeEL(config instanceof ConfigWeb?(ConfigWeb)config:null,cc);
   	    	  parent.removeChild(children[i]);
   			}
@@ -1835,8 +1947,9 @@ public final class ConfigWebAdmin {
      * updates request timeout value
      * @param span
      * @throws SecurityException
+     * @throws ApplicationException 
      */
-    public void updateRequestTimeout(TimeSpan span) throws SecurityException {
+    public void updateRequestTimeout(TimeSpan span) throws SecurityException, ApplicationException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -1846,7 +1959,9 @@ public final class ConfigWebAdmin {
         
         Element application=_getRootElement("application");
         if(span!=null){
-        application.setAttribute("requesttimeout",span.getDay()+","+span.getHour()+","+span.getMinute()+","+span.getSecond());
+        	if(span.getMillis()<=0)
+        		throw new ApplicationException("value must be a positive number");
+        	application.setAttribute("requesttimeout",span.getDay()+","+span.getHour()+","+span.getMinute()+","+span.getSecond());
         }
         else application.removeAttribute("requesttimeout");
         
@@ -1871,7 +1986,86 @@ public final class ConfigWebAdmin {
         else scope.removeAttribute("sessiontimeout");
     }
     
-    /**
+    
+
+
+	public void updateClientStorage(String storage) throws SecurityException, ApplicationException {
+		updateStorage("client", storage);
+	}
+
+
+	public void updateSessionStorage(String storage) throws SecurityException, ApplicationException {
+		updateStorage("session", storage);
+	}
+	
+
+	private void updateStorage(String storageName,String storage) throws SecurityException, ApplicationException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        storage=validateStorage(storage);
+        
+        
+        Element scope=_getRootElement("scope");
+        if(!StringUtil.isEmpty(storage,true))scope.setAttribute(storageName+"storage",storage);
+        else scope.removeAttribute(storageName+"storage");
+	}
+    
+    
+    
+    private String validateStorage(String storage) throws ApplicationException {
+    	storage=storage.trim().toLowerCase();
+        
+    	// empty
+    	if(StringUtil.isEmpty(storage,true)) return "";
+    	
+    	// standard storages
+    	if("cookie".equals(storage) || "memory".equals(storage) || "file".equals(storage)) 
+    		return storage;
+    	
+    	// aliases
+    	if("ram".equals(storage)) return "memory";
+    	if("registry".equals(storage)) return "file";
+    	
+    	// datasource
+    	DataSource  ds = config.getDataSource(storage,null);
+    	if(ds!=null) {
+    		if(ds.isStorage())return storage;
+    		throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage");
+    	}
+		
+    	// cache
+    	CacheConnection cc = Util.getCacheConnection(config, storage,null);
+    	if(cc!=null) {
+    		if(cc.isStorage())return storage;
+    		throw new ApplicationException("cache ["+storage+"] is not enabled to be used as session/client storage");
+    	}
+    	
+    	String sdx=StringUtil.soundex(storage);
+    	
+    	// check if a datasource has a similar name 
+    	DataSource[] sources = config.getDataSources();
+    	for(int i=0;i<sources.length;i++){
+    		if(StringUtil.soundex(sources[i].getName()).equals(sdx))
+    			throw new ApplicationException("no matching storage for ["+storage+"] found, did you mean ["+sources[i].getName()+"]");
+    	}
+    	
+    	// check if a cache has a similar name 
+    	Iterator<String> it = config.getCacheConnections().keySet().iterator();
+    	String name;
+    	while(it.hasNext()){
+    		name=it.next();
+    		if(StringUtil.soundex(name).equals(sdx))
+    			throw new ApplicationException( "no matching storage for ["+storage+"] found, did you mean ["+name+"]");
+    	}
+    	
+		
+    	throw new ApplicationException("no matching storage for ["+storage+"] found");
+	}
+
+
+	/**
      * updates session timeout value
      * @param span
      * @throws SecurityException
@@ -1892,9 +2086,31 @@ public final class ConfigWebAdmin {
         
     }
     
-    
 
-    public void updateSuppressWhitespace(Boolean value) throws SecurityException {
+    public void updateCFMLWriterType(String writerType) throws SecurityException, ApplicationException {
+    	checkWriteAccess();
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        writerType=writerType.trim();
+        
+        // remove
+        if(StringUtil.isEmpty(writerType)) {
+        	if(scope.hasAttribute("cfml-writer"))scope.removeAttribute("cfml-writer");
+        	return;
+        }
+        
+        // update
+        if(!"white-space".equalsIgnoreCase(writerType) && 
+        		!"white-space-pref".equalsIgnoreCase(writerType) && 
+        		!"regular".equalsIgnoreCase(writerType))
+        	throw new ApplicationException("invalid writer type defintion ["+writerType+"], valid types are [white-space, white-space-pref, regular]");
+        
+        scope.setAttribute("cfml-writer",writerType.toLowerCase());
+    } 
+
+    /*public void updateSuppressWhitespace(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -1902,7 +2118,8 @@ public final class ConfigWebAdmin {
         
         Element scope=_getRootElement("setting");
         scope.setAttribute("suppress-whitespace",Caster.toString(value,""));
-    }
+    }*/
+    
     public void updateSuppressContent(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
@@ -1942,6 +2159,17 @@ public final class ConfigWebAdmin {
         Element scope=_getRootElement("setting");
         scope.setAttribute("content-length",Caster.toString(value,""));
     }
+    
+
+	public void updateBufferOutput(Boolean value) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("buffer-output",Caster.toString(value,""));
+	}
     
     /**
      * updates request timeout value
@@ -2596,18 +2824,23 @@ public final class ConfigWebAdmin {
     /**
      * @param password
      * @throws SecurityException 
+     * @throws IOException 
+     * @throws DOMException 
      */
-    public void updateDefaultPassword(String password) throws SecurityException {
+    public void updateDefaultPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.setAttribute("default-password",new BlowfishEasy("tpwisgh").encryptString(password));
-        ((ConfigServerImpl)config).setDefaultPassword(password);
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password"); // remove old PW type
+        String hpw=ConfigWebFactory.hash(password);
+        root.setAttribute("default-pw",hpw);
+        ((ConfigServerImpl)config).setDefaultPassword(hpw);
     }
 
 	public void removeDefaultPassword() throws SecurityException {
 		checkWriteAccess();
         Element root=doc.getDocumentElement();
-        root.removeAttribute("default-password");
+        if(root.hasAttribute("default-password"))root.removeAttribute("default-password");
+        if(root.hasAttribute("default-pw"))root.removeAttribute("default-pw");
         ((ConfigServerImpl)config).setDefaultPassword(null);
 	}
     
@@ -2682,7 +2915,7 @@ public final class ConfigWebAdmin {
         Element update=_getRootElement("update");
         update.setAttribute("type",type);
         try {
-			location=HTTPUtil.toURL(location).toString();
+			location=HTTPUtil.toURL(location,true).toString();
 		} 
         catch (Throwable e) {}
         update.setAttribute("location",location);
@@ -2927,11 +3160,11 @@ public final class ConfigWebAdmin {
 	private String checkCharset(String charset)  throws PageException{
 		charset=charset.trim();
 		if("system".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("jre".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		else if("os".equalsIgnoreCase(charset))
-			charset=SystemUtil.getCharset();
+			charset=SystemUtil.getCharset().name();
 		
 		// check access
 		boolean hasAccess = ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_SETTING);
@@ -3012,14 +3245,14 @@ public final class ConfigWebAdmin {
 			throw new SecurityException("no access to update custom tag setting");
 		
 		// check
-		Array arr = List.listToArrayRemoveEmpty(extensions, ',');
-		List.trimItems(arr);
+		Array arr = ListUtil.listToArrayRemoveEmpty(extensions, ',');
+		ListUtil.trimItems(arr);
 		//throw new ApplicationException("you must define at least one extension");
 		
 		
 		// update charset
 		Element element = _getRootElement("custom-tag");
-		element.setAttribute("extensions",List.arrayToList(arr, ","));
+		element.setAttribute("extensions",ListUtil.arrayToList(arr, ","));
 	}
 
 
@@ -3345,7 +3578,7 @@ public final class ConfigWebAdmin {
 	public void verifyExtensionProvider(String strUrl) throws PageException {
 		HTTPResponse method=null;
 		try {
-			URL url = HTTPUtil.toURL(strUrl+"?wsdl");
+			URL url = HTTPUtil.toURL(strUrl+"?wsdl",true);
 			method = HTTPEngine.get(url, null, null, 2000,HTTPEngine.MAX_REDIRECT, null, null, null, null);
 		} 
 		catch (MalformedURLException e) {
@@ -3373,7 +3606,7 @@ public final class ConfigWebAdmin {
 		updateLD(config.getFldFile(),resFld);
 	}
 	
-	public void updateLD(Resource dir,Resource res) throws IOException {
+	private void updateLD(Resource dir,Resource res) throws IOException {
 		if(!dir.exists())dir.createDirectory(true);
     	
     	Resource file = dir.getRealResource(res.getName());
@@ -3381,14 +3614,44 @@ public final class ConfigWebAdmin {
 			ResourceUtil.copy(res, file);
 		}
 	}
+	
+	static void updateTLD(Config config,InputStream is,String name, boolean closeStream) throws IOException {
+		updateLD(config.getTldFile(),is,name,closeStream);
+	}
+	static void updateFLD(Config config,InputStream is,String name, boolean closeStream) throws IOException {
+		updateLD(config.getFldFile(),is,name,closeStream);
+	}
+	
+	private static void updateLD(Resource dir,InputStream is,String name, boolean closeStream) throws IOException {
+		if(!dir.exists())dir.createDirectory(true);
+    	Resource file = dir.getRealResource(name);
+    	IOUtil.copy(is, file.getOutputStream(), closeStream, true);
+	}
 
 	public void removeTLD(String name) throws IOException {
 		removeLD(config.getTldFile(),name);
+	}
+	
+	public void removeTLDs(String[] names) throws IOException {
+		if(ArrayUtil.isEmpty(names)) return;
+		Resource file = config.getTldFile();
+		for(int i=0;i<names.length;i++){
+			removeLD(file,names[i]);
+		}
+	}
+
+	public void removeFLDs(String[] names) throws IOException {
+		if(ArrayUtil.isEmpty(names)) return;
+		Resource file = config.getFldFile();
+		for(int i=0;i<names.length;i++){
+			removeLD(file,names[i]);
+		}
 	}
 
 	public void removeFLD(String name) throws IOException {
 		removeLD(config.getFldFile(),name);
 	}
+	
 	private void removeLD(Resource dir,String name) throws IOException {
 		if(dir.isDirectory()){
 			Resource[] children = dir.listResources(new MyResourceNameFilter(name));
@@ -3399,6 +3662,9 @@ public final class ConfigWebAdmin {
 	}
 
 	public void updateJar(Resource resJar) throws IOException {
+		updateJar(config, resJar);
+	}
+	private static void updateJar(Config config, Resource resJar) throws IOException {
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		if(!lib.exists())lib.mkdir();
     	
@@ -3407,10 +3673,20 @@ public final class ConfigWebAdmin {
 		if(fileLib.length()!=resJar.length()){
 			IOUtil.closeEL(config.getClassLoader());
 			ResourceUtil.copy(resJar, fileLib);
-			ConfigWebFactory.reloadLib(this.config);
+			ConfigWebFactory.reloadLib((ConfigImpl) config);
 		}
 	}
-
+	
+	static void updateJar(Config config, InputStream is, String name,boolean closeStream) throws IOException {
+		Resource lib = config.getConfigDir().getRealResource("lib");
+		if(!lib.exists())lib.mkdir();
+    	
+		Resource fileLib = lib.getRealResource(name);
+		
+		IOUtil.closeEL(config.getClassLoader());
+		IOUtil.copy(is, fileLib.getOutputStream(), closeStream, true);
+		ConfigWebFactory.reloadLib((ConfigImpl) config);
+	}
 
 	public void updateLogSettings(String name, int level,String virtualpath, int maxfile, int maxfilesize) throws ApplicationException {
 		name=name.toLowerCase().trim();
@@ -3564,12 +3840,15 @@ public final class ConfigWebAdmin {
 	}
 
 	public void removeJar(String strNames) throws IOException {
+		removeJar(ListUtil.listToStringArray(strNames, ','));
+	}
+	public void removeJar(String[] names) throws IOException {
+		if(ArrayUtil.isEmpty(names)) return;
 		
 		
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		boolean changed=false;
 		if(lib.isDirectory()){
-			String[] names = List.listToStringArray(strNames, ',');
 			for(int n=0;n<names.length;n++){
 				Resource[] children = lib.listResources(new MyResourceNameFilter(names[n].trim()));
 				for(int i=0;i<children.length;i++){
@@ -3601,9 +3880,7 @@ public final class ConfigWebAdmin {
 			this.name=name;
 		}
 		
-		/**
-		 * @see railo.commons.io.res.filter.ResourceNameFilter#accept(railo.commons.io.res.Resource, java.lang.String)
-		 */
+		@Override
 		public boolean accept(Resource parent, String name) {
 			return name.equals(this.name);
 		}
@@ -3764,7 +4041,7 @@ public final class ConfigWebAdmin {
 	}
 
 
-	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg) throws PageException {
+	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg, Boolean nullSupport) throws PageException {
 		
 		Element element = _getRootElement("compiler");
 		
@@ -3785,7 +4062,383 @@ public final class ConfigWebAdmin {
     		element.setAttribute("supress-ws-before-arg", Caster.toString(supressWSBeforeArg));
     	}
     	
+    	// full null support
+    	if(nullSupport==null){
+			if(element.hasAttribute("full-null-support"))
+				element.removeAttribute("full-null-support");
+		}
+    	else {
+    		element.setAttribute("full-null-support", Caster.toString(nullSupport));
+    	}
+    	
     	
     	
 	}
+	
+	/*private void updatePlugin(Resource src) throws PageException, IOException {
+        Resource srcDir = ResourceUtil.toResourceExisting(config, "zip://"+src.getAbsolutePath());
+        if(!doAccept(srcDir))
+        	throw new ApplicationException("plugin ["+src+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.util.ListUtil.arrayToList(srcDir.list(), ", ")+"]");
+        
+        String name=ResourceUtil.getName(src.getName());
+        
+        Resource dir = config.getConfigDir().getRealResource("context/admin/plugin");
+        Resource trgDir = dir.getRealResource(name);
+        if(trgDir.exists()){
+        	trgDir.remove(true);
+        }
+        
+        ResourceUtil.copyRecursive(srcDir, trgDir);    
+        store();
+    }
+	public static boolean doAccept(Resource res) {
+		return res.isDirectory() && res.getRealResource("/Action.cfc").isFile() && res.getRealResource("/language.xml").isFile();
+    }*/
+
+	
+	static Resource[] updateContext(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+    	//ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	List<Resource> filesDeployed=new ArrayList<Resource>();
+    	ConfigWebAdmin._updateContext(config, is, realpath, closeStream, filesDeployed);
+    	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
+    }
+
+	private static void _updateContext(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
+    	if(config instanceof ConfigServer) {
+    		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+    		if(webs.length==0) return;
+    		if(webs.length==1) {
+    			_updateContext(webs[0], is,realpath,closeStream,filesDeployed);
+    			return;
+    		}
+        	try{
+	    		byte[] barr = IOUtil.toBytes(is);
+	    		for(int i=0;i<webs.length;i++){
+	    			_updateContext(webs[i], new ByteArrayInputStream(barr),realpath,true,filesDeployed);
+	    		}
+        	}
+        	finally {
+        		if(closeStream)IOUtil.closeEL(is);
+        	}
+    		return ;
+    	}
+		
+    	// ConfigWeb
+    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
+        if(trg.exists()) trg.remove(true);
+        Resource p = trg.getParentResource();
+        if(!p.isDirectory()) p.createDirectory(true); 
+        IOUtil.copy(is, trg.getOutputStream(false), closeStream,true);
+        filesDeployed.add(trg);
+        _store((ConfigImpl)config);
+    }
+	public boolean removeContext(Config config, boolean store,String... realpathes) throws PageException, IOException, SAXException {
+		if(ArrayUtil.isEmpty(realpathes)) return false;
+		boolean force=false;
+		for(int i=0;i<realpathes.length;i++){
+			if(_removeContext(config, realpathes[i],store))
+				force=true;
+		}
+		return force;
+	}
+	
+	private boolean _removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
+    	
+		if(config instanceof ConfigServer) {
+			ConfigServer cs = ((ConfigServer)config);
+    		
+			// remove files from deploy folder
+			Resource deploy = cs.getConfigDir().getRealResource("web-context-deployment");
+    		Resource trg = deploy.getRealResource(realpath);
+    		
+    		if(trg.exists()) {
+    			trg.remove(true);
+    			ResourceUtil.removeEmptyFolders(deploy);
+    		}
+    		
+			// remove files from railo web context
+			boolean store=false;
+			ConfigWeb[] webs = cs.getConfigWebs();
+    		for(int i=0;i<webs.length;i++){
+	    		if(_removeContext(webs[i], realpath,_store)) {
+	    			store=true;
+	    		}
+	    	}
+    		return store;
+    	}
+		
+    	// ConfigWeb
+		Resource context = config.getConfigDir().getRealResource("context");
+    	Resource trg = context.getRealResource(realpath);
+    	if(trg.exists()) {
+        	trg.remove(true);
+        	if(_store) ConfigWebAdmin._store((ConfigImpl) config);
+        	ResourceUtil.removeEmptyFolders(context);
+        	return true;
+        }
+        return false;
+    }
+
+	static Resource[] updateApplication(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+    	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+    	List<Resource> filesDeployed=new ArrayList<Resource>();
+    	admin._updateApplication(config, is, realpath, closeStream, filesDeployed);
+    	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
+    }
+
+	private void _updateApplication(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
+    	if(config instanceof ConfigServer) {
+    		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+    		if(webs.length==0) return;
+    		if(webs.length==1) {
+    			_updateApplication(webs[0], is,realpath,closeStream,filesDeployed);
+    			return;
+    		}
+        	try{
+	    		byte[] barr = IOUtil.toBytes(is);
+	    		for(int i=0;i<webs.length;i++){
+	    			_updateApplication(webs[i], new ByteArrayInputStream(barr),realpath,true,filesDeployed);
+	    		}
+        	}
+        	finally {
+        		if(closeStream)IOUtil.closeEL(is);
+        	}
+    		return ;
+    	}
+		
+    	// ConfigWeb
+    	
+    	
+    	Resource trg = config.getRootDirectory().getRealResource(realpath);
+    	if(trg.exists()) trg.remove(true);
+        Resource p = trg.getParentResource();
+        if(!p.isDirectory()) p.createDirectory(true); 
+        IOUtil.copy(is, trg.getOutputStream(false), closeStream,true);
+        filesDeployed.add(trg);
+        //_store((ConfigImpl)config);
+    }
+
+	private void removeApplications(Config config,String[] realpathes) throws PageException, IOException, SAXException {
+		if(ArrayUtil.isEmpty(realpathes)) return;
+		for(int i=0;i<realpathes.length;i++){
+			removeApplication(config, realpathes[i]);
+		}
+	}
+	
+	private void removeApplication(Config config,String realpath) throws PageException, IOException, SAXException {
+    	if(config instanceof ConfigServer) {
+    		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
+			for(int i=0;i<webs.length;i++){
+				removeApplication(webs[i], realpath);
+    		}
+        	
+    		return ;
+    	}
+		
+    	// ConfigWeb
+    	Resource trg = config.getRootDirectory().getRealResource(realpath);
+    	if(trg.exists()) trg.remove(true);
+    }
+	
+	public static void removeRHExtension(ConfigImpl config,String extensionID) throws SAXException, IOException, PageException {
+		ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+		boolean storeChildren = admin._removeExtension(config, extensionID);
+		admin._store();
+		
+		if(storeChildren && config instanceof ConfigServer) {
+			ConfigServer cs = (ConfigServer)config;
+			ConfigWeb[] webs = cs.getConfigWebs();
+			for(int i=0;i<webs.length;i++) {
+				admin._store((ConfigImpl)webs[i]);
+			}
+		}
+	}
+
+	public boolean _removeExtension(ConfigImpl config,String extensionID) throws IOException, PageException, SAXException {
+		if(!Decision.isUUId(extensionID)) throw new IOException("id ["+extensionID+"] is invalid, it has to be a UUID"); 
+		
+		Element extensions=_getRootElement("extensions");
+		Element[] children = ConfigWebFactory.getChildren(extensions,"rhextension");// RailoHandledExtensions
+      	
+        // Update
+		Element el;
+		String id;
+		String[] arr;
+		boolean storeChildren=false;
+        for(int i=0;i<children.length;i++) {
+      	    el=children[i];
+      	    id=el.getAttribute("id");
+  			if(extensionID.equalsIgnoreCase(id)) {
+  				
+  				// jars
+  				arr=_removeExtensionCheckOtherUsage(children,el,"jars");
+  				removeJar(arr);
+  				// flds
+  				arr=_removeExtensionCheckOtherUsage(children,el,"flds");
+  				removeFLDs(arr);
+  				// tlds
+  				arr=_removeExtensionCheckOtherUsage(children,el,"tlds");
+  				removeTLDs(arr);
+  				// contexts
+  				arr=_removeExtensionCheckOtherUsage(children,el,"contexts");
+  				storeChildren=removeContext(config,false, arr);
+  				// applications
+  				arr=_removeExtensionCheckOtherUsage(children,el,"applications");
+  				removeApplications(config, arr);
+  				
+  				
+  				
+  				extensions.removeChild(el);
+  				return storeChildren;
+  			}
+      	}
+  		return false;
+	}
+	
+	private String[] _removeExtensionCheckOtherUsage(Element[] children, Element curr,String type) {
+		String currVal=curr.getAttribute(type);
+		if(StringUtil.isEmpty(currVal)) return null;
+		
+		String otherVal;
+		Element other;
+		Set<String> currSet = ListUtil.toSet(ListUtil.trimItems(ListUtil.listToStringArray(currVal, ',')));
+		String[] otherArr;
+		for(int i=0;i<children.length;i++) {
+			other=children[i];
+			if(other==curr) continue;
+			otherVal=other.getAttribute(type);
+			if(StringUtil.isEmpty(otherVal)) continue;
+			otherArr=ListUtil.trimItems(ListUtil.listToStringArray(otherVal, ','));
+			for(int y=0;y<otherArr.length;y++) {
+				currSet.remove(otherArr[y]);
+			}
+		}
+		return currSet.toArray(new String[currSet.size()]);
+	}
+
+
+	public static void updateRHExtension(ConfigImpl config,RHExtension rhExtension) throws SAXException, IOException, PageException {
+		ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
+		admin._updateExtension(config, rhExtension);
+		admin._store();
+	}
+
+
+	public void _updateExtension(ConfigImpl config,RHExtension ext) throws IOException {
+		if(!Decision.isUUId(ext.getId())) throw new IOException("id ["+ext.getId()+"] is invalid, it has to be a UUID"); 
+		
+		Element extensions=_getRootElement("extensions");
+		Element[] children = ConfigWebFactory.getChildren(extensions,"rhextension");// RailoHandledExtensions
+      	
+        // Update
+		Element el;
+		String provider,id;
+        for(int i=0;i<children.length;i++) {
+      	    el=children[i];
+      	    provider=el.getAttribute("provider");
+      	    id=el.getAttribute("id");
+  			if(ext.getId().equalsIgnoreCase(id)) {
+  				setExtensionAttrs(el,ext);
+  				return ;
+  			}
+      	}
+        
+     // Insert
+      	el = doc.createElement("rhextension");
+      	setExtensionAttrs(el,ext);
+  		extensions.appendChild(el);
+    	
+	}
+
+
+	private void setExtensionAttrs(Element el, RHExtension ext) {
+		setAttr(el,"id", ext.getId());
+		setAttr(el,"name", ext.getName());
+		setAttr(el,"version", ext.getVersion());
+		setAttr(el,"jars",ListUtil.arrayToList(ext.getJars(), ","));
+		setAttr(el,"flds",ListUtil.arrayToList(ext.getFlds(), ","));
+		setAttr(el,"tlds",ListUtil.arrayToList(ext.getTlds(), ","));
+		setAttr(el,"contexts",ListUtil.arrayToList(ext.getContexts(), ","));
+		setAttr(el,"applications",ListUtil.arrayToList(ext.getApplications(), ","));	
+	}
+
+
+	private void setAttr(Element el, String name, String value) {
+		if(value==null) value="";
+		el.setAttribute(name, value);
+	}
+
+
+	public void updateAuthKey(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// merge new key and existing
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			set.add(keys[i]);
+		}
+		set.add(key);
+		
+		
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+		
+		
+	}
+
+	public void removeAuthKeys(String key) throws PageException {
+		checkWriteAccess();
+		key=key.trim();
+		
+		// remove key
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		String[] keys = cs.getAuthenticationKeys();
+		Set<String> set=new HashSet<String>();
+		for(int i=0;i<keys.length;i++){
+			if(!key.equals(keys[i]))set.add(keys[i]);
+		}
+
+		Element root=doc.getDocumentElement();
+        root.setAttribute("auth-keys",authKeysAsList(set));
+	}
+
+	public void updateAPIKey(String key) throws SecurityException, ApplicationException {
+		checkWriteAccess();
+		key=key.trim();
+		if(!Decision.isGUId(key))
+			throw new ApplicationException("passed API Key ["+key+"] is not valid");
+		Element root=doc.getDocumentElement();
+        root.setAttribute("api-key",key);
+		
+	}
+	
+	public void removeAPIKey() throws PageException {
+		checkWriteAccess();
+		Element root=doc.getDocumentElement();
+        if(root.hasAttribute("api-key"))
+        	root.removeAttribute("api-key");
+	}
+
+	private String authKeysAsList(Set<String> set) throws PageException {
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = set.iterator();
+		String key;
+		while(it.hasNext()){
+			key=it.next().trim();
+			if(sb.length()>0)sb.append(',');
+			try {
+				sb.append(URLEncoder.encode(key, "UTF-8"));
+			}
+			catch (UnsupportedEncodingException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return sb.toString();
+	}
+
+
+
 }

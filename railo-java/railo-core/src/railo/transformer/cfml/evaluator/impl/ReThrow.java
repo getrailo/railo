@@ -9,7 +9,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag rethrow.
+ * Prueft den Kontext des Tag rethrow.
  * Das Tag <code>rethrow</code> darf nur innerhalb des Tag <code>throw</code> liegen.
  */
 public final class ReThrow extends EvaluatorSupport {

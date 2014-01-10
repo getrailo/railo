@@ -31,10 +31,7 @@ public class FileStreamWrapperRead extends FileStreamWrapper {
 		this.seekable=seekable;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.functions.file.FileStreamWrapper#read(int)
-	 */
+	@Override
 	public Object read(int len) throws IOException {
 		if(seekable) {
 			byte[] barr=new byte[len];
@@ -50,10 +47,7 @@ public class FileStreamWrapperRead extends FileStreamWrapper {
 		return new String(carr,0,len);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.functions.file.FileStreamWrapper#readLine()
-	 */
+	@Override
 	public String readLine() throws IOException {
 		if(seekable) {
 			return getRAF().readLine();
@@ -64,18 +58,14 @@ public class FileStreamWrapperRead extends FileStreamWrapper {
 		return _getBR().readLine();
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		super.setStatus(FileStreamWrapper.STATE_CLOSE);
 		if(br!=null)br.close();
 		if(raf!=null)raf.close();
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#getMode()
-	 */
+	@Override
 	public String getMode() {
 		return "read";
 	}
@@ -105,16 +95,12 @@ public class FileStreamWrapperRead extends FileStreamWrapper {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#getSize()
-	 */
+	@Override
 	public long getSize() {
 		return res.length();
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#skip(long)
-	 */
+	@Override
 	public void skip(int len) throws PageException {
 		if(seekable){
 			try {

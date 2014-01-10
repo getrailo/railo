@@ -64,8 +64,7 @@
 
 
 <cfif session.confirm.success>
-	<!--- loadcfc --->
-    <cfset zip="zip://"&destFile&"!/">
+	<cfset zip="zip://"&destFile&"!/">
     <cfset virtual='/install'>
     <cfset mappings[virtual]=zip>
     <cfapplication action="update" mappings="#mappings#">

@@ -2,22 +2,19 @@ package railo.runtime.gateway;
 
 import java.util.Map;
 
-import org.opencfml.eventgateway.Gateway;
-import org.opencfml.eventgateway.GatewayEngine;
-import org.opencfml.eventgateway.GatewayException;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
+import railo.runtime.gateway.proxy.GatewayProFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
-public class CFCGateway implements Gateway {
+public class CFCGateway implements GatewayPro {
 	
 	//private static final Object OBJ = new Object();
 	//private Component _cfc;
 	private String id;
-	private int state=Gateway.STOPPED;
+	private int state=GatewayPro.STOPPED;
 	private String cfcPath;
 	//private Config config;
 	//private String requestURI;
@@ -28,11 +25,9 @@ public class CFCGateway implements Gateway {
 		this.cfcPath=cfcPath;
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#init(java.lang.String, java.lang.String, railo.runtime.type.Struct)
-	 */
-	public void init(GatewayEngine engine,String id, String cfcPath, Map config) throws GatewayException {
-		this.engine=(GatewayEngineImpl) engine;
+	@Override
+	public void init(GatewayEnginePro engine,String id, String cfcPath, Map config) throws GatewayException {
+		this.engine=GatewayProFactory.toGatewayEngineImpl(engine);
 		this.id=id;
 		
 		//requestURI=engine.toRequestURI(cfcPath);
@@ -43,7 +38,7 @@ public class CFCGateway implements Gateway {
 			try {
 				args.setEL("listener", this.engine.getComponent(cfcPath,id));
 			} catch (PageException e) {
-				engine.log(this,GatewayEngine.LOGLEVEL_ERROR, e.getMessage());
+				engine.log(this,GatewayEnginePro.LOGLEVEL_ERROR, e.getMessage());
 			}
 		}
 		
@@ -51,18 +46,16 @@ public class CFCGateway implements Gateway {
 			callOneWay("init",args);
 		} catch (PageException pe) {
 			
-			engine.log(this,GatewayEngine.LOGLEVEL_ERROR, pe.getMessage());
+			engine.log(this,GatewayEnginePro.LOGLEVEL_ERROR, pe.getMessage());
 			//throw new PageGatewayException(pe);
 		}
 		
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doRestart()
-	 */
+	@Override
 	public void doRestart() throws GatewayException {
 
-		engine.log(this,GatewayEngine.LOGLEVEL_INFO,"restart");
+		engine.log(this,GatewayEnginePro.LOGLEVEL_INFO,"restart");
 		Struct args=new StructImpl();
 		try{
 			boolean has=callOneWay("restart",args);
@@ -79,16 +72,14 @@ public class CFCGateway implements Gateway {
 		
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doStart()
-	 */
+	@Override
 	public void doStart() throws GatewayException {
-		engine.log(this,GatewayEngine.LOGLEVEL_INFO,"start");
+		engine.log(this,GatewayEnginePro.LOGLEVEL_INFO,"start");
 		Struct args=new StructImpl();
 		state=STARTING;
 		try{
 			callOneWay("start",args);
-			engine.log(this,GatewayEngine.LOGLEVEL_INFO,"running");
+			engine.log(this,GatewayEnginePro.LOGLEVEL_INFO,"running");
 			state=RUNNING;
 		}
 		catch(PageException pe){
@@ -97,12 +88,10 @@ public class CFCGateway implements Gateway {
 		}
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doStop()
-	 */
+	@Override
 	public void doStop() throws GatewayException {
 
-		engine.log(this,GatewayEngine.LOGLEVEL_INFO,"stop");
+		engine.log(this,GatewayEnginePro.LOGLEVEL_INFO,"stop");
 		Struct args=new StructImpl();
 		state=STOPPING;
 		try{
@@ -117,24 +106,18 @@ public class CFCGateway implements Gateway {
 		}
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getHelper()
-	 */
+	@Override
 	public Object getHelper() {
 		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
 		return callEL("getHelper",args,null);
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getState()
-	 */
+	@Override
 	public int getState() {
 		Struct args=new StructImpl();
 		Integer state=Integer.valueOf(this.state);
@@ -142,16 +125,14 @@ public class CFCGateway implements Gateway {
 			return GatewayEngineImpl.toIntState(Caster.toString(call("getState",args,state)),this.state);
 		} 
 		catch (PageException pe) {
-			engine.log(this, GatewayEngine.LOGLEVEL_ERROR, pe.getMessage());
+			engine.log(this, GatewayEnginePro.LOGLEVEL_ERROR, pe.getMessage());
 		}
 		return this.state;
 	}
 
 
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#sendMessage(railo.runtime.type.Struct)
-	 */
+	@Override
 	public String sendMessage(Map data) throws GatewayException {
 		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
 		args.setEL("data", Caster.toStruct(data, null, false));

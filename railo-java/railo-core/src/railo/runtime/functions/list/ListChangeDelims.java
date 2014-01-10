@@ -6,7 +6,7 @@ package railo.runtime.functions.list;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListChangeDelims implements Function {
 	
@@ -19,7 +19,7 @@ public final class ListChangeDelims implements Function {
 		return call(pc, list, newDel, oldDel, false);
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel, boolean includeEmptyFields) throws PageException {
-		if(includeEmptyFields)return List.arrayToList(List.listToArray(list,oldDel),newDel);
-		return List.arrayToList(List.listToArrayRemoveEmpty(list,oldDel),newDel);
+		if(includeEmptyFields)return ListUtil.arrayToList(ListUtil.listToArray(list,oldDel),newDel);
+		return ListUtil.arrayToList(ListUtil.listToArrayRemoveEmpty(list,oldDel),newDel);
 	}
 }

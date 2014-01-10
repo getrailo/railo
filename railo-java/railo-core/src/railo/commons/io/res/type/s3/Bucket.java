@@ -81,46 +81,32 @@ public final class Bucket implements S3Info {
 		return s3.listContents(name, prefix, marker, maxKeys);
 	}
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "name:"+name+";creation:"+creation+";ownerDisplayName:"+ownerDisplayName+";ownerIdKey:"+ownerIdKey;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.type.s3.S3Info#getLastModified()
-	 */
+	@Override
 	public long getLastModified() {
 		return getCreation().getTime();
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#getSize()
-	 */
+	@Override
 	public long getSize() {
 		return 0;
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#exists()
-	 */
+	@Override
 	public boolean exists() {
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return false;
 	}

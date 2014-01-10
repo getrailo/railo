@@ -32,7 +32,7 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 
 	protected void _clean() {
 		ConfigWebImpl config = (ConfigWebImpl) engine.getFactory().getConfig();
-		Map connections = config.getCacheConnections();
+		Map<String, CacheConnection> connections = config.getCacheConnections();
 		CacheConnection cc;
 		
 		if(connections!=null) {
@@ -56,7 +56,7 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 	private void clean(CacheConnection cc, ConfigWebImpl config) throws IOException {
 		Cache cache = cc.getInstance(config);
 		int len=filter.length(),index;
-		List entries = cache.entries(filter);
+		List<CacheEntry> entries = cache.entries(filter);
 		CacheEntry ce;
 		long expires;
 		

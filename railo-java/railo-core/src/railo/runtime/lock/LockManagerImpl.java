@@ -27,9 +27,7 @@ public final class LockManagerImpl implements LockManager {
     	return lmi;
     }
 	
-	/**
-     * @see railo.runtime.lock.LockManager#lock(int, java.lang.String, int, int)
-     */
+	@Override
 	public LockData lock(int type, String name, int timeout, int pageContextId) throws LockTimeoutException, InterruptedException {
 		if(!caseSensitive)name=name.toLowerCase();
 		//if(type==LockManager.TYPE_READONLY) return new ReadLockData(name,pageContextId);
@@ -52,17 +50,26 @@ public final class LockManagerImpl implements LockManager {
 		locks.unlock(l);
 	}
     
-	/**
-	 *
-	 * @see railo.runtime.lock.LockManager#getOpenLockNames()
-	 */
+	@Override
 	public String[] getOpenLockNames() {
 		List<String> list = locks.getOpenLockNames();
 		return list.toArray(new String[list.size()]);
 	}
 
+	@Override
 	public void clean() {
 		locks.clean();
+	}
+
+
+	public Boolean isReadLocked(String name) {
+		if(!caseSensitive)name=name.toLowerCase();
+		return locks.isReadLocked(name);
+	}
+	
+	public Boolean isWriteLocked(String name) {
+		if(!caseSensitive)name=name.toLowerCase();
+		return locks.isWriteLocked(name);
 	}
 	
 	

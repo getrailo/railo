@@ -50,6 +50,11 @@ public final class JavaConverter extends ConverterSupport implements BinaryConve
         serialize(o, baos);
         return Base64Coder.encode(baos.toByteArray());
     }
+    public static byte[] serializeAsBinary(Serializable o) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serialize(o, baos);
+        return baos.toByteArray();
+    }
 
     public static void serialize(Serializable o, railo.commons.io.res.Resource out) throws IOException {
         serialize(o,out.getOutputStream());

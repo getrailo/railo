@@ -3,11 +3,11 @@ package railo.runtime.cfx.customtag;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.config.Config;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 import com.allaire.cfx.CustomTag;
 
@@ -18,33 +18,30 @@ import com.allaire.cfx.CustomTag;
 public final class CFXTagPoolImpl implements CFXTagPool {
 	
 	Config config;
-	Map classes;
-	Map objects=new HashTable();
+	Map<String,CFXTagClass> classes;
+	Map<String,CFXTagClass> objects=MapFactory.<String,CFXTagClass>getConcurrentMap();
 	
 	/**
 	 * constructor of the class
 	 * @param classes
 	 */
-	public CFXTagPoolImpl(Map classes) {
+	public CFXTagPoolImpl(Map<String,CFXTagClass> classes) {
 		this.classes=classes;
 	}
 
-    /**
-     * @see railo.runtime.cfx.CFXTagPool#getClasses()
-     */
-    public Map getClasses() {
+    @Override
+    public Map<String,CFXTagClass> getClasses() {// FUTURE add generic type to interface
         return classes;
     }
-	/**
-     * @see railo.runtime.cfx.CFXTagPool#getCustomTag(java.lang.String)
-     */
+    
+	@Override
 	public synchronized CustomTag getCustomTag(String name) throws CFXTagException {
 		name=name.toLowerCase();
 		
 		Object o=classes.get(name);
 		if(o==null) {
 			Set<String> set = classes.keySet();
-			String names = List.arrayToList(set.toArray(new String[set.size()]),",");
+			String names = ListUtil.arrayToList(set.toArray(new String[set.size()]),",");
 			
 			throw new CFXTagException("there is no Custom Tag (CFX) with name ["+name+"], available Custom Tags are ["+names+"]");
 		}
@@ -54,19 +51,15 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		return ct;
 	}
 	
-	/**
-	 * @see railo.runtime.cfx.CFXTagPool#getCFXTagClass(java.lang.String)
-	 */
+	@Override
 	public synchronized CFXTagClass getCFXTagClass(String name) throws CFXTagException {
 		name=name.toLowerCase();
-		CFXTagClass ctc=(CFXTagClass) classes.get(name);
+		CFXTagClass ctc = classes.get(name);
 		if(ctc==null) throw new CFXTagException("there is not Custom Tag (CFX) with name ["+name+"]");
 		return ctc;
 	}
 
-	/**
-     * @see railo.runtime.cfx.CFXTagPool#releaseCustomTag(com.allaire.cfx.CustomTag)
-     */
+	@Override
 	public synchronized void releaseCustomTag(CustomTag ct) {
 		//table.put(ct.getClass().toString(),ct);
 	}

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -13,6 +14,7 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -21,10 +23,11 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.system.GetDirectoryFromPath;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a cfml file on the runtime system
@@ -88,6 +91,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	    
 	}
 	
+	
+	
 	/**
 	 * private constructor of the class
 	 * @param mapping
@@ -113,20 +118,29 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	public Page getPage() {
 		return page;
 	}
+	
+	public PageSource getParent(){
+		if(realPath.equals("/")) return null;
+		if(StringUtil.endsWith(realPath, '/'))
+			return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath.substring(0, realPath.length()-1)));
+		return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath));
+	}
 
 	
-	/**
-     * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext)
-     */
+	@Override
 	public Page loadPage(ConfigWeb config) throws PageException {
 		return loadPage(ThreadLocalPageContext.get());
 	}
 
-	/**
-	 * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext, railo.runtime.Page)
-	 */
+	@Override
 	public Page loadPage(ConfigWeb config, Page defaultValue) throws PageException {
 		return loadPage(ThreadLocalPageContext.get(), defaultValue);
+	}
+	
+
+	public Page loadPage(PageContext pc, boolean forceReload) throws PageException {
+		if(forceReload) page=null;
+		return loadPage(pc);
 	}
 	
 	public Page loadPage(PageContext pc) throws PageException {
@@ -145,9 +159,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	    
 	}
 	
-	/**
-	 * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext, railo.runtime.Page)
-	 */
+	@Override
 	public Page loadPage(PageContext pc, Page defaultValue) throws PageException {
 		Page page=this.page;
 		if(mapping.isPhysicalFirst()) {
@@ -165,7 +177,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	
     private Page loadArchive(Page page) {
     	if(!mapping.hasArchive()) return null;
-		if(page!=null) return page;
+		if(page!=null && page.getLoadType()==LOAD_ARCHIVE) return page;
         
         try {
             synchronized(this) {
@@ -189,17 +201,22 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	
     	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
-    	//if(pc.isPageAlreadyUsed(page)) return page;
-    	
-    	if((mapping.isTrusted() || 
-    			pci.isTrusted(page)) 
-        		&& isLoad(LOAD_PHYSICAL)) return page;
-				//&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
-        
+    	if((mapping.getInspectTemplate()==ConfigImpl.INSPECT_NEVER || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
-        long srcLastModified = srcFile.lastModified();
-        
+    	/*{
+    		String dp = getDisplayPath();
+    		String cn = getClassName();
+    		if(dp.endsWith(".cfc") && cn.startsWith("cfc")) {
+    			print.ds("->"+dp);
+    			print.e("trusted:"+mapping.isTrusted());
+    			print.e(mapping.getVirtual());
+    			print.e("mod:"+srcFile.lastModified());
+    		}
+    	}*/
+    	
+    	
+		long srcLastModified = srcFile.lastModified();
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
@@ -277,7 +294,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
 	}
 
-	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws IOException, SecurityException, IllegalArgumentException, PageException {
+	private Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws IOException, SecurityException, IllegalArgumentException, PageException {
         ConfigWebImpl cwi=(ConfigWebImpl) config;
         
         
@@ -352,7 +369,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 * @return file Object
 	 */
 	private String getArchiveSourcePath() {
-	    return "ra://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
+	    return "zip://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
 	}
 
     /**
@@ -409,7 +426,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 				strRoot+='/';
 			}
 			int rootLen=strRoot.length();
-			String[] arr=List.toStringArray(List.listToArray(path,'/'),"");//path.split("/");
+			String[] arr=ListUtil.toStringArray(ListUtil.listToArray(path,'/'),"");//path.split("/");
 			int tmpLen;
 			for(int i=count;i>0;i--) {
 				if(arr.length>i) {
@@ -466,15 +483,11 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return path.substring(0,path.lastIndexOf('/'));
 	}
 	
-	/**
-     * @see railo.runtime.PageSource#getRealpath()
-     */
+	@Override
 	public String getRealpath() {
 		return realPath;
 	}	
-	/**
-     * @see railo.runtime.PageSource#getFullRealpath()
-     */
+	@Override
 	public String getFullRealpath() {
 		if(mapping.getVirtual().length()==1 || mapping.ignoreVirtual())
 			return realPath;
@@ -488,9 +501,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return StringUtil.toIdentityVariableName(realPath);
 	}
 	
-	/**
-     * @see railo.runtime.PageSource#getClazz()
-     */
+	@Override
 	public String getClazz() {
 		if(className==null) createClassAndPackage();
 		if(packageName.length()>0) return packageName+'.'+className;
@@ -505,17 +516,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return className;
 	}
 
-    /**
-     * @see railo.runtime.PageSource#getFileName()
-     */
+    @Override
     public String getFileName() {
 		if(fileName==null) createClassAndPackage();
         return fileName;
     }
 	
-	/**
-     * @see railo.runtime.PageSource#getJavaName()
-     */
+	@Override
 	public String getJavaName() {
 		if(javaName==null) createClassAndPackage();
 		return javaName;
@@ -528,9 +535,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		if(packageName==null) createClassAndPackage();
 		return packageName;
 	}
-	/**
-     * @see railo.runtime.PageSource#getComponentName()
-     */
+	@Override
 	public String getComponentName() {
 		if(compName==null) createComponentName();
 		return compName;
@@ -542,7 +547,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		StringBuffer packageName=new StringBuffer();
 		StringBuffer javaName=new StringBuffer();
 		
-		String[] arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(str,'/'));
+		String[] arr=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(str,'/'));
 		
 		String varName;
 		for(int i=0;i<arr.length;i++) {
@@ -595,7 +600,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		
 		// virtual part
 		if(!mapping.ignoreVirtual()) {
-			arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(mapping.getVirtual(),"\\/"));
+			arr=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(mapping.getVirtual(),"\\/"));
 			for(int i=0;i<arr.length;i++) {
 				if(compName.length()>0) compName.append('.');
 				compName.append(arr[i]);
@@ -603,7 +608,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		}
 		
 		// physical part
-		arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(str,'/'));	
+		arr=ListUtil.toStringArrayEL(ListUtil.listToArrayRemoveEmpty(str,'/'));	
 		for(int i=0;i<arr.length;i++) {
 		    if(compName.length()>0) compName.append('.');
 			if(i==(arr.length-1)) {
@@ -614,25 +619,19 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		this.compName=compName.toString();
 	}
 
-    /**
-     * @see railo.runtime.PageSource#getMapping()
-     */
+    @Override
     public Mapping getMapping() {
         return mapping;
     }
 
-    /**
-     * @see railo.runtime.PageSource#exists()
-     */
-    public synchronized boolean exists() {
+    @Override
+    public boolean exists() {
     	if(mapping.isPhysicalFirst())
 	        return physcalExists() || archiveExists();
 	    return archiveExists() || physcalExists();
     }
 
-    /**
-     * @see railo.runtime.PageSource#physcalExists()
-     */
+    @Override
     public boolean physcalExists() {
         return ResourceUtil.exists(getPhyscalFile());
     }
@@ -672,24 +671,20 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             return null;
         }
     }
-    /**
-     * @see railo.runtime.PageSource#getSource()
-     */
+    @Override
     public String[] getSource() throws IOException {
         //if(source!=null) return source;
         InputStream is = getSourceAsInputStream();
         if(is==null) return null;
         try {
-        	return IOUtil.toStringArray(IOUtil.getReader(is,getMapping().getConfig().getTemplateCharset()));
+        	return IOUtil.toStringArray(IOUtil.getReader(is,CharsetUtil.toCharset(getMapping().getConfig().getTemplateCharset())));
         }
         finally {
         	IOUtil.closeEL(is);
         }
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object obj) {
     	if(this==obj) return true;  
     	if(!(obj instanceof PageSource)) return false;
@@ -707,9 +702,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         return getClassName().equals(other.getClassName());
     }
 
-	/**
-     * @see railo.runtime.PageSource#getRealPage(java.lang.String)
-     */
+	@Override
 	public PageSource getRealPage(String realPath) {
 	    if(realPath.equals(".") || realPath.equals(".."))realPath+='/';
 	    else realPath=realPath.replace('\\','/');
@@ -728,47 +721,47 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return mapping.getPageSource(realPath,_isOutSide.toBooleanValue());
 	}
 	
-	/**
-     * @see railo.runtime.PageSource#setLastAccessTime(long)
-     */
+	@Override
 	public final void setLastAccessTime(long lastAccess) {
 		this.lastAccess=lastAccess;
 	}	
 	
-	/**
-     * @see railo.runtime.PageSource#getLastAccessTime()
-     */
+	@Override
 	public final long getLastAccessTime() {
 		return lastAccess;
 	}
 
-	/**
-     * @see railo.runtime.PageSource#setLastAccessTime()
-     */
+	@Override
 	public synchronized final void setLastAccessTime() {
 		accessCount++;
 		this.lastAccess=System.currentTimeMillis();
 	}	
 	
-	/**
-     * @see railo.runtime.PageSource#getAccessCount()
-     */
+	@Override
 	public final int getAccessCount() {
 		return accessCount;
 	}
 
-    /**
-     * @see railo.runtime.SourceFile#getFile()
-     */
-    public Resource getFile() {
-    	return getResource();
-    }
-    
     @Override
     public Resource getResource() {
-    	Resource res = getPhyscalFile();
-    	if(res!=null) return res;
-    	return getArchiveFile();
+    	Resource p = getPhyscalFile();
+    	Resource a = getArchiveFile();
+    	if(mapping.isPhysicalFirst()){
+    		if(a==null) return p;
+        	if(p==null) return a;
+        	
+    		if(p.exists()) return p;
+    		if(a.exists()) return a;
+    		return p;
+    	}
+    	if(p==null) return a;
+    	if(a==null) return p;
+    	
+    	if(a.exists()) return a;
+    	if(p.exists()) return p;
+    	return a;
+    	
+    	//return getArchiveFile();
     }
     
     @Override
@@ -805,9 +798,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	}
     }
 
-	/**
-	 * @see railo.runtime.SourceFile#getFullClassName()
-	 */
+	@Override
     public String getFullClassName() {
     	String s=_getFullClassName();
     	return s;
@@ -823,16 +814,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return page!=null;////load!=LOAD_NONE;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return getDisplayPath();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(page,0)+
 		SizeOf.size(className)+
@@ -850,15 +837,14 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		for(int i=0;i<arr.length;i++) {
 			if(pageExist(arr[i])) return arr[i];
 		}
-		
-		// get the best none existing
+		/*// get the best none existing
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i].getPhyscalFile()!=null) return arr[i];
 		}
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i].getDisplayPath()!=null) return arr[i];
 		}
-		
+		*/
 		return arr[0];
 	}
 

@@ -1,8 +1,11 @@
 package railo.runtime.sql.exp;
 
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.util.QueryUtil;
 
 
 public class ColumnExpression extends ExpressionSupport implements Column {
@@ -12,6 +15,11 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	private boolean hasBracked;
 	private int columnIndex;
 	private QueryColumn col;
+	
+	public String toString(){
+		return "table:"+table+";column:"+column+";hasBracked:"+hasBracked+";columnIndex:"+columnIndex;
+		
+	}
 
 	public ColumnExpression(String value, int columnIndex) {
 		this.column=value;
@@ -31,26 +39,20 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 		return getFullName();
 	}
 
-	/**
-	 *
-	 * @see sql.exp.Column#getFullName()
-	 */
+	@Override
 	public String getFullName() {
 		if(table==null) return column;
 		return table+"."+column;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.sql.exp.ExpressionSupport#getAlias()
-	 */
+	@Override
 	public String getAlias() {
-		if(!hasAlias()) return getColumn();
+		if(!hasAlias()) return getColumn().getString();
 		return super.getAlias();
 	}
 
-	public String getColumn() {
-		return column;
+	public Collection.Key getColumn() {
+		return KeyImpl.init(column);
 	}
 
 	public String getTable() {
@@ -65,16 +67,21 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 		this.hasBracked=b;
 	}
 
+    public String getColumnName() {
+
+        return column;
+    }
+
 	/**
 	 * @return the columnIndex
 	 */
 	public int getColumnIndex() {
 		return columnIndex;
 	}
-	
+	// MUST hanle null correctly
 	public Object getValue(Query qr, int row) throws PageException {
 		if(col==null)col = qr.getColumn(getColumn());
-		return col.get(row);
+		return QueryUtil.getValue(col,row);
 	}
 	
 	public Object getValue(Query qr, int row, Object defaultValue) {

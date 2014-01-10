@@ -8,7 +8,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Used with cfgrid in a cfform, you use cfgridcolumn to specify column data in a cfgrid control. Font and alignment 
@@ -29,9 +29,7 @@ public final class GridColumn extends TagImpl {
 	private String valuesdisplay;
 	private String values;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		column=new GridColumnBean();
 		valuesdelimiter=",";
@@ -279,16 +277,13 @@ public final class GridColumn extends TagImpl {
 	}
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		if(!StringUtil.isEmpty(values))
-			column.setValues(List.toStringArray(List.listToArrayRemoveEmpty(values, valuesdelimiter)));
+			column.setValues(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(values, valuesdelimiter)));
 		if(!StringUtil.isEmpty(valuesdisplay))
-			column.setValuesDisplay(List.toStringArray(List.listToArrayRemoveEmpty(valuesdisplay, valuesdelimiter)));
+			column.setValuesDisplay(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(valuesdisplay, valuesdelimiter)));
 
 		// provide to parent
 		Tag parent=this;
@@ -304,9 +299,7 @@ public final class GridColumn extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

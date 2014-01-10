@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.LinkedHashMapMaxSize;
+import railo.commons.collection.MapFactory;
+import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
@@ -30,7 +33,9 @@ import railo.runtime.MappingImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.ReqRspUtil;
@@ -47,13 +52,14 @@ import railo.runtime.type.util.ArrayUtil;
  * config server impl
  */
 public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
+	
+	private static final long FIVE_SECONDS = 5000;
     
-
 	private final CFMLEngineImpl engine;
     private Map<String,CFMLFactory> initContextes;
     //private Map contextes;
     private SecurityManager defaultSecurityManager;
-    private Map managers=new HashTable();
+    private Map<String,SecurityManager> managers=MapFactory.<String,SecurityManager>getConcurrentMap();
     private String defaultPassword;
     private Resource rootDir;
     private URL updateLocation;
@@ -62,10 +68,18 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private Map<String, String> labels;
 	private RequestMonitor[] requestMonitors;
 	private IntervallMonitor[] intervallMonitors;
+	private ActionMonitorCollector actionMonitorCollector;
+	
 	private boolean monitoringEnabled=false;
-	private int delay=0;
+	private int delay=1;
 	private boolean captcha=false;
 	private static ConfigServerImpl instance;
+
+	private String[] authKeys;
+	private String idPro;
+	
+	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
+	
 	
 	/**
      * @param engine 
@@ -97,16 +111,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		this.configListener = configListener;
 	}
 
-    /**
-     * @see railo.runtime.config.ConfigImpl#getConfigServer(java.lang.String)
-     */
+    @Override
     public ConfigServer getConfigServer(String password) {
         return this;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#getConfigWebs()
-     */
+    @Override
     public ConfigWeb[] getConfigWebs() {
     
         Iterator<String> it = initContextes.keySet().iterator();
@@ -118,9 +128,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return webs;
     }
     
-    /**
-     * @see railo.runtime.config.ConfigServer#getConfigWeb(java.lang.String)
-     */
+    @Override
     public ConfigWeb getConfigWeb(String realpath) {
         return getConfigWebImpl(realpath);
     }
@@ -151,6 +159,13 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return null;
     }
     
+    public String getIdPro() {
+    	if(idPro==null){
+    		idPro = getId(getSecurityKey(),getSecurityToken(),true,null);
+    	}
+    	return idPro;
+    }
+    
     /**
      * @return JspFactoryImpl array
      */
@@ -163,16 +178,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         }
         return factories;
     }
-    /**
-     * @see railo.runtime.config.ConfigServer#getJSPFactoriesAsMap()
-     */
+    @Override
     public Map<String,CFMLFactory> getJSPFactoriesAsMap() {
         return initContextes;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#getSecurityManager(java.lang.String)
-     */
+    @Override
     public SecurityManager getSecurityManager(String id) {
         Object o=managers.get(id);
         if(o!=null) return (SecurityManager) o;
@@ -182,9 +193,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return defaultSecurityManager.cloneSecurityManager();
     }
     
-    /**
-     * @see railo.runtime.config.ConfigServer#hasIndividualSecurityManager(java.lang.String)
-     */
+    @Override
     public boolean hasIndividualSecurityManager(String id) {
         return managers.containsKey(id);
     }
@@ -211,9 +220,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         managers.remove(id);
     }
     
-    /**
-     * @see railo.runtime.config.ConfigServer#getDefaultSecurityManager()
-     */
+    @Override
     public SecurityManager getDefaultSecurityManager() {
         return defaultSecurityManager;
     }
@@ -223,6 +230,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     protected String getDefaultPassword() {
         return defaultPassword;
     }
+    
+    
     /**
      * @param defaultPassword The defaultPassword to set.
      */
@@ -230,9 +239,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         this.defaultPassword = defaultPassword;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#getCFMLEngine()
-     */
+    @Override
     public CFMLEngine getCFMLEngine() {
         return engine;
     }
@@ -245,45 +252,33 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return rootDir;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateType()
-     */
+    @Override
     public String getUpdateType() {
         return updateType;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateType(java.lang.String)
-     */
+    @Override
     public void setUpdateType(String updateType) {
         if(!StringUtil.isEmpty(updateType))
             this.updateType = updateType;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateLocation()
-     */
+    @Override
     public URL getUpdateLocation() {
         return updateLocation;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateLocation(java.net.URL)
-     */
+    @Override
     public void setUpdateLocation(URL updateLocation) {
         this.updateLocation = updateLocation;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateLocation(java.lang.String)
-     */
+    @Override
     public void setUpdateLocation(String strUpdateLocation) throws MalformedURLException {
         setUpdateLocation(new URL(strUpdateLocation));
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateLocation(java.lang.String, java.net.URL)
-     */
+    @Override
     public void setUpdateLocation(String strUpdateLocation, URL defaultValue) {
         try {
             setUpdateLocation(strUpdateLocation);
@@ -292,9 +287,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         }
     }
 
-    /**
-     * @see railo.runtime.config.Config#getSecurityManager()
-     */
+    @Override
     public SecurityManager getSecurityManager() {
         SecurityManagerImpl sm = (SecurityManagerImpl) getDefaultSecurityManager();//.cloneSecurityManager();
         //sm.setAccess(SecurityManager.TYPE_ACCESS_READ,SecurityManager.ACCESS_PROTECTED);
@@ -355,6 +348,19 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	protected void setIntervallMonitors(IntervallMonitor[] monitors) {
 		this.intervallMonitors=monitors;;
+	}
+	
+
+	public void setActionMonitorCollector(ActionMonitorCollector actionMonitorCollector) {
+		this.actionMonitorCollector=actionMonitorCollector;
+	}
+	
+	public ActionMonitorCollector getActionMonitorCollector() {
+		return actionMonitorCollector;
+	}
+	
+	public Object getActionMonitor(String name) { // FUTURE return ActionMonitor
+		return actionMonitorCollector.getActionMonitor(name);
 	}
 
 	@Override
@@ -591,5 +597,64 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	@Override
 	public boolean allowRequestTimeout() {
 		return engine.allowRequestTimeout();
+	}
+	
+
+	private boolean fullNullSupport=false;
+	protected void setFullNullSupport(boolean fullNullSupport) {
+		this.fullNullSupport=fullNullSupport;
+	}
+
+	public boolean getFullNullSupport() {
+		return fullNullSupport;
+	}
+
+	public String[] getAuthenticationKeys() {
+		return authKeys==null?new String[0]:authKeys;
+	}
+
+	protected void setAuthenticationKeys(String[] authKeys) {
+		this.authKeys = authKeys;
+	}
+	
+	public ConfigServer getConfigServer(String key,String nonce) {
+        return this;
+    }
+
+	public void checkAccess(String password) throws ExpressionException {
+		if(!hasPassword())
+            throw new ExpressionException("Cannot access, no password is defined");
+        if(!passwordEqual(password))
+            throw new ExpressionException("No access, password is invalid");
+	}
+
+	public void checkAccess(String key, long timeNonce) throws PageException {
+		
+		if(previousNonces.containsKey(timeNonce)) {
+			long now = System.currentTimeMillis();
+			long diff=timeNonce>now?timeNonce-now:now-timeNonce;
+			if(diff>10)
+				throw new ApplicationException("nonce was already used, same nonce can only be used once");
+			
+			
+		}
+    	long now = System.currentTimeMillis()+getTimeServerOffset();
+    	if(timeNonce>(now+FIVE_SECONDS) || timeNonce<(now-FIVE_SECONDS))
+    		throw new ApplicationException("nonce is outdated (timserver offset:"+getTimeServerOffset()+")");
+    	previousNonces.put(timeNonce,"");
+    	
+    	String[] keys=getAuthenticationKeys();
+    	// check if one of the keys matching
+    	String hash;
+    	for(int i=0;i<keys.length;i++){
+    		try {
+    			hash=Hash.hash(keys[i], Caster.toString(timeNonce), Hash.ALGORITHM_SHA_256, Hash.ENCODING_HEX);
+    			if(hash.equals(key)) return;
+			}
+			catch (NoSuchAlgorithmException e) {
+				throw Caster.toPageException(e);
+			}
+    	}
+    	throw new ApplicationException("No access, no matching authentication key found");
 	}
 }

@@ -88,7 +88,7 @@ public final class JSConverter extends ConverterSupport {
 		if(object instanceof Number) {
 			sb.append(goIn());
 			sb.append("\"");
-			sb.append(Caster.toString(((Number)object).doubleValue()));
+			sb.append(Caster.toString(((Number)object)));
 			sb.append("\";");
 			return;
 		}
@@ -313,7 +313,7 @@ public final class JSConverter extends ConverterSupport {
 	 */
 	private synchronized void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
 	   
-		Calendar c = JREDateTimeUtil.newInstance(ThreadLocalPageContext.getTimeZone());
+		Calendar c = JREDateTimeUtil.getThreadCalendar(ThreadLocalPageContext.getTimeZone());
 		c.setTime(dateTime);
 	    sb.append(goIn());
 	    sb.append("new Date(");

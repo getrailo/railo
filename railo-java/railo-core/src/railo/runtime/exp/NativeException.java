@@ -50,9 +50,7 @@ public class NativeException extends PageExceptionImpl {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    DumpData data = super.toDumpData(pageContext, maxlevel,dp);
 	    if(data instanceof DumpTable)
@@ -61,17 +59,13 @@ public class NativeException extends PageExceptionImpl {
         return data;
     }
 
-    /**
-     * @see railo.runtime.exp.IPageException#typeEqual(java.lang.String)
-     */
+    @Override
     public boolean typeEqual(String type) {
     	if(super.typeEqual(type))return true;
         return Reflector.isInstaneOfIgnoreCase(t.getClass(),type);
     }
 
-	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#setAdditional(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public void setAdditional(Collection.Key key, Object value) {
 		super.setAdditional(key, value);
 	}

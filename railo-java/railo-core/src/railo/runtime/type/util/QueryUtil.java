@@ -18,6 +18,7 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -31,16 +32,18 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryColumnImpl;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.query.SimpleQuery;
 
 public class QueryUtil {
@@ -86,17 +89,15 @@ public class QueryUtil {
 
 	/**
      * check if there is a sql restriction
-	 * @param ds
+	 * @param dc
 	 * @param sql
 	 * @throws PageException 
 	 */
 	public static void checkSQLRestriction(DatasourceConnection dc, SQL sql) throws PageException {
-        Array sqlparts = List.listToArrayRemoveEmpty(
+        Array sqlparts = ListUtil.listToArrayRemoveEmpty(
         		SQLUtil.removeLiterals(sql.getSQLString())
         		," \t"+System.getProperty("line.separator"));
-        
-        
-        
+
         //print.ln(List.toStringArray(sqlparts));
         DataSource ds = dc.getDatasource();
         if(!ds.hasAllow(DataSource.ALLOW_ALTER))    checkSQLRestriction(dc,"alter",sqlparts,sql);
@@ -107,9 +108,9 @@ public class QueryUtil {
         if(!ds.hasAllow(DataSource.ALLOW_INSERT))   checkSQLRestriction(dc,"insert",sqlparts,sql);
         if(!ds.hasAllow(DataSource.ALLOW_REVOKE))   checkSQLRestriction(dc,"revoke",sqlparts,sql);
         if(!ds.hasAllow(DataSource.ALLOW_SELECT))   checkSQLRestriction(dc,"select",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_UPDATE))   checkSQLRestriction(dc,"update",sqlparts,sql);        
-        
+        if(!ds.hasAllow(DataSource.ALLOW_UPDATE))   checkSQLRestriction(dc,"update",sqlparts,sql);
     }
+
 	
 	private static void checkSQLRestriction(DatasourceConnection dc, String keyword, Array sqlparts, SQL sql) throws PageException {
         if(ArrayFind.find(sqlparts,keyword,false)>0) {
@@ -132,24 +133,27 @@ public class QueryUtil {
 		//table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
 		String template=query.getTemplate();
 		if(!StringUtil.isEmpty(template))
-			comment.append("Template:").append(template).append("\n");
+			comment.append("Template: ").append(template).append("\n");
 		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
-		
-		comment.append("Execution Time (ms):").append(Caster.toString(FormatUtil.formatNSAsMSDouble(query.getExecutionTime()))).append("\n");
-		comment.append("Recordcount:").append(Caster.toString(query.getRecordcount())).append("\n");
-		comment.append("Cached:").append(query.isCached()?"Yes\n":"No\n");
-		comment.append("Lazy:").append(query instanceof SimpleQuery?"Yes\n":"No\n");
+
+		int top = dp.getMaxlevel();        // in Query dump maxlevel is used as Top
+
+		comment.append("Execution Time: ").append(Caster.toString(FormatUtil.formatNSAsMSDouble(query.getExecutionTime()))).append(" ms \n");
+		comment.append("Record Count: ").append(Caster.toString(query.getRecordcount()));
+		if ( query.getRecordcount() > top )
+			comment.append( " (showing top " ).append( Caster.toString( top ) ).append( ")" );
+		comment.append("\n");
+		comment.append("Cached: ").append(query.isCached()?"Yes\n":"No\n");
+		comment.append("Lazy: ").append(query instanceof SimpleQuery?"Yes\n":"No\n");
 		
 		SQL sql=query.getSql();
 		if(sql!=null)
-			comment.append("SQL:").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
+			comment.append("SQL: ").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
 		
 		//table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
 		//table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
 		//table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
-		
-		
-		
+
 		DumpTable recs=new DumpTable("query","#cc99cc","#ffccff","#000000");
 		recs.setTitle("Query");
 		if(dp.getMetainfo())recs.setComment(comment.toString());
@@ -166,7 +170,7 @@ public class QueryUtil {
 				try {
 					Object o=query.getAt(keys[y],i+1);
 					if(o instanceof String)items[y+1]=new SimpleDumpData(o.toString());
-                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o).doubleValue()));
+                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o)));
                     else if(o instanceof Boolean) items[y+1]=new SimpleDumpData(((Boolean)o).booleanValue());
                     else if(o instanceof Date) items[y+1]=new SimpleDumpData(Caster.toString(o));
                     else if(o instanceof Clob) items[y+1]=new SimpleDumpData(Caster.toString(o));								
@@ -176,6 +180,9 @@ public class QueryUtil {
 				}
 			}
 			recs.appendRow(new DumpRow(1,items));
+
+			if ( i == top - 1 )
+				break;
 		}
 		if(!dp.getMetainfo()) return recs;
 		
@@ -256,5 +263,38 @@ public class QueryUtil {
 		if(Ref.class==type) return rs.getRef(columnLabel);
 		
 		throw new SQLFeatureNotSupportedException("type ["+type.getName()+"] is not supported");
+	}
+
+	/**
+	 * return the value at the given position (row), returns the default empty value ("" or null) for wrong row or null values.
+	 * this method only exist for backward compatibility and should not be used for new functinality
+	 * @param column
+	 * @param row
+	 * @return
+	 * @deprecated use instead QueryColumn.get(int,Object)
+	 */
+	public static Object getValue(QueryColumn column, int row) {//print.ds();
+		if(NullSupportHelper.full()) return column.get(row, null);
+		Object v = column.get(row, "");
+		return v==null?"":v;
+	}
+
+	public static QueryColumnImpl duplicate2QueryColumnImpl(QueryImpl targetQuery,QueryColumn col, boolean deepCopy) {
+		if(col instanceof QueryColumnImpl)
+    		return ((QueryColumnImpl)col).cloneColumnImpl(deepCopy);
+    	
+		// fill array for column
+		Array content=new ArrayImpl();
+		int len=col.size();
+		for(int i=1;i<=len;i++){
+			content.setEL(i, col.get(i,null));
+		}
+		
+		// create and return column
+		try {
+			return new QueryColumnImpl(targetQuery,col.getKey(),content,col.getType());
+		} catch (PageException e) {
+			throw new PageRuntimeException(e);
+		}
 	}
 }

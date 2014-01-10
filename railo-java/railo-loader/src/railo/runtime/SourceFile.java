@@ -42,6 +42,7 @@ public interface SourceFile extends Serializable {
 	public String getRealPathAsVariableString();
 
 	/**
+	 * if the mapping physical path and archive is invalid or not defined, it is possible this method returns null
      * @return base Resource
      */
 	public Resource getResource();

@@ -1,4 +1,16 @@
 <cfscript>
+function ComponentListPackageAsStruct(string package, cfcNames=structnew("linked")){
+	try{
+		local._cfcNames=ComponentListPackage(package);
+		loop array="#_cfcNames#" index="i" item="el" {
+			cfcNames[el]=package&"."&el;
+		}
+	}
+	catch(e){}
+	return cfcNames;
+	
+}
+	
 /**
 * cast a String to a File Object
 * @param strFile string to cast
@@ -17,12 +29,15 @@ function printError(error,boolean longversion=false) {
 		
 		if(longversion) {
 			if(StructKeyExists(error,"TagContext")){
-				if(arrayLen(error.TagContext)){
-					writeOutput('<br>');
-					writeOutput('<b>error occured in '&listLast(error.TagContext[1].template,'/\')&':'&error.TagContext[1].line&'</b>');
-					writeOutput('<br>');
-					writeOutput(error.TagContext[1].codePrintHTML);
-					//dump(error.TagContext[1]);
+				loop array="#error.TagContext#" index="local.i" item="local.tc" {
+					writeOutput('<br><span class="comment">');
+					
+					if(i==1) writeOutput('error occured in ');
+					else writeOutput('called by ');
+					writeOutput(error.TagContext[i].template&':'&error.TagContext[i].line&"</span>");
+					//writeOutput('<br>');
+					//writeOutput(error.TagContext[i].codePrintHTML);
+					//dump(error.TagContext[i]);
 				}
 			}
 		}
@@ -260,3 +275,50 @@ ACCESS.ALL= smClass.VALUE_ALL;
 ACCESS.CFX_USAGE=securityManager.getAccess(smClass.TYPE_CFX_USAGE);
 */
 </cfscript>
+
+<cffunction name="createUIDFolder" output="no"
+    	hint="create a new step cfc">
+    	<cfargument name="uid" type="string">
+        
+        <cfset var info="">
+        <cfset var data.directory="">
+        <cfadmin 
+            action="getExtensionInfo"
+            type="#request.adminType#"
+            password="#session["password"&request.adminType]#"
+            returnVariable="info">
+        <cfset data.directory=info.directory>
+        
+        <!--- create directory --->
+		<cfset var dest=data.directory>
+        <cfif not DirectoryExists(dest)>
+            <cfdirectory directory="#dest#" action="create" mode="777">
+        </cfif>
+        
+        <!--- uid --->
+        <cfset dest=dest&"/"&arguments.uid>
+        <cfif not DirectoryExists(dest)>
+            <cfdirectory directory="#dest#" action="create" mode="777">
+        </cfif>
+        
+        <cfreturn dest>
+    </cffunction>
+
+
+<cffunction name="renderCodingTip" output="true">
+	<cfargument name="codeSample"   default="">
+	<cfargument name="text"         default="">
+	<cfargument name="isExpand"     default="#false#" type="boolean">
+	
+	<cfset var stText= application.stText[session.railo_admin_lang]>
+	<cfset var desc  = len( arguments.text ) ? arguments.text : stText.settings.appcfcdesc>
+
+	<cfif !arguments.isExpand>
+		<div class="coding-tip-trigger">#stText.settings.tip#</div>		
+	</cfif>
+	<div class="coding-tip #arguments.isExpand ? 'expanded' : ''#">
+		<div>#desc#:</div>
+		<code>#trim( arguments.codeSample )#</code>
+	</div>
+</cffunction>
+

@@ -15,7 +15,7 @@ import railo.runtime.functions.image.ImageNew;
 import railo.runtime.functions.image.ImageWrite;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class Sprite extends TagImpl {
 	
@@ -27,9 +27,7 @@ public final class Sprite extends TagImpl {
 		
 
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		this._id=null;
 		this._ids=null;
@@ -56,9 +54,7 @@ public final class Sprite extends TagImpl {
 		this.src=src;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 
 	public int doStartTag() throws PageException	{
 		try {
@@ -81,8 +77,8 @@ public final class Sprite extends TagImpl {
 		
 		// handle all items
 		if(!StringUtil.isEmpty(_ids)) {
-			String[] ids=List.listToStringArray(_ids, ',');
-			String[] strSrcs=List.listToStringArray(_srcs, ',');
+			String[] ids=ListUtil.listToStringArray(_ids, ',');
+			String[] strSrcs=ListUtil.listToStringArray(_srcs, ',');
 			Resource[] srcs=new Resource[strSrcs.length];
 			Image[] images=new Image[strSrcs.length];
 			for(int i=0;i<srcs.length;i++){
@@ -92,7 +88,7 @@ public final class Sprite extends TagImpl {
 			
 			// TODO use the same resource as for cfimage
 			PageSource ps = pageContext.getCurrentTemplatePageSource();
-			Resource curr = ps.getPhyscalFile();// TODO handle archives
+			Resource curr = ps.getResource();
 			Resource dir = curr.getParentResource();
 			Resource cssDir = dir.getRealResource("css");
 			Resource pathdir = cssDir;
@@ -170,9 +166,7 @@ public final class Sprite extends TagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

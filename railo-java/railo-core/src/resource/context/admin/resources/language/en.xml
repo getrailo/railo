@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language key="en" label="English">
+	<!-- this file contains the English/default language definition for the Admin March-2013 !-->
 
 	<data key="admin.search.label">Search the Railo Administrator</data>
 	<data key="admin.search.desc">Search for keywords within the Railo Administrator</data>
@@ -41,8 +42,14 @@
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">There is no Certificate available from this host.</data>
 	
-	<data key="mappings.archivesecuredesc">Exclude source files from archive. Source files are only used for codeprints in case of an error</data>
-	<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
+	<data key="mappings.addNonCFMLFiles">Add Non CFML Templates</data>
+	<data key="mappings.addNonCFMLFilesDesc">Add all Non CFML Source Templates as well (.js,.css,.gif,.png ...).</data>
+	<data key="mappings.addCFMLFiles">Add CFML Templates</data>
+	<data key="mappings.addCFMLFilesDesc">Add all CFML Source Templates as well (.cfm,.cfc,.cfml).</data>
+	<data key="mappings.addCFCFiles">Add Component Templates</data>
+	<data key="mappings.addCFCFilesDesc">Add all Component Source Templates as well (.cfc).</data>
+	
+<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
 	<data key="mappings.archiveheaddescription">Name of the archive file (ra or ras), (absolute or relative to the webroot)</data>
 	<data key="mappings.primaryheaddescription">Sets where Railo-files will first be searched</data>
 	<data key="mappings.trustedheaddescription"></data>
@@ -56,7 +63,7 @@
 	<data key="mappings.compiledesc">Compile all cfm and cfc files inside the mapping</data>
 	<data key="mappings.physicalmissing">Please enter a value for the resource (row </data>
 	<data key="mappings.archive">Archive</data>
-	<data key="mappings.toplevelhead">Top Level</data>
+	<data key="mappings.toplevelhead">Web Accessible</data>
 	<data key="mappings.virtualhead">Virtual</data>
 	<data key="mappings.compiletitle">compile</data>
 	<data key="mappings.primaryhead">Primary</data>
@@ -83,7 +90,7 @@
 	<data key="customtags.mode.modern">Modern</data>
 	<data key="customtags.mode.classic">Classic (Railo 1.0 - 3.0)</data>
 	<data key="customtags.mode.custom">Custom</data>
-	<data key="customtags.customtagmappings">Resources</data>
+	<data key="customtags.customtagmappings">Additional Resources</data>
 	<data key="customtags.physicalmissing">Please enter a value for the resource (row </data>
 	<data key="customtags.extensions">Extensions</data>
 	<data key="customtags.customtagmappingsdesc">Directories that Railo checks for Custom Tags.</data>
@@ -163,10 +170,12 @@
 	<data key="menu.server.label">Settings</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regional</data>
-	<data key="menu.server.compiler">Compiler</data>
+	<data key="overview.langPerf">Performance/Language</data>
+	<data key="menu.server.compiler">Language/Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
-	<data key="menu.server.application">Application</data>
+	<data key="menu.server.request">Request</data>
+	<data key="menu.server.language">Language</data>
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Services</data>
@@ -256,7 +265,7 @@
 	<data key="ext.documentation">Documentation</data>
 	<data key="ext.installeddesc">These applications are already installed on the system.</data>
 	<data key="ext.licenseagreement">License agreement</data>
-	<data key="ext.uploadextension">Upload new extension</data>
+	<data key="ext.uploadextension">Upload new extension (experimental)</data>
 	<data key="ext.uploadextensiondesc">If you downloaded an extension, you can add the extension here.</data>
 	<data key="ext.upload">upload</data>
 	<data key="ext.nofileuploaded">You have not uploaded a file!&lt;br&gt;Please first choose a file.</data>
@@ -364,8 +373,10 @@
 	<data key="application.listenermode">Mode</data>
 	<data key="application.listenermode_root">Root</data>
 	<data key="application.requesttimeoutdescription">Sets the amount of time Railo will wait for a request to finish before a request timeout will be raised. This means that the execution of the request will be stopped. This behaviour can be overridden by the tag cfsetting.</data>
-	<data key="application.server">Defines application settings that represent the default values for all web contextes</data>
-	<data key="application.scriptprotectdescription">The configuration of Script protect, secures your system from &quot;cross-site scripting&quot;</data>
+	<data key="request.description">Settings that affect the execution of a request.</data>
+		
+
+<data key="application.scriptprotectdescription">The configuration of Script protect, secures your system from &quot;cross-site scripting&quot;</data>
 	<data key="application.scriptprotect">Script-protect</data>
 	<data key="application.scriptprotectall">Script-protect checks in all scopes for external data (cgi,cookie,form,url)</data>
 	<data key="application.listenertypedescription_mixed">Mixed handling. Railo looks for a file &quot;Application.cfm/OnRequestEnd.cfm&quot; as well as for the file &quot;Application.cfc&quot;</data>
@@ -474,15 +485,16 @@
 	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
 	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
-	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
+	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: {url})</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
 	<data key="components.componentmappingsearchdesc">Search the component in the mappings defined, this include the implicit mapping &quot;/&quot;, that points on the webroot</data>
 	<data key="components.archive">Archive</data>
 	<data key="components.componentmappings">Additional Resources</data>
 	<data key="components.createnewcompmapping">Create new Additional Resource</data>
+	<data key="customtags.createnewcustomtagmapping">Create new Additional Resource</data>
 	<data key="components.dmatpackage">package</data>
-	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way.</data>
+	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way. Every change on this Component needs a restart from Railo.</data>
 	<data key="login.passwordmissing">Please enter a value for the field password</data>
 	<data key="login.retypenewpasswordmissing">Please reenter the new password</data>
 	<data key="login.password">Password</data>
@@ -587,13 +599,21 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="scopes.cascadingdescription">Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#)&lt;br/&gt;- strict: scans only the variables scope&lt;br/&gt;- small: scans the scopes variables,cgi,url,form&lt;br/&gt;- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions allow to make sessions over a cluster. when you change this setting you will lose your current session and you must make a new login</data>
 	<data key="scopes.web">Here you can define the settings for how Railo handles scopes.</data>
-	<data key="scopes.localmodealways">always</data>
+	<data key="scopes.localmodeClassic">Classic</data>
 	<data key="scopes.timeoutsecondsvalue">Value seconds for </data>
 	<data key="scopes.sessionmanagementdescription">By default session management can be enabled. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.clientcookiesdescription">Enable or disable client cookies. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontimeout">Session timeout</data>
-	<data key="scopes.localmodeupdate">update (CFML standard)</data>
-	<data key="scopes.localmodedesc">Defines how the local scope of a function is invoked when a variable with no scope definition is used.&lt;br&gt;- always: the local scope is always invoked&lt;br&gt;- update (CFML standard): the local scope is only invoked when the key already exists in it</data>
+	
+	<data key="scopes.localmodeClassic">Classic (CFML Default)</data>
+	<data key="scopes.localmodeModern">Modern</data>
+	
+	<data key="scopes.localmodedesc">Defines how the local scope of a function is invoked when a variable with no scope definition is used.</data>
+
+	<data key="scopes.localmodeModernDesc">the local scope is always invoked</data>
+	<data key="scopes.localmodeClassicDesc">the local scope is only invoked when the key already exists in it</data>
+
+
 	<data key="scopes.mergeurlform">Merge URL and form</data>
 	<data key="scopes.cascading">Cascading</data>
 	<data key="scopes.cascadetoresultset">Search resultsets</data>
@@ -613,24 +633,34 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="scopes.standard">standard (CFML Default)</data>
 	<data key="scopes.domaincookiesdescription">Enable or disable domain cookies. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.applicationtimeout">Application timeout</data>
-	
 
-	
+	<data key="compiler.nullSupport">Null Support</data>
+	<data key="compiler.nullSupportOnlyServer">This setting is only possible in the Railo Server Administrator.</data>
+	<data key="compiler.nullSupportDesc">Definiert wie Railo null unterstützt.</data>
+	<data key="compiler.nullSupportFull">Complete Support</data>
+	<data key="compiler.nullSupportFullDesc">Railo has a complete support for null, including "null" literal. Find more details in the Railo Wiki.</data>
+	<data key="compiler.nullSupportPartial">Partial Support (CFML Default)</data>
+	<data key="compiler.nullSupportPartialDesc">Railo has only a partial null support.</data>
+
 	<data key="setting.compiler">Railo compiler settings, this affects how the Railo Compiler parses the source code. Changing this settings flushes all existing class files and triggers a recompilation.</data>
-<data key="setting.dotNotation">Dot notation</data>
-<data key="setting.dotNotationDesc">Convert all struct keys defined with "dot notation" to upper case (CFML Default) 
-or keep them in original case (according to the "bracket notation").
-Example:
-Convert to upper case:
-sct.dotNotation --> keyname: "DOTNOTATION"
-sct[""bracketNotation""] --> keyname: "bracketNotation"
+	<data key="setting.dotNotation">Dot notation</data>
 
-Keep original case:
+
+	<data key="setting.dotNotationUpperCaseDesc">Convert all struct keys defined with "dot notation" to upper case.
+Example:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+
+<data key="setting.dotNotationOriginalCaseDesc">Keep all struct keys defined with "dot notation" in original case (according to the "bracket notation").
+Example:
 sct.dotNotation --> keyname: "dotNotation"
 sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
-<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
-<data key="setting.dotNotationOriginalCase">Keep original case</data>
-	<data key="setting.supressWSBeforeArg">Supress white space before cfargument</data>
+
+	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
+	<data key="setting.dotNotationOriginalCase">Keep original case</data>
+	
+	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
+
 	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
 	<data key="setting.templatecache">Template Cache</data>
@@ -644,6 +674,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.querycachecleardesc">Press the button above to clear the query cache.</data>
 	<data key="setting.querycacheclear">Clear query cache</data>
 	<data key="setting.inspecttemplatealwaysShort">Always</data>
+	<data key="setting.inspecttemplateInheritShort">Inherit</data>
 	<data key="setting.inspecttemplatealways">Always ( Bad )</data>
 	<data key="setting.cachedesc">Different Cache and Performance settings to improve overall performance</data>
 	<data key="setting.componentcache">Component path Cache</data>
@@ -654,9 +685,21 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.showversion">Output Railo version</data>
 	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
 	<data key="setting.allowCompression">Compression</data>
-	<data key="setting.allowCompressionDescription">Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser)</data>
+	<data key="setting.allowCompressionDescription">Enable compression (GZip) for the Railo Response stream for text-based responses when supported by the client (Web Browser)</data>
+	
+	<data key="setting.cfmlWriterReg">No whitespace management</data>
+	<data key="setting.cfmlWriterWS">Simple whitespace management - every whitespace character that follows whitespace is removed</data>
+	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
+
+	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
+	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
+	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>
+
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
+	<data key="setting.inspecttemplateInherit">Inherit</data>
+	<data key="setting.inspecttemplateInheritDesc">Inherit setting defined in "Performance/Caching"</data>
 	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
 	<data key="setting.inspecttemplateoncedesc">When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead.</data>
 	<data key="setting.inspecttemplateonceShort">Once</data>
@@ -808,6 +851,9 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="schedule.usernamedescription">Username to access the URL if it is protected by authentication</data>
 	<data key="schedule.startdatedesc">Defines the date when the task should be executed the first time.</data>
 	<data key="settings.datasourcesettings">Settings</data>
+	<data key="settings.datasource.databaseName">Database (Name/Version)</data>
+	<data key="settings.datasource.driverName">Driver (Name/Version)</data>
+
 	<data key="settings.readonlydatasources">Global Datasources (Datasources from Server Administrator)</data>
 	<data key="settings.readonlydatasourcesdescription">These datasources have been created in the Server Administrator and are shared with ALL web contexts. You cannot modify these datasources in the Web Administrator, but you can override them by creating your own datasource with the same name.</data>
 	<data key="settings.dbpassdesc">The password for the database</data>
@@ -845,7 +891,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.dbconnlimit">Connection limit (max)</data>
 	<data key="settings.dbconntimeoutdesc">Define a time in minutes for how long a connection is kept alive before it will be closed</data>
 	<data key="settings.dbportdesc">The port to connect the database</data>
-	<data key="settings.dbconnlimitdesc">Restricts the maximal connections at time</data>
+	<data key="settings.dbconnlimitdesc">Restricts the maximum number of simultaneous connections at one time</data>
 	<data key="settings.listdatasourcesdescserver">Datasources created here are available for ALL web contexts to use. The settings for these datasources can only be modified in this Server Administrator area.</data>
 	<data key="settings.dballowed">Allowed operations</data>
 	<data key="Settings.dbStorage">Storage</data>
@@ -863,11 +909,19 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	
 	<data key="settings.datasourcemodify">Create new datasource</data>
 	<data key="settings.verifyconnection">Verify connection</data>
+	<data key="settings.appcfc">Application.cfc</data>
+	<data key="settings.appcfcdesc">You can also set this in the Application.cfc as follows</data>
+	<data key="settings.codetip">You can do this in your code yourself as follows</data>
+<data key="settings.tip">Coding tip (Click me)</data>
+	
+	<data key="settings.appcfcSomedesc">Some of this settings can be done in the Application.cfc as well</data>
 	<data key="settings.namemissing">Please enter a name for the datasource</data>
 	<data key="settings.dbclob">Clob</data>
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
+	
+	<data key="settings.dbdriverselectorchoose">Choose a Database Driver</data>
 	
 	<data key="settings.dbtimezone">Timezone</data>
 	
@@ -1142,7 +1196,8 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
 		<data key="services.update.lib">Update JAR's</data>
 	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
-	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
+	<data key="settings.gateway.ListenerCfcPath">Listener Component</data>
+	<data key="settings.gateway.ListenerCfcPathDesc">Path to the Component that is listening to the Gateways action</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>
 	<data key="settings.gateway.startupModeManual">Manual</data>

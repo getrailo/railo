@@ -75,9 +75,7 @@ public final class RegistryEntry {
 		return value;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		try {
 			return "Registry Entry: ["+key+" "+toStringType(type)+" "+value+"]";

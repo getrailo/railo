@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.io.FileUtil;
@@ -14,7 +16,6 @@ import railo.commons.lang.PCLCollection;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.dump.DumpData;
@@ -22,6 +23,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -36,15 +38,15 @@ public final class MappingImpl implements Mapping {
 	private String virtual;
     private String lcVirtual;
     private boolean topLevel;
-    private boolean trusted;
-    private final boolean physicalFirst;
+    private short inspect;
+    private boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
     //private PhysicalClassLoader physicalClassLoader;
     private PCLCollection pclCollection;
     private Resource archive;
     
     private boolean hasArchive;
-    private ConfigImpl config;
+    private Config config;
     private Resource classRootDirectory;
     private PageSourcePool pageSourcePool=new PageSourcePool();
     
@@ -71,9 +73,11 @@ public final class MappingImpl implements Mapping {
 	private boolean appMapping;
 	private boolean ignoreVirtual;
 
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual) {
-    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,5000);
+	private ApplicationListener appListener;
+
+    public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual,ApplicationListener appListener) {
+    	this(config, virtual, strPhysical, strArchive, inspect, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,appListener,5000);
     	
     }
 
@@ -89,20 +93,20 @@ public final class MappingImpl implements Mapping {
      * @param readonly
      * @throws IOException
      */
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual, int classLoaderMaxElements) {
+    public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual,ApplicationListener appListener, int classLoaderMaxElements) {
     	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
-        this.strPhysical=strPhysical;
+        this.strPhysical=StringUtil.isEmpty(strPhysical)?null:strPhysical;
         this.strArchive=StringUtil.isEmpty(strArchive)?null:strArchive;
-        this.trusted=trusted;
+        this.inspect=inspect;
         this.topLevel=topLevel;
         this.appMapping=appMapping;
         this.physicalFirst=physicalFirst;
+        this.appListener=appListener;
         this.classLoaderMaxElements=classLoaderMaxElements;
-        
         
         // virtual
         if(virtual.length()==0)virtual="/";
@@ -111,14 +115,16 @@ public final class MappingImpl implements Mapping {
         this.lcVirtual=this.virtual.toLowerCase();
         this.lcVirtualWithSlash=lcVirtual.endsWith("/")?this.lcVirtual:this.lcVirtual+'/';
 
-        if(!(config instanceof ConfigWebImpl)) return;
-        ConfigWebImpl cw=(ConfigWebImpl) config;
+        //if(!(config instanceof ConfigWebImpl)) return;
+        //ConfigWebImpl cw=(ConfigWebImpl) config;
+        ServletContext cs = (config instanceof ConfigWebImpl)?((ConfigWebImpl)config).getServletContext():null;
+        
         
         // Physical
-        physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,
+        physical=ConfigWebUtil.getExistingResource(cs,strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,
                 config);
         // Archive
-        archive=ConfigWebUtil.getExistingResource(cw.getServletContext(),strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
+        archive=ConfigWebUtil.getExistingResource(cs,strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                 config);
         if(archive!=null) {
             try {
@@ -129,26 +135,29 @@ public final class MappingImpl implements Mapping {
             }
         }
         hasArchive=archive!=null;
+
+        if(archive==null) this.physicalFirst=true;
+        else if(physical==null) this.physicalFirst=false;
+        else this.physicalFirst=physicalFirst;
         
-       //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
+        
+        //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
     }
     
-    /**
-     * @see railo.runtime.Mapping#getClassLoaderForArchive()
-     */
+    @Override
     public ClassLoader getClassLoaderForArchive() {
         return archiveClassLoader;
     }
     
-    public synchronized PCLCollection touchPCLCollection() throws IOException {
+    public PCLCollection touchPCLCollection() throws IOException {
     	
     	if(pclCollection==null){
     		pclCollection=new PCLCollection(this,getClassRootDirectory(),getConfig().getClassLoader(),classLoaderMaxElements);
 		}
-    	getConfig().checkPermGenSpace(true);
     	return pclCollection;
     }
-	public synchronized PCLCollection getPCLCollection() {
+    
+	public PCLCollection getPCLCollection() {
 		return pclCollection;
 	}
 
@@ -163,51 +172,37 @@ public final class MappingImpl implements Mapping {
 		pageSourcePool.clearPages(cl);
 	}
 	
-    /**
-     * @see railo.runtime.Mapping#getPhysical()
-     */
+    @Override
     public Resource getPhysical() {
     	return physical;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getVirtualLowerCase()
-     */
+    @Override
     public String getVirtualLowerCase() {
         return lcVirtual;
     }
-    /**
-     * @see railo.runtime.Mapping#getVirtualLowerCaseWithSlash()
-     */
+    @Override
     public String getVirtualLowerCaseWithSlash() {
         return lcVirtualWithSlash;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getArchive()
-     */
+    @Override
     public Resource getArchive() {
         //initArchive();
         return archive;
     }
 
-    /**
-     * @see railo.runtime.Mapping#hasArchive()
-     */
+    @Override
     public boolean hasArchive() {
         return hasArchive;
     }
     
-    /**
-     * @see railo.runtime.Mapping#hasPhysical()
-     */
+    @Override
     public boolean hasPhysical() {
         return physical!=null;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getClassRootDirectory()
-     */
+    @Override
     public Resource getClassRootDirectory() {
         if(classRootDirectory==null) {
         	String path=getPhysical()!=null?
@@ -229,21 +224,21 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,classLoaderMaxElements);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,inspect,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,appListener,classLoaderMaxElements);
     }
     
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
         
+		
+		
 		DumpTable htmlBox = new DumpTable("mapping","#ff6600","#ffcc99","#000000");
 		htmlBox.setTitle("Mapping");
 		htmlBox.appendRow(1,new SimpleDumpData("virtual"),new SimpleDumpData(virtual));
 		htmlBox.appendRow(1,new SimpleDumpData("physical"),DumpUtil.toDumpData(strPhysical,pageContext,maxlevel,dp));
 		htmlBox.appendRow(1,new SimpleDumpData("archive"),DumpUtil.toDumpData(strArchive,pageContext,maxlevel,dp));
-		htmlBox.appendRow(1,new SimpleDumpData("trusted"),new SimpleDumpData(Caster.toString(trusted)));
+		htmlBox.appendRow(1,new SimpleDumpData("inspect"),new SimpleDumpData(ConfigWebUtil.inspectTemplate(getInspectTemplateRaw(),"")));
 		htmlBox.appendRow(1,new SimpleDumpData("physicalFirst"),new SimpleDumpData(Caster.toString(physicalFirst)));
 		htmlBox.appendRow(1,new SimpleDumpData("readonly"),new SimpleDumpData(Caster.toString(readonly)));
 		htmlBox.appendRow(1,new SimpleDumpData("hidden"),new SimpleDumpData(Caster.toString(hidden)));
@@ -254,8 +249,26 @@ public final class MappingImpl implements Mapping {
     }
 
     /**
-     * @see railo.runtime.Mapping#getPageSource(java.lang.String)
+     * inspect template setting (Config.INSPECT_*), if not defined with the mapping the config setting is returned
+     * @return
      */
+    public short getInspectTemplate() {
+		if(inspect==ConfigImpl.INSPECT_UNDEFINED) return config.getInspectTemplate();
+		return inspect;
+	}
+    
+    /**
+     * inspect template setting (Config.INSPECT_*), if not defined with the mapping, Config.INSPECT_UNDEFINED is returned
+     * @return
+     */
+    public short getInspectTemplateRaw() {
+		return inspect;
+	}
+    
+    
+	
+
+	@Override
     public PageSource getPageSource(String realPath) {
     	boolean isOutSide = false;
 		realPath=realPath.replace('\\','/');
@@ -273,9 +286,7 @@ public final class MappingImpl implements Mapping {
 		return getPageSource(realPath,isOutSide);
     }
     
-    /**
-     * @see railo.runtime.Mapping#getPageSource(java.lang.String, boolean)
-     */
+    @Override
     public PageSource getPageSource(String path, boolean isOut) {
         PageSource source=pageSourcePool.getPageSource(path,true);
         if(source!=null) return source;
@@ -293,21 +304,22 @@ public final class MappingImpl implements Mapping {
         return pageSourcePool;
     }
 
-    /**
-     * @see railo.runtime.Mapping#check()
-     */
+    @Override
     public void check() {
-        if(config instanceof ConfigServer) return;
-        ConfigWebImpl cw=(ConfigWebImpl) config;
+        //if(config instanceof ConfigServer) return;
+        //ConfigWebImpl cw=(ConfigWebImpl) config;
+        ServletContext cs = (config instanceof ConfigWebImpl)?((ConfigWebImpl)config).getServletContext():null;
+        
+        
         // Physical
         if(getPhysical()==null && strPhysical!=null && strPhysical.length()>0) {
-            physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,config);
+            physical=ConfigWebUtil.getExistingResource(cs,strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,config);
             
         }
         // Archive
         if(getArchive()==null && strArchive!=null && strArchive.length()>0) {
             try {
-                archive=ConfigWebUtil.getExistingResource(cw.getServletContext(),strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
+                archive=ConfigWebUtil.getExistingResource(cs,strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                         config);
                 if(archive!=null) {
                     try {
@@ -323,62 +335,43 @@ public final class MappingImpl implements Mapping {
         }
     }
 
-    /**
-     * @see railo.runtime.Mapping#getConfig()
-     */
+    @Override
     public Config getConfig() {
         return config;
     }
-    
-    public ConfigImpl getConfigImpl() {
-        return config;
-    }
 
-    /**
-     * @see railo.runtime.Mapping#isHidden()
-     */
+    @Override
     public boolean isHidden() {
         return hidden;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isPhysicalFirst()
-     */
+    @Override
     public boolean isPhysicalFirst() {
-        return physicalFirst || archive==null;
+        return physicalFirst;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isReadonly()
-     */
+    @Override
     public boolean isReadonly() {
         return readonly;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getStrArchive()
-     */
+    @Override
     public String getStrArchive() {
         return strArchive;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getStrPhysical()
-     */
+    @Override
     public String getStrPhysical() {
         return strPhysical;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isTrusted()
-     */
+    @Override
+    @Deprecated
     public boolean isTrusted() {
-        return trusted;
+        return getInspectTemplate()==ConfigImpl.INSPECT_NEVER;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getVirtual()
-     */
+    @Override
     public String getVirtual() {
         return virtual;
     }
@@ -473,17 +466,12 @@ public final class MappingImpl implements Mapping {
     	return null;    	
 	}
 	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "StrPhysical:"+getStrPhysical()+";"+
 		 "StrArchive:"+getStrArchive()+";"+
@@ -491,9 +479,14 @@ public final class MappingImpl implements Mapping {
 		 "Archive:"+getArchive()+";"+
 		 "Physical:"+getPhysical()+";"+
 		 "topLevel:"+topLevel+";"+
-		 "trusted:"+trusted+";"+
+		 "inspect:"+ConfigWebUtil.inspectTemplate(getInspectTemplateRaw(),"")+";"+
 		 "physicalFirst:"+physicalFirst+";"+
 		 "readonly:"+readonly+";"+
 		 "hidden:"+hidden+";";
+	}
+
+	public ApplicationListener getApplicationListener() {
+		if(appListener!=null) return appListener;
+		return config.getApplicationListener();
 	}
 }

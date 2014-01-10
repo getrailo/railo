@@ -19,24 +19,18 @@ public class SoapCacheEntry implements CacheEntry {
 	}
 
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#created()
-	 */
+	@Override
 	public Date created() {
 		return new Date(element.getExpirationDate().longValue()-element.getTimeToLiveSeconds().longValue());
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#lastHit()
-	 */
+	@Override
 	public Date lastHit() {
 		return new Date(0);
 		// TODO return new Date(element.getLastAccessTime());
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#lastModified()
-	 */
+	@Override
 	public Date lastModified() {
 		return new Date(0);
 		// TODO long value = element.getLastUpdateTime();
@@ -44,45 +38,33 @@ public class SoapCacheEntry implements CacheEntry {
 		// TODO return new Date(value); 
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#hitCount()
-	 */
+	@Override
 	public int hitCount() {
 		return 0;
 		// TODO return (int)element.getHitCount();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#idleTimeSpan()
-	 */
+	@Override
 	public long idleTimeSpan() {
 		return element.getTimeToIdleSeconds().intValue()*1000;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#validUntil()
-	 */
+	@Override
 	public long liveTimeSpan() { 
 		return element.getTimeToLiveSeconds().intValue()*1000;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#size()
-	 */
+	@Override
 	public long size() {
 		return element.getValue().length;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getKey()
-	 */
+	@Override
 	public String getKey() {
 		return (String) element.getKey();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		try{
 		ByteArrayInputStream bais = new ByteArrayInputStream(element.getValue());
@@ -103,16 +85,12 @@ public class SoapCacheEntry implements CacheEntry {
 	}
 	
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return CacheUtil.toString(this);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getCusomInfo()
-	 */
+	@Override
 	public Struct getCustomInfo() {
 		Struct info=CacheUtil.getInfo(this);
 		// TODO info.setEL("version", new Double(element.getVersion()));

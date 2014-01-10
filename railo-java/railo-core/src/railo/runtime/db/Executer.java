@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
@@ -22,10 +22,11 @@ import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.QueryUtil;
 
 /**
  * 
@@ -77,7 +78,7 @@ public final class Executer {
 		Vector vSelects=query.getSelect();
 		int selCount=vSelects.size();
 		
-		Map selects=new HashTable();
+		Map<String,Object> selects=MapFactory.<String,Object>getConcurrentMap();
 		boolean isSMS=false;
 	// headers
 		for(int i=0;i<selCount;i++) {
@@ -108,7 +109,7 @@ public final class Executer {
 				selects.put(alias,select);
 			}
 		}
-		String[] headers = (String[])selects.keySet().toArray(new String[selects.size()]);
+		String[] headers = selects.keySet().toArray(new String[selects.size()]);
 		
 		// aHeaders.toArray(new String[aHeaders.size()]);
 		QueryImpl rtn=new QueryImpl(headers,0,"query");
@@ -168,7 +169,7 @@ public final class Executer {
             int i;
             outer:for(int row=rtn.getRecordcount();row>1;row--) {
                 for(i=0;i<columns.length;i++) {
-                    if(!Operator.equals(columns[i].get(row),columns[i].get(row-1),true))
+                    if(!Operator.equals(QueryUtil.getValue(columns[i],row),QueryUtil.getValue(columns[i],row-1),true))
                         continue outer;
                 }
                 rtn.removeRow(row);
@@ -753,7 +754,7 @@ public final class Executer {
 				    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 				    return sql.getItems()[pos].getValueForCF();
 				}
-		        return qr.getAt(List.last(constant.getValue(),".",true),row);
+		        return qr.getAt(ListUtil.last(constant.getValue(),".",true),row);
 			}
 			case ZConstant.NULL:			return null;
 			case ZConstant.NUMBER:			return Caster.toDouble(constant.getValue());

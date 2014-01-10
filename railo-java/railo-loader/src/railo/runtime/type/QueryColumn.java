@@ -33,19 +33,22 @@ public interface QueryColumn extends Collection,Reference,Castable {
     public Object removeEL(int row);
     
 	/**
-	 * get method with a int as key
+	 * get method with a int as key, return empty default value for invalid row
 	 * @param row row to get value
 	 * @return row value
 	 * @throws PageException
+	 * @deprecated use instead <code>get(int row, Object defaultValue)</code>
 	 */
 	public Object get(int row) throws PageException;
 
 	/**
-	 * getExpressionLess method with a int as key
+	 * return the value in this row (can be null), when row number is invalid the default value is returned
+	 * 
 	 * @param row row to get value
+	 * @param emptyValue value returned when row does not exists or the rows value is null
 	 * @return row value
 	 */
-	public Object get(int row, Object defaultValue);
+	public Object get(int row, Object emptyValue);
 
 	/**
 	 * set method with a int as key

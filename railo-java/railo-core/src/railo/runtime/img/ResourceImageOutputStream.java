@@ -55,10 +55,7 @@ public class ResourceImageOutputStream extends ImageOutputStreamImpl {
     	throw new IOException("not supported");
     }
 
-    /**
-     *
-     * @see javax.imageio.stream.ImageInputStreamImpl#close()
-     */
+    @Override
     public void close() throws IOException {
     	try {
             super.close();

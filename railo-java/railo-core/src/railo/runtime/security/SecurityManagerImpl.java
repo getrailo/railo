@@ -112,9 +112,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         
     }
 
-    /**
-     * @see railo.runtime.security.SecurityManager#getAccess(int)
-     */
+    @Override
     public short getAccess(int access) {
         return accesses[access];
     }
@@ -122,9 +120,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         accesses[access]=value;;
     }
     
-    /**
-     * @see railo.runtime.security.SecurityManager#getAccess(java.lang.String)
-     */
+    @Override
     public short getAccess(String access) throws SecurityException {
         return getAccess(toIntAccessType(access));
     }
@@ -278,10 +274,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         
     }
 
-    /**
-     *
-     * @see railo.runtime.security.SecurityManager#checkFileLocation(railo.commons.io.res.Resource, java.lang.String)
-     */
+    @Override
     public void checkFileLocation(Resource res) throws SecurityException {
     	checkFileLocation(null, res, null);
     }
@@ -383,9 +376,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	}
 
 
-    /**
-     * @see railo.runtime.security.ISecurityManager#cloneSecurityManager()
-     */
+    @Override
     public SecurityManager cloneSecurityManager() {
         SecurityManagerImpl sm = new SecurityManagerImpl();
         
@@ -397,9 +388,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         return sm;
     }
     
-    /**
-     * @see java.lang.Object#clone()
-     */
+    @Override
     public Object clone() {
         return cloneSecurityManager();
     }

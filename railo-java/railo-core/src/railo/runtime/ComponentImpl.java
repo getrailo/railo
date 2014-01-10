@@ -4,7 +4,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +17,9 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.commons.collection.HashMapPro;
+import railo.commons.collection.MapFactory;
+import railo.commons.collection.MapPro;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
@@ -30,11 +32,13 @@ import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.DataMember;
 import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
+import railo.runtime.component.MetaDataSoftReference;
+import railo.runtime.component.MetadataUtil;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.converter.ScriptConverter;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -45,6 +49,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.dynamicEvaluation.EvaluateComponent;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
@@ -57,13 +62,13 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFGSProperty;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
@@ -79,24 +84,31 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
+import railo.runtime.type.util.UDFUtil;
 
 /**
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
 public final class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
+	private static final long serialVersionUID = -245618330485511484L; // do not change this
 
 
+	/*
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * Any change here must be changed in the method writeExternal,readExternal as well
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * */
 	private ComponentProperties properties;
-	private Map<Key,Member> _data;
-    private Map<Key,UDF> _udfs;
+	private MapPro<Key,Member> _data;
+    private MapPro<Key,UDF> _udfs;
 
 	ComponentImpl top=this;
     ComponentImpl base;
-    //private ComponentPage componentPage;
     private PageSource pageSource;
     private ComponentScope scope;
     
@@ -109,10 +121,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	private InterfaceCollection interfaceCollection;
 
+
 	private boolean useShadow;
+	private boolean entity;
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
 	private boolean loaded;
+	private boolean hasInjectedFunctions;
 
 
 
@@ -126,6 +141,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			SizeOf.size(false)+
 			SizeOf.size(interfaceCollection)+
 			SizeOf.size(useShadow)+
+			SizeOf.size(entity)+
 			SizeOf.size(afterConstructor)+
 			SizeOf.size(base);
 	}
@@ -178,13 +194,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
     
 
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     
-    public synchronized Collection duplicatex(boolean deepCopy) {
-        ComponentImpl c=new ClonedComponent(this,deepCopy);
-        return c;
-    }*/
+    @Override
 
     public Collection duplicate(boolean deepCopy) {
     	ComponentImpl top= _duplicate(deepCopy,true);
@@ -205,6 +215,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	trg.pageSource=pageSource;
 	        trg._triggerDataMember=_triggerDataMember;
 	        trg.useShadow=useShadow;
+	        trg.entity=entity;
+	        trg.hasInjectedFunctions=hasInjectedFunctions;
 	        trg.afterConstructor=afterConstructor;
 	        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
 			trg.properties=properties.duplicate();
@@ -218,18 +230,18 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				trg.base=base._duplicate(deepCopy,false);
 				
 				trg._data=trg.base._data;
-				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key,UDF>(trg.base._udfs));
+				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMapPro<Key,UDF>(trg.base._udfs));
 
 	    		if(useShadow) trg.scope=new ComponentScopeShadow(trg,(ComponentScopeShadow)trg.base.scope,false);
 			}
 	    	else {
 	    		// clone data member, ignore udfs for the moment
-	    		trg._data=duplicateDataMember(trg, _data, new HashMap(), deepCopy);
-	    		trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key, UDF>());
+	    		trg._data=duplicateDataMember(trg, _data, new HashMapPro(), deepCopy);
+	    		trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMapPro<Key, UDF>());
 	    		
 	    		if(useShadow) {
 	    			ComponentScopeShadow css = (ComponentScopeShadow)scope;
-	    			trg.scope=new ComponentScopeShadow(trg,duplicateDataMember(trg,css.getShadow(),new HashMap(),deepCopy));
+	    			trg.scope=new ComponentScopeShadow(trg,duplicateDataMember(trg,css.getShadow(),MapFactory.getConcurrentMap(),deepCopy));
 	    		}
 	    	}
 	    	
@@ -307,7 +319,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param deepCopy
      * @return
      */
-    public static Map duplicateDataMember(ComponentImpl c,Map map,Map newMap,boolean deepCopy){
+    public static MapPro duplicateDataMember(ComponentImpl c,MapPro map,MapPro newMap,boolean deepCopy){
         Iterator it=map.entrySet().iterator();
         Map.Entry entry;
         Object value;
@@ -323,17 +335,19 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return newMap;
     }
     
-    public static Map<Key, UDF> duplicateUTFMap(ComponentImpl src,ComponentImpl trg,Map<Key,UDF> srcMap, Map<Key, UDF> trgMap){
+    public static MapPro<Key, UDF> duplicateUTFMap(ComponentImpl src,ComponentImpl trg,MapPro<Key,UDF> srcMap, MapPro<Key, UDF> trgMap){
     	Iterator<Entry<Key, UDF>> it = srcMap.entrySet().iterator();
-        Map.Entry<Key, UDF> entry;
+        Entry<Key, UDF> entry;
         UDF udf;
         while(it.hasNext()) {
             entry=it.next();
             udf=entry.getValue();
         	
             if(udf.getOwnerComponent()==src) {
-        		udf=((UDFImpl)entry.getValue()).duplicate(trg);
-        		trgMap.put(entry.getKey(),udf);	
+            	UDFPlus clone=(UDFPlus) entry.getValue().duplicate();
+        		clone.setOwnerComponent(trg);
+        		clone.setAccess(udf.getAccess());
+        		trgMap.put(entry.getKey(),clone);	
             }
         	
         }
@@ -353,7 +367,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
         // extends
 	    if(!StringUtil.isEmpty(properties.extend)) {
-			base= ComponentLoader.loadComponent(pageContext,properties.extend,Boolean.TRUE,null);
+			base= ComponentLoader.loadComponent(pageContext,componentPage.getPageSource(),properties.extend,Boolean.TRUE,null);
 		}
 	    else { 
 	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);
@@ -366,24 +380,24 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	this.dataMemberDefaultAccess=base.dataMemberDefaultAccess;
 	    	this._triggerDataMember=base._triggerDataMember;
 	    	_data=base._data;
-	    	_udfs=new HashMap<Key,UDF>(base._udfs);
+	    	_udfs=new HashMapPro<Key,UDF>(base._udfs);
 	    	setTop(this,base);
 	    }
 	    else {
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
 	    	// TODO get per CFC setting this._triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
-		    _udfs=new HashMap<Key,UDF>();
-		    _data=new HashMap<Key,Member>();
+		    _udfs=new HashMapPro<Key,UDF>();
+		    _data=MapFactory.getConcurrentMap();
 	    }
 	    
 	    // implements
 	    if(!StringUtil.isEmpty(properties.implement)) {
-	    	interfaceCollection=new InterfaceCollection((PageContextImpl)pageContext,properties.implement);
+	    	interfaceCollection=new InterfaceCollection((PageContextImpl)pageContext,getPageSource(),properties.implement);
 	    }
 	    
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
-	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap<Key,Object>());
+	        if(base==null) scope=new ComponentScopeShadow(this,MapFactory.getConcurrentMap());
 		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope,false);
 	    }
 	    else {
@@ -397,13 +411,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	
 	    Iterator it = interfaceCollection.getUdfs().entrySet().iterator();
 	    Map.Entry entry;
-	    UDFImpl iUdf,cUdf;
+	    UDFPlus iUdf,cUdf;
 	    FunctionArgument[] iFA,cFA;
     	while(it.hasNext()){
     		
     		entry=(Entry) it.next();
-    		iUdf=(UDFImpl) entry.getValue();
-    		cUdf=(UDFImpl) _udfs.get(entry.getKey());
+    		iUdf=(UDFPlus) entry.getValue();
+    		cUdf=(UDFPlus) _udfs.get(entry.getKey());
     		
     		// UDF does not exist
     		if(cUdf==null ) {
@@ -469,7 +483,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    componentPage.ckecked();
     }
 
-	private String _getErrorMessage(UDFImpl cUdf,UDFImpl iUdf) {
+	private String _getErrorMessage(UDFPlus cUdf,UDFPlus iUdf) {
 		return "function ["+cUdf.toString().toLowerCase()+"] of component " +
 			 "["+pageSource.getDisplayPath()+"]" +
 			 " does not match the function declaration ["+iUdf.toString().toLowerCase()+"] of the interface " +
@@ -485,9 +499,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
     Object _call(PageContext pc, Collection.Key key, Struct namedArgs, Object[] args,boolean superAccess) throws PageException {
-        Member member=getMember(pc,key,false, superAccess);
-        if(member instanceof UDF) {
-        	return _call(pc,(UDF)member,namedArgs,args);
+    	
+    	Member member=getMember(pc,key,false, superAccess);
+    	
+    	if(member instanceof UDFPlus) {
+    		return _call(pc,key,(UDFPlus)member,namedArgs,args);
         }
         return onMissingMethod(pc, -1, member, key.getString(), args, namedArgs, superAccess);
     }
@@ -495,7 +511,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     Object _call(PageContext pc, int access, Collection.Key key, Struct namedArgs, Object[] args,boolean superAccess) throws PageException {
         Member member=getMember(access,key,false,superAccess);
         if(member instanceof UDF) {
-            return _call(pc,(UDF)member,namedArgs,args);
+            return _call(pc,key,(UDFPlus)member,namedArgs,args);
         }
         return onMissingMethod(pc, access, member, key.getString(), args, namedArgs, superAccess);
     }
@@ -512,7 +528,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		}
         	}
         	else if(_namedArgs!=null) {
-        		UDFImpl.argumentCollection(_namedArgs, new FunctionArgument[]{});
+        		UDFUtil.argumentCollection(_namedArgs, new FunctionArgument[]{});
         		
         		Iterator<Entry<Key, Object>> it = _namedArgs.entryIterator();
         		Entry<Key, Object> e;
@@ -528,13 +544,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	//newArgs.setEL(MISSING_METHOD_ARGS, args); 
         	Object[] newArgs=new Object[]{name,args};
         	
-        	return _call(pc,(UDF)ommm,null,newArgs);
+        	return _call(pc,KeyConstants._onmissingmethod,(UDFPlus)ommm,null,newArgs);
         }
         if(member==null)throw ComponentUtil.notFunction(this, KeyImpl.init(name), null,access);
         throw ComponentUtil.notFunction(this, KeyImpl.init(name), member.getValue(),access);
     }
 	
-	Object _call(PageContext pc, UDF udf, Struct namedArgs, Object[] args) throws PageException {
+	Object _call(PageContext pc, Collection.Key calledName,UDFPlus udf, Struct namedArgs, Object[] args) throws PageException {
 			
 		Object rtn=null;
 		Variables parent=null;
@@ -553,8 +569,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				synchronized (this) {
 					try {
 						parent=beforeCall(pc);
-						if(args!=null)rtn=udf.call(pc,args,true);
-						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+						if(args!=null)rtn=udf.call(pc,calledName,args,true);
+						else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 					}		
 					finally {
 						pc.setVariablesScope(parent);
@@ -569,8 +585,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			else {
 				try {
 					parent=beforeCall(pc);
-					if(args!=null)rtn=udf.call(pc,args,true);
-					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+					if(args!=null)rtn=udf.call(pc,calledName,args,true);
+					else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 				}		
 				finally {
 					pc.setVariablesScope(parent);
@@ -591,8 +607,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				synchronized (this) {
 				    try {
 		            	parent=beforeCall(pc); 
-		            	if(args!=null)rtn=udf.call(pc,args,true);
-						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+		            	if(args!=null)rtn=udf.call(pc,calledName,args,true);
+						else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 					}		
 					finally {
 						pc.setVariablesScope(parent);
@@ -600,12 +616,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				}
 			}
 			
-			// sync no
+			// sync no 385|263
 			else {
 			    try {
 	            	parent=beforeCall(pc);
-	            	if(args!=null)rtn=udf.call(pc,args,true);
-					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+	            	if(args!=null)rtn=udf.call(pc,calledName,args,true);
+					else rtn=udf.callWithNamedValues(pc,calledName,namedArgs,true);
 				}		
 				finally {
 					pc.setVariablesScope(parent);
@@ -622,8 +638,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      */
 	public Variables beforeCall(PageContext pc) {
     	Variables parent=pc.variablesScope();
-        pc.setVariablesScope(scope);
-        return parent;
+    	pc.setVariablesScope(scope);
+    	return parent;
     }
 	
 	/**
@@ -639,11 +655,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     		Iterator<Entry<Key, UDF>> it = constructorUDFs.entrySet().iterator();
     		Map.Entry<Key, UDF> entry;
     		Key key;
-    		UDFImpl udf;
+    		UDFPlus udf;
     		while(it.hasNext()){
     			entry=it.next();
     			key=entry.getKey();
-    			udf=(UDFImpl) entry.getValue();
+    			udf=(UDFPlus) entry.getValue();
     			registerUDF(key, udf,false,true);
     		}
     	}
@@ -786,7 +802,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param dataMember do also check if key super
      * @return matching entry if exists otherwise null
      */
-    protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
+	protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyConstants._super)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());
@@ -879,9 +895,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return ACCESS_PUBLIC;
     }
 	
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return toDumpData(pageContext,maxlevel,dp,getAccess(pageContext));
     }
@@ -997,22 +1011,18 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	protected String getCallPath() {
 		if(StringUtil.isEmpty(top.properties.callPath)) return getName();
 		try {
-            return "("+List.arrayToList(List.listToArrayTrim(top.properties.callPath.replace('/','.').replace('\\','.'),"."),".")+")";
+            return "("+ListUtil.arrayToList(ListUtil.listToArrayTrim(top.properties.callPath.replace('/','.').replace('\\','.'),"."),".")+")";
         } catch (PageException e) {
             return top.properties.callPath;
         }
 	}
 
-    /**
-     * @see railo.runtime.Component#getDisplayName()
-     */
+    @Override
     public String getDisplayName() {
 		return top.properties.dspName;
 	}
 	
-    /**
-     * @see railo.runtime.Component#getExtends()
-     */
+    @Override
     public String getExtends() {
 		return top.properties.extend;
 	}
@@ -1025,61 +1035,47 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 	
 	
-    /**
-     * @see railo.runtime.Component#getHint()
-     */
+    @Override
     public String getHint() {
 		return top.properties.hint;
 	}
     
-    /**
-     * @see railo.runtime.Component#getWSDLFile()
-     */
+    @Override
     public String getWSDLFile() {
 		return top.properties.getWsdlFile();
 	}
 
-    /**
-     * @see railo.runtime.Component#getName()
-     */
+    @Override
     public String getName() {
 	    if(top.properties.callPath==null) return "";
-	    return List.last(top.properties.callPath,"./",true);
+	    return ListUtil.last(top.properties.callPath,"./",true);
 	}
     public String _getName() { // MUST nicht so toll
 	    if(properties.callPath==null) return "";
-	    return List.last(properties.callPath,"./",true);
+	    return ListUtil.last(properties.callPath,"./",true);
 	}
     public PageSource _getPageSource() {
     	return pageSource;
 	}
 	
-    /**
-     * @see railo.runtime.Component#getCallName()
-     */
+    @Override
     public String getCallName() {
 	    return top.properties.callPath;
 	}
     
-    /**
-     * @see railo.runtime.Component#getAbsName()
-     */
+    @Override
     public String getAbsName() {
     	return top.pageSource.getComponentName();
 	}
     
 
-    /**
-     * @see railo.runtime.Component#getOutput()
-     */
+    @Override
     public boolean getOutput() {
     	if(top.properties.output==null) return true;
         return top.properties.output.booleanValue();
     }
 
-    /**
-     * @see railo.runtime.Component#instanceOf(java.lang.String)
-     */
+    @Override
     public boolean instanceOf(String type) {
     	
     	ComponentImpl c=top;
@@ -1130,31 +1126,23 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
     
 
-    /**
-     * @see railo.runtime.Component#isValidAccess(int)
-     */
+    @Override
     public boolean isValidAccess(int access) {
 		return !(access <0 || access>ACCESS_COUNT);
 	}
     
-    /**
-     * @see railo.runtime.Component#getPageSource()
-     */
+    @Override
     public PageSource getPageSource() {
         return top.pageSource;
     }
     
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
     	return castToString(false);
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return castToString(false,defaultValue);
 	}
@@ -1165,10 +1153,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toString,true,superAccess);
 			//Object o = get(pc,"_toString",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
-					return Caster.toString(_call(pc, udf, null, new Object[0]));
+					return Caster.toString(_call(pc, KeyConstants.__toString,udf, null, new Object[0]));
 				}
 			}
 		}
@@ -1187,11 +1175,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toString,true,superAccess);
 			//Object o = get(pc,"_toString",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toString(_call(pc, udf, null, new Object[0]),defaultValue);
+						return Caster.toString(_call(pc,KeyConstants.__toString, udf, null, new Object[0]),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1201,16 +1189,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
     	return castToBooleanValue(false);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return castToBoolean(false, defaultValue);
     }
@@ -1221,10 +1205,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toBoolean,true,superAccess);
 			//Object o = get(pc,"_toBoolean",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_BOOLEAN && udf.getFunctionArguments().length==0) {
-					return Caster.toBooleanValue(_call(pc, udf, null, new Object[0]));
+					return Caster.toBooleanValue(_call(pc, KeyConstants.__toBoolean,udf, null, new Object[0]));
 				}
 			}
 		}
@@ -1239,11 +1223,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toBoolean,true,superAccess);
 			//Object o = get(pc,"_toBoolean",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_BOOLEAN && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toBoolean(_call(pc, udf, null, new Object[0]),defaultValue);
+						return Caster.toBoolean(_call(pc,KeyConstants.__toBoolean, udf, null, new Object[0]),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1253,16 +1237,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
     	return castToDoubleValue(false);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return castToDoubleValue(false, defaultValue);
     }
@@ -1274,10 +1254,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toNumeric,true,superAccess);
 			//Object o = get(pc,"_toNumeric",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_NUMERIC && udf.getFunctionArguments().length==0) {
-					return Caster.toDoubleValue(_call(pc, udf, null, new Object[0]));
+					return Caster.toDoubleValue(_call(pc, KeyConstants.__toNumeric,udf, null, new Object[0]));
 				}
 			}
 		}
@@ -1291,11 +1271,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toNumeric,true,superAccess);
 			//Object o = get(pc,"_toNumeric",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_NUMERIC && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toDoubleValue(_call(pc, udf, null, new Object[0]),defaultValue);
+						return Caster.toDoubleValue(_call(pc, KeyConstants.__toNumeric,udf, null, new Object[0]),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1305,16 +1285,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
     	return castToDateTime(false);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return castToDateTime(false, defaultValue);
     }
@@ -1325,10 +1301,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toDateTime,true,superAccess);
 			//Object o = get(pc,"_toDateTime",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_DATETIME && udf.getFunctionArguments().length==0) {
-					return Caster.toDate(_call(pc, udf, null, new Object[0]),pc.getTimeZone());
+					return Caster.toDate(_call(pc, KeyConstants.__toDateTime,udf, null, new Object[0]),pc.getTimeZone());
 				}
 			}
 		}
@@ -1342,12 +1318,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc!=null) {
 			Member member = getMember(pc,KeyConstants.__toDateTime,true,superAccess);
 			//Object o = get(pc,"_toDateTime",null);
-			if(member instanceof UDF) {
-				UDF udf = (UDF)member;
+			if(member instanceof UDFPlus) {
+				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_DATETIME && udf.getFunctionArguments().length==0) {
 					
 					try {
-						return DateCaster.toDateAdvanced(_call(pc, udf, null, new Object[0]),true,pc.getTimeZone(),defaultValue);
+						return DateCaster.toDateAdvanced(_call(pc, KeyConstants.__toDateTime,udf, null, new Object[0]),true,pc.getTimeZone(),defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}
@@ -1358,11 +1334,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.Component#getMetaData(railo.runtime.PageContext)
-     */
+    @Override
     public synchronized Struct getMetaData(PageContext pc) throws PageException {
-    	return getMetaData(ACCESS_PRIVATE,pc,top);
+    	return getMetaData(ACCESS_PRIVATE,pc,top,false);
     }
     
 
@@ -1373,15 +1347,13 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return null;
     }
 
-    protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
+    protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp, boolean ignoreCache) throws PageException {
     	// Cache
-    	Page page = ((PageSourceImpl)comp.pageSource).getPage();
-    	if(page==null) page = comp.pageSource.loadPage(pc.getConfig());
-    	if(page.metaData!=null && page.metaData.get()!=null) {
+    	Page page=MetadataUtil.getPageWhenMetaDataStillValid(pc, comp, ignoreCache);
+    	if(page!=null && page.metaData!=null && page.metaData.get()!=null){
     		return page.metaData.get();
-
     	}
-    	
+    	long creationTime=System.currentTimeMillis(); 
     	StructImpl sct=new StructImpl();
     	
         // fill udfs
@@ -1405,20 +1377,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             
         // extends
         Struct ex=null;
-        if(comp.base!=null) ex=getMetaData(access,pc,comp.base);
+        if(comp.base!=null) ex=getMetaData(access,pc,comp.base,true);
         if(ex!=null)sct.set(KeyConstants._extends,ex);
         
         // implements
         InterfaceCollection ic = comp.interfaceCollection;
         if(ic!=null){
-        	Set<String> set = List.listToSet(comp.properties.implement, ",",true);
+        	Set<String> set = ListUtil.listToSet(comp.properties.implement, ",",true);
             InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
             if(!ArrayUtil.isEmpty(interfaces)){
 	            Struct imp=new StructImpl();
             	for(int i=0;i<interfaces.length;i++){
             		if(!set.contains(interfaces[i].getCallPath())) continue;
             		//print.e("-"+interfaces[i].getCallPath());
-            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
+            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc,true));
 	            }
 	            sct.set(KeyConstants._implements,imp);
             }
@@ -1431,7 +1403,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._path,ps.getDisplayPath());
         sct.set(KeyConstants._type,"component");
             
-        Class skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
+        Class<?> skeleton = comp.getJavaAccessClass(pc,new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
@@ -1448,16 +1420,21 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
         	while(pit.hasNext()){
         		p=pit.next().getValue();
-        		parr.add(p.getMetaData());
+        		parr.append(p.getMetaData());
         	}
         	parr.sort(new ArrayOfStructComparator(KeyConstants._name));
         	sct.set(KeyConstants._properties,parr);
         }
-        page.metaData=new SoftReference<Struct>(sct);
-        return page.metaData.get();
+
+        page.metaData=new MetaDataSoftReference<Struct>(sct,creationTime);
+        return sct;
     }    
 
-    private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
+
+
+	
+
+	private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
     	ArrayImpl arr=new ArrayImpl();
     	//Collection.Key name;
         
@@ -1465,7 +1442,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	if(page!=null && page.udfs!=null){
     		for(int i=0;i<page.udfs.length;i++){
     			if(page.udfs[i].getAccess()>access) continue;
-        		arr.add(ComponentUtil.getMetaData(pc,(UDFPropertiesImpl) page.udfs[i]));
+        		arr.append(ComponentUtil.getMetaData(pc,(UDFPropertiesImpl) page.udfs[i]));
     		}
     	}
     	
@@ -1486,14 +1463,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
         if(arr.size()!=0)sct.set(KeyConstants._functions,arr);
 	}
-    
-    
-    
 
-	/**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
-    public boolean isInitalized() {
+	public boolean isInitalized() {
         return isInit;
     }
     
@@ -1510,16 +1481,15 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @throws ExpressionException 
      */
     private synchronized Object _set(PageContext pc,Collection.Key key, Object value) throws ExpressionException {
-    	//print.out("set:"+key);
-        if(value instanceof UDFImpl) {
-        	UDFImpl udf = (UDFImpl)((UDF)value).duplicate();
+    	if(value instanceof UDFPlus) {
+        	UDFPlus udf = (UDFPlus)((UDFPlus)value).duplicate();
         	//udf.isComponentMember(true);///+++
         	udf.setOwnerComponent(this);
         	if(udf.getAccess()>Component.ACCESS_PUBLIC)
         		udf.setAccess(Component.ACCESS_PUBLIC);
         	_data.put(key,udf);
         	_udfs.put(key,udf);
-        	
+        	hasInjectedFunctions=true;
         }
         else {
         	if(loaded && !isAccessible(ThreadLocalPageContext.get(pc), dataMemberDefaultAccess))
@@ -1532,22 +1502,22 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
     
 
-    public void reg(Collection.Key key, UDFImpl udf) {
+    public void reg(Collection.Key key, UDFPlus udf) {
     	registerUDF(key, udf,useShadow,false);
     }
-    public void reg(String key, UDFImpl udf) {
+    public void reg(String key, UDFPlus udf) {
     	registerUDF(KeyImpl.init(key), udf,useShadow,false);
     }
 
     public void registerUDF(String key, UDF udf) {
-    	registerUDF(KeyImpl.init(key), (UDFImpl) udf,useShadow,false);
+    	registerUDF(KeyImpl.init(key), (UDFPlus) udf,useShadow,false);
     }
     public void registerUDF(String key, UDFProperties prop) {
     	registerUDF(KeyImpl.init(key), new UDFImpl( prop),useShadow,false);
     }
 
     public void registerUDF(Collection.Key key, UDF udf) {
-    	registerUDF(key, (UDFImpl) udf,useShadow,false);
+    	registerUDF(key, (UDFPlus) udf,useShadow,false);
     }
     public void registerUDF(Collection.Key key, UDFProperties prop) {
     	registerUDF(key, new UDFImpl( prop),useShadow,false);
@@ -1556,17 +1526,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     /*
      *  @deprecated injected is not used
      */
-    public void registerUDF(Collection.Key key, UDFImpl udf,boolean useShadow,boolean injected) {
+    public void registerUDF(Collection.Key key, UDFPlus udf,boolean useShadow,boolean injected) {
     	udf.setOwnerComponent(this);//+++
     	_udfs.put(key,udf);
     	_data.put(key,udf);
     	if(useShadow)scope.setEL(key, udf);
     }
     
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
     	return _data.remove(key);
 	}
@@ -1576,16 +1543,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return _data.remove(key);
     }
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object set(PageContext pc, String name, Object value) throws PageException {
+    /*public Object set(PageContext pc, String name, Object value) throws PageException {
     	return set(pc, KeyImpl.init(name), value);
-    }
+    }*/
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, Collection.Key key, Object value) throws PageException {
     	if(pc==null)pc=ThreadLocalPageContext.get();
     	if(triggerDataMember(pc) && isInit) {
@@ -1596,43 +1558,40 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return _set(pc,key,value);
     }
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
         return set(null,key,value);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String name, Object value) {
+    /*public Object setEL(PageContext pc, String name, Object value) {
     	try {return set(pc, name, value);} 
     	catch (PageException e) {return null;}
-    }
+    }*/
     
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, Collection.Key name, Object value) {
     	try {return set(pc, name, value);} 
     	catch (PageException e) {return null;}
     }
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
     	return setEL(null, key, value);
 	}
+	
+	@Override
+	public final Object put(Object key, Object value) {
+		// TODO find a better solution
+		// when a orm entity the data given by put or also written to the variables scope
+		if(entity) {
+			getComponentScope().put(key, value);
+		}
+		return super.put(key, value);
+	}
     
-
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String name) throws PageException {
+    /*public Object get(PageContext pc, String name) throws PageException {
         return get(pc, KeyImpl.init(name));
-    }
+    }*/
     
     public Object get(PageContext pc, Collection.Key key) throws PageException {
         Member member=getMember(pc,key,true,false);
@@ -1647,23 +1606,25 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     private Object callGetter(PageContext pc,Collection.Key key) throws PageException {
-    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
-        if(member instanceof UDF) {
-            UDF udf = (UDF)member;
+    	Key getterName = KeyImpl.getInstance("get"+key.getLowerString());
+    	Member member=getMember(pc,getterName,false,false);
+        if(member instanceof UDFPlus) {
+            UDFPlus udf = (UDFPlus)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
-                return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
+                return _call(pc,getterName,udf,null,ArrayUtil.OBJECT_EMPTY);
             }
         } 
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
     
     private Object callGetter(PageContext pc,Collection.Key key, Object defaultValue) {
-    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
-        if(member instanceof UDF) {
-            UDF udf = (UDF)member;
+    	Key getterName = KeyImpl.getInstance("get"+key.getLowerString());
+    	Member member=getMember(pc,getterName,false,false);
+        if(member instanceof UDFPlus) {
+            UDFPlus udf = (UDFPlus)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
                 try {
-					return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
+					return _call(pc,getterName,udf,null,ArrayUtil.OBJECT_EMPTY);
 				} catch (PageException e) {
 					return defaultValue;
 				}
@@ -1673,11 +1634,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
     
     private Object callSetter(PageContext pc,Collection.Key key, Object value) throws PageException {
-    	Member member=getMember(pc,KeyImpl.getInstance("set"+key.getLowerString()),false,false);
-    	if(member instanceof UDF) {
-        	UDF udf = (UDF)member;
+    	Collection.Key setterName = KeyImpl.getInstance("set"+key.getLowerString());
+    	Member member=getMember(pc,setterName,false,false);
+    	if(member instanceof UDFPlus) {
+        	UDFPlus udf = (UDFPlus)member;
         	if(udf.getFunctionArguments().length==1 && (udf.getReturnType()==CFTypes.TYPE_VOID) || udf.getReturnType()==CFTypes.TYPE_ANY   ) {// TDOO support int return type
-                return _call(pc,udf,null,new Object[]{value});
+                return _call(pc,setterName,udf,null,new Object[]{value});
             }    
         }
         return _set(pc,key,value);
@@ -1707,16 +1669,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
     }
 
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object get(PageContext pc, String name, Object defaultValue) {
+    /*public Object get(PageContext pc, String name, Object defaultValue) {
         return get(pc, KeyImpl.init(name), defaultValue);
-    }
+    }*/
 
-    /**
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
         Member member=getMember(pc,key,true,false);
         if(member!=null) return member.getValue();
@@ -1756,24 +1713,17 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return defaultValue;
     }
     
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
     	return get(ThreadLocalPageContext.get(),key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
     	return get(ThreadLocalPageContext.get(),key,defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.Component#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
+    @Override
     public Object call(PageContext pc, String name, Object[] args) throws PageException {
         return _call(pc,KeyImpl.init(name),null,args,false);
     }
@@ -1790,9 +1740,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return _call(pc,access,name,null,args,false);
     }
 
-    /**
-     * @see railo.runtime.Component#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
+    @Override
     public Object callWithNamedValues(PageContext pc, String name, Struct args) throws PageException {
         return _call(pc,KeyImpl.init(name),args,null,false);
     }
@@ -1810,7 +1758,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     public boolean contains(PageContext pc,String name) {
-       	return get(getAccess(pc),name,null)!=null;
+       	return get(getAccess(pc),name,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
     }
 
 	/**
@@ -1819,22 +1767,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	 * @return
 	 */
 	public boolean contains(PageContext pc,Key key) {
-	   	return get(getAccess(pc),key,null)!=null;
+	   	return get(getAccess(pc),key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 	   	return contains(ThreadLocalPageContext.get(),key);
 	}
     
     public boolean contains(int access,String name) {
-    	return get(access,name,null)!=null;
+    	return get(access,name,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
    }
     
     public boolean contains(int access,Key name) {
-    	return get(access,name,null)!=null;
+    	return get(access,name,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
     }
 
     @Override
@@ -1856,9 +1802,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return keys(getAccess(ThreadLocalPageContext.get()));
     }
 
-    /**
-     * @see railo.runtime.type.Collection#size()
-     */
+    @Override
     public int size() {
     	return size(getAccess(ThreadLocalPageContext.get()));
     }
@@ -1961,30 +1905,22 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(), str);
 	}
@@ -2007,36 +1943,60 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			pc=ThreadUtil.createPageContext(config, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", "/","", new Cookie[0], parr, parr, new StructImpl());
 		}
 		
+		// reading fails for serialized data from Railo version 4.1.2.002
+		String name = in.readUTF();
+		
+		if(name.startsWith("evaluateComponent('") && name.endsWith("})")) {
+			readExternalOldStyle(pc, name);
+			return;
+		}
+		
+		String md5 = in.readUTF();
+		Struct _this = Caster.toStruct(in.readObject(),null);
+		Struct _var = Caster.toStruct(in.readObject(),null);
+	    
 		try {
-			// MUST do serialisation more like the cloning way
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,in.readUTF());
-			
-			
-			this._data=other._data;
-			this._udfs=other._udfs;
-			setOwner(_udfs);
-			setOwner(_data);
-			this.afterConstructor=other.afterConstructor;
-			this.base=other.base;
-			//this.componentPage=other.componentPage;
-			this.pageSource=other.pageSource;
-			this.constructorUDFs=other.constructorUDFs;
-			this.dataMemberDefaultAccess=other.dataMemberDefaultAccess;
-			this.interfaceCollection=other.interfaceCollection;
-			this.isInit=other.isInit;
-			this.properties=other.properties;
-			this.scope=other.scope;
-			this.top=this;
-			this._triggerDataMember=other._triggerDataMember;
-			this.useShadow=other.useShadow;
-			
-			
-		} catch (PageException e) {
-			throw new IOException(e.getMessage());
+			ComponentImpl other=(ComponentImpl)EvaluateComponent.invoke(pc, name, md5, _this,_var);
+			_readExternal(other);
+		}
+		catch (PageException e) {
+			throw ExceptionUtil.toIOException(e);
 		}
 		finally {
 			if(pcCreated)ThreadLocalPageContext.release();
 		}
+	}
+
+	private void readExternalOldStyle(PageContext pc, String str) throws IOException {
+		try {
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,str);
+			_readExternal(other);
+		}
+		catch (PageException e) {
+			throw ExceptionUtil.toIOException(e);
+		}
+	}
+
+	private void _readExternal(ComponentImpl other) {
+		this._data=other._data;
+		this._udfs=other._udfs;
+		setOwner(_udfs);
+		setOwner(_data);
+		this.afterConstructor=other.afterConstructor;
+		this.base=other.base;
+		//this.componentPage=other.componentPage;
+		this.pageSource=other.pageSource;
+		this.constructorUDFs=other.constructorUDFs;
+		this.dataMemberDefaultAccess=other.dataMemberDefaultAccess;
+		this.interfaceCollection=other.interfaceCollection;
+		this.isInit=other.isInit;
+		this.properties=other.properties;
+		this.scope=other.scope;
+		this.top=this;
+		this._triggerDataMember=other._triggerDataMember;
+		this.hasInjectedFunctions=other.hasInjectedFunctions;
+		this.useShadow=other.useShadow;
+		this.entity=other.entity;
 	}
 
 	private void  setOwner(Map<Key,? extends Member> data) {
@@ -2044,30 +2004,64 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		Iterator<? extends Member> it = data.values().iterator();
 		while(it.hasNext()){
 			m=it.next();
-			if(m instanceof UDFImpl) {
-				((UDFImpl)m).setOwnerComponent(this);
+			if(m instanceof UDFPlus) {
+				((UDFPlus)m).setOwnerComponent(this);
 			}
 		}
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
-        try {
-        	out.writeUTF(new ScriptConverter().serialize(this));
-		} 
-		catch (Throwable t) {
-			//print.printST(t);
+		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,this);  
+        Struct _this=new StructImpl();
+		Struct _var=new StructImpl();
+		
+		
+		// this scope (removing all UDFs)
+		Object member;
+	    {
+	    	Iterator<Entry<Key, Object>> it = cw.entryIterator();
+	        Entry<Key, Object> e;
+	        while(it.hasNext()) {
+	            e = it.next();
+	            member = e.getValue();
+	            if(member instanceof UDF)continue;
+	            _this.setEL(e.getKey(), member);
+	        }
 		}
+		
+	    
+	    // variables scope (removing all UDFs and key "this")
+	    {
+        	ComponentScope scope = getComponentScope();
+        	Iterator<Entry<Key, Object>> it = scope.entryIterator();
+            Entry<Key, Object> e;
+        	Key k;
+        	while(it.hasNext()) {
+        		e = it.next();
+        		k = e.getKey();
+                if(KeyConstants._THIS.equalsIgnoreCase(k))continue;
+                member = e.getValue();
+                if(member instanceof UDF)continue;
+	            _var.setEL(e.getKey(), member);
+            }
+        }
+	    
+	    out.writeUTF(getAbsName());
+		out.writeUTF(ComponentUtil.md5(cw));
+		out.writeObject(_this);
+		out.writeObject(_var);
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.cfc.ComponentAccess#_base()
-	 */
+	@Override
 	public ComponentAccess _base() {
 		return base;
 	}	
 	
 
+	public InterfaceCollection _interfaceCollection() {
+		return interfaceCollection;
+	}
 
 	private boolean triggerDataMember(PageContext pc) {
 		if(_triggerDataMember!=null) return _triggerDataMember.booleanValue();
@@ -2080,5 +2074,19 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	public void setLoaded(boolean loaded) {
 		this.loaded=loaded;
+	}
+
+	public boolean hasInjectedFunctions() {
+		return hasInjectedFunctions;
+	}
+
+	@Override
+	public void setEntity(boolean entity) {
+		this.entity=entity;
+	}
+
+	@Override
+	public boolean isEntity() {
+		return entity;
 	}
 }

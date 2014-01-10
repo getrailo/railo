@@ -7,23 +7,17 @@ import railo.runtime.net.mail.MailClient;
  */
 public final class Pop extends _Mail {
 
-	/**
-	 * @see railo.runtime.tag._Mail#getDefaultPort()
-	 */
+	@Override
 	protected int getDefaultPort() {
 		return 110;
 	}
 
-	/**
-	 * @see railo.runtime.tag._Mail#getTagName()
-	 */
+	@Override
 	protected String getTagName() {
 		return "Pop";
 	}
 
-	/**
-	 * @see railo.runtime.tag._Mail#getType()
-	 */
+	@Override
 	protected int getType() {
 		return MailClient.TYPE_POP3;
 	}

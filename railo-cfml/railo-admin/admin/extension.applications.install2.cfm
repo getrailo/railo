@@ -25,14 +25,19 @@
     </cfif>
     
     <!--- create app folder --->
-    <cfset dest=manager.createUIDFolder(url.uid)>
+	<cftry>
+		<cfset dest=manager.createUIDFolder(url.uid)>
+		<cfcatch>
+			<cfset dest=createUIDFolder(url.uid)>
+		</cfcatch>
+	</cftry>
     
     <!--- copy railo extension package to destination directory, if it wasn't copied/downloaded yet --->
     <cfset destFile=manager.copyAppFile(detail.data,dest).destFile>
 	
 	<!--- did not agree with license? Remove the extension --->
 	<cfif form.mainAction eq stText.Buttons.dontagree>
-        <cfset deleteExtension(destFile) />
+        <cfif FileExists(destFile)><cfset fileDelete(destFile)></cfif>
 		<!--- session var, so we can show a msg on the next page--->
 		<cfset session.extremoved = 1 />
 		<cflocation url="#request.self#?action=#url.action#" addtoken="no" />
@@ -41,18 +46,19 @@
     <!---- load xml ---->
     <cfset zip="zip://"&destFile&"!/">
     <cfset configFile=zip&"config.xml">
-    <cfif not FileExists(configFile)>
-        <cfset deleteExtension(destFile)>
+	<cfif not FileExists(configFile)>
+		<cfset fileDelete(destFile)>
         <cfthrow message="missing config file in extension package" />
     </cfif>
     
-    <!--- loadcfc --->
-	<cfset install=manager.loadInstallCFC(zip)>
+    <cfset install=manager.loadInstallCFC(zip)>
 
 	<cfcatch>
     	<cfset display=false>
-        <cfset deleteExtension(destFile)>
-    	<cfset printError(cfcatch,true)>
+		<cfif structKeyExists(variables, "destFile")>
+			<cfif FileExists(destFile)><cfset fileDelete(destFile)></cfif>
+		</cfif>
+		<cfset printError(cfcatch,true)>
     </cfcatch>
 </cftry>
         
@@ -92,7 +98,7 @@
 
 	<cfcatch>
     	<cfset display=false>
-        <cfset deleteExtension(destFile)>
+		<cfif FileExists(destFile)><cfset fileDelete(destFile)></cfif>
     	<cfset printError(cfcatch,true)>
     </cfcatch>
 </cftry>

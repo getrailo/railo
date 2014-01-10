@@ -13,9 +13,9 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.net.ldap.LDAPClient;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 // TODO tag ldap 
 // attr rebind
@@ -54,9 +54,7 @@ public final class Ldap extends TagImpl {
     private boolean rebind;
 
 
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#release()
-     */
+    @Override
     public void release() {
         action="query";
         delimiter=";";
@@ -224,7 +222,7 @@ public final class Ldap extends TagImpl {
      * @throws PageException 
      */
     public void setReturnasbinary(String returnAsBinary) throws PageException {
-        this.returnAsBinary = ArrayUtil.trim(List.toStringArray(List.listToArrayRemoveEmpty(returnAsBinary,',')));
+        this.returnAsBinary = ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(returnAsBinary,',')));
     }
     
     /**
@@ -234,7 +232,7 @@ public final class Ldap extends TagImpl {
      * @throws PageException 
      */
     public void setSort(String sort) throws PageException {
-        this.sort = ArrayUtil.trim(List.toStringArray(List.listToArrayRemoveEmpty(sort,','))); 
+        this.sort = ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(sort,','))); 
     }
     
     /**
@@ -243,7 +241,7 @@ public final class Ldap extends TagImpl {
      * @throws PageException 
      */
     public void setSortcontrol(String sortControl) throws PageException {
-        String[] sortControlArr = ArrayUtil.trim(List.toStringArray(List.listToArrayRemoveEmpty(sortControl,','))); 
+        String[] sortControlArr = ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(sortControl,','))); 
         for(int i=0;i<sortControlArr.length;i++) {
             String scs=sortControlArr[i].trim().toLowerCase();
             
@@ -330,9 +328,7 @@ public final class Ldap extends TagImpl {
 
     
     
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException {
         try {
             return _doStartTag();

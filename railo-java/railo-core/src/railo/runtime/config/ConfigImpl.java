@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.digest.Hash;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -40,7 +41,6 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.IPRange;
-import railo.commons.net.JarLoader;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
@@ -64,6 +64,7 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
@@ -73,9 +74,9 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
-import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
@@ -85,7 +86,6 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.orm.ORMException;
 import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.rest.RestSettings;
 import railo.runtime.schedule.Scheduler;
@@ -93,8 +93,6 @@ import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
-import railo.runtime.tag.Admin;
-import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -117,6 +115,7 @@ import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import flex.messaging.config.ConfigMap;
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 
 /**
@@ -124,7 +123,7 @@ import flex.messaging.config.ConfigMap;
  */
 public abstract class ConfigImpl implements Config {
 
-
+	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config; Hibernate Extension has hardcoded this 4, do not change!!!!
 
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
@@ -150,17 +149,33 @@ public abstract class ConfigImpl implements Config {
 	
 	public static final int AMF_CONFIG_TYPE_XML = 1;
 	public static final int AMF_CONFIG_TYPE_MANUAL = 2;
+
+	public static final int MODE_CUSTOM = 1;
+	public static final int MODE_STRICT = 2;
 	
+
+	public static final int CFML_WRITER_REFULAR=1;
+	public static final int CFML_WRITER_WS=2;
+	public static final int CFML_WRITER_WS_PREF=3;
+
+
+	public static final String DEFAULT_STORAGE_SESSION = "memory";
+	public static final String DEFAULT_STORAGE_CLIENT = "cookie";
+	
+	
+	private int mode=MODE_CUSTOM;
 
 	private PhysicalClassLoader rpcClassLoader;
 	private Map<String,DataSource> datasources=new HashMap<String,DataSource>();
 	private Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
-	
+
+	private CacheConnection defaultCacheFunction=null;
 	private CacheConnection defaultCacheObject=null;
 	private CacheConnection defaultCacheTemplate=null;
 	private CacheConnection defaultCacheQuery=null;
 	private CacheConnection defaultCacheResource=null;
-	
+
+	private String cacheDefaultConnectionNameFunction=null;
 	private String cacheDefaultConnectionNameObject=null;
 	private String cacheDefaultConnectionNameTemplate=null;
 	private String cacheDefaultConnectionNameQuery=null;
@@ -176,10 +191,8 @@ public abstract class ConfigImpl implements Config {
     private boolean _mergeFormAndURL=false;
 
     private int _debug;
-    
+    private int debugLogOutput=SERVER_BOOLEAN_FALSE;
     private int debugOptions=0;
-	
-	
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -198,6 +211,9 @@ public abstract class ConfigImpl implements Config {
 
     private Resource configFile;
     private Resource configDir;
+	private String sessionStorage=DEFAULT_STORAGE_SESSION;
+	private String clientStorage=DEFAULT_STORAGE_CLIENT;
+	
 
     private long loadTime;
 
@@ -251,6 +267,7 @@ public abstract class ConfigImpl implements Config {
     
     private LogAndSource requestTimeoutLogger=null;
     private LogAndSource applicationLogger=null;
+    private LogAndSource deployLogger=null;
     private LogAndSource exceptionLogger=null;
 	private LogAndSource traceLogger=null;
 
@@ -271,8 +288,8 @@ public abstract class ConfigImpl implements Config {
 
     private short compileType=RECOMPILE_NEVER;
     
-    private String resourceCharset=SystemUtil.getCharset();
-    private String templateCharset=SystemUtil.getCharset();
+    private String resourceCharset=SystemUtil.getCharset().name();
+    private String templateCharset=SystemUtil.getCharset().name();
     private String webCharset="UTF-8";
 
 	private String mailDefaultEncoding = "UTF-8";
@@ -382,6 +399,10 @@ public abstract class ConfigImpl implements Config {
 	private LogAndSource scopeLogger;
 	private railo.runtime.rest.Mapping[] restMappings;
 	
+	protected int writerType=CFML_WRITER_REFULAR;
+	private long configFileLastModified;
+	private boolean checkForChangesInConfigFile;
+	private String apiKey=null;
 	
 	
 	/**
@@ -399,16 +420,12 @@ public abstract class ConfigImpl implements Config {
 	}
 
 
-    /**
-     * @see railo.runtime.config.Config#getCompileType()
-     */
+    @Override
     public short getCompileType() {
         return compileType;
     }
 
-    /**
-     * @see railo.runtime.config.Config#reset()
-     */
+    @Override
     public void reset() {
     	timeServer="";
         componentDumpTemplate="";
@@ -422,9 +439,7 @@ public abstract class ConfigImpl implements Config {
         //clearComponentMetadata();
     }
     
-    /**
-     * @see railo.runtime.config.Config#reloadTimeServerOffset()
-     */
+    @Override
     public void reloadTimeServerOffset() {
     	timeOffset=0;
         if(useTimeServer && !StringUtil.isEmpty(timeServer,true)) {
@@ -440,11 +455,9 @@ public abstract class ConfigImpl implements Config {
     
     /**
      * private constructor called by factory method
-     * @param configDir config directory
-     * @param configFile config file
-     * @param id 
-     * @throws FunctionLibException 
-     * @throws TagLibException 
+     * @param factory
+     * @param configDir - config directory
+     * @param configFile - config file
      */
     protected ConfigImpl(CFMLFactory factory,Resource configDir, Resource configFile) {
         this(factory,configDir,configFile,
@@ -494,23 +507,28 @@ public abstract class ConfigImpl implements Config {
 		}
 		return rst;
 	}
+	
+	public long lastModified() {
+        return configFileLastModified;
+    }
+	
+	protected void setLastModified() {
+		this.configFileLastModified=configFile.lastModified();
+    }
+	
 
-	/**
-     * @see railo.runtime.config.Config#getScopeCascadingType()
-     */
+    
+
+	@Override
     public short getScopeCascadingType() {
         return type;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getCFMLExtension()
-     */
+    @Override
     public String[] getCFMLExtensions() {
         return Constants.CFML_EXTENSION;
     }
-    /**
-     * @see railo.runtime.config.Config#getCFCExtension()
-     */
+    @Override
     public String getCFCExtension() {
         return Constants.CFC_EXTENSION;
     }
@@ -537,109 +555,79 @@ public abstract class ConfigImpl implements Config {
         return tlds;
     }
     
-    /**
-     * @see railo.runtime.config.Config#allowImplicidQueryCall()
-     */
+    @Override
     public boolean allowImplicidQueryCall() {
         return _allowImplicidQueryCall;
     }
 
-    /**
-     * @see railo.runtime.config.Config#mergeFormAndURL()
-     */
+    @Override
     public boolean mergeFormAndURL() {
         return _mergeFormAndURL;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getApplicationTimeout()
-     */
+    @Override
     public TimeSpan getApplicationTimeout() {
         return applicationTimeout;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getSessionTimeout()
-     */
+    @Override
     public TimeSpan getSessionTimeout() {
         return sessionTimeout;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getSessionTimeout()
-     */
+    @Override
     public TimeSpan getClientTimeout() {
         return clientTimeout;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getRequestTimeout()
-     */
+    @Override
     public TimeSpan getRequestTimeout() {
         return requestTimeout;
     }   
     
-    /**
-     * @see railo.runtime.config.Config#isClientCookies()
-     */
+    @Override
     public boolean isClientCookies() {
         return clientCookies;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isClientManagement()
-     */
+    @Override
     public boolean isClientManagement() {
         return clientManagement;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isDomainCookies()
-     */
+    @Override
     public boolean isDomainCookies() {
         return domainCookies;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isSessionManagement()
-     */
+    @Override
     public boolean isSessionManagement() {
         return sessionManagement;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isMailSpoolEnable()
-     */
+    @Override
     public boolean isMailSpoolEnable() {
         //print.ln("isMailSpoolEnable:"+spoolEnable);
         return spoolEnable;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getMailServers()
-     */
+    @Override
     public Server[] getMailServers() {
     	if(mailServers==null) mailServers=new Server[0];
         return mailServers;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getMailTimeout()
-     */
+    @Override
     public int getMailTimeout() {
         return mailTimeout;
     }   
     
-    /**
-     * @see railo.runtime.config.Config#getPSQL()
-     */
+    @Override
     public boolean getPSQL() {
         return psq;   
     }
 
-    /**
-     * @see railo.runtime.config.Config#getClassLoader()
-     */
+    @Override
     public ClassLoader getClassLoader() {
     	return getResourceClassLoader();   
     }
@@ -648,9 +636,7 @@ public abstract class ConfigImpl implements Config {
     	return resourceCL;   
     }
 
-    /**
-     * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
-     */
+    @Override
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
     	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
     	//PageContextImpl pci=(PageContextImpl) ThreadLocalPageContext.get();
@@ -681,41 +667,40 @@ public abstract class ConfigImpl implements Config {
     	this.resourceCL=resourceCL;
 	}
 
-    /**
-     * @see railo.runtime.config.Config#getLocale()
-     */
+    @Override
     public Locale getLocale() {
         return locale;
     }
 
-    /**
-     * @see railo.runtime.config.Config#debug()
-     */
+    @Override
     public boolean debug() {
     	return _debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE;
     }
+    
+    public boolean debugLogOutput() {
+    	return debug() && debugLogOutput==CLIENT_BOOLEAN_TRUE || debugLogOutput==SERVER_BOOLEAN_TRUE;
+    }
+
     public int intDebug() {
         return _debug;
     }
+
+    public int intDebugLogOutput() {
+        return debugLogOutput;
+    }
     
-    /**
-     * @see railo.runtime.config.Config#getTempDirectory()
-     */
+    @Override
     public Resource getTempDirectory() {
     	if(tempDirectory==null) return SystemUtil.getTempDirectory();
         return tempDirectory;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getMailSpoolInterval()
-     */
+    @Override
     public int getMailSpoolInterval() {
         return spoolInterval;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getMailLogger()
-     */
+    @Override
     public LogAndSource getMailLogger() {
     	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return mailLogger;
@@ -727,9 +712,6 @@ public abstract class ConfigImpl implements Config {
 		return restLogger;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getMailLogger()
-     */
     public LogAndSource getThreadLogger() {
     	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return threadLogger;
@@ -740,31 +722,23 @@ public abstract class ConfigImpl implements Config {
     	this.threadLogger=threadLogger;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getRequestTimeoutLogger()
-     */
+    @Override
     public LogAndSource getRequestTimeoutLogger() {
     	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return requestTimeoutLogger;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getTimeZone()
-     */
+    @Override
     public TimeZone getTimeZone() {
         return timeZone;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getTimeServerOffset()
-     */
+    @Override
     public long getTimeServerOffset() {
         return timeOffset;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getSearchEngine()
-     */
+    @Override
     public SearchEngine getSearchEngine() {
         return searchEngine;
     }
@@ -777,29 +751,35 @@ public abstract class ConfigImpl implements Config {
     }
 
     /**
-     * @return gets the password
+     * @return gets the password as hash
      */
     protected String getPassword() {
         return password;
     }
     
-    /**
-     * @see railo.runtime.config.Config#hasPassword()
-     */
-    public boolean hasPassword() {
-        return password!=null && password.length()>0;
+    protected boolean isPasswordEqual(String password, boolean hashIfNecessary) {
+    	if(this.password.equals(password)) return true;
+    	if(!hashIfNecessary) return false;
+    	try {
+    		return this.password.equals(ConfigWebFactory.hash(password));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
     }
     
-    /**
-     * @see railo.runtime.config.Config#passwordEqual(java.lang.String)
-     */
+    @Override
+    public boolean hasPassword() {
+        return !StringUtil.isEmpty(password);
+    }
+    
+    @Override
     public boolean passwordEqual(String password) {
-        return this.password.equals(password);
+        return isPasswordEqual(password,true);
     }
 
-    /**
-     * @see railo.runtime.config.Config#getMappings()
-     */
+    @Override
     public Mapping[] getMappings() {
         return mappings;
     }
@@ -992,7 +972,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * @param mappings2 
+     * @param mappings
      * @param realPath
      * @param alsoDefaultMapping ignore default mapping (/) or not
      * @return physical path from mapping
@@ -1000,10 +980,11 @@ public abstract class ConfigImpl implements Config {
     public Resource getPhysical(Mapping[] mappings, String realPath, boolean alsoDefaultMapping) {
     	throw new PageRuntimeException(new DeprecatedException("method not supported"));
     }
-    
 
     public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
-    	PageSource[] pages = getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping);
+    	// now that archives can be used the same way as physical resources, there is no need anymore to limit to that
+    	throw new PageRuntimeException(new DeprecatedException("method not supported"));
+    	/*PageSource[] pages = getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping);
     	List<Resource> list=new ArrayList<Resource>();
     	Resource res;
     	for(int i=0;i<pages.length;i++) {
@@ -1011,20 +992,18 @@ public abstract class ConfigImpl implements Config {
     		res=pages[i].getPhyscalFile();
     		if(res!=null) list.add(res);
     	}
-    	return list.toArray(new Resource[list.size()]);
+    	return list.toArray(new Resource[list.size()]);*/
     }
     
 
     public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
-    	PageSource ps = getPageSourceExisting(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping,true);
+    	// now that archives can be used the same way as physical resources, there is no need anymore to limit to that
+    	throw new PageRuntimeException(new DeprecatedException("method not supported"));
+    	/*PageSource ps = getPageSourceExisting(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping,true);
     	if(ps==null) return null;
-    	return ps.getPhyscalFile();
+    	return ps.getPhyscalFile();*/
     }
 
-    /**
-     * @param mappings2 
-     * @see railo.runtime.config.Config#toPageSource(railo.commons.io.res.Resource, railo.runtime.PageSource)
-     */
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
         Mapping mapping;
         String path;
@@ -1076,55 +1055,63 @@ public abstract class ConfigImpl implements Config {
     // map resource to root mapping when same filesystem
         Mapping rootMapping = this.mappings[this.mappings.length-1];
         Resource root;
-     // Physical
-        if(rootMapping.hasPhysical()) {
-	        root=rootMapping.getPhysical();
-	        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
-	        	String realpath="";
-	        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
-	        		root=root.getParentResource();
-	        		realpath+="../";
-	        	}
-	        	String p2c=ResourceUtil.getPathToChild(res,root);
-	        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
-	        		p2c=p2c.substring(1);
-	        	realpath+=p2c;
-	        	
-	        	return rootMapping.getPageSource(realpath);
-	        }
+        if(rootMapping.hasPhysical() && 
+        		res.getResourceProvider().getScheme().equals((root=rootMapping.getPhysical()).getResourceProvider().getScheme())) {
+	        
+        	String realpath="";
+        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
+        		root=root.getParentResource();
+        		realpath+="../";
+        	}
+        	String p2c=ResourceUtil.getPathToChild(res,root);
+        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
+        		p2c=p2c.substring(1);
+        	realpath+=p2c;
+        	
+        	return rootMapping.getPageSource(realpath);
+	        
         }
+        // MUST better impl than this
+        if(this instanceof ConfigWebImpl) {
+        	Resource parent = res.getParentResource();
+        	if(parent!=null && !parent.equals(res)) {
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath());
+        		return m.getPageSource(res.getName());
+        	}
+        }
+        
+		
      // Archive
         // MUST check archive
         return defaultValue;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getConfigDir()
-     */
+    @Override
     public Resource getConfigDir() {
         return configDir;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getConfigFile()
-     */
+    @Override
     public Resource getConfigFile() {
         return configFile;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getScheduleLogger()
-     */
+    @Override
     public LogAndSource getScheduleLogger() {
     	return scheduler.getLogger();
     }
     
-    /**
-     * @see railo.runtime.config.Config#getApplicationLogger()
-     */
+    @Override
     public LogAndSource getApplicationLogger() {
     	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return applicationLogger;
+    }
+    
+    public LogAndSource getDeployLogger() {
+    	if(deployLogger==null){
+    		deployLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_INFO),"");
+    	}
+		return deployLogger;
     }
     
     public LogAndSource getScopeLogger() {
@@ -1239,7 +1226,7 @@ public abstract class ConfigImpl implements Config {
     protected void setTagDirectory(Resource tagDirectory) {
     	this.tagDirectory=tagDirectory;
     	
-    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
+    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,ConfigImpl.INSPECT_NEVER,true,true,true,true,false,true,null);
     	
     	TagLib tl=getCoreTagLib();
     	
@@ -1299,7 +1286,7 @@ public abstract class ConfigImpl implements Config {
     
     protected void setFunctionDirectory(Resource functionDirectory) {
     	//this.functionDirectory=functionDirectory;
-    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
+    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,ConfigImpl.INSPECT_NEVER,true,true,true,true,false,true,null);
     	FunctionLib fl=flds[flds.length-1];
         
         // now overwrite with new data
@@ -1528,7 +1515,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * @param sessionTimeout The sessionTimeout to set.
+     * @param clientTimeout The sessionTimeout to set.
      */
     protected void setClientTimeout(TimeSpan clientTimeout) {
         this.clientTimeout = clientTimeout;
@@ -1632,6 +1619,10 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setDebug(int _debug) {
         this._debug=_debug;
+    }  
+    
+    protected void setDebugLogOutput(int debugLogOutput) {
+        this.debugLogOutput=debugLogOutput;
     }   
     
     /**
@@ -1676,7 +1667,7 @@ public abstract class ConfigImpl implements Config {
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
-        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset());
+        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset().name());
         	//else
         		//this.scheduler.reinit(scheduleDirectory,logger);
         } 
@@ -1766,17 +1757,15 @@ public abstract class ConfigImpl implements Config {
     protected void setDataSources(Map<String,DataSource> datasources) {
         this.datasources=datasources;
     }
+
     /**
-     * @param customTagMapping The customTagMapping to set.
+     * @param customTagMappings The customTagMapping to set.
      */
     protected void setCustomTagMappings(Mapping[] customTagMappings) {
     	this.customTagMappings = customTagMappings;
     }
-    
 
-    /**
-     * @see railo.runtime.config.Config#getCustomTagMappings()
-     */
+    @Override
     public Mapping[] getCustomTagMappings() {
     	return customTagMappings;
     }
@@ -1804,18 +1793,18 @@ public abstract class ConfigImpl implements Config {
         return false;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getLoadTime()
-     */
+    @Override
     public long getLoadTime() {
         return loadTime;
     }
+
     /**
      * @param loadTime The loadTime to set.
      */
     protected void setLoadTime(long loadTime) {
         this.loadTime = loadTime;
     }
+
     /**
      * @return Returns the configLogger.
      * /
@@ -1823,9 +1812,7 @@ public abstract class ConfigImpl implements Config {
         return configLogger;
     }*/
 
-    /**
-     * @see railo.runtime.config.Config#getCFXTagPool()
-     */
+    @Override
     public CFXTagPool getCFXTagPool() throws SecurityException {
         return cfxTagPool;
     }
@@ -1843,9 +1830,7 @@ public abstract class ConfigImpl implements Config {
         this.cfxTagPool = new CFXTagPoolImpl(cfxTagPool);
     }
 
-    /**
-     * @see railo.runtime.config.Config#getBaseComponentTemplate()
-     */
+    @Override
     public String getBaseComponentTemplate() {
         return baseComponentTemplate;
     }
@@ -1856,6 +1841,7 @@ public abstract class ConfigImpl implements Config {
     public PageSource getBaseComponentPageSource() {
         return getBaseComponentPageSource(ThreadLocalPageContext.get());
     }
+
     public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
         	baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,getBaseComponentTemplate(),false,false,true));
@@ -1879,10 +1865,13 @@ public abstract class ConfigImpl implements Config {
         this.applicationLogger=applicationLogger;
     }
 
+    protected void setDeployLogger(LogAndSource deployLogger) {
+        this.deployLogger=deployLogger;
+    }
+
     protected void setScopeLogger(LogAndSource scopeLogger) {
         this.scopeLogger=scopeLogger;
     }
-
 
     protected void setMappingLogger(LogAndSource mappingLogger) {
         this.mappingLogger=mappingLogger;
@@ -1908,8 +1897,6 @@ public abstract class ConfigImpl implements Config {
     public boolean getRestAllowChanges() {
         return restAllowChanges;
     }*/
-    
-    
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)
@@ -1935,9 +1922,7 @@ public abstract class ConfigImpl implements Config {
         else clientType=Config.CLIENT_SCOPE_TYPE_COOKIE;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getClientType()
-     */
+    @Override
     public short getClientType() {
         return this.clientType;
     }
@@ -1949,9 +1934,7 @@ public abstract class ConfigImpl implements Config {
         this.searchEngine = searchEngine;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getComponentDataMemberDefaultAccess()
-     */
+    @Override
     public int getComponentDataMemberDefaultAccess() {
         return componentDataMemberDefaultAccess;
     }
@@ -1964,16 +1947,12 @@ public abstract class ConfigImpl implements Config {
     }
 
     
-    /**
-     * @see railo.runtime.config.Config#getTimeServer()
-     */
+    @Override
     public String getTimeServer() {
         return timeServer;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getComponentDumpTemplate()
-     */
+    @Override
     public String getComponentDumpTemplate() {
         return componentDumpTemplate;
     }
@@ -2000,29 +1979,29 @@ public abstract class ConfigImpl implements Config {
     @Override
     public String getId() {
     	if(id==null){
-    		id = getId(getSecurityKey(),getSecurityToken(),securityKey);
+    		id = getId(getSecurityKey(),getSecurityToken(),false,securityKey);
     	}
     	return id;
 	}
 
-    public static String getId(String key, String token,String defaultValue) {
+    public static String getId(String key, String token,boolean addMacAddress,String defaultValue) {
     	
 		try {
+			if(addMacAddress){// because this was new we could swutch to a new ecryption // FUTURE cold we get rid of the old one?
+				return Hash.sha256(key+";"+token+":"+SystemUtil.getMacAddress());
+			}
 			return Md5.getDigestAsString(key+token);
 		} 
-    	catch (IOException e) {
+    	catch (Throwable t) {
 			return defaultValue;
 		}
 	}
-    
     
     public String getSecurityKey() {
     	return securityKey;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getDebugTemplate()
-     */
+    @Override
     public String getDebugTemplate() {
     	throw new PageRuntimeException(new DeprecatedException("no longer supported, use instead getDebugEntry(ip, defaultValue)"));
     }
@@ -2039,9 +2018,7 @@ public abstract class ConfigImpl implements Config {
 		this.errorTemplates.put(Caster.toString(statusCode), errorTemplate);
 	}
 
-    /**
-     * @see railo.runtime.config.Config#getSessionType()
-     */
+    @Override
     public short getSessionType() {
         return sessionType;
     }
@@ -2061,19 +2038,13 @@ public abstract class ConfigImpl implements Config {
         else setSessionType(SESSION_TYPE_CFML);
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateType()
-     */
+    @Override
     public abstract String getUpdateType() ;
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateLocation()
-     */
+    @Override
     public abstract URL getUpdateLocation();
 
-    /**
-     * @see railo.runtime.config.Config#getDeployDirectory()
-     */
+    @Override
     public Resource getDeployDirectory() {
     	return deployDirectory;
     }
@@ -2099,11 +2070,8 @@ public abstract class ConfigImpl implements Config {
         }
     	this.deployDirectory=deployDirectory;
     }
-    
 
-    /**
-     * @see railo.runtime.config.Config#getRootDirectory()
-     */
+    @Override
     public abstract Resource getRootDirectory();
 
     /**
@@ -2129,7 +2097,6 @@ public abstract class ConfigImpl implements Config {
     protected void setSuppressWhitespace(boolean suppresswhitespace) {
         this.suppresswhitespace = suppresswhitespace;
     }
-    
 
     public boolean isSuppressContent() {
         return suppressContent;
@@ -2138,19 +2105,13 @@ public abstract class ConfigImpl implements Config {
     protected void setSuppressContent(boolean suppressContent) {
         this.suppressContent = suppressContent;
     }
-    
 
-	/**
-	 * @see railo.runtime.config.Config#getDefaultEncoding()
-	 */
+	@Override
 	public String getDefaultEncoding() {
 		return webCharset;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getTemplateCharset()
-	 */
+	@Override
 	public String getTemplateCharset() {
 		return templateCharset;
 	}
@@ -2163,10 +2124,7 @@ public abstract class ConfigImpl implements Config {
 		this.templateCharset = templateCharset;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getWebCharset()
-	 */
+	@Override
 	public String getWebCharset() {
 		return webCharset;
 	}
@@ -2179,17 +2137,14 @@ public abstract class ConfigImpl implements Config {
 		this.resourceCharset = resourceCharset;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getResourceCharset()
-	 */
+	@Override
 	public String getResourceCharset() {
 		return resourceCharset;
 	}
 	
 	/**
 	 * sets the charset for the response stream
-	 * @param outputEncoding
+	 * @param webCharset
 	 */
 	protected void setWebCharset(String webCharset) {
 		this.webCharset = webCharset;
@@ -2213,9 +2168,7 @@ public abstract class ConfigImpl implements Config {
 		return tldFile;
 	}
     
-    /**
-	 * @see railo.runtime.config.Config#getDataSources()
-	 */
+    @Override
 	public DataSource[] getDataSources() {
 		Map<String, DataSource> map = getDataSourcesAsMap();
 		Iterator<DataSource> it = map.values().iterator();
@@ -2234,7 +2187,7 @@ public abstract class ConfigImpl implements Config {
         Entry<String, DataSource> entry;
         while(it.hasNext()) {
             entry = it.next();
-            if(!entry.getKey().equals("_queryofquerydb"))
+            if(!entry.getKey().equals(QOQ_DATASOURCE_NAME))
                 map.put(entry.getKey(),entry.getValue());
         }        
         return map;
@@ -2248,7 +2201,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param mailDefaultCharset the mailDefaultCharset to set
+	 * @param mailDefaultEncoding the mailDefaultCharset to set
 	 */
 	protected void setMailDefaultEncoding(String mailDefaultEncoding) {
 		this.mailDefaultEncoding = mailDefaultEncoding;
@@ -2256,6 +2209,17 @@ public abstract class ConfigImpl implements Config {
 
 	protected void setDefaultResourceProvider(String strDefaultProviderClass, Map arguments) throws ClassException {
 		Object o=ClassUtil.loadInstance(strDefaultProviderClass);
+		if(o instanceof ResourceProvider) {
+			ResourceProvider rp=(ResourceProvider) o;
+			rp.init(null,arguments);
+			setDefaultResourceProvider(rp);
+		}
+		else 
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
+	}
+
+	protected void setDefaultResourceProvider(Class defaultProviderClass, Map arguments) throws ClassException {
+		Object o=ClassUtil.loadInstance(defaultProviderClass);
 		if(o instanceof ResourceProvider) {
 			ResourceProvider rp=(ResourceProvider) o;
 			rp.init(null,arguments);
@@ -2281,11 +2245,19 @@ public abstract class ConfigImpl implements Config {
 
 	protected void addResourceProvider(String strProviderScheme, String strProviderClass, Map arguments) throws ClassException {
 		// old buld in S3
+		Object o=ClassUtil.loadInstance(strProviderClass);
 		
-		
-		Object o=null;
-		
-		o=ClassUtil.loadInstance(strProviderClass);
+		if(o instanceof ResourceProvider) {
+			ResourceProvider rp=(ResourceProvider) o;
+			rp.init(strProviderScheme,arguments);
+			addResourceProvider(rp);
+		}
+		else 
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
+	}
+
+	protected void addResourceProvider(String strProviderScheme, Class providerClass, Map arguments) throws ClassException {
+		Object o=ClassUtil.loadInstance(providerClass);
 		
 		if(o instanceof ResourceProvider) {
 			ResourceProvider rp=(ResourceProvider) o;
@@ -2320,20 +2292,14 @@ public abstract class ConfigImpl implements Config {
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		return resources.getResource(path);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getApplicationListener()
-	 */
+	@Override
 	public ApplicationListener getApplicationListener() {
-		return applicationListener;//new ModernAppListener();//new ClassicAppListener();
+		return applicationListener;
 	}
 
 	/**
@@ -2395,15 +2361,13 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param proxyPassword the proxyPassword to set
+	 * @param proxy the proxyPassword to set
 	 */
 	protected void setProxyData(ProxyData proxy) {
 		this.proxy = proxy;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#isProxyEnableFor(java.lang.String)
-	 */
+	@Override
 	public boolean isProxyEnableFor(String host) {
 		return false;// TODO proxyEnable;
 	}
@@ -2422,10 +2386,7 @@ public abstract class ConfigImpl implements Config {
 		this.triggerComponentDataMember = triggerComponentDataMember;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getClientScopeDir()
-	 */
+	@Override
 	public Resource getClientScopeDir() {
 		if(clientScopeDir==null) clientScopeDir=getConfigDir().getRealResource("client-scope");
 		return clientScopeDir;
@@ -2435,8 +2396,6 @@ public abstract class ConfigImpl implements Config {
 		if(sessionScopeDir==null) sessionScopeDir=getConfigDir().getRealResource("session-scope");
 		return sessionScopeDir;
 	}
-	
-	
 
 	/*public int getClientScopeMaxAge() {
 		return clientScopeMaxAge;
@@ -2445,13 +2404,8 @@ public abstract class ConfigImpl implements Config {
 	public void setClientScopeMaxAge(int age) {
 		this. clientScopeMaxAge=age;
 	}*/
-	
-	
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getClientScopeDirSize()
-	 */
+	@Override
 	public long getClientScopeDirSize() {
 		return clientScopeDirSize;
 	}
@@ -2476,7 +2430,7 @@ public abstract class ConfigImpl implements Config {
 	protected void setClientScopeDirSize(long clientScopeDirSize) {
 		this.clientScopeDirSize = clientScopeDirSize;
 	}
-	
+
 	@Override
 	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
 		
@@ -2530,10 +2484,7 @@ public abstract class ConfigImpl implements Config {
 		return new HTMLDumpWriter();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getDumpWriter(java.lang.String)
-	 */
+	@Override
 	public DumpWriter getDumpWriter(String name) throws DeprecatedException {
 		throw new DeprecatedException("this method is no longer supported");
 	}
@@ -2557,9 +2508,7 @@ public abstract class ConfigImpl implements Config {
 		throw new ExpressionException("invalid format definition ["+name+"], valid definitions are ["+sb+"]");
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#useComponentShadow()
-	 */
+	@Override
 	public boolean useComponentShadow() {
 		return useComponentShadow;
 	}
@@ -2595,9 +2544,7 @@ public abstract class ConfigImpl implements Config {
 		this.useComponentShadow = useComponentShadow;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getDataSource(java.lang.String)
-	 */
+	@Override
 	public DataSource getDataSource(String datasource) throws DatabaseException {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
@@ -2610,19 +2557,14 @@ public abstract class ConfigImpl implements Config {
 		throw de;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getDataSource(java.lang.String, railo.runtime.db.DataSource)
-	 */
+	@Override
 	public DataSource getDataSource(String datasource, DataSource defaultValue) {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
 		return defaultValue;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getErrWriter()
-	 */
+	@Override
 	public PrintWriter getErrWriter() {
 		return err;
 	}
@@ -2634,10 +2576,7 @@ public abstract class ConfigImpl implements Config {
 		this.err = err;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getOutWriter()
-	 */
+	@Override
 	public PrintWriter getOutWriter() {
 		return out;
 	}
@@ -2659,9 +2598,7 @@ public abstract class ConfigImpl implements Config {
 		return doLocalCustomTag;
 	}	
 	
-	/**
-	 * @see railo.runtime.config.Config#getCustomTagExtensions()
-	 */
+	@Override
 	public String[] getCustomTagExtensions() {
 		return customTagExtensions;
 	}
@@ -2683,10 +2620,7 @@ public abstract class ConfigImpl implements Config {
 		this.doComponentTagDeepSearch = doComponentTagDeepSearch;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.config.Config#doCustomTagDeepSearch()
-	 */
+	@Override
 	public boolean doCustomTagDeepSearch() {
 		return doCustomTagDeepSearch;
 	}
@@ -2847,9 +2781,7 @@ public abstract class ConfigImpl implements Config {
 		this.errorStatusCode = errorStatusCode;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#getLocalMode()
-	 */
+	@Override
 	public int getLocalMode() {
 		return localMode;
 	}
@@ -2862,16 +2794,10 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param localMode the localMode to set
+	 * @param strLocalMode the localMode to set
 	 */
 	protected void setLocalMode(String strLocalMode) {
-		strLocalMode=strLocalMode.trim().toLowerCase();
-		if("always".equals(strLocalMode))
-			this.localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
-		else if("update".equals(strLocalMode))
-			this.localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
-		else
-			this.localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
+		this.localMode=AppListenerUtil.toLocalMode(strLocalMode,this.localMode);
 	}
 
 	public Resource getVideoDirectory() {
@@ -2929,15 +2855,13 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param classClusterScope the classClusterScope to set
+	 * @param clusterClass the classClusterScope to set
 	 */
 	protected void setClusterClass(Class clusterClass) {
 		this.clusterClass = clusterClass;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#getRemoteClientUsage()
-	 */
+	@Override
 	public Struct getRemoteClientUsage() {
 		if(remoteClientUsage==null)remoteClientUsage=new StructImpl();
 		return remoteClientUsage;
@@ -2947,9 +2871,7 @@ public abstract class ConfigImpl implements Config {
 		this.remoteClientUsage=remoteClientUsage;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#getAdminSyncClass()
-	 */
+	@Override
 	public Class getAdminSyncClass() {
 		return adminSyncClass;
 	}
@@ -2967,9 +2889,7 @@ public abstract class ConfigImpl implements Config {
 		return this.adminSync;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getVideoExecuterClass()
-	 */
+	@Override
 	public Class getVideoExecuterClass() {
 		return videoExecuterClass;
 	}
@@ -3123,6 +3043,9 @@ public abstract class ConfigImpl implements Config {
 			if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameTemplate)){
 				defaultCacheTemplate=cc;
 			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameFunction)){
+				defaultCacheFunction=cc;
+			}
 			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameQuery)){
 				defaultCacheQuery=cc;
 			}
@@ -3142,25 +3065,30 @@ public abstract class ConfigImpl implements Config {
 
 	@Override
 	public CacheConnection getCacheDefaultConnection(int type) {
+		if(type==CACHE_DEFAULT_FUNCTION)	return defaultCacheFunction;
 		if(type==CACHE_DEFAULT_OBJECT)		return defaultCacheObject;
 		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return defaultCacheQuery;
-		return defaultCacheResource;
+		if(type==CACHE_DEFAULT_RESOURCE)	return defaultCacheResource;
+		return null;
 	}
 
 	protected void setCacheDefaultConnectionName(int type,String cacheDefaultConnectionName) {
-		if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
+		if(type==CACHE_DEFAULT_FUNCTION)		cacheDefaultConnectionNameFunction=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_OBJECT)		cacheDefaultConnectionNameObject=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
-		else cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_RESOURCE)	cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
 	}
 	
 	@Override
 	public String getCacheDefaultConnectionName(int type) {
-		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
+		if(type==CACHE_DEFAULT_FUNCTION)	return cacheDefaultConnectionNameFunction;
 		if(type==CACHE_DEFAULT_OBJECT)		return cacheDefaultConnectionNameObject;
+		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
-		return cacheDefaultConnectionNameResource;
+		if(type==CACHE_DEFAULT_RESOURCE)	return cacheDefaultConnectionNameResource;
+		return null;
 	}
 
 	public String getCacheMD5() { 
@@ -3199,27 +3127,33 @@ public abstract class ConfigImpl implements Config {
 		ORMEngine engine = ormengines.get(name);
 		if(engine==null){
 			//try {
-			boolean hasError=false;	
+			Throwable t=null;
+			
 			try {
 				engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
 				engine.init(pc);
 			}
-			catch (ClassException t) {
-				hasError=true;	
+			catch (ClassException ce) {
+				t=ce;	
 			}
-			catch (NoClassDefFoundError t) {
-				hasError=true;	
+			catch (NoClassDefFoundError ncfe) {
+				t=ncfe;
 			}
 			
-			if(hasError) {
-				// try to load hibernate jars
-				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
-					throw new ORMException(
-						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
-						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
-				throw new ORMException(
-							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
-							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
+			if(t!=null) {
+				
+				
+				// try to load orm jars
+				//if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
+				//	throw new ApplicationException(
+				//		"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
+				ApplicationException ae = new ApplicationException(
+							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
+				
+				ae.setStackTrace(t.getStackTrace());
+				ae.setDetail(t.getMessage());
+				
+				
 			
 			}
 				ormengines.put(name,engine);
@@ -3267,7 +3201,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false,true,true
+				null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}
@@ -3275,16 +3209,11 @@ public abstract class ConfigImpl implements Config {
 		return m;
 	}
 
-	
 
 	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
-	
 	private Map<String,UDF> udfCache=new ReferenceMap();
-	
-	
-	
-	
+
 	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
 		if(componentPathCache==null) return null; 
@@ -3314,8 +3243,6 @@ public abstract class ConfigImpl implements Config {
 		if(ctPatchCache==null) ctPatchCache=Collections.synchronizedMap(new HashMap<String, InitFile>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
 		ctPatchCache.put(key.toLowerCase(),initFile);
 	}
-	
-	
 
 	public Struct listCTCache() {
 		Struct sct=new StructImpl();
@@ -3334,18 +3261,18 @@ public abstract class ConfigImpl implements Config {
 		if(ctPatchCache==null) return; 
 		ctPatchCache.clear();
 	}
-	
 
 	public void clearFunctionCache() {
 		udfCache.clear();
 	}
+
 	public UDF getFromFunctionCache(String key) {
 		return udfCache.get(key);
 	}
+
 	public void putToFunctionCache(String key,UDF udf) {
 		udfCache.put(key, udf);
 	}
-	
 	
 	public Struct listComponentCache() {
 		Struct sct=new StructImpl();
@@ -3364,12 +3291,11 @@ public abstract class ConfigImpl implements Config {
 		if(componentPathCache==null) return; 
 		componentPathCache.clear();
 	}
-	
-	
 
 	public ImportDefintion getComponentDefaultImport() {
 		return componentDefaultImport;
 	}
+
 	protected void setComponentDefaultImport(String str) {
 		ImportDefintion cdi = ImportDefintionImpl.getInstance(str, null);
 		if(cdi!=null)this.componentDefaultImport= cdi;
@@ -3397,13 +3323,15 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @param componentLocalSearch the componentLocalSearch to set
+	 * @param componentRootSearch the componentLocalSearch to set
 	 */
 	protected void setComponentRootSearch(boolean componentRootSearch) {
 		this.componentRootSearch = componentRootSearch;
 	}
 
 	private final Map compressResources= new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+
+
 	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) compressResources.get(zipFile.getPath());
 		if(compress==null) {
@@ -3421,11 +3349,30 @@ public abstract class ConfigImpl implements Config {
 		return false;
 	}
 	
+	public String getClientStorage() {
+		return clientStorage;
+	}
+	
+	public String getSessionStorage() {
+		return sessionStorage;
+	}
+	
+	protected void setClientStorage(String clientStorage) {
+		this.clientStorage = clientStorage;
+	}
+	
+	protected void setSessionStorage(String sessionStorage) {
+		this.sessionStorage = sessionStorage;
+	}
+	
+	
+	
 	private Map<String,ComponentMetaData> componentMetaData=null;
 	public ComponentMetaData getComponentMetadata(String key) {
 		if(componentMetaData==null) return null;
 		return componentMetaData.get(key.toLowerCase());
 	}
+
 	public void putComponentMetadata(String key,ComponentMetaData data) {
 		if(componentMetaData==null) componentMetaData=new HashMap<String, ComponentMetaData>();
 		componentMetaData.put(key.toLowerCase(),data);
@@ -3445,7 +3392,6 @@ public abstract class ConfigImpl implements Config {
 			this.meta=meta;
 			this.lastMod=lastMod;
 		}
-		
 	}
  
 	private DebugEntry[] debugEntries;
@@ -3461,16 +3407,16 @@ public abstract class ConfigImpl implements Config {
 	public DebugEntry getDebugEntry(String ip, DebugEntry defaultValue) {
 		if(debugEntries.length==0) return defaultValue;
 		short[] sarr;
+
 		try {
 			sarr = IPRange.toShortArray(ip);
 		} catch (IOException e) {
 			return defaultValue;
 		}
+
 		for(int i=0;i<debugEntries.length;i++){
 			if(debugEntries[i].getIpRange().inRange(sarr)) return debugEntries[i];
 		}
-		
-		
 		
 		return defaultValue;
 	}
@@ -3479,13 +3425,10 @@ public abstract class ConfigImpl implements Config {
 	protected void setDebugMaxRecordsLogged(int debugMaxRecordsLogged) {
 		this.debugMaxRecordsLogged=debugMaxRecordsLogged;
 	}
+
 	public int getDebugMaxRecordsLogged() {
 		return debugMaxRecordsLogged;
 	}
-	
-	public abstract int getLoginDelay();
-	
-	public abstract boolean getLoginCaptcha();
 
 	private boolean dotNotationUpperCase=true;
 	protected void setDotNotationUpperCase(boolean dotNotationUpperCase) {
@@ -3504,11 +3447,6 @@ public abstract class ConfigImpl implements Config {
 	public boolean getSupressWSBeforeArg() {
 		return getSupressWSBeforeArg;
 	}
-	
-	
-
-	public abstract Cluster createClusterScope() throws PageException;
-
 
 	private RestSettings restSetting=new RestSettingImpl(false,UDF.RETURN_FORMAT_JSON);
 	protected void setRestSetting(RestSettings restSetting){
@@ -3520,9 +3458,40 @@ public abstract class ConfigImpl implements Config {
 		return restSetting; 
 	}
 
+	protected void setMode(int mode) {
+		this.mode=mode;
+	}
+
+	public int getMode() {
+		return mode;
+	}
+
+	// do not move to Config interface, do instead getCFMLWriterClass
+	protected void setCFMLWriterType(int writerType) {
+		this.writerType=writerType;
+	}
+
+	// do not move to Config interface, do instead setCFMLWriterClass
+	public int getCFMLWriterType() {
+		return writerType;
+	}
+
+	private boolean bufferOutput=true;
+
+
+	private int externalizeStringGTE=-1;
+	public boolean getBufferOutput() {
+		return bufferOutput;
+	}
+
+	protected void setBufferOutput(boolean bufferOutput) {
+		this.bufferOutput= bufferOutput;
+	}
+
 	public int getDebugOptions() {
 		return debugOptions;
 	}
+	
 	public boolean hasDebugOptions(int debugOption) {
 		return (debugOptions&debugOption)>0  ;
 	}
@@ -3552,6 +3521,38 @@ public abstract class ConfigImpl implements Config {
 		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
 			list.add(mappings[i]);
 		}
+	}
+
+	protected void setCheckForChangesInConfigFile(boolean checkForChangesInConfigFile) {
+		this.checkForChangesInConfigFile=checkForChangesInConfigFile;
+	}
+
+	public boolean checkForChangesInConfigFile() {
+		return checkForChangesInConfigFile;
+	}
+
+
+    public abstract int getLoginDelay();
+
+    public abstract boolean getLoginCaptcha();
+
+    public abstract boolean getFullNullSupport();
+
+    public abstract Cluster createClusterScope() throws PageException;
+
+	protected void setApiKey(String apiKey) {
+		this.apiKey=apiKey;
+	}
+	
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	protected void setExternalizeStringGTE(int externalizeStringGTE) {
+		this.externalizeStringGTE=externalizeStringGTE;
+	}
+	public int getExternalizeStringGTE() {
+		return externalizeStringGTE;
 	}
 	
 }

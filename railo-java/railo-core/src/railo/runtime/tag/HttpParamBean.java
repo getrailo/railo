@@ -38,7 +38,7 @@ public final class HttpParamBean {
 	 * @param type value to set
 	 **/
 	public void setType(String type)	{
-		this.type=type.toLowerCase();
+		this.type=type.toLowerCase().trim();
 	}
 	/** set the value file
 	 *  Required for type = "File".
@@ -92,7 +92,7 @@ public final class HttpParamBean {
      * Returns the value of encoded.
      * @return value encoded
      */
-    public boolean isEncoded() {
+    public boolean getEncoded() {
         return encoded;
     }
     /**

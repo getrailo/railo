@@ -140,7 +140,7 @@ Minimal length of attributes
  -->
 <!ELEMENT attribute-min (#PCDATA)>
 <!-- 
-Maximal length of attributes
+Maximum length of attributes
  -->
 <!ELEMENT attribute-max (#PCDATA)>
 <!--

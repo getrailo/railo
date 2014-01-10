@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
@@ -15,7 +16,10 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
-public class StructKeyTranslate {
+public class StructKeyTranslate extends BIF {
+	
+	private static final long serialVersionUID = -7978129950865681102L;
+
 	public static double call(PageContext pc ,Struct sct) throws PageException {
 		return call(pc, sct,false,false);
     }
@@ -49,16 +53,16 @@ public class StructKeyTranslate {
 		if(value instanceof Collection)
 			return translate((Collection)value, true,leaveOrg);
 		if(value instanceof List)
-			return translate((List)value, leaveOrg);
+			return translate((List<?>)value, leaveOrg);
 		if(value instanceof Map)
-			return translate((Map)value, leaveOrg);
+			return translate((Map<?,?>)value, leaveOrg);
 		if(Decision.isArray(value))
 			return translate(Caster.toNativeArray(value), leaveOrg);
 		return 0;
 	}
 
-	private static int translate(List list,boolean leaveOrg) throws PageException {
-		Iterator it = list.iterator();
+	private static int translate(List<?> list,boolean leaveOrg) throws PageException {
+		Iterator<?> it = list.iterator();
 		int count=0;
 		while(it.hasNext()){
 			count+=translate(it.next(),leaveOrg);
@@ -66,11 +70,11 @@ public class StructKeyTranslate {
 		return count;
 	}
 
-	private static int translate(Map map,boolean leaveOrg) throws PageException {
-		Iterator it = map.entrySet().iterator();
+	private static int translate(Map<?,?> map,boolean leaveOrg) throws PageException {
+		Iterator<?> it = map.entrySet().iterator();
 		int count=0;
 		while(it.hasNext()){
-			count+=translate(((Map.Entry)it.next()).getValue(),leaveOrg);
+			count+=translate(((Map.Entry<?,?>)it.next()).getValue(),leaveOrg);
 		}
 		return count;
 	}
@@ -105,4 +109,11 @@ public class StructKeyTranslate {
 		return coll;
 		
 	}
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==3) return call(pc,Caster.toStruct(args[0]),Caster.toBooleanValue(args[1]),Caster.toBooleanValue(args[2]));
+		if(args.length==2) return call(pc,Caster.toStruct(args[0]),Caster.toBooleanValue(args[1]));
+		return call(pc,Caster.toStruct(args[0]));
+	}
+	
 }

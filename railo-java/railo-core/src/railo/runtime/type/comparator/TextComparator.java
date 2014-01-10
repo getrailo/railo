@@ -26,9 +26,7 @@ public final class TextComparator implements Comparator {
 		this.ignoreCase=ignoreCase;
 	}
 	
-	/**
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 */
+	@Override
 	public int compare(Object oLeft, Object oRight) {
 		try {
 			if(isAsc) return compareObjects(oLeft, oRight);

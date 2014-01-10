@@ -13,8 +13,8 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.FunctionArgument;
-import railo.runtime.type.List;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.ListUtil;
 
 
 public final class ListFilter implements Function {
@@ -36,7 +36,7 @@ public final class ListFilter implements Function {
 			throw new ExpressionException("UDF filter has to many arguments ["+args.length+"], should have at maximum 1 argument");
 		
 		if(delimiter==null) delimiter=",";
-		Array array = List.listToArrayRemoveEmpty(list, delimiter);
+		Array array = ListUtil.listToArrayRemoveEmpty(list, delimiter);
 		
 		
 		StringBuilder sb=new StringBuilder();

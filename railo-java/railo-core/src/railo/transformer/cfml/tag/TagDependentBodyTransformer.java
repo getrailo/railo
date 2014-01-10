@@ -10,7 +10,7 @@ import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
 /**
- * Interface zum implementieren von individullen Parsersn für einezelne Tags (cfscript)
+ * Interface zum implementieren von individullen Parsersn fuer einezelne Tags (cfscript)
  */
 public interface TagDependentBodyTransformer {
 	

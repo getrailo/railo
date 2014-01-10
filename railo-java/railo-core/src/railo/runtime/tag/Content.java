@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,21 +17,20 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PostContentAbort;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Defines the MIME type returned by the current page. Optionally, lets you specify the name of a file
 *   to be returned with the page.
-*
-*
-*
 **/
 public final class Content extends BodyTagImpl {
 
@@ -57,9 +57,7 @@ public final class Content extends BodyTagImpl {
     private byte[] content;
 
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
         type=null;
@@ -93,7 +91,7 @@ public final class Content extends BodyTagImpl {
     /** 
     * the content to output as binary
     * @param content value to set
-    * @deprecated replaced with <code>{@link #setVariable(String)}</code>
+    * @deprecated replaced with <code>{@link #setVariable(Object)}</code>
     **/
     public void setContent(byte[] content)    {
         this.content=content;
@@ -125,9 +123,7 @@ public final class Content extends BodyTagImpl {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
     public int doStartTag() throws PageException   {
         //try {
             return _doStartTag();
@@ -136,24 +132,31 @@ public final class Content extends BodyTagImpl {
             throw Caster.toPageException(e);
         }*/
     }
+
+
     private int _doStartTag() throws PageException   {
         // check the file before doing anyrhing else
     	Resource file=null;
 		if(content==null && !StringUtil.isEmpty(strFile)) 
     		file = ResourceUtil.toResourceExisting(pageContext,strFile);
-        
-    	
-    	
-    	
+
 		// get response object
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
 	    
-        // check commited
+        // check committed
         if(rsp.isCommitted())
             throw new ApplicationException("content is already flushed","you can't rewrite head of response after part of the page is flushed");
         
         // set type
-        setContentType(rsp);
+        if(!StringUtil.isEmpty(type,true)) {
+        	type=type.trim();
+        	rsp.setContentType(type);
+        	
+        	// TODO more dynamic implementation, configuration in admin?
+        	if(!HTTPUtil.isTextMimeType(type)) {
+        		((PageContextImpl)pageContext).getRootOut().setAllowCompression(false);
+        	}
+        }
         
         Range[] ranges=getRanges();
         boolean hasRanges=ranges!=null && ranges.length>0;
@@ -163,8 +166,7 @@ public final class Content extends BodyTagImpl {
         else if(_range==RANGE_NO) {
             rsp.setHeader("Accept-Ranges", "none");
             hasRanges=false;
-        }	
-        
+        }
         
         // set content
         if(this.content!=null || file!=null) {
@@ -182,7 +184,7 @@ public final class Content extends BodyTagImpl {
                      is=new BufferedInputStream(new ByteArrayInputStream(content));  
                 }
                 else {
-                    ReqRspUtil.setContentLength(rsp,file.length());
+                    //ReqRspUtil.setContentLength(rsp,file.length());
                     pageContext.getConfig().getSecurityManager().checkFileLocation(file);
                     contentLength=totalLength=file.length();
                     is=IOUtil.toBufferedInputStream(file.getInputStream());
@@ -213,7 +215,8 @@ public final class Content extends BodyTagImpl {
             			IOUtil.copy(is, os,off,len);
             		}
             	}
-            	ReqRspUtil.setContentLength(rsp,contentLength);
+            	if(!(os instanceof GZIPOutputStream))
+            		ReqRspUtil.setContentLength(rsp,contentLength);
             } 
             catch(IOException ioe) {}
             finally {
@@ -222,7 +225,7 @@ public final class Content extends BodyTagImpl {
                 if(deletefile && file!=null) ResourceUtil.removeEL(file, true);
                 ((PageContextImpl)pageContext).getRootOut().setClosed(true);
             }
-            throw new railo.runtime.exp.Abort(railo.runtime.exp.Abort.SCOPE_REQUEST);
+            throw new PostContentAbort();
         }
         // clear current content
         else if(reset)pageContext.clear();
@@ -239,22 +242,9 @@ public final class Content extends BodyTagImpl {
         }
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag()	{
 		return strFile == null ? EVAL_PAGE : SKIP_PAGE;
-	}
-
-	
-	/**
-	 * set the content type of the side
-	 * @param rsp HTTP Servlet Response object
-	 */
-	private void setContentType(HttpServletResponse rsp) {
-        if(!StringUtil.isEmpty(type)) {
-        	rsp.setContentType(type);
-        }
 	}
 
     /**
@@ -263,7 +253,6 @@ public final class Content extends BodyTagImpl {
      */
     public void hasBody(boolean hasBody) {
     }
-    
 
 
 	private Range[] getRanges() {
@@ -283,13 +272,14 @@ public final class Content extends BodyTagImpl {
 		}
 		return null;
 	}
+
 	private Range[] getRanges(String name,String range) {
 		if(StringUtil.isEmpty(range, true)) return null;
 		range=StringUtil.removeWhiteSpace(range);
 		if(range.indexOf("bytes=")==0) range=range.substring(6);
 		String[] arr=null;
 		try {
-			arr = List.toStringArray(List.listToArrayRemoveEmpty(range, ','));
+			arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(range, ','));
 		} catch (PageException e) {
 			failRange(name,range);
 			return null;
@@ -330,12 +320,15 @@ public final class Content extends BodyTagImpl {
 
 	private void failRange(String name, String range) {
 		PrintWriter err = pageContext.getConfig().getErrWriter();
-		SystemOut.printDate(err,"fails to parse the header field ["+name+":"+range+"]");
+		SystemOut.printDate(err,"failed to parse the header field ["+name+":"+range+"]");
 	}
 }
+
 class Range {
+
 	long from;
 	long to;
+
 	public Range(long from, long len) {
 		this.from = from;
 		this.to = len;

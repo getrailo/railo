@@ -9,68 +9,71 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
-import railo.runtime.PageContext;
+import railo.commons.io.SystemUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 public final class ClassUtil {
 
 	/**
-	 * @param pc
-	 * @param lcType
-	 * @param type
+	 * @param className
 	 * @return
 	 * @throws ClassException 
 	 * @throws PageException
 	 */
 	public static Class toClass(String className) throws ClassException {
-		className = className.trim();
+		return ClassUtil.loadClass(className);
+	}
+	
+	private static Class checkPrimaryTypes(String className, Class defaultValue) {
 		String lcClassName=className.toLowerCase();
 		boolean isRef=false;
+		
 		if(lcClassName.startsWith("java.lang.")){
 			lcClassName=lcClassName.substring(10);
 			isRef=true;
 		}
 
-		if(lcClassName.equals("boolean"))	{
+		if(lcClassName.equals("boolean") || className.equals("[Z"))	{ 
 			if(isRef) return Boolean.class;
 			return boolean.class; 
 		}
-		if(lcClassName.equals("byte"))	{
+		if(lcClassName.equals("byte") || className.equals("[B"))	{
 			if(isRef) return Byte.class;
 			return byte.class; 
 		}
-		if(lcClassName.equals("int"))	{
+		if(lcClassName.equals("int") || className.equals("[I"))	{
 			return int.class; 
 		}
-		if(lcClassName.equals("long"))	{
+		if(lcClassName.equals("long") || className.equals("[J"))	{
 			if(isRef) return Long.class;
 			return long.class; 
 		}
-		if(lcClassName.equals("float"))	{
+		if(lcClassName.equals("float") || className.equals("[F"))	{
 			if(isRef) return Float.class;
 			return float.class; 
 		}
-		if(lcClassName.equals("double"))	{
+		if(lcClassName.equals("double") || className.equals("[D"))	{
 			if(isRef) return Double.class;
 			return double.class; 
 		}
-		if(lcClassName.equals("char"))	{
+		if(lcClassName.equals("char") || className.equals("[C"))	{
 			return char.class; 
 		}
-		if(lcClassName.equals("short"))	{
+		if(lcClassName.equals("short") || className.equals("[S"))	{
 			if(isRef) return Short.class;
 			return short.class; 
 		}
@@ -82,7 +85,7 @@ public final class ClassUtil {
 		if(lcClassName.equals("null"))		return Object.class; 
 		if(lcClassName.equals("numeric"))	return Double.class; 
 		
-		return ClassUtil.loadClass(className);
+		return defaultValue;
 	}
 	
 	
@@ -104,11 +107,12 @@ public final class ClassUtil {
 	 * @throws ClassException 
 	 */
 	public static Class loadClass(String className) throws ClassException {
-		Class clazz = loadClass(null,className,null);
+		Config config = ThreadLocalPageContext.getConfig();
+		Class clazz = loadClass(config==null?null:config.getClassLoader(),className,null);
 		if(clazz!=null) return clazz;
 		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
-
+	
 	/**
 	 * loads a class from a specified Classloader with given classname
 	 * @param className
@@ -116,6 +120,10 @@ public final class ClassUtil {
 	 * @return matching Class
 	 */
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
+		className=className.trim();
+		
+		Class clazz = checkPrimaryTypes(className, null);
+		if(clazz!=null) return clazz;
 		
 		if(cl==null){
 			PageContextImpl pci = (PageContextImpl) ThreadLocalPageContext.get();
@@ -143,14 +151,43 @@ public final class ClassUtil {
 				return Class.forName(className, false, cl);
 			} 
 			catch (ClassNotFoundException e1) {
-				if("boolean".equals(className)) return boolean.class;
-				if("char".equals(className)) return char.class;
-				if("float".equals(className)) return float.class;
-				if("short".equals(className)) return short.class;
-				if("int".equals(className)) return int.class;
-				if("long".equals(className)) return long.class;
-				if("double".equals(className)) return double.class;
-				
+				// array in the format boolean[] or java.lang.String[]
+				if(!StringUtil.isEmpty(className) && className.endsWith("[]")) {
+					StringBuilder pureCN=new StringBuilder(className);
+					int dimensions=0;
+					do{
+						pureCN.delete(pureCN.length()-2, pureCN.length());
+						dimensions++;
+					}
+					while(pureCN.lastIndexOf("[]")==pureCN.length()-2);
+					
+					clazz = loadClass(cl,pureCN.toString(),null);
+					if(clazz!=null) {
+						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
+						return clazz;
+					}
+				}
+				// array in the format [C or [Ljava.lang.String;
+				else if(!StringUtil.isEmpty(className) && className.charAt(0)=='[') {
+					StringBuilder pureCN=new StringBuilder(className);
+					int dimensions=0;
+					do{
+						pureCN.delete(0, 1);
+						dimensions++;
+					}
+					while(pureCN.charAt(0)=='[');
+					
+					clazz = loadClass(cl,pureCN.toString(),null);
+					if(clazz!=null) {
+						for(int i=0;i<dimensions;i++)clazz=toArrayClass(clazz);
+						return clazz;
+					}
+				}
+				// class in format Ljava.lang.String;
+				else if(!StringUtil.isEmpty(className) && className.charAt(0)=='L' && className.endsWith(";")) {
+					className=className.substring(1,className.length()-1).replace('/', '.');
+					return loadClass(cl, className,defaultValue);
+				}
 				
 				return defaultValue;
 			}
@@ -319,14 +356,14 @@ public final class ClassUtil {
 	 */
 	public static String[] getClassPath(Config config) {
 
-        Map pathes=new HashTable();
+        Map<String,String> pathes=MapFactory.<String,String>getConcurrentMap();
 		String pathSeperator=System.getProperty("path.separator");
 		if(pathSeperator==null)pathSeperator=";";
 			
 	// pathes from system properties
 		String strPathes=System.getProperty("java.class.path");
 		if(strPathes!=null) {
-			Array arr=List.listToArrayRemoveEmpty(strPathes,pathSeperator);
+			Array arr=ListUtil.listToArrayRemoveEmpty(strPathes,pathSeperator);
 			int len=arr.size();
 			for(int i=1;i<=len;i++) {
 				File file=FileUtil.toFile(Caster.toString(arr.get(i,""),"").trim());
@@ -348,7 +385,7 @@ public final class ClassUtil {
 	
 	/**
 	 * get class pathes from all url ClassLoaders
-	 * @param ucl URL Class Loader
+	 * @param cl URL Class Loader
 	 * @param pathes Hashmap with allpathes
 	 */
 	private static void getClassPathesFromLoader(ClassLoader cl, Map pathes) {
@@ -503,4 +540,47 @@ public final class ClassUtil {
 		}
 		return clazz;
 	}
+
+
+	/**
+	 * returns the path to the directory or jar file that the class was loaded from
+	 *
+	 * @param clazz - the Class object to check, for a live object pass obj.getClass();
+	 * @param defaultValue - a value to return in case the source could not be determined
+	 * @return
+	 */
+	public static String getSourcePathForClass(Class clazz, String defaultValue) {
+
+		try {
+
+			String result = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+			result = URLDecoder.decode(result, Charset.UTF8);
+			result = SystemUtil.fixWindowsPath(result);
+			return result;
+		}
+		catch (Throwable t) {}
+
+		return defaultValue;
+	}
+
+
+	/**
+	 * tries to load the class and returns the path that it was loaded from
+	 *
+	 * @param className - the name of the class to check
+	 * @param defaultValue - a value to return in case the source could not be determined
+	 * @return
+	 */
+	public static String getSourcePathForClass(String className, String defaultValue) {
+
+		try {
+
+			return  getSourcePathForClass(ClassUtil.loadClass(className), defaultValue);
+		}
+		catch (Throwable t) {}
+
+		return defaultValue;
+	}
+
+
 }

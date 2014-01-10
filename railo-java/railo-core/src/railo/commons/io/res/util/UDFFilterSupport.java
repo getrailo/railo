@@ -32,10 +32,7 @@ public abstract class UDFFilterSupport {
 		
 	}
 	
-    /**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+    @Override
 	public String toString() {
 		return "UDFFilter:"+udf;
 	}

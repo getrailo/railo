@@ -5,7 +5,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 
 /**
@@ -14,106 +16,107 @@ import railo.commons.io.IOUtil;
 public final class ByteArrayInputStreamReader extends InputStreamReader {
 
 	private final BufferedReader br;
-	private final String charsetName;
+	private final Charset charset;
 
-	public ByteArrayInputStreamReader(ByteArrayInputStream bais, String charsetName) throws IOException {
-		super(bais, charsetName);
-		this.br=IOUtil.toBufferedReader(IOUtil.getReader(bais, charsetName));
-		this.charsetName=charsetName;
+	
+	public ByteArrayInputStreamReader(ByteArrayInputStream bais, Charset charset) throws IOException {
+		super(bais, charset);
+		this.br=IOUtil.toBufferedReader(IOUtil.getReader(bais, charset));
+		this.charset=charset;
 	}
 	
-	public ByteArrayInputStreamReader(byte[] barr, String charsetName) throws IOException {
-		this(new ByteArrayInputStream(barr), charsetName);
+	public ByteArrayInputStreamReader(byte[] barr, Charset charset) throws IOException {
+		this(new ByteArrayInputStream(barr), charset);
 	}
 
-	public ByteArrayInputStreamReader(String str, String charsetName) throws IOException {
-		this(new ByteArrayInputStream(str.getBytes(charsetName)), charsetName);
+	public ByteArrayInputStreamReader(String str, Charset charset) throws IOException {
+		this(new ByteArrayInputStream(str.getBytes(charset)), charset);
+	}
+	
+	/**
+	 * @deprecated use instead <code>{@link #ByteArrayInputStreamReader(ByteArrayInputStream, Charset)}</code>
+	 * @param bais
+	 * @param charsetName
+	 * @throws IOException
+	 */
+	public ByteArrayInputStreamReader(ByteArrayInputStream bais, String charsetName) throws IOException {
+		this(bais, CharsetUtil.toCharset(charsetName));
+	}
+	
+	/**
+	 * @deprecated use instead <code>{@link #ByteArrayInputStreamReader(byte[], Charset)}</code>
+	 * @param barr
+	 * @param charsetName
+	 * @throws IOException
+	 */
+	public ByteArrayInputStreamReader(byte[] barr, String charsetName) throws IOException {
+		this(new ByteArrayInputStream(barr), CharsetUtil.toCharset(charsetName));
 	}
 
 	/**
-	 *
-	 * @see java.io.InputStreamReader#close()
+	 * @deprecated use instead <code>{@link #ByteArrayInputStreamReader(String, Charset)}</code>
+	 * @param str
+	 * @param charsetName
+	 * @throws IOException
 	 */
+	public ByteArrayInputStreamReader(String str, String charsetName) throws IOException {
+		this(str, CharsetUtil.toCharset(charsetName));
+	}
+
+	@Override
 	public void close() throws IOException {
 		br.close();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#getEncoding()
-	 */
+	@Override
 	public String getEncoding() {
-		return charsetName;
+		return charset.name();
+	}
+	public Charset getCharset() {
+		return charset;
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#read()
-	 */
+	@Override
 	public int read() throws IOException {
 		return br.read();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#read(char[], int, int)
-	 */
+	@Override
 	public int read(char[] cbuf, int offset, int length) throws IOException {
 		return br.read(cbuf, offset, length);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#ready()
-	 */
+	@Override
 	public boolean ready() throws IOException {
 		return br.ready();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#mark(int)
-	 */
+	@Override
 	public void mark(int readAheadLimit) throws IOException {
 		br.mark(readAheadLimit);
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#markSupported()
-	 */
+	@Override
 	public boolean markSupported() {
 		return br.markSupported();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read(java.nio.CharBuffer)
-	 */
+	@Override
 	public int read(CharBuffer target) throws IOException {
 		return br.read(target.array());
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read(char[])
-	 */
+	@Override
 	public int read(char[] cbuf) throws IOException {
 		return br.read(cbuf);
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#reset()
-	 */
+	@Override
 	public void reset() throws IOException {
 		br.reset();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#skip(long)
-	 */
+	@Override
 	public long skip(long n) throws IOException {
 		return br.skip(n);
 	}

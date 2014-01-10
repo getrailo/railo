@@ -4,6 +4,7 @@ package railo.runtime.debug;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.db.SQL;
 import railo.runtime.type.Query;
 
@@ -38,4 +39,8 @@ public interface DebuggerPro extends Debugger {
     public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
     
     public DebugTrace[] getTraces(PageContext pc);
+    
+    public void setOutputLog(DebugOutputLog outputLog);
+    
+    public void init(Config config);
 }

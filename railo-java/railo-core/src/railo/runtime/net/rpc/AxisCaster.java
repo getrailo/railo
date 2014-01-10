@@ -53,6 +53,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
@@ -334,7 +335,7 @@ public final class AxisCaster {
         int row;
         for(row=1;row<=recordcount;row++) {
             for(int i=0;i<columns.length;i++) {
-            	data[row-1][i]=_toAxisType(tm,null,null,columns[i].get(row),targetClass,done);
+            	data[row-1][i]=_toAxisType(tm,null,null,columns[i].get(row,null),targetClass,done);
             }
         }
     	
@@ -582,7 +583,7 @@ public final class AxisCaster {
         		for(int i=0;i<props.length;i++){
         			prop=props[i];
         			try{
-        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName())));
+        				cw.set(pc, KeyImpl.init(prop.getName()), toRailoType(pc,Reflector.callGetter(value, prop.getName())));
         			}
         			catch(PageException pe){
         				pe.printStackTrace();
@@ -684,7 +685,7 @@ public final class AxisCaster {
             for(int i=0;i<strColumns.length;i++) {
                 col=q.getColumn(strColumns[i]);
                 for(row=1;row<=recorcount;row++) {
-                    col.set(row,toRailoType(pc,col.get(row)));
+                    col.set(row,toRailoType(pc,col.get(row,null)));
                 }
             }
             return q;

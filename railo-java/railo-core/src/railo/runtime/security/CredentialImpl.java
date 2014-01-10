@@ -11,7 +11,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * User Password Information
@@ -75,21 +75,15 @@ public final class CredentialImpl implements Credential {
         this.rolesDir=rolesDir;
     }
 
-    /**
-     * @see railo.runtime.security.Credential#getPassword()
-     */
+    @Override
     public String getPassword() {
         return password;
     }
-    /**
-     * @see railo.runtime.security.Credential#getRoles()
-     */
+    @Override
     public String[] getRoles() {
         return roles;
     }
-    /**
-     * @see railo.runtime.security.Credential#getUsername()
-     */
+    @Override
     public String getUsername() {
         return username;
     }
@@ -102,7 +96,7 @@ public final class CredentialImpl implements Credential {
      */
     public static String[] toRole(Object oRoles) throws PageException {
         if(oRoles instanceof String) {
-            oRoles=List.listToArrayRemoveEmpty(oRoles.toString(),",");
+            oRoles=ListUtil.listToArrayRemoveEmpty(oRoles.toString(),",");
         }
         
         if(oRoles instanceof Array) {
@@ -121,15 +115,13 @@ public final class CredentialImpl implements Credential {
     }
 
     public String serialize(Set<Object> done) {
-        return "createObject('java','railo.runtime.security.Credential').init('"+username+"','"+password+"','"+List.arrayToList(roles,",")+"')";
+        return "createObject('java','railo.runtime.security.Credential').init('"+username+"','"+password+"','"+ListUtil.arrayToList(roles,",")+"')";
     } 
     
     
-    /**
-     * @see railo.runtime.security.Credential#encode()
-     */
+    @Override
     public String encode() throws PageException{
-    	String raw=List.arrayToList(roles,",");
+    	String raw=ListUtil.arrayToList(roles,",");
 		if(raw.length()>100){
 	    	try {
 	    		if(!rolesDir.exists())rolesDir.mkdirs();
@@ -160,7 +152,7 @@ public final class CredentialImpl implements Credential {
 			throw Caster.toPageException(e);
 		}
     	
-    	Array arr=List.listToArray(dec,""+ONE);
+    	Array arr=ListUtil.listToArray(dec,""+ONE);
         int len=arr.size();
         if(len==3) {
         	String str=Caster.toString(arr.get(3,""));
@@ -183,9 +175,7 @@ public final class CredentialImpl implements Credential {
         return null;
     }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "username:"+username+";password:"+password+";roles:"+roles;
 	} 

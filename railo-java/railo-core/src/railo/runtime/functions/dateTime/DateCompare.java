@@ -11,10 +11,12 @@ import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 
-public final class DateCompare implements Function {
+public final class DateCompare extends BIF {
 
 	public static double call(PageContext pc , DateTime left, DateTime right) throws ExpressionException {
 		return call(pc , left, right,"s");
@@ -23,12 +25,10 @@ public final class DateCompare implements Function {
 	public static double call(PageContext pc , DateTime left, DateTime right, String datepart) throws ExpressionException {
 		datepart=datepart.toLowerCase().trim();
 		TimeZone tz=ThreadLocalPageContext.getTimeZone(pc);
-		Calendar cLeft=JREDateTimeUtil.getCalendar();
-		cLeft.setTimeZone(tz);
+		Calendar cLeft=JREDateTimeUtil.getThreadCalendar(tz);
 		cLeft.setTime(left);
 		
-		Calendar cRight=JREDateTimeUtil.newInstance();
-		cRight.setTimeZone(tz);
+		Calendar cRight=JREDateTimeUtil.newInstance(tz);
 		cRight.setTime(right);
 		
 		// TODO WEEEK
@@ -77,6 +77,12 @@ public final class DateCompare implements Function {
 		if(value!=0) return value>0?1:-1;
 		return 0;
 			
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()),Caster.toDatetime(args[1],pc.getTimeZone()));
+		return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()),Caster.toDatetime(args[1],pc.getTimeZone()),Caster.toString(args[2]));
 	}
 
 }

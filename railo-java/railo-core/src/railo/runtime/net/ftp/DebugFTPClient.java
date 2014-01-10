@@ -17,16 +17,12 @@ public final class DebugFTPClient extends FTPClient {
     
     private static int count=0;
     
-    /**
-     * @see org.apache.commons.net.SocketClient#disconnect()
-     */
+    @Override
     public void disconnect() throws IOException {
         SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"MyFTPClient.disconnect("+(--count)+")");
         super.disconnect();
     }
-    /**
-     * @see org.apache.commons.net.SocketClient#connect(java.net.InetAddress, int)
-     */
+    @Override
     public void connect(InetAddress arg0, int arg1) throws SocketException,
             IOException {
         SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"MyFTPClient.connect("+(++count)+")");

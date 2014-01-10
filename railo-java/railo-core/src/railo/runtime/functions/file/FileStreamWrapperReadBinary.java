@@ -33,10 +33,7 @@ public class FileStreamWrapperReadBinary extends FileStreamWrapper {
 
 
 
-	/**
-	 *
-	 * @see railo.runtime.functions.file.FileStreamWrapper#read(int)
-	 */
+	@Override
 	public Object read(int len) throws IOException {
 		byte[] barr=new byte[len];
 		len=seekable?getRAF().read(barr):_getBIS().read(barr);
@@ -51,18 +48,14 @@ public class FileStreamWrapperReadBinary extends FileStreamWrapper {
 		return barr;
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		super.setStatus(FileStreamWrapper.STATE_CLOSE);
 		if(bis!=null)bis.close();
 		if(raf!=null)raf.close();
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#getMode()
-	 */
+	@Override
 	public String getMode() {
 		return "readBinary";
 	}
@@ -71,16 +64,12 @@ public class FileStreamWrapperReadBinary extends FileStreamWrapper {
 		return isEOF;
 	}
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#getSize()
-	 */
+	@Override
 	public long getSize() {
 		return res.length();
 	}
 	
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#skip(long)
-	 */
+	@Override
 	public void skip(int len) throws PageException {
 		if(seekable){
 			try {

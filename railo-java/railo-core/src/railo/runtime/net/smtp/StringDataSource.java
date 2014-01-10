@@ -19,30 +19,22 @@ public final class StringDataSource implements DataSource {
 		this.charset=charset;
 	}
 
-	/**
-	 * @see javax.activation.DataSource#getContentType()
-	 */
+	@Override
 	public String getContentType() {
 		return ct;
 	}
 
-	/**
-	 * @see javax.activation.DataSource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		return new ByteArrayInputStream(text.getBytes(charset));
 	}
 
-	/**
-	 * @see javax.activation.DataSource#getName()
-	 */
+	@Override
 	public String getName() {
 		return "StringDataSource";
 	}
 
-	/**
-	 * @see javax.activation.DataSource#getOutputStream()
-	 */
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		throw new IOException("no access to write");
 	}

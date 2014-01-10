@@ -14,7 +14,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Checks the data type of a query parameter. The cfqueryparam tag is nested within a cfquery tag. 
@@ -42,9 +42,7 @@ public final class QueryParam extends TagImpl {
 	** 	the value attribute. */
 	private double maxlength=-1;
     
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 	    separator=",";
 	    list=false;
@@ -114,10 +112,12 @@ public final class QueryParam extends TagImpl {
 		item.setType(SQLCaster.toIntType(type));
 		
 	}
+	public void setSqltype(String type) throws DatabaseException	{
+		item.setType(SQLCaster.toIntType(type));
+		
+	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    Tag parent = getParent();
 		while(parent!=null && !(parent instanceof Query)) {
@@ -134,7 +134,7 @@ public final class QueryParam extends TagImpl {
 		    		arr=new ArrayImpl();
 		    		arr.append("");
 		    	}
-		    	else arr=List.listToArrayRemoveEmpty(v,separator);
+		    	else arr=ListUtil.listToArrayRemoveEmpty(v,separator);
 				
 				int len=arr.size();
 				StringBuffer sb=new StringBuffer();

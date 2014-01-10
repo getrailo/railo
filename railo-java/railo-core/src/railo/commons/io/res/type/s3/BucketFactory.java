@@ -11,8 +11,8 @@ import org.xml.sax.SAXException;
 import railo.runtime.exp.PageException;
 
 /**
- * Die Klasse TagLibFactory liest die XML Repräsentation einer TLD ein 
- * und lädt diese in eine Objektstruktur. 
+ * Die Klasse TagLibFactory liest die XML Repraesentation einer TLD ein 
+ * und laedt diese in eine Objektstruktur. 
  * Sie tut dieses mithilfe eines Sax Parser.
  * Die Klasse kann sowohl einzelne Files oder gar ganze Verzeichnisse von TLD laden.
  */
@@ -30,7 +30,7 @@ public final class BucketFactory extends S3Factory {
 
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws IOException 
@@ -42,12 +42,7 @@ public final class BucketFactory extends S3Factory {
 		init(in);
 	}
 
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim Auftreten eines Start-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#startElement(String, String, String, Attributes)
-	 */
+	@Override
 	public void doStartElement(String uri, String name, String qName, Attributes atts) {
 		if(qName.equals("Owner")) insideOwners=true;
 		if(qName.equals("Buckets")) insideBuckets=true;
@@ -55,12 +50,7 @@ public final class BucketFactory extends S3Factory {
 		
 	}
     
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim auftreten eines End-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#endElement(String, String, String)
-	 */
+	@Override
 	public void doEndElement(String uri, String name, String qName) throws SAXException {
 		if(qName.equals("Owner")) insideOwners=false;
 		if(qName.equals("Buckets")) insideBuckets=false;

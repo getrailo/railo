@@ -3,9 +3,8 @@ package railo.runtime.type;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.DeprecatedException;
 
 /**
  * implementation of the query column
@@ -44,10 +43,8 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 	}
 
 
-	/**
-     * @see railo.runtime.type.QueryColumn#get(int)
-     */
-    public Object get(int row){
+	@Override
+    public Object get(int row) throws DeprecatedException{
     	used=true;
     	return super.get(row);
     }
@@ -58,7 +55,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
      * @return new row or existing
      * @throws DatabaseException
      */
-    public Object touch(int row) throws DatabaseException{
+    public Object touch(int row) {
     	used=true;
     	return super.touch(row);
     }
@@ -74,9 +71,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
     	return super.touchEL(row);
     }
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int row, Object defaultValue) {
 		used=true;
     	return super.get(row,defaultValue);
@@ -89,48 +84,36 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
         return clone;
     }
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		used=true;
 		return super.valueIterator();
 	}
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
+	@Override
 	public int indexOf(Object o) {
 		used=true;
 		return super.indexOf(o);
 	}
 
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
+	@Override
 	public int lastIndexOf(Object o) {
 		used=true;
 		return super.lastIndexOf(o);
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List<Object> subList(int fromIndex, int toIndex) {
 		used=true;
 		return super.subList(fromIndex, toIndex);
 	}
 
-	/**
-	 * @see java.util.List#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		used=true;
 		return super.toArray();
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
+	@Override
 	public  Object[] toArray(Object[] trg) {
 		used=true;
 		return super.toArray(trg);

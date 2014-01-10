@@ -12,7 +12,6 @@ import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Info;
 import railo.runtime.SourceFile;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
@@ -20,11 +19,12 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.literal.LitString;
@@ -34,10 +34,8 @@ import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.ExprTransformer;
-import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorException;
-import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
 import railo.transformer.cfml.script.AbstrCFMLScriptTransformer.ComponentTemplateException;
@@ -107,27 +105,7 @@ public final class CFMLTransformer {
     public static short TAG_LIB_GLOBAL=0;
     public static short TAG_LIB_PAGE=1;
     
-    public class Data {
-		
-    	public final TagLib[][] tlibs;//=new TagLib[][]{null,new TagLib[0]};
-		public final FunctionLib[] flibs;
-		public final CFMLString cfml;
-		public final TagLibTag[] scriptTags;
-		public final EvaluatorPool ep=new EvaluatorPool();
-		private SimpleExprTransformer set;
-	    private final Config config;
-		private final Page page;
-	 
-	    public Data(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,Config config,Page page) {
-			super();
-			this.tlibs = tlibs;
-			this.flibs = flibs;
-			this.scriptTags = scriptTags;
-			this.cfml = cfml;
-			this.config = config;
-			this.page = page;
-		}
-    }
+    
 	
 	/**
 	 * Startmethode zum transfomieren einer CFML Datei.
@@ -145,23 +123,22 @@ public final class CFMLTransformer {
 	public Page transform(ConfigImpl config,SourceFile sf, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
 		Page p;
 		CFMLString cfml;
-		String charset;
-		boolean writeLog;
 		
-		writeLog=config.getExecutionLogEnabled();
-		charset=config.getTemplateCharset();
-		
+		boolean writeLog=config.getExecutionLogEnabled();
+		String charset=config.getTemplateCharset();
+		boolean dotUpper = config.getDotNotationUpperCase();
 		
 		
 		while(true){
 			try {
 				cfml=new CFMLString(sf,charset,writeLog);
-				p = transform(config,cfml,tlibs,flibs,sf.getResource().lastModified());
+				p = transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
 				break;
 			}
 			catch(ProcessingDirectiveException pde) {
-				writeLog=pde.getWriteLog();
-				charset=pde.getCharset();
+				if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
+				if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
+				if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
 			}
 		}
 		
@@ -184,12 +161,13 @@ public final class CFMLTransformer {
 						cfml=new CFMLString(text,charset,writeLog,sf);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified());
+						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
-						writeLog=pde.getWriteLog();
-						charset=pde.getCharset();
+						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
+						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
 						cfml=null;
 					}
 				}
@@ -217,12 +195,13 @@ public final class CFMLTransformer {
 						cfml=new CFMLString(text,charset,writeLog,sf);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified());
+						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
-						writeLog=pde.getWriteLog();
-						charset=pde.getCharset();
+						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
+						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
 						cfml=null;
 					}
 				}
@@ -261,7 +240,7 @@ public final class CFMLTransformer {
 	 * @return ￜbersetztes CFXD Dokument Element.
 	 * @throws TemplateException
 	 */
-	public Page transform(ConfigImpl config,CFMLString cfml,TagLib[] tlibs,FunctionLib[] flibs, long sourceLastModified) throws TemplateException {
+	public Page transform(ConfigImpl config,CFMLString cfml,TagLib[] tlibs,FunctionLib[] flibs, long sourceLastModified, Boolean dotNotationUpperCase) throws TemplateException {
 		
 		TagLib[][] _tlibs=new TagLib[][]{null,new TagLib[0]};
 		_tlibs[TAG_LIB_GLOBAL]=tlibs;
@@ -275,8 +254,8 @@ public final class CFMLTransformer {
 
 		SourceFile source=cfml.getSourceFile(); 
 		
-		Page page=new Page(source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
-		Data data = new Data(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,config,page);
+		Page page=new Page(config,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
+		TagData data = new TagData(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;
 		try {
@@ -286,12 +265,21 @@ public final class CFMLTransformer {
 				
 				if(data.cfml.isAfterLast()) break;
 				if(data.cfml.forwardIfCurrent("</")){
+					int pos = data.cfml.getPos();
 					TagLib tagLib=nameSpace(data);
 					if(tagLib==null){
 						page.addPrintOut("</", null,null);
 					}
 					else {
-						throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+identifier(data.cfml,true)+"]");
+						String name = identifier(data.cfml,true);
+						if(tagLib.getIgnoreUnknowTags()) {
+							TagLibTag tlt = tagLib.getTag(name);
+							if(tlt==null) {
+								data.cfml.setPos(pos);
+								page.addPrintOut("</", null,null);
+							}
+						}
+						else throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+name+"]");
 			
 					}
 				}
@@ -306,13 +294,7 @@ public final class CFMLTransformer {
 		}
 		catch(TemplateException e) {
 		    data.ep.clear();
-		    /*if(e instanceof ProcessingDirectiveException) throw e;
-		    throw new TemplateException(
-		    		"\n-----------------------------------------------------\n"+
-		    		"line:"+e.getLine()+"\n"+
-		    		"message:"+e.getMessage()+"\n"+
-		    		data.cfml.toString()+"\n-----------------------------------------------------\n");
-		    */throw e;
+		    throw e;
 		}
 	}
 
@@ -326,7 +308,7 @@ public final class CFMLTransformer {
 	 * @param transformer Expression Transfomer zum ￼bersetzten von Expression.
 	 * @throws TemplateException
 	 */
-	private void body(Data data,Body body, boolean parseExpression, ExprTransformer transformer) throws TemplateException {
+	private void body(TagData data,Body body, boolean parseExpression, ExprTransformer transformer) throws TemplateException {
 		boolean parseLiteral=true;
 		
 	// Comment 
@@ -413,7 +395,7 @@ public final class CFMLTransformer {
 			(* Welcher Teil der "oder" Bedingung ausgef￼hrt wird, ist abh￤ngig ob die Tag-Lib vorgibt, 
 			 dass Expression geparst werden sollen oder nicht. *)</code>
 	 */
-	private void literal(Data data,Body parent,boolean parseExpression, ExprTransformer transformer) throws TemplateException {
+	private void literal(TagData data,Body parent,boolean parseExpression, ExprTransformer transformer) throws TemplateException {
 		// with expression
 		if(parseExpression) {
 			if(data.cfml.isAfterLast())return;
@@ -435,7 +417,7 @@ public final class CFMLTransformer {
 						}
                         Position line = data.cfml.getPosition();
 						PrintOut po;
-						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config)),line,null));
+						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings),line,null));
 						po.setEnd(data.cfml.getPosition());
 						
 						if(!data.cfml.isCurrent('#'))
@@ -481,7 +463,7 @@ public final class CFMLTransformer {
 	 * @return Gibt zur￼ck ob es sich um ein Tag as einer Tag-Lib handelte oder nicht.
 	 * @throws TemplateException
 	 */
-	private boolean tag(Data data,Body parent,boolean parseExpression) throws TemplateException {
+	private boolean tag(TagData data,Body parent,boolean parseExpression) throws TemplateException {
 	    //railo.print.ln("--->"+data.cfml.getCurrent());
 	    boolean hasBody=false;
 		
@@ -513,8 +495,13 @@ public final class CFMLTransformer {
 		// get taglib
 		if(tagLibTag==null)	{
 			tagLibTag=tagLib.getAppendixTag(strName);
-			 if(tagLibTag==null)
+			 if(tagLibTag==null) {
+				 if(tagLib.getIgnoreUnknowTags()){
+					 data.cfml.setPos(start);
+					 return false;
+				 } 
 				 throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+strName+"]");
+			 }
 			appendix=StringUtil.removeStartingIgnoreCase(strNameNormal,tagLibTag.getName());
 		 }
 		
@@ -588,7 +575,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(data.page,this,data.ep,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config));
+				tdbt.transform(data.page,this,data.ep,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,data.settings);
 				
 				//	get TagLib of end Tag
 				if(!data.cfml.forwardIfCurrent("</")) {
@@ -659,6 +646,7 @@ public final class CFMLTransformer {
 						throw createTemplateException(data.cfml,"Missing end tag for ["+tagLibTag.getFullName()+"]",tagLibTag);
 					
 					// get TagLib of end Tag
+					int _start = data.cfml.getPos();
 					TagLib tagLibEnd=nameSpace(data);
 					
 					// same NameSpace
@@ -688,14 +676,18 @@ public final class CFMLTransformer {
 										"End Tag ["+
 										tagLibEnd.getNameSpaceAndSeparator()+strNameEnd+"] is not allowed, for this tag only a Start Tag is allowed");
 							data.cfml.setPos(start);
-							
-							throw new TemplateException(data.cfml,
+							if(tagLibEnd.getIgnoreUnknowTags() && (tagLibEnd.getTag(strNameEnd))==null){
+								data.cfml.setPos(_start);
+							}
+							else throw new TemplateException(data.cfml,
 									"Start and End Tag has not the same Name ["+
 									tagLib.getNameSpaceAndSeparator()+strName+"-"+tagLibEnd.getNameSpaceAndSeparator()+strNameEnd+"]");
 						}
-						body.moveStatmentsTo(parent);
-						data.cfml.setPos(posBeforeEndTag);
-						return executeEvaluator(data,tagLibTag, tag);
+					    else {
+							body.moveStatmentsTo(parent);
+							data.cfml.setPos(posBeforeEndTag);
+							return executeEvaluator(data,tagLibTag, tag);
+					    }
 					    /// new part	
 					}
 					body.addPrintOut("</",null,null);
@@ -713,10 +705,10 @@ public final class CFMLTransformer {
         
 	}
 	
-	private boolean executeEvaluator(Data data,TagLibTag tagLibTag, Tag tag) throws TemplateException {
+	private boolean executeEvaluator(TagData data,TagLibTag tagLibTag, Tag tag) throws TemplateException {
 		if(tagLibTag.hasTteClass())	{
 			try {
-				TagLib lib=tagLibTag.getEvaluator().execute(data.config,tag,tagLibTag,data.flibs,data.cfml);
+				TagLib lib=tagLibTag.getEvaluator().execute(data.config,tag,tagLibTag,data.flibs,data);
 				if(lib!=null) {
 					// set
 					for(int i=0;i<data.tlibs[TAG_LIB_PAGE].length;i++) {
@@ -760,7 +752,7 @@ public final class CFMLTransformer {
 	 * <code>< tagLib[].getNameSpaceAndSeperator() >(* Vergleicht Zeichen mit den Namespacedefinitionen der Tag Libraries. *) </code>
 	 * @return TagLib Passende Tag Lirary oder null.
 	 */
-	private TagLib nameSpace(Data data) {
+	private TagLib nameSpace(TagData data) {
 		boolean hasTag=false;
 		int start = data.cfml.getPos();
 		TagLib tagLib=null;
@@ -806,11 +798,12 @@ public final class CFMLTransformer {
 	 * @param parent
 	 * @throws TemplateException
 	 */
-	public static void attributes(Data data,TagLibTag tag, Tag parent) throws TemplateException {
+	public static void attributes(TagData data,TagLibTag tag, Tag parent) throws TemplateException {
 		int type=tag.getAttributeType();
-		
+		int start = data.cfml.getPos();
 	// Tag with attribute names
 		if(	type!=TagLibTag.ATTRIBUTE_TYPE_NONAME)	{
+			try{
 			int min=tag.getMin();
 			int max=tag.getMax();
 			int count=0;
@@ -836,7 +829,7 @@ public final class CFMLTransformer {
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
 				    			att.getName(),
-				    			Cast.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
+				    			CastOther.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
 				    	);
 				    	parent.addAttribute(attr);
 					}
@@ -847,11 +840,11 @@ public final class CFMLTransformer {
 			
 			// to less attributes
 			if(!hasAttributeCollection && min>count)
-				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" must have "+min+" attributes at least",tag);
+				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" must have at least "+min+" attributes",tag);
 			
 			// too much attributes
 			if(!hasAttributeCollection && max>0 && max<count)
-				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" can have "+max+" attributes maximal",tag);
+				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" can have a maximum of "+max+" attributes",tag);
 			
 			// not defined attributes
 			if(type==TagLibTag.ATTRIBUTE_TYPE_FIXED || type==TagLibTag.ATTRIBUTE_TYPE_MIXED)	{
@@ -866,25 +859,38 @@ public final class CFMLTransformer {
 					}
 				}
 			}
+			}
+			catch(TemplateException te){
+				data.cfml.setPos(start);
+				// if the tag supports a non name attribute try this
+				TagLibTagAttr sa = tag.getSingleAttr();
+				if(sa!=null) attrNoName(parent,tag,data,sa);
+				else throw te;
+			}
 		}
 	// tag without attributes name
 		else	{
-			TagLibTagAttr attr=tag.getFirstAttribute();
-			String strName="noname";
-			String strType="any";
-			boolean pe=true;
-			if(attr!=null) {
-				strName=attr.getName();
-				strType=attr.getType();	
-				pe=attr.getRtexpr();
-			}
-			//LitString.toExprString("",-1);
-			Attribute att=new Attribute(false,strName,attributeValue(data,tag,strType,pe,true,NullExpression.NULL_EXPRESSION),strType);
-			parent.addAttribute(att);
+			attrNoName(parent,tag,data,null);
 		}
 	}
 
-    /**
+    private static void attrNoName(Tag parent, TagLibTag tag, TagData data,TagLibTagAttr attr) throws TemplateException {
+    	if(attr==null)attr=tag.getFirstAttribute();
+		String strName="noname";
+		String strType="any";
+		boolean pe=true;
+		if(attr!=null) {
+			strName=attr.getName();
+			strType=attr.getType();	
+			pe=attr.getRtexpr();
+		}
+		//LitString.toExprString("",-1);
+		Attribute att=new Attribute(false,strName,attributeValue(data,tag,strType,pe,true,NullExpression.NULL_EXPRESSION),strType);
+		parent.addAttribute(att);
+	}
+
+
+	/**
      * Liest ein einzelnes Atribut eines tag ein (nicht NONAME).
      * <br />
      * EBNF:<br />
@@ -894,7 +900,7 @@ public final class CFMLTransformer {
      * @return Element Attribute Element.
      * @throws TemplateException
      */
-    private static Attribute attribute(Data data,TagLibTag tag, ArrayList<String> args,RefBoolean allowDefaultValue) throws TemplateException {
+    private static Attribute attribute(TagData data,TagLibTag tag, ArrayList<String> args,RefBoolean allowDefaultValue) throws TemplateException {
     	Expression value=null;
     	
     	// Name
@@ -929,7 +935,7 @@ public final class CFMLTransformer {
     	else {
     		value=tag.getAttributeDefaultValue();
     		if(sbType.toString().length()>0) {
-    			value=Cast.toExpression(value, sbType.toString());
+    			value=CastOther.toExpression(value, sbType.toString());
     		}
     	}		
     	comment(data.cfml,true);
@@ -983,7 +989,11 @@ public final class CFMLTransformer {
 						throw createTemplateException(cfml,
 								"Attribute "+id+" is not allowed for tag "+tag.getFullName(),tag);
 					
-						throw createTemplateException(cfml,
+					try{
+						names=ListUtil.sort(names, "textnocase",null, null);
+					}
+					catch(Throwable t){}
+					throw createTemplateException(cfml,
 							"Attribute "+id+" is not allowed for tag "+tag.getFullName(),
 							"valid attribute names are ["+names+"]",tag);
 				}
@@ -1018,7 +1028,7 @@ public final class CFMLTransformer {
 	 * @return Element Eingelesener ￼bersetzer Wert des Attributes.
 	 * @throws TemplateException
 	 */
-	public static Expression attributeValue(Data data,TagLibTag tag, String type,boolean parseExpression,boolean isNonName, Expression noExpression) throws TemplateException {
+	public static Expression attributeValue(TagData data,TagLibTag tag, String type,boolean parseExpression,boolean isNonName, Expression noExpression) throws TemplateException {
 		Expression expr;
 		try {
 			ExprTransformer transfomer=null;
@@ -1026,25 +1036,25 @@ public final class CFMLTransformer {
 			    transfomer = tag.getTagLib().getExprTransfomer();
 			}
 			else  {
-				if(data.set==null) {
-					data.set=new SimpleExprTransformer('#');
+				if(data.getSimpleExprTransformer()==null) {
+					data.setSimpleExprTransformer(new SimpleExprTransformer('#'));
 					//set.setSpecialChar();
 				}
-				transfomer=data.set;				
+				transfomer=data.getSimpleExprTransformer();
 			}
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config));
+			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings);
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config),true);
+			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings,true);
 			if(type.length()>0) {
-				expr=Cast.toExpression(expr, type);
+				expr=CastOther.toExpression(expr, type);
 			}
 		} catch (TagLibException e) {
 			throw new TemplateException(data.cfml,e);

@@ -73,7 +73,7 @@ public final class Sprite extends EvaluatorSupport {
 					new Attribute(
 							false,
 							"_ids",
-							LitString.toExprString(railo.runtime.type.List.listToList(previous.ids, ",")),
+							LitString.toExprString(railo.runtime.type.util.ListUtil.listToList(previous.ids, ",")),
 							"string"
 					));
 

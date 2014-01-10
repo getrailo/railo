@@ -1,10 +1,15 @@
 package railo.commons.lang;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.io.SystemUtil;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
@@ -27,7 +32,51 @@ public final class StringUtil {
 			return str.substring(0,1).toUpperCase()+str.substring(1);
 		}
 	}
+
+
+    public static String capitalize( String input, char[] delims ) {
+
+        if (isEmpty(input)) return input;
+
+        if (ArrayUtil.isEmpty(delims))
+            delims = new char[]{ '.', '-', '(', ')' };
+
+        StringBuilder sb = new StringBuilder( input.length() );
+
+        boolean isLastDelim = true,isLastSpace = true;
+        int len=input.length();
+        for (int i=0; i<len; i++) {
+
+            char c = input.charAt( i );
+
+            if ( Character.isWhitespace(c) ) {
+
+                if ( !isLastSpace )
+                    sb.append( ' ' );
+
+                isLastSpace = true;
+            } 
+            else {
+
+                sb.append( ( isLastSpace || isLastDelim ) ? Character.toUpperCase( c ) : c );
+
+                isLastDelim = _contains(delims, c );
+                isLastSpace = false;
+            }
+        }
+
+        return sb.toString();
+    }
+
 	
+	private static boolean _contains(char[] chars, char c) {
+		for ( int i=0; i<chars.length; i++ ) {
+			if(chars[i]==c) return true;
+		}
+		return false;
+	}
+
+
 	/**
 	 * do first Letter Upper case
 	 * @param str String to operate
@@ -443,33 +492,88 @@ public final class StringUtil {
     
 
     /**
-     * @param str String to work with
-     * @param sub1 value to replace
-     * @param sub2 replacement
-     * @param onlyFirst replace only first or all 
-     * @return new String
+     * performs a replace operation on a string
+     *  
+     * @param input - the string input to work on 
+     * @param find - the substring to find
+     * @param repl - the substring to replace the matches with
+     * @param firstOnly - if true then only the first occurrence of {@code find} will be replaced
+     * @param ignoreCase - if true then matches will not be case sensitive
+     * @return
      */
-    public static String replace(String str, String sub1, String sub2, boolean onlyFirst) {
-        if(sub1.equals(sub2)) return str;
-        
-        if(!onlyFirst && sub1.length()==1 && sub2.length()==1)return str.replace(sub1.charAt(0),sub2.charAt(0));
-        
-        
-        StringBuilder sb=new StringBuilder();
-        int start=0;
-        int pos;
-        int sub1Length=sub1.length();
-        
-        while((pos=str.indexOf(sub1,start))!=-1){
-            sb.append(str.substring(start,pos));
-            sb.append(sub2);
-            start=pos+sub1Length;
-            if(onlyFirst)break;
+	public static String replace( String input, String find, String repl, boolean firstOnly, boolean ignoreCase ) {
+
+		int findLen = find.length();
+
+		if ( findLen == 0 )
+			return input;
+
+		String scan = input;
+
+        if ( ignoreCase ) {
+            
+            scan = scan.toLowerCase();
+            find = find.toLowerCase();
+        } else if ( findLen == repl.length() ) {
+
+        	if ( find.equals( repl ) )
+        		return input;
+        	
+        	if ( !firstOnly && findLen == 1 )
+        		return input.replace( find.charAt(0), repl.charAt(0) );
         }
-        sb.append(str.substring(start));
         
+        StringBuilder sb = new StringBuilder( repl.length() > find.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
+        
+        int start = 0;
+        int pos;        
+        
+        while ( (pos = scan.indexOf( find, start ) ) != -1 ) {
+            
+            sb.append( input.substring( start, pos ) );
+            sb.append( repl );
+            
+            start = pos + findLen;
+            
+            if ( firstOnly )
+            	break;
+        }
+                
+        if ( input.length() > start )
+        	sb.append( input.substring( start ) );
+
         return sb.toString();
     }
+    
+	
+	/**
+	 * maintains the legacy signature of this method where matches are CaSe sensitive (sets the default of ignoreCase to false). 
+	 * 
+	 * @param input - the string input to work on 
+     * @param find - the substring to find
+     * @param repl - the substring to replace the matches with
+     * @param firstOnly - if true then only the first occurrence of {@code find} will be replaced
+     * @return - calls replace( input, find, repl, firstOnly, false )
+	 */
+	public static String replace( String input, String find, String repl, boolean firstOnly ) {
+	 
+		return replace( input, find, repl, firstOnly, false );
+	}
+	
+
+	/**
+	 * performs a CaSe sensitive replace all
+	 * 
+	 * @param input - the string input to work on 
+     * @param find - the substring to find
+     * @param repl - the substring to replace the matches with
+     * @return - calls replace( input, find, repl, false, false )
+	 */
+	public static String replace( String input, String find, String repl ) {
+		 
+		return replace( input, find, repl, false, false );
+	}
+	
     
     /**
      * adds zeros add the begin of a int example: addZeros(2,3) return "002"
@@ -816,7 +920,7 @@ public final class StringUtil {
 
 	/**
 	 * trim given value, return defaultvalue when input is null
-	 * @param string
+	 * @param str
 	 * @param defaultValue
 	 * @return trimmed string or defaultValue
 	 */
@@ -889,15 +993,39 @@ public final class StringUtil {
 		return sb.toString();
 	}
 
-	public static boolean isAscci(String str) {
-		char c;
-		for(int i=str.length()-1;i>=0;i--){
-			c = str.charAt(i);
-			if(c < 128)  continue;
+	public static boolean isAscii(String str) {
+
+		if ( str == null )
 			return false;
+
+		for(int i=str.length()-1;i>=0;i--){
+
+			if( str.charAt(i) > 127 )
+    			return false;
 		}
 		return true;
 	}
+
+
+	/**
+	 * returns true if all characters in the string are letters
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static boolean isAllAlpha(String str) {
+
+		if ( str == null )  return false;
+
+		for (int i=str.length()-1; i >= 0; i--) {
+
+			if ( !Character.isLetter( str.charAt(i) ) )
+				return false;
+		}
+
+		return true;
+	}
+
 
 	public static boolean isWhiteSpace(String str) {
 		if(str==null) return false;
@@ -909,4 +1037,103 @@ public final class StringUtil {
 		}
 		return true;
 	}
+
+	/**
+	 * this method works different from the regular substring method, the regular substring method takes startIndex and endIndex as second and third argument,
+	 * this method takes offset and length
+	 * @param str
+	 * @param off
+	 * @param len
+	 * @return
+	 */
+	public static String substring(String str, int off, int len) {
+		return str.substring(off,off+len);
+	}
+	
+	
+	
+	/**
+	 * this is the public entry point for the replaceMap() method
+	 * 
+	 * @param input - the string on which the replacements should be performed.
+	 * @param map - a java.util.Map with key/value pairs where the key is the substring to find and the value is the substring with which to replace the matched key 
+	 * @param ignoreCase - if true then matches will not be case sensitive
+	 * @return
+	 * @throws PageException 
+	 */
+	public static String replaceMap( String input, Map map, boolean ignoreCase ) throws PageException {
+		 
+		return replaceMap( input, map, ignoreCase, true );
+	}
+
+    
+	/**
+	 * this is the core of the replaceMap() method.  
+	 * 
+	 * it is called once from the public entry point and then internally from resolveInternals()
+	 * 
+	 * when doResolveInternals is true -- this method calls resolveInternals.  therefore, calls from resolveInternals() 
+	 * must pass false to that param to avoid an infinite ping-pong loop 
+	 * 
+	 * @param input - the string on which the replacements should be performed.
+	 * @param map - a java.util.Map with key/value pairs where the key is the substring to find and the value is the substring with which to replace the matched key
+	 * @param ignoreCase - if true then matches will not be case sensitive
+	 * @param doResolveInternals - only the initial call (from the public entry point) should pass true
+	 * @return
+	 * @throws PageException 
+	 */
+    private static String replaceMap( String input, Map map, boolean ignoreCase, boolean doResolveInternals ) throws PageException {
+        if ( doResolveInternals )
+            map = resolveInternals( map, ignoreCase, 0 );
+        
+        String result = input;
+        Iterator<Map.Entry> it = map.entrySet().iterator();
+        Map.Entry e;
+        while ( it.hasNext() ) {
+            e = it.next();
+            result = replace( result, Caster.toString(e.getKey()), Caster.toString(e.getValue()), false, ignoreCase );
+        }
+        return result;
+    }
+	
+        
+    
+    /**
+     * resolves internal values within the map, so if the map has a key "{signature}" 
+     * and its value is "Team {group}" and there's a key with the value {group} whose
+     * value is "Railo", then {signature} will resolve to "Team Railo".
+     * 
+     *  {signature} = "Team {group}"
+     *  {group}     = "Railo"
+     * 
+     * then signature will resolve to
+     * 
+     *  {signature} = "Team Railo"
+     * 
+     * @param map - key/value pairs for find key/replace with value
+     * @param ignoreCase - if true then matches will not be case sensitive
+     * @param count - used internally as safety valve to ensure that we don't go into infinite loop if two values reference each-other
+     * @return 
+     * @throws PageException 
+     */
+    private static Map resolveInternals( Map map, boolean ignoreCase, int count ) throws PageException {
+        Map result = new HashMap();
+        Iterator<Map.Entry> it = map.entrySet().iterator();
+        boolean isModified = false;
+        Map.Entry e;
+        String v,r;
+        while ( it.hasNext() ) {
+            e = it.next();
+            v = Caster.toString( e.getValue() );
+            r = replaceMap( v, map, ignoreCase, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
+            result.put( Caster.toString( e.getKey() ), r );
+            if ( !v.equalsIgnoreCase( r ) )
+                isModified = true;
+        }
+                
+        if ( isModified && count++ < map.size() )
+            result = resolveInternals( result, ignoreCase, count );	// recursive call
+        
+        return result;
+    }
 }

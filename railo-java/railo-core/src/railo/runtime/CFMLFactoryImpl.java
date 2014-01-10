@@ -34,7 +34,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -43,6 +42,7 @@ import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * implements a JSP Factory, this class produce JSP Compatible PageContext Object
@@ -80,11 +80,18 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         synchronized(pcs) {
             pcs.clear();
         }
+        
+        if(runningPcs!=null) {
+        	synchronized(runningPcs) {
+        	Iterator<Object> it = runningPcs.valueIterator();
+        	while(it.hasNext()){
+        		((PageContextImpl)it.next()).reset();
+        	}
+        	}
+        }
     }
     
-	/**
-	 * @see javax.servlet.jsp.JspFactory#getPageContext(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
-	 */
+	@Override
 	public javax.servlet.jsp.PageContext getPageContext(
 		Servlet servlet,
 		ServletRequest req,
@@ -142,9 +149,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		        return pc;
 			}
 
-    /**
-	 * @see javax.servlet.jsp.JspFactory#releasePageContext(javax.servlet.jsp.PageContext)
-	 */
+    @Override
 	public void releasePageContext(javax.servlet.jsp.PageContext pc) {
 		releaseRailoPageContext((PageContext)pc);
 	}
@@ -196,7 +201,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {
                     Log log = config.getRequestTimeoutLogger();
-                    if(log!=null)log.warn("controler","downgrade priority of the a thread at "+getPath(pc));
+                    if(log!=null)log.warn("controller","downgrade priority of the a thread at "+getPath(pc));
                     try {
                     	pc.getThread().setPriority(Thread.MIN_PRIORITY);
                     }
@@ -214,14 +219,14 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 			LockManager manager = pc.getConfig().getLockManager();
 	        String[] locks = manager.getOpenLockNames();
 	        if(!ArrayUtil.isEmpty(locks)) 
-	        	strLocks=" open locks at this time ("+List.arrayToList(locks, ", ")+").";
+	        	strLocks=" open locks at this time ("+ListUtil.arrayToList(locks, ", ")+").";
 	        //LockManagerImpl.unlockAll(pc.getId());
 		}
 		catch(Throwable t){}
         
-        if(log!=null)log.error("controler",
+        if(log!=null)log.error("controller",
         		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks);
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
+        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
 	}
 
@@ -237,9 +242,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		}
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.JspFactory#getEngineInfo()
-	 */
+	@Override
 	public JspEngineInfo getEngineInfo() {
 		return info;
 	}
@@ -314,11 +317,16 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		this.config=config;
 	}
 
-	public Struct getRunningPageContextes() {
+	public Struct getRunningPageContexts() {
 		return runningPcs;
 	}
+	
+	// exists because it is used in Morpheus
+	public Struct getRunningPageContextes() {
+		return getRunningPageContexts();
+	}
 
-	public long getPageContextesSize() {
+	public long getPageContextsSize() {
 		return SizeOf.size(pcs);
 	}
 	
@@ -365,7 +373,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
                 data.setEL("urlToken", pc.getURLToken());
                 try {
-					data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
+					if(pc.getConfig().debug())data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
 				} catch (PageException e2) {}
 
                 try {

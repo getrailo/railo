@@ -5,12 +5,13 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.writer.BodyContentImpl;
 
 public final class Silent extends BodyTagTryCatchFinallyImpl {
 
 
-    private boolean bufferoutput=true;
+    private Boolean bufferOutput=true;
 	private BodyContentImpl bc;
 	private boolean wasSilent;
 
@@ -19,28 +20,26 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
 	/**
 	 * @param bufferoutput the bufferoutput to set
 	 */
-	public void setBufferoutput(boolean bufferoutput) {
-		this.bufferoutput = bufferoutput;
+	public void setBufferoutput(boolean bufferOutput) {
+		this.bufferOutput = bufferOutput?Boolean.TRUE:Boolean.FALSE;
 	}
 
 
-	/**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+	@Override
     public int doStartTag() throws JspException {
-    	if(bufferoutput) bc = (BodyContentImpl) pageContext.pushBody();
+    	if(bufferOutput==null)
+    		bufferOutput=((ApplicationContextSupport)pageContext.getApplicationContext()).getBufferOutput()?Boolean.TRUE:Boolean.FALSE;
+    	
+    	if(bufferOutput.booleanValue()) bc = (BodyContentImpl) pageContext.pushBody();
     	else wasSilent=pageContext.setSilent();
     	
     	return EVAL_BODY_INCLUDE;
     }
     
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
-	 */
+	@Override
 	public void doCatch(Throwable t) throws Throwable {
-		if(bufferoutput){
+		if(bufferOutput.booleanValue()){
 	    	try {
 				bc.flush();
 			} catch (IOException e) {}
@@ -52,11 +51,9 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
 	}
 
     
-    /**
-     * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
-     */
+    @Override
     public void doFinally() {
-    	if(bufferoutput){
+    	if(bufferOutput.booleanValue()){
 	    	if(bc!=null){
 	        	bc.clearBody();
 	        	pageContext.popBody();
@@ -66,14 +63,11 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
     }
 
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		bc=null;
-		this.bufferoutput=true;
+		this.bufferOutput=null;
 	}
 
 

@@ -1,6 +1,7 @@
 package railo.runtime.helpers;
 
 import java.io.InputStream;
+import java.util.Stack;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -14,6 +15,7 @@ import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Struct;
@@ -35,7 +37,7 @@ public final class XMLEventParser extends DefaultHandler {
 	private UDF endDocument;
 	private UDF error;
 	
-	private StringBuffer sbBody;
+	private Stack<StringBuilder> bodies=new Stack<StringBuilder>();
 	private PageContext pc;
 	private Struct att;
 	/**
@@ -103,53 +105,40 @@ public final class XMLEventParser extends DefaultHandler {
 		
 	}
 
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
-	 */
+	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
-		sbBody.append(ch,start,length);
+		bodies.peek().append(ch,start,length);
 	}
 
-	/**
-	 * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
-	 */
+	@Override
 	public void error(SAXParseException e) throws SAXException {
 		error(Caster.toPageException(e));
 	}
-	/**
-	 * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
-	 */
+	@Override
 	public void fatalError(SAXParseException e) throws SAXException {
 		error(Caster.toPageException(e));
 	}
-	/**
-	 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	 */
+	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		sbBody=new StringBuffer();
+		bodies.add(new StringBuilder());
+		//sbBody=new StringBuffer();
 		att = toStruct(attributes);
 		call(startElement,new Object[]{uri,localName,qName,att});
 	}
 
-	/**
-	 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		call(body,new Object[]{sbBody.toString()});
+		call(body,new Object[]{bodies.pop().toString()});
 		call(endElement,new Object[]{uri,localName,qName,att});
 	}
 	
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#startDocument()
-	 */
+	@Override
 	public void startDocument() throws SAXException {
 		call(startDocument,ArrayUtil.OBJECT_EMPTY);
 	}
 	
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#endDocument()
-	 */
+	@Override
 	public void endDocument() throws SAXException {
 		call(endDocument,ArrayUtil.OBJECT_EMPTY);
 	}
@@ -172,10 +161,10 @@ public final class XMLEventParser extends DefaultHandler {
 	 * @param pe
 	 */
 	private void error(PageException pe) {
+		if(error==null) throw new PageRuntimeException(pe);
 		try {
-			// TLPC
 			pc=ThreadLocalPageContext.get(pc);
-			error.call(pc,new Object[]{pe.getCatchBlock(pc)},false);
+			error.call(pc,new Object[]{pe.getCatchBlock(pc.getConfig())},false);
 		} 
 		catch (PageException e) {}
 	}

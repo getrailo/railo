@@ -27,9 +27,7 @@ public final class SMTPSender extends Thread {
 		this.pass=pass;
 	}
 	
-	/**
-	 * @see java.lang.Thread#run()
-	 */
+	@Override
 	public void run() {
 		Transport transport = null;
         try {

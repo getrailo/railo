@@ -27,6 +27,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.coder.Base64Coder;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -41,11 +42,19 @@ import railo.runtime.type.scope.CookieImpl;
 
 public class DumpUtil {
 
-	
-	public static DumpData toDumpData(Object o,PageContext pageContext, int maxlevel, DumpProperties props) {
-		if(maxlevel<=0) {
-			return new SimpleDumpData("maximal dump level reached");
-		}
+	public static final DumpData MAX_LEVEL_REACHED;
+
+	static {
+
+		MAX_LEVEL_REACHED = new DumpTable("Max Level Reached","#e0e0e0","#ffcc99","#888888");
+		((DumpTable)MAX_LEVEL_REACHED).appendRow( new DumpRow(1, new SimpleDumpData("[Max Dump Level Reached]") ) );
+	}
+
+	public static DumpData toDumpData(Object o, PageContext pageContext, int maxlevel, DumpProperties props) {
+
+		if(maxlevel<0)
+			return MAX_LEVEL_REACHED;
+
 		// null
 		if(o == null) {
 			DumpTable table=new DumpTable("null","#ff6600","#ffcc99","#000000");
@@ -118,7 +127,7 @@ public class DumpUtil {
 		// Number
 		if(o instanceof Number) {
 			DumpTable table = new DumpTable("numeric","#ff6600","#ffcc99","#000000");
-			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
+			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o))));
 			return table;
 		}
 		// Boolean
@@ -158,20 +167,33 @@ public class DumpUtil {
 		// byte[]
 		if(o instanceof byte[]) {
 			byte[] bytes=(byte[]) o;
-			
+			int max=5000;
 			DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 			table.setTitle("Native Array  ("+Caster.toClassName(o)+")");
-			
-			StringBuffer sb=new StringBuffer();
+			StringBuilder sb=new StringBuilder("[");
 			for(int i=0;i<bytes.length;i++) {
-				if(i!=0)sb.append("-");
+				if(i!=0)sb.append(",");
 				sb.append(bytes[i]);
-				if(i==1000) {
-					sb.append("  [truncated]  ");
+				if(i==max) {
+					sb.append(", ...truncated");
 					break;
 				}
 			}
-			table.appendRow(0,new SimpleDumpData(sb.toString()));
+			sb.append("]");
+			table.appendRow(1,new SimpleDumpData("Raw"+(bytes.length<max?"":" (truncated)")),new SimpleDumpData(sb.toString()));
+			
+			
+			if(bytes.length<max) {
+				// base64
+				table.appendRow(1,new SimpleDumpData("Base64 Encoded"),new SimpleDumpData(Base64Coder.encode(bytes)));
+				/*try {
+					table.appendRow(1,new SimpleDumpData("CFML expression"),new SimpleDumpData("evaluateJava('"+JavaConverter.serialize(bytes)+"')"));
+					
+				}
+				catch (IOException e) {}*/
+			}
+			
+			
 			return table;	
 		}
 		// Collection.Key
@@ -194,6 +216,9 @@ public class DumpUtil {
 		
 		ThreadLocalDump.set(o,id);
 		try{
+
+			int top = props.getMaxlevel();
+
 			// Printable
 			if(o instanceof Dumpable) {
 				return setId(id,((Dumpable)o).toDumpData(pageContext,maxlevel,props));
@@ -202,17 +227,17 @@ public class DumpUtil {
 			if(o instanceof Map) {
 				Map map=(Map) o;
 				Iterator it=map.keySet().iterator();
-	
+
 				DumpTable table = new DumpTable("struct","#ff9900","#ffcc00","#000000");
 				table.setTitle("Map ("+Caster.toClassName(o)+")");
-				
+
 				while(it.hasNext()) {
 					Object next=it.next();
 					table.appendRow(1,toDumpData(next,pageContext,maxlevel,props),toDumpData(map.get(next),pageContext,maxlevel,props));
 				}
 				return setId(id,table);
 			}
-		
+
 			// List
 			if(o instanceof List) {
 				List list=(List) o;
@@ -220,16 +245,35 @@ public class DumpUtil {
 				
 				DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 				table.setTitle("Array (List)");
-				
-				while(it.hasNext()) {
+				if ( list.size() > top )
+					table.setComment("Rows: " + list.size() + " (showing top " + top + ")");
+
+				int i = 0;
+				while(it.hasNext() && i++ < top) {
 					table.appendRow(1,new SimpleDumpData(it.nextIndex()+1),toDumpData(it.next(),pageContext,maxlevel,props));
 				}
 				return setId(id,table);
 			}
+		
+			// Set
+			if(o instanceof Set) {
+				Set set=(Set) o;
+				Iterator it = set.iterator();
+				
+				DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
+				table.setTitle("Set ("+set.getClass().getName()+")");
+
+				int i = 0;
+				while(it.hasNext() && i++ < top) {
+					table.appendRow(1,toDumpData(it.next(),pageContext,maxlevel,props));
+				}
+				return setId(id,table);
+			}
+			
 			// Resultset
 			if(o instanceof ResultSet) {
 				try {
-					DumpData dd = new QueryImpl((ResultSet)o,"query").toDumpData(pageContext,maxlevel,props);
+					DumpData dd = new QueryImpl((ResultSet)o,"query",pageContext.getTimeZone()).toDumpData(pageContext,maxlevel,props);
 					if(dd instanceof DumpTable)
 						((DumpTable)dd).setTitle(Caster.toClassName(o));
 					return setId(id,dd);
@@ -244,8 +288,9 @@ public class DumpUtil {
 				
 				DumpTable table = new DumpTable("enumeration","#ff9900","#ffcc00","#000000");
 				table.setTitle("Enumeration");
-				
-				while(e.hasMoreElements()) {
+
+				int i = 0;
+				while(e.hasMoreElements() && i++ < top) {
 					table.appendRow(0,toDumpData(e.nextElement(),pageContext,maxlevel,props));
 				}
 				return setId(id,table);

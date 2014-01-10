@@ -25,10 +25,7 @@ public final class Formgroup extends BodyTagImpl {
 		// TODO impl tag formgroup
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		query=null;

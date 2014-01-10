@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * Filter für die <code>listFiles</code> Methode des FIle Objekt, 
+ * Filter fuer die <code>listFiles</code> Methode des FIle Objekt, 
  * zum filtern von FIles mit einer bestimmten Extension.
  */
 public final class ExtensionFilter implements FileFilter {
@@ -18,7 +18,7 @@ public final class ExtensionFilter implements FileFilter {
 
 	/**
 	 * Konstruktor des Filters
-	 * @param extension Endung die geprüft werden soll.
+	 * @param extension Endung die geprueft werden soll.
 	 */
 	public ExtensionFilter(String extension) {
 		this(new String[]{extension},false,true);
@@ -26,7 +26,7 @@ public final class ExtensionFilter implements FileFilter {
 
 	/**
 	 * Konstruktor des Filters
-	 * @param extension Endung die geprüft werden soll.
+	 * @param extension Endung die geprueft werden soll.
 	 */
 	public ExtensionFilter(String extension, boolean allowDir) {
 		this(new String[]{extension},allowDir,true);

@@ -4,7 +4,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class VideoInputImpl implements VideoInput {
 
@@ -33,7 +33,7 @@ public class VideoInputImpl implements VideoInput {
 	public void setCommand(String path,java.util.List args) {
 		this.path=path;
 		try {
-			addArgs(List.listToList(args, " "));
+			addArgs(ListUtil.listToList(args, " "));
 		} catch (PageException pe) {
 			throw new PageRuntimeException(pe);
 		}
@@ -41,7 +41,7 @@ public class VideoInputImpl implements VideoInput {
 	
 	public void setCommand(String path,String[] args) {
 		this.path=path;
-		addArgs(List.arrayToList(args, " "));
+		addArgs(ListUtil.arrayToList(args, " "));
 	}
 	
 	/**

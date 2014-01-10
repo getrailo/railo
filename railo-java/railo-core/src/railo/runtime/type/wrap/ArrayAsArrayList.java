@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Duplicator;
@@ -26,9 +24,7 @@ public class ArrayAsArrayList extends ArrayList {
 	}
 	
 	
-	/**
-	 * @see java.util.List#addEntry(E)
-	 */
+	@Override
 	public boolean add(Object o) {
 		try {
 			array.append(o);
@@ -47,9 +43,7 @@ public class ArrayAsArrayList extends ArrayList {
 		}
 	}
 
-	/**
-	 * @see java.util.List#addAll(java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -58,9 +52,7 @@ public class ArrayAsArrayList extends ArrayList {
 		return !c.isEmpty();
 	}
 
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(int index, Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -69,23 +61,17 @@ public class ArrayAsArrayList extends ArrayList {
 		return !c.isEmpty();
 	}
 
-	/**
-	 * @see java.util.List#clear()
-	 */
+	@Override
 	public void clear() {
 		array.clear();
 	}
 
-	/**
-	 * @see java.util.List#contains(java.lang.Object)
-	 */
+	@Override
 	public boolean contains(Object o) {
 		return indexOf(o)!=-1;
 	}
 
-	/**
-	 * @see java.util.List#containsAll(java.util.Collection)
-	 */
+	@Override
 	public boolean containsAll(Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -94,9 +80,7 @@ public class ArrayAsArrayList extends ArrayList {
 		return true;
 	}
 
-	/**
-	 * @see java.util.List#get(int)
-	 */
+	@Override
 	public Object get(int index) {
 		try {
 			return array.getE(index+1);
@@ -115,16 +99,12 @@ public class ArrayAsArrayList extends ArrayList {
 		return -1;
 	}
 
-	/**
-	 * @see java.util.List#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() {
 		return array.size()==0;
 	}
 
-	/**
-	 * @see java.util.List#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
 		return array.valueIterator();
 	}
@@ -140,24 +120,18 @@ public class ArrayAsArrayList extends ArrayList {
 		return rtn;
 	}
 
-	/**
-	 * @see java.util.List#listIterator()
-	 */
+	@Override
 	public ListIterator listIterator() {
 		return listIterator(0);
 	}
 
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
+	@Override
 	public ListIterator listIterator(int index) {
 		return array.toList().listIterator(index);
 	}
 	
 
-	/**
-	 * @see java.util.List#remove(java.lang.Object)
-	 */
+	@Override
 	public boolean remove(Object o) {
 		int index = indexOf(o);
 		if(index==-1) return false;
@@ -208,54 +182,37 @@ public class ArrayAsArrayList extends ArrayList {
 		}
 	}
 
-	/**
-	 * @see java.util.List#size()
-	 */
+	@Override
 	public int size() {
 		return array.size();
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
 		return array.toList().subList(fromIndex, toIndex);
 	}
 
-	/**
-	 * @see java.util.List#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		return array.toArray();
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
+	@Override
 	public Object[] toArray(Object[] a) {
 		return array.toArray();
 	}
 
-	/**
-	 *
-	 * @see java.util.ArrayList#clone()
-	 */
+	@Override
 	public Object clone() {
 		return toArrayList((Array) Duplicator.duplicate(array,true));
 	}
 
-	/**
-	 *
-	 * @see java.util.ArrayList#ensureCapacity(int)
-	 */
+	@Override
 	public void ensureCapacity(int minCapacity) {
 		throw new PageRuntimeException("not supported");
 	}
 
-	/**
-	 *
-	 * @see java.util.ArrayList#trimToSize()
-	 */
+	@Override
 	public void trimToSize() {
 		throw new PageRuntimeException("not supported");
 	}

@@ -27,9 +27,9 @@ import railo.runtime.text.feed.FeedHandler;
 import railo.runtime.text.feed.FeedQuery;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public final class Feed extends TagImpl	{
 
@@ -64,9 +64,7 @@ public final class Feed extends TagImpl	{
 	private String proxyUser=null;
 	private String charset=null;
 	
-	/**
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		charset=null;
 		action=ACTION_READ;
@@ -234,9 +232,7 @@ public final class Feed extends TagImpl	{
 	
 
 	
-	/**
-	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException {
 		if(source instanceof HTTPResource) {
 			HTTPResource httpSource = (HTTPResource)source;
@@ -627,7 +623,7 @@ public final class Feed extends TagImpl	{
 		}
 		if(splitString && tag.getValue() instanceof String)	{
 			String strValue=(String) tag.getValue();
-			Array arr = List.listToArray(strValue, ',');
+			Array arr = ListUtil.listToArray(strValue, ',');
 			if(arr.size()>1){
 				int len=arr.size();
 				for(int i=1;i<=len;i++) {
@@ -653,7 +649,7 @@ public final class Feed extends TagImpl	{
 				if(index>0){
 					if(attrValue instanceof Array)attrValue=((Array)attrValue).get(index,null);
 					else if(splitString && attrValue instanceof String){
-						Array arr = List.listToArray((String)attrValue, ',');
+						Array arr = ListUtil.listToArray((String)attrValue, ',');
 						attrValue=arr.get(index,null);
 					}
 				}
@@ -676,7 +672,7 @@ public final class Feed extends TagImpl	{
 					if(index>0){
 						if(attrValue instanceof Array)attrValue=((Array)attrValue).get(index,null);
 						else if(splitString && attrValue instanceof String){
-							Array arr = List.listToArray((String)attrValue, ',');
+							Array arr = ListUtil.listToArray((String)attrValue, ',');
 							attrValue=arr.get(index,null);
 						}
 					}

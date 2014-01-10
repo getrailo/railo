@@ -75,9 +75,7 @@ public final class PropertiesImpl implements Properties {
 		this.secretAccessKey = secretAccessKey;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(){
 		return "accessKeyId:"+accessKeyId+";defaultLocation:"+defaultLocation+";host:"+host+";secretAccessKey:"+secretAccessKey;
 	}

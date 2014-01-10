@@ -180,13 +180,13 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContains</name>
 		<class>railo.runtime.functions.arrays.ArrayContains</class>
 		<member-name>contains</member-name>
-		<description>Returns true if specified object is present is given array</description>
+		<description>Returns the position of the first element in the array that matches the item that we are searching for, or 0 if the item is not found.</description>
 		<argument>
 			<name>haystack</name>
 			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
-			<description>The array that we are looking for the item</description>
+			<description>The array in which to search for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
@@ -194,6 +194,12 @@ All elements in the array must contain values that can be automatically converte
 			<type>object</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
+		</argument>
+		<argument>
+		    <name>substringMatch</name>
+		    <type>boolean</type>
+		    <required>false</required>
+		    <description>If set to true then if a then a substring match will also return true. This will only work with simple values. Passing true with complex objects will throw an exception.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -204,20 +210,20 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContainsNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayContainsNoCase</class>
 		<member-name>containsNoCase</member-name>
-		<description>Search an array to find a case insensitive item</description>
+		<description>Returns the position of the first element in the array whose string value contains the substring passed (not case sensitive), or 0 if no such element is found.</description>
 		<argument>
 			<name>haystack</name>
 			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
-			<description>The array that we are looking for the item</description>
+			<description>The array in which to search for the substring</description>
 		</argument>
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
 			<type>object</type>
 			<required>Yes</required>
-			<description>The item that we are looking for in the array</description>
+			<description>The substring to search for (not case sensitive)</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -363,6 +369,19 @@ All elements in the array must contain values that can be automatically converte
 			<type>function</type>
 			<required>Yes</required>
 			<description>UDF/Closure that call with the values from array</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -791,7 +810,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>length</name>
 			<type>number</type>
 			<required>No</required>
-		<description>maximal elements to slice from offset</description>
+		<description>maximum elements to slice from offset</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -905,6 +924,7 @@ sort direction:
 		<name>arrayToList</name>
 		<class>railo.runtime.functions.list.ArrayToList</class>
 		<member-name>toList</member-name>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.ArrayToList</tte-class>
 		<description>Transform the array to a list of elements delimiter by the given string</description>
 		<argument>
 			<name>array</name>
@@ -1420,7 +1440,7 @@ sort direction:
 		<argument>
 			<name>throwWhenNotExist</name>
 			<default>false</default>
-			<type>boolean</type>
+			<type>object</type>
 			<required>no</required>
 			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
@@ -2093,7 +2113,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>CreateDynamicProxy</name>
 		<class>railo.runtime.functions.other.CreateDynamicProxy</class>
-		<status>hidden</status>
 		<description>wrap the given component with a java class that implements the given interfaces.</description>
 		<argument>
 			<name>cfc</name>
@@ -2637,7 +2656,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
-	<!-- dateTimeFormat
+	<!-- dateTimeFormat -->
 	<function>
 		<name>dateTimeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
@@ -2655,8 +2674,60 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>No</required>
 			<default>dd-MMM-yyyy HH:mm:ss</default>
 		<description>
-Mask that has to be used for formatting. The function follows Java date time mask. 
-For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
+Mask that has to be used for formatting. 
+the following characters are pattern letters (case sensitive) representing the components of a datetime string. All other characters are not interpreted
+- a,..,aaaa: AM/PM marker (see also "t" and "tt"; Example:AM)
+- d: Day in month, no leading zero for single-digit days (Example:3)
+- dd: Day in month, leading zero for single-digit days (Example:03)
+- D: Day in year, no leading zero for single-digit days (Example:4)
+- DD: Day in month, leading zero for single-digit days (Example:04)
+- DDD: Day in month, 2 leading zero for single-digit days (Example:004)
+- E,EE,EEE: Day of week as a three-letter abbreviation (Example:Tue)
+- EEEE: Day of week as its full name (Example:Tuesday)
+- F: Day of week in month, no leading zero for single-digit days (Example:4)
+- FF: Day of week in month, leading zero for single-digit days (Example:04)
+- G,GG: Era designator (Example:AD)
+- h: Hour in am/pm (1-12), no leading zero for single-digit hours (Example:3)
+- hh: Hour in am/pm (1-12), leading zero for single-digit hours (Example:03)
+- H: Hour in day (0-23), no leading zero for single-digit hours (Example:14)
+- HH: Hour in day (00-23), leading zero for single-digit hours (Example:14)
+- k: Hour in day (1-24), no leading zero for single-digit hours (Example:15)
+- kk: Hour in day (1-24), leading zero for single-digit hours (Example:15)
+- K: Hour in am/pm (0-11), no leading zero for single-digit hours (Example:2)
+- KK: Hour in am/pm (0-11), leading zero for single-digit hours (Example:02)
+- l,L: milliseconds, with no leading zeros (Example:3)
+- ll,LL: milliseconds, leading zero for single-digit days (Example:03)
+- lll,LLL: milliseconds,  2 leading zero for single-digit days (Example:003)
+- m,M: Month as digits, no leading zero for single-digit months (Example:6)
+- mm,MM: Month as digits, leading zero for single-digit months (Example:06)
+- mmm,MMM: Month as a three-letter abbreviation (Example:Jun)
+- mmmm,MMMM: Month as its full name (Example:June)
+- n,N: minutes in hour, no leading zero for single-digit minutes (Example:3)
+- nn,NN: minutes in hour, leading zero for single-digit minutes (Example:03)
+- s,S: seconds in minute, no leading zero for single-digit seconds (Example:3)
+- ss,SS: seconds in minute, leading zero for single-digit seconds (Example:03)
+- t,T: one-character time marker string (Example:P)
+- tt,TT: multiple-character time marker string (Example:PM)
+- w: Week in year, no leading zero for single-digit hours (Example:27)
+- ww: Week in year, leading zero for single-digit hours (Example:27)
+- W: Week in month, no leading zero for single-digit hours (Example:2)
+- WW: Week in month, leading zero for single-digit hours (Example:02)
+- y,yy,yyy: Year as last two digits, leading zero for single-digit (Example:09)
+- yyyy: Year represented by four digits (Example:2009)
+- z,zz,zzz: General time zone as a 3 to 4 lettesr abbreviation (Example:PST)
+- zzzz: General time zone as its full name (Example:Pacific Standard Time)
+- Z,..,ZZZZ: RFC 822 time zone (Example:-0800)
+  
+The following masks tell how to format the full date and time and cannot be combined with other masks:
+- short: equivalent to m/d/y h:mm tt
+- medium: equivalent to mmm d, yyyy h:mm:ss tt
+- long: medium followed by three-letter time zone; as in, mmmm d, yyyy h:mm:ss tt zz
+- full: equivalent to dddd, mmmm d, yyyy h:mm:ss tt zz
+The function also follows Java date time mask. For details, see the section Date and Time Patterns on this page.
+
+
+The function follows Java date time mask. 
+For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
 </description>
     </argument>
 		<argument>
@@ -2677,7 +2748,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
-	 -->
+	
 	<!-- datePart -->
 	<function>
 		<name>datePart</name>
@@ -3097,7 +3168,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>Empty</name>
 		<class>railo.runtime.functions.system.Empty</class>
-		<description>return true if a function exists and is not "empty". 
+		<status>deprecated</status>
+		<description>this function is deprcated, use instead "IsEmpty".
+		this function returns true if a value exists and is not "empty". 
 The following things are considered to be empty:
 - string:"" (an empty string)
 - number:return always false
@@ -3166,25 +3239,36 @@ The following things are considered to be empty:
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
-The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+		    <description>The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
-- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.</description>
+        </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
 			<default>uu</default>
-		<description>
-The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
+		    <description>The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045
 - Hex: the characters A-F and 0-9 represent the hexadecimal byte values
 - UU(default): the UNIX standard UUEncode algorithm</description>
-    </argument>
+        </argument>
+        <argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3198,30 +3282,43 @@ The binary encoding used to represent the data as a string. Must be the same as 
 			<name>input</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>Binary data to decrypt.</description>
-    </argument>
+		    <description>Binary data to decrypt.</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>
+		    <description>
 Key or seed used to encrypt the string.
 - For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
 - For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
-    </argument>
+        </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
+		    <description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
 - DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.
+        </argument>
+        <argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -3277,10 +3374,17 @@ Filter to be used to filter the data copied:
 - A string that uses "*" as a wildcard, for example, "*.cfm"
 - a UDF (User defined Function) using the following pattern "functioname(String path):boolean", the function is run for every single file, if the function returns true, then the file is will be added to the list otherwise it will be omitted</description>
 		</argument>
+		<argument>
+			<name>createPath</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>if set to false, expects all parent directories to exist, true (default) will generate necessary directories</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
 	</function>
+
 	<!-- DirectoryCreate -->
 	<function>
 		<name>DirectoryCreate</name>
@@ -3293,11 +3397,19 @@ Filter to be used to filter the data copied:
 			<description>Absolute path of the directory to be created</description>
 		</argument>
 		<argument>
-			<name>doParent</name>
+			<name>createPath</name>
+			<alias>doParent</alias>
 			<type>boolean</type>
 			<required>no</required>
 			<default>true</default>
-			<description>create parent directory when not exist</description>
+			<description>Create parent directory when not exist</description>
+		</argument>
+		<argument>
+			<name>ignoreExists</name>
+			<type>boolean</type>
+			<required>false</required>
+			<default>false</default>
+			<description>Pass false (default) to throw an error if the directory already exists, or true to skip the create operation without an error</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -3413,6 +3525,12 @@ dec: descending (z to a) sort order.
 			<type>string</type>
 			<required>Yes</required>
 			<description>new name for the directory</description>
+		</argument>
+		<argument>
+			<name>createPath</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>if set to false, expects all parent directories to exist, true (default) will generate necessary directories</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -3543,91 +3661,6 @@ dec: descending (z to a) sort order.
 			<type>void</type>
 		</return>
 	</function>
-	<!-- dump -->
-	<function>
-		<name>dump</name>
-		<class>railo.runtime.functions.other.Dump</class>
-		<description>Use the dump function to display objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.</description>
-		<argument>
-			<name>value</name>
-			<type>any</type>
-			<required>Yes</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>label</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>expand</name>
-			<type>boolean</type>
-			<required>No</required>
-			<default>true</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>top</name>
-			<type>number</type>
-			<required>No</required>
-			<default>9999</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>show</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>hide</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>output</name>
-			<type>string</type>
-			<required>No</required>
-		<description>Where to send the results of the dump. The following values are valid:
-- browser: outputs in browser window
-- console: outputs on (System.out stream; see also setting in railo-server.xml {system-out})
-- filename: outputs in a file
-		</description>
-    </argument>
-		<argument>
-			<name>format</name>
-			<type>string</type>
-			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>keys</name>
-			<type>number</type>
-			<required>No</required>
-			<default>9999</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>metainfo</name>
-			<type>boolean</type>
-			<required>No</required>
-			<default>true</default>
-		<description></description>
-    </argument>
-		<argument>
-			<name>showUDFs</name>
-			<type>boolean</type>
-			<required>No</required>
-			<default>true</default>
-		<description></description>
-    </argument>
-		<return>
-			<type>void</type>
-		</return>
-	</function>
-	
 	
 	<!-- dumpStruct -->
 	<function>
@@ -3990,40 +4023,52 @@ dec: descending (z to a) sort order.
 			<type>string</type>
 			<required>Yes</required>
 		<description>String to encrypt.</description>
-    </argument>
+    	</argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>
+		    <description>
 Key or seed used to encrypt the string.
 - For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
 - For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
-    </argument>
+    	</argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
-The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+		    <description>The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
-- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.</description>
+    	</argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
 			<default>uu</default>
-		<description>
-The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
+            <description>The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045.
 - Hex: the characters A-F and 0-9 represent the hexadecimal byte values.
-- UU(default): the UNIX standard UUEncode algorithm .</description>
-    </argument>
+- UU(default): the UNIX standard UUEncode algorithm .
+            </description>
+    	</argument>
+    	<argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4037,8 +4082,8 @@ The binary encoding used to represent the data as a string. Must be the same as 
 			<name>bytes</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>Binary data to encrypt.</description>
-    </argument>
+		    <description>Binary data to encrypt.</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
@@ -4053,14 +4098,27 @@ Key or seed used to encrypt the string.
 			<type>string</type>
 			<required>No</required>
 			<default>cfmx_compat</default>
-		<description>
+		    <description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
 - AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
 - BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
 - DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
-- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
-    </argument>
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3
+You may also specify other algorithm names as well as the feedback mode and padding scheme where applicable (in the format algorithm/mode/padding) as documented in the Java Cryptography Architecture (JCA) Reference Guide.</description>
+        </argument>
+        <argument>
+            <name>IVorSalt</name>
+            <type>any</type>
+            <required>no</required>
+            <description>Initialization Vector for algorithms with Feedback Mode that is not ECB, or Salt for Password Based Encryption algorithms</description>
+        </argument>
+        <argument>
+            <name>iterations</name>
+            <type>number</type>
+            <required>no</required>
+            <description>number of Iterations for Password Based Encryption algorithms (ignored for all other algorithms). NIST recommends a minimum value of 1000.</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4660,8 +4718,7 @@ If you do not specify the mode, Railo opens the file in read mode.</description>
 			<type>void</type>
 		</return>
 	</function>
-	
-	
+
 	<!-- FileUpload -->
 	<function>
 		<name>FileUpload</name>
@@ -5664,15 +5721,6 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
-	<!-- GetUsageData
-	<function>
-		<name>GetUsageData</name>
-		<class>railo.runtime.functions.system.GetUsageData</class>
-		<description></description>
-		<return>
-			<type>struct</type>
-		</return>
-	</function> -->
 	<!-- GetWriteableImageFormats -->
 	<function>
 		<name>GetWriteableImageFormats</name>
@@ -6226,6 +6274,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getTickCount</name>
 		<class>railo.runtime.functions.other.GetTickCount</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.GetTickCount</tte-class>
 		<description>Returns the number of milliseconds since the start of the application server</description>
 		<argument>
 			<name>unit</name>
@@ -6327,6 +6376,53 @@ Default list delimiter: comma character.</description>
 		<name>hash</name>
 		<class>railo.runtime.functions.string.Hash</class>
 		<description>Converts a variable-length string to a 32-byte, hexadecimal
+        string, using the MD5 algorithm. (It is not possible to convert
+        the hash result back to the source string.)
+        32-byte, hexadecimal string</description>
+		<argument>
+			<name>input</name>
+			<type>any</type>
+			<required>Yes</required>
+		<description>String to hash.</description>
+    </argument>
+		<argument>
+			<name>algorithm</name>
+			<type>string</type>
+			<required>No</required>
+		<description>The algorithm to use to hash the string. Supported are the following algorithms:
+- QUICK: generating a fast hash string, that provides no security. this algorithm is good when you simply need to shorten a string for an id, for example
+- CFMX_COMPAT: generating a hash string using classic CFML algorithm.
+- MD5: (default) Generates a 32-character, hexadecimal string, using the MD5 algorithm.
+- SHA: Generates a 28-character string using the Secure Hash Standard SHA-1 algorithm specified by Nation Institute of Standards and Technology (NIST) FIPS-180-2.
+- SHA-256: Generates a 44-character string using the SHA-256 algorithm specified by FIPS-180-2.
+- SHA-384: Generates a 64-character string using the SHA-384 algorithm specified by FIPS-180-2.
+- SHA-512: Generates an 88-character string using the SHA-1 algorithm specified by FIPS-180-2.</description>
+    </argument>
+		<argument>
+			<name>encoding</name>
+			<type>string</type>
+			<required>No</required>
+			<description>A string specifying the encoding to use when converting
+            the string to byte data used by the hash algorithm.</description>
+		</argument>
+		<argument>
+			<name>numIterations</name>
+			<type>number</type>
+			<required>No</required>
+			<description>number of iterations; default is 1.</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- hash40 -->
+	<function>
+		<name>hash40</name>
+		<class>railo.runtime.functions.string.Hash40</class>
+		<description>This function only exists for backward compstibility to Railo 4.0 or older version that has produced a incorrect result for non us-ascii caharacters,
+		Only use this function for backward compatibility.
+		
+		Converts a variable-length string to a 32-byte, hexadecimal
         string, using the MD5 algorithm. (It is not possible to convert
         the hash result back to the source string.)
         32-byte, hexadecimal string</description>
@@ -9916,6 +10012,30 @@ The value determines whether the image is blurred or sharpened:
 			<type>boolean</type>
 		</return>
 	</function>
+	
+	
+	<!-- IsEmpty -->
+	<function>
+		<name>IsEmpty</name>
+		<class>railo.runtime.functions.decision.IsEmpty</class>
+		<description>return true if a value is "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string)
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+...
+		 </description>
+		<argument>
+			<name>value</name>
+			<alias>object</alias>
+			<type>any</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	<!-- IsImage -->
 	<function>
 		<name>IsImage</name>
@@ -10846,7 +10966,8 @@ The value determines whether the image is blurred or sharpened:
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
-			<description>Characters that separate list elements. The default value is comma.</description>
+			<description>Characters that separate list elements. The default value is comma.
+			If this string contains more than one character, only the first character is used.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -11488,6 +11609,13 @@ The value determines whether the image is blurred or sharpened:
 			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
+		<argument>
+            <name>ignoreCase</name>
+            <type>boolean</type>
+            <required>false</required>
+            <default>false</default>
+            <description>if set to true, the duplicate value test will not be case sensitive</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -12816,6 +12944,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.PrecisionEvaluate</tte-class>
 		<description>Evaluates one or more string expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
@@ -13002,8 +13131,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
-		<status>unimplemeted</status>
-		<description>Converts query data to a structure that contains a paged subset of the query.</description>
+		<status>deprecated</status>
+		<description>Use instead the function QuerySlice. Converts query data to a structure that contains a paged subset of the query.</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -13614,19 +13743,21 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 			<required>Yes</required>
 		<description>String in which to search. </description>
-    </argument>
+		</argument>
 		<argument>
 			<name>substring1</name>
-			<type>string</type>
+			<alias>sub1,find</alias>
+			<type>any</type>
 			<required>Yes</required>
-		<description>String for which to search.</description>
-    </argument>
+		<description>Substring for which to search.  Optionally pass a Struct with key/value pairs to do a replace all</description>
+		</argument>
 		<argument>
 			<name>substring2</name>
+			<alias>sub2,repl</alias>
 			<type>string</type>
-			<required>Yes</required>
-		<description>string replacement</description>
-    </argument>
+			<required>No</required>
+			<description>Substring with which to replace the found matches.  This arg is required if the substring1 arg is a string</description>
+		</argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -13635,10 +13766,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<description>scope for the execution:
 - one (default): replaces only the first occurrence	
 - all: replaces all occurrences</description>
-			
-
-
-    </argument>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -13698,19 +13826,19 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 			<required>Yes</required>
 		<description>A string (or variable that contains one) within which to replace substring.</description>
-    </argument>
+		</argument>
 		<argument>
 			<name>substring1</name>
-			<type>string</type>
+			<type>any</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+		<description>Substring for which to search.  Optionally pass a Struct with key/value pairs to do a replace all</description>
+		</argument>
 		<argument>
 			<name>substring2</name>
 			<type>string</type>
-			<required>Yes</required>
-		<description></description>
-    </argument>
+			<required>No</required>
+			<description>Substring with which to replace the found matches.  This arg is required if the substring1 arg is a string</description>
+		</argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -13719,7 +13847,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>scope for the execution:
 - one (default): Replace the first occurrence
 - all: Replace all occurrences</description>
-    </argument>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -13950,8 +14078,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>Number to round </description>
-    </argument>
+			<description>Number to round </description>
+    	</argument>
+    	<argument>
+			<name>precision</name>
+			<type>number</type>
+			<required>No</required>
+			<default>0</default>
+		<description>Number of decimal points to round to</description>
+    	</argument>
+    
+    
 		<return>
 			<type>number</type>
 		</return>
@@ -14716,10 +14853,61 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>Yes</required>
 			<description>UDF/Closure that call with the entries from struct</description>
 		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
 	</function>
+	
+	
+	<!-- each -->
+	<function>
+		<name>each</name>
+		<class>railo.runtime.functions.closure.Each</class>
+		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
+		<argument>
+			<name>collection</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from struct</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 		<!-- structFilter -->
 	<function>
 		<name>structFilter</name>
@@ -15011,7 +15199,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
   - weak: a struct containing weak referenced values, which do not prevent their referents from being made garbage collected. Weak references are most often used to implement simple caches.
   - soft: a struct with soft reference values, which are cleared at the discretion of the garbage collector in response to memory demand.
   - linked: a struct with linked keys, maintain their creation order
-  - synchronized: a struct with a synchronized (thread-safe) access
+  the type "synchronized" is no longer supported and get ignored, because since version 4.1 all struct/scopes are "thread safe"
 			</description>
 		</argument>
 		<return>
@@ -15375,13 +15563,19 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ucFirst</name>
 		<class>railo.runtime.functions.string.UCFirst</class>
-		<description>does the first character of the given string upper case.</description>
+		<description>Capitalizes the first character of the given string.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+		    <description>the input string</description>
+		</argument>
+		<argument>
+			<name>doAll</name>
+			<type>boolean</type>
+			<required>false</required>
+		    <description>if true, then every word is capitalized, where a new word is defined as alpha characters that come after whitespace, a dot [.], a dash [-], or (parenthesis)</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>

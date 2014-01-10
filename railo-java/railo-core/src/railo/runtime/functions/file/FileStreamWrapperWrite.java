@@ -29,9 +29,7 @@ public class FileStreamWrapperWrite extends FileStreamWrapper {
 	}
 	
 
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#write(java.lang.Object)
-	 */
+	@Override
 	public void write(Object obj) throws IOException {
 		byte[] bytes = null;
 		InputStream is=null;
@@ -70,17 +68,12 @@ public class FileStreamWrapperWrite extends FileStreamWrapper {
 		if(raf!=null)raf.close();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.functions.file.FileStreamWrapper#getMode()
-	 */
+	@Override
 	public String getMode() {
 		return append?"append":"write";
 	}
 	
-	/**
-	 * @see railo.runtime.functions.file.FileStreamWrapper#skip(long)
-	 */
+	@Override
 	public void skip(int len) throws PageException {
 		if(seekable){
 			try {

@@ -168,4 +168,9 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 		return bodies;
 	}
 
+	@Override
+	public String getLabel() {
+		return null;
+	}
+
 }

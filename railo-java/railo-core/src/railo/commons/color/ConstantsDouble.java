@@ -1,7 +1,9 @@
 package railo.commons.color;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import railo.runtime.op.Caster;
 
@@ -1110,12 +1112,12 @@ public class ConstantsDouble {
 	public static Double _100 = new Double(100.0d);
 
 	
-	private static HashSet<String> _____keys;
+	private static Set<String> _____keys;
 	
 	public static String getFieldName(double d) {
 		if(_____keys==null) {
 			Field[] fields = ConstantsDouble.class.getFields();
-			_____keys=new HashSet<String>();
+			_____keys=Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
 			for(int i=0;i<fields.length;i++){
 				if(fields[i].getType()!=Double.class) continue;
 				_____keys.add(fields[i].getName());

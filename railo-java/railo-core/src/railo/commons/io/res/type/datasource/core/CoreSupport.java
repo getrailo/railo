@@ -27,7 +27,7 @@ public abstract class CoreSupport implements Core {
 	}
 
 	public static Calendar getCalendar() {
-		return JREDateTimeUtil.newInstance(ThreadLocalPageContext.getTimeZone());
+		return JREDateTimeUtil.getThreadCalendar(ThreadLocalPageContext.getTimeZone());
 	}
 
 	public static void log(String s1) {

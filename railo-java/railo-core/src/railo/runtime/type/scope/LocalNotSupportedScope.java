@@ -28,81 +28,51 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 		return instance;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return 0;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Collection.Key[] keys() {
 		return null;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	/* *
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 *  /
-	public Object remove (String key) throws ExpressionException {
-	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
-	}*/
-	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 	}
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
 		throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key.getString()+", Local Scope can only invoked inside a Function");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws ExpressionException {
 		throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key.getString()+", Local Scope can only invoked inside a Function");
 	}
 	
-    /**
-     * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object setEL(Collection.Key key, Object value) {
 		return null;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope","Local Scope can only invoked inside a Function"));
 	}
@@ -118,15 +88,11 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope","Local Scope can only invoked inside a Function"));
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return false;
 	}
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 	}
 	
@@ -137,97 +103,71 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	public void release(PageContext pc) {
 	}
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 	    return new LocalNotSupportedScope();
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
 		return false;
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return false;
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return null;
 	}
 	
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Unsupported Context for Local Scope");
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("Unsupported Context for Local Scope");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("Unsupported Context for Local Scope");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("Unsupported Context for Local Scope");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
@@ -250,16 +190,12 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	public int compareTo(DateTime dt) throws PageException {
         throw new ExpressionException("Unsupported Context for Local Scope");
 	}
-	/**
-	 * @see railo.runtime.type.scope.LocalPro#isBind()
-	 */
+	@Override
 	public boolean isBind() {
 		return bind;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.LocalPro#setBind(boolean)
-	 */
+	@Override
 	public void setBind(boolean bind) {
 		this.bind=bind;
 	}

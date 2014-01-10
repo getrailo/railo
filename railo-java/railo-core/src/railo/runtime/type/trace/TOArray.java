@@ -20,87 +20,67 @@ public class TOArray extends TOCollection implements Array {
 		this.arr=arr;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#getDimension()
-	 */
+	@Override
 	public int getDimension() {
 		log();
 		return arr.getDimension();
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int key, Object defaultValue) {
 		log(""+key);
 		return arr.get(key, defaultValue);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.get(key, defaultValue),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
+	@Override
 	public Object getE(int key) throws PageException {
 		log(""+key);
 		return arr.getE(key);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.getE(key),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int key, Object value) {
 		log(""+key,value);
 		return arr.setEL(key, value);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.setEL(key, value),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
-	 */
+	@Override
 	public Object setE(int key, Object value) throws PageException {
 		log(""+key,value);
 		return arr.setEL(key, value);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.setEL(key, value),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#intKeys()
-	 */
+	@Override
 	public int[] intKeys() {
 		log();
 		return arr.intKeys();
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#insert(int, java.lang.Object)
-	 */
+	@Override
 	public boolean insert(int key, Object value) throws PageException {
 		log(""+key);
 		return arr.insert(key, value);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
 	public Object append(Object o) throws PageException {
 		log(o.toString());
 		return arr.append(o);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.append(o),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#appendEL(java.lang.Object)
-	 */
+	@Override
 	public Object appendEL(Object o) {
 		log(o.toString());
 		return arr.appendEL(o);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.appendEL(o),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
-	 */
+	@Override
 	public Object prepend(Object o) throws PageException {
 		log();
 		return arr.prepend(o);
@@ -151,9 +131,7 @@ public class TOArray extends TOCollection implements Array {
 		//return TraceObjectSupport.toTraceObject(debugger,arr.removeEL(key),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#containsKey(int)
-	 */
+	@Override
 	public boolean containsKey(int key) {
 		log(""+key);
 		return arr.containsKey(key);

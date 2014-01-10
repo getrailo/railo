@@ -3,7 +3,29 @@
 <cftry>
 	<cfset stVeritfyMessages = StructNew()>
 	<cfswitch expression="#form.mainAction#">
-	
+	<!--- UPDATE --->
+		<cfcase value="#stText.Buttons.Update#">
+
+			<cfif form.debug == "resetServerAdmin">
+				
+				<cfadmin action="updateDebug"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"					
+	                debug=""
+					debugTemplate=""	                
+					remoteClients="#request.getRemoteClients()#">
+			
+			<cfelse>
+
+				<cfadmin action="updateDebug"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					debug="#form.debug#"
+					debugTemplate=""
+					remoteClients="#request.getRemoteClients()#">
+			</cfif>
+		</cfcase>
+
     <!--- delete --->
 		<cfcase value="#stText.Buttons.Delete#">
 				<cfset data.rows=toArrayFromForm("row")>

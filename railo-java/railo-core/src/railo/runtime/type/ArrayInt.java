@@ -184,9 +184,7 @@ public final class ArrayInt implements Sizeable,Serializable {
         return get(key,NULL)!=NULL;
     }
 
-	/**
-	 * @see railo.runtime.engine.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(arr)
 		+SizeOf.size(cap)

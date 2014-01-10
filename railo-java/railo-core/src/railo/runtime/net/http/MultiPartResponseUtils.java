@@ -14,10 +14,10 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 
 public class MultiPartResponseUtils {
@@ -44,10 +44,10 @@ public class MultiPartResponseUtils {
 
 	private static String extractBoundary(String contentTypeHeader, String defaultValue) {
 		if (contentTypeHeader == null) return defaultValue;
-		String[] headerSections = List.listToStringArray(contentTypeHeader, ';');
+		String[] headerSections = ListUtil.listToStringArray(contentTypeHeader, ';');
 		for (String section: headerSections) {
-			String[] subHeaderSections = List.listToStringArray(section,'=');
-			String headerName = subHeaderSections[0];
+			String[] subHeaderSections = ListUtil.listToStringArray(section,'=');
+			String headerName = subHeaderSections[0].trim();
 			if (headerName.toLowerCase().equals("boundary")) {
 				return subHeaderSections[1];
 			}
@@ -69,9 +69,9 @@ public class MultiPartResponseUtils {
 
 	private static Struct extractHeaders(String rawHeaders) throws PageException {
 		Struct result = new StructImpl();
-		String[] headers = List.listToStringArray(rawHeaders,'\n');
+		String[] headers = ListUtil.listToStringArray(rawHeaders,'\n');
 		for(String rawHeader :headers) {
-			String[] headerArray = List.listToStringArray(rawHeader,':');
+			String[] headerArray = ListUtil.listToStringArray(rawHeader,':');
 			String headerName = headerArray[0];
 			if (!StringUtil.isEmpty(headerName,true)) {
 				String value = StringUtils.join(Arrays.copyOfRange(headerArray, 1, headerArray.length),":").trim();

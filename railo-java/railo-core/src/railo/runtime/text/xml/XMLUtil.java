@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -292,11 +293,11 @@ public final class XMLUtil {
 			return null;
 		}
 	}
-	public static Object setPropertyEL(Node node, Collection.Key key, Object value,boolean caseSensitive) {
+	public static Object setProperty(Node node, Collection.Key key, Object value,boolean caseSensitive, Object defaultValue) {
 		try {
 			return setProperty(node,key,value,caseSensitive);
 		} catch (PageException e) {
-			return null;
+			return defaultValue;
 		}
 	}
 	
@@ -333,7 +334,7 @@ public final class XMLUtil {
 			}			
 		// Root
 			else if(k.equals(XMLROOT)) {
-				doc.appendChild(XMLCaster.toNode(doc,value));
+				doc.appendChild(XMLCaster.toNode(doc,value,false));
 			}			
 		// Parent
 			else if(k.equals(XMLPARENT)) {
@@ -391,7 +392,7 @@ public final class XMLUtil {
 			}
 			else {
 				boolean isIndex=false;
-			    Node child = XMLCaster.toNode(doc,value);
+			    Node child = XMLCaster.toNode(doc,value,false);
 				if(!k.getString().equalsIgnoreCase(child.getNodeName()) && !(isIndex=Decision.isInteger(k))) {
 					throw new XMLException("if you assign a XML Element to a XMLStruct , assignment property must have same name like XML Node Name", "Property Name is "+k.getString()+" and XML Element Name is "+child.getNodeName());
 				}
@@ -448,8 +449,8 @@ public final class XMLUtil {
 		if(nc!=oc)p.replaceChild(nc, oc);
 	}
 
-	public static Object getPropertyEL(Node node, Collection.Key key) {
-		return getPropertyEL(node, key,isCaseSensitve(node));
+	public static Object getProperty(Node node, Collection.Key key, Object defaultValue) {
+		return getProperty(node, key,isCaseSensitve(node),defaultValue);
 	}
 	
 	
@@ -460,11 +461,11 @@ public final class XMLUtil {
 	 * @param caseSensitive
 	 * @return Object matching key
 	 */
-	public static Object getPropertyEL(Node node, Collection.Key k,boolean caseSensitive) {
+	public static Object getProperty(Node node, Collection.Key k,boolean caseSensitive, Object defaultValue) {
 		try {
 			return getProperty(node, k,caseSensitive);
 		} catch (SAXException e) {
-			return null;
+			return defaultValue;
 		}
 	}
 	
@@ -944,12 +945,12 @@ public final class XMLUtil {
      */
     public static Node[] getChildNodesAsArray(Node node, short type) {
         ArrayNodeList nodeList=getChildNodes(node, type);
-        return (Node[]) nodeList.toArray(new Node[nodeList.getLength()]);
+        return nodeList.toArray(new Node[nodeList.getLength()]);
     }
 
     public static Node[] getChildNodesAsArray(Node node, short type, boolean caseSensitive, String filter) {
         ArrayNodeList nodeList=getChildNodes(node, type,caseSensitive,filter);
-        return (Node[]) nodeList.toArray(new Node[nodeList.getLength()]);
+        return  nodeList.toArray(new Node[nodeList.getLength()]);
     }
     
     /**
@@ -959,7 +960,7 @@ public final class XMLUtil {
      */
     public static Element[] getChildElementsAsArray(Node node) {
         ArrayNodeList nodeList=getChildNodes(node,Node.ELEMENT_NODE);
-        return (Element[]) nodeList.toArray(new Element[nodeList.getLength()]);
+        return  nodeList.toArray(new Element[nodeList.getLength()]);
     }
 
     /**
@@ -1064,7 +1065,7 @@ public final class XMLUtil {
 	}
 	
 	public static InputSource toInputSource(Resource res) throws IOException {
-        	String str = IOUtil.toString((res), null);
+        	String str = IOUtil.toString((res), (Charset)null);
         	return new InputSource(new StringReader(str));
     }
 
@@ -1079,17 +1080,17 @@ public final class XMLUtil {
             return toInputSource(pc, value.toString());
         }
         if(value instanceof Resource) {
-        	String str = IOUtil.toString(((Resource)value), null);
+        	String str = IOUtil.toString(((Resource)value), (Charset)null);
         	return new InputSource(new StringReader(str));
         }
 		if(value instanceof File) {
-        	String str = IOUtil.toString(ResourceUtil.toResource(((File)value)), null);
+        	String str = IOUtil.toString(ResourceUtil.toResource(((File)value)),(Charset)null);
         	return new InputSource(new StringReader(str));
         }
 		if(value instanceof InputStream) {
 			InputStream is = (InputStream)value;
 			try {
-				String str = IOUtil.toString(is, null);
+				String str = IOUtil.toString(is, (Charset)null);
 	        	return new InputSource(new StringReader(str));
 			}
 			finally {

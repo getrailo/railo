@@ -7,7 +7,7 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListToArray implements Function {
 	
@@ -16,7 +16,7 @@ public final class ListToArray implements Function {
 	public static Array call(PageContext pc , String list) {
 		if(list.length()==0) 
 			return new ArrayImpl();
-		return List.listToArrayRemoveEmpty(list,',');
+		return ListUtil.listToArrayRemoveEmpty(list,',');
 	}
 	public static Array call(PageContext pc , String list, String delimiter) {
 		return call(pc, list,delimiter,false,false);
@@ -33,11 +33,11 @@ public final class ListToArray implements Function {
 				a.appendEL("");
 				return a;
 			}
-			return List.listToArray(list,delimiter,multiCharacterDelimiter);
+			return ListUtil.listToArray(list,delimiter,multiCharacterDelimiter);
 		}
 		if(list.length()==0) 
 			return new ArrayImpl();
 		
-		return List.listToArrayRemoveEmpty(list,delimiter,multiCharacterDelimiter);
+		return ListUtil.listToArrayRemoveEmpty(list,delimiter,multiCharacterDelimiter);
 	}
 }

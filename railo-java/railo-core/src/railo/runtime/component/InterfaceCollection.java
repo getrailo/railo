@@ -5,6 +5,7 @@ import java.util.Map;
 
 import railo.runtime.InterfaceImpl;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.util.ComponentUtil;
 
@@ -15,8 +16,8 @@ public class InterfaceCollection {
 	private long lastUpdate=0;
 
 
-	public InterfaceCollection(PageContextImpl pc, String implement) throws PageException {
-		interfaces = InterfaceImpl.loadImplements(pc, implement,udfs);
+	public InterfaceCollection(PageContextImpl pc, PageSource child,String implement) throws PageException {
+		interfaces = InterfaceImpl.loadImplements(pc,child, implement,udfs);
 	}
 
 	/**

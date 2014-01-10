@@ -81,6 +81,8 @@ public interface VariableUtil {
      */
     public abstract Object set(PageContext pc, Object coll, String key,
             Object value) throws PageException;
+    
+    // FUTURE add and set above to depr public Object set(PageContext pc, Object coll, Collection.Key key,Object value) throws PageException {
 
     /**
      * sets a value to the Object

@@ -42,256 +42,191 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		this.qry=qry;
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#executionTime()
-	 */
-	
 	@Override
 	public int executionTime() {
 		return qry.executionTime();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getUpdateCount()
-	 */
-	
+	@Override
 	public int getUpdateCount() {
 		
 		return qry.getUpdateCount();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getGeneratedKeys()
-	 */
-	
+	@Override
 	public Query getGeneratedKeys() {
 		
 		return qry.getGeneratedKeys();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getAt(java.lang.String, int, java.lang.Object)
-	 */
+	@Override
 	
 	public Object getAt(String key, int row, Object defaultValue) {
 		
 		return qry.getAt(key, row, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getAt(railo.runtime.type.Collection.Key, int, java.lang.Object)
-	 */
+	@Override
 	
 	public Object getAt(Key key, int row, Object defaultValue) {
 		
 		return qry.getAt(key, row, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getAt(java.lang.String, int)
-	 */
+	@Override
 	
 	public Object getAt(String key, int row) throws PageException {
 		
 		return qry.getAt(key, row);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getAt(railo.runtime.type.Collection.Key, int)
-	 */
+	@Override
 	
 	public Object getAt(Key key, int row) throws PageException {
 		
 		return qry.getAt(key, row);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeRow(int)
-	 */
+	@Override
 	
 	public synchronized int removeRow(int row) throws PageException {
 		
 		return qry.removeRow(row);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeRowEL(int)
-	 */
+	@Override
 	
 	public int removeRowEL(int row) {
 		
 		return qry.removeRowEL(row);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeColumn(java.lang.String)
-	 */
+	@Override
 	
 	public QueryColumn removeColumn(String key) throws PageException {
 		log(key);
 		return qry.removeColumn(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeColumn(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	
 	public QueryColumn removeColumn(Key key) throws PageException {
 		log(key.getString());
 		return qry.removeColumn(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeColumnEL(java.lang.String)
-	 */
+	@Override
 	
 	public synchronized QueryColumn removeColumnEL(String key) {
 		log(key);
 		return qry.removeColumnEL(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeColumnEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	
 	public QueryColumn removeColumnEL(Key key) {
 		log(key.getString());
 		return qry.removeColumnEL(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setAt(java.lang.String, int, java.lang.Object)
-	 */
+	@Override
 	
 	public Object setAt(String key, int row, Object value) throws PageException {
 		log(key);
 		return qry.setAt(key, row, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setAt(railo.runtime.type.Collection.Key, int, java.lang.Object)
-	 */
+	@Override
 	
 	public Object setAt(Key key, int row, Object value) throws PageException {
 		log(key.getString());
 		return qry.setAt(key, row, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setAtEL(java.lang.String, int, java.lang.Object)
-	 */
+	@Override
 	
 	public Object setAtEL(String key, int row, Object value) {
 		log(key);
 		return qry.setAtEL(key, row, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setAtEL(railo.runtime.type.Collection.Key, int, java.lang.Object)
-	 */
+	@Override
 	
 	public Object setAtEL(Key key, int row, Object value) {
 		log(key.getString());
 		return qry.setAtEL(key, row, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#next()
-	 */
+	@Override
 	
 	public boolean next() {
 		log();
 		return qry.next();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#next(int)
-	 */
+	@Override
 	
 	public boolean next(int pid) throws PageException {
 		log();
 		return qry.next(pid);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#reset()
-	 */
+	@Override
 	
 	public void reset() throws PageException {
 		log();
 		qry.reset();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#reset(int)
-	 */
+	@Override
 	
 	public void reset(int pid) throws PageException {
 		log();
 		qry.reset(pid);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getRecordcount()
-	 */
+	@Override
 	
 	public int getRecordcount() {
 		log();
 		return qry.getRecordcount();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
-	 */
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#getCurrentrow(int)
-	 */
-	
+	@Override
 	public int getCurrentrow(int pid) {
 		log();
 		return qry.getCurrentrow(pid);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#go(int, int)
-	 */
+	@Override
 	
 	public boolean go(int index, int pid) throws PageException {
 		log();
 		return qry.go(index, pid);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isEmpty()
-	 */
+	@Override
 	
 	public boolean isEmpty() {
 		log();
 		return qry.isEmpty();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#sort(java.lang.String)
-	 */
+	@Override
 	
 	public void sort(String column) throws PageException {
 		log(column);
 		qry.sort(column);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#sort(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	
 	public void sort(Key column) throws PageException {
 		log(column.getString());
 		qry.sort(column);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#sort(java.lang.String, int)
-	 */
+	@Override
 	
 	public synchronized void sort(String strColumn, int order)
 			throws PageException {
@@ -299,9 +234,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.sort(strColumn, order);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#sort(railo.runtime.type.Collection.Key, int)
-	 */
+	@Override
 	
 	public synchronized void sort(Key keyColumn, int order)
 			throws PageException {
@@ -309,18 +242,14 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.sort(keyColumn, order);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addRow(int)
-	 */
+	@Override
 	
 	public synchronized boolean addRow(int count) {
 		log(""+count);
 		return qry.addRow(count);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addColumn(java.lang.String, railo.runtime.type.Array)
-	 */
+	@Override
 	
 	public boolean addColumn(String columnName, Array content)
 			throws PageException {
@@ -328,9 +257,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.addColumn(columnName, content);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addColumn(railo.runtime.type.Collection.Key, railo.runtime.type.Array)
-	 */
+	@Override
 	
 	public boolean addColumn(Key columnName, Array content)
 			throws PageException {
@@ -338,9 +265,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.addColumn(columnName, content);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addColumn(java.lang.String, railo.runtime.type.Array, int)
-	 */
+	@Override
 	
 	public synchronized boolean addColumn(String columnName, Array content,
 			int type) throws PageException {
@@ -348,9 +273,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.addColumn(columnName, content, type);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addColumn(railo.runtime.type.Collection.Key, railo.runtime.type.Array, int)
-	 */
+	@Override
 	
 	public boolean addColumn(Key columnName, Array content, int type)
 			throws PageException {
@@ -358,45 +281,35 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.addColumn(columnName, content, type);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTypes()
-	 */
+	@Override
 	
 	public synchronized int[] getTypes() {
 		log();
 		return qry.getTypes();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTypesAsMap()
-	 */
+	@Override
 	
 	public synchronized Map getTypesAsMap() {
 		log();
 		return qry.getTypesAsMap();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumn(java.lang.String)
-	 */
+	@Override
 	
 	public QueryColumn getColumn(String key) throws PageException {
 		log(key);
 		return qry.getColumn(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumn(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	
 	public QueryColumn getColumn(Key key) throws PageException {
 		log(key.getString());
 		return qry.getColumn(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#rename(railo.runtime.type.Collection.Key, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	
 	public synchronized void rename(Key columnName, Key newColumnName)
 			throws PageException {
@@ -404,18 +317,14 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.rename(columnName, newColumnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumn(java.lang.String, railo.runtime.type.QueryColumn)
-	 */
+	@Override
 	
 	public QueryColumn getColumn(String key, QueryColumn defaultValue) {
 		log(key);
 		return qry.getColumn(key, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumn(railo.runtime.type.Collection.Key, railo.runtime.type.QueryColumn)
-	 */
+	@Override
 	
 	public QueryColumn getColumn(Key key, QueryColumn defaultValue) {
 		log(key.getString());
@@ -428,99 +337,77 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.setExecutionTime(exeTime);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setCached(boolean)
-	 */
+	@Override
 	
 	public void setCached(boolean isCached) {
 		log(""+isCached);
 		qry.setCached(isCached);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isCached()
-	 */
+	@Override
 	
 	public boolean isCached() {
 		log();
 		return qry.isCached();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addRow()
-	 */
+	@Override
 	
 	public int addRow() {
 		log();
 		return qry.addRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumnIndex(java.lang.String)
-	 */
+	@Override
 	
 	public int getColumnIndex(String coulmnName) {
 		log(coulmnName);
 		return qry.getColumnIndex(coulmnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumns()
-	 */
+	@Override
 	
 	public String[] getColumns() {
 		log();
 		return qry.getColumns();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumnNames()
-	 */
+	@Override
 	
 	public Key[] getColumnNames() {
 		log();
 		return qry.getColumnNames();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getColumnNamesAsString()
-	 */
+	@Override
 	
 	public String[] getColumnNamesAsString() {
 		log();
 		return qry.getColumnNamesAsString();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getData(int, int)
-	 */
+	@Override
 	
 	public String getData(int row, int col) throws IndexOutOfBoundsException {
 		log(row+":"+col);
 		return qry.getData(row, col);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getName()
-	 */
+	@Override
 	
 	public String getName() {
 		log();
 		return qry.getName();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getRowCount()
-	 */
+	@Override
 	
 	public int getRowCount() {
 		log();
 		return qry.getRowCount();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setData(int, int, java.lang.String)
-	 */
+	@Override
 	
 	public void setData(int row, int col, String value)
 			throws IndexOutOfBoundsException {
@@ -528,216 +415,168 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.setData(row, col, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getMetaDataSimple()
-	 */
+	@Override
 	
 	public synchronized Array getMetaDataSimple() {
 		log();
 		return qry.getMetaDataSimple();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getObject(java.lang.String)
-	 */
+	@Override
 	
 	public Object getObject(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getObject(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getObject(int)
-	 */
+	@Override
 	
 	public Object getObject(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getObject(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getString(int)
-	 */
+	@Override
 	
 	public String getString(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getString(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getString(java.lang.String)
-	 */
+	@Override
 	
 	public String getString(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getString(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBoolean(int)
-	 */
+	@Override
 	
 	public boolean getBoolean(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getBoolean(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBoolean(java.lang.String)
-	 */
+	@Override
 	
 	public boolean getBoolean(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getBoolean(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#wasNull()
-	 */
+	@Override
 	
 	public boolean wasNull()  throws SQLException{
 		log();
 		return qry.wasNull();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#absolute(int)
-	 */
+	@Override
 	
 	public boolean absolute(int row) throws SQLException {
 		log();
 		return qry.absolute(row);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#afterLast()
-	 */
+	@Override
 	
 	public void afterLast() throws SQLException {
 		log();
 		qry.afterLast();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#beforeFirst()
-	 */
+	@Override
 	
 	public void beforeFirst() throws SQLException {
 		log();
 		qry.beforeFirst();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#cancelRowUpdates()
-	 */
+	@Override
 	
 	public void cancelRowUpdates() throws SQLException {
 		log();
 		qry.cancelRowUpdates();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#clearWarnings()
-	 */
+	@Override
 	
 	public void clearWarnings() throws SQLException {
 		log();
 		qry.clearWarnings();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#close()
-	 */
+	@Override
 	
 	public void close() throws SQLException {
 		log();
 		qry.close();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#deleteRow()
-	 */
+	@Override
 	
 	public void deleteRow() throws SQLException {
 		log();
 		qry.deleteRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#findColumn(java.lang.String)
-	 */
+	@Override
 	
 	public int findColumn(String columnName) throws SQLException {
 		log();
 		return qry.findColumn(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#first()
-	 */
+	@Override
 	
 	public boolean first() throws SQLException {
 		log();
 		return qry.first();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getArray(int)
-	 */
+	@Override
 	
 	public java.sql.Array getArray(int i) throws SQLException {
 		log(""+i);
 		return qry.getArray(i);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getArray(java.lang.String)
-	 */
+	@Override
 	
 	public java.sql.Array getArray(String colName) throws SQLException {
 		log(colName);
 		return qry.getArray(colName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getAsciiStream(int)
-	 */
+	@Override
 	
 	public InputStream getAsciiStream(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getAsciiStream(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getAsciiStream(java.lang.String)
-	 */
+	@Override
 	
 	public InputStream getAsciiStream(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getAsciiStream(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBigDecimal(int)
-	 */
+	@Override
 	
 	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getBigDecimal(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBigDecimal(java.lang.String)
-	 */
+	@Override
 	
 	public BigDecimal getBigDecimal(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getBigDecimal(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBigDecimal(int, int)
-	 */
+	@Override
 	
 	public BigDecimal getBigDecimal(int columnIndex, int scale)
 			throws SQLException {
@@ -745,9 +584,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.getBigDecimal(columnIndex, scale);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBigDecimal(java.lang.String, int)
-	 */
+	@Override
 	
 	public BigDecimal getBigDecimal(String columnName, int scale)
 			throws SQLException {
@@ -755,369 +592,287 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.getBigDecimal(columnName, scale);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBinaryStream(int)
-	 */
+	@Override
 	
 	public InputStream getBinaryStream(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getBinaryStream(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBinaryStream(java.lang.String)
-	 */
+	@Override
 	
 	public InputStream getBinaryStream(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getBinaryStream(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBlob(int)
-	 */
+	@Override
 	
 	public Blob getBlob(int i) throws SQLException {
 		log(""+i);
 		return qry.getBlob(i);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBlob(java.lang.String)
-	 */
+	@Override
 	
 	public Blob getBlob(String colName) throws SQLException {
 		log(colName);
 		return qry.getBlob(colName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getByte(int)
-	 */
+	@Override
 	
 	public byte getByte(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getByte(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getByte(java.lang.String)
-	 */
+	@Override
 	
 	public byte getByte(String columnName) throws SQLException {
 		log(""+columnName);
 		return qry.getByte(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBytes(int)
-	 */
+	@Override
 	
 	public byte[] getBytes(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getBytes(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getBytes(java.lang.String)
-	 */
+	@Override
 	
 	public byte[] getBytes(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getBytes(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getCharacterStream(int)
-	 */
+	@Override
 	
 	public Reader getCharacterStream(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getCharacterStream(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getCharacterStream(java.lang.String)
-	 */
+	@Override
 	
 	public Reader getCharacterStream(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getCharacterStream(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getClob(int)
-	 */
+	@Override
 	
 	public Clob getClob(int i) throws SQLException {
 		log(""+i);
 		return qry.getClob(i);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getClob(java.lang.String)
-	 */
+	@Override
 	
 	public Clob getClob(String colName) throws SQLException {
 		log(colName);
 		return qry.getClob(colName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getConcurrency()
-	 */
+	@Override
 	
 	public int getConcurrency() throws SQLException {
 		log();
 		return qry.getConcurrency();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getCursorName()
-	 */
+	@Override
 	
 	public String getCursorName() throws SQLException {
 		log();
 		return qry.getCursorName();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getDate(int)
-	 */
+	@Override
 	
 	public Date getDate(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getDate(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getDate(java.lang.String)
-	 */
+	@Override
 	
 	public Date getDate(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getDate(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getDate(int, java.util.Calendar)
-	 */
+	@Override
 	
 	public Date getDate(int columnIndex, Calendar cal) throws SQLException {
 		log(columnIndex+"");
 		return qry.getDate(columnIndex, cal);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getDate(java.lang.String, java.util.Calendar)
-	 */
+	@Override
 	
 	public Date getDate(String columnName, Calendar cal) throws SQLException {
 		log(columnName);
 		return qry.getDate(columnName, cal);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getDouble(int)
-	 */
+	@Override
 	
 	public double getDouble(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getDouble(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getDouble(java.lang.String)
-	 */
+	@Override
 	
 	public double getDouble(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getDouble(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getFetchDirection()
-	 */
+	@Override
 	
 	public int getFetchDirection() throws SQLException {
 		log();
 		return qry.getFetchDirection();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getFetchSize()
-	 */
+	@Override
 	
 	public int getFetchSize() throws SQLException {
 		log();
 		return qry.getFetchSize();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getFloat(int)
-	 */
+	@Override
 	
 	public float getFloat(int columnIndex) throws SQLException {
 		log(columnIndex+"");
 		return qry.getFloat(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getFloat(java.lang.String)
-	 */
+	@Override
 	
 	public float getFloat(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getFloat(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getInt(int)
-	 */
+	@Override
 	
 	public int getInt(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getInt(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getInt(java.lang.String)
-	 */
+	@Override
 	
 	public int getInt(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getInt(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getLong(int)
-	 */
+	@Override
 	
 	public long getLong(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getLong(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getLong(java.lang.String)
-	 */
+	@Override
 	
 	public long getLong(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getLong(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getRef(int)
-	 */
+	@Override
 	
 	public Ref getRef(int i) throws SQLException {
 		log(""+i);
 		return qry.getRef(i);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getRef(java.lang.String)
-	 */
+	@Override
 	
 	public Ref getRef(String colName) throws SQLException {
 		log(colName);
 		return qry.getRef(colName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getRow()
-	 */
+	@Override
 	
 	public int getRow() throws SQLException {
 		log();
 		return qry.getRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getShort(int)
-	 */
+	@Override
 	
 	public short getShort(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getShort(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getShort(java.lang.String)
-	 */
+	@Override
 	
 	public short getShort(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getShort(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getStatement()
-	 */
+	@Override
 	
 	public Statement getStatement() throws SQLException {
 		log();
 		return qry.getStatement();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTime(int)
-	 */
+	@Override
 	
 	public Time getTime(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getTime(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTime(java.lang.String)
-	 */
+	@Override
 	
 	public Time getTime(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getTime(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTime(int, java.util.Calendar)
-	 */
+	@Override
 	
 	public Time getTime(int columnIndex, Calendar cal) throws SQLException {
 		log(""+columnIndex);
 		return qry.getTime(columnIndex, cal);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTime(java.lang.String, java.util.Calendar)
-	 */
+	@Override
 	
 	public Time getTime(String columnName, Calendar cal) throws SQLException {
 		log(columnName);
 		return qry.getTime(columnName, cal);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTimestamp(int)
-	 */
+	@Override
 	
 	public Timestamp getTimestamp(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getTimestamp(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTimestamp(java.lang.String)
-	 */
+	@Override
 	
 	public Timestamp getTimestamp(String columnName) throws SQLException {
 		log(columnName);
 		return qry.getTimestamp(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTimestamp(int, java.util.Calendar)
-	 */
+	@Override
 	
 	public Timestamp getTimestamp(int columnIndex, Calendar cal)
 			throws SQLException {
@@ -1125,9 +880,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.getTimestamp(columnIndex, cal);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getTimestamp(java.lang.String, java.util.Calendar)
-	 */
+	@Override
 	
 	public Timestamp getTimestamp(String columnName, Calendar cal)
 			throws SQLException {
@@ -1135,216 +888,168 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.getTimestamp(columnName, cal);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getType()
-	 */
+	@Override
 	
 	public int getType() throws SQLException {
 		log();
 		return qry.getType();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getURL(int)
-	 */
+	@Override
 	
 	public URL getURL(int columnIndex) throws SQLException {
 		log();
 		return qry.getURL(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getURL(java.lang.String)
-	 */
+	@Override
 	
 	public URL getURL(String columnName) throws SQLException {
 		log();
 		return qry.getURL(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getUnicodeStream(int)
-	 */
+	@Override
 	
 	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
 		log();
 		return qry.getUnicodeStream(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getUnicodeStream(java.lang.String)
-	 */
+	@Override
 	
 	public InputStream getUnicodeStream(String columnName) throws SQLException {
 		log();
 		return qry.getUnicodeStream(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getWarnings()
-	 */
+	@Override
 	
 	public SQLWarning getWarnings() throws SQLException {
 		log();
 		return qry.getWarnings();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#insertRow()
-	 */
+	@Override
 	
 	public void insertRow() throws SQLException {
 		log();
 		qry.insertRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isAfterLast()
-	 */
+	@Override
 	
 	public boolean isAfterLast() throws SQLException {
 		log();
 		return qry.isAfterLast();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isBeforeFirst()
-	 */
+	@Override
 	
 	public boolean isBeforeFirst() throws SQLException {
 		log();
 		return qry.isBeforeFirst();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isFirst()
-	 */
+	@Override
 	
 	public boolean isFirst() throws SQLException {
 		log();
 		return qry.isFirst();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isLast()
-	 */
+	@Override
 	
 	public boolean isLast() throws SQLException {
 		log();
 		return qry.isLast();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#last()
-	 */
+	@Override
 	
 	public boolean last() throws SQLException {
 		log();
 		return qry.last();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#moveToCurrentRow()
-	 */
+	@Override
 	
 	public void moveToCurrentRow() throws SQLException {
 		log();
 		qry.moveToCurrentRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#moveToInsertRow()
-	 */
+	@Override
 	
 	public void moveToInsertRow() throws SQLException {
 		log();
 		qry.moveToInsertRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#previous()
-	 */
+	@Override
 	
 	public boolean previous() throws SQLException {
 		log();
 		return qry.previous();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#previous(int)
-	 */
+	@Override
 	
 	public boolean previous(int pid) {
 		log();
 		return qry.previous(pid);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#refreshRow()
-	 */
+	@Override
 	
 	public void refreshRow() throws SQLException {
 		log();
 		qry.refreshRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#relative(int)
-	 */
+	@Override
 	
 	public boolean relative(int rows) throws SQLException {
 		log();
 		return qry.relative(rows);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#rowDeleted()
-	 */
+	@Override
 	
 	public boolean rowDeleted() throws SQLException {
 		log();
 		return qry.rowDeleted();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#rowInserted()
-	 */
+	@Override
 	
 	public boolean rowInserted() throws SQLException {
 		log();
 		return qry.rowInserted();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#rowUpdated()
-	 */
+	@Override
 	
 	public boolean rowUpdated() throws SQLException {
 		log();
 		return qry.rowUpdated();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setFetchDirection(int)
-	 */
+	@Override
 	
 	public void setFetchDirection(int direction) throws SQLException {
 		log();
 		qry.setFetchDirection(direction);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setFetchSize(int)
-	 */
+	@Override
 	
 	public void setFetchSize(int rows) throws SQLException {
 		log(""+rows);
 		qry.setFetchSize(rows);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateArray(int, java.sql.Array)
-	 */
+	@Override
 	
 	public void updateArray(int columnIndex, java.sql.Array x)
 			throws SQLException {
@@ -1352,9 +1057,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateArray(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateArray(java.lang.String, java.sql.Array)
-	 */
+	@Override
 	
 	public void updateArray(String columnName, java.sql.Array x)
 			throws SQLException {
@@ -1362,9 +1065,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateArray(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateAsciiStream(int, java.io.InputStream, int)
-	 */
+	@Override
 	
 	public void updateAsciiStream(int columnIndex, InputStream x, int length)
 			throws SQLException {
@@ -1372,9 +1073,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateAsciiStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateAsciiStream(java.lang.String, java.io.InputStream, int)
-	 */
+	@Override
 	
 	public void updateAsciiStream(String columnName, InputStream x, int length)
 			throws SQLException {
@@ -1382,9 +1081,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateAsciiStream(columnName, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBigDecimal(int, java.math.BigDecimal)
-	 */
+	@Override
 	
 	public void updateBigDecimal(int columnIndex, BigDecimal x)
 			throws SQLException {
@@ -1392,9 +1089,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBigDecimal(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBigDecimal(java.lang.String, java.math.BigDecimal)
-	 */
+	@Override
 	
 	public void updateBigDecimal(String columnName, BigDecimal x)
 			throws SQLException {
@@ -1402,9 +1097,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBigDecimal(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBinaryStream(int, java.io.InputStream, int)
-	 */
+	@Override
 	
 	public void updateBinaryStream(int columnIndex, InputStream x, int length)
 			throws SQLException {
@@ -1412,9 +1105,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBinaryStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBinaryStream(java.lang.String, java.io.InputStream, int)
-	 */
+	@Override
 	
 	public void updateBinaryStream(String columnName, InputStream x, int length)
 			throws SQLException {
@@ -1422,81 +1113,63 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBinaryStream(columnName, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBlob(int, java.sql.Blob)
-	 */
+	@Override
 	
 	public void updateBlob(int columnIndex, Blob x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateBlob(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBlob(java.lang.String, java.sql.Blob)
-	 */
+	@Override
 	
 	public void updateBlob(String columnName, Blob x) throws SQLException {
 		log(columnName);
 		qry.updateBlob(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBoolean(int, boolean)
-	 */
+	@Override
 	
 	public void updateBoolean(int columnIndex, boolean x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateBoolean(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBoolean(java.lang.String, boolean)
-	 */
+	@Override
 	
 	public void updateBoolean(String columnName, boolean x) throws SQLException {
 		log(columnName);
 		qry.updateBoolean(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateByte(int, byte)
-	 */
+	@Override
 	
 	public void updateByte(int columnIndex, byte x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateByte(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateByte(java.lang.String, byte)
-	 */
+	@Override
 	
 	public void updateByte(String columnName, byte x) throws SQLException {
 		log(columnName);
 		qry.updateByte(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBytes(int, byte[])
-	 */
+	@Override
 	
 	public void updateBytes(int columnIndex, byte[] x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateBytes(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBytes(java.lang.String, byte[])
-	 */
+	@Override
 	
 	public void updateBytes(String columnName, byte[] x) throws SQLException {
 		log(columnName);
 		qry.updateBytes(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateCharacterStream(int, java.io.Reader, int)
-	 */
+	@Override
 	
 	public void updateCharacterStream(int columnIndex, Reader reader, int length)
 			throws SQLException {
@@ -1504,9 +1177,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateCharacterStream(columnIndex, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateCharacterStream(java.lang.String, java.io.Reader, int)
-	 */
+	@Override
 	
 	public void updateCharacterStream(String columnName, Reader reader,
 			int length) throws SQLException {
@@ -1514,153 +1185,119 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateCharacterStream(columnName, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateClob(int, java.sql.Clob)
-	 */
+	@Override
 	
 	public void updateClob(int columnIndex, Clob x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateClob(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateClob(java.lang.String, java.sql.Clob)
-	 */
+	@Override
 	
 	public void updateClob(String columnName, Clob x) throws SQLException {
 		log(columnName);
 		qry.updateClob(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateDate(int, java.sql.Date)
-	 */
+	@Override
 	
 	public void updateDate(int columnIndex, Date x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateDate(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateDate(java.lang.String, java.sql.Date)
-	 */
+	@Override
 	
 	public void updateDate(String columnName, Date x) throws SQLException {
 		log(columnName);
 		qry.updateDate(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateDouble(int, double)
-	 */
+	@Override
 	
 	public void updateDouble(int columnIndex, double x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateDouble(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateDouble(java.lang.String, double)
-	 */
+	@Override
 	
 	public void updateDouble(String columnName, double x) throws SQLException {
 		log(columnName);
 		qry.updateDouble(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateFloat(int, float)
-	 */
+	@Override
 	
 	public void updateFloat(int columnIndex, float x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateFloat(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateFloat(java.lang.String, float)
-	 */
+	@Override
 	
 	public void updateFloat(String columnName, float x) throws SQLException {
 		log(columnName);
 		qry.updateFloat(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateInt(int, int)
-	 */
+	@Override
 	
 	public void updateInt(int columnIndex, int x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateInt(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateInt(java.lang.String, int)
-	 */
+	@Override
 	
 	public void updateInt(String columnName, int x) throws SQLException {
 		log(columnName);
 		qry.updateInt(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateLong(int, long)
-	 */
+	@Override
 	
 	public void updateLong(int columnIndex, long x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateLong(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateLong(java.lang.String, long)
-	 */
+	@Override
 	
 	public void updateLong(String columnName, long x) throws SQLException {
 		log(columnName);
 		qry.updateLong(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNull(int)
-	 */
+	@Override
 	
 	public void updateNull(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		qry.updateNull(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNull(java.lang.String)
-	 */
+	@Override
 	
 	public void updateNull(String columnName) throws SQLException {
 		log(columnName);
 		qry.updateNull(columnName);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateObject(int, java.lang.Object)
-	 */
+	@Override
 	
 	public void updateObject(int columnIndex, Object x) throws SQLException {
 		
 		qry.updateObject(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateObject(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	
 	public void updateObject(String columnName, Object x) throws SQLException {
 		log(columnName);
 		qry.updateObject(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateObject(int, java.lang.Object, int)
-	 */
+	@Override
 	
 	public void updateObject(int columnIndex, Object x, int scale)
 			throws SQLException {
@@ -1668,9 +1305,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateObject(columnIndex, x, scale);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateObject(java.lang.String, java.lang.Object, int)
-	 */
+	@Override
 	
 	public void updateObject(String columnName, Object x, int scale)
 			throws SQLException {
@@ -1678,90 +1313,70 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateObject(columnName, x, scale);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateRef(int, java.sql.Ref)
-	 */
+	@Override
 	
 	public void updateRef(int columnIndex, Ref x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateRef(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateRef(java.lang.String, java.sql.Ref)
-	 */
+	@Override
 	
 	public void updateRef(String columnName, Ref x) throws SQLException {
 		log(columnName);
 		qry.updateRef(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateRow()
-	 */
+	@Override
 	
 	public void updateRow() throws SQLException {
 		log();
 		qry.updateRow();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateShort(int, short)
-	 */
+	@Override
 	
 	public void updateShort(int columnIndex, short x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateShort(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateShort(java.lang.String, short)
-	 */
+	@Override
 	
 	public void updateShort(String columnName, short x) throws SQLException {
 		log(columnName);
 		qry.updateShort(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateString(int, java.lang.String)
-	 */
+	@Override
 	
 	public void updateString(int columnIndex, String x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateString(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateString(java.lang.String, java.lang.String)
-	 */
+	@Override
 	
 	public void updateString(String columnName, String x) throws SQLException {
 		log(columnName);
 		qry.updateString(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateTime(int, java.sql.Time)
-	 */
+	@Override
 	
 	public void updateTime(int columnIndex, Time x) throws SQLException {
 		log(""+columnIndex);
 		qry.updateTime(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateTime(java.lang.String, java.sql.Time)
-	 */
+	@Override
 	
 	public void updateTime(String columnName, Time x) throws SQLException {
 		log(columnName);
 		qry.updateTime(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateTimestamp(int, java.sql.Timestamp)
-	 */
+	@Override
 	
 	public void updateTimestamp(int columnIndex, Timestamp x)
 			throws SQLException {
@@ -1769,9 +1384,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateTimestamp(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateTimestamp(java.lang.String, java.sql.Timestamp)
-	 */
+	@Override
 	
 	public void updateTimestamp(String columnName, Timestamp x)
 			throws SQLException {
@@ -1779,36 +1392,28 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateTimestamp(columnName, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getMetaData()
-	 */
+	@Override
 	
 	public ResultSetMetaData getMetaData() throws SQLException {
 		log();
 		return qry.getMetaData();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getHoldability()
-	 */
+	@Override
 	
 	public int getHoldability() throws SQLException {
 		log();
 		return qry.getHoldability();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isClosed()
-	 */
+	@Override
 	
 	public boolean isClosed() throws SQLException {
 		log();
 		return qry.isClosed();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNString(int, java.lang.String)
-	 */
+	@Override
 	
 	public void updateNString(int columnIndex, String nString)
 			throws SQLException {
@@ -1816,9 +1421,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNString(columnIndex, nString);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNString(java.lang.String, java.lang.String)
-	 */
+	@Override
 	
 	public void updateNString(String columnLabel, String nString)
 			throws SQLException {
@@ -1826,45 +1429,35 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNString(columnLabel, nString);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getNString(int)
-	 */
+	@Override
 	
 	public String getNString(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getNString(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getNString(java.lang.String)
-	 */
+	@Override
 	
 	public String getNString(String columnLabel) throws SQLException {
 		log(columnLabel);
 		return qry.getNString(columnLabel);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getNCharacterStream(int)
-	 */
+	@Override
 	
 	public Reader getNCharacterStream(int columnIndex) throws SQLException {
 		log(""+columnIndex);
 		return qry.getNCharacterStream(columnIndex);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#getNCharacterStream(java.lang.String)
-	 */
+	@Override
 	
 	public Reader getNCharacterStream(String columnLabel) throws SQLException {
 		log(columnLabel);
 		return qry.getNCharacterStream(columnLabel);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNCharacterStream(int, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateNCharacterStream(int columnIndex, Reader x, long length)
 			throws SQLException {
@@ -1872,9 +1465,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNCharacterStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNCharacterStream(java.lang.String, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateNCharacterStream(String columnLabel, Reader reader,
 			long length) throws SQLException {
@@ -1882,9 +1473,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNCharacterStream(columnLabel, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateAsciiStream(int, java.io.InputStream, long)
-	 */
+	@Override
 	
 	public void updateAsciiStream(int columnIndex, InputStream x, long length)
 			throws SQLException {
@@ -1892,9 +1481,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateAsciiStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBinaryStream(int, java.io.InputStream, long)
-	 */
+	@Override
 	
 	public void updateBinaryStream(int columnIndex, InputStream x, long length)
 			throws SQLException {
@@ -1902,9 +1489,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBinaryStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateCharacterStream(int, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateCharacterStream(int columnIndex, Reader x, long length)
 			throws SQLException {
@@ -1912,9 +1497,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateCharacterStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateAsciiStream(java.lang.String, java.io.InputStream, long)
-	 */
+	@Override
 	
 	public void updateAsciiStream(String columnLabel, InputStream x, long length)
 			throws SQLException {
@@ -1922,9 +1505,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateAsciiStream(columnLabel, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBinaryStream(java.lang.String, java.io.InputStream, long)
-	 */
+	@Override
 	
 	public void updateBinaryStream(String columnLabel, InputStream x,
 			long length) throws SQLException {
@@ -1932,9 +1513,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBinaryStream(columnLabel, x, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateCharacterStream(java.lang.String, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateCharacterStream(String columnLabel, Reader reader,
 			long length) throws SQLException {
@@ -1942,9 +1521,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateCharacterStream(columnLabel, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBlob(int, java.io.InputStream, long)
-	 */
+	@Override
 	
 	public void updateBlob(int columnIndex, InputStream inputStream, long length)
 			throws SQLException {
@@ -1952,9 +1529,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBlob(columnIndex, inputStream, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBlob(java.lang.String, java.io.InputStream, long)
-	 */
+	@Override
 	
 	public void updateBlob(String columnLabel, InputStream inputStream,
 			long length) throws SQLException {
@@ -1962,9 +1537,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBlob(columnLabel, inputStream, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateClob(int, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateClob(int columnIndex, Reader reader, long length)
 			throws SQLException {
@@ -1972,9 +1545,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateClob(columnIndex, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateClob(java.lang.String, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateClob(String columnLabel, Reader reader, long length)
 			throws SQLException {
@@ -1982,9 +1553,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateClob(columnLabel, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNClob(int, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateNClob(int columnIndex, Reader reader, long length)
 			throws SQLException {
@@ -1992,9 +1561,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNClob(columnIndex, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNClob(java.lang.String, java.io.Reader, long)
-	 */
+	@Override
 	
 	public void updateNClob(String columnLabel, Reader reader, long length)
 			throws SQLException {
@@ -2002,9 +1569,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNClob(columnLabel, reader, length);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNCharacterStream(int, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateNCharacterStream(int columnIndex, Reader x)
 			throws SQLException {
@@ -2012,9 +1577,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNCharacterStream(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNCharacterStream(java.lang.String, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateNCharacterStream(String columnLabel, Reader reader)
 			throws SQLException {
@@ -2022,9 +1585,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNCharacterStream(columnLabel, reader);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateAsciiStream(int, java.io.InputStream)
-	 */
+	@Override
 	
 	public void updateAsciiStream(int columnIndex, InputStream x)
 			throws SQLException {
@@ -2032,9 +1593,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateAsciiStream(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBinaryStream(int, java.io.InputStream)
-	 */
+	@Override
 	
 	public void updateBinaryStream(int columnIndex, InputStream x)
 			throws SQLException {
@@ -2042,9 +1601,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBinaryStream(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateCharacterStream(int, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateCharacterStream(int columnIndex, Reader x)
 			throws SQLException {
@@ -2052,9 +1609,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateCharacterStream(columnIndex, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateAsciiStream(java.lang.String, java.io.InputStream)
-	 */
+	@Override
 	
 	public void updateAsciiStream(String columnLabel, InputStream x)
 			throws SQLException {
@@ -2062,9 +1617,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateAsciiStream(columnLabel, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBinaryStream(java.lang.String, java.io.InputStream)
-	 */
+	@Override
 	
 	public void updateBinaryStream(String columnLabel, InputStream x)
 			throws SQLException {
@@ -2072,9 +1625,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBinaryStream(columnLabel, x);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateCharacterStream(java.lang.String, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateCharacterStream(String columnLabel, Reader reader)
 			throws SQLException {
@@ -2082,9 +1633,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateCharacterStream(columnLabel, reader);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBlob(int, java.io.InputStream)
-	 */
+	@Override
 	
 	public void updateBlob(int columnIndex, InputStream inputStream)
 			throws SQLException {
@@ -2092,9 +1641,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBlob(columnIndex, inputStream);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateBlob(java.lang.String, java.io.InputStream)
-	 */
+	@Override
 	
 	public void updateBlob(String columnLabel, InputStream inputStream)
 			throws SQLException {
@@ -2102,18 +1649,14 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateBlob(columnLabel, inputStream);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateClob(int, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateClob(int columnIndex, Reader reader) throws SQLException {
 		log(""+columnIndex);
 		qry.updateClob(columnIndex, reader);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateClob(java.lang.String, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateClob(String columnLabel, Reader reader)
 			throws SQLException {
@@ -2121,18 +1664,14 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateClob(columnLabel, reader);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNClob(int, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateNClob(int columnIndex, Reader reader) throws SQLException {
 		log(""+columnIndex);
 		qry.updateNClob(columnIndex, reader);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#updateNClob(java.lang.String, java.io.Reader)
-	 */
+	@Override
 	
 	public void updateNClob(String columnLabel, Reader reader)
 			throws SQLException {
@@ -2140,18 +1679,14 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		qry.updateNClob(columnLabel, reader);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#unwrap(java.lang.Class)
-	 */
+	@Override
 	
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		log();
 		return qry.unwrap(iface);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isWrapperFor(java.lang.Class)
-	 */
+	@Override
 	
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		log();

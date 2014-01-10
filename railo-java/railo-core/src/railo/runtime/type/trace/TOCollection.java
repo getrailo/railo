@@ -24,17 +24,13 @@ abstract class TOCollection extends TOObjects implements Collection {
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone() {
 		return duplicate(true);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		log();
 		return coll.keyIterator();
@@ -52,9 +48,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 		return coll.entryIterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		log();
 		return coll.valueIterator();
@@ -65,219 +59,167 @@ abstract class TOCollection extends TOObjects implements Collection {
 		return coll.castToString();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		log();
 		return coll.castToString(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		log();
 		return coll.castToBooleanValue();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-	 */
+	@Override
 	public Boolean castToBoolean(Boolean defaultValue) {
 		log();
 		return coll.castToBoolean(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		log();
 		return coll.castToDoubleValue();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue(double)
-	 */
+	@Override
 	public double castToDoubleValue(double defaultValue) {
 		log();
 		return coll.castToDoubleValue(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		log();
 		return new TODateTime(debugger,coll.castToDateTime(),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public DateTime castToDateTime(DateTime defaultValue) {
 		log();
 		return  new TODateTime(debugger,coll.castToDateTime(defaultValue),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		log();
 		return coll.compareTo(str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		log();
 		return coll.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		log();
 		return coll.compareTo(d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		log();
 		return coll.compareTo(dt);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		log();
 		return coll.size();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		log();
 		return coll.keys();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		log(key.getString());
 		return coll.remove(key);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.remove(key),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		log(key.getString());
 		return coll.removeEL(key);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.removeEL(key),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		log();
 		coll.clear();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
 		log(key);
 		return coll.get(KeyImpl.init(key));
 		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		log(key.getString());
 		return coll.get(key);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		log(key);
 		return coll.get(key, defaultValue);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key, defaultValue),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		log(key.getString());
 		return coll.get(key,defaultValue);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key,defaultValue),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		log(key,value);
 		return coll.set(key, value);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.set(key, value),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		log(key.getString(),value);
 		return coll.set(key, value);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.set(key, value),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		log(key,value);
 		return coll.setEL(key, value);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.setEL(key, value),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		log(key.getString(),value);
 		return coll.setEL(key, value);
 		//return TraceObjectSupport.toTraceObject(debugger,coll.setEL(key, value),type,category,text);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-	 */
+	@Override
 	public boolean containsKey(String key) {
 		log(key);
 		return coll.containsKey(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		log(key.getString());
 		return coll.containsKey(key);

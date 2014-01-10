@@ -21,9 +21,7 @@ public final class JspEngineInfoImpl extends JspEngineInfo {
 		this.version=version;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.JspEngineInfo#getSpecificationVersion()
-	 */
+	@Override
 	public String getSpecificationVersion() {
 		// Railo Version
 		return version;

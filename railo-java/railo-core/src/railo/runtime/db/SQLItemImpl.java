@@ -12,7 +12,7 @@ import railo.runtime.type.Sizeable;
 /**
  * 
  */
-public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
+public class SQLItemImpl implements SQLItem,Serializable,Sizeable {
 
 	/** Yes or No. Indicates whether the parameter is passed as a null. If Yes, the tag ignores the 
 	** 	value attribute. The default is No. */
@@ -54,60 +54,42 @@ public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
         this.type=type;
     }
 
-    /**
-     * @see railo.runtime.db.SQLItem#isNulls()
-     */
+    @Override
     public boolean isNulls() {
         return nulls;
     }
-    /**
-     * @see railo.runtime.db.SQLItem#setNulls(boolean)
-     */
+    @Override
     public void setNulls(boolean nulls) {
         this.nulls = nulls;
     }
-    /**
-     * @see railo.runtime.db.SQLItem#getScale()
-     */
+    @Override
     public int getScale() {
         return scale;
     }
-    /**
-     * @see railo.runtime.db.SQLItem#setScale(int)
-     */
+    @Override
     public void setScale(int scale) {
         this.scale = scale;
     }
-    /**
-     * @see railo.runtime.db.SQLItem#getValue()
-     */
+    @Override
     public Object getValue() {
         return value;
     }
-    /**
-     * @see railo.runtime.db.SQLItem#setValue(java.lang.Object)
-     */
+    @Override
     public void setValue(Object value) {
         isValueSet=true;
         this.value = value;
     }
     
-    /**
-     * @see railo.runtime.db.SQLItem#getType()
-     */
+    @Override
     public int getType() {
         return type;
     }
-    /**
-     * @see railo.runtime.db.SQLItem#setType(int)
-     */
+    @Override
     public void setType(int type) {
         this.type = type;
     }
     
-    /**
-     * @see railo.runtime.db.SQLItem#clone(java.lang.Object)
-     */
+    @Override
     public SQLItem clone(Object object) {
        
         SQLItemImpl item = new SQLItemImpl();
@@ -118,9 +100,7 @@ public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
         return item;
     }
     
-    /**
-     * @see railo.runtime.db.SQLItem#getValueForCF()
-     */
+    @Override
     public Object getValueForCF() throws PageException {
         if(cfValue==null) {
             cfValue=SQLCaster.toCFTypex(this);
@@ -128,9 +108,7 @@ public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
         return cfValue;
     }
     
-    /**
-     * @see railo.runtime.db.SQLItem#isValueSet()
-     */
+    @Override
     public boolean isValueSet() {
         return isValueSet;
     }

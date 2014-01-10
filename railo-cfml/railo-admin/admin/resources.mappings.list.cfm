@@ -66,12 +66,12 @@
 									#stText.Mappings.Archive#
 								</cfif>
 							</td>
-							<!--- trusted --->
+							<!--- inspect --->
 							<td>
-								<cfif mappings.Trusted>
-									#stText.setting.inspecttemplateneverShort#
+								<cfif len(mappings.inspect)>
+								#stText.setting['inspecttemplate'&mappings.inspect&'Short']#
 								<cfelse>
-									#stText.setting.inspecttemplatealwaysShort#
+								#stText.setting['inspecttemplateInheritShort']#
 								</cfif>
 								<input type="hidden" name="toplevel_#mappings.currentrow#" value="#mappings.toplevel#">
 							</td>
@@ -139,12 +139,21 @@
 						</td>
 					</tr>
 					<tr>
-						<th scope="row">#stText.Mappings.TrustedHead#</th>
+						<th scope="row">
+							#stText.Mappings.TrustedHead#</div>
+						</th>
 						<td>
-						 	<select name="trusted_1" onchange="checkTheBox(this)" class="small">
-								<option value="true">#stText.setting.inspecttemplateneverShort#</option>
-								<option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
-							</select>
+						 	<ul class="radiolist">
+							<cfloop list="never,once,always,inherit" item="type">
+								<li><label>
+									<input class="radio" type="radio" name="inspect_1" value="#type EQ "inherit"?"":type#" <cfif type EQ "inherit"> checked="checked"</cfif>>
+									<b>#stText.setting['inspectTemplate'&type]#</b>
+								</label>
+								<div class="comment">#stText.setting['inspectTemplate'&type&"Desc"]#</div>
+								</li>
+							</cfloop>
+							</ul>
+							
 							<input type="hidden" name="toplevel_1" value="yes">
 						</td>
 					</tr>

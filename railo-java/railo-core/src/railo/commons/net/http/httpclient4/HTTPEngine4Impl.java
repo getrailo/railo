@@ -3,12 +3,18 @@ package railo.commons.net.http.httpclient4;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpMessage;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -29,6 +35,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -46,12 +53,14 @@ import railo.commons.net.http.httpclient4.entity.ByteArrayHttpEntity;
 import railo.commons.net.http.httpclient4.entity.EmptyHttpEntity;
 import railo.commons.net.http.httpclient4.entity.ResourceHttpEntity;
 import railo.commons.net.http.httpclient4.entity.TemporaryStreamHttpEntity;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.util.CollectionUtil;
 
 public class HTTPEngine4Impl {
 	
@@ -75,7 +84,7 @@ public class HTTPEngine4Impl {
             String charset, String useragent,
             ProxyData proxy, railo.commons.net.http.Header[] headers) throws IOException {
 		HttpGet get = new HttpGet(url.toExternalForm());
-		return _invoke(url,get, username, password, timeout,maxRedirect, charset, useragent, proxy, headers);
+		return _invoke(url,get, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null);
 	}
 
     /**
@@ -98,8 +107,20 @@ public class HTTPEngine4Impl {
             String charset, String useragent,
             ProxyData proxy, railo.commons.net.http.Header[] headers) throws IOException {
     	HttpPost post = new HttpPost(url.toExternalForm());
-    	return _invoke(url,post, username, password, timeout,maxRedirect, charset, useragent, proxy, headers);
+    	return _invoke(url,post, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,null);
     }
+    
+
+    
+
+    public static HTTPResponse post(URL url, String username,String password, long timeout, int maxRedirect,
+            String charset, String useragent,
+            ProxyData proxy, railo.commons.net.http.Header[] headers,Map<String,String> formfields) throws IOException {
+    	HttpPost post = new HttpPost(url.toExternalForm());
+    	
+    	return _invoke(url,post, username, password, timeout,maxRedirect, charset, useragent, proxy, headers,formfields);
+    }
+    
     
     /**
 	 * does a http put request
@@ -124,7 +145,7 @@ public class HTTPEngine4Impl {
             ProxyData proxy, railo.commons.net.http.Header[] headers, Object body) throws IOException {
 		HttpPut put= new HttpPut(url.toExternalForm());
 		setBody(put,body,mimetype,charset);
-        return _invoke(url,put, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
+        return _invoke(url,put, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,null);
 		 
 	}
     
@@ -148,7 +169,7 @@ public class HTTPEngine4Impl {
             String charset, String useragent,
             ProxyData proxy, railo.commons.net.http.Header[] headers) throws IOException {
     	HttpDelete delete= new HttpDelete(url.toExternalForm());
-		return _invoke(url,delete, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);    
+		return _invoke(url,delete, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,null);    
 	}
 
     /**
@@ -171,7 +192,7 @@ public class HTTPEngine4Impl {
             String charset, String useragent,
             ProxyData proxy, railo.commons.net.http.Header[] headers) throws IOException {
     	HttpHead head= new HttpHead(url.toExternalForm());
-		return _invoke(url,head, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);    
+		return _invoke(url,head, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,null);    
 	}
     
 	
@@ -189,23 +210,40 @@ public class HTTPEngine4Impl {
 	
 	private static HTTPResponse _invoke(URL url,HttpUriRequest request,String username,String password, long timeout, int maxRedirect,
             String charset, String useragent,
-            ProxyData proxy, railo.commons.net.http.Header[] headers) throws IOException {
+            ProxyData proxy, railo.commons.net.http.Header[] headers, Map<String,String> formfields) throws IOException {
     	
     	// TODO HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		BasicHttpParams params = new BasicHttpParams();
     	DefaultHttpClient client = createClient(params,maxRedirect);
     	HttpHost hh=new HttpHost(url.getHost(),url.getPort());
     	setHeader(request,headers);
-        setContentType(request,charset);
-        setUserAgent(request,useragent);
-        setTimeout(params,timeout);
-        HttpContext context=setCredentials(client,hh, username, password,false);  
-        setProxy(client,request,proxy);
+    	if(CollectionUtil.isEmpty(formfields))setContentType(request,charset);
+    	setFormFields(request,formfields,charset);
+    	setUserAgent(request,useragent);
+    	setTimeout(params,timeout);
+    	HttpContext context=setCredentials(client,hh, username, password,false);  
+    	setProxy(client,request,proxy);
         if(context==null)context = new BasicHttpContext();
-		
         return new HTTPResponse4Impl(url,context,request,client.execute(request,context));
     }
 	
+	private static void setFormFields(HttpUriRequest request, Map<String, String> formfields, String charset) throws IOException {
+		if(!CollectionUtil.isEmpty(formfields)) {
+			if(!(request instanceof HttpPost)) throw new IOException("form fields are only suppported for post request");
+			HttpPost post=(HttpPost) request;
+    		List<NameValuePair> list = new ArrayList<NameValuePair>();
+        	Iterator<Entry<String, String>> it = formfields.entrySet().iterator();
+        	Entry<String, String> e;
+    		while(it.hasNext()){
+    			e = it.next();
+    			list.add(new BasicNameValuePair(e.getKey(),e.getValue()));
+    		}
+    		if(StringUtil.isEmpty(charset)) charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    		
+    		post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(list,charset));
+    	}
+	}
+
 	public static DefaultHttpClient createClient(BasicHttpParams params, int maxRedirect) {
     	params.setParameter(ClientPNames.HANDLE_REDIRECTS, maxRedirect==0?Boolean.FALSE:Boolean.TRUE);
     	if(maxRedirect>0)params.setParameter(ClientPNames.MAX_REDIRECTS, new Integer(maxRedirect));

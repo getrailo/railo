@@ -90,9 +90,7 @@ webservice
 	private String proxyUser;
 	private String proxyPassword;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		name=null;
@@ -118,9 +116,7 @@ webservice
 	
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    
 		if(component!=null) {
@@ -178,9 +174,7 @@ webservice
     }
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

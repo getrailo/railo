@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.BodyContent;
@@ -13,7 +12,6 @@ import javax.servlet.jsp.tagext.BodyContent;
 import railo.commons.io.cache.Cache;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
-import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
@@ -22,15 +20,14 @@ import railo.runtime.PageSource;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.component.MemberSupport;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpRow;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.UDFCasterException;
 import railo.runtime.functions.cache.Util;
+import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -42,18 +39,17 @@ import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.writer.BodyContentUtil;
 
 /**
  * defines a abstract class for a User defined Functions
  */
-public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
+public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externalizable {
 	
-	private static final FunctionArgument[] EMPTY = new FunctionArgument[0];
 	private static final RamCache DEFAULT_CACHE=new RamCache();
-	
+	private static final long serialVersionUID = -7288148349256615519L; // do not change
+
 	
 	
 	protected ComponentImpl ownerComponent;
@@ -72,33 +68,29 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		this.properties= (UDFPropertiesImpl) properties;
 	}
 
-	/**
-	 * @see railo.runtime.engine.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(properties);
 	}
-    
 	
-	public UDF duplicate(ComponentImpl c) {
+	public UDF duplicate(ComponentImpl cfc) {
 		UDFImpl udf = new UDFImpl(properties);
-		udf.ownerComponent=c;
+		udf.ownerComponent=cfc;
 		udf.setAccess(getAccess());
 		return udf;
 	}
 	
+	@Override
 	public UDF duplicate(boolean deepCopy) {
 		return duplicate(ownerComponent);
 	}
 	
+	@Override
 	public UDF duplicate() {
 		return duplicate(ownerComponent);
 	}
 
-	/**
-     * @throws Throwable 
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-     */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		return ComponentUtil.getPage(pageContext, properties.pageSource).udfCall(pageContext,this,properties.index);
 	}
@@ -124,12 +116,12 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			}
 			// argument not defined
 			else {
-				Object d=getDefaultValue(pc,i);
-				if(d==null) { 
+				Object d=getDefaultValue(pc,i,NullSupportHelper.NULL());
+				if(d==NullSupportHelper.NULL()) { 
 					if(funcArgs[i].isRequired()) {
 						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 					}
-					newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
+					if(!NullSupportHelper.full()) newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
 				}
 				else {
 					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));
@@ -144,7 +136,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	
     private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, Argument newArgs) throws PageException {
     	// argumentCollection
-    	argumentCollection(values,funcArgs);
+    	UDFUtil.argumentCollection(values,funcArgs);
     	//print.out(values.size());
     	Object value;
     	Collection.Key name;
@@ -165,8 +157,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 			
 			// default argument or exception
-			Object defaultValue=getDefaultValue(pageContext,i);//funcArgs[i].getDefaultValue();
-			if(defaultValue==null) { 
+			Object defaultValue=getDefaultValue(pageContext,i,NullSupportHelper.NULL());//funcArgs[i].getDefaultValue();
+			if(defaultValue==NullSupportHelper.NULL()) { 
 				if(funcArgs[i].isRequired()) {
 					throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 				}
@@ -185,78 +177,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
     
 
-	public static void argumentCollection(Struct values) {
-		argumentCollection(values,EMPTY);
-	}
-
-	public static void argumentCollection(Struct values, FunctionArgument[] funcArgs) {
-		Object value=values.removeEL(KeyConstants._argumentCollection);
-		if(value !=null) {
-			value=Caster.unwrap(value,value);
-			
-			if(value instanceof Argument) {
-				Argument argColl=(Argument) value;
-				Iterator<Key> it = argColl.keyIterator();
-				Key k;
-				int i=-1;
-			    while(it.hasNext()) {
-			    	i++;
-			    	k = it.next();
-			    	if(funcArgs.length>i && k instanceof ArgumentIntKey) {
-	            		if(!values.containsKey(funcArgs[i].getName()))
-	            			values.setEL(funcArgs[i].getName(),argColl.get(k,Argument.NULL));
-	            		else 
-	            			values.setEL(k,argColl.get(k,Argument.NULL));
-			    	}
-	            	else if(!values.containsKey(k)){
-	            		values.setEL(k,argColl.get(k,Argument.NULL));
-	            	}
-	            }
-		    }
-			else if(value instanceof Collection) {
-		        Collection argColl=(Collection) value;
-			    //Collection.Key[] keys = argColl.keys();
-				Iterator<Key> it = argColl.keyIterator();
-				Key k;
-				while(it.hasNext()) {
-			    	k = it.next();
-			    	if(!values.containsKey(k)){
-	            		values.setEL(k,argColl.get(k,Argument.NULL));
-	            	}
-	            }
-		    }
-			else if(value instanceof Map) {
-				Map map=(Map) value;
-			    Iterator it = map.entrySet().iterator();
-			    Map.Entry entry;
-			    Key key;
-			    while(it.hasNext()) {
-			    	entry=(Entry) it.next();
-			    	key = toKey(entry.getKey());
-			    	if(!values.containsKey(key)){
-	            		values.setEL(key,entry.getValue());
-	            	}
-	            }
-		    }
-			else if(value instanceof java.util.List) {
-				java.util.List list=(java.util.List) value;
-			    Iterator it = list.iterator();
-			    Object v;
-			    int index=0;
-			    Key k;
-			    while(it.hasNext()) {
-			    	v= it.next();
-			    	k=ArgumentIntKey.init(++index);
-			    	if(!values.containsKey(k)){
-	            		values.setEL(k,v);
-	            	}
-	            }
-		    }
-		    else {
-		        values.setEL(KeyConstants._argumentCollection,value);
-		    }
-		} 
-	}
+	
 	
 	public static Collection.Key toKey(Object obj) {
 		if(obj==null) return null;
@@ -266,28 +187,35 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return KeyImpl.init(str);
 	}
 
-	/**
-     * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-     */
-    public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
+	@Override
+	public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
     	return this.properties.cachedWithin>0?
-    			_callCachedWithin(pc, null, values, doIncludePath):
-    			_call(pc, null, values, doIncludePath);
+    			_callCachedWithin(pc,null, null, values, doIncludePath):
+    			_call(pc,null, null, values, doIncludePath);
+    }
+	public Object callWithNamedValues(PageContext pc,Collection.Key calledName, Struct values,boolean doIncludePath) throws PageException {
+    	return this.properties.cachedWithin>0?
+    			_callCachedWithin(pc,calledName, null, values, doIncludePath):
+    			_call(pc,calledName, null, values, doIncludePath);
     }
 
-	/**
-     * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-     */
-    public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
+    @Override
+	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
     	return  this.properties.cachedWithin>0?
-    			_callCachedWithin(pc, args,null, doIncludePath):
-    			_call(pc, args,null, doIncludePath);
+    			_callCachedWithin(pc,null, args,null, doIncludePath):
+    			_call(pc,null, args,null, doIncludePath);
+    }
+
+	public Object call(PageContext pc,Collection.Key calledName, Object[] args, boolean doIncludePath) throws PageException {
+    	return  this.properties.cachedWithin>0?
+    			_callCachedWithin(pc,calledName, args,null, doIncludePath):
+    			_call(pc,calledName, args,null, doIncludePath);
     }
    // private static int count=0;
     
     
 
-    private Object _callCachedWithin(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
+    private Object _callCachedWithin(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id = UDFUtil.callerHash(this,args,values);
     	
@@ -313,7 +241,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		BodyContent bc =  pci.pushBody();
 	    
 	    try {
-	    	Object rtn = _call(pci, args, values, doIncludePath);
+	    	Object rtn = _call(pci,calledName, args, values, doIncludePath);
 	    	String out = bc.getString();
 	    	cache.put(id, new UDFCacheEntry(out, rtn),properties.cachedWithin,properties.cachedWithin);
 	    	return rtn;
@@ -323,7 +251,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         }
     }
     
-    private Object _call(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
+    private Object _call(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	
     	//print.out(count++);
     	PageContextImpl pci=(PageContextImpl) pc;
@@ -334,9 +262,12 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		Undefined 	undefined=pc.undefinedScope();
 		Argument	oldArgs=pc.argumentsScope();
         Local		oldLocal=pc.localScope();
+        Collection.Key oldCalledName=pci.getActiveUDFCalledName();
         
 		pc.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(pc.getApplicationContext().getLocalMode());
+		pci.setActiveUDFCalledName(calledName);
+		
+		int oldCheckArgs=undefined.setMode(properties.localMode==null?pc.getApplicationContext().getLocalMode():properties.localMode.intValue());
 		PageSource psInc=null;
 		try {
 			PageSource ps = getPageSource();
@@ -352,10 +283,16 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			}
 			pci.addPageSource(ps,psInc);
 			pci.addUDF(this);
+			
 //////////////////////////////////////////
-			BodyContent bc =  (getOutput()?null:pci.pushBody());
-		    //boolean isC=ownerComponent!=null;
-		    
+			BodyContent bc=null;
+			Boolean wasSilent=null;
+			boolean bufferOutput=getBufferOutput(pci);
+			if(!getOutput()) {
+				if(bufferOutput) bc =  pci.pushBody();
+				else wasSilent=pc.setSilent()?Boolean.TRUE:Boolean.FALSE;
+			}
+			
 		    UDF parent=null;
 		    if(ownerComponent!=null) {
 			    parent=pci.getActiveUDF();
@@ -373,10 +310,21 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			}
 	        catch(Throwable t) {
 	        	if(ownerComponent!=null)pci.setActiveUDF(parent);
-	        	BodyContentUtil.flushAndPop(pc,bc);
+	        	if(!getOutput()) {
+	        		if(bufferOutput)BodyContentUtil.flushAndPop(pc,bc);
+	        		else if(!wasSilent)pc.unsetSilent();
+	        	}
+	        	//BodyContentUtil.flushAndPop(pc,bc);
 	        	throw Caster.toPageException(t);
 	        }
-	        BodyContentUtil.clearAndPop(pc,bc);
+	        if(!getOutput()) {
+        		if(bufferOutput)BodyContentUtil.clearAndPop(pc,bc);
+        		else if(!wasSilent)pc.unsetSilent();
+        	}
+	        //BodyContentUtil.clearAndPop(pc,bc);
+        	
+	        
+	        
 	        
 	        if(properties.returnType==CFTypes.TYPE_ANY) return returnValue;
 	        else if(Decision.isCastableTo(properties.strReturnType,returnValue,false,false,-1)) return returnValue;
@@ -389,118 +337,30 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			pc.removeLastPageSource(psInc!=null);
 			pci.removeUDF();
             pci.setFunctionScopes(oldLocal,oldArgs);
+            pci.setActiveUDFCalledName(oldCalledName);
 		    undefined.setMode(oldCheckArgs);
             pci.getScopeFactory().recycle(newArgs);
             pci.getScopeFactory().recycle(newLocal);
 		}
 	}
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
-
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return toDumpData(pageContext, maxlevel, dp,this,false);
+		return UDFUtil.toDumpData(pageContext, maxlevel, dp,this,false);
 	}
-	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp,UDF udf, boolean closure) {
 	
-		if(!dp.getShowUDFs())
-			return new SimpleDumpData(closure?"<Closure>":"<UDF>");
-		
-		// arguments
-		FunctionArgument[] args = udf.getFunctionArguments();
-        
-        DumpTable atts = closure?new DumpTable("udf","#ff00ff","#ffccff","#000000"):new DumpTable("udf","#cc66ff","#ffccff","#000000");
-        
-		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
-		for(int i=0;i<args.length;i++) {
-			FunctionArgument arg=args[i];
-			DumpData def;
-			try {
-				Object oa=null;
-                try {
-                    oa = udf.getDefaultValue(pageContext,i);
-                } catch (PageException e1) {
-                }
-                if(oa==null)oa="null";
-				def=new SimpleDumpData(Caster.toString(oa));
-			} catch (PageException e) {
-				def=new SimpleDumpData("");
-			}
-			atts.appendRow(new DumpRow(0,new DumpData[]{
-					new SimpleDumpData(arg.getDisplayName()),
-					new SimpleDumpData(arg.getName().getString()),
-					new SimpleDumpData(arg.isRequired()),
-					new SimpleDumpData(arg.getTypeAsString()),
-					def,
-					new SimpleDumpData(arg.getHint())}));
-			//atts.setRow(0,arg.getHint());
-			
-		}
-		
-		DumpTable func = closure?new DumpTable("#ff00ff","#ffccff","#000000"):new DumpTable("#cc66ff","#ffccff","#000000");
-		if(closure) func.setTitle("Closure");
-		else {
-			String f="Function ";
-			try {
-				f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
-			} 
-			catch (ExpressionException e) {}
-			func.setTitle(f+udf.getFunctionName());
-		}
-		
-		
-		
-		
-		if(udf instanceof UDFImpl)func.setComment("source:"+((UDFImpl)udf).getPageSource().getDisplayPath());
-		
-		
-		if(!StringUtil.isEmpty(udf.getDescription()))func.setComment(udf.getDescription());
-		
-		
-		
-		func.appendRow(1,new SimpleDumpData("arguments"),atts);
-		func.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(udf.getReturnTypeAsString()));
-		
-		boolean hasLabel=!StringUtil.isEmpty(udf.getDisplayName());//displayName!=null && !displayName.equals("");
-		boolean hasHint=!StringUtil.isEmpty(udf.getHint());//hint!=null && !hint.equals("");
-		
-		if(hasLabel || hasHint) {
-			DumpTable box = new DumpTable("#ffffff","#cccccc","#000000");
-			box.setTitle(hasLabel?udf.getDisplayName():udf.getFunctionName());
-			if(hasHint)box.appendRow(0,new SimpleDumpData(udf.getHint()));
-			box.appendRow(0,func);
-			return box;
-		}
-		
-		/* / meta data
-		try {
-			Struct meta = udf.getMetaData(pageContext);
-			if(meta.size()>0)
-				func.appendRow(1,new SimpleDumpData("metadata"),meta.toDumpData(pageContext, maxlevel, dp));
-				
-		}
-		catch (PageException e) {}
-		*/
-		return func;
-	}
-	/**
-     * @see railo.runtime.type.UDF#getDisplayName()
-     */
+	@Override
 	public String getDisplayName() {
 		return properties.displayName;
 	}
-	/**
-     * @see railo.runtime.type.UDF#getHint()
-     */
+	
+	@Override
 	public String getHint() {
 		return properties.hint;
 	}
     
-    /**
-     * @see railo.runtime.type.UDF#getPageSource()
-     */
-    public PageSource getPageSource() {
+	@Override
+	public PageSource getPageSource() {
         return properties.pageSource;
     }
 
@@ -508,76 +368,13 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return properties.meta;
 	}
 	
+	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		return ComponentUtil.getMetaData(pc, properties);
 		//return getMetaData(pc, this);
 	}
-	
-	/*public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
-		StructImpl func=new StructImpl();
-        
-		// TODO func.set("roles", value);
-        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
-        // meta data
-        Struct meta = udf.getMeta();
-        if(meta!=null) StructUtil.copy(meta, func, true);
-        
-		
-		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
-        String hint=udf.getHint();
-        if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
-        String displayname=udf.getDisplayName();
-        if(!StringUtil.isEmpty(displayname))func.set(KeyImpl.DISPLAY_NAME,displayname);
-        func.set(KeyImpl.NAME,udf.getFunctionName());
-        func.set(KeyImpl.OUTPUT,Caster.toBoolean(udf.getOutput()));
-        func.set(KeyImpl.RETURN_TYPE, udf.getReturnTypeAsString());
-        func.set(KeyImpl.DESCRIPTION, udf.getDescription());
-        
-        func.set(KeyImpl.OWNER, udf.getPageSource().getDisplayPath());
-        
-	    	   
-	    int format = udf.getReturnFormat();
-        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
-        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
-        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
-        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
-        
-        
-        FunctionArgument[] args =  udf.getFunctionArguments();
-        Array params=new ArrayImpl();
-        //Object defaultValue;
-        Struct m;
-        //Object defaultValue;
-        for(int y=0;y<args.length;y++) {
-            StructImpl param=new StructImpl();
-            param.set(KeyImpl.NAME,args[y].getName().getString());
-            param.set(KeyImpl.REQUIRED,Caster.toBoolean(args[y].isRequired()));
-            param.set(KeyConstants._type,args[y].getTypeAsString());
-            displayname=args[y].getDisplayName();
-            if(!StringUtil.isEmpty(displayname)) param.set(KeyImpl.DISPLAY_NAME,displayname);
-            
-            int defType = args[y].getDefaultType();
-            if(defType==FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION){
-            	param.set(KeyImpl.DEFAULT, "[runtime expression]");
-            }
-            else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
-            	param.set(KeyImpl.DEFAULT, udf.getDefaultValue(pc,y));
-            }
-            
-            hint=args[y].getHint();
-            if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
-            // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche attr, die dann hier ausgebenen werden blﾚdsinn
-            
-            // meta data
-            m=args[y].getMetaData();
-            if(m!=null) StructUtil.copy(m, param, true);
-                
-            params.append(param);
-        }
-        func.set(KeyImpl.PARAMETERS,params);
-		return func;
-	}*/
 
+	@Override
 	public Object getValue() {
 		return this;
 	}
@@ -591,14 +388,12 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		this.ownerComponent = component;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	 */
+	@Override
 	public Component getOwnerComponent() {
 		return ownerComponent;//+++
 	}
 	
-
+	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer(properties.functionName);
 		sb.append("(");
@@ -620,84 +415,81 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return sb.toString();
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getSecureJson()
-	 */
+	@Override
 	public Boolean getSecureJson() {
 		return properties.secureJson;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getVerifyClient()
-	 */
+	@Override
 	public Boolean getVerifyClient() {
 		return properties.verifyClient;
 	}
 	
-	/*public boolean isInjected() {
-		return injected;
-	}*/
-
+	@Override
 	public Object clone() {
 		return duplicate();
 	}
 
-
-	
-	/**
-     * @see railo.runtime.type.UDF#getFunctionArguments()
-     */
-    public FunctionArgument[] getFunctionArguments() {
+	@Override
+	public FunctionArgument[] getFunctionArguments() {
         return properties.arguments;
     }
 	
-	/**
-     * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-     */
-    public Object getDefaultValue(PageContext pc,int index) throws PageException {
-    	return ComponentUtil.getPage(pc,properties.pageSource).udfDefaultValue(pc,properties.index,index);
+	@Override
+	public Object getDefaultValue(PageContext pc,int index) throws PageException {
+    	return UDFUtil.getDefaultValue(pc,properties.pageSource,properties.index,index,null);
+    }
+    
+    @Override
+	public Object getDefaultValue(PageContext pc,int index, Object defaultValue) throws PageException {
+    	return UDFUtil.getDefaultValue(pc,properties.pageSource,properties.index,index,defaultValue);
     }
     // public abstract Object getDefaultValue(PageContext pc,int index) throws PageException;
 
-	/**
-     * @see railo.runtime.type.UDF#getFunctionName()
-     */
+    @Override
 	public String getFunctionName() {
 		return properties.functionName;
 	}
 
-	/**
-     * @see railo.runtime.type.UDF#getOutput()
-     */
+	@Override
 	public boolean getOutput() {
 		return properties.output;
 	}
+	
+	public Boolean getBufferOutput() {
+		return properties.bufferOutput;
+	}
+	
+	private boolean getBufferOutput(PageContextImpl pc) {// FUTURE move to interface
+		if(properties.bufferOutput!=null)
+			return properties.bufferOutput.booleanValue();
+		return ((ApplicationContextSupport)pc.getApplicationContext()).getBufferOutput();
+	}
 
-	/**
-     * @see railo.runtime.type.UDF#getReturnType()
-     */
+	@Override
 	public int getReturnType() {
 		return properties.returnType;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		return properties.strReturnType;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		return properties.description;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getReturnFormat()
-	 */
+	@Override
 	public int getReturnFormat() {
+		if(properties.returnFormat<0) return UDF.RETURN_FORMAT_WDDX;
+		return properties.returnFormat;
+	}
+	
+	@Override
+	public int getReturnFormat(int defaultValue) {
+		if(properties.returnFormat<0) return defaultValue;
 		return properties.returnFormat;
 	}
 	
@@ -705,37 +497,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return properties.strReturnFormat;
 	}
 	
-	
-	public static int toReturnFormat(String returnFormat) throws ExpressionException {
-		if(StringUtil.isEmpty(returnFormat,true))
-			return UDF.RETURN_FORMAT_WDDX;
-			
-			
-		returnFormat=returnFormat.trim().toLowerCase();
-		if("wddx".equals(returnFormat))				return UDF.RETURN_FORMAT_WDDX;
-		else if("json".equals(returnFormat))		return UDF.RETURN_FORMAT_JSON;
-		else if("plain".equals(returnFormat))		return UDF.RETURN_FORMAT_PLAIN;
-		else if("text".equals(returnFormat))		return UDF.RETURN_FORMAT_PLAIN;
-		else if("serialize".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
-		else throw new ExpressionException("invalid returnFormat definition ["+returnFormat+"], valid values are [wddx,plain,json,serialize]");
-	}
-
-	public static String toReturnFormat(int returnFormat) throws ExpressionException {
-		if(RETURN_FORMAT_WDDX==returnFormat)		return "wddx";
-		else if(RETURN_FORMAT_JSON==returnFormat)	return "json";
-		else if(RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
-		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "serialize";
-		else throw new ExpressionException("invalid returnFormat definition, valid values are [wddx,plain,json,serialize]");
-	}
-	
-	public static String toReturnFormat(int returnFormat,String defaultValue) {
-		if(RETURN_FORMAT_WDDX==returnFormat)		return "wddx";
-		else if(RETURN_FORMAT_JSON==returnFormat)	return "json";
-		else if(RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
-		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "serialize";
-		else return defaultValue;
-	}
-
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		// access
 		setAccess(in.readInt());
@@ -744,7 +506,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		properties=(UDFPropertiesImpl) in.readObject();
 	}
 
-
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		// access
 		out.writeInt(getAccess());
@@ -753,7 +515,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		out.writeObject(properties);
 	}
 	
-
+	@Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof UDF)) return false;
 		return equals(this,(UDF)obj);
@@ -790,7 +552,10 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		if(left==null) return right==null;
 		return left.equals(right);
 	}
-
+	
+	public int getIndex(){
+		return properties.index;
+	}
 	
 }
 

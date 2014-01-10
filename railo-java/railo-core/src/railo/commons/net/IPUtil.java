@@ -4,13 +4,13 @@ import java.net.InetAddress;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class IPUtil {
 
 
     public static boolean isIPv4(String ip)	{
-        String[] arr = List.trimItems(List.trim(List.listToStringArray(ip, '.')));
+        String[] arr = ListUtil.trimItems(ListUtil.trim(ListUtil.listToStringArray(ip, '.')));
         if(arr.length!=4) return false;
         
         int tmp;
@@ -23,7 +23,7 @@ public class IPUtil {
 
     public static boolean isIPv62(String ip)	{
         if(ip.indexOf(':') == -1) return false;
-        String[] arr = List.trimItems(List.trim(List.listToStringArray(ip, ':')));
+        String[] arr = ListUtil.trimItems(ListUtil.trim(ListUtil.listToStringArray(ip, ':')));
         if(arr.length!=8) return false;
         String str;
         int _int;

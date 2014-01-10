@@ -180,10 +180,7 @@ public class CharBuffer {
 		return chrs;
 	}
 	
-	/** 
-	* return the content of the buffer as string
-	* @see java.lang.Object#toString()
-	*/
+	@Override
 	public String toString() {
 		return new String(toCharArray());
 	}

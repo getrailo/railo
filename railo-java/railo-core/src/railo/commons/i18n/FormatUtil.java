@@ -1,5 +1,6 @@
 package railo.commons.i18n;
 
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -121,24 +122,37 @@ public class FormatUtil {
 		for(int i=0;i<df.length;i++){
 			if(df[i] instanceof SimpleDateFormat) {
 				p=((SimpleDateFormat) df[i]).toPattern()+"";
-				// h:mm:ss a
-				index=p.indexOf("h:mm:ss a");
-				if(index!=-1) {
-					p=StringUtil.replace(p, "h:mm:ss a", "H:mm:ss", true);
-					sdf = new SimpleDateFormat(p,locale);
-					if(!list.contains(sdf))list.add(sdf);
-				}
-				// hh:mm:ss a
-				index=p.indexOf("hh:mm:ss a");
-				if(index!=-1) {
-					p=StringUtil.replace(p, "hh:mm:ss a", "HH:mm:ss", true);
-					sdf = new SimpleDateFormat(p,locale);
-					if(!list.contains(sdf))list.add(sdf);
-				}
+				
+				if(check(list,p,locale,"hh:mm:ss a","HH:mm:ss")) continue;
+				if(check(list,p,locale,"h:mm:ss a","H:mm:ss")) continue;
+				if(check(list,p,locale,"hh:mm a","HH:mm")) continue;
+				if(check(list,p,locale,"h:mm a","H:mm")) continue;
+				
+				if(check(list,p,locale,"hh:mm:ssa","HH:mm:ss")) continue;
+				if(check(list,p,locale,"h:mm:ssa","H:mm:ss")) continue;
+				if(check(list,p,locale,"hh:mma","HH:mm")) continue;
+				if(check(list,p,locale,"h:mma","H:mm")) continue;
+				
+				//if(check(list,p,locale,"HH:mm:ss","hh:mm:ss a")) continue;
+				//if(check(list,p,locale,"H:mm:ss","h:mm:ss a")) continue;
+				//if(check(list,p,locale,"HH:mm","hh:mm a")) continue;
+				//if(check(list,p,locale,"H:mm","h:mm a")) continue;
 			}
 		}
 	}
 	
+	private static boolean check(List<DateFormat> list, String p,Locale locale, String from, String to) {
+		int index = p.indexOf(from);
+		if(index!=-1) {
+			p=StringUtil.replace(p, from, to, true);
+			SimpleDateFormat sdf = new SimpleDateFormat(p,locale);
+			if(!list.contains(sdf))list.add(sdf);
+			return true;
+		}
+		return false;
+	}
+
+
 	private static void addCustom(List<DateFormat> list,Locale locale,short formatType) {
 		// get custom formats from file
 		Config config = ThreadLocalPageContext.getConfig();
@@ -151,8 +165,8 @@ public class FormatUtil {
 			Resource file = dir.getRealResource(locale.getLanguage()+"-"+locale.getCountry()+appendix+".df");
 			if(file.isFile()) {
 				try {
-					String content=IOUtil.toString(file, null);
-					String[] arr = railo.runtime.type.List.listToStringArray(content, '\n');
+					String content=IOUtil.toString(file, (Charset)null);
+					String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(content, '\n');
 					String line;
 					SimpleDateFormat sdf;
 					for(int i=0;i<arr.length;i++){
@@ -192,8 +206,9 @@ public class FormatUtil {
 				     ,new SimpleDateFormat("EEEE, MMMM dd, yyyy H:mm:ss a zzz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMM-yy HH:mm a",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMMM-yy HH:mm a",Locale.ENGLISH)
-					 ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
-					 ,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
+					  ,new SimpleDateFormat("EE, dd-MMM-yyyy HH:mm:ss zz",Locale.ENGLISH)
+					  ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
+					,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM, dd yyyy HH:mm:ssZ",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM, dd yyyy HH:mm:ss",Locale.ENGLISH)

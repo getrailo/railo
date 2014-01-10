@@ -21,6 +21,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
+import railo.aprint;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -88,6 +89,15 @@ public final class CompressUtil {
     	else if(format==FORMAT_TGZ)	extractTGZ(source,target);
         else throw new IOException("can't extract in given format");
     }
+    
+    public static void list(int format,Resource source) throws IOException {
+    	if(format==FORMAT_ZIP)    	listZip(source);
+    	//else if(format==FORMAT_TAR)	listar(source);
+    	//else if(format==FORMAT_GZIP)listGZip(source);
+    	//else if(format==FORMAT_TGZ)	listTGZ(source);
+        else throw new IOException("can't list in given format, atm only zip files are supported");
+    }
+    
     
 
     private static void extractTGZ(Resource source, Resource target) throws IOException {
@@ -227,6 +237,8 @@ public final class CompressUtil {
     }
     
 
+    
+
     private static void unzip(Resource zipFile,Resource targetDir) throws IOException {
     	/*if(zipFile instanceof File){
     		unzip((File)zipFile, targetDir);
@@ -249,6 +261,32 @@ public final class CompressUtil {
 	            }
 	            target.setLastModified(entry.getTime());
 	            zis.closeEntry() ;
+	        }
+        }
+        finally {
+        	IOUtil.closeEL(zis);
+        }
+	}
+
+    private static void listZip(Resource zipFile) throws IOException {
+    	if(!zipFile.exists())
+            throw new IOException(zipFile+" is not a existing file");
+        
+        if(zipFile.isDirectory()) {
+        	 throw new IOException(zipFile+" is a directory");
+        }
+        
+    	ZipInputStream zis=null;
+        try {
+	        zis = new ZipInputStream( IOUtil.toBufferedInputStream(zipFile.getInputStream()) ) ;     
+	        ZipEntry entry;
+	        while ( ( entry = zis.getNextEntry()) != null ) {
+	        	if(!entry.isDirectory()){
+	        		ByteArrayOutputStream baos=new ByteArrayOutputStream(); 
+	        		IOUtil.copy(zis,baos,false,false);
+	        		byte[] barr = baos.toByteArray();
+	        		aprint.o(entry.getName()+":"+barr.length);
+	        	}
 	        }
         }
         finally {

@@ -20,12 +20,11 @@ import org.hibernate.tuple.entity.EntityMetamodel;
 
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.CommonUtil;
+import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
-import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.orm.hibernate.tuplizer.proxy.CFCHibernateProxyFactory;
 import railo.runtime.type.cfc.ComponentAccess;
-import railo.runtime.type.util.ComponentUtil;
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
@@ -35,16 +34,12 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 		super(entityMetamodel, persistentClass);
 	}
 
-	/**
-	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#getIdentifier(java.lang.Object, org.hibernate.engine.SessionImplementor)
-	 */
+	@Override
 	public Serializable getIdentifier(Object entity, SessionImplementor arg1) {
 		return toIdentifier(super.getIdentifier(entity, arg1));
 	}
 	
-	/**
-	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#getIdentifier(java.lang.Object)
-	 */
+	@Override
 	public Serializable getIdentifier(Object entity) throws HibernateException {
 		return toIdentifier(super.getIdentifier(entity));
 	}
@@ -54,11 +49,11 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 			HashMap<String, String> map = new HashMap<String, String>();
 			Component cfc=(Component) id;
 			ComponentScope scope = cfc.getComponentScope();
-			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true,true);
+			railo.runtime.component.Property[] props = HibernateUtil.getIDProperties(cfc, true,true);
 			String name,value;
 			for(int i=0;i<props.length;i++){
 				name=props[i].getName();
-				value=Caster.toString(scope.get(KeyImpl.init(name),null),null);
+				value=CommonUtil.toString(scope.get(CommonUtil.createKey(name),null),null);
 				map.put(name, value);
 			}
 			return map;
@@ -67,9 +62,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	}
 
 
-	/**
-	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildInstantiator(org.hibernate.mapping.PersistentClass)
-	 */
+	@Override
 	protected Instantiator buildInstantiator(PersistentClass persistentClass) {
 		return new CFCInstantiator(persistentClass);
 	}
@@ -88,55 +81,41 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	}
 
 	
-	/**
-	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildPropertyGetter(org.hibernate.mapping.Property, org.hibernate.mapping.PersistentClass)
-	 */
+	@Override
 	protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
 		return buildPropertyAccessor(mappedProperty).getGetter( null, mappedProperty.getName() );
 	}
 
 	
-	/**
-	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildPropertySetter(org.hibernate.mapping.Property, org.hibernate.mapping.PersistentClass)
-	 */
+	@Override
 	protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
 		return buildPropertyAccessor(mappedProperty).getSetter( null, mappedProperty.getName() );
 	}
 	
-	/**
-	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildProxyFactory(org.hibernate.mapping.PersistentClass, org.hibernate.property.Getter, org.hibernate.property.Setter)
-	 */
+	@Override
 	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1,Setter arg2) {
-		CFCProxyFactory pf = new CFCProxyFactory();
+		CFCHibernateProxyFactory pf = new CFCHibernateProxyFactory();
 		pf.postInstantiate(pc);
 		
 		return pf;
 	}
 
-	/**
-	 * @see org.hibernate.tuple.entity.EntityTuplizer#determineConcreteSubclassEntityName(java.lang.Object, org.hibernate.engine.SessionFactoryImplementor)
-	 */
+	@Override
 	public String determineConcreteSubclassEntityName(Object entityInstance, SessionFactoryImplementor factory) {
 		return CFCEntityNameResolver.INSTANCE.resolveEntityName(entityInstance);
 	}
 
-	/**
-	 * @see org.hibernate.tuple.entity.EntityTuplizer#getEntityNameResolvers()
-	 */
+	@Override
 	public EntityNameResolver[] getEntityNameResolvers() {
 		return new EntityNameResolver[] { CFCEntityNameResolver.INSTANCE };
 	}
 
-	/**
-	 * @see org.hibernate.tuple.entity.EntityTuplizer#getConcreteProxyClass()
-	 */
+	@Override
 	public Class getConcreteProxyClass() {
 		return ComponentAccess.class;// ????
 	}
 
-	/**
-	 * @see org.hibernate.tuple.Tuplizer#getMappedClass()
-	 */
+	@Override
 	public Class getMappedClass() {
 		return ComponentAccess.class; // ????
 	}
@@ -145,9 +124,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 		return EntityMode.MAP;
 	}
 
-	/**
-	 * @see org.hibernate.tuple.entity.EntityTuplizer#isInstrumented()
-	 */
+	@Override
 	public boolean isInstrumented() {
 		return false;
 	}

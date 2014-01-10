@@ -3,7 +3,7 @@ package railo.runtime.orm;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
@@ -36,7 +36,6 @@ public interface ORMSession {
 	/**
 	 * Reloads data for an entity that is already loaded. This method refetches data from the database and repopulates the entity with the refreshed data.
 	 * @param obj 
-	 * @throws ORMException
 	 */
 	public void reload(PageContext pc, Object obj) throws PageException;
 
@@ -44,7 +43,6 @@ public interface ORMSession {
 	 * creates a entity matching the given name
 	 * @param entityName
 	 * @return
-	 * @throws ORMException
 	 */
 	public Component create(PageContext pc, String entityName) throws PageException;
 	
@@ -181,7 +179,9 @@ public interface ORMSession {
 	public Object getRawSession();
 
 	public ORMTransaction getTransaction(boolean autoManage);
-
-	public DatasourceConnection getDatasourceConnection();
 	
+
+	public DataSource getDataSource();
+
+	public String[] getEntityNames(); 
 }

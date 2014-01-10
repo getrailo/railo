@@ -22,7 +22,8 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.db.debug.DebugQuery;
+import railo.runtime.debug.ActiveLock;
+import railo.runtime.debug.ActiveQuery;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -90,7 +91,7 @@ public final class GetUsageData implements Function {
 		sct.setEL(QUERIES, qry);
 		
 		// Locks
-		Query lck=new QueryImpl(new Collection.Key[]{KeyConstants._web,KeyConstants._name,START_TIME,KeyConstants._timeout}, 0, "requests");
+		Query lck=new QueryImpl(new Collection.Key[]{KeyConstants._web,KeyConstants._application,KeyConstants._name,START_TIME,KeyConstants._timeout,KeyConstants._type}, 0, "requests");
 		sct.setEL(LOCKS, lck);
 
 		// Loop webs
@@ -99,13 +100,16 @@ public final class GetUsageData implements Function {
 		PageContextImpl _pc;
 		int row,openConnections=0;
 		CFMLFactoryImpl factory;
-		DebugQuery dq;
+		ActiveQuery[] queries;
+		ActiveQuery aq;
+		ActiveLock[] locks;
+		ActiveLock al;
 		for(int i=0;i<webs.length;i++){
 			
 			// Loop requests
 			web=(ConfigWebImpl) webs[i];
 			factory=(CFMLFactoryImpl)web.getFactory();
-			pcs = factory.getRunningPageContextes();
+			pcs = factory.getRunningPageContexts();
 			Iterator<Object> it = pcs.valueIterator();
 			while(it.hasNext()){
 				_pc = (PageContextImpl) it.next();
@@ -119,13 +123,31 @@ public final class GetUsageData implements Function {
 				req.setAt(KeyConstants._timeout, row, new Double(pc.getRequestTimeout()));
 				
 				// Query
-				dq = _pc.getActiveQuery();
-				if(dq!=null) {
-					row = qry.addRow();
-					qry.setAt(KeyConstants._web, row, web.getLabel());
-					qry.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
-					qry.setAt(START_TIME, row, new DateTimeImpl(dq.startTime,false));
-					qry.setAt(KeyConstants._sql, row, dq.sql);
+				queries = _pc.getActiveQueries();
+				if(queries!=null) {
+					for(int y=0;y<queries.length;y++){
+						aq=queries[y];
+						row = qry.addRow();
+						qry.setAt(KeyConstants._web, row, web.getLabel());
+						qry.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
+						qry.setAt(START_TIME, row, new DateTimeImpl(web,aq.startTime,true));
+						qry.setAt(KeyConstants._sql, row, aq.sql);
+					}
+				}
+				
+				// Lock
+				locks = _pc.getActiveLocks();
+				if(locks!=null) {
+					for(int y=0;y<locks.length;y++){
+						al=locks[y];
+						row = lck.addRow();
+						lck.setAt(KeyConstants._web, row, web.getLabel());
+						lck.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
+						lck.setAt(KeyConstants._name, row, al.name);
+						lck.setAt(START_TIME, row, new DateTimeImpl(web,al.startTime,true));
+						lck.setAt(KeyConstants._timeout, row, Caster.toDouble(al.timeoutInMillis/1000));
+						lck.setAt(KeyConstants._type, row, al.type==LockManager.TYPE_EXCLUSIVE?"exclusive":"readonly");
+					}
 				}
 			}
 			openConnections+=web.getDatasourceConnectionPool().openConnections();
@@ -142,18 +164,6 @@ public final class GetUsageData implements Function {
 			// Scope Application
 			getAllApplicationScopes(web,factory.getScopeContext(),app);
 			getAllCFSessionScopes(web,factory.getScopeContext(),sess);
-			
-			// Locks
-			try{
-				LockManager manager = web.getLockManager();
-		        String[] locks = manager.getOpenLockNames();
-		        for(int y=0;y<locks.length;y++){
-		        	row = lck.addRow();
-		        	lck.setAt(KeyConstants._web, row, web.getLabel());
-		        	lck.setAt(KeyConstants._name, row, locks[i]);
-		        }
-			}
-			catch(Throwable t){}
 			
 			
 		}

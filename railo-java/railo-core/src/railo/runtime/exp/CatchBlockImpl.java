@@ -32,8 +32,8 @@ import railo.runtime.type.util.StructUtil;
 
 public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Objects{
 	
-	public static final Key MESSAGE = KeyConstants._Message;
-	public static final Key DETAIL = KeyConstants._Detail;
+	private static final long serialVersionUID = -3680961614605720352L;
+	
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
 	public static final Key EXTENDEDINFO = KeyImpl.intern("ExtendedInfo");
 	public static final Key EXTENDED_INFO = KeyImpl.intern("Extended_Info");
@@ -48,8 +48,8 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public CatchBlockImpl(PageExceptionImpl pe) {
 		this.exception=pe;
 
-		setEL(MESSAGE, new SpecialItem(pe, MESSAGE));
-		setEL(DETAIL, new SpecialItem(pe, DETAIL));
+		setEL(KeyConstants._Message, new SpecialItem(pe, KeyConstants._Message));
+		setEL(KeyConstants._Detail, new SpecialItem(pe, KeyConstants._Detail));
 		setEL(ERROR_CODE, new SpecialItem(pe, ERROR_CODE));
 		setEL(EXTENDEDINFO, new SpecialItem(pe, EXTENDEDINFO));
 		setEL(EXTENDED_INFO, new SpecialItem(pe, EXTENDED_INFO));
@@ -71,6 +71,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 						continue;
 					}
 					key=KeyImpl.init(Reflector.removeGetterPrefix(getter.getName()));
+					if(STACK_TRACE.equalsIgnoreCase(key)) continue;
 					setEL(key,new Pair(throwable,key, getter,false));
 				}
 			}
@@ -88,8 +89,8 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		}
 		
 		public Object get() {
-			if(key==MESSAGE) return StringUtil.emptyIfNull(pe.getMessage());
-			if(key==DETAIL) return StringUtil.emptyIfNull(pe.getDetail());
+			if(key==KeyConstants._Message) return StringUtil.emptyIfNull(pe.getMessage());
+			if(key==KeyConstants._Detail) return StringUtil.emptyIfNull(pe.getDetail());
 			if(key==ERROR_CODE) return StringUtil.emptyIfNull(pe.getErrorCode());
 			if(key==EXTENDEDINFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
 			if(key==EXTENDED_INFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
@@ -103,7 +104,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		public void set(Object o){
 			try {
 				if(!(o instanceof Pair)) {
-					if(key==DETAIL) {
+					if(key==KeyConstants._Detail) {
 						pe.setDetail(Caster.toString(o));
 						return;
 					}
@@ -144,7 +145,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		}
 		public Object remove(){
 			Object rtn=null;
-			if(key==DETAIL) {
+			if(key==KeyConstants._Detail) {
 				rtn=pe.getDetail();
 				pe.setDetail("");
 			}
@@ -169,25 +170,17 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return exception;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#castToString()
-	 */
+	@Override
 	public String castToString() throws ExpressionException {
 		return castToString(null);
 	}
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return exception.getClass().getName();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		Key[] keys = keys();
 		for(int i=0;i<keys.length;i++){
@@ -196,20 +189,14 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return false;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImpl();
 		StructUtil.copy(this, sct, true);
 		return sct;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
 		return StructUtil.entrySet(this);
 	}
@@ -219,10 +206,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		Object value = super.get(key,defaultValue);
 		if(value instanceof SpecialItem) {
@@ -242,12 +226,9 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		Object curr = super.get(key,null);
-
 		if(curr instanceof SpecialItem){
 			((SpecialItem)curr).set(value);
 			return value;
@@ -268,9 +249,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return super.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		Object curr = super.get(key,null);
 		if(curr instanceof SpecialItem){
@@ -294,16 +273,12 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return super.setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#size()
-	 */
+	@Override
 	public int size() {
 		return keys().length;
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		Key[] keys = super.keys();
 		List<Key> list=new ArrayList<Key>();
@@ -355,19 +330,12 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return new ValueIterator(this, keys());
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return StructUtil.values(this);
 	}
 
-
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this,"Catch",pageContext,maxlevel,dp);
 	}
@@ -447,7 +415,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object get(Key key) throws PageException {
 		Object res = get(key,NULL);
 		if(res!=NULL) return res;
-		throw StructImpl.invalidKey(keys(), key);
+		throw StructImpl.invalidKey(null,this, key);
 	}
 	public Object get(PageContext pc, String key, Object defaultValue) {
 		return get(key,defaultValue);

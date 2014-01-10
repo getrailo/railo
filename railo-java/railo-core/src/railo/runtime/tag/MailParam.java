@@ -17,7 +17,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 /**
 * Can either attach a file or add a header to a message. It is nested within a cfmail tag. You can 
 *   use more than one cfmailparam tag within a cfmail tag.
@@ -44,9 +44,7 @@ public final class MailParam extends TagImpl {
     private Boolean remove=false;
     private byte[] content=null;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		value="";
@@ -136,15 +134,12 @@ public final class MailParam extends TagImpl {
     }
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		if(content!=null){
 			required("mailparam", "file", file);
-			String filename = List.last(file, "/\\",true);
+			String filename = ListUtil.last(file, "/\\",true);
 			Resource res = SystemUtil.getTempDirectory().getRealResource(filename);
 			if(res.exists())ResourceUtil.removeEL(res, true);
 			try {
@@ -194,9 +189,7 @@ public final class MailParam extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -19,9 +19,7 @@ public final class FTPPoolImpl implements FTPPool {
     Map<String,FTPWrap> wraps=new HashMap<String, FTPWrap>();
     //ArrayList arr=new ArrayList();
 
-    /**
-     * @see railo.runtime.net.ftp.FTPPool#get(railo.runtime.net.ftp.FTPConnection)
-     */
+    @Override
     public FTPClient get(FTPConnection conn) throws IOException, ApplicationException {
         FTPClient client = _get(conn).getClient();
         if(client==null)throw new ApplicationException("can't connect to server ["+conn.getServer()+"]");
@@ -95,16 +93,12 @@ public final class FTPPoolImpl implements FTPPool {
         catch(IOException ioe) {}
     }
 
-    /**
-     * @see railo.runtime.net.ftp.FTPPool#remove(railo.runtime.net.ftp.FTPConnection)
-     */
+    @Override
     public FTPClient remove(FTPConnection conn) {
         return remove(conn.getName());
     }
 
-    /**
-     * @see railo.runtime.net.ftp.FTPPool#remove(java.lang.String)
-     */
+    @Override
     public FTPClient remove(String name) {
         FTPWrap wrap=wraps.remove(name);
         if(wrap==null) return null;
@@ -114,9 +108,7 @@ public final class FTPPoolImpl implements FTPPool {
         return client;
     }
 
-    /**
-     * @see railo.runtime.net.ftp.FTPPool#clear()
-     */
+    @Override
     public void clear() {
         if(!wraps.isEmpty()) {
             Iterator<Entry<String, FTPWrap>> it = wraps.entrySet().iterator();

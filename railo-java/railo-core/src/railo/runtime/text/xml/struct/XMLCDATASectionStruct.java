@@ -29,75 +29,52 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
         this.section=section;
     }
 
-    /**
-     * @see org.w3c.dom.Text#splitText(int)
-     */
+    @Override
     public Text splitText(int offset) throws DOMException {
         return section.splitText(offset);
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#getLength()
-     */
+    @Override
     public int getLength() {
         return section.getLength();
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#deleteData(int, int)
-     */
+    @Override
     public void deleteData(int offset, int count) throws DOMException {
         section.deleteData(offset,count);
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#getData()
-     */
+    @Override
     public String getData() throws DOMException {
         return section.getData();
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#substringData(int, int)
-     */
+    @Override
     public String substringData(int offset, int count) throws DOMException {
         return section.substringData(offset,count);
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#replaceData(int, int, java.lang.String)
-     */
+    @Override
     public void replaceData(int offset, int count, String arg)
             throws DOMException {
         section.replaceData(offset,count,arg);
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#insertData(int, java.lang.String)
-     */
+    @Override
     public void insertData(int offset, String arg) throws DOMException {
         section.insertData(offset,arg);
     }
 
-    /**
-     * @see org.w3c.dom.CharacterData#appendData(java.lang.String)
-     */
+    @Override
     public void appendData(String arg) throws DOMException {
         section.appendData(arg);
     }
 
-    /**
-     *
-     * @see org.w3c.dom.CharacterData#setData(java.lang.String)
-     */
+    @Override
     public void setData(String data) throws DOMException {
         section.setData(data);
     }
 
-	/**
-	 *
-	 * @see org.w3c.dom.Text#getWholeText()
-	 */
 	public String getWholeText() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -109,10 +86,6 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Text#isElementContentWhitespace()
-	 */
 	public boolean isElementContentWhitespace() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -124,10 +97,6 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Text#replaceWholeText(java.lang.String)
-	 */
 	public Text replaceWholeText(String arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -141,18 +110,13 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 	
 
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLCDATASectionStruct((CDATASection)section.cloneNode(deepCopy),caseSensitive);
 	}
 	
 
-	/**
-	 * @see org.w3c.dom.Node#cloneNode(boolean)
-	 */
+	@Override
 	public Node cloneNode(boolean deep) {
 		return new XMLCDATASectionStruct((CDATASection)section.cloneNode(deep),caseSensitive);
 	}

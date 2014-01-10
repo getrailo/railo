@@ -15,9 +15,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * slider applet tag
@@ -31,9 +31,7 @@ public final class Slider extends TagImpl {
 	private int vspace=0;
 	private int hspace=0;
     
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#release()
-     */
+    @Override
     public void release() {
         super.release();
 
@@ -53,7 +51,7 @@ public final class Slider extends TagImpl {
      */
     public void setAlign(String align) throws ApplicationException {
         align=align.trim().toLowerCase();
-        if(List.listFind("top,left,bottom,baseline,texttop,absbottom,middle,absmiddle,right",align,",")>-1) {
+        if(ListUtil.listFind("top,left,bottom,baseline,texttop,absbottom,middle,absmiddle,right",align,",")>-1) {
             params.setEL("align",align);
         }
         else
@@ -131,7 +129,7 @@ public final class Slider extends TagImpl {
         String errMessage="attribute range has an invalid value ["+range+"], must be string list with numbers";
         String errDetail="Example: [number_from,number_to], [number_from], [number_from,], [,number_to]";
         
-        Array arr=List.listToArray(range,',');
+        Array arr=ListUtil.listToArray(range,',');
         
         if(arr.size()==1) {
             double from=Caster.toDoubleValue(arr.get(1,null),Double.NaN);
@@ -309,9 +307,7 @@ public final class Slider extends TagImpl {
         this.width = (int) width;
     }
 
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException {
         try {
             _doStartTag();

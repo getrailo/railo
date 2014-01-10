@@ -9,9 +9,9 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag output.
+ * Prueft den Kontext des Tag output.
  * Das Tag output darf nicht innerhalb eines output Tag verschachtelt sein, 
- * ausser das äussere Tag besitzt ein group Attribute. Das innere Tag darf jedoch kein group Attribute besitzen.
+ * ausser das aeussere Tag besitzt ein group Attribute. Das innere Tag darf jedoch kein group Attribute besitzen.
 
  */
 public final class Output extends EvaluatorSupport {

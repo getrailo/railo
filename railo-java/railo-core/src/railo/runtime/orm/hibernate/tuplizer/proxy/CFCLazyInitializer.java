@@ -6,8 +6,8 @@ import org.hibernate.engine.SessionImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
 
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
+import railo.runtime.orm.hibernate.CommonUtil;
+import railo.runtime.orm.hibernate.HibernatePageException;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 
@@ -25,9 +25,9 @@ public class CFCLazyInitializer extends AbstractLazyInitializer implements Seria
 
 	public ComponentAccess getCFC() {
 		try {
-			return ComponentUtil.toComponentAccess(Caster.toComponent(getImplementation()));
-		} catch (PageException e) {
-			throw new HibernateRuntimeException(e);
+			return ComponentUtil.toComponentAccess(CommonUtil.toComponent(getImplementation()));
+		} catch (PageException pe) {
+			throw new HibernatePageException(pe);
 		}
 	}
 

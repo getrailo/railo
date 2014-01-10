@@ -64,12 +64,16 @@ public interface DataSource extends Cloneable {
     /**
      * @return Returns the dsn.
      */
-    public abstract String getDsnOriginal();
+    public abstract String getDsnOriginal(); // FUTURE deprecated
+    // FUTURE public abstract String getConnectionStringOriginal();
 
     /**
      * @return Returns the dsn.
      */
-    public abstract String getDsnTranslated();
+    public abstract String getDsnTranslated(); // FUTURE deprecated
+    // FUTURE public abstract String getConnectionStringTranslated();
+    
+    
 
     /**
      * @return Returns the password.
@@ -183,4 +187,5 @@ public interface DataSource extends Cloneable {
 
 	//  public abstract int getMaxConnection();
 
+//	public String getDbDriver();        // FUTURE, for JIRA-569; return the dbdriver used in the Admin to edit this datasource
 }

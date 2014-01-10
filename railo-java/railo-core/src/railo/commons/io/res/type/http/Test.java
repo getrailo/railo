@@ -1,6 +1,7 @@
 package railo.commons.io.res.type.http;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import railo.aprint;
 import railo.commons.io.IOUtil;
@@ -16,7 +17,7 @@ public class Test {
 		aprint.out("3");
 		aprint.out(res.isFile());
 		aprint.out("4");
-		aprint.out(IOUtil.toString(res,null).length());
+		aprint.out(IOUtil.toString(res,(Charset)null).length());
 		
 	}
 }

@@ -25,9 +25,7 @@ public class PDF2ImageICEpdf extends PDF2Image {
 		Document.class.getName();// this is needed, that the class throws a error when the PDFRenderer.jar is not in the enviroment
 	}
 
-	/**
-	 * @see railo.runtime.text.pdf.PDF2Image#toImage(byte[], int)
-	 */
+	@Override
 	public Image toImage(byte[] input, int pageNumber) throws PageException {
 		return toImage(input, pageNumber, 100,false);
 	}
@@ -39,9 +37,7 @@ public class PDF2ImageICEpdf extends PDF2Image {
 		return new Image(bi);
 	}
 
-	/**
-	 * @see railo.runtime.text.pdf.PDF2Image#writeImages(byte[], java.util.Set, railo.commons.io.res.Resource, java.lang.String, java.lang.String, int, boolean, boolean, boolean)
-	 */
+	@Override
 	public void writeImages(byte[] input, Set pages, Resource outputDirectory,
 			String prefix, String format, int scale, boolean overwrite,
 			boolean goodQuality, boolean transparent) throws PageException,

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;
@@ -17,6 +18,11 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
+import railo.runtime.db.ApplicationDataSource;
+import railo.runtime.db.DBUtil;
+import railo.runtime.db.DBUtil.DataSourceDefintion;
+import railo.runtime.db.DataSource;
+import railo.runtime.db.DataSourceImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
@@ -29,19 +35,29 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public final class AppListenerUtil {
-	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
-	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
-	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
-	private static final Collection.Key HOST = KeyImpl.intern("host");
+	public static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
+	public static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
+	public static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
+	public static final Collection.Key CONNECTION_STRING = KeyImpl.intern("connectionString");
 	
+	public static final Collection.Key BLOB = KeyImpl.intern("blob");
+	public static final Collection.Key CLOB = KeyImpl.intern("clob");
+	public static final Collection.Key CONNECTION_LIMIT = KeyImpl.intern("connectionLimit");
+	public static final Collection.Key CONNECTION_TIMEOUT = KeyImpl.intern("connectionTimeout");
+	public static final Collection.Key META_CACHE_TIMEOUT = KeyImpl.intern("metaCacheTimeout");
+	public static final Collection.Key TIMEZONE = KeyImpl.intern("timezone");
+	public static final Collection.Key ALLOW = KeyImpl.intern("allow");
+	public static final Collection.Key STORAGE = KeyImpl.intern("storage");
+	public static final Collection.Key READ_ONLY = KeyImpl.intern("readOnly");
+	public static final Collection.Key DATABASE = KeyConstants._database;
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
 		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, filename);
@@ -66,7 +82,7 @@ public final class AppListenerUtil {
 	    if(ps.exists()) { 
 			return ps;
 		}
-	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
+	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 	    //Config config = pc.getConfig();
 		for(int i=arr.size()-1;i>0;i--) {
 		    StringBuffer sb=new StringBuffer("/");
@@ -86,9 +102,11 @@ public final class AppListenerUtil {
 	
 
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, int mode, RefBoolean isCFC) {
-		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, isCFC);
-		if(mode==ApplicationListener.MODE_ROOT)return getApplicationPageSourceRoot(pc, isCFC);
-		return getApplicationPageSourceCurr2Root(pc, requestedPage, isCFC);
+		if(mode==ApplicationListener.MODE_CURRENT2ROOT)
+			return getApplicationPageSourceCurr2Root(pc, requestedPage, isCFC);
+		if(mode==ApplicationListener.MODE_CURRENT)
+			return getApplicationPageSourceCurrent(requestedPage, isCFC);
+		return getApplicationPageSourceRoot(pc, isCFC);
 	}
 	
 	public static PageSource getApplicationPageSourceCurrent(PageSource requestedPage, RefBoolean isCFC) {
@@ -123,7 +141,7 @@ public final class AppListenerUtil {
 	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 	    
-	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
+	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 		//Config config = pc.getConfig();
 		String path;
 		for(int i=arr.size()-1;i>0;i--) {
@@ -158,6 +176,85 @@ public final class AppListenerUtil {
 		return "";
 	}
 	
+	public static DataSource[] toDataSources(Object o,DataSource[] defaultValue) {
+		try {
+			return toDataSources(o);
+		} catch (Throwable t) {t.printStackTrace();
+			return defaultValue;
+		}
+	}
+
+	public static DataSource[] toDataSources(Object o) throws PageException, ClassException {
+		Struct sct = Caster.toStruct(o);
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		java.util.List<DataSource> dataSources=new ArrayList<DataSource>();
+		while(it.hasNext()) {
+			e = it.next();
+			dataSources.add(toDataSource(e.getKey().getString().trim(), Caster.toStruct(e.getValue())));
+		}
+		return dataSources.toArray(new DataSource[dataSources.size()]);
+	}
+
+	public static DataSource toDataSource(String name,Struct data) throws PageException, ClassException {
+			String user = Caster.toString(data.get(KeyConstants._username,null),null);
+			String pass = Caster.toString(data.get(KeyConstants._password,""),"");
+			if(StringUtil.isEmpty(user)) {
+				user=null;
+				pass=null;
+			}
+			else {
+				user=user.trim();
+				pass=pass.trim();
+			}
+			
+			// first check for {class:... , connectionString:...}
+			Object oConnStr=data.get(CONNECTION_STRING,null);
+			if(oConnStr!=null)
+				return ApplicationDataSource.getInstance(
+					name, 
+					Caster.toString(data.get(KeyConstants._class)), 
+					Caster.toString(oConnStr), 
+					user, pass,
+					Caster.toBooleanValue(data.get(BLOB,null),false),
+					Caster.toBooleanValue(data.get(CLOB,null),false), 
+					Caster.toIntValue(data.get(CONNECTION_LIMIT,null),-1), 
+					Caster.toIntValue(data.get(CONNECTION_TIMEOUT,null),1), 
+					Caster.toLongValue(data.get(META_CACHE_TIMEOUT,null),60000L), 
+					Caster.toTimeZone(data.get(TIMEZONE,null),null), 
+					Caster.toIntValue(data.get(ALLOW,null),DataSource.ALLOW_ALL),
+					Caster.toBooleanValue(data.get(STORAGE,null),false),
+					Caster.toBooleanValue(data.get(READ_ONLY,null),false));
+			
+			// then for {type:... , host:... , ...}
+			String type=Caster.toString(data.get(KeyConstants._type));
+			DataSourceDefintion dbt = DBUtil.getDataSourceDefintionForType(type, null);
+			if(dbt==null) throw new ApplicationException("no datasource type ["+type+"] found");
+			DataSourceImpl ds = new DataSourceImpl(
+					name, 
+					dbt.className, 
+					Caster.toString(data.get(KeyConstants._host)), 
+					dbt.connectionString,
+					Caster.toString(data.get(DATABASE)), 
+					Caster.toIntValue(data.get(KeyConstants._port,null),-1), 
+					user,pass, 
+					Caster.toIntValue(data.get(CONNECTION_LIMIT,null),-1), 
+					Caster.toIntValue(data.get(CONNECTION_TIMEOUT,null),1), 
+					Caster.toLongValue(data.get(META_CACHE_TIMEOUT,null),60000L), 
+					Caster.toBooleanValue(data.get(BLOB,null),false), 
+					Caster.toBooleanValue(data.get(CLOB,null),false), 
+					DataSource.ALLOW_ALL, 
+					Caster.toStruct(data.get(KeyConstants._custom,null),null,false), 
+					Caster.toBooleanValue(data.get(READ_ONLY,null),false), 
+					true, 
+					Caster.toBooleanValue(data.get(STORAGE,null),false), 
+					Caster.toTimeZone(data.get(TIMEZONE,null),null),
+					""
+			);
+
+			return ds;
+		
+	}
 
 	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue, Resource source) { 
 		try {
@@ -209,7 +306,7 @@ public final class AppListenerUtil {
 	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o) throws PageException {
 		Array array;
 		if(o instanceof String){
-			array=List.listToArrayRemoveEmpty(Caster.toString(o),',');
+			array=ListUtil.listToArrayRemoveEmpty(Caster.toString(o),',');
 		}
 		else if(o instanceof Struct){
 			array=new ArrayImpl();
@@ -236,6 +333,13 @@ public final class AppListenerUtil {
 		return mappings;
 	}
 
+
+	public static String toLocalMode(int mode, String defaultValue) {
+		if(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS==mode) return "modern";
+		if(Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS==mode)return "classic";
+		return defaultValue;
+	}
+	
 	public static int toLocalMode(Object oMode, int defaultValue) {
 		if(oMode==null) return defaultValue;
 		
@@ -245,15 +349,17 @@ public final class AppListenerUtil {
 			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
 		}
 		String strMode=Caster.toString(oMode,null);
-		if("always".equalsIgnoreCase(strMode)) return Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
-		if("update".equalsIgnoreCase(strMode)) return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
+		if("always".equalsIgnoreCase(strMode) || "modern".equalsIgnoreCase(strMode)) 
+			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
+		if("update".equalsIgnoreCase(strMode) || "classic".equalsIgnoreCase(strMode)) 
+			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
 		return defaultValue;
 	}
 	
 	public static int toLocalMode(String strMode) throws ApplicationException {
 		int lm = toLocalMode(strMode, -1);
 		if(lm!=-1) return lm;
-		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [always,update]");
+		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [classic,modern,true,false]");
 	}
 
 	public static short toSessionType(String str, short defaultValue) {
@@ -283,7 +389,7 @@ public final class AppListenerUtil {
 	}
 	
 	public static Properties toS3(Struct sct) {
-		String host=Caster.toString(sct.get(HOST,null),null);
+		String host=Caster.toString(sct.get(KeyConstants._host,null),null);
 		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(KeyConstants._server,null),null);
 		
 		return toS3(
@@ -333,7 +439,7 @@ public final class AppListenerUtil {
 		
 		
 		try {
-			return List.arrayToList(arr, ",");
+			return ListUtil.arrayToList(arr, ",");
 		} catch (PageException e) {
 			return "none";
 		} 
@@ -342,7 +448,7 @@ public final class AppListenerUtil {
 
 	/**
 	 * translate string definition of script protect to int definition
-	 * @param scriptProtect
+	 * @param strScriptProtect
 	 * @return
 	 */
 	public static int translateScriptProtect(String strScriptProtect) {
@@ -356,7 +462,7 @@ public final class AppListenerUtil {
 		if("true".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
 		if("yes".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
 		
-		String[] arr = List.listToStringArray(strScriptProtect, ',');
+		String[] arr = ListUtil.listToStringArray(strScriptProtect, ',');
 		String item;
 		int scriptProtect=0;
 		for(int i=0;i<arr.length;i++) {

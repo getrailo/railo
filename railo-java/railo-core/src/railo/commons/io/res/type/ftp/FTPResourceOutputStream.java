@@ -23,10 +23,7 @@ public final class FTPResourceOutputStream extends ResourceOutputStream {
 		this.client=client;
 	}
 	
-	/**
-	 *
-	 * @see railo.commons.io.res.util.ResourceOutputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		try {
 			super.close();

@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ContentTypeImpl implements ContentType {
 
@@ -37,22 +37,18 @@ public final class ContentTypeImpl implements ContentType {
 
 	public ContentTypeImpl(InputStream is) {
 		String raw=IOUtil.getMimeType(is, null);
-		String[] arr = List.listToStringArray(raw, '/');
+		String[] arr = ListUtil.listToStringArray(raw, '/');
 		this.type=arr[0];
 		this.subtype=arr[1];
 	}
 
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object other) {
 		if((other instanceof ContentType)) return false;
 		return toString().equals(other.toString());
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(type==null)return APPLICATION_UNKNOW.toString();
 		if(this.charset==null) return type+"/"+subtype;

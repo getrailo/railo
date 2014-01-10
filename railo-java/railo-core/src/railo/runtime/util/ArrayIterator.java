@@ -36,23 +36,17 @@ public final class ArrayIterator implements Iterator {
 		
 	}
 
-	/**
-	 * @see java.util.Iterator#remove()
-	 */
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("this operation is not suppored");
 	}
 
-	/**
-	 * @see java.util.Iterator#hasNext()
-	 */
+	@Override
 	public boolean hasNext() {
 		return (length)>offset;
 	}
 
-	/**
-	 * @see java.util.Iterator#next()
-	 */
+	@Override
 	public Object next() {
 		return arr[offset++];
 	}

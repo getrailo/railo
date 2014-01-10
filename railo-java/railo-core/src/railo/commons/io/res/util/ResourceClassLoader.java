@@ -79,9 +79,7 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 			return ((FileResource)res).toURL();
 	}
 	
-	/**
-	 * @see java.io.Closeable#close()
-	 */
+	@Override
 	public void close(){}
 
 	public synchronized void addResourcesX(Resource[] reses) throws IOException {

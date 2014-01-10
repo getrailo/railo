@@ -7,11 +7,11 @@
 	<cflocation url="#request.self#?action=#url.action#&noextfile=1" addtoken="no" />
 </cfif>
 
-<!--- try to upload --->
+<!--- try to upload (.zip and .re) --->
 <cftry>
 	<cffile action="upload" filefield="extfile" destination="#GetTempDirectory()#" nameconflict="makeunique" />
-	<cfif cffile.serverfileext neq "zip">
-		<cfthrow message="Only zip files are allowed as extensions!" />
+	<cfif cffile.serverfileext neq "zip" and cffile.serverfileext neq "re">
+		<cfthrow message="Only zip and re files are allowed as extensions!" />
 	</cfif>
 	<cfcatch>
 		<!--- try to delete the uploaded file, if any--->
@@ -21,16 +21,36 @@
 				<cfcatch><!--- too bad, but it'll just remain in the temp dir...---></cfcatch>
 			</cftry>
 		</cfif>
-		<cfset outputError(stText.ext.errorFileUpload & " #stText.ext.theerror#:<br /><em>#cfcatch.message# #cfcatch.detail#</em>") />
+		<cfset printError(stText.ext.errorFileUpload & " #stText.ext.theerror#:<br /><em>#cfcatch.message# #cfcatch.detail#</em>") /><cfabort>
 	</cfcatch>
 </cftry>
 
 <cfset zipfile = "#rereplace(cffile.serverdirectory, '[/\\]$', '')##server.separator.file##cffile.serverfile#" />
+	
+<!--- re files --->
+<cfif cffile.serverfileext eq "re">
+	<!--- move to deploy directory --->
+	<cfadmin 
+        action="updateRHExtension"
+        type="#request.adminType#"
+        password="#session["password"&request.adminType]#"
+        
+		source="#zipfile#">
+	
+	
+	<!--- go back to overview --->
+	<cflocation url="#request.self#?action=#url.action#&addedRe=true" addtoken="no" />
+	
+
+</cfif>
+
+
+
 
 <!--- check the uploaded file: is it an extension? --->
 <cfif not fileExists('zip://#zipfile#!config.xml')>
 	<cfset fileDelete(zipfile) />
-	<cfset outputError(stText.ext.noConfigXMLInExtension) />
+	<cfset printError(stText.ext.noConfigXMLInExtension) /><cfabort>
 </cfif>
 
 <!--- try to parse the config xml--->
@@ -38,35 +58,36 @@
 	<cfset configXML = xmlParse('zip://#zipfile#!config.xml') />
 	<cfcatch>
 		<cfset fileDelete(zipfile) />
-		<cfset outputError(stText.ext.configNotParsed & ":<br /><em>#cfcatch.message# #cfcatch.detail#</em>") />
+		<cfset printError(stText.ext.configNotParsed & ":<br /><em>#cfcatch.message# #cfcatch.detail#</em>") /><cfabort>
 	</cfcatch>
 </cftry>
 
 <!--- xml tag available? --->
 <cfif not structKeyExists(configXML, "config") or not structKeyExists(configxml.config, "info")>
 	<cfset fileDelete(zipfile) />
-	<cfset outputError(stText.ext.configHasNoInfoTag & "<br />#stText.ext.reviewdocumentation#") />
+	<cfset printError(stText.ext.configHasNoInfoTag & "<br />#stText.ext.reviewdocumentation#") /><cfabort>
 </cfif>
 
 <!--- test existence of necessary info data (should be done by xsl, but quicky quicky) --->
 <cfloop list="id,name,label,author,version,created,type" index="key">
 	<cfif not structKeyExists(configXml.config.info, key)>
 		<cfset fileDelete(zipfile) />
-		<cfset outputError(replace(stText.ext.requiredKeyMissing, '$key$', key) & "<br />#stText.ext.reviewdocumentation#") />
+		<cfset printError(replace(stText.ext.requiredKeyMissing, '$key$', key) & "<br />#stText.ext.reviewdocumentation#") /><cfabort>
 	<cfelseif configXml.config.info[key].xmlText eq "">
 		<cfset fileDelete(zipfile) />
-		<cfset outputError(replace(stText.ext.requiredKeyEmpty, '$key$', key) & "<br />#stText.ext.reviewdocumentation#") />
+		<cfset printError(replace(stText.ext.requiredKeyEmpty, '$key$', key) & "<br />#stText.ext.reviewdocumentation#") /><cfabort>
 	</cfif>
 </cfloop>
 
 <!--- check for correct Type: web extensions should not be added to the server env. --->
 <cfif not listFindNoCase("web,server,all", configXml.config.info.type.xmlText)>
-	<cfset outputError(stText.ext.typeFieldInvalid) />
-	<cfset fileDelete(zipfile) />
+	<cfset printError(stText.ext.typeFieldInvalid) />
+	<cfset fileDelete(zipfile) /><cfabort>
 </cfif>
 <cfif configXml.config.info.type.xmlText neq "all" and configXml.config.info.type.xmlText neq request.adminType>
 	<cfset fileDelete(zipfile) />
-	<cfset outputError(replaceList(stText.ext.adminNotEqualsInstallType, "$type$,$admintype$,$url.action$", "#uCase(configXml.config.info.type.xmlText)#,#uCase(request.adminType)#,#url.action#")) />
+	<cfset printError(replaceList(stText.ext.adminNotEqualsInstallType, "$type$,$admintype$,$url.action$", "#uCase(configXml.config.info.type.xmlText)#,#uCase(request.adminType)#,#url.action#")) />
+	<cfabort>
 </cfif>
 
 <!--- everything seems to be okay, so add it --->
@@ -83,8 +104,13 @@
 	, download: zipfile
 } />
 <cfloop collection="#configXml.config.info#" item="key">
-	<cfset qData[key] = configXml.config.info[key].xmlText />
+	<cfif isDefined("configXml.config.info[key].xmlText")>
+		<cfset qData[key] = configXml.config.info[key].xmlText />
+	<cfelse>
+		<cfset qData[key] = "" />
+	</cfif>
 </cfloop>
+
 
 <!--- set download URL for the extension --->
 <cfset qData.download = zipfile />
@@ -97,11 +123,13 @@
 	<cfset qData.provider = "manualupload" />
 <cfelse>
 	<cftry>
-		<cfset providerCFC = loadCFC(qData.provider) />
-		<cfset qData.info = providerCFC.getInfo() />
+		<cfset datas=loadProvidersData(qData.provider)>
+		<cfset data=datas[qData.provider]>
+		<cfset qData.info = data.getInfo />
 		<cfcatch></cfcatch>
 	</cftry>
 </cfif>
+
 <cfif not isStruct(qData.info)>
 	<!--- create 'manual' info --->
 	<cfset qData.info = {

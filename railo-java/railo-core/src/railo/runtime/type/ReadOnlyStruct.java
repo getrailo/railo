@@ -20,60 +20,36 @@ public class ReadOnlyStruct extends StructImpl {
 		this.isReadOnly=isReadOnly;
 	}
 	
-	/* *
-	 * @see railo.runtime.type.StructImpl#remove(java.lang.String)
-	 * /
-	public Object remove (String key) throws PageException {
-		if(isReadOnly)throw new ExpressionException("can't remove key ["+key+"] from struct, struct is readonly");
-		return super.remove (KeyImpl.init(key));
-	}*/
-
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		if(isReadOnly)throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, struct is readonly");
 		return super.remove (key);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#removeEL(java.lang.String)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		if(isReadOnly)return null;
 		return super.removeEL (key);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
 	public void removeAll() {
 		if(!isReadOnly)super.clear();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(isReadOnly)throw new ExpressionException("can't set key ["+key.getString()+"] to struct, struct is readonly");
 		return super.set (key,value);
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		if(!isReadOnly)super.setEL (key,value);
 		return value;
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		ReadOnlyStruct trg=new ReadOnlyStruct();
 		trg.isReadOnly=isReadOnly;
@@ -82,9 +58,7 @@ public class ReadOnlyStruct extends StructImpl {
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		if(isReadOnly)throw new PageRuntimeException(new ExpressionException("can't clear struct, struct is readonly"));
 		super.clear();

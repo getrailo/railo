@@ -13,10 +13,7 @@ public class ForkWriter extends Writer {
 		this.w2=w2;
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#append(char)
-	 */
+	@Override
 	public Writer append(char c) throws IOException {
 		try {
 			w1.write(c);
@@ -27,10 +24,7 @@ public class ForkWriter extends Writer {
 		return this;
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#append(java.lang.CharSequence, int, int)
-	 */
+	@Override
 	public Writer append(CharSequence csq, int start, int end) throws IOException {
 		try {
 			w1.write(csq.toString(), start, end);
@@ -41,10 +35,7 @@ public class ForkWriter extends Writer {
 		return this;
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#append(java.lang.CharSequence)
-	 */
+	@Override
 	public Writer append(CharSequence csq) throws IOException {
 		try {
 			w1.write(csq.toString());
@@ -55,10 +46,7 @@ public class ForkWriter extends Writer {
 		return this;
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#write(char[])
-	 */
+	@Override
 	public void write(char[] cbuf) throws IOException {
 		try {
 			w1.write(cbuf);
@@ -68,10 +56,7 @@ public class ForkWriter extends Writer {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#write(int)
-	 */
+	@Override
 	public void write(int c) throws IOException {
 		try {
 			w1.write(c);
@@ -81,10 +66,7 @@ public class ForkWriter extends Writer {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#write(java.lang.String, int, int)
-	 */
+	@Override
 	public void write(String str, int off, int len) throws IOException {
 		try {
 			w1.write(str, off, len);
@@ -94,10 +76,7 @@ public class ForkWriter extends Writer {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#write(java.lang.String)
-	 */
+	@Override
 	public void write(String str) throws IOException {
 		try {
 			w1.write(str);
@@ -107,10 +86,7 @@ public class ForkWriter extends Writer {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		try {
 			w1.close();
@@ -120,10 +96,7 @@ public class ForkWriter extends Writer {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#flush()
-	 */
+	@Override
 	public void flush() throws IOException {
 
 		try {
@@ -134,10 +107,7 @@ public class ForkWriter extends Writer {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.Writer#write(char[], int, int)
-	 */
+	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
 
 		try {

@@ -94,7 +94,7 @@ Redirtect to entry --->
 	<h2>#driver.getLabel()#</h2>
 	<div class="pageintro">#driver.getDescription()#</div>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.id'),de('&id=##url.id##'),de(''))#" method="post">
-		<cfinput type="hidden" name="name" value="#listLast(getMetaData(driver).name,'.')#.cfc">
+		<cfinput type="hidden" name="name" value="#listLast(getMetaData(driver).name,'.')#">
 		<cfinput type="hidden" name="class" value="#entry.class#">
 		<cfinput type="hidden" name="cfcPath" value="#entry.cfcPath#">
 		<cfinput type="hidden" name="id" value="#entry.id#" >
@@ -108,7 +108,14 @@ Redirtect to entry --->
 				<cfif driver.getListenerCfcMode() NEQ "none">
 					<tr>
 						<th scope="row">#stText.Settings.gateway.ListenerCfcPath#</th>
-						<td><cfinput type="text" name="listenerCfcPath" value="#entry.listenerCfcPath#" required="#driver.getListenerCfcMode() EQ "required"#" class="large" message="Missing value for field listener CFC Path"></td>
+						<td><cfinput type="text" name="listenerCfcPath" value="#entry.listenerCfcPath#" required="#driver.getListenerCfcMode() EQ "required"#" class="large" message="Missing value for field listener CFC Path">
+						<div class="comment">
+							<cfif structKeyExists(driver,'getListenerCFCDescription')>
+								#driver.getListenerCFCDescription()#
+							<cfelse>
+								#stText.Settings.gateway.ListenerCfcPathDesc#
+							</cfif>
+						</div></td>
 					</tr>
 				</cfif>
 				<tr>

@@ -19,10 +19,7 @@ public final class AndFileFilter implements ResourceFilter {
         this.filters=filters;
     }
 
-    /**
-     *
-     * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-     */
+    @Override
     public boolean accept(Resource res) {
         for(int i=0;i<filters.length;i++) {
             if(!filters[i].accept(res)) return false;

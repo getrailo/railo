@@ -8,10 +8,9 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -34,9 +33,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
         this.component=component;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-     */
+    @Override
     public void initialize(PageContext pc) {
         
     }
@@ -47,23 +44,17 @@ public final class ComponentScopeThis extends StructSupport implements Component
     @Override
     public void release(PageContext pc) {}
 
-    /**
-     * @see railo.runtime.type.scope.Scope#getType()
-     */
+    @Override
     public int getType() {
         return SCOPE_VARIABLES;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Scope#getTypeAsString()
-     */
+    @Override
     public String getTypeAsString() {
         return "variables";
     }
 
-    /**
-     * @see railo.runtime.type.Collection#size()
-     */
+    @Override
     public int size() {
         return component.size(access)+1;
     }
@@ -92,16 +83,12 @@ public final class ComponentScopeThis extends StructSupport implements Component
 		 return component.removeEL(key);
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#clear()
-     */
+    @Override
     public void clear() {
         component.clear();
     }
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
         if(key.equalsIgnoreCase(KeyConstants._THIS)){
             return component.top;
@@ -109,9 +96,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
         return component.get(access,key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
         if(key.equalsIgnoreCase(KeyConstants._THIS)){
             return component.top;
@@ -119,9 +104,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
         return component.get(access,key,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		return component.set(key,value);
 	}
@@ -151,109 +134,78 @@ public final class ComponentScopeThis extends StructSupport implements Component
 		return component.valueIterator(access);
 	}
     
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return get(key,null)!=null;
 	}
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, "Variable Scope (of Component)", pageContext, maxlevel, dp);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         return component.castToString();
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return component.castToString(defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return component.castToBooleanValue();
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return component.castToBoolean(defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         return component.castToDoubleValue();
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return component.castToDoubleValue(defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         return component.castToDateTime();
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return component.castToDateTime(defaultValue);
     }
 
 
-	/**
-	 * @throws PageException 
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return component.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return component.compareTo(dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return component.compareTo(d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return component.compareTo(str);
 	}
     
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     */
+    @Override
     public Collection duplicate(boolean deepCopy) {
 
 		StructImpl sct = new StructImpl();
@@ -266,119 +218,80 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * @return value component
      */
     public Component getComponent() {
-        return component;
+        return component.top;
     }
 
-    /**
-     *
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object get(PageContext pc, String key, Object defaultValue) {
+    /*public Object get(PageContext pc, String key, Object defaultValue) {
         return component.get(access,key,defaultValue);
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
 		return component.get(access,key,defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String key) throws PageException {
+    /*public Object get(PageContext pc, String key) throws PageException {
     	return component.get(access,key);
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		return component.get(access,key);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object set(PageContext pc, String propertyName, Object value) throws PageException {
+    /*public Object set(PageContext pc, String propertyName, Object value) throws PageException {
         return component.set(propertyName,value);
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
 		return component.set(propertyName,value);
 	}
 
-    /**
-     *
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String propertyName, Object value) {
+    /*public Object setEL(PageContext pc, String propertyName, Object value) {
         return component.setEL(propertyName,value);
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
 		return component.setEL(propertyName,value);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
-    public Object call(PageContext pc, String key, Object[] arguments) throws PageException {
+    /*public Object call(PageContext pc, String key, Object[] arguments) throws PageException {
     	return call(pc, KeyImpl.init(key), arguments);
-    }
+    }*/
 
 	public Object call(PageContext pc, Collection.Key key, Object[] arguments) throws PageException {
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
-			if(m instanceof UDF) return ((UDF)m).call(pc, arguments, false);
+			if(m instanceof UDFPlus) return ((UDFPlus)m).call(pc,key, arguments, false);
 	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
 		throw ComponentUtil.notFunction(component, key, null,access);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
-    public Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException {
+    /*public Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException {
     	return callWithNamedValues(pc, KeyImpl.init(key), args);
-    }
+    }*/
 
 	public Object callWithNamedValues(PageContext pc, Collection.Key key, Struct args) throws PageException {
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
-			if(m instanceof UDF) return ((UDF)m).callWithNamedValues(pc, args, false);
+			if(m instanceof UDFPlus) return ((UDFPlus)m).callWithNamedValues(pc,key, args, false);
 	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
 		throw ComponentUtil.notFunction(component, key, null,access);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
+    @Override
     public boolean isInitalized() {
         return component.isInitalized();
     }
 
-	/**
-	 * @see railo.runtime.type.scope.Variables#setBind(boolean)
-	 */
+	@Override
 	public void setBind(boolean bind) {}
 
-	/**
-	 * @see railo.runtime.type.scope.Variables#isBind()
-	 * return always true because this scope is always binf to the cfc
-	 */
+	@Override
 	public boolean isBind() {
 		return true;
 	}

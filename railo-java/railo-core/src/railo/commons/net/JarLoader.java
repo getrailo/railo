@@ -16,10 +16,8 @@ import railo.commons.lang.SystemOut;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Info;
-import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
-import railo.runtime.config.ConfigWebImpl;
 
 public class JarLoader {
 
@@ -38,34 +36,34 @@ public class JarLoader {
 	 * @return Classloader with loaded jars for temporary use, after restart the engine this jars are loaded by the servlet engine
 	 * @throws IOException
 	 */
-	public static ClassLoader loadJars(PageContext pc, String[] jars,ClassLoader parent) throws IOException {
-		return new ResourceClassLoader(download(pc, jars),parent);
+	public static ClassLoader loadJars(Config config, String[] jars,ClassLoader parent) throws IOException {
+		return new ResourceClassLoader(download(config, jars),parent);
 	}
 	
 
-	public static Resource[] download(PageContext pc, String[] jars) throws IOException {
+	public static Resource[] download(Config config, String[] jars) throws IOException {
 		List<Resource> list=new ArrayList<Resource>();
 		Resource jar;
 		lastCheck=-1;
 		for(int i=0;i<jars.length;i++){
-			jar=download(pc, jars[i], WHEN_EXISTS_UPDATE);
+			jar=download(config, jars[i], WHEN_EXISTS_UPDATE);
 			if(jar!=null) list.add(jar);
 		}
 		return list.toArray(new Resource[list.size()]);
 	}
 	
 	
-	private static Resource download(PageContext pc,String jarName, short whenExists) throws IOException {
+	private static Resource download(Config config,String jarName, short whenExists) throws IOException {
     	// some variables nned later
-		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-    	PrintWriter out = pc.getConfig().getOutWriter();
+		PrintWriter out = config.getOutWriter();
 		
 		URL dataUrl=toURL(config,jarName);
         
 		// destination file
 		ClassLoader mainClassLoader = new TP().getClass().getClassLoader();
-		Resource lib = ResourceUtil.toResourceNotExisting(pc,CFMLEngineFactory.getClassLoaderRoot(mainClassLoader).getCanonicalPath(),false);
 		
+		Resource lib = config.getResource(CFMLEngineFactory.getClassLoaderRoot(mainClassLoader).getCanonicalPath());
+			
 		Resource jar=lib.getRealResource(jarName);
 		SystemOut.printDate(out,"Check for jar at "+dataUrl);
         if(jar.exists()){

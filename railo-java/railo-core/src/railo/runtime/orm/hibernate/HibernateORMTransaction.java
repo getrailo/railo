@@ -17,32 +17,24 @@ public class HibernateORMTransaction implements ORMTransaction {
 		this.autoManage=autoManage;
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMTransaction#begin()
-	 */
+	@Override
 	public void begin() {
 		if(autoManage)session.flush();
 		trans=session.beginTransaction();
 		
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMTransaction#commit()
-	 */
+	@Override
 	public void commit() {
 		// do nothing
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMTransaction#rollback()
-	 */
+	@Override
 	public void rollback() {
 		doRollback=true;
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMTransaction#end()
-	 */
+	@Override
 	public void end() {
 		if(doRollback){
 			trans.rollback();

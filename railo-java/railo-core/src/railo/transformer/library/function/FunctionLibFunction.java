@@ -9,14 +9,19 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.BIF;
+import railo.runtime.functions.BIFProxy;
+import railo.runtime.reflection.Reflector;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
 
 
 
 /**
- * Eine FunctionLibFunction repräsentiert eine einzelne Funktion innerhalb einer FLD.
+ * Eine FunctionLibFunction repraesentiert eine einzelne Funktion innerhalb einer FLD.
  */
 public final class FunctionLibFunction {
 	
@@ -51,10 +56,11 @@ public final class FunctionLibFunction {
 	private String memberName;
 	private short memberType=CFTypes.TYPE_UNKNOW;
 	private boolean memberChaining;
+	private BIF bif;
 
 	
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 */
 	public FunctionLibFunction() {
 	}
@@ -63,7 +69,7 @@ public final class FunctionLibFunction {
 	}
 	
 	/**
-	 * Gibt den Namen der Funktion zurück.
+	 * Gibt den Namen der Funktion zurueck.
 	 * @return name Name der Funktion.
 	 */
 	public String getName() {
@@ -71,7 +77,7 @@ public final class FunctionLibFunction {
 	}
 	
 	/**
-	* Gibt alle Argumente einer Funktion als ArrayList zurück.
+	* Gibt alle Argumente einer Funktion als ArrayList zurueck.
 	* @return Argumente der Funktion.
 	*/
    public ArrayList<FunctionLibFunctionArg> getArg() {
@@ -79,7 +85,7 @@ public final class FunctionLibFunction {
    }
 
 	/**
-	 * Gibt zurück wieviele Argumente eine Funktion minimal haben muss.
+	 * Gibt zurueck wieviele Argumente eine Funktion minimal haben muss.
 	 * @return Minimale Anzahl Argumente der Funktion.
 	 */
 	public int getArgMin() {
@@ -87,7 +93,7 @@ public final class FunctionLibFunction {
 	}
 	
 	/**
-	 * Gibt zurück wieviele Argumente eine Funktion minimal haben muss.
+	 * Gibt zurueck wieviele Argumente eine Funktion minimal haben muss.
 	 * @return Maximale Anzahl Argumente der Funktion.
 	 */
 	public int getArgMax() {
@@ -111,7 +117,7 @@ public final class FunctionLibFunction {
 	
 	
 	/**
-	 * Gibt die argument art zurück.
+	 * Gibt die argument art zurueck.
 	 * @return argument art
 	 */
 	public int getArgType() {
@@ -119,7 +125,7 @@ public final class FunctionLibFunction {
 	}
 	
 	/**
-	 * Gibt die argument art als String zurück.
+	 * Gibt die argument art als String zurueck.
 	 * @return argument art
 	 */
 	public String getArgTypeAsString() {
@@ -128,15 +134,15 @@ public final class FunctionLibFunction {
 	}
 
 	/**
-	 * Gibt zurück von welchem Typ der Rückgabewert dieser Funktion sein muss (query, string, struct, number usw.).
-	 * @return Typ des Rückgabewert.
+	 * Gibt zurueck von welchem Typ der Rueckgabewert dieser Funktion sein muss (query, string, struct, number usw.).
+	 * @return Typ des Rueckgabewert.
 	 */
 	public String getReturnTypeAsString() {
 		return strReturnType;
 	}
 
 	/**
-	 * Gibt die Klassendefinition als Zeichenkette zurück, welche diese Funktion implementiert.
+	 * Gibt die Klassendefinition als Zeichenkette zurueck, welche diese Funktion implementiert.
 	 * @return Klassendefinition als Zeichenkette.
 	 */
 	public String getCls() {
@@ -144,23 +150,18 @@ public final class FunctionLibFunction {
 	}
 
 	/**
-	 * Gibt die Klasse zurück, welche diese Funktion implementiert.
+	 * Gibt die Klasse zurueck, welche diese Funktion implementiert.
 	 * @return Klasse der Function.
 	 */
-	public Class getCazz() {
+	public Class getClazz() {
 		if(clazz==null) {
 			clazz=ClassUtil.loadClass(cls,(Class)null);
-			/*try {
-				clazz=Class.orName(cls);
-			} catch (ClassNotFoundException e) {
-				
-			}*/
 		}
 		return clazz;
 	}
 
 	/**
-	 * Gibt die Beschreibung der Funktion zurück.
+	 * Gibt die Beschreibung der Funktion zurueck.
 	 * @return String
 	 */
 	public String getDescription() {
@@ -168,8 +169,8 @@ public final class FunctionLibFunction {
 	}
 
 	/**
-	 * Gibt die FunctionLib zurück, zu der die Funktion gehört.
-	 * @return Zugehörige FunctionLib.
+	 * Gibt die FunctionLib zurueck, zu der die Funktion gehoert.
+	 * @return Zugehoerige FunctionLib.
 	 */
 	public FunctionLib getFunctionLib() {
 		return functionLib;
@@ -184,7 +185,7 @@ public final class FunctionLibFunction {
 	}	
 
 	/**
-	 * Fügt der Funktion ein Argument hinzu.
+	 * Fuegt der Funktion ein Argument hinzu.
 	 * @param arg Argument zur Funktion.
 	 */
 	public void addArg(FunctionLibFunctionArg arg) {
@@ -195,7 +196,7 @@ public final class FunctionLibFunction {
 	}
 
 	/**
-	 * Fügt der Funktion ein Argument hinzu, alias für addArg.
+	 * Fuegt der Funktion ein Argument hinzu, alias fuer addArg.
 	 * @param arg Argument zur Funktion.
 	 */
 	public void setArg(FunctionLibFunctionArg arg) {
@@ -220,7 +221,7 @@ public final class FunctionLibFunction {
 	}
 
 	/**
-	 * Setzt den Rückgabewert der Funktion (query,array,string usw.)
+	 * Setzt den Rueckgabewert der Funktion (query,array,string usw.)
 	 * @param value
 	 */
 	public void setReturn(String value) {
@@ -245,8 +246,8 @@ public final class FunctionLibFunction {
 	}
 
 	/**
-	 * Setzt die zugehörige FunctionLib.
-	 * @param functionLib Zugehörige FunctionLib.
+	 * Setzt die zugehoerige FunctionLib.
+	 * @param functionLib Zugehoerige FunctionLib.
 	 */
 	public void setFunctionLib(FunctionLib functionLib) {
 		this.functionLib=functionLib;
@@ -331,5 +332,24 @@ public final class FunctionLibFunction {
 	}
 	public String getMemberTypeAsString() {
 		return CFTypes.toString(getMemberType(),"any");
+	}
+	public BIF getBIF() {
+		if(bif!=null) return bif;
+		
+		Class clazz=getClazz();
+        if(clazz==null)throw new PageRuntimeException(new ExpressionException("class "+clazz+" not found"));
+        
+		if(Reflector.isInstaneOf(clazz, BIF.class)) {
+			try {
+				bif=(BIF)clazz.newInstance();
+			}
+			catch (Throwable t) {
+				throw new RuntimeException(t);
+			}
+		}
+		else {
+			return new BIFProxy(clazz);
+		}
+		return bif;
 	}
 }

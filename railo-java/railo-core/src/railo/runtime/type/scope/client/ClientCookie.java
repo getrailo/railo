@@ -26,10 +26,7 @@ public final class ClientCookie extends StorageScopeCookie implements Client {
 	}
 	
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientCookie(this,deepCopy);
 	}

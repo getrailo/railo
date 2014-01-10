@@ -18,7 +18,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * Cast to a String
  */
-public final class CastString extends ExpressionBase implements ExprString {
+public final class CastString extends ExpressionBase implements ExprString,Cast {
     
     private Expression expr;
 
@@ -66,9 +66,7 @@ public final class CastString extends ExpressionBase implements ExprString {
         return Types.STRING;
     }
 
-	/**
-	 * @return the expr
-	 */
+	@Override
 	public Expression getExpr() {
 		return expr;
 	}

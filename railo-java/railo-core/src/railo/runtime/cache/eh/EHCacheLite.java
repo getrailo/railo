@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.io.res.Resource;
@@ -39,7 +40,7 @@ public class EHCacheLite extends EHCacheSupport {
 	private static final boolean REPLICATE_REMOVALS = true;
 	private static final boolean REPLICATE_ASYNC = true;
 	private static final int ASYNC_REP_INTERVAL = 1000; */
-	private static Map managers=new HashMap();
+	private static Map<String,CacheManagerAndHashLite> managers=new HashMap<String,CacheManagerAndHashLite>();
 	
 	//private net.sf.ehcache.Cache cache;
 	private int hits;
@@ -61,7 +62,7 @@ public class EHCacheLite extends EHCacheSupport {
 		
 		// create all xml
 		HashMap<String,String> mapXML = new HashMap<String,String>();
-		HashMap newManagers = new HashMap();
+		HashMap<String,CacheManagerAndHashLite> newManagers = new HashMap<String,CacheManagerAndHashLite>();
 		for(int i=0;i<hashArgs.length;i++){
 			if(mapXML.containsKey(hashArgs[i])) continue;
 			
@@ -69,7 +70,7 @@ public class EHCacheLite extends EHCacheSupport {
 			String xml=createXML(hashDir.getAbsolutePath(), cacheNames,arguments,hashArgs,hashArgs[i]);
 			String hash=MD5.getDigestAsString(xml);
 			
-			CacheManagerAndHashLite manager=(CacheManagerAndHashLite) managers.remove(hashArgs[i]);
+			CacheManagerAndHashLite manager= managers.remove(hashArgs[i]);
 			if(manager!=null && manager.hash.equals(hash)) {
 				newManagers.put(hashArgs[i], manager);
 			}	
@@ -77,14 +78,13 @@ public class EHCacheLite extends EHCacheSupport {
 		}
 		
 		// shutdown all existing managers that have changed
-		Map.Entry entry;
-		Iterator it;
 		synchronized(managers){
-			it = managers.entrySet().iterator();
+			Entry<String, CacheManagerAndHashLite> entry;
+			Iterator<Entry<String, CacheManagerAndHashLite>> it = managers.entrySet().iterator();
 			while(it.hasNext()){
-				entry=(Entry) it.next();
+				entry = it.next();
 				if(entry.getKey().toString().startsWith(dir.getAbsolutePath())){
-					((CacheManagerAndHashLite)entry.getValue()).manager.shutdown();
+					entry.getValue().manager.shutdown();
 				}
 				else newManagers.put(entry.getKey(), entry.getValue());
 				
@@ -92,12 +92,13 @@ public class EHCacheLite extends EHCacheSupport {
 			managers=newManagers;
 		}
 		
-		it = mapXML.entrySet().iterator();
+		Iterator<Entry<String, String>> it = mapXML.entrySet().iterator();
+		Entry<String, String> entry;
 		String xml,hashArg,hash;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			hashArg=(String) entry.getKey();
-			xml=(String) entry.getValue();
+			entry=it.next();
+			hashArg=entry.getKey();
+			xml=entry.getValue();
 			
 			hashDir=dir.getRealResource(hashArg);
 			if(!hashDir.isDirectory())hashDir.createDirectory(true);
@@ -107,7 +108,7 @@ public class EHCacheLite extends EHCacheSupport {
 			
 			moveData(dir,hashArg,cacheNames,arguments);
 			
-			CacheManagerAndHashLite m = new CacheManagerAndHashLite(new CacheManager(new ByteArrayInputStream(xml.getBytes())),hash);
+			CacheManagerAndHashLite m = new CacheManagerAndHashLite(new CacheManager(new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8))),hash);
 			newManagers.put(hashDir.getAbsolutePath(), m);
 		}
 		
@@ -211,7 +212,7 @@ public class EHCacheLite extends EHCacheSupport {
 	}
 
 	private static void writeEHCacheXML(Resource hashDir, String xml) {
-		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8));
 		OutputStream os=null;
 		try{
 			os = hashDir.getRealResource("ehcache.xml").getOutputStream();
@@ -326,16 +327,13 @@ public class EHCacheLite extends EHCacheSupport {
 
 
 
-	/**
-	 * @param cacheName 
-	 * @throws IOException 
-	 * @see railo.commons.io.cache.Cache#init(railo.runtime.type.Struct)
-	 */
-	public void init(String cacheName, Struct arguments) throws IOException {
+	public void init(String cacheName, Struct arguments) {
 		CFMLEngine engine = CFMLEngineFactory.getInstance();
 		init(engine.getThreadPageContext().getConfig(),cacheName, arguments);
 		
 	}
+	
+	@Override
 	public void init(Config config,String cacheName, Struct arguments) {
 		
 		this.classLoader=config.getClassLoader();
@@ -343,7 +341,7 @@ public class EHCacheLite extends EHCacheSupport {
 		
 		setClassLoader();
 		Resource hashDir = config.getConfigDir().getRealResource("ehcache").getRealResource(createHash(arguments));
-		manager =((CacheManagerAndHashLite) managers.get(hashDir.getAbsolutePath())).manager;
+		manager =managers.get(hashDir.getAbsolutePath()).manager;
 	} 
 
 	private void setClassLoader() {
@@ -356,9 +354,7 @@ public class EHCacheLite extends EHCacheSupport {
 		return manager.getCache(cacheName);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(String)
-	 */
+	@Override
 	public boolean remove(String key) {
 		try	{
 			return getCache().remove(key);
@@ -399,9 +395,7 @@ public class EHCacheLite extends EHCacheSupport {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(String)
-	 */
+	@Override
 	public Object getValue(String key) throws CacheException {
 		try {
 			misses++;
@@ -419,9 +413,7 @@ public class EHCacheLite extends EHCacheSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(String, java.lang.Object)
-	 */
+	@Override
 	public Object getValue(String key, Object defaultValue) {
 		try {
 			Element el = getCache().get(key);
@@ -436,16 +428,12 @@ public class EHCacheLite extends EHCacheSupport {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#hitCount()
-	 */
+	@Override
 	public long hitCount() {
 		return hits;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#missCount()
-	 */
+	@Override
 	public long missCount() {
 		return misses;
 	}
@@ -513,9 +501,7 @@ class CacheManagerAndHashLite {
 
 class DataFiterLite implements ResourceNameFilter {
 
-	/**
-	 * @see railo.commons.io.res.filter.ResourceNameFilter#accept(railo.commons.io.res.Resource, java.lang.String)
-	 */
+	@Override
 	public boolean accept(Resource parent, String name) {
 		return name.endsWith(".data");
 	}

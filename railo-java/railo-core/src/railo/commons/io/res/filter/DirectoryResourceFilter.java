@@ -9,10 +9,7 @@ public final class DirectoryResourceFilter implements ResourceFilter {
 
     public final static DirectoryResourceFilter FILTER = new DirectoryResourceFilter();
 
-	/**
-     *
-     * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-     */
+	@Override
     public boolean accept(Resource pathname) {
         return pathname.isDirectory();
     }

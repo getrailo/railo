@@ -3,7 +3,7 @@ package railo.runtime.type.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
@@ -84,8 +84,12 @@ public class CollectionUtil {
 		return rtn.toArray(new String[rtn.size()]);
 	}
 
-	
-	public static int hashCode(Collection coll) {
+	public static boolean isEmpty(Map<?, ?> map) {
+		return map==null || map.size()==0;
+	}
+
+	/*public static int hashCode(Collection coll) { produce infiniti loop when there is a refrerence to itself or a anchestor
+
 		int hashCode = 1;
 		Iterator<Entry<Key, Object>> it = coll.entryIterator();
 		Entry<Key, Object> e;
@@ -99,15 +103,5 @@ public class CollectionUtil {
 			);
 		}
 		return hashCode;
-	}
-	
-
-	/*public static String keyList(Collection coll, String delimiter) {
-		return List.arrayToList(coll.keys(),delimiter);
 	}*/
-
-	/*public static String keyList(Collection.Key[] keys, String delimiter) {
-		return List.arrayToList(keys,delimiter);
-	}*/
-
 }

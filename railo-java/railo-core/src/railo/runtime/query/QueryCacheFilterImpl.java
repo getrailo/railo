@@ -13,9 +13,7 @@ public class QueryCacheFilterImpl implements QueryCacheFilter {
 		filter=new WildCardFilter(wildcard,ignoreCase);
 	}
 
-	/**
-	 * @see railo.commons.io.res.util.WildCardFilter#accept(java.lang.String)
-	 */
+	@Override
 	public boolean accept(String name) {
 		
 		StringBuffer sb=new StringBuffer();

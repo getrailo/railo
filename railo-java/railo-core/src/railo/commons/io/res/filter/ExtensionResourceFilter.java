@@ -5,7 +5,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 
 /**
- * Filter für die <code>listFiles</code> Methode des FIle Objekt, 
+ * Filter fuer die <code>listFiles</code> Methode des FIle Objekt, 
  * zum filtern von FIles mit einer bestimmten Extension.
  */
 public final class ExtensionResourceFilter implements ResourceFilter {
@@ -14,11 +14,14 @@ public final class ExtensionResourceFilter implements ResourceFilter {
 	private final boolean allowDir;
 	private final boolean ignoreCase;
     //private int extLen;
-	
+
+	public static final ExtensionResourceFilter EXTENSION_JAR_NO_DIR = new ExtensionResourceFilter(".jar", false);
+	public static final ExtensionResourceFilter EXTENSION_CLASS_DIR  = new ExtensionResourceFilter(".class", true);
+
 
 	/**
 	 * Konstruktor des Filters
-	 * @param extension Endung die geprüft werden soll.
+	 * @param extension Endung die geprueft werden soll.
 	 */
 	public ExtensionResourceFilter(String extension) {
 		this(new String[]{extension},false,true);
@@ -26,7 +29,7 @@ public final class ExtensionResourceFilter implements ResourceFilter {
 
 	/**
 	 * Konstruktor des Filters
-	 * @param extension Endung die geprüft werden soll.
+	 * @param extension Endung die geprueft werden soll.
 	 */
 	public ExtensionResourceFilter(String extension, boolean allowDir) {
 		this(new String[]{extension},allowDir,true);
@@ -53,9 +56,7 @@ public final class ExtensionResourceFilter implements ResourceFilter {
     	this.ignoreCase=ignoreCase;
 	}
 
-	/**
-	 * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public boolean accept(Resource res) {
 		if(res.isDirectory()) return allowDir;
 		if(res.exists()) {

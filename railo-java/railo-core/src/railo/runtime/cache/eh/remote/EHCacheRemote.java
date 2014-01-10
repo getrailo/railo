@@ -58,9 +58,7 @@ public class EHCacheRemote extends CacheSupport {
 		this.soap=new SoapClient(new URL(url.toExternalForm()+"soap/EhcacheWebServiceEndpoint?wsdl"));
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#contains(java.lang.String)
-	 */
+	@Override
 	public boolean contains(String key) {
 		try {
 			return rest.contains(name, key);
@@ -69,9 +67,7 @@ public class EHCacheRemote extends CacheSupport {
 		}
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#keys()
-	 */
+	@Override
 	public List keys() {
 		try {
 			return soap.getKeysWithExpiryCheck(name);
@@ -173,9 +169,7 @@ public class EHCacheRemote extends CacheSupport {
 		
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(java.lang.String)
-	 */
+	@Override
 	public boolean remove(String key) {
 		try {
 			return soap.remove(name, key);

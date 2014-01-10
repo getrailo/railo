@@ -15,10 +15,7 @@ public class ValueBoolean extends ValueSupport implements Literal {
 		this.value=value;
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return getString();
 		return getString()+" as "+getAlias();

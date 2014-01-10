@@ -13,6 +13,7 @@ import railo.transformer.bytecode.visitor.WhileVisitor;
 public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,FlowControlContinue {
 
 	private WhileVisitor wv;
+	private String label;
 
 	public TagWhile(Position start,Position end) {
 		super(start,end);
@@ -45,6 +46,16 @@ public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,F
 	 */
 	public Label getContinueLabel() {
 		return wv.getContinueLabel();
+	}
+
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label=label;
 	}
 
 }

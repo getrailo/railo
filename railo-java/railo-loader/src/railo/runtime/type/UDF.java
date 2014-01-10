@@ -17,7 +17,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 	public static final int RETURN_FORMAT_WDDX=0;
 	public static final int RETURN_FORMAT_JSON=1;
 	public static final int RETURN_FORMAT_PLAIN=2;
-	public static final int RETURN_FORMAT_SERIALIZE=3;
+	public static final int RETURN_FORMAT_SERIALIZE=3; // FUTURE change to RETURN_FORMAT_CFML
 	public static final int RETURN_FORMAT_XML=4;
 	
 
@@ -42,8 +42,10 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return default value
      * @throws PageException
      */
-    public abstract Object getDefaultValue(PageContext pc, int index)
-            throws PageException;
+    public abstract Object getDefaultValue(PageContext pc, int index) throws PageException;
+    
+
+    // FUTURE public abstract Object getDefaultValue(PageContext pc, int index, Object defaultValue);
 
     /**
      * @return Returns the functionName.
@@ -58,9 +60,10 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
     /**
      * @return Returns the returnType.
      */
-    public abstract int getReturnType();
+    public int getReturnType();
 
-    public abstract int getReturnFormat();
+    public int getReturnFormat(); // FUTURE mark as deprecated
+    // FUTURE public abstract int getReturnFormat(int defaultFormat);
 
     /**
      * returns null when not defined
@@ -89,8 +92,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return return value of the function
      * @throws PageException
      */
-    public abstract Object callWithNamedValues(PageContext pageContext,
-            Struct values, boolean doIncludePath) throws PageException;
+    public abstract Object callWithNamedValues(PageContext pageContext, Struct values, boolean doIncludePath) throws PageException;
 
     /**
      * call user defined Funcion with parameters as Object Array
@@ -100,8 +102,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      * @return return value of the function
      * @throws PageException
      */
-    public abstract Object call(PageContext pageContext, Object[] args,
-            boolean doIncludePath) throws PageException;
+    public abstract Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException;
 
     /**
      * @return Returns the displayName.
@@ -113,11 +114,9 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      */
     public abstract String getHint();
 
-    
+
     public abstract PageSource getPageSource();
     
-    
-
 	public abstract Struct getMetaData(PageContext pc) throws PageException; 
 	
 

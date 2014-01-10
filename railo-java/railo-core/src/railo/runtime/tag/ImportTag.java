@@ -17,9 +17,6 @@ public final class ImportTag extends TagImpl {
 
 	private String path;
 
-	/**
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
 	@Override
 	public void release() {
 		path=null;
@@ -42,16 +39,12 @@ public final class ImportTag extends TagImpl {
 	public void setTaglib(String taglib)	{}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws ExpressionException, ApplicationException {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

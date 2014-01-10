@@ -18,9 +18,7 @@ public final class Loginuser extends TagImpl {
     private String password;
     private String[] roles;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		name=null;
@@ -48,10 +46,7 @@ public final class Loginuser extends TagImpl {
         roles=CredentialImpl.toRole(oRoles);
     }
     
-	/**
-	* @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		Resource rolesDir = pageContext.getConfig().getConfigDir().getRealResource("roles");
 	    CredentialImpl login = new CredentialImpl(name,password,roles,rolesDir);
@@ -78,9 +73,7 @@ public final class Loginuser extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

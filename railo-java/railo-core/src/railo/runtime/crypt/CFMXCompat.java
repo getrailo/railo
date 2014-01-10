@@ -4,6 +4,9 @@ import railo.commons.lang.StringUtil;
 
 public final class CFMXCompat {
 
+    public static final String ALGORITHM_NAME = "cfmx_compat";
+
+
     private String m_Key;
     private int m_LFSR_A = 0x13579bdf;
     private int m_LFSR_B = 0x2468ace0;
@@ -80,5 +83,17 @@ public final class CFMXCompat {
         if(0 == m_LFSR_A)m_LFSR_A = 0x13579bdf;
         if(0 == m_LFSR_B)m_LFSR_B = 0x2468ace0;
         if(0 == m_LFSR_C)m_LFSR_C = 0xfdb97531;
+    }
+
+
+    /**
+     * returns true if the passed value is empty or is CFMX_COMPAT
+     */
+    public static boolean isCfmxCompat( String algorithm ) {
+
+        if ( StringUtil.isEmpty( algorithm, true ) )
+            return true;
+
+        return algorithm.equalsIgnoreCase( CFMXCompat.ALGORITHM_NAME );
     }
 }

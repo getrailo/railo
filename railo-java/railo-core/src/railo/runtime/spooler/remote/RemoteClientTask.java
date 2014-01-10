@@ -29,22 +29,16 @@ public class RemoteClientTask extends SpoolerTaskWS {
 		args.setEL(CALLER_ID, callerId);
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#getType()
-	 */
+	@Override
 	public String getType() {
 		return type;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#subject()
-	 */
+	@Override
 	public String subject() {
 		return action+" ("+super.subject()+")";
 	}
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#detail()
-	 */
+	@Override
 	public Struct detail() {
 		Struct sct=super.detail();
 		sct.setEL("action", action);
@@ -52,16 +46,12 @@ public class RemoteClientTask extends SpoolerTaskWS {
 	}
 	
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTaskWS#getMethodName()
-	 */
+	@Override
 	protected String getMethodName() {
 		return "invoke";
 	}
 	
-	/**
-	 * @see railo.runtime.spooler.SpoolerTaskWS#getArguments()
-	 */
+	@Override
 	protected Struct getArguments() {
 		return args;
 	}

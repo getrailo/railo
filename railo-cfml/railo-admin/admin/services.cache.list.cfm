@@ -14,11 +14,11 @@
                 action="updateCacheDefaultConnection"
                 type="#request.adminType#"
                 password="#session["password"&request.adminType]#"
-                object="#StructKeyExists(form,'object')?form.object:''#"
-                template="#StructKeyExists(form,'template')?form.template:''#"
-                query="#StructKeyExists(form,'query')?form.query:''#"
-                resource="#StructKeyExists(form,'resource')?form.resource:''#"
-                function="#StructKeyExists(form,'function')?form.function:''#"
+                object="#StructKeyExists(form,'default_object')?form.default_object:''#"
+                template="#StructKeyExists(form,'default_template')?form.default_template:''#"
+                query="#StructKeyExists(form,'default_query')?form.default_query:''#"
+                resource="#StructKeyExists(form,'default_resource')?form.default_resource:''#"
+                function="#StructKeyExists(form,'default_function')?form.default_function:''#"
                 remoteClients="#request.getRemoteClients()#">				
 		</cfcase>
 	<!--- delete --->
@@ -226,8 +226,20 @@ Redirtect to entry --->
 				</tfoot>
 			 </table>
 		</cfform>
+		
 	</cfif>
 </cfoutput>
+<script>
+function defaultValue(field) {
+	var form=field.form;
+	for(var i=0;i<form.elements.length;i++){
+		var f=form.elements[i];
+		if(f.name.substring(0,8)=='default_' && field.name!=f.name && f.value==field.value) {
+			f.selectedIndex = 0;
+		}
+	}
+}
+</script>
 
 <!--- select default cache --->
 <cfif connections.recordcount and access EQ "yes">
@@ -237,20 +249,35 @@ Redirtect to entry --->
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<table class="maintbl">
 				<tbody>
+	<cfset defaults={}>
     <cfloop index="type" list="object,template,query,resource,function"><!---  --->
 						<tr>
 							<th scope="row">#stText.Settings.cache['defaulttype'& type]#</th>
 							<td>
-								<select name="#type#" class="small">
+								<select name="default_#type#" class="small" onchange="defaultValue(this);">
 									<option value="">------</option>
 									<cfloop query="connections">
-										<option value="#connections.name#" <cfif connections.default EQ type>selected="selected"</cfif>>#connections.name#</option>
+										<option value="#connections.name#" <cfif connections.default EQ type><cfset defaults[type]=connections.name>selected="selected"</cfif>>#connections.name#</option>
 									</cfloop>
 								</select>
 								<div class="comment">#stText.Settings.cache['defaulttype' &type& 'Desc']#</div>
 							</td>
 						</tr>
 					</cfloop>
+						<tr>
+						<td colspan="2">
+
+<cfsavecontent variable="codeSample">
+	this.cache.object = "#isNull(defaults.object) || !len(defaults.object)?"&lt;cache-name>":defaults.object#";
+this.cache.template = "#isNull(defaults.template) || !len(defaults.template)?"&lt;cache-name>":defaults.template#";
+this.cache.query = "#isNull(defaults.query) || !len(defaults.query)?"&lt;cache-name>":defaults.query#";
+this.cache.resource = "#isNull(defaults.resource) || !len(defaults.resource)?"&lt;cache-name>":defaults.resource#";
+this.cache.function = "#isNull(defaults.function) || !len(defaults.function)?"&lt;cache-name>":defaults.function#";
+</cfsavecontent>
+<cfset renderCodingTip( codeSample )>
+
+						</td>
+						</tr>
 				</tbody>
 				<tfoot>
 					<tr>
@@ -262,8 +289,9 @@ Redirtect to entry --->
 						</td>
 					</tr>
 				</tfoot>
-			</table>   
+			</table>
 		</cfform>
+		
 	</cfoutput>
 </cfif>
 

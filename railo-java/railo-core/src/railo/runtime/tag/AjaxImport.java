@@ -11,9 +11,7 @@ public class AjaxImport extends TagImpl {
 	
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		//csssrc=null;
@@ -42,17 +40,13 @@ public class AjaxImport extends TagImpl {
 		//this.tags = tags;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		throw new TagNotSupported("AjaxImport");
 		//return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

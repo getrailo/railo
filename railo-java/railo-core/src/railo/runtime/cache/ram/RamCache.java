@@ -2,11 +2,11 @@ package railo.runtime.cache.ram;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.CacheEntry;
@@ -18,14 +18,14 @@ import railo.runtime.type.Struct;
 
 public class RamCache extends CacheSupport {
 
-	private static final int DEFAULT_CONTROL_INTERVALL = 60;
-	private Map<String, RamCacheEntry> entries= new HashMap<String, RamCacheEntry>();
+	private static final int DEFAULT_CONTROL_INTERVAL = 60;
+	private Map<String, RamCacheEntry> entries= new ConcurrentHashMap<String, RamCacheEntry>();
 	private long missCount;
 	private int hitCount;
 	
 	private long idleTime;
 	private long until;
-	private int controlIntervall=DEFAULT_CONTROL_INTERVALL*1000;
+	private int controlInterval=DEFAULT_CONTROL_INTERVAL*1000;
 	
 
 	public static void init(Config config,String[] cacheNames,Struct[] arguments)  {//print.ds();
@@ -35,13 +35,14 @@ public class RamCache extends CacheSupport {
 	public void init(Config config,String cacheName, Struct arguments) throws IOException {
 		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
-		controlIntervall=Caster.toIntValue(arguments.get("controlIntervall",null),DEFAULT_CONTROL_INTERVALL)*1000;
+		
+		Object ci = arguments.get("controlIntervall",null);
+		if(ci==null)ci = arguments.get("controlInterval",null);
+		controlInterval=Caster.toIntValue(ci,DEFAULT_CONTROL_INTERVAL)*1000;
 		new Controler(this).start();
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#contains(java.lang.String)
-	 */
+	@Override
 	public boolean contains(String key) {
 		return getQuiet(key,null)!=null;
 	}
@@ -61,9 +62,7 @@ public class RamCache extends CacheSupport {
 		return entry;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getCacheEntry(java.lang.String, railo.commons.io.cache.CacheEntry)
-	 */
+	@Override
 	public CacheEntry getCacheEntry(String key, CacheEntry defaultValue) {
 		RamCacheEntry ce = (RamCacheEntry) getQuiet(key, null);
 		if(ce!=null) {
@@ -74,16 +73,12 @@ public class RamCache extends CacheSupport {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#hitCount()
-	 */
+	@Override
 	public long hitCount() {
 		return hitCount;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#missCount()
-	 */
+	@Override
 	public long missCount() {
 		return missCount;
 	}
@@ -138,7 +133,7 @@ public class RamCache extends CacheSupport {
 				catch(Throwable t){
 					t.printStackTrace();
 				}
-				SystemUtil.sleep(ramCache.controlIntervall);
+				SystemUtil.sleep(ramCache.controlInterval);
 			}
 		}
 

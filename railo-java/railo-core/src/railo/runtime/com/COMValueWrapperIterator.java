@@ -20,23 +20,17 @@ public final class COMValueWrapperIterator implements Iterator {
         this.wrapper=wrapper;
     }
 
-    /**
-     * @see java.util.Iterator#remove()
-     */
+    @Override
     public void remove() {
         enumVariant.safeRelease();
     }
 
-    /**
-     * @see java.util.Iterator#hasNext()
-     */
+    @Override
     public boolean hasNext() {
         return enumVariant.hasMoreElements();
     }
 
-    /**
-     * @see java.util.Iterator#next()
-     */
+    @Override
     public Object next() {
         return COMUtil.toObject(wrapper,enumVariant.Next(),"",null);
     }

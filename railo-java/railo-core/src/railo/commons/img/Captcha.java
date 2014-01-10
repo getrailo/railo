@@ -18,10 +18,7 @@ public final class Captcha extends AbstractCaptcha {
 		//,'0','1','2','3','4','5','6','7','8','9'
 	};
 
-	/**
-	 *
-	 * @see railo.commons.img.AbstractCaptcha#getFont(java.lang.String, java.awt.Font)
-	 */
+	@Override
 	public Font getFont(String font, Font defaultValue) {
 		return Font.decode(font);
 	}

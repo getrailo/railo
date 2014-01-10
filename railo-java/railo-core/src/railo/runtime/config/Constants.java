@@ -9,7 +9,7 @@ public class Constants {
 	public static final String APP_CFC = "Application.cfc";
 	public static final String APP_CFM = "Application.cfm";
 	public static final String CFAPP_NAME = "cfapplication";
-
-
+	
+	
 
 }

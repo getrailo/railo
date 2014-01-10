@@ -26,23 +26,17 @@ public final class COMKeyWrapperIterator implements Iterator<Collection.Key> {
         this.wrapper=wrapper;
     }
 
-    /**
-     * @see java.util.Iterator#remove()
-     */
+    @Override
     public void remove() {
         enumVariant.safeRelease();
     }
 
-    /**
-     * @see java.util.Iterator#hasNext()
-     */
+    @Override
     public boolean hasNext() {
         return enumVariant.hasMoreElements();
     }
 
-    /**
-     * @see java.util.Iterator#next()
-     */
+    @Override
     public Collection.Key next() {
         try {
 			return Caster.toKey(COMUtil.toObject(wrapper,enumVariant.Next(),"",null));

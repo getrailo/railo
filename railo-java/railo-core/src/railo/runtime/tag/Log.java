@@ -43,9 +43,7 @@ public final class Log extends TagImpl {
 	private boolean application;
 	private String charset=null;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		log=LOG_APPLICATION;
@@ -158,10 +156,7 @@ public final class Log extends TagImpl {
 	}
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    railo.commons.io.log.Log logger;
 	    Config config =pageContext.getConfig();

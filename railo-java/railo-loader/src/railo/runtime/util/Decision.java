@@ -10,6 +10,9 @@ import railo.runtime.type.Collection.Key;
  * Object to test if a Object is a specific type
  */
 public interface Decision {
+	
+	// FUTURE add function isJson and others we support in the core
+	// FUTURE add function is(String type, Object value)
 
     /**
      * tests if value is a simple value (Number,String,Boolean,Date,Printable)
@@ -114,6 +117,8 @@ public interface Decision {
      * @return boolean
      */
     public boolean isUserDefinedFunction(Object object);
+    // FUTURE add isClosure and isFunction, set function above to deprecated
+    
     
     /**
      * tests if year is a leap year 

@@ -13,10 +13,7 @@ public final class ForkOutputStream extends OutputStream {
 		this.os2=os2;
 	}
 	
-	/**
-	 *
-	 * @see java.io.OutputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		try {
 			os1.close();
@@ -26,10 +23,7 @@ public final class ForkOutputStream extends OutputStream {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#flush()
-	 */
+	@Override
 	public void flush() throws IOException {
 		try {
 			os1.flush();
@@ -39,19 +33,13 @@ public final class ForkOutputStream extends OutputStream {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[], int, int)
-	 */
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		os1.write(b, off, len);
 		os2.write(b, off, len);
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[])
-	 */
+	@Override
 	public void write(byte[] b) throws IOException {
 		os1.write(b);
 		os2.write(b);

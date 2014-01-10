@@ -10,9 +10,7 @@ public final class Not implements Op {
 		this.right=right;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return left+" NOT "+right;
 	}

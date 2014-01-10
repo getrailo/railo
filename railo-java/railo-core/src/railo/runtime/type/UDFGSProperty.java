@@ -6,7 +6,9 @@ import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.component.MemberSupport;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.DeprecatedException;
@@ -17,20 +19,24 @@ import railo.runtime.exp.UDFCasterException;
 import railo.runtime.functions.decision.IsValid;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
-public abstract class UDFGSProperty extends UDFImpl {
+public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 
 	private static final Collection.Key MIN_LENGTH = KeyImpl.intern("minLength");
 	private static final Collection.Key MAX_LENGTH = KeyImpl.intern("maxLength");
 	
 	protected final FunctionArgument[] arguments;
 	protected final String name;
-	protected final ComponentImpl component;
+	protected ComponentImpl component;
+	private UDFPropertiesImpl properties;
 
 	public UDFGSProperty(ComponentImpl component,String name,FunctionArgument[] arguments,short rtnType,String rtnFormat) {
-		super(UDFProperties(
+		super(Component.ACCESS_PUBLIC);
+		properties=UDFProperties(
 				component.getPageSource(),
 				arguments,
 				-1,
@@ -38,16 +44,18 @@ public abstract class UDFGSProperty extends UDFImpl {
 				rtnType,
 				rtnFormat,
 				false,
-				"public",
+				true,
+				Component.ACCESS_PUBLIC,
 				"",
 				"",
 				"",
 				Boolean.FALSE,
 				Boolean.FALSE,
 				0L,
+				null,
 				new StructImpl()
 				
-		));
+		);
 		
 		this.name=name;
 		this.arguments=arguments;
@@ -61,15 +69,16 @@ public abstract class UDFGSProperty extends UDFImpl {
 	        short returnType, 
 	        String strReturnFormat, 
 	        boolean output, 
-	        String strAccess, 
+	        Boolean bufferOutput, 
+	        int access, 
 	        String displayName, 
 	        String description, 
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        long cachedWithin,
+	        Integer localMode,
 	        StructImpl meta) {
-		try {
 			return new UDFPropertiesImpl( pageSource,
 			        arguments,
 					 index,
@@ -77,131 +86,113 @@ public abstract class UDFGSProperty extends UDFImpl {
 			         returnType, 
 			         strReturnFormat, 
 			         output,
-			         ComponentUtil.toIntAccess(strAccess), 
+			         access, 
+			         bufferOutput,
 			         displayName, 
 			         description, 
 			         hint, 
 			         secureJson,
 			         verifyClient,
 			         cachedWithin,
+			         localMode,
 			         meta);
-		} catch (ExpressionException e) {
-			return new UDFPropertiesImpl();
-		}
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getFunctionArguments()
-	 */
+	@Override
 	public FunctionArgument[] getFunctionArguments() {
 		return arguments;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getFunctionName()
-	 */
+	@Override
 	public String getFunctionName() {
 		return name;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	 */
+	@Override
+	public PageSource getPageSource() {
+		return component.getPageSource();
+	}
+
+	@Override
+	public int getIndex() {
+		return -1;
+	}
+
+	@Override
 	public Component getOwnerComponent() {
 		return component;
 	}
+
+	public void setOwnerComponent(ComponentImpl component) {
+		this.component = component;
+	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getPage()
-	 */
 	public Page getPage() {
 		throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use instead getPageSource():PageSource"));
-        //return component.getPage();
-	}
+    }
 
-	/**
-	 * @see railo.runtime.type.UDF#getOutput()
-	 */
+	@Override
 	public boolean getOutput() {
 		return false;
 	}
-
-	/**
-	 * @see railo.runtime.component.Member#getAccess()
-	 */
-	public int getAccess() {
-		return Component.ACCESS_PUBLIC;
+ 
+	public UDF duplicate(boolean deep) {
+		return duplicate(); // deep has no influence here, because a UDF is not a collection
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getDisplayName()
-	 */
+	@Override
 	public String getDisplayName() {
 		return "";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		return "";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getHint()
-	 */
+	@Override
 	public String getHint() {
 		return "";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnFormat()
-	 */
+	@Override
 	public int getReturnFormat() {
-		return UDFImpl.RETURN_FORMAT_WDDX;
+		return UDF.RETURN_FORMAT_WDDX;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnType()
-	 */
+	@Override
+	public int getReturnFormat(int defaultValue) {
+		return defaultValue;
+	}
+
+	@Override
 	public int getReturnType() {
 		return CFTypes.toShortStrict(getReturnTypeAsString(),CFTypes.TYPE_UNKNOW);
 	}
 
-	/**
-	 * @see railo.runtime.component.Member#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return this;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getSecureJson()
-	 */
+	@Override
 	public Boolean getSecureJson() {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getVerifyClient()
-	 */
+	@Override
 	public Boolean getVerifyClient() {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this,false);
+		return UDFUtil.toDumpData(pageContext, maxlevel, properties, this,false);
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getMetaData(railo.runtime.PageContext)
-	 */
+	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
-		return super.getMetaData(pc);
-		//return UDFImpl.getMetaData(pc, this);
+		return ComponentUtil.getMetaData(pc, properties);
 	}
 	
 	
@@ -240,7 +231,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 			if(!Double.isNaN(min) && l<((int)min))
 				throw new ExpressionException("string ["+str+"] is to short ["+l+"], the string must be at least ["+min+"] characters");
 			if(!Double.isNaN(max) && l>((int)max))
-				throw new ExpressionException("string ["+str+"] is to long ["+l+"], the string can have a maximal length of ["+max+"] characters");
+				throw new ExpressionException("string ["+str+"] is to long ["+l+"], the string can have a maximum length of ["+max+"] characters");
 		}
 		else if(validate.equals("regex")){
 			String pattern=Caster.toString(validateParams.get(KeyConstants._pattern,null),null);
@@ -251,6 +242,32 @@ public abstract class UDFGSProperty extends UDFImpl {
 	}
 
 	
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key calledName, Struct values, boolean doIncludePath) throws PageException {
+		PageContextImpl pci = ((PageContextImpl)pc);
+		Key old =pci.getActiveUDFCalledName();
+		pci.setActiveUDFCalledName(calledName);
+		try{
+			return callWithNamedValues(pci, values, doIncludePath);
+		}
+		finally{
+			pci.setActiveUDFCalledName(old);
+		}
+	}
+
+	@Override
+	public Object call(PageContext pc, Key calledName, Object[] args, boolean doIncludePath) throws PageException {
+		PageContextImpl pci = ((PageContextImpl)pc);
+		Key old =pci.getActiveUDFCalledName();
+		pci.setActiveUDFCalledName(calledName);
+		try{
+			return call(pci, args, doIncludePath);
+		}
+		finally{
+			pci.setActiveUDFCalledName(old);
+		}
+	}
+
 	private static String createMessage(String format, Object value) {
     	if(Decision.isSimpleValue(value)) return "the value ["+Caster.toString(value,null)+"] is not in  ["+format+"] format";
     	return "cannot convert object from type ["+Caster.toTypeName(value)+"] to a ["+format+"] format";

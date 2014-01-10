@@ -8,12 +8,12 @@
 			action:"server",label:stMenu.server.label,
 			children:array(
 				struct(action:"cache",label:stMenu.server.cache),
+				struct(action:"compiler",label:stMenu.server.compiler),
 				struct(action:"regional",label:stMenu.server.regional),
 				struct(action:"charset",label:stMenu.server.charset),
 				struct(action:"scope",label:stMenu.server.scope),
-				struct(action:"application",label:stMenu.server.application),
+				struct(action:"request",label:stMenu.server.request),
 				struct(action:"output",label:stMenu.server.output),
-				struct(action:"compiler",label:stMenu.server.compiler),
 				struct(action:"error",label:stMenu.server.error)
 			)
 		),

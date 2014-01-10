@@ -27,9 +27,7 @@ public final class ClientCache extends StorageScopeCache implements Client {
 	
 
 	
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientCache(this,deepCopy);
 	}

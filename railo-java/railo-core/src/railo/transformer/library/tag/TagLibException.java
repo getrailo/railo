@@ -12,7 +12,7 @@ import java.io.IOException;
 public final class TagLibException extends IOException {
 
     /* *
-     * Standart Konstruktor für die Klasse TagLibException.
+     * Standart Konstruktor fuer die Klasse TagLibException.
      * @param message Fehlermeldungstext.
      * /
     public TagLibException(String message) {
@@ -20,7 +20,7 @@ public final class TagLibException extends IOException {
     }*/
     
     /**
-     * Standart Konstruktor für die Klasse TagLibException.
+     * Standart Konstruktor fuer die Klasse TagLibException.
      * @param t Throwable
      */
     public TagLibException(Throwable t) {

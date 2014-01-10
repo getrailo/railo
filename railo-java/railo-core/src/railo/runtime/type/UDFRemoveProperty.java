@@ -16,6 +16,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.PropertyFactory;
+import railo.runtime.type.util.UDFUtil;
 
 public final class UDFRemoveProperty extends UDFGSProperty {
 
@@ -48,21 +49,12 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		return "struct".equalsIgnoreCase(t);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#duplicate()
-	 */
-	public UDF duplicate(ComponentImpl c) {
-		return new UDFRemoveProperty(c,prop);
-	}
-	
- 
+	@Override
 	public UDF duplicate() {
-		return duplicate(component);
+		return new UDFRemoveProperty(component,prop);
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-	 */
+	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+this.arguments[0].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
@@ -70,11 +62,9 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		return remove(pageContext, args[0]);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
-		UDFImpl.argumentCollection(values,getFunctionArguments());
+		UDFUtil.argumentCollection(values,getFunctionArguments());
 		Key key = arguments[0].getName();
 		Object value = values.get(key,null);
 		if(value==null){
@@ -134,23 +124,22 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		return null;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public Object getDefaultValue(PageContext pc, int index) throws PageException {
 		return prop.getDefault();
 	}
+	
+	@Override
+	public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException {
+		return prop.getDefault();
+	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		return "boolean";
 	}

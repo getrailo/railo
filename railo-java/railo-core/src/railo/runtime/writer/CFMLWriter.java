@@ -5,8 +5,10 @@ import java.io.OutputStream;
 
 import javax.servlet.jsp.JspWriter;
 
-public abstract class CFMLWriter extends JspWriter {
+import railo.runtime.cache.legacy.CacheItem;
 
+public abstract class CFMLWriter extends JspWriter {
+	
 	protected CFMLWriter(int bufferSize, boolean autoFlush) {
 		super(bufferSize, autoFlush);
 	}
@@ -32,5 +34,15 @@ public abstract class CFMLWriter extends JspWriter {
 	 * @throws IOException 
 	 */
 	public abstract void writeRaw(String str) throws IOException;
+
+	public abstract void setAllowCompression(boolean allowCompression);
+	
+
+	public abstract void doCache(railo.runtime.cache.legacy.CacheItem ci);
+
+	/**
+	 * @return the cacheResource
+	 */
+	public abstract CacheItem getCacheItem();
 
 }

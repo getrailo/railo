@@ -109,9 +109,7 @@ public class Video extends TagSupport {
 		
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		result="cfvideo";
@@ -175,7 +173,7 @@ public class Video extends TagSupport {
         else if(action.equals("uninstall"))		this.action=ACTION_UNINSTALL;
         
         else throw doThrow("invalid value for attribute action for tag video ["+action+"], " +
-        		"valid actions are [concat, convert, cutImage, info]");
+        		"valid actions are [concat, convert, cutImage, info,install,uninstall]");
 		
 	}
 
@@ -235,9 +233,7 @@ public class Video extends TagSupport {
 		setProfile(strQuality);
 	}
 		
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		try {

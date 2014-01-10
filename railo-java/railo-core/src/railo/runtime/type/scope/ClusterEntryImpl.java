@@ -69,10 +69,7 @@ public final class ClusterEntryImpl  implements ClusterEntry {
 		return value;
 	}
 	
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof ClusterEntry) {
 			ClusterEntry other = (ClusterEntry)obj;

@@ -8,23 +8,20 @@ import org.w3c.dom.Node;
 /**
  * 
  */
-public final class ArrayNodeList extends ArrayList implements org.w3c.dom.NodeList {
-	
+public final class ArrayNodeList extends ArrayList<Node> implements org.w3c.dom.NodeList {
+
+	private static final long serialVersionUID = 8355573954254967533L;
+
 	public ArrayNodeList() {
 	}
 	
-	/**
-	 * @see org.w3c.dom.NodeList#getLength()
-	 */
+	@Override
 	public int getLength() {
 		return size();
 	}
-	/**
-	 * @see org.w3c.dom.NodeList#item(int)
-	 */
+	
+	@Override
 	public Node item(int index) {
-		//synchronized (o) {
-			return (Node)get(index);
-		//}
+		return get(index);
 	}
 }

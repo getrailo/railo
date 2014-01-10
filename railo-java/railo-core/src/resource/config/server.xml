@@ -176,7 +176,7 @@ Path placeholders:
 			when yes all form and url scope are synonym for both data
 		
 		client-directory-max-size
-			maximal size in bytes of the client scope directory (used for default type file)
+			maximum size in bytes of the client scope directory (used for default type file)
 		
 		client-max-age
 			the max age of the client scope in days
@@ -209,8 +209,12 @@ Path placeholders:
 	<!--
 	directory mapping:
 		
-		trusted: yes|no
-			trusted cache -> recheck every time if there are changes in the called cfml file or not.
+		inspect-template: never|once|always|<empty-string>
+			never - when a template s loaded, railo no longer checks for changes on that template
+			once - Railo only once per request check if the file has changed
+			always - check for changes with every access on the file
+			<empty-string> - no mapping specific setting, inherit setting config 
+			
 		virtual:
 			virtual path of the application
 			example: /somedir/
@@ -228,17 +232,28 @@ Path placeholders:
  -->	
 		<mapping
 			readonly="yes"
-			trusted="true"
+			virtual="/railo-server-context/"
+			physical="{railo-server}/context/"
+			archive=""
+			primary="physical"
+			listener-mode="modern"
+			listener-type="curr2root"
+			inspect-template="once"/>
+		<mapping
+			readonly="yes"
 			virtual="/railo-context/"
 			physical="{railo-config}/context/"
 			archive="{railo-config}/context/railo-context.ra"
-			primary="physical"/>
+			primary="physical"
+			listener-mode="modern"
+			listener-type="curr2root"
+			inspect-template="once"/>
 
 	</mappings>	
 	
 	<custom-tag>
 		<mapping
-			trusted="yes"
+			inspect-template="never"
 			physical="{railo-config}/customtags/"/>
 	</custom-tag>
 	
@@ -258,7 +273,7 @@ Path placeholders:
         base="/railo-context/Component.cfc"
 		data-member-default-access="public"
 		dump-template="/railo-context/component-dump.cfm">
-  		<mapping physical="{railo-web}/components/" primary="physical" trusted="true"/>
+  		<mapping virtual="/default" physical="{railo-web}/components/" primary="physical" inspect-template="never"/>
 	</component>
 	
 	<!--
@@ -336,6 +351,6 @@ Path placeholders:
 		caster-class-arguments: init arguments provided to the AMFCaster init method, use "CSS" syntax.
 	-->
 	<flex 
-		configuration="xml"/>
+		configuration="manual"/>
 
 </railo-configuration>

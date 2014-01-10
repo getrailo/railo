@@ -75,9 +75,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		return dt;
 	}
 	
-	/**
-	 * @see railo.runtime.type.SharedScope#release(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchAfterRequest(pc);
@@ -85,17 +83,12 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 			store(pc.getConfig());
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorageType()
-	 */
+	@Override
 	public String getStorageType() {
 		return "Cache";
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ClientSupportOld#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchBeforeRequest(pc);

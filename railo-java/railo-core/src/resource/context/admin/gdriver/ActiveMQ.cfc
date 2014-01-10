@@ -50,7 +50,7 @@
 #subscriberName=uniqueSubscriber
 --->
 	<cffunction name="getClass" returntype="string">
-    	<cfreturn "railo.extension.gateway.jms.JMSGateway">
+    	<cfreturn "railo.extension.gateway.jms.ActiveMQGateway">
     </cffunction>
 	<cffunction name="getCFCPath" returntype="string">
     	<cfreturn "">

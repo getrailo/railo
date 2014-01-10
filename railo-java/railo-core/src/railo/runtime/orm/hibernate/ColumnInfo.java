@@ -80,9 +80,7 @@ public class ColumnInfo {
 		this.nullable = nullable;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "name:"+name+";type:"+type+";typeName:"+typeName+";size:"+size+";nullable:"+nullable+";";
 	}	

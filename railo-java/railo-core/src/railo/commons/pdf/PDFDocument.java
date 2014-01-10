@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
@@ -34,21 +35,18 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.functions.system.GetDirectoryFromPath;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.List;
 import railo.runtime.type.scope.CGIImpl;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 public final class PDFDocument {
-	
 
-	
-    
-	
 	// PageType
     public static final Dimension PAGETYPE_ISOB5 = new Dimension(501, 709);
     public static final Dimension PAGETYPE_ISOB4 = new Dimension(709, 1002);
@@ -186,7 +184,7 @@ public final class PDFDocument {
 	}
 	
 	/**
-	 * @param mimetype the mimetype to set
+	 * @param strMimetype the mimetype to set
 	 */
 	public void setMimetype(String strMimetype) {
 		strMimetype = strMimetype.toLowerCase().trim();
@@ -199,11 +197,11 @@ public final class PDFDocument {
 		else mimetype=MIMETYPE_OTHER;
 		
 		// charset
-		String[] arr = List.listToStringArray(strMimetype, ';');
+		String[] arr = ListUtil.listToStringArray(strMimetype, ';');
 		if(arr.length>=2) {
 			this.strMimetype=arr[0].trim();
 			for(int i=1;i<arr.length;i++) {
-				String[] item = List.listToStringArray(arr[i], '=');
+				String[] item = ListUtil.listToStringArray(arr[i], '=');
 				if(item.length==1) {
 					strCharset=item[0].trim();
 					break;
@@ -349,7 +347,7 @@ public final class PDFDocument {
 	    				String abs = srcfile.getAbsolutePath();
 	    				String contract = ContractPath.call(pc, abs);
 	    				if(!abs.equals(contract)) {
-	    					base=HTTPUtil.toURL(CGIImpl.getDomain(pc.getHttpServletRequest())+contract);
+	    					base=HTTPUtil.toURL(CGIImpl.getDomain(pc.getHttpServletRequest())+contract,true);
 	    				}
 
     			}
@@ -365,7 +363,7 @@ public final class PDFDocument {
     	// src
     	else if(src!=null) {
     		if(StringUtil.isEmpty(strCharset))strCharset="iso-8859-1";
-    		URL url = HTTPUtil.toURL(src);
+    		URL url = HTTPUtil.toURL(src,true);
 			
 			// set Proxy
 			if(StringUtil.isEmpty(proxyserver) && config.isProxyEnableFor(url.getHost())) {
@@ -425,7 +423,7 @@ public final class PDFDocument {
 		// bug in pd4ml-> html badse definition create a call
 		if(!StringUtil.isEmpty(userAgent) && userAgent.startsWith("Java"))return null;
 		
-		return HTTPUtil.toURL(GetDirectoryFromPath.call(pc,CGIImpl.getCurrentURL(pc.getHttpServletRequest())));
+		return HTTPUtil.toURL(GetDirectoryFromPath.call(pc, ReqRspUtil.getRequestURL(pc.getHttpServletRequest(), false)),true);
 	}
 
 
@@ -437,7 +435,7 @@ public final class PDFDocument {
 				body="";
 				
 				try {
-					InputSource input = new InputSource(IOUtil.getReader(is,strCharset));
+					InputSource input = new InputSource(IOUtil.getReader(is,CharsetUtil.toCharset(strCharset)));
 					body=beautifyHTML(input,base);
 				} 
 				catch (Throwable t) {}
@@ -639,8 +637,5 @@ public final class PDFDocument {
 	public void setHtmlBookmark(boolean htmlBookmark) {
 		this.htmlBookmark = htmlBookmark;
 	}
-	
-
-
 
 }

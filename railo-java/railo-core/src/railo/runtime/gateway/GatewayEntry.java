@@ -1,7 +1,5 @@
 package railo.runtime.gateway;
 
-import org.opencfml.eventgateway.Gateway;
-
 import railo.commons.lang.ClassException;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
@@ -22,7 +20,7 @@ public interface GatewayEntry {
 	 */
 	public void createGateway(Config config) throws ClassException,PageException;
 	
-	public Gateway getGateway() ;
+	public GatewayPro getGateway() ;
 
 	
 	/**

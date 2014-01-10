@@ -18,7 +18,7 @@ import railo.runtime.exp.Abort;
 import railo.runtime.tag.MissingAttribute;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitString;
@@ -249,7 +249,7 @@ public final class TagHelper {
 		while(it.hasNext()) {
 			attr=(Attribute) it.next();
 			if(!attr.isDynamicType()){
-				Type type = Cast.getType(attr.getType());
+				Type type = CastOther.getType(attr.getType());
 				methodName=tag.getTagLibTag().getSetter(attr,type);
 				adapter.loadLocal(currLocal);
 				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);

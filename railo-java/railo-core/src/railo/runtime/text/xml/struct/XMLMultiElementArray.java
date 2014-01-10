@@ -34,55 +34,39 @@ public class XMLMultiElementArray extends ArraySupport {
 		this.struct=struct;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
 	public Object append(Object o) throws PageException {
 		return setE(size()+1,o);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#appendEL(java.lang.Object)
-	 */
+	@Override
 	public Object appendEL(Object o) {
 		return setEL(size()+1,o);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#containsKey(int)
-	 */
+	@Override
 	public boolean containsKey(int key) {
 		return get(key,null)!=null;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int key, Object defaultValue) {
 		return struct.get(key,defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
+	@Override
 	public Object getE(int key) throws PageException {
 		return struct.get(key);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#getDimension()
-	 */
+	@Override
 	public int getDimension() {
 		return struct.getInnerArray().getDimension();
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#insert(int, java.lang.Object)
-	 */
+	@Override
 	public boolean insert(int index, Object value) throws PageException {
     	Element element=XMLCaster.toElement(struct.getOwnerDocument(),value);
     	boolean rtn = struct.getInnerArray().insert(index, element);
@@ -98,17 +82,12 @@ public class XMLMultiElementArray extends ArraySupport {
     	return rtn;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#intKeys()
-	 */
+	@Override
 	public int[] intKeys() {
 		return struct.getInnerArray().intKeys();
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
-	 */
+	@Override
 	public Object prepend(Object value) throws PageException {
     	Element element=XMLCaster.toElement(struct.getOwnerDocument(),value);
     	Object obj = struct.getInnerArray().get(1,null);
@@ -123,50 +102,32 @@ public class XMLMultiElementArray extends ArraySupport {
     	return struct.getInnerArray().prepend(element);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
+	@Override
 	public Object removeE(int key) throws PageException {
 		return struct.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int key) {
 		return struct.removeEL(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#resize(int)
-	 */
+	@Override
 	public void resize(int to) throws PageException {
 		throw new PageRuntimeException("resizing of xml nodelist not allowed");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
-	 */
+	@Override
 	public Object setE(int key, Object value) throws PageException {
 		return struct.set(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int key, Object value) {
 		return struct.setEL(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void sort(String sortType, String sortOrder) throws PageException {
 		if(size()<=1) return;
 		
@@ -198,149 +159,101 @@ public class XMLMultiElementArray extends ArraySupport {
 	}
 	
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Array#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		return struct.getInnerArray().toArray();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#toArrayList()
-	 */
 	public ArrayList toArrayList() {
 		return ArrayAsArrayList.toArrayList(this);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {//MUST
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-	 */
+	@Override
 	public boolean containsKey(String key) {
 		return struct.containsKey(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return struct.containsKey(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLMultiElementArray((XMLMultiElementStruct)Duplicator.duplicate(struct,deepCopy));
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
 		return struct.get(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return struct.get(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		return struct.get(key,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		return struct.get(key,defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		return struct.getInnerArray().keys();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		return struct.remove(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		return struct.removeEL(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		return struct.set(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		return struct.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		return struct.setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		return struct.setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return struct.getInnerArray().size();
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return struct.toDumpData(pageContext, maxlevel,dp);
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
@@ -355,95 +268,67 @@ public class XMLMultiElementArray extends ArraySupport {
 		return new EntryIterator(this,keys());
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return struct.castToBooleanValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return struct.castToBoolean(defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return struct.castToDateTime();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return struct.castToDateTime(defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return struct.castToDoubleValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return struct.castToDoubleValue(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return struct.castToString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return struct.castToString(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return struct.compareTo(str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return struct.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return struct.compareTo(d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return struct.compareTo(dt);
 	}
 	
-	/**
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone() {
 		return duplicate(true);
 	}
@@ -453,9 +338,7 @@ public class XMLMultiElementArray extends ArraySupport {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return ArrayUtil.sizeOf((List)this);
 	}

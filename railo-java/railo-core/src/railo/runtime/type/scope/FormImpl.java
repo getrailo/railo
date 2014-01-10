@@ -19,7 +19,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ByteNameValuePair;
@@ -33,9 +33,9 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ServletInputStreamDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -49,7 +49,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	private byte AMP=38;
 	
 	
-	private HashTable fileItems=new HashTable();
+	private Map<String,Item> fileItems=MapFactory.<String,Item>getConcurrentMap();
 	private Exception initException=null;
 
     private String encoding=null;
@@ -71,9 +71,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		super(true,"form",SCOPE_FORM);
 	}
 
-    /**
-     * @see railo.runtime.type.scope.Form#getEncoding()
-     */
+    @Override
     public String getEncoding() {
         return encoding;
     }
@@ -88,9 +86,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
         setFieldNames();
     }
 
-	/**
-	 * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		if(encoding==null)encoding=pc.getConfig().getWebCharset();
 		
@@ -112,7 +108,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			headerType=HEADER_TEXT_PLAIN;
 			initializeUrlEncodedOrTextPlain(pc,'\n',isScriptProtected());
 		}
-		else {
+		else if(contentType.startsWith("application/x-www-form-urlencoded")) {
 			headerType=HEADER_APP_URL_ENC;
 			initializeUrlEncodedOrTextPlain(pc,'&',isScriptProtected());
 		}
@@ -121,7 +117,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     void setFieldNames() {
     	if(size()>0) {
-    		setEL(KeyConstants._fieldnames,List.arrayToList(keys(), ","));
+    		setEL(KeyConstants._fieldnames,ListUtil.arrayToList(keys(), ","));
         }
     }
 
@@ -154,7 +150,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     		FileItemIterator iter = upload.getItemIterator(context);
         	//byte[] value;
         	InputStream is;
-        	ArrayList list=new ArrayList();
+        	ArrayList<URLItem> list=new ArrayList<URLItem>();
 			while (iter.hasNext()) {
 			    FileItemStream item = iter.next();
 
@@ -173,7 +169,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    }       
 			}
 			
-			raw=(URLItem[]) list.toArray(new URLItem[list.size()]);
+			raw= list.toArray(new URLItem[list.size()]);
 			fillDecoded(raw,encoding,scriptProteced,pc.getApplicationContext().getSameFieldAsArray(SCOPE_FORM));
 		} 
     	catch (Exception e) {
@@ -266,10 +262,10 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
         raw=empty;
 		
 		if(!fileItems.isEmpty()) {
-			Iterator it = fileItems.entrySet().iterator();
+			Iterator<Entry<String, Item>> it = fileItems.entrySet().iterator();
 			Item item;
 			while(it.hasNext()) {
-				item=(Item) ((Map.Entry) it.next()).getValue();
+				item=it.next().getValue();
 				item.getResource().delete();
 			}
 			fileItems.clear();
@@ -282,21 +278,18 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	public FormItem[] getFileItems() {
 		if(fileItems==null || fileItems.isEmpty()) return new FormImpl.Item[0];
 		
-		Iterator it = fileItems.entrySet().iterator();
-		Map.Entry entry;
+		Iterator<Entry<String, Item>> it = fileItems.entrySet().iterator();
+		Map.Entry<String, Item> entry;
 		FormImpl.Item[] rtn=new FormImpl.Item[fileItems.size()];
 		int index=0;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			rtn[index++]=(Item) entry.getValue();
+			entry=it.next();
+			rtn[index++]=entry.getValue();
 		}
 		return rtn;
 	}
 	
 	
-	/**
-     * @see railo.runtime.type.scope.Form#getFileUpload(java.lang.String)
-     */
 	public DiskFileItem getFileUpload(String key) {
 		return null;
 	}
@@ -306,47 +299,39 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		String lcKey = StringUtil.toLowerCase(key);
 		
 		// x
-		Item item = (Item) fileItems.get(lcKey);
+		Item item = fileItems.get(lcKey);
 		if(item!=null)return item;
 		
 		// form.x
 		if(lcKey.startsWith("form.")) {
 			lcKey=lcKey.substring(5).trim();
-			item = (Item) fileItems.get(lcKey);
+			item = fileItems.get(lcKey);
 			if(item!=null)return item;
 		}
 		
 		// form . x
 		try {
-			Array array = List.listToArray(lcKey, '.');
+			Array array = ListUtil.listToArray(lcKey, '.');
 			if(array.size()>1 && array.getE(1).toString().trim().equals("form")) {
 				array.removeE(1);
-				lcKey=List.arrayToList(array, ".").trim();
-				item = (Item) fileItems.get(lcKey);
+				lcKey=ListUtil.arrayToList(array, ".").trim();
+				item = fileItems.get(lcKey);
 				if(item!=null)return item;
 			}
 		} 
 		catch (PageException e) {}
 		
 		// /file.tmp
-		Iterator it = fileItems.entrySet().iterator();
-		//print.out("------------------");
+		Iterator<Entry<String, Item>> it = fileItems.entrySet().iterator();
 		while(it.hasNext()) {
-			item=(Item) ((Map.Entry)it.next()).getValue();
-			//print.out(item.getResource().getAbsolutePath()+" - "+key);
-			//try {
-				//if(item.getStoreLocation().getCanonicalFile().toString().equalsIgnoreCase(key))return item;
-				if(item.getResource().getAbsolutePath().equalsIgnoreCase(key))return item;
-			//} 
-			//catch (IOException e) {}
+			item=it.next().getValue();
+			if(item.getResource().getAbsolutePath().equalsIgnoreCase(key))return item;
 		}
 		
 		return null;
 	}
 
-	/**
-     * @see railo.runtime.type.scope.Form#getInitException()
-     */
+	@Override
 	public PageException getInitException() {
 		if(initException!=null)
 			return Caster.toPageException(initException);
@@ -363,10 +348,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		this.scriptProtected=_scriptProtected;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#isScriptProtected()
-	 */
+	@Override
 	public boolean isScriptProtected() {
 		return scriptProtected==ScriptProtected.YES ;
 	}

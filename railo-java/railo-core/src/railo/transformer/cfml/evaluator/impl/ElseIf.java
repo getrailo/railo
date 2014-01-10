@@ -9,7 +9,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag elseif.
+ * Prueft den Kontext des Tag elseif.
  * Das Tag <code>elseif</code> darf nur direkt innerhalb des Tag <code>if</code> liegen.  
  */
 public final class ElseIf extends EvaluatorSupport {

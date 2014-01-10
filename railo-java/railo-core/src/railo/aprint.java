@@ -1,12 +1,12 @@
 package railo;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -26,7 +26,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
-import railo.commons.io.res.type.file.FileResource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -241,6 +240,7 @@ public class aprint {
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
+    	else if(o instanceof Collection) _(ps,(Collection)o);
     	else if(o instanceof Iterator) _(ps,(Iterator)o);
     	else if(o instanceof NamedNodeMap) _(ps,(NamedNodeMap)o);
     	else if(o instanceof ResultSet) _(ps,(ResultSet)o);
@@ -389,6 +389,15 @@ public class aprint {
         _(ps,"}");
     }
     
+    private static void _(PrintStream ps,Collection coll) {
+    	Iterator it = coll.iterator();
+        _(ps,coll.getClass().getName()+" {");
+        while(it.hasNext()) {
+        	_(ps, it.next());
+        }
+        _(ps,"}");
+    }
+    
     private static void _(PrintStream ps,Iterator it) {
         
         _(ps,it.getClass().getName()+" {");
@@ -412,7 +421,7 @@ public class aprint {
     
     private static void _(PrintStream ps,ResultSet res) {
     	try {
-			_(ps, new QueryImpl(res,"query").toString());
+			_(ps, new QueryImpl(res,"query",null).toString());
 		} catch (PageException e) {
 			_(ps, res.toString());
 		}
@@ -430,9 +439,9 @@ public class aprint {
             while(it.hasNext()) {
                 Object key = it.next();
 
-                ps.print(key);
+                _(ps,key);
                 ps.print(":");
-                ps.print(map.get(key));
+                _(ps,map.get(key));
             }
             ps.println("}");
         } 
@@ -441,9 +450,9 @@ public class aprint {
 	        while(it.hasNext()) {
 	            Object key = it.next();
 	            ps.print("	");
-	            ps.print(key);
+	            _(ps,key);
 	            ps.print(":");
-	            ps.print(map.get(key));
+	            _(ps,map.get(key));
 	            ps.println(";");
 	        }
 	        ps.println("}");

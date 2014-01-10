@@ -46,9 +46,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
         this.created=System.currentTimeMillis();
     }
 
-    /**
-     * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
-	 */
+    @Override
 	public void touchBeforeRequest(PageContext pc) {
 		
 	    ApplicationContext appContext = pc.getApplicationContext();
@@ -104,45 +102,32 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
         super.release(pc);
     }
 
-    /**
-     * @see railo.runtime.type.scope.Session#getLastAccess()
-     */
+    @Override
     public long getLastAccess() {
         return lastAccess;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Session#getTimeSpan()
-     */
+    @Override
     public long getTimeSpan() {
         return timespan;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Session#isExpired()
-     */
+    @Override
     public boolean isExpired() {
         return (getLastAccess()+getTimeSpan())<System.currentTimeMillis();
     }
 
-    /**
-     * @see javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.HttpSessionBindingEvent)
-     */
+    @Override
     public void valueBound(HttpSessionBindingEvent event) {
         
     }
 
-    /**
-     * @see javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http.HttpSessionBindingEvent)
-     */
+    @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
         clear();
     }
 	
-    /**
-     *
-     * @see railo.runtime.type.scope.Session#touch()
-     */
+    @Override
     public void touch() {
 		lastAccess=System.currentTimeMillis();
 	}

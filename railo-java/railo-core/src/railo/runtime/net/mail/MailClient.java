@@ -2,6 +2,7 @@ package railo.runtime.net.mail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -40,12 +42,12 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public abstract class MailClient {
 	
@@ -390,14 +392,14 @@ public abstract class MailClient {
 	
 				if(attachments.size() > 0) {
 					try {
-						query.setAtEL(ATTACHMENTS, row, List.arrayToList(attachments, "\t"));
+						query.setAtEL(ATTACHMENTS, row, ListUtil.arrayToList(attachments, "\t"));
 					}
 					catch(PageException pageexception) {
 					}
 				}
 				if(attachmentFiles.size() > 0) {
 					try {
-						query.setAtEL(ATTACHMENT_FILES, row, List.arrayToList(attachmentFiles, "\t"));
+						query.setAtEL(ATTACHMENT_FILES, row, ListUtil.arrayToList(attachmentFiles, "\t"));
 					}
 					catch(PageException pageexception1) {
 					}
@@ -507,7 +509,7 @@ public abstract class MailClient {
     	InputStream is=null;
     	
     	try {
-    		return getContent(is=bp.getInputStream(), getCharsetFromContentType(bp.getContentType()));
+    		return getContent(is=bp.getInputStream(), CharsetUtil.toCharset(getCharsetFromContentType(bp.getContentType())));
         }
         catch(IOException mie) {
         	IOUtil.closeEL(is);
@@ -523,16 +525,16 @@ public abstract class MailClient {
         }
     }
     
-    private String getContent(InputStream is,String charset) throws IOException {
+    private String getContent(InputStream is,Charset charset) throws IOException {
 		return MailUtil.decode(IOUtil.toString(is, charset));
     }
     
     
 	private static String getCharsetFromContentType(String contentType) {
-		Array arr=List.listToArrayRemoveEmpty(contentType,"; ");
+		Array arr=ListUtil.listToArrayRemoveEmpty(contentType,"; ");
 		
 		for(int i=1;i<=arr.size();i++) {
-			Array inner = List.listToArray((String)arr.get(i,null),"= ");
+			Array inner = ListUtil.listToArray((String)arr.get(i,null),"= ");
 			if(inner.size()==2 && ((String)inner.get(1,"")).trim().equalsIgnoreCase("charset")) {
 				String charset = (String) inner.get(2,"");
 				charset=charset.trim();
@@ -584,7 +586,7 @@ public abstract class MailClient {
      */
 	private String toList(String ids[]) {
 		if(ids == null)	return "";
-		return List.arrayToList(ids, ",");
+		return ListUtil.arrayToList(ids, ",");
 	}
 
 	/**

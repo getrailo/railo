@@ -9,7 +9,7 @@ import railo.intergral.fusiondebug.server.type.simple.FDSimpleVariable;
 import railo.runtime.op.Caster;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
+import railo.runtime.type.util.UDFUtil;
 
 import com.intergral.fusiondebug.server.IFDStackFrame;
 
@@ -39,7 +39,7 @@ public class FDUDF extends FDValueNotMutability {
 		if(!StringUtil.isEmpty(udf.getHint()))
 			list.add(new FDSimpleVariable(frame,"Hint",udf.getHint(),null));
 		list.add(new FDSimpleVariable(frame,"Return Type",udf.getReturnTypeAsString(),null));
-		list.add(new FDSimpleVariable(frame,"Return Format",UDFImpl.toReturnFormat(udf.getReturnFormat(),"plain"),null));
+		list.add(new FDSimpleVariable(frame,"Return Format",UDFUtil.toReturnFormat(udf.getReturnFormat(),"plain"),null));
 		list.add(new FDSimpleVariable(frame,"Source",Caster.toString(udf.getPageSource().getDisplayPath()),null));
 		list.add(new FDSimpleVariable(frame,"Secure Json",Caster.toString(udf.getSecureJson(),""),null));
 		list.add(new FDSimpleVariable(frame,"Verify Client",Caster.toString(udf.getVerifyClient(),""),null));
@@ -66,30 +66,21 @@ public class FDUDF extends FDValueNotMutability {
 		children.add(new FDSimpleVariable(frame,"return",udf.getReturnTypeAsString(),null));	
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getChildren()
-	 */
+	@Override
 	public List getChildren() {
 		return children;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getName()
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return true;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return toString(udf);
 	}

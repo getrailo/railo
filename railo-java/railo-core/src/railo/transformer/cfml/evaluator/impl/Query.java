@@ -11,7 +11,7 @@ import railo.runtime.functions.query.ValueList;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
@@ -56,11 +56,11 @@ public final class Query extends EvaluatorSupport {
 						if(member instanceof BIF) {
 							BIF bif=(BIF) member;
 
-							if(bif.getClassName().equals(PreserveSingleQuotes.class.getName())) {
+							if(bif.getClazz().getName().equals(PreserveSingleQuotes.class.getName())) {
 								printOut.setExpr(bif.getArguments()[0].getValue());
 								continue;
 							}
-							else if(bif.getClassName().equals(ListQualify.class.getName())) {
+							else if(bif.getClazz().getName().equals(ListQualify.class.getName())) {
 								Argument[] args = bif.getArguments();
 								List<Argument> arr=new ArrayList<Argument>();
 								
@@ -81,8 +81,8 @@ public final class Query extends EvaluatorSupport {
 								continue;
 							}
 							else if(
-								bif.getClassName().equals(QuotedValueList.class.getName()) ||
-								bif.getClassName().equals(ValueList.class.getName())
+								bif.getClazz().getName().equals(QuotedValueList.class.getName()) ||
+								bif.getClazz().getName().equals(ValueList.class.getName())
 								) {
 								//printOut.setPreserveSingleQuote(false);
 								continue;
@@ -115,13 +115,13 @@ public final class Query extends EvaluatorSupport {
 				
 			}
 			else if(
-					expr instanceof Cast && 
+					expr instanceof CastOther && 
 					(
-							((Cast) expr).getType().equalsIgnoreCase("String") || 
-							((Cast) expr).getType().equalsIgnoreCase("java.lang.String")
+							((CastOther) expr).getType().equalsIgnoreCase("String") || 
+							((CastOther) expr).getType().equalsIgnoreCase("java.lang.String")
 					)
 				){
-					expr=((Cast) expr).getExpr();
+					expr=((CastOther) expr).getExpr();
 			}
 			else break;
 		}

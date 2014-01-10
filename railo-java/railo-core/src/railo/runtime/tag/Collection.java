@@ -34,9 +34,7 @@ public final class Collection extends TagImpl {
 	//private boolean categories=false;
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		action="list";
@@ -131,10 +129,7 @@ public final class Collection extends TagImpl {
 	}
 
 
-	/**
-	 * calls the specified methods depending on the value of the property action
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    //SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -249,9 +244,7 @@ public final class Collection extends TagImpl {
         return getSearchEngine().getCollectionByName(collection);
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

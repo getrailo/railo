@@ -158,4 +158,9 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 		
 		return bodies;
 	}
+
+	@Override
+	public String getLabel() {
+		return null;
+	}
 }

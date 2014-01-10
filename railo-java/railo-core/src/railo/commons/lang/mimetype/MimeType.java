@@ -1,19 +1,26 @@
 package railo.commons.lang.mimetype;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
+import railo.runtime.type.util.ListUtil;
 
 public class MimeType {
 	
 	private static int DEFAULT_MXB=100000;
 	private static double DEFAULT_MXT=5;
 	private static double DEFAULT_QUALITY=1;
+	private static Charset DEFAULT_CHARSET=null;
 	
 	public static final MimeType ALL = new MimeType(null,null,null);
 	public static final MimeType APPLICATION_JSON = new MimeType("application","json",null);
@@ -37,6 +44,8 @@ public class MimeType {
 	public static final MimeType IMAGE_ASTERIX = new MimeType("image",null,null);
 	public static final MimeType APPLICATION_JAVA = new MimeType("application","java",null);
 	
+	public static final MimeType TEXT_HTML = new MimeType("text","html",null);
+	
 	private String type;
 	private String subtype;
 	//private double quality;
@@ -44,6 +53,8 @@ public class MimeType {
 	//private double mxt;
 	private Map<String,String> properties;
 	private double q=-1;
+	private Charset cs;
+	private boolean initCS=true;
 
 	
 	private MimeType(String type, String subtype, Map<String,String> properties) {
@@ -152,7 +163,6 @@ public class MimeType {
 		*/
 		return new MimeType(type, subtype, properties);
 	}
-
 	
 	/**
 	 * returns a mimetype that match given string
@@ -162,20 +172,26 @@ public class MimeType {
 	public static MimeType getInstance(String strMimeType){
 		if(strMimeType==null) return ALL;
 		strMimeType=strMimeType.trim();
+		
 		if("*".equals(strMimeType) || strMimeType.length()==0) return ALL;
+		String[] arr = ListUtil.listToStringArray(strMimeType, ';');
+		if(arr.length==0) return ALL;
 		
-		String[] arr = List.listToStringArray(strMimeType, ';');
+		String[] arrCT = ListUtil.listToStringArray(arr[0].trim(), '/');
 		
-		String[] arrCT = List.listToStringArray(arr[0].trim(), '/');
+		// subtype
+		String type=null,subtype=null;
 		
-		String type=arrCT[0].trim();
-		if("*".equals(type)) type=null;
-		
-		if(arrCT.length==1) return getInstance(type,null,null);
-		
-		String subtype=arrCT[1].trim();
-		if("*".equals(subtype)) subtype=null;
-		
+		// type
+		if(arrCT.length>=1) {
+			type=arrCT[0].trim();
+			if("*".equals(type)) type=null;
+			
+			if(arrCT.length>=2) {
+				subtype=arrCT[1].trim();
+				if("*".equals(subtype)) subtype=null;	
+			}
+		}
 		if(arr.length==1) return getInstance(type,subtype,null);
 		
 
@@ -184,19 +200,19 @@ public class MimeType {
 		String[] _arr;
 		for(int i=1;i<arr.length;i++){
 			entry=arr[i].trim();
-			_arr = List.listToStringArray(entry, '=');
-			if(arr.length<2) continue;
-			properties.put(_arr[0].trim().toLowerCase(), _arr[1].trim());
-			//if(_arr[0].equals("q")) quality=Caster.toDoubleValue(_arr[1],1);
-			//if(_arr[0].equals("mxb")) mxb=Caster.toIntValue(_arr[1],100000);
-			//if(_arr[0].equals("mxt")) mxt=Caster.toDoubleValue(_arr[1],5);
+			_arr = ListUtil.listToStringArray(entry, '=');
+			if(_arr.length>=2)
+				properties.put(_arr[0].trim().toLowerCase(), _arr[1].trim());
+			else if(_arr.length==1 && !_arr[0].trim().toLowerCase().equals("*"))
+				properties.put(_arr[0].trim().toLowerCase(),"");
+				
 		}
 		return getInstance(type,subtype,properties);
 	}
 
 	public static MimeType[] getInstances(String strMimeTypes, char delimiter) {
 		if(StringUtil.isEmpty(strMimeTypes,true)) return new MimeType[0];
-		String[] arr = List.trimItems(List.listToStringArray(strMimeTypes, delimiter));
+		String[] arr = ListUtil.trimItems(ListUtil.listToStringArray(strMimeTypes, delimiter));
 		MimeType[] mtes=new MimeType[arr.length];
 		for(int i=0;i<arr.length;i++){
 			mtes[i]=getInstance(arr[i]);
@@ -220,6 +236,9 @@ public class MimeType {
 	public String getSubtype() {
 		return subtype;
 	}
+	public Map<String, String> getProperties() {
+		return properties;
+	}
 	
 	/**
 	 * @return the type
@@ -239,10 +258,24 @@ public class MimeType {
 	public double getQuality() {
 		if(q==-1){
 			if(properties==null) q=DEFAULT_QUALITY;
-			else q= Caster.toDoubleValue(properties.get("q"),DEFAULT_QUALITY);
+			else q= Caster.toDoubleValue(getProperty("q"),DEFAULT_QUALITY);
 		}
 		return q;
 	}
+
+	public Charset getCharset() {
+		if(initCS){
+			if(properties==null) cs=DEFAULT_CHARSET;
+			else {
+				String str = getProperty("charset");
+				cs= StringUtil.isEmpty(str)?DEFAULT_CHARSET:CharsetUtil.toCharset(str);
+			}
+			initCS=false;
+		}
+		return cs;
+	}
+	
+	
 	/*
 	public int getMxb() {
 		return Caster.toIntValue(properties.get("mxb"),DEFAULT_MXB);
@@ -251,6 +284,23 @@ public class MimeType {
 	public double getMxt() {
 		return Caster.toDoubleValue(properties.get("mxt"),DEFAULT_MXT);
 	}*/
+
+	private String getProperty(String name) {
+		if(properties!=null) {
+		 String value = properties.get(name);
+		 if(value!=null)return value;
+		 
+		 Iterator<Entry<String, String>> it = properties.entrySet().iterator();
+		 Entry<String, String> e;
+		 while(it.hasNext()){
+			 e = it.next();
+			 if(name.equalsIgnoreCase(e.getKey())) return e.getValue();
+		 }
+		}
+		return null;
+	}
+
+
 
 	public boolean hasWildCards() {
 		return type==null || subtype==null;
@@ -337,7 +387,21 @@ public class MimeType {
 		case UDF.RETURN_FORMAT_SERIALIZE:return MimeType.APPLICATION_CFML;
 		case UDF.RETURN_FORMAT_XML:return MimeType.APPLICATION_XML;
 		case UDF.RETURN_FORMAT_PLAIN:return MimeType.APPLICATION_PLAIN;
+		case UDFPlus.RETURN_FORMAT_JAVA:return MimeType.APPLICATION_JAVA;
 		
+		}
+		return defaultValue;
+	}
+	
+	
+
+	public static int toFormat(List<MimeType> mimeTypes,int ignore, int defaultValue) {
+		if(mimeTypes==null || mimeTypes.size()==0) return defaultValue;
+		Iterator<MimeType> it = mimeTypes.iterator();
+		int res;
+		while(it.hasNext()){
+			res=toFormat(it.next(), -1);
+			if(res!=-1 && res!=ignore) return res;
 		}
 		return defaultValue;
 	}
@@ -349,6 +413,10 @@ public class MimeType {
 		if(MimeType.APPLICATION_CFML.same(mt)) return  UDF.RETURN_FORMAT_SERIALIZE;
 		if(MimeType.APPLICATION_XML.same(mt)) return  UDF.RETURN_FORMAT_XML;
 		if(MimeType.APPLICATION_PLAIN.same(mt)) return  UDF.RETURN_FORMAT_PLAIN;
+		if(MimeType.APPLICATION_JAVA.same(mt)) return  UDFPlus.RETURN_FORMAT_JAVA;
 		return defaultValue;
 	}
+
+
+
 }

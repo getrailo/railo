@@ -36,7 +36,8 @@ public final class NorwegianAnalyzer extends Analyzer {
 		analyzer = new SnowballAnalyzer("Norwegian", stopWords);
 	}
 
-	public TokenStream tokenStream(String fieldName, Reader reader) {
+	@Override
+    public TokenStream tokenStream(String fieldName, Reader reader) {
 		return analyzer.tokenStream(fieldName, reader);
 	}
 }

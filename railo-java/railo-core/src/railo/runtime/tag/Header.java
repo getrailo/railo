@@ -34,9 +34,7 @@ public final class Header extends TagImpl {
 
     private String charset;
     
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		value="";
@@ -90,9 +88,7 @@ public final class Header extends TagImpl {
     }
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
@@ -143,9 +139,7 @@ public final class Header extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -7,7 +7,6 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
@@ -34,7 +33,7 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 		DataSource[] datasources = config.getDataSources();
 		for(int i=0;i<datasources.length;i++){
 			
-			if(((DataSourceImpl)datasources[i]).isStorage()) {
+			if((datasources[i]).isStorage()) {
 				try {
 					clean(config,datasources[i]);
 				} catch (Throwable t) {

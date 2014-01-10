@@ -4,13 +4,15 @@ import java.sql.SQLException;
 
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.db.DataSourceImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerPro;
+import railo.runtime.debug.DebuggerUtil;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -80,14 +82,14 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	protected static Struct _loadData(PageContext pc, String datasourceName,String strType,int type, Log log, boolean mxStyle) throws PageException	{
 		ConfigImpl config = (ConfigImpl)pc.getConfig();
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
-		DatasourceConnection dc=pool.getDatasourceConnection(pc,config.getDataSource(datasourceName),null,null);
+		DatasourceConnection dc=pool.getDatasourceConnection(pc,((PageContextImpl)pc).getDataSource(datasourceName),null,null);
 		SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 		
 		
 		Query query;
 		
 		try {
-			if(!((DataSourceImpl)dc.getDatasource()).isStorage()) 
+			if(!dc.getDatasource().isStorage()) 
 				throw new ApplicationException("storage usage for this datasource is disabled, you can enable this in the railo administrator.");
 			query = executor.select(pc.getConfig(),pc.getCFID(),pc.getApplicationContext().getName(), dc, type,log, true);
 		} 
@@ -97,10 +99,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    finally {
 	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
 	    }
-	    boolean debugUsage=DebuggerImpl.debugQueryUsage(pc,query);
 	    
-	    if(query!=null)
+	    if(query!=null && pc.getConfig().debug()) {
+	    	boolean debugUsage=DebuggerUtil.debugQueryUsage(pc,query);
 	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),pc.getCurrentPageSource(),query.getExecutionTime());
+	    }
 	    boolean _isNew = query.getRecordcount()==0;
 	    
 	    if(_isNew) {
@@ -115,9 +118,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    return s;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchAfterRequest(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchAfterRequest(pc); 
@@ -133,7 +134,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
 		Log log=((ConfigImpl)config).getScopeLogger();
 		try {
-			dc=pool.getDatasourceConnection(null,config.getDataSource(datasourceName),null,null);
+			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
+			DataSource ds;
+			if(pc!=null) ds=((PageContextImpl)pc).getDataSource(datasourceName);
+			else ds=config.getDataSource(datasourceName);
+			dc=pool.getDatasourceConnection(null,ds,null,null);
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 			executor.update(config, cfid,appName, dc, getType(), sct,getTimeSpan(),log);
 		} 
@@ -153,7 +158,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
 		Log log=((ConfigImpl)config).getScopeLogger();
 		try {
-			dc=pool.getDatasourceConnection(null,config.getDataSource(datasourceName),null,null);
+			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
+			DataSource ds;
+			if(pc!=null) ds=((PageContextImpl)pc).getDataSource(datasourceName);
+			else ds=config.getDataSource(datasourceName);
+			dc=pool.getDatasourceConnection(null,ds,null,null);
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 			executor.delete(config, cfid,appName, dc, getType(),log);
 		} 
@@ -174,18 +183,13 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ClientSupportOld#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchBeforeRequest(pc);
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorageType()
-	 */
+	@Override
 	public String getStorageType() {
 		return "Datasource";
 	}

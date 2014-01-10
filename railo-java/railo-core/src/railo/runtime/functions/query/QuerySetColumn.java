@@ -5,7 +5,7 @@ package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -14,7 +14,10 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 
-public final class QuerySetColumn implements Function {
+public final class QuerySetColumn extends BIF {
+
+	private static final long serialVersionUID = -268309857190767441L;
+
 	public static String call(PageContext pc , Query query, String columnName,String newColumnName) throws PageException {
 		columnName=columnName.trim();
 		newColumnName=newColumnName.trim();
@@ -28,10 +31,15 @@ public final class QuerySetColumn implements Function {
 			Array content=new ArrayImpl();
 			int len=qc.size();
 			for(int i=1;i<=len;i++){
-				content.setE(i, qc.get(i));
+				content.setE(i, qc.get(i,null));
 			}
 			query.addColumn(trg, content, qc.getType());
 		}
 		return null;
+	}
+	
+	@Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]),Caster.toString(args[2]));
 	}
 }

@@ -8,8 +8,8 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageSource;
 import railo.transformer.Context;
-import railo.transformer.bytecode.extern.StringExternalizerWriter;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.visitor.OnFinally;
 
@@ -35,8 +35,10 @@ public class BytecodeContext implements Context {
 	
 	private String id=id();
 	private Page page;
+	private PageSource source;
 
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,Page page,StringExternalizerWriter externalizer,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog, boolean supressWSbeforeArg) {
+	public BytecodeContext(PageSource source,BytecodeContext statConstr,BytecodeContext constr,Page page,List<LitString> keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,
+			Method method,boolean writeLog, boolean supressWSbeforeArg) {
 		this.classWriter = classWriter;
 		this.className = className;
 		this.writeLog = writeLog;
@@ -45,16 +47,17 @@ public class BytecodeContext implements Context {
 		this.method=method;
 		this.staticConstr=statConstr;
 		this.constr=constr;
-		this.externalizer=externalizer;
 		this.page=page;
 		this.supressWSbeforeArg=supressWSbeforeArg;
+		if(source!=null)this.source=source;
+		else if(constr!=null)this.source=constr.source;
+		else if(statConstr!=null)this.source=statConstr.source;
 	}
 	
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
+	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
 		this.classWriter = bc.getClassWriter();
 		this.className = bc.getClassName();
 		this.writeLog = bc.writeLog();
-		this.externalizer=bc.externalizer;
 		
 		this.adapter = adapter;
 		this.keys = keys;
@@ -63,6 +66,7 @@ public class BytecodeContext implements Context {
 		this.constr=constr;
 		this.page=bc.getPage();
 		this.supressWSbeforeArg=bc.supressWSbeforeArg;
+		this.source=bc.source;
 	}
 	
 	/**
@@ -134,7 +138,7 @@ public class BytecodeContext implements Context {
 		return keys.size()-1;
 	}
 
-	public List getKeys() {
+	public List<LitString> getKeys() {
 		return keys;
 	}
 
@@ -144,7 +148,6 @@ public class BytecodeContext implements Context {
 	private int line;
 	private BytecodeContext root;
 	private boolean writeLog;
-	private StringExternalizerWriter externalizer;
 	//private static BytecodeContext staticConstr;
 	
 	public void pushOnFinally(OnFinally onFinally) {
@@ -230,15 +233,15 @@ public class BytecodeContext implements Context {
 		return this.writeLog;
 	}
 
-	public StringExternalizerWriter getStringExternalizerWriter() {
-		return externalizer;
-	}
-
 	public Page getPage() {
 		return page;
 	}
 	
 	public boolean getSupressWSbeforeArg(){
 		return supressWSbeforeArg;
+	}
+
+	public PageSource getPageSource() {
+		return source;
 	}
 }

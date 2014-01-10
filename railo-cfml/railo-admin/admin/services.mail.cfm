@@ -1,3 +1,10 @@
+<cfset stText.mail.LogFileDesc="Destination file where the log information get stored.">
+<cfset stText.mail.LogLevelDesc="Log level used for the log file.">
+<cfset stText.mail.SpoolEnabledDesc="If enabled the mails are sent in a background thread and the main request does not have to wait until the mails are sent.">
+<cfset stText.mail.maxThreads="Maximum concurrent threads">
+<cfset stText.mail.maxThreadsDesc="This setting can be changed on page ""Services/Taks"". Maximum number of threads that are executed at the same time to send the mails, fewer threads will take longer to send all the mail, more threads will add more load to the system.">
+<cfset stText.mail.TimeoutDesc="Time in seconds that the Task Manager waits to send a single mail, when the time is reached the Task Manager stops the thread and the mail gets moved to unsent folder, where the Task Manager will pick it up later to try to send it again.">
+<cfset stText.mail.seconds="Seconds">
 <!--- 
 Defaults --->
 <cfparam name="form.mainAction" default="none">
@@ -53,7 +60,6 @@ Defaults --->
 					logfile="#form.logFile#"
 					loglevel="#form.loglevel#"
 					spoolEnable="#isDefined("form.spoolenable") and form.spoolenable#"
-					spoolInterval="#form.spoolInterval#"
 					timeout="#form.timeout#"
 					defaultEncoding="#form.defaultEncoding#"
 					remoteClients="#request.getRemoteClients()#">
@@ -67,7 +73,6 @@ Defaults --->
 					logfile=""
 					loglevel=""
 					spoolEnable=""
-					spoolInterval=""
 					timeout=""
 					defaultEncoding=""
 					
@@ -201,8 +206,9 @@ Defaults --->
 							<cfinput type="text" name="logFile" value="#mail.strlogfile#" required="no" class="xlarge"
 								message="#stText.Mail.LogFileMissing#">
 						<cfelse>
-							<b>#mail.strlogfile#</b>
+							<b>#mail.strlogfile#</b><br>
 						</cfif>
+						<div class="comment">#stText.mail.LogFileDesc#</div>
 					</td>
 				</tr>
 				<tr>
@@ -214,20 +220,30 @@ Defaults --->
 								<cfloop index="idx" from="1" to="#arrayLen(levels)#"><option<cfif levels[idx] EQ mail.logLevel> selected</cfif>>#levels[idx]#</option></cfloop>
 							</select>
 						<cfelse>
-							<b>#mail.logLevel#</b>
+							<b>#mail.logLevel#</b><br>
 						</cfif>
+						<div class="comment">#stText.mail.LogLevelDesc#</div>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">#stText.Mail.SpoolEnabled#</th>
 					<td>
 						<cfif hasAccess>
-							<input type="checkbox" class="checkbox" name="spoolEnable" value="yes"<cfif mail.spoolEnable> checked</cfif> />
+							<input type="checkbox" class="checkbox" name="spoolEnable" value="yes"<cfif mail.spoolEnable> checked</cfif> /><br>
 						<cfelse>
-							<b>#iif(mail.spoolEnable,de('Yes'),de('No'))#</b>
+							<b>#iif(mail.spoolEnable,de('Yes'),de('No'))#</b><br>
 						</cfif>
+						<div class="comment">#stText.mail.SpoolEnabledDesc#</div>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row">#stText.Mail.maxThreads#</th>
+					<td>
+						<b>#mail.maxThreads#</b>
+						<div class="comment">#stText.mail.maxThreadsDesc#</div>
+					</td>
+				</tr>
+				<!---- there is no spooler intervall anymore
 				<tr>
 					<th scope="row">#stText.Mail.SpoolInterval#</th>
 					<td>
@@ -238,14 +254,16 @@ Defaults --->
 						</cfif>
 					</td>
 				</tr>
+				---->
 				<tr>
 					<th scope="row">#stText.Mail.Timeout#</th>
 					<td>
 						<cfif hasAccess>
-							<cfinput type="text" name="timeout" value="#mail.timeout#" validate="integer" class="number" required="no">
+							<cfinput type="text" name="timeout" value="#mail.timeout#" validate="integer" class="number" required="no"> #stText.mail.seconds#
 						<cfelse>
-							<b>#mail.timeout#</b>
+							<b>#mail.timeout# #stText.mail.seconds#</b><br>
 						</cfif>
+						<div class="comment">#stText.mail.TimeoutDesc#</div>
 					</td>
 				</tr>
 				<cfif hasAccess>

@@ -17,16 +17,17 @@ public class CFCNamingStrategy implements NamingStrategy {
 	}
 	
 	
-	/**
-	 * @see railo.runtime.orm.naming.NamingStrategy#convertTableName(java.lang.String)
-	 */
+	public Component getComponent() {
+		return cfc;
+	}
+
+
+	@Override
 	public String convertTableName(String tableName) {
 		return call("getTableName",tableName);
 	}
 
-	/**
-	 * @see railo.runtime.orm.naming.NamingStrategy#convertColumnName(java.lang.String)
-	 */
+	@Override
 	public String convertColumnName(String columnName) {
 		return call("getColumnName",columnName);
 	}
@@ -42,9 +43,7 @@ public class CFCNamingStrategy implements NamingStrategy {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.orm.naming.NamingStrategy#getType()
-	 */
+	@Override
 	public String getType() {
 		return "cfc";
 	}

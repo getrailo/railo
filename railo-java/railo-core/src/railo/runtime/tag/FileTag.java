@@ -1,12 +1,20 @@
 package railo.runtime.tag;
 
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_ERROR;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_MAKEUNIQUE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_OVERWRITE;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_SKIP;
+import static railo.runtime.tag.util.FileUtil.NAMECONFLICT_UNDEFINED;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
@@ -27,9 +35,9 @@ import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.tag.util.FileUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateImpl;
@@ -38,6 +46,7 @@ import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormItem;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
@@ -47,12 +56,6 @@ import railo.runtime.type.util.KeyConstants;
 *
 **/
 public final class FileTag extends BodyTagImpl {
-
-	public static final int NAMECONFLICT_UNDEFINED=0;
-	public static final int NAMECONFLICT_ERROR=1;
-	public static final int NAMECONFLICT_SKIP=2;
-	public static final int NAMECONFLICT_OVERWRITE=3;
-	public static final int NAMECONFLICT_MAKEUNIQUE=4;
 
 	private static final int ACTION_UNDEFINED = 0;
 	private static final int ACTION_MOVE = 1;
@@ -92,7 +95,7 @@ public final class FileTag extends BodyTagImpl {
 	private String filefield;
 
 	/** Character set name for the file contents. */
-	private String charset=null;
+	private Charset charset=null;
 
 	/** Yes: appends newline character to text written to file */
 	private boolean addnewline=true;
@@ -112,8 +115,9 @@ public final class FileTag extends BodyTagImpl {
 	** accept = "image/jpg, application/msword"
 	** The browser uses file extension to determine file type. */
 	private String accept;
-	
+
 	private boolean strict=true;
+	private boolean createPath=false;
     
     private String result=null;
 	
@@ -122,9 +126,7 @@ public final class FileTag extends BodyTagImpl {
 	private String serverPassword=null;
 	private Object acl=null;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		acl=null;
@@ -143,6 +145,7 @@ public final class FileTag extends BodyTagImpl {
 		nameconflict=NAMECONFLICT_UNDEFINED;
 		accept=null;
 		strict=true;
+		createPath=false;
 		securityManager=null;
         result=null;
         serverPassword=null;
@@ -150,7 +153,7 @@ public final class FileTag extends BodyTagImpl {
 
 	/** set the value action
 	*  Type of file manipulation that the tag performs.
-	* @param action value to set
+	* @param strAction value to set
 	**/	
 	public void setAction(String strAction) throws ApplicationException	{
 		strAction=strAction.toLowerCase();
@@ -237,12 +240,13 @@ public final class FileTag extends BodyTagImpl {
 	* @param charset value to set
 	**/
 	public void setCharset(String charset)	{
-		this.charset=charset.trim();
+		if(StringUtil.isEmpty(charset)) return;
+		this.charset=CharsetUtil.toCharset(charset.trim());
 	}
 	
 	/** set the value acl
 	*  used only for s3 resources, for all others ignored
-	* @param charset value to set
+	* @param acl value to set
 	 * @throws ApplicationException 
 	 * @Deprecated only exists for backward compatibility to old ra files.
 	**/
@@ -289,27 +293,15 @@ public final class FileTag extends BodyTagImpl {
 	}
 
 	/** set the value nameconflict
-	*  Action to take if filename is the same as that of a file in the directory.
+	* Action to take if filename is the same as that of a file in the directory.
 	* @param nameconflict value to set
-	 * @throws ApplicationException 
+	* @throws ApplicationException
 	**/
 	public void setNameconflict(String nameconflict) throws ApplicationException	{
-		this.nameconflict=toNameconflict(nameconflict);
+
+		this.nameconflict = FileUtil.toNameConflict( nameconflict );
 	}
-	
-	public static int toNameconflict(String nameconflict) throws ApplicationException	{
-		if(StringUtil.isEmpty(nameconflict,true)) return NAMECONFLICT_UNDEFINED;
-		
-		nameconflict=nameconflict.toLowerCase().trim();
-		if("error".equals(nameconflict)) 			return NAMECONFLICT_ERROR;
-		else if("skip".equals(nameconflict)) 		return NAMECONFLICT_SKIP;
-		else if("overwrite".equals(nameconflict)) 	return NAMECONFLICT_OVERWRITE;
-		else if("makeunique".equals(nameconflict)) 	return NAMECONFLICT_MAKEUNIQUE;
-		else throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
-				"valid values are [error,skip,overwrite,makeunique]");
-	}
-	
-	
+
 
 	/** set the value accept
 	*  Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
@@ -324,6 +316,9 @@ public final class FileTag extends BodyTagImpl {
 	public void setStrict(boolean strict)	{
 		this.strict=strict;
 	}
+	public void setCreatepath(boolean createPath)	{
+		this.createPath=createPath;
+	}
     
     /**
      * @param result The result to set.
@@ -333,12 +328,10 @@ public final class FileTag extends BodyTagImpl {
     }
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
-		if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
+		if(charset==null) charset=CharsetUtil.toCharset(pageContext.getConfig().getResourceCharset()); // TODO 4.2
 		securityManager = pageContext.getConfig().getSecurityManager();
 		
 		switch(action){
@@ -369,9 +362,7 @@ public final class FileTag extends BodyTagImpl {
 		return SKIP_BODY;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody() throws ApplicationException	{
 		if(action==ACTION_APPEND || action==ACTION_WRITE) {
 			String body = bodyContent.getString();
@@ -384,9 +375,7 @@ public final class FileTag extends BodyTagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		switch(action){
 		case ACTION_APPEND: actionAppend();
@@ -565,7 +554,7 @@ public final class FileTag extends BodyTagImpl {
 	 * @throws PageException 
 	 */
 	private void actionDelete() throws PageException {
-		checkFile(false,false,false);
+		checkFile(false,false,false,false);
 		setACL(file,acl);
 		try {
 			if(!file.delete()) throw new ApplicationException("can't delete file ["+file+"]");
@@ -582,7 +571,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionRead() throws PageException {
 		if(variable==null)
 			throw new ApplicationException("attribute variable is not defined for tag file");
-		checkFile(false,true,false);
+		checkFile(false,false,true,false);
 		//print.ln(charset);
 		//TextFile tf=new TextFile(file.getAbsolutePath());
 			
@@ -603,7 +592,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionReadBinary() throws PageException {
 		if(variable==null)
 			throw new ApplicationException("attribute variable is not defined for tag file");
-		checkFile(false,true,false);
+		checkFile(false,false,true,false);
 		
 		//TextFile tf=new TextFile(file.getAbsolutePath());
 		
@@ -621,7 +610,7 @@ public final class FileTag extends BodyTagImpl {
     private void actionWrite() throws PageException {
         if(output==null)
             throw new ApplicationException("attribute output is not defined for tag file");
-        checkFile(true,false,true);
+        checkFile(createPath,true,false,true);
         
         try {
         	if(output instanceof InputStream)	{
@@ -641,8 +630,7 @@ public final class FileTag extends BodyTagImpl {
         		if(fixnewline)content=doFixNewLine(content);
         		if(addnewline) content+=SystemUtil.getOSSpecificLineSeparator();
         		
-                if(content.length()==0)ResourceUtil.touch(file);
-                else IOUtil.write(file,content,charset,false);
+                IOUtil.write(file,content,charset,false);
         		
         	}    
         } 
@@ -663,7 +651,7 @@ public final class FileTag extends BodyTagImpl {
      * @throws PageException
      */
     private void actionTouch() throws PageException {
-        checkFile(true,true,true);
+        checkFile(createPath,true,true,true);
         
         try {
             ResourceUtil.touch(file);
@@ -687,7 +675,7 @@ public final class FileTag extends BodyTagImpl {
 	private void actionAppend() throws PageException {
 		if(output==null)
 			throw new ApplicationException("attribute output is not defined for tag file");
-		checkFile(true,false,true);
+		checkFile(createPath,true,false,true);
 		
         try {
 
@@ -722,7 +710,7 @@ public final class FileTag extends BodyTagImpl {
 		
 		if(variable==null)
 			throw new ApplicationException("attribute variable is not defined for tag file");
-		checkFile(false,false,false);
+		checkFile(false,false,false,false);
 		
 		Struct sct =new StructImpl();
 		pageContext.setVariable(variable,sct);
@@ -854,20 +842,33 @@ public final class FileTag extends BodyTagImpl {
 	    
 	    Resource destination=toDestination(pageContext,strDestination,null);
 	    
-	    
 		securityManager.checkFileLocation(pageContext.getConfig(),destination,serverPassword);
 		
-	   // destination.getCanonicalPath()
 	    if(destination.isDirectory()) 
 	    	destination=destination.getRealResource(clientFileName);
-	    else if(!clientFileName.equalsIgnoreCase(destination.getName()))
-	    	fileWasRenamed=true;
+	    else if(!destination.exists() && (strDestination.endsWith("/") || strDestination.endsWith("\\"))) 
+	    	destination=destination.getRealResource(clientFileName);
+	    else if(!clientFileName.equalsIgnoreCase(destination.getName())) {
+	    	if(ResourceUtil.getExtension(destination, null)==null)
+	    		destination=destination.getRealResource(clientFileName);
+	    	else 
+	    		fileWasRenamed=true;
+	    }
 	    
 	    // check parent destination -> directory of the desinatrion
 	    Resource parentDestination=destination.getParentResource();
 	    
-	    if(!parentDestination.exists())
-	    	throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    if(!parentDestination.exists()) {
+	    	Resource pp = parentDestination.getParentResource();
+	    	if(pp==null || !pp.exists()) 
+	    		throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    	try {
+				parentDestination.createDirectory(true);
+			}
+			catch (IOException e) {
+				throw Caster.toPageException(e);
+			} 
+	    }
 	    else if(!parentDestination.canWrite())
 	    	throw new ApplicationException("can't write to destination directory ["+parentDestination+"], no access to write");
 	    
@@ -921,7 +922,7 @@ public final class FileTag extends BodyTagImpl {
 				IOUtil.copy(formItem.getResource(),destination);
 			}
 			catch(Throwable t) {
-				throw new ApplicationException(t.getMessage());
+				throw Caster.toPageException(t);
 			}
 			
 			// Set cffile/file struct
@@ -958,13 +959,13 @@ public final class FileTag extends BodyTagImpl {
 		
 		MimeType mt = MimeType.getInstance(contentType),sub;
 		
-		Array whishedTypes=List.listToArrayRemoveEmpty(accept,',');
+		Array whishedTypes=ListUtil.listToArrayRemoveEmpty(accept,',');
 		int len=whishedTypes.size();
 		for(int i=1;i<=len;i++) {
 			String whishedType=Caster.toString(whishedTypes.getE(i)).trim().toLowerCase();
 			if(whishedType.equals("*")) return;
 			// check mimetype
-			if(List.len(whishedType, "/", true)==2){
+			if(ListUtil.len(whishedType, "/", true)==2){
 				sub=MimeType.getInstance(whishedType);
 				if(mt.match(sub)) return;
 			}
@@ -1034,7 +1035,7 @@ public final class FileTag extends BodyTagImpl {
 		String name=file.getName();
 		String[] arr;
 		try {
-			arr = List.toStringArray(List.listToArrayRemoveEmpty(name, '.'));
+			arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(name, '.'));
 		} catch (PageException e) {
 			arr=null;
 		}
@@ -1074,7 +1075,7 @@ public final class FileTag extends BodyTagImpl {
 	}
 	
 
-	private void checkFile(boolean create, boolean canRead, boolean canWrite) throws PageException {
+	private void checkFile(boolean createParent, boolean create, boolean canRead, boolean canWrite) throws PageException {
 		if(file==null)
 			throw new ApplicationException("attribute file is not defined for tag file");
 
@@ -1082,8 +1083,10 @@ public final class FileTag extends BodyTagImpl {
 		if(!file.exists()) {
 			if(create) {
 				Resource parent=file.getParentResource();
-				if(parent!=null && !parent.exists())
-					throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
+				if(parent!=null && !parent.exists()) {
+					if(createParent) parent.mkdirs();
+					else throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
+				}
 				try {
 					file.createFile(false);
 				} catch (IOException e) {

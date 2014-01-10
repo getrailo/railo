@@ -15,67 +15,49 @@ public class EHCacheEntry implements CacheEntry {
 		this.element=element;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#created()
-	 */
+	@Override
 	public Date created() {
 		return new Date(element.getCreationTime());
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#lastHit()
-	 */
+	@Override
 	public Date lastHit() {
 		return new Date(element.getLastAccessTime());
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#lastModified()
-	 */
+	@Override
 	public Date lastModified() {
 		long value = element.getLastUpdateTime();
 		if(value==0)return created();
 		return new Date(value); 
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#hitCount()
-	 */
+	@Override
 	public int hitCount() {
 		return (int)element.getHitCount();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#idleTimeSpan()
-	 */
+	@Override
 	public long idleTimeSpan() {
 		return element.getTimeToIdle()*1000;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#validUntil()
-	 */
+	@Override
 	public long liveTimeSpan() { 
 		return element.getTimeToLive()*1000;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#size()
-	 */
+	@Override
 	public long size() {
 		return element.getSerializedSize();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getKey()
-	 */
+	@Override
 	public String getKey() {
 		return (String) element.getKey();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return element.getObjectValue();
 	}
@@ -85,16 +67,12 @@ public class EHCacheEntry implements CacheEntry {
 	}
 	
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return CacheUtil.toString(this);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getCusomInfo()
-	 */
+	@Override
 	public Struct getCustomInfo() {
 		Struct info=CacheUtil.getInfo(this);
 		info.setEL("version", new Double(element.getVersion()));

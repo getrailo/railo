@@ -12,7 +12,7 @@ import railo.runtime.type.util.KeyConstants;
 public class GetFileInfo {
 
 	public static Struct call(PageContext pc, Object oSrc) throws PageException {
-		Resource src = Caster.toResource(oSrc,true);
+		Resource src = Caster.toResource(pc,oSrc,true);
 		pc.getConfig().getSecurityManager().checkFileLocation(src);
 		
 		Struct sct=new StructImpl();

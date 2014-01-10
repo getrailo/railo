@@ -26,6 +26,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.VariableUtil;
+import railo.runtime.util.VariableUtilImpl;
 
 
 /**
@@ -57,9 +58,6 @@ public class JavaObject implements Objects,ObjectWrap {
 		isInit=true;
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
-	 */
 	public Object get(PageContext pc, String propertyName) throws PageException {
         if(isInit) {
             return variableUtil.get(pc,object,propertyName);
@@ -94,10 +92,7 @@ public class JavaObject implements Objects,ObjectWrap {
         return variableUtil.get(pc,init(),propertyName);  
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		return get(pc, key.getString());
 	}
@@ -130,23 +125,18 @@ public class JavaObject implements Objects,ObjectWrap {
         }         
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
 		return get(pc, key.getString(), defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value) throws PageException  {
+	@Override
+	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException  {
 		if(isInit) {
-		    return variableUtil.set(pc,object,propertyName,value);
+		    return ((VariableUtilImpl)variableUtil).set(pc,object,propertyName,value);
 		}
 	    // Field
-		Field[] fields=Reflector.getFieldsIgnoreCase(clazz,propertyName,null);
+		Field[] fields=Reflector.getFieldsIgnoreCase(clazz,propertyName.getString(),null);
 		if(!ArrayUtil.isEmpty(fields) && Modifier.isStatic(fields[0].getModifiers())) {
 			try {
                 fields[0].set(null,value);
@@ -156,7 +146,7 @@ public class JavaObject implements Objects,ObjectWrap {
             }
 		}
         // Getter
-        MethodInstance mi = Reflector.getSetterEL(clazz,propertyName,value);
+        MethodInstance mi = Reflector.getSetter(clazz,propertyName.getString(),value,null);
         if(mi!=null) {
             if(Modifier.isStatic(mi.getMethod().getModifiers())) {
                 try {
@@ -172,26 +162,16 @@ public class JavaObject implements Objects,ObjectWrap {
         }
         
 
-	    return variableUtil.set(pc,init(),propertyName,value);
+	    return ((VariableUtilImpl)variableUtil).set(pc,init(),propertyName,value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
-	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
-		return set(pc, propertyName.toString(), value);
-	}
-
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String propertyName, Object value) {
+    @Override
+    public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
 		if(isInit) {
 		    return variableUtil.setEL(pc,object,propertyName,value);
 		}
 	    // Field
-		Field[] fields=Reflector.getFieldsIgnoreCase(clazz,propertyName,null);
+		Field[] fields=Reflector.getFieldsIgnoreCase(clazz,propertyName.getString(),null);
 		if(!ArrayUtil.isEmpty(fields) && Modifier.isStatic(fields[0].getModifiers())) {
 			try {
                 fields[0].set(null,value);
@@ -199,7 +179,7 @@ public class JavaObject implements Objects,ObjectWrap {
 			return value;
 		}
         // Getter
-        MethodInstance mi = Reflector.getSetterEL(clazz,propertyName,value);
+        MethodInstance mi = Reflector.getSetter(clazz,propertyName.getString(),value,null);
         if(mi!=null) {
             if(Modifier.isStatic(mi.getMethod().getModifiers())) {
                 try {
@@ -216,17 +196,6 @@ public class JavaObject implements Objects,ObjectWrap {
         }
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
-	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
-		return setEL(pc, propertyName.toString(), value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
 	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
         if(arguments==null)arguments=new Object[0];
         
@@ -241,7 +210,7 @@ public class JavaObject implements Objects,ObjectWrap {
         
 	    try {
 		    // get method
-		    MethodInstance mi = Reflector.getMethodInstance(clazz,methodName,arguments);
+		    MethodInstance mi = Reflector.getMethodInstance(this,clazz,methodName,arguments);
 			// call static method if exist
 		    if(Modifier.isStatic(mi.getMethod().getModifiers())) {
 				return mi.invoke(null);
@@ -264,17 +233,11 @@ public class JavaObject implements Objects,ObjectWrap {
 		}
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
-	 */
+	@Override
 	public Object call(PageContext pc, Collection.Key methodName, Object[] arguments) throws PageException {
 		return call(pc, methodName.getString(), arguments);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
     public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
         Iterator<Object> it = args.valueIterator();
     	List<Object> values=new ArrayList<Object>();
@@ -319,17 +282,13 @@ public class JavaObject implements Objects,ObjectWrap {
 	}
 
 
-	/**
-	 * @see ObjectWrap#getEmbededObject()
-	 */
+	@Override
 	public Object getEmbededObject() throws PageException {
 		if(object==null)init();
 		return object;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties props) {
 		try {
 			return DumpUtil.toDumpData(getEmbededObject(), pageContext,maxlevel,props);
@@ -343,25 +302,18 @@ public class JavaObject implements Objects,ObjectWrap {
 	 */
 	public Class getClazz() {return clazz;}
 
-    /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
     public boolean isInitalized() {
         return isInit;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         return Caster.toString(getEmbededObject());
     }
     
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
+    @Override
     public String castToString(String defaultValue) {
     	try {
 			return Caster.toString(getEmbededObject(),defaultValue);
@@ -371,16 +323,12 @@ public class JavaObject implements Objects,ObjectWrap {
     }
     
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return Caster.toBooleanValue(getEmbededObject());
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         try {
 			return Caster.toBoolean(getEmbededObject(),defaultValue);
@@ -389,16 +337,12 @@ public class JavaObject implements Objects,ObjectWrap {
 		}
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         return Caster.toDoubleValue(getEmbededObject());
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         try {
 			return Caster.toDoubleValue(getEmbededObject(),defaultValue);
@@ -407,16 +351,12 @@ public class JavaObject implements Objects,ObjectWrap {
 		}
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         return Caster.toDatetime(getEmbededObject(),null);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         try {
 			return DateCaster.toDateAdvanced(getEmbededObject(),true,null,defaultValue);
@@ -425,9 +365,7 @@ public class JavaObject implements Objects,ObjectWrap {
 		}
     }
 
-    /**
-     * @see railo.runtime.type.ObjectWrap#getEmbededObject(Object)
-     */
+    @Override
     public Object getEmbededObject(Object def) {
     	if(object==null)init(def);
 		return object;
@@ -440,30 +378,22 @@ public class JavaObject implements Objects,ObjectWrap {
 		return object;
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(), str);
 	}

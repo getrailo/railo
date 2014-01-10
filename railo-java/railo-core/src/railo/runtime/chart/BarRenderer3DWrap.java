@@ -14,19 +14,13 @@ public class BarRenderer3DWrap extends BarRenderer3D {
 		this.yoffset=yoffset;
 	}
 
-	/**
-	 *
-	 * @see org.jfree.chart.renderer.category.BarRenderer3D#getXOffset()
-	 */
+	@Override
 	public double getXOffset() {
 		// TODO Auto-generated method stub
 		return xoffset*100;
 	}
 
-	/**
-	 *
-	 * @see org.jfree.chart.renderer.category.BarRenderer3D#getYOffset()
-	 */
+	@Override
 	public double getYOffset() {
 		// TODO Auto-generated method stub
 		return yoffset*100;

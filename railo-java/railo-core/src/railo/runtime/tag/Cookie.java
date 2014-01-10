@@ -28,7 +28,7 @@ public final class Cookie extends TagImpl {
 	/** Schedules the expiration of a cookie variable. Can be specified as a date (as in, 10/09/97), 
 	** 	number of days (as in, 10, 100), "Now", or "Never". Using Now effectively deletes the cookie from
 	** 	the client browser. */
-	private Object expires="-1";
+	private Object expires=null;
 
 	/** The name of the cookie variable. */
 	private String name;
@@ -38,16 +38,14 @@ public final class Cookie extends TagImpl {
 	private boolean encode=true;
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		secure=false;
 		value="";
 		domain=null;
 		path="/";
-		expires="-1";
+		expires=null;
 		name=null;
 		httponly=false;
 		preservecase=false;
@@ -133,17 +131,13 @@ public final class Cookie extends TagImpl {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		pageContext.cookieScope().setCookie(KeyImpl.getInstance(name),value,expires,secure,path,domain,httponly,preservecase,encode);
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

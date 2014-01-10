@@ -16,7 +16,7 @@ import railo.runtime.tag.CFImportTag;
 import railo.runtime.tag.CFTag;
 import railo.runtime.tag.CFTagCore;
 import railo.runtime.tag.Module;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
 
@@ -71,7 +71,7 @@ public final class GetBaseTagList implements Function {
                 }
             }
         }
-        return List.last(className,".",true).toUpperCase();
+        return ListUtil.last(className,".",true).toUpperCase();
         
     }
 }

@@ -20,30 +20,26 @@ import railo.runtime.type.util.KeyConstants;
 
 public final class EvaluateComponent {
 	public static Object call(PageContext pc, String name, String md5, Struct sctThis) throws PageException {
-		return call(pc, name, md5, sctThis, null);
-	}
+		return invoke(pc, name, md5, sctThis, null);
+		}
 	public static Object call(PageContext pc, String name, String md5, Struct sctThis, Struct sctVariables) throws PageException {
-		
+		return invoke(pc, name, md5, sctThis, sctVariables);
+	}
+	public static Component invoke(PageContext pc, String name, String md5, Struct sctThis, Struct sctVariables) throws PageException {
 		// Load comp
 		Component comp=null;
 		try {
 			comp = pc.loadComponent(name);
 			if(!ComponentUtil.md5(comp).equals(md5)){	
-				SystemOut.printDate(pc.getConfig().getErrWriter(),"component ["+name+"] in this enviroment has not the same interface as the component to load");
+				SystemOut.printDate(pc.getConfig().getErrWriter(),"component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
 				//throw new ExpressionException("component ["+name+"] in this enviroment has not the same interface as the component to load");
 			}
 		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
-		
-		
-		
 		setInternalState(comp,sctThis,sctVariables);
-		
-		
-	
-        return comp;
+		return comp;
 	}
 	public static void setInternalState(Component comp, Struct sctThis, Struct sctVariables) throws PageException {
 		

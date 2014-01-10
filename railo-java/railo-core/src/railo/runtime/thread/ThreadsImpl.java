@@ -6,6 +6,7 @@ import java.lang.Thread.State;
 import java.util.Iterator;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -60,9 +61,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		return ct;
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return get(key,null)!=null;
 	}
@@ -74,9 +73,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		return -1;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return "thread";
 	}
@@ -121,7 +118,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	}
 	
 
-	private Object getMeta(Key key) {
+	private Object getMeta(Key key, Object defaultValue) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());
 		if(KeyConstants._NAME.equalsIgnoreCase(key)) return ct.getTagName();
 		if(KEY_OUTPUT.equalsIgnoreCase(key)) return getOutput();
@@ -130,7 +127,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		if(KEY_STATUS.equalsIgnoreCase(key)) return getState();
 		if(KEY_ERROR.equalsIgnoreCase(key)) return ct.catchBlock;
 		if(KEY_STACKTRACE.equalsIgnoreCase(key)) return getStackTrace();
-		return null;
+		return defaultValue;
 	}
 
 	private String getStackTrace() {
@@ -187,28 +184,22 @@ The current status of the thread; one of the following values:
 	}
 
 
-	/**
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
-		Object meta = getMeta(key);
-		if(meta!=null) return meta;
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) return meta;
 		return ct.content.get(key,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
-		Object meta = getMeta(key);
-		if(meta!=null) return meta;
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) return meta;
 		return ct.content.get(key);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.StructImpl#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		Key[] skeys = CollectionUtil.keys(ct.content);
 		
@@ -230,60 +221,48 @@ The current status of the thread; one of the following values:
 		return rtn;
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		if(isReadonly())throw errorOutside();
-		Object meta = getMeta(key);
-		if(meta!=null) throw errorMeta(key);
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) throw errorMeta(key);
 		return ct.content.remove(key);
 	}
 
 
 
 
-	/**
-	 * @see railo.runtime.type.StructImpl#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		if(isReadonly())return null;
 		return ct.content.removeEL(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		
 		
 		if(isReadonly())throw errorOutside();
-		Object meta = getMeta(key);
-		if(meta!=null) throw errorMeta(key);
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) throw errorMeta(key);
 		return ct.content.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		if(isReadonly()) return null;
-		Object meta = getMeta(key);
-		if(meta!=null) return null;
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) return null;
 		return ct.content.setEL(key, value);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.StructImpl#size()
-	 */
+	@Override
 	public int size() {
 		return ct.content.size()+DEFAULT_KEYS.length+(ct.catchBlock==null?0:1);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = keys();
 		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");
@@ -320,95 +299,67 @@ The current status of the thread; one of the following values:
 		return new ValueIterator(this,keys());
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return ct.content.castToBooleanValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return ct.content.castToBoolean(defaultValue);
     }
 
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return ct.content.castToDateTime();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return ct.content.castToDateTime(defaultValue);
     }
 
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return ct.content.castToDoubleValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return ct.content.castToDoubleValue(defaultValue);
     }
 
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return ct.content.castToString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return ct.content.castToString(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return ct.content.compareTo(str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return ct.content.compareTo(b);
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return ct.content.compareTo(d);
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return ct.content.compareTo(dt);
 	}
@@ -426,5 +377,4 @@ The current status of the thread; one of the following values:
 	private ApplicationException errorMeta(Key key) {
 		return new ApplicationException("the metadata "+key.getString()+" of the thread scope are readonly");
 	}
-
 }

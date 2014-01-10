@@ -21,6 +21,7 @@ public final class While extends StatementBaseNoFinal implements FlowControlBrea
 
 	private Label begin = new Label();
 	private Label end = new Label();
+	private String label;
 
 
 
@@ -30,11 +31,12 @@ public final class While extends StatementBaseNoFinal implements FlowControlBrea
 	 * @param body
 	 * @param line
 	 */
-	public While(Expression expr,Body body,Position start,Position end) {
+	public While(Expression expr,Body body,Position start,Position end, String label) {
 		super(start,end);
 		this.expr=CastBoolean.toExprBoolean(expr);
 		this.body=body;
 		body.setParent(this);
+		this.label=label;
 	}
 	
 	
@@ -44,15 +46,11 @@ public final class While extends StatementBaseNoFinal implements FlowControlBrea
 	 * @param body
 	 * @param line
 	 */
-	public While(boolean b, Body body,Position start,Position end) {
-		this(LitBoolean.toExprBoolean(b),body,start, end);
+	public While(boolean b, Body body,Position start,Position end, String label) {
+		this(LitBoolean.toExprBoolean(b),body,start, end, label);
 	}
 
-
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.visitLabel(begin);
@@ -66,28 +64,23 @@ public final class While extends StatementBaseNoFinal implements FlowControlBrea
 		adapter.visitLabel(end);
 	}
 
-
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
-	 */
+	@Override
 	public Label getBreakLabel() {
 		return end;
 	}
 
-
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
-	 */
+	@Override
 	public Label getContinueLabel() {
 		return begin;
 	}
 
-	/**
-	 * @see railo.transformer.bytecode.statement.HasBody#getBody()
-	 */
+	@Override
 	public Body getBody() {
 		return body;
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
 	}
 }

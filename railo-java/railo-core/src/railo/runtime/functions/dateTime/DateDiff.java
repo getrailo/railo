@@ -30,8 +30,8 @@ public final class DateDiff implements Function {
 	private static final int DATEPART_WW = DATEPART_W;
 	private static final int DATEPART_Q = 20;
 	
-	private static Calendar _cRight;
-	private static Calendar _cLeft;
+	//private static Calendar _cRight;
+	//private static Calendar _cLeft;
 
 
 	/**
@@ -65,20 +65,11 @@ public final class DateDiff implements Function {
 		
 		
 		// dates
-		if(_cLeft==null) _cLeft = JREDateTimeUtil.newInstance(tz);
-		//synchronized(_cLeft){
-			_cLeft.clear();
-			_cLeft.setTimeZone(tz);
-			_cLeft.setTimeInMillis(msLeft);
-			//long msLeft = _cLeft.getTimeInMillis();
-			
-			if(_cRight==null) _cRight = JREDateTimeUtil.newInstance(tz);
-			else {
-				_cRight.clear();
-				_cRight.setTimeZone(tz);
-			}
-			_cRight.setTimeInMillis(msRight);
-			//long msRight = _cRight.getTimeInMillis();
+		Calendar _cLeft = JREDateTimeUtil.getThreadCalendar(tz);
+		_cLeft.setTimeInMillis(msLeft);
+		
+		Calendar _cRight = JREDateTimeUtil.newInstance(tz);
+		_cRight.setTimeInMillis(msRight);
 			
 			
 			if(msLeft>msRight) 

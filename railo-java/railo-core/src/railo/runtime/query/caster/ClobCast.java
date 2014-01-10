@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.TimeZone;
 
 import railo.commons.io.IOUtil;
 
 public class ClobCast implements Cast {
 
-	public Object toCFType(int type, ResultSet rst, int columnIndex) throws SQLException, IOException {
+	public Object toCFType(TimeZone tz, int type, ResultSet rst, int columnIndex) throws SQLException, IOException {
 		//IOUtil.toString(rst.getClob(columnIndex).getCharacterStream())
 		
 		Reader reader = null;

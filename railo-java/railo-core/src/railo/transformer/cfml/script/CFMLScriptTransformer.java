@@ -14,10 +14,10 @@ import railo.transformer.util.CFMLString;
 
 public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements TagDependentBodyTransformer {
 	/**
-	 * Einstiegsmethode für den CFScript Transformer, 
+	 * Einstiegsmethode fuer den CFScript Transformer, 
 	 * die Methode erbt sich von der Transform Methode der data.cfmlExprTransformer Klasse.
 	 * Der einzige Unterschied liegt darin, das der data.cfmlString der eingegeben wird als vererbte Klasse CFScriptString vorliegen muss.
-	 * Der Parameter ist als data.cfmlString definiert, so dass er die transform Methode überschreibt.
+	 * Der Parameter ist als data.cfmlString definiert, so dass er die transform Methode ueberschreibt.
 	 * @param fld Array von Function Libraries, 
 	 * Mithilfe dieser Function Libraries kann der Transfomer buil-in Funktionen innerhalb des data.cfml Codes erkennen 
 	 * und validieren.
@@ -35,7 +35,7 @@ public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements
 		boolean isCFC= page.isComponent();
 		boolean isInterface= page.isInterface();
 		
-		Data data = init(page,ep,fld,scriptTags,cfml,settings,true);
+		ExprData data = init(page,ep,fld,scriptTags,cfml,settings,true);
 		data.insideFunction=false; 
 		data.tagName=libTag.getFullName();
 		data.isCFC=isCFC;
@@ -48,7 +48,7 @@ public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements
 	/**
 	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#expression()
 	 */
-	public final Expression expression(Data data) throws TemplateException {
+	public final Expression expression(ExprData data) throws TemplateException {
 		Expression expr;
 		expr = super.expression(data);
 		comments(data);

@@ -15,9 +15,7 @@ import railo.runtime.type.util.KeyConstants;
 
 public abstract class EHCacheSupport extends CacheSupport implements Cache,CacheEvent {
 
-	/**
-	 * @see railo.commons.io.cache.CacheEvent#register(railo.commons.io.cache.CacheEventListener)
-	 */
+	@Override
 	public void register(CacheEventListener listener) {
 		//RegisteredEventListeners listeners=cache.getCacheEventNotificationService();
 		//listeners.registerListener(new ExpiresCacheEventListener());
@@ -31,17 +29,13 @@ public abstract class EHCacheSupport extends CacheSupport implements Cache,Cache
 		//.getCacheEventListeners().add(new EHCacheEventListener(listener));
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#contains(String)
-	 */
+	@Override
 	public boolean contains(String key) {
 		if(!getCache().isKeyInCache(key))return false;
 		return getCache().get(key)!=null;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getCustomInfo()
-	 */
+	@Override
 	public Struct getCustomInfo() {
 		Struct info=super.getCustomInfo();
 		// custom
@@ -56,20 +50,16 @@ public abstract class EHCacheSupport extends CacheSupport implements Cache,Cache
 		return info;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#keys()
-	 */
+	@Override
 	public List keys() {
 		return getCache().getKeysWithExpiryCheck();
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#put(String, java.lang.Object, java.lang.Long, java.lang.Long)
-	 */
+	@Override
 	public void put(String key, Object value, Long idleTime, Long liveTime) {
 		Boolean eternal = idleTime==null && liveTime==null?Boolean.TRUE:Boolean.FALSE;
-		Integer idle = idleTime==null?null:new Integer((int)idleTime.longValue()/1000);
-		Integer live = liveTime==null?null:new Integer((int)liveTime.longValue()/1000);
+		Integer idle = idleTime==null?null : new Integer( (int)(idleTime.longValue()/1000) );
+		Integer live = liveTime==null?null : new Integer( (int)(liveTime.longValue()/1000) );
 		getCache().put(new Element(key, value ,eternal, idle, live));
 	}
 

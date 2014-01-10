@@ -19,23 +19,17 @@ public class ComponentCacheEventListener implements CacheEventListener {
 		this.cfc=cfc;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.CacheEventListener#onRemove(railo.commons.io.cache.CacheEntry)
-	 */
+	@Override
 	public void onRemove(CacheEntry entry) {
 		call(ON_REMOVE,entry);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEventListener#onPut(railo.commons.io.cache.CacheEntry)
-	 */
+	@Override
 	public void onPut(CacheEntry entry) {
 		call(ON_PUT,entry);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEventListener#onExpires(railo.commons.io.cache.CacheEntry)
-	 */
+	@Override
 	public void onExpires(CacheEntry entry) {
 		call(ON_EXPIRES,entry);
 	}
@@ -45,9 +39,7 @@ public class ComponentCacheEventListener implements CacheEventListener {
 		//cfc.callWithNamedValues(pc, methodName, data);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEventListener#duplicate()
-	 */
+	@Override
 	public CacheEventListener duplicate() {
 		return new ComponentCacheEventListener((Component)cfc.duplicate(false));
 	}

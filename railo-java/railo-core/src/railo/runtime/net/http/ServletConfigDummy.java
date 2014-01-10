@@ -22,23 +22,17 @@ public class ServletConfigDummy implements ServletConfig {
 		this.context=context;
 	}
 	
-	/**
-	 * @see javax.servlet.ServletConfig#getInitParameter(java.lang.String)
-	 */
+	@Override
 	public String getInitParameter(String key) {
 		return context.getInitParameter(key);
 	}
 
-	/**
-	 * @see javax.servlet.ServletConfig#getInitParameterNames()
-	 */
+	@Override
 	public Enumeration getInitParameterNames() {
 		return context.getInitParameterNames();
 	}
 
-	/**
-	 * @see javax.servlet.ServletConfig#getServletName()
-	 */
+	@Override
 	public String getServletName() {
 		return servletName;
 	}

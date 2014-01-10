@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -14,8 +16,15 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.type.scope.Form;
+import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.URL;
+import railo.runtime.type.scope.URLImpl;
+import railo.runtime.type.scope.UrlFormImpl;
+import railo.runtime.type.scope.util.ScopeUtil;
 import railo.runtime.util.EnumerationWrapper;
 
 /**
@@ -106,23 +115,17 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return req;
 	}
 
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getContextPath()
-	 */
+	@Override
 	public String getContextPath() {
 		return context_path;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getPathInfo()
-	 */
+	@Override
 	public String getPathInfo() {
 		return path_info;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURL()
-	 */
+	@Override
 	public StringBuffer getRequestURL() {
 		return new StringBuffer(isSecure()?"https":"http").
 			append("://").
@@ -132,29 +135,21 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			append(request_uri.startsWith("/")?request_uri:"/"+request_uri);
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getQueryString()
-	 */
+	@Override
 	public String getQueryString() {
 		return query_string;
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURI()
-	 */
+	@Override
 	public String getRequestURI() {
 		return request_uri;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getServletPath()
-	 */
+	@Override
 	public String getServletPath() {
 		return servlet_path;
 	}
 	
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#getRequestDispatcher(java.lang.String)
-	 */
+	@Override
 	public RequestDispatcher getRequestDispatcher(String realpath) {
 		return new RequestDispatcherWrap(this,realpath);
 	}
@@ -164,17 +159,13 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return req.getRequestDispatcher(realpath);
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#removeAttribute(java.lang.String)
-	 */
+	@Override
 	public void removeAttribute(String name) {
 		if(disconnected) disconnectedData.remove(name); 
 		else req.removeAttribute(name);
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#setAttribute(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public void setAttribute(String name, Object value) {
 		if(disconnected) disconnectedData.put(name, value);
 		else req.setAttribute(name, value);
@@ -185,9 +176,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	}*/
 
 
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#getAttribute(java.lang.String)
-	 */
+	@Override
 	public Object getAttribute(String name) {
 		if(disconnected) return disconnectedData.get(name);
 		return req.getAttribute(name);
@@ -201,11 +190,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		
 	}
 
-	/**
-	 * this method still throws a error if want read input stream a second time
-	 * this is done to be compatibility with servletRequest class
-	 * @see javax.servlet.ServletRequestWrapper#getInputStream()
-	 */
+	@Override
 	public ServletInputStream getInputStream() throws IOException {
 		//if(ba rr!=null) throw new IllegalStateException();
 		if(barr==null) {
@@ -218,6 +203,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			}
 			
 			firstRead=false;
+			
 			if(isToBig(getContentLength())) {
 				return super.getInputStream();
 			}
@@ -241,6 +227,53 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return new ServletInputStreamDummy(barr);	
 	}
 	
+	@Override
+	public Map<String,String[]> getParameterMap() {
+		PageContext pc = ThreadLocalPageContext.get();
+		FormImpl form=_form(pc);
+		URLImpl url=_url(pc);
+		
+		return ScopeUtil.getParameterMap(
+				new URLItem[][]{form.getRaw(),url.getRaw()}, 
+				new String[]{form.getEncoding(),url.getEncoding()});
+	}
+
+	private static URLImpl _url(PageContext pc) {
+		URL u = pc.urlScope();
+		if(u instanceof UrlFormImpl) {
+			return ((UrlFormImpl) u).getURL();
+		}
+		return (URLImpl) u;
+	}
+
+	private static FormImpl _form(PageContext pc) {
+		Form f = pc.formScope();
+		if(f instanceof UrlFormImpl) {
+			return ((UrlFormImpl) f).getForm();
+		}
+		return (FormImpl) f;
+	}
+
+	@Override
+	public Enumeration<String> getParameterNames() {
+		return new ItasEnum<String>(getParameterMap().keySet().iterator());
+	}
+
+	@Override
+	public String[] getParameterValues(String name) {
+		return getParameterValues(ThreadLocalPageContext.get(), name); 
+	}
+	
+	public static String[] getParameterValues(PageContext pc, String name) {
+		pc = ThreadLocalPageContext.get(pc);
+		FormImpl form = _form(pc);
+		URLImpl url= _url(pc);
+		
+		return ScopeUtil.getParameterValues(
+				new URLItem[][]{form.getRaw(),url.getRaw()}, 
+				new String[]{form.getEncoding(),url.getEncoding()},name);
+	}
+
 	private boolean isToBig(int contentLength) {
 		if(contentLength<MIN_STORAGE_SIZE) return false;
 		if(contentLength>MAX_STORAGE_SIZE) return true;
@@ -259,10 +292,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return new ServletInputStreamDummy(new byte[]{});	 
 	}*/
 
-	/**
-	 *
-	 * @see javax.servlet.ServletRequestWrapper#getReader()
-	 */
+	@Override
 	public BufferedReader getReader() throws IOException {
 		String enc = getCharacterEncoding();
 		if(StringUtil.isEmpty(enc))enc="iso-8859-1";
@@ -291,5 +321,24 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		}
 		disconnected=true;
 		req=null;
+	}
+	
+	static class ItasEnum<E> implements Enumeration<E> {
+
+		private Iterator<E> it;
+
+		public ItasEnum(Iterator<E> it){
+			this.it=it;
+		}
+		@Override
+		public boolean hasMoreElements() {
+			return it.hasNext();
+		}
+
+		@Override
+		public E nextElement() {
+			return it.next();
+		}
+		
 	}
 }

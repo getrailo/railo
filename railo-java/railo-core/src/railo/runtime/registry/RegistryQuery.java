@@ -9,7 +9,7 @@ import railo.commons.cli.Command;
 import railo.commons.lang.StringUtil;
 import railo.runtime.functions.string.ParseNumber;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -30,7 +30,7 @@ public final class RegistryQuery {
 	 * @throws InterruptedException
 	 */
 	public static String executeQuery(String[] cmd) throws IOException, InterruptedException {
-		return Command.execute(cmd);
+		return Command.execute(cmd).getOutput();
 	}  
   
 	  /**
@@ -80,7 +80,7 @@ public final class RegistryQuery {
 	public static void setValue(String branch, String entry, short type, String value) throws RegistryException, IOException, InterruptedException {
 	    
 	    if(type==RegistryEntry.TYPE_KEY) {
-	        String fullKey=List.trim(branch,"\\")+"\\"+List.trim(entry,"\\");
+	        String fullKey=ListUtil.trim(branch,"\\")+"\\"+ListUtil.trim(entry,"\\");
 	        //String[] cmd = new String[]{"reg","add",cleanBrunch(fullKey),"/ve","/f"};
 	        String[] cmd = new String[]{"reg","add",cleanBrunch(fullKey),"/f"};
 	        executeQuery(cmd);
@@ -114,7 +114,7 @@ public final class RegistryQuery {
 	
 	private static String cleanBrunch(String branch) {
 		branch=branch.replace('/', '\\');
-		branch=List.trim(branch,"\\");
+		branch=ListUtil.trim(branch,"\\");
 		if(branch.length()==0) return "\\";
 		return branch;
 	}
@@ -129,7 +129,7 @@ public final class RegistryQuery {
 	 * @throws RegistryException
 	 */
 	private static RegistryEntry[] filter(String string,String branch, short type) throws RegistryException {
-		branch=List.trim(branch,"\\");
+		branch=ListUtil.trim(branch,"\\");
 	    StringBuffer result=new StringBuffer();
 		ArrayList array=new ArrayList();
 	  	String[] arr=string.split("\n");
@@ -156,9 +156,9 @@ public final class RegistryQuery {
 				//}
 			}
 			else if(line.indexOf(branch)==0 && (type==RegistryEntry.TYPE_ANY || type==RegistryEntry.TYPE_KEY)) {
-			    line=List.trim(line,"\\");
+			    line=ListUtil.trim(line,"\\");
 			    if(branch.length()<line.length()) {
-			        array.add(new RegistryEntry(RegistryEntry.TYPE_KEY,List.last(line,"\\",true),""));
+			        array.add(new RegistryEntry(RegistryEntry.TYPE_KEY,ListUtil.last(line,"\\",true),""));
 			    }
 			}
 		}
@@ -184,9 +184,7 @@ static class StreamReader extends Thread {
       sw = new StringWriter();
     }
 
-    /**
-     * @see java.lang.Thread#run()
-     */
+    @Override
     public void run() {
       try {
         int c;

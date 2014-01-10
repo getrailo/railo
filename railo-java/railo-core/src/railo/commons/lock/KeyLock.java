@@ -94,16 +94,12 @@ class Token<K> {
 		return key;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(){
 		return key.toString();
 	}
 	
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj){
 		if(obj instanceof Token<?>) {
 			Token<?> other=(Token<?>) obj;
@@ -112,9 +108,7 @@ class Token<K> {
 		return key.equals(obj);
 	}
 	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode(){
 		return key.hashCode();
 	}

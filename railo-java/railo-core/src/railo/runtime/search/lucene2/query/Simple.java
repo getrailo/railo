@@ -252,9 +252,7 @@ public final class Simple {
         private Term toTerm() {
             return new Term(FIELD, toContent());
         }
-        /**
-         * @see java.lang.Object#toString()
-         */
+        @Override
         public String toString() {
             return toContent();
         }

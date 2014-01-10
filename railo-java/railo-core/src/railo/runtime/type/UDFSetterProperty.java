@@ -9,10 +9,11 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.orm.hibernate.HBMCreator;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 
 public final class UDFSetterProperty extends UDFGSProperty {
 
@@ -44,7 +45,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 				else {
 					String str=Caster.toString(o);
 					if(!StringUtil.isEmpty(str,true)) {
-						validateParams=HBMCreator.convertToSimpleMap(str);
+						validateParams=ORMUtil.convertToSimpleMap(str);
 						if(validateParams==null)
 							throw new ExpressionException("cannot parse string ["+str+"] as struct");
 					}
@@ -53,25 +54,16 @@ public final class UDFSetterProperty extends UDFGSProperty {
 		}
 	} 
 
-	/**
-	 * @see railo.runtime.type.UDF#duplicate()
-	 */
-	public UDF duplicate(ComponentImpl c) {
+	@Override
+	public UDF duplicate() {
 		try {
-			return new UDFSetterProperty(c,prop);
+			return new UDFSetterProperty(component,prop);
 		} catch (PageException e) {
 			return null;
 		}
 	}
-
 	
-
-	public UDF duplicate() {
-		return duplicate(component);
-	}
-	/**
-	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-	 */
+	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
@@ -80,11 +72,9 @@ public final class UDFSetterProperty extends UDFGSProperty {
 		return component;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
-		UDFImpl.argumentCollection(values,getFunctionArguments());
+		UDFUtil.argumentCollection(values,getFunctionArguments());
 		Object value = values.get(propName,null);
 		
 		if(value==null){
@@ -98,23 +88,22 @@ public final class UDFSetterProperty extends UDFGSProperty {
 		return component;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public Object getDefaultValue(PageContext pc, int index) throws PageException {
 		return prop.getDefault();
 	}
+	
+	@Override
+	public Object getDefaultValue(PageContext pc, int index, Object defaultValue) throws PageException {
+		return prop.getDefault();
+	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		return "any";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		return null;
 	}

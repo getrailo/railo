@@ -7,6 +7,7 @@ import java.util.Map;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.functions.system.CFFunction;
+import railo.runtime.listener.AppListenerUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
@@ -28,7 +29,7 @@ import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.tag.TagLibTag;
 
 /**
- * Prüft den Kontext des Tag function.
+ * Prueft den Kontext des Tag function.
  * Das Attribute <code>argument</code> darf nur direkt innerhalb des Tag <code>function</code> liegen.
  * Dem Tag <code>argument</code> muss als erstes im tag function vorkommen
  */
@@ -77,6 +78,17 @@ public final class Function extends EvaluatorSupport {
 			tag.addAttribute(new Attribute(attrCachedWithin.isDynamicType(), attrCachedWithin.getName(), LitLong.toExpr(ASMUtil.timeSpanToLong(val), null, null), "numeric"));
 		}
 		
+		// Attribute localMode
+		Attribute attrLocalMode = tag.getAttribute("localmode");
+		if(attrLocalMode!=null) {
+			Expression expr = attrLocalMode.getValue();
+			String str = ASMUtil.toString(expr,null);
+			if(!StringUtil.isEmpty(str) && AppListenerUtil.toLocalMode(str, -1)==-1)
+				throw new EvaluatorException("Attribute localMode of the Tag Function, must be a literal value (modern, classic, true or false)");
+			//boolean output = ((LitBoolean)expr).getBooleanValue();
+			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
+		}
+		
 		
 		// Attribute Output
 		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehŠndelt
@@ -85,6 +97,15 @@ public final class Function extends EvaluatorSupport {
 			Expression expr = CastBoolean.toExprBoolean(attrOutput.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute output of the Tag Function, must be a literal boolean value (true or false, yes or no)");
+			//boolean output = ((LitBoolean)expr).getBooleanValue();
+			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
+		}
+		
+		Attribute attrBufferOutput = tag.getAttribute("bufferoutput");
+		if(attrBufferOutput!=null) {
+			Expression expr = CastBoolean.toExprBoolean(attrBufferOutput.getValue());
+			if(!(expr instanceof LitBoolean))
+				throw new EvaluatorException("Attribute bufferOutput of the Tag Function, must be a literal boolean value (true or false, yes or no)");
 			//boolean output = ((LitBoolean)expr).getBooleanValue();
 			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
 		}
@@ -101,18 +122,16 @@ public final class Function extends EvaluatorSupport {
         //}
         
 	}
-
-
+	
 	public static void checkFunctionName(String name, FunctionLib[] flibs) throws EvaluatorException {
 		FunctionLibFunction flf;
 		for (int i = 0; i < flibs.length; i++) {
 			flf = flibs[i].getFunction(name);
-			if(flf!=null && flf.getCazz()!=CFFunction.class) {
+			if(flf!=null && flf.getClazz()!=CFFunction.class) {
 				throw new EvaluatorException("The name ["+name+"] is already used by a built in Function");
 			}
 		}
 	}
-
 
 	public static void throwIfNotEmpty(Tag tag) throws EvaluatorException {
 		Body body = tag.getBody();

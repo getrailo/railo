@@ -22,44 +22,32 @@ public final class RefLongImpl implements RefLong {
     public RefLongImpl() {
     }
     
-    /**
-     * @see railo.commons.lang.types.RefLong#setValue(long)
-     */
+    @Override
     public void setValue(long value) {
         this.value = value;
     }
     
-    /**
-     * @see railo.commons.lang.types.RefLong#plus(long)
-     */
+    @Override
     public void plus(long value) {
         this.value+=value;
     }
     
-    /**
-     * @see railo.commons.lang.types.RefLong#minus(long)
-     */
+    @Override
     public void minus(long value) {
         this.value-=value;
     }
 
-    /**
-     * @see railo.commons.lang.types.RefLong#toLong()
-     */
+    @Override
     public Long toLong() {
         return Long.valueOf(value);
     }
     
-	/**
-	 * @see railo.commons.lang.types.RefLong#toLongValue()
-	 */
+	@Override
 	public long toLongValue() {
 		return value;
 	}
 	
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return String.valueOf(value);
     }

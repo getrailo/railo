@@ -1,23 +1,27 @@
 package railo.runtime.net.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.xml.sax.InputSource;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
@@ -26,10 +30,11 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigWeb;
-import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
@@ -38,11 +43,16 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
+import railo.runtime.type.scope.FormImpl;
 
 public final class ReqRspUtil {
 
 	
 	
+	private static final Object NULL = new Object();
+
+
 	public static String get(Pair<String,Object>[] items, String name) {
 		for(int i=0;i<items.length;i++) {
 			if(items[i].getName().equalsIgnoreCase(name)) 
@@ -103,7 +113,7 @@ public final class ReqRspUtil {
 			for(int i=0;i<cookies.length;i++){
 				cookie=cookies[i];	
 				// value (is decoded by the servlet engine with iso-8859-1)
-				if(!StringUtil.isAscci(cookie.getValue())) {
+				if(!StringUtil.isAscii(cookie.getValue())) {
 					tmp=encode(cookie.getValue(), "iso-8859-1");
 					cookie.setValue(decode(tmp, charset,false));
 				}
@@ -114,10 +124,10 @@ public final class ReqRspUtil {
 			String str = req.getHeader("Cookie");
 			if(str!=null) {
 				try{
-					String[] arr = railo.runtime.type.List.listToStringArray(str, ';'),tmp;
+					String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(str, ';'),tmp;
 					java.util.List<Cookie> list=new ArrayList<Cookie>();
 					for(int i=0;i<arr.length;i++){
-						tmp=railo.runtime.type.List.listToStringArray(arr[i], '=');
+						tmp=railo.runtime.type.util.ListUtil.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
 							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}
@@ -296,7 +306,7 @@ public final class ReqRspUtil {
 
 	public static boolean isThis(HttpServletRequest req, String url) { 
 		try {
-			return isThis(req, HTTPUtil.toURL(url));
+			return isThis(req, HTTPUtil.toURL(url,true));
 		} 
 		catch (Throwable t) {
 			return false;
@@ -380,8 +390,8 @@ public final class ReqRspUtil {
     	
 		MimeType contentType = getContentType(pc);
 		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
-        String charEncoding = req.getCharacterEncoding();
-        Object obj = "";
+        String strCS = getCharacterEncoding(pc,req);
+        Charset cs = CharsetUtil.toCharset(strCS);
         
         boolean isBinary =!(
         		strContentType == null || 
@@ -392,49 +402,17 @@ public final class ReqRspUtil {
         	ServletInputStream is=null;
             try {
                 byte[] data = IOUtil.toBytes(is=req.getInputStream());//new byte[req.getContentLength()];
-                
-                if(isBinary) return data;
-                
-                String str;
-                if(charEncoding != null && charEncoding.length() > 0)
-                    obj = str = new String(data, charEncoding);
-                else
-                    obj = str = new String(data);
+                Object obj=NULL;
                 
                 if(deserialized){
                 	int format = MimeType.toFormat(contentType, -1);
-                	switch(format) {
-                	case UDF.RETURN_FORMAT_JSON:
-                		try{
-                			obj=new JSONExpressionInterpreter().interpret(pc, str);
-                		}
-                		catch(PageException pe){}
-                	break;
-                	case UDF.RETURN_FORMAT_SERIALIZE:
-                		try{
-                			obj=new CFMLExpressionInterpreter().interpret(pc, str);
-                		}
-                		catch(PageException pe){}
-                	break;
-                	case UDF.RETURN_FORMAT_WDDX:
-                		try{
-                			WDDXConverter converter =new WDDXConverter(pc.getTimeZone(),false,true);
-                			converter.setTimeZone(pc.getTimeZone());
-                			obj = converter.deserialize(str,false);
-                		}
-                		catch(Exception pe){}
-                	break;
-                	case UDF.RETURN_FORMAT_XML:
-                		try{
-                			InputSource xml = XMLUtil.toInputSource(pc,str.trim());
-                			InputSource validator =null;
-                			obj = XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),true);
-                		}
-                		catch(Exception pe){}
-                	break;
-                	}
+                	obj=toObject(pc, data, format, cs, obj);
                 }
-               
+            	if(obj==NULL) {
+                	if(isBinary) obj=data;
+            		else obj=toString(data, cs);
+                }
+                return obj;
                 
                 
             }
@@ -445,16 +423,117 @@ public final class ReqRspUtil {
             	IOUtil.closeEL(is);
             }
         }
-        else {
-        	return defaultValue;
-        }
-        return obj;
+        return defaultValue;
     }
+
+
+    private static String toString(byte[] data, Charset cs) {
+    	if(cs!=null)
+            return  new String(data, cs).trim();
+        return new String(data).trim();
+	}
+
+	/**
+     * returns the full request URL
+     *
+     * @param req - the HttpServletRequest
+     * @param includeQueryString - if true, the QueryString will be appended if one exists
+     * */
+    public static String getRequestURL( HttpServletRequest req, boolean includeQueryString ) {
+
+        StringBuffer sb = req.getRequestURL();
+        int maxpos = sb.indexOf( "/", 8 );
+
+        if ( maxpos > -1 ) {
+
+            if ( req.isSecure() ) {
+                if ( sb.substring( maxpos - 4, maxpos ).equals( ":443" ) )
+                    sb.delete( maxpos - 4, maxpos );
+            }
+            else {
+                if ( sb.substring( maxpos - 3, maxpos ).equals( ":80" ) )
+                    sb.delete( maxpos - 3, maxpos );
+            }
+
+            if ( includeQueryString && !StringUtil.isEmpty( req.getQueryString() ) )
+                sb.append( '?' ).append( req.getQueryString() );
+        }
+
+        return sb.toString();
+    }
+
 
 	public static String getRootPath(ServletContext sc) {
 		if(sc==null) throw new RuntimeException("cannot determine webcontext root, because the ServletContext is null");
 		String root = sc.getRealPath("/");
 		if(root==null) throw new RuntimeException("cannot determinae webcontext root, the ServletContext from class ["+sc.getClass().getName()+"] is returning null for the method call sc.getRealPath(\"/\"), possibly due to configuration problem.");
 		return root;
+	}
+
+	public static Object toObject(PageContext pc,byte[] data, int format, Charset charset, Object defaultValue) {
+		switch(format) {
+    	case UDF.RETURN_FORMAT_JSON:
+    		try{
+    			return new JSONExpressionInterpreter().interpret(pc, toString(data,charset));
+    		}
+    		catch(PageException pe){}
+    	break;
+    	case UDF.RETURN_FORMAT_SERIALIZE:
+    		try{
+    			return new CFMLExpressionInterpreter().interpret(pc, toString(data,charset));
+    		}
+    		catch(PageException pe){}
+    	break;
+    	case UDF.RETURN_FORMAT_WDDX:
+    		try{
+    			WDDXConverter converter =new WDDXConverter(pc.getTimeZone(),false,true);
+    			converter.setTimeZone(pc.getTimeZone());
+    			return converter.deserialize(toString(data,charset),false);
+    		}
+    		catch(Exception pe){}
+    	break;
+    	case UDF.RETURN_FORMAT_XML:
+    		try{
+    			InputSource xml = XMLUtil.toInputSource(pc,toString(data,charset));
+    			InputSource validator =null;
+    			return XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),true);
+    		}
+    		catch(Exception pe){}
+    	break;
+    	case UDFPlus.RETURN_FORMAT_JAVA:
+    		try{
+    			return JavaConverter.deserialize(new ByteArrayInputStream(data));
+    		}
+    		catch(Exception pe){}
+    	break;
+    	}
+		return defaultValue;
+	}
+
+	public static boolean identical(HttpServletRequest left, HttpServletRequest right) { 
+		if(left==right) return true;
+		if(left instanceof HTTPServletRequestWrap) 
+			left=((HTTPServletRequestWrap)left).getOriginalRequest();
+		if(right instanceof HTTPServletRequestWrap) 
+			right=((HTTPServletRequestWrap)right).getOriginalRequest();
+		if(left==right) return true;
+		return false;
+	}
+
+	public static String getCharacterEncoding(PageContext pc, ServletRequest req) {
+		String ce = req.getCharacterEncoding();
+		if(!StringUtil.isEmpty(ce,true)) return ce;
+		return _getCharacterEncoding(pc);
+	}
+	
+	public static String getCharacterEncoding(PageContext pc, ServletResponse rsp) {
+		String ce = rsp.getCharacterEncoding();
+		if(!StringUtil.isEmpty(ce,true)) return ce;
+		return _getCharacterEncoding(pc);
+	}
+	
+	private static String _getCharacterEncoding(PageContext pc) {
+		Config config = ThreadLocalPageContext.getConfig(pc); // TODO 4.2
+		return config.getWebCharset();
 	}
 }

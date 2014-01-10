@@ -6,8 +6,8 @@ import org.xml.sax.InputSource;
  
 
 /**
- * Hilfsklasse für die TagLibFactory, diese Klasse definiert den DTDHandler für den Sax Parser. 
- * Die Klasse lädt wenn möglich die DTD, anhand der Public-id vom lokalen System.
+ * Hilfsklasse fuer die TagLibFactory, diese Klasse definiert den DTDHandler fuer den Sax Parser. 
+ * Die Klasse laedt wenn moeglich die DTD, anhand der Public-id vom lokalen System.
  * 
  * @see  org.xml.sax.EntityResolver
  */
@@ -22,7 +22,7 @@ public final class TagLibEntityResolver implements EntityResolver {
 	public final static String SUN_DTD_1_2=	"/resource/dtd/web-jsptaglibrary_1_2.dtd";
 		
 	/**
-	 * Lädt die DTD vom lokalen System.
+	 * Laedt die DTD vom lokalen System.
 	 * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String, java.lang.String)
 	 */
 	public InputSource resolveEntity(String publicId, String systemId) {

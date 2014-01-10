@@ -75,7 +75,7 @@ public class MemberUtil {
 			//Object res = Reflector.callMethod(coll,methodName,args,DEFAULT_VALUE);
 	    	//if(res!=DEFAULT_VALUE) return res;
 	    } 
-		throw new ExpressionException("No matching function member ["+methodName+"] found, available function members are ["+railo.runtime.type.List.sort(CollectionUtil.getKeyList(members.keySet().iterator(), ","),"textnocase","asc",",")+"]");
+		throw new ExpressionException("No matching function member ["+methodName+"] found, available function members are ["+railo.runtime.type.util.ListUtil.sort(CollectionUtil.getKeyList(members.keySet().iterator(), ","),"textnocase","asc",",")+"]");
 	}
 
 	public static Object callWithNamedValues(PageContext pc,Object coll, Collection.Key methodName, Struct args,short type, String strType) throws PageException {
@@ -100,7 +100,7 @@ public class MemberUtil {
 					if(val==null) {
 						String alias=arg.getAlias();
 						if(!StringUtil.isEmpty(alias,true)) {
-							String[] aliases = railo.runtime.type.List.trimItems(railo.runtime.type.List.listToStringArray(alias,','));
+							String[] aliases = railo.runtime.type.util.ListUtil.trimItems(railo.runtime.type.util.ListUtil.listToStringArray(alias,','));
 							for(int x=0;x<aliases.length;x++){
 								val = args.get(aliases[x],null);
 								if(val!=null) break;
@@ -123,7 +123,7 @@ public class MemberUtil {
 			}
 			
 		}
-		throw new ExpressionException("No matching function member ["+methodName+"] for call with named arguments found, available function members are ["+railo.runtime.type.List.sort(CollectionUtil.getKeyList(members.keySet().iterator(), ","),"textnocase","asc",",")+"]");
+		throw new ExpressionException("No matching function member ["+methodName+"] for call with named arguments found, available function members are ["+railo.runtime.type.util.ListUtil.sort(CollectionUtil.getKeyList(members.keySet().iterator(), ","),"textnocase","asc",",")+"]");
 	}
 	
 }

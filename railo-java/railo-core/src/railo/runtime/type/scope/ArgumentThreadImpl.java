@@ -32,25 +32,19 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		this.sct=sct;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.ArgumentPro#getFunctionArgument(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object getFunctionArgument(String key, Object defaultValue) {
 		return sct.get(key,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.ArgumentPro#getFunctionArgument(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object getFunctionArgument(Key key, Object defaultValue) {
 		return sct.get(key,defaultValue);
 	}
 	
 
 
-	/**
-	 * @see railo.runtime.type.scope.ArgumentPro#containsFunctionArgumentKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsFunctionArgumentKey(Key key) {
 		return sct.containsKey(key);
 	}
@@ -60,9 +54,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.ArgumentPro#setFunctionArgumentNames(java.util.Set)
-	 */
+	@Override
 	public void setFunctionArgumentNames(Set functionArgumentNames) {
 		
 	}
@@ -72,175 +64,125 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Argument#isBind()
-	 */
+	@Override
 	public boolean isBind() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Argument#setBind(boolean)
-	 */
+	@Override
 	public void setBind(boolean bind) {
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getType()
-	 */
+	@Override
 	public int getType() {
 		return SCOPE_ARGUMENTS;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return "arguments";
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	@Override
 	public void release() {}
 	public void release(PageContext pc) {}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		sct.clear();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-	 */
+	@Override
 	public boolean containsKey(String key) {
 		return sct.containsKey(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return sct.containsKey(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new ArgumentThreadImpl((Struct)Duplicator.duplicate(sct,deepCopy));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
 		return get(KeyImpl.init(key));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return sct.get(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		return sct.get(key, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		return sct.get(key, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		return sct.keys();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		return sct.remove(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		return sct.removeEL(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		return sct.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		return sct.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		return sct.setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		return sct.setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return sct.size();
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
 		return sct.toDumpData(pageContext, maxlevel, properties);
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return sct.keyIterator();
 	}
@@ -255,9 +197,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		return sct.entryIterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		return sct.valueIterator();
 	}
@@ -266,234 +206,168 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		return sct.castToBoolean(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return sct.castToBooleanValue();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return sct.castToDateTime();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public DateTime castToDateTime(DateTime defaultValue) {
 		return sct.castToDateTime(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return sct.castToDoubleValue();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue(double)
-	 */
+	@Override
 	public double castToDoubleValue(double defaultValue) {
 		return sct.castToDoubleValue(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return sct.castToString();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return sct.castToString(defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return sct.compareTo(str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return sct.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return sct.compareTo(d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return sct.compareTo(dt);
 	}
 
-	/**
-	 * @see java.util.Map#containsKey(java.lang.Object)
-	 */
+	@Override
 	public boolean containsKey(Object key) {
 		return sct.containsKey(key);
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return sct.containsValue(value);
 	}
 
-	/**
-	 * @see java.util.Map#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
 		return sct.entrySet();
 	}
 
-	/**
-	 * @see java.util.Map#get(java.lang.Object)
-	 */
+	@Override
 	public Object get(Object key) {
 		return sct.get(key);
 	}
 
-	/**
-	 * @see java.util.Map#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() {
 		return sct.isEmpty();
 	}
 
-	/**
-	 * @see java.util.Map#keySet()
-	 */
+	@Override
 	public Set keySet() {
 		return sct.keySet();
 	}
 
-	/**
-	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
-	 */
+	@Override
 	public Object put(Object key, Object value) {
 		return sct.put(key, value);
 	}
 
-	/**
-	 * @see java.util.Map#putAll(java.util.Map)
-	 */
+	@Override
 	public void putAll(Map m) {
 		sct.putAll(m);
 	}
 
-	/**
-	 * @see java.util.Map#remove(java.lang.Object)
-	 */
+	@Override
 	public Object remove(Object key) {
 		return sct.remove(key);
 	}
 
 	
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return sct.values();
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
 	public Object append(Object o) throws PageException {
 		throw new CasterException(sct,"Array");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#appendEL(java.lang.Object)
-	 */
+	@Override
 	public Object appendEL(Object o) {
 		throw new PageRuntimeException(new CasterException(sct,"Array"));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#containsKey(int)
-	 */
+	@Override
 	public boolean containsKey(int key) {
-		return sct.containsKey(KeyImpl.init(Caster.toString(key)));
+		return sct.containsKey(ArgumentIntKey.init(key));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int key, Object defaultValue) {
-		return sct.get(KeyImpl.init(Caster.toString(key)),defaultValue);
+		return sct.get(ArgumentIntKey.init(key),defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#getDimension()
-	 */
+	@Override
 	public int getDimension() {
 		throw new PageRuntimeException(new CasterException(sct,"Array"));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
+	@Override
 	public Object getE(int key) throws PageException {
 		return sct.get(KeyImpl.init(Caster.toString(key)));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#insert(int, java.lang.Object)
-	 */
+	@Override
 	public boolean insert(int key, Object value) throws PageException {
 		throw new CasterException(sct,"Array");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#intKeys()
-	 */
+	@Override
 	public int[] intKeys() {
 		throw new PageRuntimeException(new CasterException(sct,"Array"));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
-	 */
+	@Override
 	public Object prepend(Object o) throws PageException {
 		throw new CasterException(sct,"Array");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
+	@Override
 	public Object removeE(int key) throws PageException {
 		return sct.remove(KeyImpl.init(Caster.toString(key)));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int key) {
 		return sct.removeEL(KeyImpl.init(Caster.toString(key)));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#resize(int)
-	 */
+	@Override
 	public void resize(int to) throws PageException {
 		throw new CasterException(sct,"Array");
 	}
@@ -508,16 +382,12 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		return sct.set(Caster.toString(key), value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int key, Object value) {
 		return sct.setEL(Caster.toString(key), value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void sort(String sortType, String sortOrder) throws PageException {
 		throw new CasterException(sct,"Array");
 	}
@@ -526,9 +396,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		throw new CasterException(sct,"Array");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		try {
 			return Caster.toArray(sct).toArray();
@@ -537,9 +405,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toList()
-	 */
+	@Override
 	public List toList() {
 		try {
 			return Caster.toArray(sct).toList();
@@ -548,16 +414,12 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		}
 	}
 	
-	/**
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone(){
 		return duplicate(true);
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return StructUtil.sizeOf(this);
 	}

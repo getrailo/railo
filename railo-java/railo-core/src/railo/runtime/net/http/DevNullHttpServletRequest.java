@@ -20,30 +20,22 @@ public final class DevNullHttpServletRequest extends HttpServletRequestWrapper {
         barr=new ByteArrayInputStream(new byte[]{});
     }
 
-    /**
-     * @see javax.servlet.ServletRequest#getContentLength()
-     */
+    @Override
     public int getContentLength() {
         return -1;
     }
 
-    /**
-     * @see javax.servlet.ServletRequestWrapper#getContentType()
-     */
+    @Override
     public String getContentType() {
         return null;
     }
 
-    /**
-     * @see javax.servlet.ServletRequestWrapper#getInputStream()
-     */
+    @Override
     public ServletInputStream getInputStream() throws IOException {
         return new ServletInputStreamDummy(barr);
     }
 
-    /**
-     * @see javax.servlet.ServletRequestWrapper#getReader()
-     */
+    @Override
     public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(barr));
     }

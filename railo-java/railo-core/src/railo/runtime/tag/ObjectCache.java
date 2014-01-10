@@ -79,9 +79,7 @@ public final class ObjectCache extends TagImpl {
 	
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		_doStartTag();
 		return SKIP_BODY;
@@ -103,16 +101,12 @@ public final class ObjectCache extends TagImpl {
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		action="clear";

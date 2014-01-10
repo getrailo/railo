@@ -1,46 +1,111 @@
-## Railo CFML Engine
+Railo CFML Engine
+=================
 
-Welcome to the Railo CFML Engine repostory
+Welcome to the Railo CFML Engine source code repository.
+
+Railo is a high performance, open source, CFML engine.  For more information visit the project's homepage at http://www.getrailo.org/
+
 
 Building from source
 --------------------
 
+
 ### 1. Before you get started
-Before you start building Railo from source, you are going to need a few things installed on your machine:
 
-1. Eclipse for JEE - this is the easiest Eclipse bundle to work with when building Java projects <http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/heliosr>
-1. Java 5 JDK - not just the JRE (because you're going to be compiling Java code) - and not Java 6! Railo requires Java 5 to build correctly! (CHECK)
-1. A Git client, any client will do. The demo here will be using the command line client to keep it simple <http://git-scm.com/>. There is also the EGit plugin for Eclipse for you to commit your changes locally and create patch files for submission <http://www.eclipse.org/egit/>
-1. A running Railo installation in which to test your new patch file <http://www.getrailo.org/index.cfm/download/>
+Before you can start building Railo from source, you will need a few things installed on your machine:
 
+1. **Java JDK** - since you're going to compile Java code you need the JDK and not just the JRE.  Railo requires JDK 6 or later in order to compile.  http://www.oracle.com/technetwork/java/javase/downloads/
 
-### 2. Get the source code from git://github.com/getrailo/railo.git
-The main way to get the code for Railo is to clone it with git. So at a command line (or using your favourite client) clone the source of the project into a folder on your computer:
+1. **Apache ANT** - the source code contains several build scripts that will automate the build process for you. you will need ANT installed in order to run these build scripts. http://ant.apache.org/bindownload.cgi
 
-    git clone git://github.com/getrailo/railo.git
+1. **A runnable copy of Railo** - you will need a running instance of Railo on the local machine as part of the build process. http://www.getrailo.org/index.cfm/download/
+
+If you are familiar with Eclipse and GIT, we recommend using these tools as well.
 
 
-after a little while you should see something like:
+### 2. Get the source code
 
-	Cloning into railo...
-	remote: Counting objects: 11038, done.
-	remote: Compressing objects: 100% (4138/4138), done.
-	remote: Total 11038 (delta 7162), reused 10404 (delta 6612)
-	Receiving objects: 100% (11038/11038), 59.48 MiB | 639 KiB/s, done.
-	Resolving deltas: 100% (7162/7162), done.
-	
-That's it! you have downloaded all the source code for Railo!
+Railo's source code is version-controlled with GIT and is hosted on github.com (https://github.com/getrailo/railo - chances are that this is where you're reading this right now ;]).
 
-### 3. Change into the railo-build directory and run ant
-	
-	cd railo/railo-build
-	ant
+The repository contains a few branches, with the most important ones being Master (current release) and Develop (alpha and beta releases).
 
-Currently the default build creates the .rc file (for whichever version you have set in the railo-build/build.properties file) (this is not reflected everywhere yet! It is only used to name the file, you really want to change it in railo-core/src/railo/runtime/Info.ini too)
+If you are familiar with GIT, then by all means, clone the repository and grab all the branches at once.
 
-Once the build has finished you will find the files in the railo-build/build directory
+If you are not comfortable working with GIT, an easier way to grab the source code of a given branch is by downloading a zipball:
+
+* **Master Branch** - https://github.com/getrailo/railo/zipball/master
+
+* **Develop Branch** - https://github.com/getrailo/railo/zipball/develop
+
+If you require other branches, simply change the branch you're on from the drop-down above and then click the button labeled ZIP.
+
+Extract the contents of the ZIP archive into a work directory, e.g. /railo-source.  Inside that work directory you will now have the folders **/railo-cfml** and **/railo-java** and a few other files (including this one).
 
 
-Notes
------
-This is currently a work in progress so it probably might not work at all. 
+### 3. Configure and Start a local instance of Railo
+
+A portion of the Railo code is written in CFML, so you will need a running instance of Railo on your local machine in order to compile it.  In a sense, we are using Railo to build Railo. How meta is that! :)
+
+The easiest way to configure and run a local instance of Railo is by grabbing a copy of Railo Express from http://www.getrailo.org/index.cfm/download/
+
+The root of that server should point to the **/railo-cfml** folder in the source code that you downloaded.  If you are using Railo Express, you can set that as follow:
+
+1. Edit {railo-express}/contexts/railo.xml and modify the resourceBase element so that it points to the /railo-cfml folder, e.g.
+
+        <Set name="resourceBase"><SystemProperty name="jetty.home" default="."/>C:/workspace/railo-source/railo-cfml/</Set>
+
+2. Start the Railo Express instance by running {railo-express}/start or {railo-express}/start.bat
+
+3. Browse to the Admin of that Railo instance, e.g. http://localhost:8888/railo-context/admin/server.cfm and set the Admin's password.
+
+        TIP: If you are using the Railo Express version, the default port number is 8888.
+
+Note the URL of that Railo instance.  You will need it in the next step.
+
+
+### 4. Edit /railo-core/build.properties
+
+The build process will connect to the local instance of Railo in order to compile some of the code.  
+
+You need to edit **/railo-java/railo-core/build.properties** and let the build script know where to find the local Railo instance.  
+
+Change the line that reads *railo.url=http://compile/compileAdmin.cfm* so that the value of railo.url points to your local instance of Railo, e.g.
+    
+    railo.url=http://localhost:8888/compileAdmin.cfm
+
+
+### 5. Edit /railo-core/src/railo/runtime/Info.ini
+
+The build process will generate a patch file that you can deploy as an update to Railo servers.  In order for the patch to work, its version must be higher than the current version on the server that you wish to patch.
+
+You should set the version in **/railo-java/railo-core/src/railo/runtime/Info.ini**
+
+At the time of this writing, the content of that file is:
+
+    [version]
+    number=4.1.0.000
+    level=os
+    state=alpha
+    name=Endal
+    name-explanation=http://en.wikipedia.org/wiki/Endal_(Dog)
+    release-date=2012/07/16 12:15:25 CET
+
+Simply edit the value of the number property so that it is higher than the version on the server that you plan to patch, for example: *4.1.0.111*
+
+
+### 6. Run ANT
+
+Open a Command Prompt (or Shell) and change the working directory to /railo-java/railo-master and run ant by simply typing 
+
+    ANT
+
+When prompted, enter the Admin password that you've set in step 3.
+
+    TIP: ANT's path must be in the system's executables PATH.
+
+The build process should take a minute or two.  Once it's finished, you can find the newly built patch file in **/railo-java/railo-core/dist/**
+
+The filename will be the version number that you've set in step 5, with the extension .rc, for example: *4.1.0.111.rc*
+
+
+### Congratulations!  You've just built Railo from source :)

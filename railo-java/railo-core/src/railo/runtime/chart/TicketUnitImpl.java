@@ -26,10 +26,7 @@ public class TicketUnitImpl extends NumberTickUnit {
 		this(labelFormat,unit.getSize());
 	}
 
-	/**
-	 *
-	 * @see org.jfree.chart.axis.TickUnit#valueToString(double)
-	 */
+	@Override
 	public String valueToString(double value) {
 		return LabelFormatUtil.format(labelFormat,value);
 	}

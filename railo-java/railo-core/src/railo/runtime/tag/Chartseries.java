@@ -12,8 +12,8 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
+import railo.runtime.type.util.ListUtil;
 
 public final class Chartseries extends BodyTagImpl {
 	
@@ -22,10 +22,7 @@ public final class Chartseries extends BodyTagImpl {
 	private Query query;
 	private String valueColumn;
 	
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		series=new ChartSeriesBean();
@@ -38,7 +35,7 @@ public final class Chartseries extends BodyTagImpl {
 	 * @throws ExpressionException 
 	 */
 	public void setColorlist(String strColorlist) throws ExpressionException {
-		String[] arr=List.listToStringArray(strColorlist.trim(),',');
+		String[] arr=ListUtil.listToStringArray(strColorlist.trim(),',');
 		Color[] colorlist=new Color[arr.length];
 		for(int i=0;i<arr.length;i++) {
 			colorlist[i]=ColorCaster.toColor(arr[i]);
@@ -164,10 +161,7 @@ public final class Chartseries extends BodyTagImpl {
 		return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws JspException {
 
 		ChartDataBean data;

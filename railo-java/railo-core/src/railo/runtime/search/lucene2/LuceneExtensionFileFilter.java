@@ -53,10 +53,7 @@ public final class LuceneExtensionFileFilter implements ResourceFilter {
         this.recurse=recurse;
     }
 
-    /**
-     *
-     * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-     */
+    @Override
     public boolean accept(Resource res) {
         if(res.isDirectory()) return recurse;
         else if(res.isFile()) {

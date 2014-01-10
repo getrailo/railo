@@ -7,9 +7,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceClassLoader;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
+import railo.runtime.instrumentation.InstrumentationUtil;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -78,7 +78,19 @@ public final class PCLCollection {
     	// if class is already loaded flush the classloader and do new classloader
     	PCLBlock cl = index.get(name);
     	if(cl!=null) {
-    		// flash classloader when update is not possible
+    		// if can upate class
+    		if(InstrumentationUtil.isSupported()){
+    			try{
+    				Class<?> old = cl.loadClass(name);
+            		InstrumentationUtil.redefineClass(old, barr);
+            		return old;
+    			}
+    			catch(Throwable t){
+    				t.printStackTrace();
+    			}
+    		}
+    		
+    		// flush classloader when update is not possible
     		mapping.clearPages(cl);
     		StructUtil.removeValue(index,cl);
     		if(isCFC){

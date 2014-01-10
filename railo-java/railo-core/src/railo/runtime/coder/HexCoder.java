@@ -1,5 +1,7 @@
 package railo.runtime.coder;
 
+import railo.commons.io.CharsetUtil;
+
 
 /**
  * 
@@ -55,7 +57,7 @@ public final class HexCoder {
 		if (hexa.length() != 2) {
 			throw new CoderException("invalid hexadicimal String");
 		}
-		byte[] b = hexa.getBytes();
+		byte[] b = hexa.getBytes(CharsetUtil.UTF8);
 		byte valor = (byte) (hexDigitValue((char)b[0]) * 16 +
 								hexDigitValue((char)b[1]));
 		return valor;

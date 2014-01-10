@@ -5,7 +5,7 @@ import railo.transformer.cfml.evaluator.ChildEvaluator;
 
 
 /**
- * Prüft den Kontext des Tag case.
+ * Prueft den Kontext des Tag case.
  * Das Tag <code>case</code> darf nur direkt innerhalb des Tag <code>switch</code> liegen.
  */
 public final class Case extends ChildEvaluator {

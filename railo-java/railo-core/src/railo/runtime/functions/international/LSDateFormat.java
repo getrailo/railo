@@ -20,7 +20,6 @@ public final class LSDateFormat implements Function {
 
 	private static final long serialVersionUID = 4720003854756942610L;
 	
-	//private static Calendar calendar;
 	public static String call(PageContext pc , Object object) throws PageException {
 		return _call(pc, object, "medium", pc.getLocale(),pc.getTimeZone());
 	}
@@ -45,7 +44,8 @@ public final class LSDateFormat implements Function {
 	}
 
 	private static DateTime toDateLS(PageContext pc ,Locale locale, TimeZone timeZone, Object object) throws PageException {
-		if(object instanceof CharSequence) {
+		if(object instanceof DateTime) return (DateTime) object;
+		else if(object instanceof CharSequence) {
 			DateTime res = DateCaster.toDateTime(locale,Caster.toString(object),timeZone,null,locale.equals(Locale.US));
 			if(res!=null)return res;
 		}

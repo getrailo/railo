@@ -38,51 +38,37 @@ public class SearchResulItemHits implements SearchResulItem {
 		this.maxLength=maxLength;
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getAuthor()
-	 */
+	@Override
 	public String getAuthor() {
 		return doc("author");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCategory()
-	 */
+	@Override
 	public String getCategory() {
 		return category;
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCategoryTree()
-	 */
+	@Override
 	public String getCategoryTree() {
 		return categoryTree;
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom1()
-	 */
+	@Override
 	public String getCustom1() {
 		return doc("custom1");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom2()
-	 */
+	@Override
 	public String getCustom2() {
 		return doc("custom2");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom3()
-	 */
+	@Override
 	public String getCustom3() {
 		return doc("custom3");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom4()
-	 */
+	@Override
 	public String getCustom4() {
 		return doc("custom4");
 	}
@@ -96,23 +82,17 @@ public class SearchResulItemHits implements SearchResulItem {
         throw new SearchException("invalid index ["+index+"], valid index is [1,2,3,4]");
     }
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getKey()
-	 */
+	@Override
 	public String getKey() {
 		return doc("key");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getMimeType()
-	 */
+	@Override
 	public String getMimeType() {
 		return doc("mime-type");
 	}
@@ -123,9 +103,7 @@ public class SearchResulItemHits implements SearchResulItem {
 	}
     
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getScore()
-	 */
+	@Override
 	public float getScore() {
 		try {
 			return hits.score(index);
@@ -134,30 +112,22 @@ public class SearchResulItemHits implements SearchResulItem {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getSize()
-	 */
+	@Override
 	public String getSize() {
 		return doc("size");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getSummary()
-	 */
+	@Override
 	public String getSummary() {
 		return doc("summary");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getTitle()
-	 */
+	@Override
 	public String getTitle() {
 		return doc("title");
 	}
 
-	/**
-	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getUrl()
-	 */
+	@Override
 	public String getUrl() {
 		return doc("url");
 	}

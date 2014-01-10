@@ -160,7 +160,7 @@ import railo.runtime.type.util.KeyConstants;
 	}
 	
 	private static void infoPageContextStack(Struct parent,CFMLFactory factory) throws PageException {
-		long size= ((CFMLFactoryImpl)factory).getPageContextesSize();
+		long size= ((CFMLFactoryImpl)factory).getPageContextsSize();
 		parent.set(PAGE_CONTEXT_STACK, Caster.toDouble(size));
 	}
 

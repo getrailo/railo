@@ -1,9 +1,22 @@
+<cfset stText.remote.settings.title="Task Settings">
+<cfset stText.remote.title="Tasks">
+<cfset stText.remote.settings.maxThreads="Maximum concurrent threads">
+<cfset stText.remote.settings.maxThreadsDesc="Maximum number of parallel threads used to execute tasks at the same time, fewer threads will take longer to execute all open threads, more threads will add more load to the system.">
+<cfset hasAccess=true>
 <cfif not isDefined('session.filter')>
 	<cfset session.filter.type="">
 	<cfset session.filter.name="">
 	<cfset session.filter.next="">
 	<cfset session.filter.tries="">
 </cfif>
+
+
+<cfadmin 
+	action="getTaskSetting"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="settings">
+	
 
 <cfparam name="form.mainAction" default="none">
 <cfparam name="session.taskRange" default="10">
@@ -25,6 +38,25 @@
 			<cfset session.filter.name=trim(form.nameFilter)>
 			<cfset session.filter.next=trim(form.nextFilter)>
 			<cfset session.filter.tries=trim(form.triesFilter)>
+		</cfcase>
+	
+		<cfcase value="#stText.Buttons.Update#">
+			<cfadmin 
+					action="updateTaskSetting"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					maxThreads="#form.maxThreads#"
+					remoteClients="#request.getRemoteClients()#">
+		</cfcase>
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfadmin 
+					action="updateTaskSetting"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					maxThreads=""
+					remoteClients="#request.getRemoteClients()#">
 		</cfcase>
 	<!--- EXECUTE --->
 		<cfcase value="#stText.Buttons.Execute#">
@@ -85,6 +117,11 @@
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
 </cftry>
+
+<!--- Redirtect to entry --->
+<cfif cgi.request_method EQ "POST" and error.message EQ "" and not isDefined('doNotRedirect')>
+	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+</cfif>
 
 <cfparam name="url.id" default="0">
 
@@ -165,7 +202,10 @@
 			#error.detail#
 		</div>
 	</cfif>
-
+	
+	
+	
+	
 	<!--- DETAIL ---->
 	<cfif url.id NEQ 0>
 		<cfloop query="tasks">
@@ -284,6 +324,52 @@
 		</cfloop>
 	<!--- List ---->
 	<cfelse>
+	
+		
+	<h2>#stText.remote.Settings.title#</h2>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.remote.settings.maxThreads#</th>
+					<td>
+						<cfif hasAccess>
+							<cfinput type="text" name="maxThreads" 
+									value="#settings.maxThreads#" validate="integer" class="number" required="no">
+						<cfelse>
+							<b>#settings.maxThreads#</b><br>
+						</cfif>
+						
+						<div class="comment">#stText.remote.settings.maxThreadsDesc#</div>
+					</td>
+				</tr>
+				
+				<cfif hasAccess>
+					<cfmodule template="remoteclients.cfm" colspan="2">
+				</cfif>
+			</tbody>
+			<cfif hasAccess>
+				<tfoot>
+					<tr>
+						<td colspan="2"><cfoutput>
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+							<input type="reset" class="reset" name="canel" value="#stText.Buttons.Cancel#">
+							<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+						</cfoutput></td>
+					</tr>
+				</tfoot>
+			</cfif>
+		</table>
+	</cfform>
+
+	
+	
+	
+	
+	
+	
+	<h2>#stText.remote.title#</h2>
+	
 		<cfset types=struct()>
 		<cfsilent>
 			<cfloop query="tasks">

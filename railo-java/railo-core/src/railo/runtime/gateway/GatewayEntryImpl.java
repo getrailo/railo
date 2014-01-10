@@ -1,11 +1,8 @@
 package railo.runtime.gateway;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import org.opencfml.eventgateway.Gateway;
-import org.opencfml.eventgateway.GatewayEngine;
-import org.opencfml.eventgateway.GatewayException;
 
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -13,6 +10,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.gateway.proxy.GatewayProFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
@@ -25,12 +23,12 @@ public class GatewayEntryImpl implements GatewayEntry {
 	private boolean readOnly;
 	private String listenerCfcPath;
 	private int startupMode;
-	private Gateway gateway;
+	private GatewayPro gateway;
 	private String cfcPath;
 	private String className;
-	private GatewayEngine engine;
+	private GatewayEnginePro engine;
 
-	public GatewayEntryImpl(GatewayEngine engine,String id, String className, String cfcPath, String listenerCfcPath, String startupMode,Struct custom, boolean readOnly) {
+	public GatewayEntryImpl(GatewayEnginePro engine,String id, String className, String cfcPath, String listenerCfcPath, String startupMode,Struct custom, boolean readOnly) {
 		this.engine=engine;
 		this.id=id;
 		this.listenerCfcPath=listenerCfcPath;
@@ -54,7 +52,8 @@ public class GatewayEntryImpl implements GatewayEntry {
 		if(gateway==null){
 			if(!StringUtil.isEmpty(className)){
 				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
-				gateway=(Gateway) ClassUtil.loadInstance(clazz);
+				
+				gateway=GatewayProFactory.toGatewayPro(ClassUtil.loadInstance(clazz));
 			}
 			else if(!StringUtil.isEmpty(cfcPath)){
 				gateway=new CFCGateway(cfcPath);
@@ -73,43 +72,28 @@ public class GatewayEntryImpl implements GatewayEntry {
 					}*/
 				}
 			}
-			catch(GatewayException pe){
-				throw Caster.toPageException(pe);
+			catch(IOException ioe){
+				throw Caster.toPageException(ioe);
 			}
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getGateway()
-	 */
-	public Gateway getGateway() {
+	@Override
+	public GatewayPro getGateway() {
 		return gateway;
 	}
 	
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getClazz()
-	 */
-	/*public Class getClazz() {
-		return clazz;
-	}*/
-
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getCustom()
-	 */
+	@Override
 	public Struct getCustom() {
 		return (Struct) Duplicator.duplicate(custom,true);
 	}
 
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#isReadOnly()
-	 */
+	@Override
 	public boolean isReadOnly() {
 		return readOnly;
 	}
@@ -122,9 +106,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 		return listenerCfcPath;
 	}
 	
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getCfcPath()
-	 */
+	@Override
 	public String getCfcPath() {
 		return cfcPath;
 	}
@@ -159,9 +141,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 		return defaultValue;
 	}
 	
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj){
 		if(obj==this) return true;
 		if(!(obj instanceof GatewayEntryImpl))return false;
@@ -196,7 +176,4 @@ public class GatewayEntryImpl implements GatewayEntry {
 		if(left!=null && right!=null) return left.equals(right);
 		return false;
 	}
-
-
-
 }

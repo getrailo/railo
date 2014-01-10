@@ -23,47 +23,32 @@ public final class ReferenceReference implements Reference {
         this.key=key;
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#getKey()
-     */
+    @Override
     public Collection.Key getKey() {
         return KeyImpl.init(key);
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#getKeyAsString()
-     */
+    @Override
     public String getKeyAsString() {
         return key;
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-     */
+    @Override
     public Object get(PageContext pc) throws PageException {
         return pc.getCollection(reference.get(pc),key);       
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Object defaultValue) {
         return pc.getCollection(reference.get(pc,null),key,defaultValue);       
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, Object value) throws PageException {
         return pc.set(reference.touch(pc),key,value);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, Object value) {
         try {
 			return set(pc,value);
@@ -72,9 +57,7 @@ public final class ReferenceReference implements Reference {
 		}
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-     */
+    @Override
     public Object touch(PageContext pc) throws PageException {
         Object parent=reference.touch(pc);
         Object o= pc.getCollection(parent,key,null);
@@ -93,29 +76,21 @@ public final class ReferenceReference implements Reference {
 		}
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#remove(railo.runtime.PageContext)
-     */
+    @Override
     public Object remove(PageContext pc) throws PageException {
         return pc.getVariableUtil().remove(reference.get(pc),key);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#removeEL(railo.runtime.PageContext)
-     */
+    @Override
     public Object removeEL(PageContext pc) {
         return pc.getVariableUtil().removeEL(reference.get(pc,null),key);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#getParent()
-     */
+    @Override
     public Object getParent() {
         return reference;
     }
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return "java.util.ReferenceReference(reference:"+reference+";key:"+key+")";
     }

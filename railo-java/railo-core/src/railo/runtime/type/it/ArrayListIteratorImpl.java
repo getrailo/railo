@@ -23,9 +23,7 @@ public class ArrayListIteratorImpl implements ListIterator {
 		this.index=index-1;
 	}
 
-	/**
-	 * @see java.util.ListIterator#addEntry(E)
-	 */
+	@Override
 	public void add(Object o) {
 		array.setEL((++index)+1,o);
 	}

@@ -21,46 +21,36 @@ public final class ErrorPageImpl implements ErrorPage {
 	
 
 	
-	/**
-     * @see railo.runtime.err.ErrorPage#setMailto(java.lang.String)
-     */
+	@Override
 	public void setMailto(String mailto) {
 		this.mailto = mailto;
 	}
 	
-	/**
-     * @see railo.runtime.err.ErrorPage#setTemplate(railo.runtime.PageSource)
-     */
+	@Override
 	public void setTemplate(PageSource template) {
 		this.template = template;
 	}
 	
-	/**
-     * @see railo.runtime.err.ErrorPage#setTypeAsString(java.lang.String)
-     */
+	@Override
 	public void setTypeAsString(String exception) {
 		setException(exception);
 	}	
+	
+	@Override
 	public void setException(String exception) {
 		this.exception = exception;
 	}	
 	
-	/**
-     * @see railo.runtime.err.ErrorPage#getMailto()
-     */
+	@Override
 	public String getMailto() {
 		return mailto;
 	}
-	/**
-     * @see railo.runtime.err.ErrorPage#getTemplate()
-     */
+	@Override
 	public PageSource getTemplate() {
 		return template;
 	}
 	
-	/**
-     * @see railo.runtime.err.ErrorPage#getTypeAsString()
-     */
+	@Override
 	public String getTypeAsString() {
 		return getException();
 	}
@@ -68,16 +58,12 @@ public final class ErrorPageImpl implements ErrorPage {
 		return exception;
 	}
 
-	/**
-	 * @see railo.runtime.err.ErrorPage#setType(short)
-	 */
+	@Override
 	public void setType(short type) {
 		this.type=type;
 	}
 
-	/**
-	 * @see railo.runtime.err.ErrorPage#getType()
-	 */
+	@Override
 	public short getType() {
 		return type;
 	}	

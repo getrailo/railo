@@ -23,7 +23,7 @@ import railo.transformer.bytecode.util.Types;
 public class BodyBase extends StatementBaseNoFinal implements Body {
 
 	private static long counter=0;
-	private LinkedList statements=new LinkedList();
+	private LinkedList<Statement> statements=new LinkedList<Statement>();
     private Statement last=null;
 	//private int count=-1;
     private final static int MAX_STATEMENTS=206;
@@ -65,7 +65,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	 *
 	 * @see railo.transformer.bytecode.Body#getStatements()
 	 */
-	public List getStatements() {
+	public List<Statement> getStatements() {
 		return statements;
 	}
 	
@@ -78,9 +78,9 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	 * @see railo.transformer.bytecode.Body#moveStatmentsTo(railo.transformer.bytecode.Body)
 	 */
 	public void moveStatmentsTo(Body trg) {
-		Iterator it = statements.iterator();
+		Iterator<Statement> it = statements.iterator();
 		while(it.hasNext()) {
-			Statement stat=(Statement) it.next();
+			Statement stat=it.next();
 			stat.setParent(trg);
 			trg.getStatements().add(stat);
 		}
@@ -114,20 +114,15 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
         writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),statements, bc);
     }
 
-	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
-		Iterator it = statements.iterator();
-		//int lastLine=-1;
-		//int count=0;
+	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,List<Statement> statements,BytecodeContext bc) throws BytecodeException {
+		Iterator<Statement> it = statements.iterator();
 		while(it.hasNext()) {
-			//count++;
-			Statement s = ((Statement)it.next());
-			
-	    	s.writeOut(bc);
-        }
-		//ExpressionUtil.writeLog(bc, lastLine);	
+			Statement s = it.next();
+			s.writeOut(bc);
+        }	
     }
 	
-	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List<Statement> statements,BytecodeContext bc) throws BytecodeException {
+	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,List<Statement> statements,final BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
         boolean isOutsideMethod;
         GeneratorAdapter a=null;
@@ -145,7 +140,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
-        		String method= ASMUtil.createOverfowMethod();
+        		String method= ASMUtil.createOverfowMethod(bc.getMethod().getName(),bc.getPage().getMethodCount());
         		ExpressionUtil.visitLine(bc, s.getStart());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
@@ -175,8 +170,6 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
             	ExpressionUtil.callEndLog(bc, s,id);
         	}
         	else s.writeOut(_bc);
-        		
-        	
         }	
         if(a!=null){
         	a.returnValue();

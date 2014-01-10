@@ -1,12 +1,18 @@
 package railo.runtime.type.scope;
 
+import java.io.File;
+
 import railo.commons.io.SystemUtil;
+import railo.commons.lang.ClassUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.instrumentation.InstrumentationUtil;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ReadOnlyStruct;
@@ -19,10 +25,7 @@ import railo.runtime.type.util.KeyConstants;
  */
 public final class ServerImpl extends ScopeSupport implements Server,SharedScope {
 
-
-
 	private static final DateTimeImpl expired=new DateTimeImpl(2145913200000L,false);
-
 
 	private static final Key PRODUCT_NAME = KeyImpl.intern("productname");
 	private static final Key PRODUCT_LEVEL = KeyImpl.intern("productlevel");
@@ -37,7 +40,13 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key  COLDFUSION= KeyConstants._coldfusion;
     private static final Key  SERVLET= KeyConstants._servlet;
     private static final Key  ARCH= KeyImpl.intern("arch");
+    private static final Key  MAC_ADDRESS= KeyImpl.intern("macAddress");
     private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
+//  private static final Key  JAVA_AGENT_PATH = KeyImpl.intern("javaAgentPath");
+    private static final Key  JAVA_EXECUTION_PATH = KeyImpl.intern("executionPath");
+    private static final Key  JAVA_AGENT_SUPPORTED = KeyImpl.intern("javaAgentSupported");
+    private static final Key  LOADER_VERSION= KeyImpl.intern("loaderVersion");
+    private static final Key  LOADER_PATH = KeyImpl.intern("loaderPath");
     private static final Key  VERSION= KeyConstants._version;
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.intern("additionalinformation");
     private static final Key BUILD_NUMBER = KeyImpl.intern("buildnumber");
@@ -55,6 +64,10 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 	private static final Key VERSION_NAME = KeyImpl.intern("versionName");
 	private static final Key VERSION_NAME_EXPLANATION = KeyImpl.intern("versionNameExplanation");
 
+	private static String jap;
+
+	private static String jep;
+
 	/*
     Supported CFML Application
     
@@ -66,7 +79,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     */
 	/**
 	 * constructor of the server scope
-	 * @param sn
+	 * @param pc
 	 */
 	public ServerImpl(PageContext pc) {
 		super(true,"server",SCOPE_SERVER);
@@ -74,9 +87,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 
 	}
 	
-	/**
-     * @see railo.runtime.type.scope.Server#reload(railo.runtime.security.SerialNumber)
-     */
+	@Override
 	public void reload() {	
 		reload(ThreadLocalPageContext.get());
 	}
@@ -102,8 +113,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			}
 			catch(Throwable t){}
 			coldfusion.setEL(ROOT_DIR,rootdir);// 
-			
-			
+
 			
 			coldfusion.setEL(SUPPORTED_LOCALES,LocaleFactory.getLocaleList());// 
 			
@@ -114,11 +124,13 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		ReadOnlyStruct os=new ReadOnlyStruct();
 			os.setEL(KeyConstants._name,System.getProperty("os.name") );
 			os.setEL(ARCH,System.getProperty("os.arch") );
+			os.setEL(MAC_ADDRESS,SystemUtil.getMacAddress());
 			int arch=SystemUtil.getOSArch();
 			if(arch!=SystemUtil.ARCH_UNKNOW)os.setEL(ARCH_MODEL,new Double(arch) );
 			os.setEL(VERSION,System.getProperty("os.version") );
 			os.setEL(ADDITIONAL_INFORMATION,"");
 			os.setEL(BUILD_NUMBER,"");
+
 			
 			os.setReadOnly(true);
 		super.setEL (OS,os);
@@ -129,9 +141,12 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			railo.setEL(VERSION_NAME_EXPLANATION,Info.getVersionNameExplanation());
 			railo.setEL(STATE,Info.getStateAsString());
 			railo.setEL(RELEASE_DATE,Info.getRealeaseDate());
+			railo.setEL(LOADER_VERSION,Caster.toDouble(SystemUtil.getLoaderVersion()));
+			railo.setEL(LOADER_PATH, ClassUtil.getSourcePathForClass("railo.loader.servlet.CFMLServlet", ""));
+
 			railo.setReadOnly(true);
 		super.setEL (RAILO,railo);
-		
+
 		ReadOnlyStruct separator=new ReadOnlyStruct();
 			separator.setEL(KeyConstants._path,System.getProperty("path.separator"));
 			separator.setEL(FILE,System.getProperty("file.separator"));
@@ -148,6 +163,19 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			java.setEL(FREE_MEMORY,new Double(rt.freeMemory()));
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
+			java.setEL(JAVA_AGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
+			
+			//if(jap==null) jap=JavaUtil.getSourcePathForClass("railo.runtime.instrumentation.Agent");
+			//java.setEL(JAVA_AGENT_PATH, jap);
+			
+			if(jep==null) {
+				String temp = System.getProperty( "user.dir", "" );
+				if ( !StringUtil.isEmpty(temp) && !temp.endsWith( File.separator ) )
+					temp = temp + File.separator;
+				jep=temp;
+			}
+			java.setEL( JAVA_EXECUTION_PATH, jep );
+
 			java.setReadOnly(true);
 			super.setEL (JAVA,java);
 		
@@ -166,10 +194,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 	    
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(isReadOnlyKey(key))
 			throw new ExpressionException("you can't rewrite key ["+key+"] from server scope, key is readonly");
@@ -177,10 +202,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		if(!isReadOnlyKey(key))return super.setEL (key, value);
 		return value;

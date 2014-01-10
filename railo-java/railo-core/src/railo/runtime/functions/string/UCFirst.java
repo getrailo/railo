@@ -8,7 +8,15 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 public final class UCFirst implements Function {
-    public static String call(PageContext pc , String string) {
-        return StringUtil.ucFirst(string);
+
+	private static final long serialVersionUID = 6476775359884698477L;
+
+	public static String call(PageContext pc , String string) {
+        return call(pc, string,false);
+    }
+
+    public static String call( PageContext pc, String string, boolean doAll ) {
+        if ( !doAll ) return StringUtil.ucFirst(string);
+        return StringUtil.capitalize( string, null );
     }
 }

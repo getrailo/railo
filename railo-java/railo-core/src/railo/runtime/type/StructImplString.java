@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
+import railo.commons.collection.MapFactory;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -15,7 +15,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
-
+ 
 /**
  * CFML data type struct
  */
@@ -47,7 +47,7 @@ public final class StructImplString extends StructImpl implements Struct {
     public StructImplString(int type) {
     	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key, Object>();
     	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key, Object>();
-        else if(type==TYPE_SYNC)	map=new HashTable();
+        else if(type==TYPE_SYNC)	map=MapFactory.<Collection.Key,Object>getConcurrentMap();
         else 						map=new HashMap<Collection.Key, Object>();
     }
     

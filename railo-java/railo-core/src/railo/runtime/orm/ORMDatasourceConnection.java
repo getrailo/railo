@@ -10,6 +10,8 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
 import railo.runtime.db.SQL;
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 
 public class ORMDatasourceConnection implements DatasourceConnection {
@@ -19,7 +21,16 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 	private Boolean supportsGetGeneratedKeys;
 
 	public ORMDatasourceConnection(PageContext pc, ORMSession session) {
-		datasource=session.getEngine().getDataSource();
+		datasource=session.getDataSource();
+		// this should never happen
+		if(datasource==null) {
+			try {
+				datasource=ORMUtil.getDataSource(pc);
+			}
+			catch (PageException pe) {
+				throw new PageRuntimeException(pe);
+			}
+		}
 		connection=new ORMConnection(pc,session);
 	}
 
@@ -28,39 +39,29 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 		return connection;
 	}
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnection#getDatasource()
-	 */
+	@Override
 	public DataSource getDatasource() {
 		return datasource;
 	}
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnection#getPassword()
-	 */
+	@Override
 	public String getPassword() {
 		return datasource.getPassword();
 	}
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnection#getUsername()
-	 */
+	@Override
 	public String getUsername() {
 		return datasource.getUsername();
 	}
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnection#isTimeout()
-	 */
+	@Override
 	public boolean isTimeout() {
 		return false;
 	}
 	
 
 
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(this==obj) return true;
 		if(!(obj instanceof ORMDatasourceConnection)) return false;

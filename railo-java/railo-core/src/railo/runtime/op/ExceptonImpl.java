@@ -55,44 +55,32 @@ public final class ExceptonImpl implements Excepton {
         return singelton;
     }
 
-    /**
-     * @see railo.runtime.util.Excepton#createAbort()
-     */
+    @Override
     public PageException createAbort() {
         return new Abort(Abort.SCOPE_REQUEST);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createAbortException(java.lang.String)
-     */
+    @Override
     public PageException createAbortException(String showError) {
         return new AbortException(showError);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createApplicationException(java.lang.String)
-     */
+    @Override
     public PageException createApplicationException(String message) {
         return new ApplicationException(message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createApplicationException(java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createApplicationException(String message, String detail) {
         return new ApplicationException(message,detail);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createCasterException(java.lang.String)
-     */
+    @Override
     public PageException createCasterException(String message) {
         return new CasterException(message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createCustomTypeException(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createCustomTypeException(String message, String detail, String errorcode, String customType) {
         return createCustomTypeException(message, detail, errorcode, customType, null);
     }
@@ -101,37 +89,27 @@ public final class ExceptonImpl implements Excepton {
         return new CustomTypeException(message,detail,errorcode,customType,extendedInfo);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createDatabaseException(java.lang.String)
-     */
+    @Override
     public PageException createDatabaseException(String message) {
         return new DatabaseException(message,null,null,null);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createDatabaseException(java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createDatabaseException(String message, String detail) {
-        return new DatabaseException(message,detail,null,null,null);
+        return new DatabaseException(message,detail,null,null);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createDatabaseException(java.lang.String, railo.runtime.db.SQL)
-     */
+    @Override
     public PageException createDatabaseException(String message, SQL sql) {
         return new DatabaseException(message,null,sql,null);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createExpressionException(java.lang.String)
-     */
+    @Override
     public PageException createExpressionException(String message) {
         return new ExpressionException(message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createExpressionException(java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createExpressionException(String message, String detail) {
         return new ExpressionException(message, detail);
     }
@@ -146,72 +124,52 @@ public final class ExceptonImpl implements Excepton {
         return new FunctionException(pc,functionName, badArgumentPosition, badArgumentName,message,detail);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createLockException(java.lang.String, java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createLockException(String operation, String name, String message) {
         return new LockException(operation,name,message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createMissingIncludeException(railo.runtime.PageSource)
-     */
+    @Override
     public PageException createMissingIncludeException(PageSource ps) {
         return new MissingIncludeException(ps);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createNativeException(java.lang.Throwable)
-     */
+    @Override
     public PageException createNativeException(Throwable t) {
         return new NativeException(t);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createSecurityException(java.lang.String)
-     */
+    @Override
     public PageException createSecurityException(String message) {
         return new SecurityException(message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createSecurityException(java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createSecurityException(String message, String detail) {
         return new SecurityException(message,detail);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createTemplateException(java.lang.String)
-     */
+    @Override
     public PageException createTemplateException(String message) {
         return new TemplateException(message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createTemplateException(java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createTemplateException(String message, String detail) {
         return new TemplateException(message,detail);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createXMLException(java.lang.String)
-     */
+    @Override
     public PageException createXMLException(String message) {
         return new XMLException(message);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createXMLException(java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createXMLException(String message, String detail) {
         return new XMLException(message,detail);
     }
 
-    /**
-     * @see railo.runtime.util.Excepton#isOfType(int, java.lang.Throwable)
-     */
+    @Override
     
     public boolean isOfType(int type, Throwable t) {
     	switch(type){

@@ -20,9 +20,7 @@ import railo.runtime.type.util.KeyConstants;
 
 public class StoreGetACL extends S3Function {
 
-	public static final Collection.Key GROUP = KeyImpl.intern("group");
 	public static final Collection.Key DISPLAY_NAME = KeyImpl.intern("displayName");
-	public static final Collection.Key EMAIL = KeyImpl.intern("email");
 	public static final Collection.Key PERMISSION = KeyImpl.intern("permission");
 	
 	
@@ -54,7 +52,7 @@ public class StoreGetACL extends S3Function {
 			else if("CanonicalUser".equalsIgnoreCase(type)) 
 				sct.setEL(DISPLAY_NAME, ac.getDisplayName());
 			else 
-				sct.setEL(EMAIL, ac.getId());
+				sct.setEL(KeyConstants._email, ac.getId());
 		}
 		return arr;
 	}
@@ -63,11 +61,11 @@ public class StoreGetACL extends S3Function {
 		String uri = ac.getUri();
 		sct.setEL(KeyConstants._id, uri);
 		if("http://acs.amazonaws.com/groups/global/AllUsers".equalsIgnoreCase(uri))
-			sct.setEL(GROUP, "all");
+			sct.setEL(KeyConstants._group, "all");
 		else if("http://acs.amazonaws.com/groups/global/AuthenticatedUsers".equalsIgnoreCase(uri))
-			sct.setEL(GROUP, "authenticated");
+			sct.setEL(KeyConstants._group, "authenticated");
 		else if("http://acs.amazonaws.com/groups/s3/LogDelivery".equalsIgnoreCase(uri))
-			sct.setEL(GROUP, "log_delivery");
+			sct.setEL(KeyConstants._group, "log_delivery");
 	}
 
 }

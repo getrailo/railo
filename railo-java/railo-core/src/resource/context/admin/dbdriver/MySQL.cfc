@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" output="no" implements="IDriver">
+<cfcomponent extends="types.Driver" output="no" implements="types.IDatasource">
 	
 	<cfset fields=array(
 		field("Use Unicode","useUnicode","true,false",true,"Should the driver use Unicode character encodings when handling strings? Should only be used when the driver can't determine the character set mapping, or you are trying to 'force' the driver to use a character set that MySQL either doesn't natively support (such as UTF-8)","radio"),
@@ -17,7 +17,10 @@
 		field('Auto reconnect','autoReconnect','true,false',false,'Should the driver try to re-establish stale and/or dead connections? If enabled the driver will throw an exception for a queries issued on a stale or dead connection, which belong to the current transaction, but will attempt reconnect before the next query issued on the connection in a new transaction. The use of this feature is not recommended, because it has side effects related to session state and data consistency when applications do not handle SQLExceptions properly, and is only designed to be used when you are unable to configure your application to handle SQLExceptions resulting from dead and stale connections properly. Alternatively, investigate setting the MySQL server variable "wait_timeout" to some high value rather than the default of 8 hours.',"radio"),
 		
 		 field('Throw error upon data truncation','jdbcCompliantTruncation','true,false',false,'If set to false then values for table fields are automatically truncated so that they fit into the field.',"radio"),
-		 field('TinyInt(1) is bit','tinyInt1isBit','true,false',false,'this defines the data type returned for tinyInt(1), if set to "true" (default) tinyInt(1) is converted to a bit value otherwise as integer.',"radio")
+		 field('TinyInt(1) is bit','tinyInt1isBit','true,false',false,'this defines the data type returned for tinyInt(1), if set to "true" (default) tinyInt(1) is converted to a bit value otherwise as integer.',"radio"),
+		 field('Legacy Datetime Code','useLegacyDatetimeCode','true,false',true,
+		 	'Use code for DATE/TIME/DATETIME/TIMESTAMP handling in result sets and statements that consistently handles timezone conversions from client to server and back again, or use the legacy code for these datatypes that has been in the driver for backwards-compatibility?'
+		 		,"radio",1)
 		 //field('Transformed Bit Is Boolean','transformedBitIsBoolean','true,false',false,'',"radio")
 		
 		
@@ -54,22 +57,6 @@
 		hint="returns array of fields">
 		<cfreturn fields>
 	</cffunction>
-	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" output="no"
-		hint="return DSN">
-		<cfreturn this.dsn>
-	</cffunction>
-	
-	<cffunction name="equals" returntype="string" output="no"
-		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
-		<cfreturn this.className EQ arguments.className and this.dsn EQ arguments.dsn>
-	</cffunction>
+
 	
 </cfcomponent>

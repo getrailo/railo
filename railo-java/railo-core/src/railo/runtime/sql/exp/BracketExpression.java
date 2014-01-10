@@ -8,10 +8,7 @@ public class BracketExpression extends ExpressionSupport {
 		this.exp=exp;
 	}
 
-	/**
-	 *
-	 * @see sql.exp.Expression#toString()
-	 */
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return "("+exp.toString(true) +")";
 		return toString(true)+" as "+getIndex();

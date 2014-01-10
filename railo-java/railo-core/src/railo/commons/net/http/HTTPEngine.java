@@ -2,12 +2,17 @@ package railo.commons.net.http;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.io.TemporaryStream;
 import railo.commons.io.res.Resource;
 import railo.commons.net.http.httpclient3.HTTPEngine3Impl;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
+import railo.commons.net.http.httpclient4.HeaderImpl;
 import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.type.util.CollectionUtil;
 
 public class HTTPEngine {
 	
@@ -55,7 +60,7 @@ public class HTTPEngine {
     
     public static HTTPResponse post(URL url) throws IOException {
     	if(use4) return HTTPEngine4Impl.post(url, null, null, -1,MAX_REDIRECT, null, null, null, null);
-    	return HTTPEngine3Impl.post(url, null, null, -1,MAX_REDIRECT, null, null, null, null);
+    	return HTTPEngine3Impl.post(url, null, null, -1,MAX_REDIRECT, null, null, null, null,null);
     }
 	
 	public static HTTPResponse get(URL url, String username, String password, long timeout, int maxRedirect,
@@ -63,12 +68,12 @@ public class HTTPEngine {
 		if(use4) return HTTPEngine4Impl.get(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
 		return HTTPEngine3Impl.get(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
     }
-    
-    public static HTTPResponse post(URL url, String username, String password, long timeout, int maxRedirect,
-        String charset, String useragent, ProxyData proxy, Header[] headers) throws IOException {
-    	if(use4) return HTTPEngine4Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
-    	return HTTPEngine3Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers);
-    }
+
+	public static HTTPResponse post(URL url, String username, String password, long timeout, int maxRedirect,
+            String charset, String useragent, ProxyData proxy, Map<String,String> headers, Map<String,String> params) throws IOException {
+        	if(use4) return HTTPEngine4Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, toHeaders(headers),params);
+        	return HTTPEngine3Impl.post(url, username, password, timeout, maxRedirect, charset, useragent, proxy, toHeaders(headers),params);
+        }
     
     public static HTTPResponse head(URL url, String username, String password, int timeout, int maxRedirect,
         String charset, String useragent,ProxyData proxy, Header[] headers) throws IOException {
@@ -111,6 +116,19 @@ public class HTTPEngine {
 	public static Entity getResourceEntity(Resource res, String contentType) {
 		if(use4) return HTTPEngine4Impl.getResourceEntity(res,contentType);
 		return HTTPEngine3Impl.getResourceEntity(res,contentType);
+	}
+	
+    private static Header[] toHeaders(Map<String, String> headers) {
+    	if(CollectionUtil.isEmpty(headers)) return null;
+    	Header[] rtn=new Header[headers.size()];
+    	Iterator<Entry<String, String>> it = headers.entrySet().iterator();
+    	Entry<String, String> e;
+    	int index=0;
+    	while(it.hasNext()){
+    		e = it.next();
+    		rtn[index++]=new HeaderImpl(e.getKey(),e.getValue());
+    	}
+    	return rtn;
 	}
 	
 	

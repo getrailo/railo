@@ -18,10 +18,7 @@ import railo.runtime.type.util.KeyConstants;
 **/
 public final class Module extends CFTag {
 
-	/**
-	 * @throws ExpressionException 
-	 * @see railo.runtime.tag.CFTag#initFile()
-	 */
+	@Override
 	public void initFile() throws MissingIncludeException, ExpressionException {
 		ConfigWeb config = pageContext.getConfig();
         // MUSTMUST cache like ct

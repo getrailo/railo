@@ -22,30 +22,22 @@ public class TemporaryStreamRequestEntity implements RequestEntity, Entity3 {
 		this.contentType=contentType;
 	}
 	
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#getContentLength()
-	 */
+	@Override
 	public long getContentLength() {
 		return ts.length();
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#getContentType()
-	 */
+	@Override
 	public String getContentType() {
 		return contentType;
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#isRepeatable()
-	 */
+	@Override
 	public boolean isRepeatable() {
 		return false;
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#writeRequest(java.io.OutputStream)
-	 */
+	@Override
 	public void writeRequest(OutputStream os) throws IOException {
 		IOUtil.copy(ts.getInputStream(), os,true,false);
 	}

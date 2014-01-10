@@ -33,8 +33,6 @@ public final class SystemOutput implements Function {
     			string=obj.toString();
     		}
     	}
-    	
-    	
     	PrintStream stream = System.out;
     	//string+=":"+Thread.currentThread().getId();
     	if(doErrorStream) stream = System.err;

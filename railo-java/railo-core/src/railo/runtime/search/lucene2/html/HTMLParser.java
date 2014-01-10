@@ -16,7 +16,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 public final class HTMLParser extends Parser {
@@ -103,9 +103,7 @@ public final class HTMLParser extends Parser {
     
     
     
-    /**
-     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     */
+    @Override
     public void startElement(String uri, String name, String qName, Attributes atts)throws SAXException {
         if(name.equalsIgnoreCase("script")) {
             silent=new Silent(silent,true);
@@ -126,11 +124,11 @@ public final class HTMLParser extends Parser {
                 String v;
                 if(value!=null) {
                     try {
-                        String[] arr=List.toStringArray(List.listToArrayRemoveEmpty(value,';'));
+                        String[] arr=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(value,';'));
                         for(int i=0;i<arr.length;i++) {
                             el=arr[i];
-                            n=List.first(el,"=",true).trim();
-                            v=List.last(el,"=",true).trim();
+                            n=ListUtil.first(el,"=",true).trim();
+                            v=ListUtil.last(el,"=",true).trim();
                             if(n.equalsIgnoreCase("charset")) {
                                 charset=v;
                                 hasChanged=true;
@@ -180,12 +178,7 @@ public final class HTMLParser extends Parser {
     }
     
     
-    /** 
-     * Geerbte Methode von org.xml.sax.ContentHandler, 
-     * wird bei durchparsen des XML, zum einlesen des Content eines Body Element aufgerufen.
-     * 
-     * @see org.xml.sax.ContentHandler#characters(char[], int, int)
-     */
+    @Override
     public void characters (char ch[], int start, int length)   {
        if(!silent.value)
         	current.append(ch,start,length);

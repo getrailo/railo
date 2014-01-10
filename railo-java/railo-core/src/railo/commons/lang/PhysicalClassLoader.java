@@ -15,13 +15,15 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
  * Directory ClassLoader
  */
-public final class PhysicalClassLoader extends ClassLoader implements Sizeable  {
+public final class PhysicalClassLoader extends ExtendableClassLoader implements Sizeable  {
     
     private Resource directory;
     private ClassLoader parent;
@@ -29,8 +31,21 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 	private int count;
 	private Map<String,PhysicalClassLoader> customCLs; 
 	
+	/**
+     * Constructor of the class
+     * @param directory
+     * @throws IOException
+     */
+    public PhysicalClassLoader(Resource directory) throws IOException {
+        this(directory,getParentCL());
+    }
+    private static ClassLoader getParentCL() {
+		Config config = ThreadLocalPageContext.getConfig();
+		if(config!=null) return config.getClassLoader();
+    	return new ClassLoaderHelper().getClass().getClassLoader();
+	}
 
-    /**
+	/**
      * Constructor of the class
      * @param directory
      * @param parent
@@ -39,8 +54,10 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     public PhysicalClassLoader(Resource directory, ClassLoader parent) throws IOException {
         super(parent);
         this.parent=parent;
-        if(!directory.isDirectory())
-            throw new IOException("resource "+directory+" is not a directory");
+        if(!directory.isDirectory()) {
+        	if(!directory.exists()) directory.mkdirs();
+        	else throw new IOException("resource "+directory+" is not a directory");
+        }
         if(!directory.canRead())
             throw new IOException("no access to "+directory+" directory");
         this.directory=directory;
@@ -140,10 +157,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         
     }
     
-    
-    /**
-     * @see java.lang.ClassLoader#findClass(java.lang.String)
-     */
+    @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
     	Resource res=directory.getRealResource(name.replace('.','/').concat(".class"));
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -179,9 +193,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     	//return loadClass(name,false);
     }
     
-    /**
-     * @see java.lang.ClassLoader#getResource(java.lang.String)
-     */
+    @Override
     public URL getResource(String name) {
         /*URL url=super.getResource(name);
         if(url!=null) return url;
@@ -196,9 +208,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return null;
     }
 
-    /**
-     * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
-     */
+    @Override
     public InputStream getResourceAsStream(String name) {
         InputStream is = super.getResourceAsStream(name);
         if(is!=null) return is;
@@ -224,9 +234,6 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return null;
     }
 
-    /**
-     * @see railo.commons.lang.ClassLoaderControl#hasClass(java.lang.String)
-     */
     public boolean hasClass(String className) {
         return hasResource(className.replace('.','/').concat(".class"));
     }
@@ -236,9 +243,6 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return findLoadedClass(className)!=null;
     }
 
-    /**
-     * @see railo.commons.lang.ClassLoaderControl#hasResource(java.lang.String)
-     */
     public boolean hasResource(String name) {
         return _getResource(name)!=null;
     }
@@ -250,9 +254,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 		return directory;
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return 0;
 	}

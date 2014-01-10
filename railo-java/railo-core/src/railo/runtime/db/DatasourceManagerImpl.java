@@ -9,8 +9,10 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.orm.ORMDatasourceConnection;
 import railo.runtime.orm.ORMSession;
 
@@ -18,7 +20,9 @@ import railo.runtime.orm.ORMSession;
  * this class handle multible db connection, transaction and logging
  */
 public final class DatasourceManagerImpl implements DataSourceManager {
-	
+
+	public static final String QOQ_DATASOURCE_NAME = "_queryofquerydb";
+
 	private ConfigImpl config;
 	
 	boolean autoCommit=true;
@@ -36,7 +40,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 
 	@Override
 	public DatasourceConnection getConnection(PageContext pc,String _datasource, String user, String pass) throws PageException {
-		return getConnection(pc,pc.getConfig().getDataSource(_datasource), user, pass);
+		return getConnection(pc,((PageContextImpl)pc).getDataSource(_datasource), user, pass);
 	}
 
 	@Override
@@ -59,7 +63,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
                     transConn=dc;
     			}
     			else if(!transConn.equals(dc)) {
-                	if("_queryofquerydb".equalsIgnoreCase(ds.getName())) return dc;
+                	if(QOQ_DATASOURCE_NAME.equalsIgnoreCase(ds.getName())) return dc;
     				throw new DatabaseException(
     						"can't use different connections inside a transaction",null,null,dc);
     			}
@@ -104,9 +108,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.db.DataSourceManager#releaseConnection(railo.runtime.db.DatasourceConnection)
-	 */
+	@Override
 	public void releaseConnection(PageContext pc,DatasourceConnection dc) {
 		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
 	}
@@ -115,19 +117,13 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		config.getDatasourceConnectionPool().releaseDatasourceConnection(pid,dc);
 	}*/
 	
-	/**
-	 *
-	 * @see DataSourceManager#begin()
-	 */
+	@Override
 	public void begin() {
 		this.autoCommit=false;
 		this.isolation=Connection.TRANSACTION_NONE;		
 	}
 	
-	/**
-	 *
-	 * @see DataSourceManager#begin(java.lang.String)
-	 */
+	@Override
 	public void begin(String isolation) {
 		this.autoCommit=false;
     	
@@ -143,20 +139,14 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		    this.isolation=Connection.TRANSACTION_NONE;
         
 	}
-    /**
-	 *
-	 * @see DataSourceManager#begin(int)
-	 */
+    @Override
     public void begin(int isolation) {
     	//print.out("begin:"+autoCommit);
     	this.autoCommit=false;
         this.isolation=isolation;
     }
 
-	/**
-	 *
-	 * @see DataSourceManager#rollback()
-	 */
+	@Override
 	public void rollback() throws DatabaseException {
 		if(autoCommit)return;
         //autoCommit=true;
@@ -172,9 +162,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.db.DataSourceManager#savepoint()
-	 */
+	@Override
 	public void savepoint() throws DatabaseException {
 		if(autoCommit)return;
         //autoCommit=true;
@@ -188,10 +176,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 
-	/**
-	 *
-	 * @see DataSourceManager#commit()
-	 */
+	@Override
 	public void commit() throws DatabaseException {
         //print.out("commit:"+autoCommit);
         if(autoCommit)return ;
@@ -208,18 +193,12 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-    /**
-	 *
-	 * @see DataSourceManager#isAutoCommit()
-	 */
+    @Override
     public boolean isAutoCommit() {
         return autoCommit;
     }
 
-    /**
-	 *
-	 * @see DataSourceManager#end()
-	 */
+    @Override
     public void end() {
         autoCommit=true;
         if(transConn!=null) {
@@ -233,8 +212,13 @@ public final class DatasourceManagerImpl implements DataSourceManager {
         }
     }
 
-	public void remove(String datasource) {
+	public void remove(DataSource datasource) {
 		config.getDatasourceConnectionPool().remove(datasource);
+	}
+
+	public void remove(String datasource) {
+		throw new PageRuntimeException(new DeprecatedException("method no longer supported!"));
+		//config.getDatasourceConnectionPool().remove(datasource);
 	}
 
 	public void release() {

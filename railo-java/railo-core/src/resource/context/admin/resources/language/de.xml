@@ -44,8 +44,13 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="services.certificate.subject">Subject</data>
 	<data key="services.certificate.issuer">Issuer</data>
 	<data key="services.certificate.noCert">Der angewählte Host stellt keine Zertifikate zu Verfügung.</data>
+	<data key="mappings.addNonCFMLFiles">Füge nicht CFML Source Templates hinzu</data>
+	<data key="mappings.addNonCFMLFilesDesc">Füge alle nicht CFML Templates zu Archiv hinzu (.js,css,gif,png ...).</data>
+	<data key="mappings.addCFMLFiles">Füge CFML Source Templates hinzu</data>
+	<data key="mappings.addCFMLFilesDesc">Füge alle CFML Source Templates hinzu (.cfm,.cfc,.cfml).</data>
+	<data key="mappings.addCFCFiles">Füge Component Source Templates hinzu</data>
+	<data key="mappings.addCFCFilesDesc">Füge alle Component Source Templates hinzu (.cfc).</data>
 	
-	<data key="mappings.archivesecuredesc">Source Dateien aus dem Archiv ausschliessen. Die Source Dateien werden nur für die Ausgabe von Codeprints bei Fehlern verwendet.</data>
 	<data key="mappings.topleveldesc">Macht dieses Mapping zugreifbar übers Web (Zugreifbar über Browser oder andere HTTP Zugriffe)</data>
 	<data key="mappings.archiveheaddescription">Name der Archivdatei (ra oder ras)  (Absolut oder relativ zum Webroot).</data>
 	<data key="mappings.primaryheaddescription">Legt fest, wo cfm-Dateien vorrangig gesucht werden.</data>
@@ -56,11 +61,10 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="mappings.editdesc">Hier können Sie ein einzelnes Mapping bearbeiten oder aus einem bestehenden Mapping ein Railo Archiv erstellen.</data>
 	<data key="mappings.archivedesc">Erstellen Sie aus einem Mapping ein Railo Archive (ra)</data>
 	<data key="mappings.physicalhead">Ressource</data>
-	<data key="mappings.archivesecure">Sicher</data>
 	<data key="mappings.compiledesc">Kompilieren Sie alle cfm und cfc-Dateien innerhalb des Mappings</data>
 	<data key="mappings.physicalmissing">Bitte geben Sie einen Wert für die Ressource an. (Zeile </data>
 	<data key="mappings.archive">Archiv</data>
-	<data key="mappings.toplevelhead">Top Level</data>
+	<data key="mappings.toplevelhead">Web Zugänglich</data>
 	<data key="mappings.virtualhead">Virtuell</data>
 	<data key="mappings.compiletitle">kompilieren</data>
 	<data key="mappings.primaryhead">Primär</data>
@@ -80,7 +84,12 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.trusted">Trusted</data>
 	<data key="customtags.customTagPathCache">Cache</data>
 	<data key="customtags.customTagPathCacheDesc">Customtag Pfade werden gecached und nicht wieder geprüft</data>
+	<data key="settings.codetip">Dies kann im Code wiefolgt gemacht werden</data>
+	<data key="settings.tip">Programmiertipp (Klick mich)</data>
 	
+	<data key="settings.appcfc">Application.cfc</data>
+	<data key="settings.appcfcdesc">Dies kann auch im Application.cfc wiefolgt konfiguriert werden</data>
+	<data key="settings.appcfcSomedesc">Einige dieser Settings können auch im Application.cfc vorgenommen werden</data>
 	
 	
 	<data key="customtags.mode.standard">CFML standard</data>
@@ -98,10 +107,12 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.label">Einstellungen</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regionales</data>
-	<data key="menu.server.compiler">Compiler</data>
+	<data key="overview.langPerf">Performance/Language</data>
+	<data key="menu.server.compiler">Language/Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
-	<data key="menu.server.application">Applikation</data>
+	<data key="menu.server.request">Request</data>
+	<data key="menu.server.language">Sprache</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Dienste</data>
@@ -349,7 +360,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="application.listenermode">Mode</data>
 	<data key="application.listenermode_root">Root (Wurzelverzeichnis)</data>
 	<data key="application.requesttimeoutdescription">Legt die Zeit fest, wie lange Railo auf die Beendigung eines Requests warten soll. Das heisst, dass die Ausführung des Requests beim Überschreiten dieser Zeit abgebrochen wird. Diese Verhaltensweise kann von dem Tag CFSetting übersteuert werden.</data>
-	<data key="application.server">Definert Applikationseinstellungen, die als Standardwert für alle Webs gelten.</data>
+	<data key="request.description">Einstellungen welche die Ausführung eines Request beeinflussen.</data>
 	<data key="application.scriptprotectdescription">Durch die Konfiguration von Script-Protect schützen Sie ihr System vor &apos;Cross-Site Scripting&apos;</data>
 	<data key="application.listenertypedescription_mixed">Gemischtes Handling. Railo sucht sowohl nach der Datei &apos;Application.cfm/onRequestEnd.cfm&apos; wie auch nach der Datei &apos;Application.cfc&apos;</data>
 	<data key="application.scriptprotectall">Script-Protect überprüft alle Scopes ob die Daten von ausserhalb kommen (cgi, cookie, form, url)</data>
@@ -444,6 +455,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.autoimport">Auto Import</data>
 	<data key="components.componentlocalsearch">Lokales Verzeichnis einbeziehen</data>
 	<data key="components.archivemissing">Bitte geben Sie einen Wert für den Archivnamen an. (Zeile </data>
+	<data key="components.createnewcompmapping">Weiteres Directory einbziehen</data>
+	<data key="customtags.createnewcustomtagmapping">Weiteres Directory einbziehen</data>
 	<data key="components.datamemberaccesstypedescription">Definiert wie die Variablen des &apos;this&apos; Scopes (Data Members) ausserhalb einer CFC angesprochen werden können. Eine strenge Objektorientierung würde verlangen, dass ein solcher Zugriff von Aussen gar nicht erst möglich wäre (access=private).</data>
 	<data key="components.autoimportdescription">Die folgende package Definition wird für jedes Template automatisch geladen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
@@ -459,14 +472,14 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
     sucht Railo nach einer entsprechenden CFC-Funktion (Methode) mit dem Namen &quot;getPropertyName&quot;. Für Schreiboperationen auf eine solche Eigenschaft wird nach einer Methode &quot;setPropertyName&quot; in der Komponente gesucht.</data>
 	<data key="components.physical">Ressource</data>
 	<data key="components.trusted">Trusted</data>
-	<data key="components.componentdumptemplatedescription">Wenn Sie ein Komponente direkt über den Browser aufrufen, wird dieses Template für die Darstellung verwendet. (Beispiel: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
+	<data key="components.componentdumptemplatedescription">Wenn Sie ein Komponente direkt über den Browser aufrufen, wird dieses Template für die Darstellung verwendet. (Beispiel: {url})</data>
 	<data key="components.basecomponentmissing">Bitte geben Sie einen Wert für die Basis/Root Komponente ein.</data>
 	<data key="components.component">Komponente</data>
 	<data key="components.componentmappingsearchdesc">Die Komponente wird auch innerhalb der Mappings gesucht, damit wird auch das implizite Mapping &quot;/&quot; einbezogen, welches aufs webroot zeigt</data>
 	<data key="components.archive">Archiv</data>
 	<data key="components.componentmappings">Zusätzliche Resourcen</data>
 	<data key="components.dmatpackage">package</data>
-	<data key="components.basecomponentdescription">Jede Komponente die nicht explizit eine andere Komponente erbt (Attribut &apos;extends&apos;) erbt diese Komponente, d.h. das jede Komponente diese Komponente direkt oder indirekt erbt.</data>
+	<data key="components.basecomponentdescription">Jede Komponente die nicht explizit eine andere Komponente erbt (Attribut &apos;extends&apos;) erbt diese Komponente, d.h. das jede Komponente diese Komponente direkt oder indirekt erbt. Jede Änderung an dieser Komponente benötigt einen restart von Railo.</data>
 	<data key="login.passwordmissing">Bitte geben Sie ein Passwort ein</data>
 	<data key="login.retypenewpasswordmissing">Bitte geben Sie das neue Passwort erneut ein</data>
 	<data key="login.password">Passwort</data>
@@ -557,17 +570,32 @@ Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template
 	<data key="debug.settings.implicitAccess">Implicit variable Access</data>
 	<data key="debug.settings.implicitAccessDesc">Select this option to log all accesses to scopes, queries and threads that happens implicit (cascaded).</data>
 	<data key="general.enabled">Enabled</data>
-		
+	
+	<data key="compiler.nullSupport">Null Support</data>
+	<data key="compiler.nullSupportOnlyServer">Diese Einstellung ist nur im Railo Server Administrator möglich.</data>
+	<data key="compiler.nullSupportDesc">Definiert wie Railo null unterstützt.</data>
+	<data key="compiler.nullSupportFull">Volle Unterstützung</data>
+	<data key="compiler.nullSupportFullDesc">Railo hat volle Unterstützung für "null", dies beinhaltet "null" Literale. Im Railo Wiki finden Sie mehr Details dazu.</data>
+	<data key="compiler.nullSupportPartial">Partial Support (CFML Default)</data>
+	<data key="compiler.nullSupportPartialDesc">Railo has only a partial null support.</data>
+
+	
 	<data key="setting.compiler">Railo Compiler Einstellungen, dies beeinflusst wie der Railo Compiler den Source Code übersetzt. Das ändern dieser Einstellungen löscht alle existierenden Class Files.</data>
 	<data key="setting.dotNotation">Dot Notation</data>
-	<data key="setting.dotNotationDesc">Konvertiert Struct Keys definiert mit "Dot Notation" als grossgeschrieben (CFML Standard) oder lässt diese wie sie sind (wie "Bracked Notation").
-Übersetzt zu grossgeschrieben:
+	
+	
+	<data key="setting.dotNotationUpperCaseDesc">Konvertiert Struct Keys definiert mit "Dot Notation" als grossgeschrieben (CFML Standard).
+Beispiel:
 sct.dotNotation --> keyname: "DOTNOTATION"
-sct[""bracketNotation""] --> keyname: "bracketNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+	
+<data key="setting.dotNotationOriginalCaseDesc">Belässt Struct Keys definiert mit "Dot Notation" wie sie sind (wie "Bracked Notation").
 
-Behält die Keys wie sie sind:
+Beispiel:
 sct.dotNotation --> keyname: "dotNotation"
 sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+
+
 	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
 	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
 	<data key="setting.supressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
@@ -584,17 +612,25 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.querycachecleardesc">Drücken Sie den Button oberhalb um den Query Cache zu leeren.</data>
 	<data key="setting.querycacheclear">Query Cache leeren</data>
 	<data key="setting.inspecttemplatealwaysShort">Immer</data>
+
+	<data key="setting.inspecttemplateInheritShort">Erben</data>
 	<data key="setting.inspecttemplatealways">Immer ( Schlecht )</data>
 	<data key="setting.cachedesc">Verschiedene Cache and Performance Einstellungen um die Ausführung zu verbessern.</data>
 	<data key="setting.showversion">Railo Version ausgeben</data>
 	<data key="setting.showversiondescription">Railo Version im Response Header zurückgeben</data>
 	<data key="setting.allowCompression">Kompression</data>
 	<data key="setting.allowCompressionDescription">Kompression (GZip) für den Response Stream einschalten, sofern dies vom Client (Browser) unterstützt ist</data>
+	<data key="setting.cfmlWriterReg">Kein white space management</data>
+	<data key="setting.cfmlWriterWS">Einfaches white space management, jeder white space welcher einem white space folgt witd ignoriert</data>
+	<data key="setting.cfmlWriterWSPref">Schlaues whitespace management, analog zu einfachem whitespace management, aber ignoriert zusätzlich white spaces in den folgenden Tags: code, pre and textarea</data>
+						
 	<data key="setting.componentcache">Komponentenpfad Cache</data>
 	<data key="setting.ctcache">Custom Tag Pfad Cache</data>
 	<data key="setting.inspecttemplateneverShort">Nie</data>
 	<data key="setting.inspecttemplatenever">Nie ( Beste Performance )</data>
 	<data key="setting.server">Kontrolle der Ausgabe von Railo</data>
+	<data key="setting.inspecttemplateInherit">Erben</data>
+	<data key="setting.inspecttemplateInheritDesc">Erbt das Setting definiert in "Performance/Caching"</data>
 	<data key="setting.inspecttemplatealwaysdesc">
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
 </data>
@@ -624,15 +660,20 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Cgi, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions erlauben es Railo Sessions über einen J2EE Server-Cluster zu verteilen. Wenn Sie diese Einstellung ändern verlieren Sie die aktuelle Session und müssen sich erneut einloggen.</data>
 	<data key="scopes.web">Hier können Sie festlegen, wie Railo Scopes abarbeitet.</data>
-	<data key="scopes.localmodealways">Always</data>
-	<data key="scopes.timeoutsecondsvalue">Der Wert Sekunden für </data>
+	
+	<data key="scopes.localmodeClassic">Classic (CFML standard)</data>
+	<data key="scopes.localmodeModern">Modern</data>
+	
+	<data key="scopes.localmodedesc">Definiert wie der Lokal Scope innerhalb einer UDF von einer Variable ohne Scope angesprochen wird.</data>
+
+	<data key="scopes.localmodeModernDesc">der Lokal Scope wird immer verwendet</data>
+	<data key="scopes.localmodeClassicDesc">er Lokal Scope wird nur verwendet, wenn der entsprechende Key darin bereits existiert</data>
+
+<data key="scopes.timeoutsecondsvalue">Der Wert Sekunden für </data>
 	<data key="scopes.sessionmanagementdescription">Standardmässig kann Session Management eingeschaltet werden. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.</data>
 	<data key="scopes.clientcookiesdescription">Client Cookies ein oder ausschalten. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.</data>
 	<data key="scopes.sessiontimeout">Session Timeout</data>
-	<data key="scopes.localmodeupdate">Update (CFML Standard)</data>
-	<data key="scopes.localmodedesc">Definiert wie der Lokal Scope innerhalb einer UDF von einer Variable ohne Scope angesprochen wird.&lt;br&gt;
-- always: der Lokal Scope wird immer verwendet&lt;br&gt;
-- update (CFML Standard): der Lokal Scope wird nur verwendet, wenn der entsprechende Key darin bereits existiert.</data>
+	
 	<data key="scopes.mergeurlform">Url und Form kombinieren</data>
 	<data key="scopes.cascading">Cascading</data>
 	<data key="scopes.cascadetoresultset">Resultsets durchsuchen</data>
@@ -795,6 +836,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.usernamedescription">Username, um auf eine geschützte URL zuzugreifen.</data>
 	<data key="schedule.startdatedesc">Definert den Tag an welchem der Task zu ersten mal ausgeführt werden soll.</data>
 	<data key="settings.datasourcesettings">Einstellungen</data>
+	<data key="settings.datasource.databaseName">Datenbank (Name/Version)</data>
+	<data key="settings.datasource.driverName">Treiber (Name/Version)</data>
 	<data key="settings.readonlydatasources">Globale Datequellen (Datenquellen vom Server Administrator)</data>
 	<data key="settings.readonlydatasourcesdescription">Diese Datenquellen werden im Server Administrator für alle Web Instanzen erstellt und können im Web Administrator nicht geändert werden, diese können jedoch überschrieben werden indem sie eine Datenquelle mit dem selben Namen unterhalb anlegen.</data>
 	<data key="settings.dbpassdesc">Passwort für den Zugriff auf die Datenbank</data>

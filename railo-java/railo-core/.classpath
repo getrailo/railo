@@ -76,7 +76,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/PDFBox.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/postgresql.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/railo-sl4j.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/serializer.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/slf4j-api.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/ss_css2.jar"/>
@@ -108,5 +107,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/apache-commons-httpmime.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xmlbeans.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javasysmon.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/slf4j-nop.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -22,7 +22,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * cast a Expression to a Double
  */
-public final class CastFloat extends ExpressionBase implements ExprFloat {
+public final class CastFloat extends ExpressionBase implements ExprFloat,Cast {
     
     private Expression expr;
     
@@ -123,13 +123,10 @@ public final class CastFloat extends ExpressionBase implements ExprFloat {
         return Types.FLOAT;
     }
 
-    /* *
-     * @see railo.transformer.bytecode.expression.Expression#getType()
-     * /
-    public int getType() {
-        return Types._DOUBLE;
-    }*/
-
+	@Override
+	public Expression getExpr() {
+		return expr;
+	}
 }
 
 

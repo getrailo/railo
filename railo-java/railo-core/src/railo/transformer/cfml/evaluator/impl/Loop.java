@@ -1,14 +1,20 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import railo.commons.lang.StringUtil;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.Data;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -18,18 +24,28 @@ import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
-
-
-/**
- * Pr¸ft den Kontext des Tag loop.
- * Die Anforderungen an das Tag unterscheiden sich je nach Definition der Attribute.
- * Falls das Attribute list vorhanden ist, muss auch das Attribute index vorhanden sein.
- * Falls das Attribute list nicht vorhanden ist, aber das Attribute index, m¸ssen auch die Attribute from und to vorhanden sein.
- * Wenn das Attribute condition vorhanden ist, muss dieses mithilfe des ExprTransformer noch transformiert werden. 
- * Falls das Attribute collection verwendet wird, muss auch das Attribute item verwendet werden.
- **/
 public final class Loop extends EvaluatorSupport {
-	//ç
+	
+
+	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,Data data) throws TemplateException {
+		TagLoop loop=(TagLoop) tag;
+		// label
+		try {
+			if(ASMUtil.isLiteralAttribute(tag, "label", ASMUtil.TYPE_STRING, false, true)) {
+				LitString ls=(LitString) CastString.toExprString(tag.getAttribute("label").getValue());
+				String l = ls.getString();
+				if(!StringUtil.isEmpty(l,true)) {
+					loop.setLabel(l.trim());
+					tag.removeAttribute("label");
+				}
+			}
+		}
+		catch (EvaluatorException e) {
+			throw new TemplateException(null, e);
+		}
+	    return null;
+	}
+
 	/**
 	 *
 	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(railo.transformer.bytecode.statement.tag.Tag, railo.transformer.library.tag.TagLibTag, railo.transformer.library.function.FunctionLib[])
@@ -37,17 +53,14 @@ public final class Loop extends EvaluatorSupport {
 	public void evaluate(Tag tag,TagLibTag tagLibTag,FunctionLib[] flibs) throws EvaluatorException {
 		TagLoop loop=(TagLoop) tag;
 		
-
-        // attribute maxrows and endrow not allowd at the same time
+		// attribute maxrows and endrow not allowd at the same time
         if(tag.containsAttribute("maxrows") && tag.containsAttribute("endrow"))
         	throw new EvaluatorException("Wrong Context, you cannot use attribute maxrows and endrow at the same time.");
         
-		
-		
 		// file loop      
         if(tag.containsAttribute("file")) {
-            if(!tag.containsAttribute("index"))
-                throw new EvaluatorException("Wrong Context, when you use attribute file you must also use attribute index");
+            if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+                throw new EvaluatorException("Wrong Context, when you use attribute file you must also use attribute index and/or item");
             loop.setType(TagLoop.TYPE_FILE);
             return;
         }
@@ -81,6 +94,9 @@ public final class Loop extends EvaluatorSupport {
 		}
 		// condition loop
 		if(tag.containsAttribute("condition")){
+			if(tag.isScriptBase())
+				throw new EvaluatorException("tag loop-condition is not supported within cfscript, use instead a while statement.");
+			
 			TagLib tagLib=tagLibTag.getTagLib();
 			ExprTransformer transformer;
 			String text=ASMUtil.getAttributeString(tag, "condition");
@@ -88,7 +104,7 @@ public final class Loop extends EvaluatorSupport {
 			try {
 				ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
 				transformer = tagLib.getExprTransfomer();
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig()));
+				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig(),null));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

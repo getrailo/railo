@@ -22,7 +22,7 @@ import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDFImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
@@ -56,7 +56,7 @@ public final class GetFunctionData implements Function {
 		// CFML Based Function
 		Class clazz=null;
 		try{
-			clazz=function.getCazz();
+			clazz=function.getClazz();
 		}
 		catch(Throwable t){}
 		if(clazz==railo.runtime.functions.system.CFFunction.class){
@@ -114,7 +114,7 @@ public final class GetFunctionData implements Function {
 		String filename = Caster.toString(args.get(0).getDefaultValue());
 		Key name = KeyImpl.toKey(args.get(1).getDefaultValue());
 		boolean isWeb = Caster.toBooleanValue(args.get(2).getDefaultValue());
-		UDFImpl udf = (UDFImpl) CFFunction.loadUDF(pc, filename, name, isWeb);
+		UDF udf = CFFunction.loadUDF(pc, filename, name, isWeb);
 		
 		sct.set(KeyConstants._name,function.getName());
         sct.set(ARGUMENT_TYPE,"fixed");

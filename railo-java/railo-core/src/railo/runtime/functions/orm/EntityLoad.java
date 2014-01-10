@@ -14,7 +14,6 @@ public class EntityLoad {
 	public static Object call(PageContext pc, String name) throws PageException {
 		
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		return session.loadAsArray(pc,name,new StructImpl());
 	}
 	
@@ -61,7 +60,6 @@ public class EntityLoad {
 	
 	public static Object call(PageContext pc, String name,Object filter, Object order, Object options) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		return session.loadAsArray(pc,name,Caster.toStruct(filter),Caster.toStruct(options),Caster.toString(order));
 	}
 }

@@ -1,11 +1,16 @@
 package railo.transformer.bytecode.literal;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.commons.lang.StringUtil;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.ExpressionBase;
@@ -22,15 +27,19 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
 	public static final int TYPE_UPPER = 1;
 	public static final int TYPE_LOWER = 2;
 	public static final LitString EMPTY = new LitString("",null,null);
+	 
 	private String str;
 	private boolean fromBracket;
-
 
 	public static ExprString toExprString(String str, Position start,Position end) {
 		return new LitString(str,start,end);
 	}
 
 	public static ExprString toExprString(String str) {
+		return new LitString(str,null,null);
+	}
+
+	public static LitString toLitString(String str) {
 		return new LitString(str,null,null);
 	}
 
@@ -55,7 +64,28 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
      * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
     private static  Type _writeOut(BytecodeContext bc, int mode,String str) throws BytecodeException {
-        if(str.length()>MAX_SIZE) {
+        // write to a file instead to the bytecode
+    	// str(0,10);
+    	//print.ds(str);
+    	int externalizeStringGTE=((ConfigImpl)bc.getPageSource().getMapping().getConfig()).getExternalizeStringGTE();
+    	
+    	if(externalizeStringGTE>-1 && str.length()>externalizeStringGTE && StringUtil.indexOfIgnoreCase(bc.getMethod().getName(),"call")!=-1) {
+    		try{
+	    		GeneratorAdapter ga = bc.getAdapter();
+	    		Page page = bc.getPage();
+	    		Range range= page.registerString(bc,str);
+	    		ga.visitVarInsn(Opcodes.ALOAD, 0);
+	    		ga.visitVarInsn(Opcodes.ALOAD, 1);
+	    		ga.push(range.from);
+	    		ga.push(range.to);
+	    		ga.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), "str", "(Lrailo/runtime/PageContext;II)Ljava/lang/String;");
+	    		return Types.STRING;
+    		}
+    		catch(Throwable t){}
+    	}
+    	
+    	
+    	if(str.length()>MAX_SIZE) {
         	ExprString expr=_toExpr(str);
         	expr.writeOut(bc, mode);
         }
@@ -136,6 +166,21 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
 		return fromBracket;
 	}
 
+
+	public static class Range {
+
+		public final int from;
+		public final int to;
+
+		public Range(int from, int to) {
+			this.from=from;
+			this.to=to;
+		}
+		public String toString(){
+			return "from:"+from+";to:"+to+";";
+		}
+		
+	}
 
     /* *
      * @see railo.transformer.bytecode.expression.Expression#getType()

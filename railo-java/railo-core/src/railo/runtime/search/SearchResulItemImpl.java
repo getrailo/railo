@@ -62,72 +62,50 @@ public class SearchResulItemImpl implements SearchResulItem {
         this.author = author;
         this.size = size;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getRecordsSearched()
-     */
+    @Override
     public int getRecordsSearched() {
         return recordsSearched;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getScore()
-     */
+    @Override
     public float getScore() {
         return score;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getSummary()
-     */
+    @Override
     public String getSummary() {
         return summary;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getTitle()
-     */
+    @Override
     public String getTitle() {
         return title;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getId()
-     */
+    @Override
     public String getId() {
         return id;
     }
     
     
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getKey()
-     */
+    @Override
     public String getKey() {
         return key;
     }
     
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getUrl()
-     */
+    @Override
     public String getUrl() {
     	return url;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom1()
-     */
+    @Override
     public String getCustom1() {
         return custom1;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom2()
-     */
+    @Override
     public String getCustom2() {
         return custom2;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom3()
-     */
+    @Override
     public String getCustom3() {
         return custom3;
     }
-    /**
-     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom4()
-     */
+    @Override
     public String getCustom4() {
         return custom4;
     }

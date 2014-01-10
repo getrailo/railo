@@ -29,7 +29,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -37,6 +36,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -49,9 +49,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
     private Document doc;
     Struct collections=new StructImpl();
 	
-	/**
-	 * @see railo.runtime.search.SearchEngine#init(railo.runtime.config.Config, railo.commons.io.res.Resource, railo.commons.io.log.LogAndSource)
-	 */
+	@Override
 	public void init(railo.runtime.config.Config config,Resource searchDir, LogAndSource log) throws SAXException, IOException, SearchException {
 		this.searchDir=searchDir;
 		this.searchFile=searchDir.getRealResource("search.xml");
@@ -74,18 +72,14 @@ public abstract class SearchEngineSupport implements SearchEngine {
     	readCollections(config);
 	} 
 	
-	/**
-     * @see railo.runtime.search.SearchEngine#getCollectionByName(java.lang.String)
-     */
+	@Override
 	public final SearchCollection getCollectionByName(String name) throws SearchException {
 		Object o=collections.get(name.toLowerCase(),null);
 		if(o!=null)return (SearchCollection) o; 
 		throw new SearchException("collection "+name+" is undefined");
 	}
 	
-	/**
-     * @see railo.runtime.search.SearchEngine#getCollectionsAsQuery()
-     */
+	@Override
 	public final Query getCollectionsAsQuery() {
         final String v="VARCHAR";
         Query query=null;
@@ -125,10 +119,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
 		return query;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.search.SearchEngine#createCollection(java.lang.String, railo.commons.io.res.Resource, java.lang.String, boolean)
-	 */
+	@Override
 	public final SearchCollection createCollection(String name,Resource path, String language, boolean allowOverwrite) throws SearchException {
 	    SearchCollection coll = _createCollection(name,path,language);
 	    coll.create();
@@ -234,16 +225,12 @@ public abstract class SearchEngineSupport implements SearchEngine {
         
     }
 
-	/**
-     * @see railo.runtime.search.SearchEngine#getDirectory()
-     */
+	@Override
 	public Resource getDirectory() {
 		return searchDir;
 	}
 
-	/**
-     * @see railo.runtime.search.SearchEngine#getLogger()
-     */
+	@Override
 	public LogAndSource getLogger() {
 		return log;
 	}
@@ -267,9 +254,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
         return null;
     }
 
-    /**
-     * @see railo.runtime.search.SearchEngine#getIndexElement(org.w3c.dom.Element, java.lang.String)
-     */
+    @Override
     public Element getIndexElement(Element collElement, String id) {
         
         NodeList children = collElement.getChildNodes();
@@ -334,7 +319,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
     protected final void setAttributes(Element el,SearchIndex index) throws SearchException {
         if(el==null) return;
         setAttribute(el,"categoryTree",index.getCategoryTree());
-        setAttribute(el,"category",List.arrayToList(index.getCategories(),","));
+        setAttribute(el,"category",ListUtil.arrayToList(index.getCategories(),","));
         setAttribute(el,"custom1",index.getCustom1());
         setAttribute(el,"custom2",index.getCustom2());
         setAttribute(el,"custom3",index.getCustom3());
@@ -343,7 +328,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
         setAttribute(el,"key",index.getKey());
         setAttribute(el,"language",index.getLanguage());
         setAttribute(el,"title",index.getTitle());
-        setAttribute(el,"extensions",List.arrayToList(index.getExtensions(),","));
+        setAttribute(el,"extensions",ListUtil.arrayToList(index.getExtensions(),","));
         setAttribute(el,"type",SearchIndex.toStringType(index.getType()));
         setAttribute(el,"urlpath",index.getUrlpath());
         setAttribute(el,"query",index.getQuery());
@@ -429,11 +414,11 @@ public abstract class SearchEngineSupport implements SearchEngine {
                     _attr(el,"key"),
                     SearchIndex.toType(_attr(el,"type")),
                     _attr(el,"query"),
-                    List.listToStringArray(_attr(el,"extensions"),','),
+                    ListUtil.listToStringArray(_attr(el,"extensions"),','),
                     _attr(el,"language"),
                     _attr(el,"urlpath"),
                     _attr(el,"categoryTree"),
-                    List.listToStringArray(_attr(el,"category"),','),
+                    ListUtil.listToStringArray(_attr(el,"category"),','),
                     _attr(el,"custom1"),
                     _attr(el,"custom2"),
                     _attr(el,"custom3"),
@@ -501,8 +486,6 @@ public abstract class SearchEngineSupport implements SearchEngine {
     	
 	}
     
-    /**
-     * @see railo.runtime.search.SearchEngine#getDisplayName()
-     */
+    @Override
     public abstract String getDisplayName();
 }

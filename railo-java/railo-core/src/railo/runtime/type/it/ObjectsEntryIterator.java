@@ -26,9 +26,7 @@ public class ObjectsEntryIterator implements Iterator<Entry<Key, Object>> {
 		return keys.hasNext();
 	}
 
-	/**
-	 * @see java.util.Iterator#next()
-	 */
+	@Override
 	public Entry<Key, Object> next() {
 		Key key = KeyImpl.toKey(keys.next(),null);
 		return new EntryImpl(objs,key);

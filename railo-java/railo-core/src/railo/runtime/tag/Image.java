@@ -18,9 +18,9 @@ import railo.runtime.functions.system.ContractPath;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.img.MarpleCaptcha;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 // GetWriteableImageFormats
 // GetReadableImageFormats
@@ -71,10 +71,7 @@ public final class Image extends TagImpl {
 
 
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		action=ACTION_READ;
@@ -180,7 +177,7 @@ public final class Image extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setFonts(String fontList) throws PageException {
-		fonts=ArrayUtil.trim(List.toStringArray(List.listToArray(fontList, ',')));
+		fonts=ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArray(fontList, ',')));
 	}
 
 	
@@ -311,10 +308,7 @@ public final class Image extends TagImpl {
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws JspException {
 		try {
 			if(this.oSource!=null){
@@ -354,7 +348,9 @@ public final class Image extends TagImpl {
 		required("height", height);
 		required("width", width);
 		required("text", text);
-		
+
+        boolean doRenderHtmlTag = ( destination == null );
+
 		String path=null;
 		
 		// create destination
@@ -366,7 +362,8 @@ public final class Image extends TagImpl {
 				difficulty));
 		
 		// link destination
-		if(StringUtil.isEmpty(name))writeLink(path);
+		if ( doRenderHtmlTag )
+			writeLink( path );
 		
 		// write out
 		write();
@@ -400,7 +397,7 @@ public final class Image extends TagImpl {
 			// create path
 			String cp = pageContext.getHttpServletRequest().getContextPath();
 			if(StringUtil.isEmpty(cp)) cp="";
-			return cp+"/railo-context/graph.cfm?img="+name+"&type="+(List.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
+			return cp+"/railo-context/graph.cfm?img="+name+"&type="+(ListUtil.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
 		}
 		return ContractPath.call(pageContext, destination.getAbsolutePath());
 	}

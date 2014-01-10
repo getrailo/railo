@@ -10,17 +10,23 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefInteger;
+import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.op.Constants;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
+import railo.runtime.util.CallerUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
@@ -33,6 +39,7 @@ import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.ArrayVisitor;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -40,6 +47,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	 
 
 	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
+	private static final Type CALLER_UTIL = Type.getType(CallerUtil.class);
 
 	// java.lang.Object get(java.lang.String)
 	final static Method METHOD_SCOPE_GET_KEY = new Method("get",
@@ -58,6 +66,13 @@ public class Variable extends ExpressionBase implements Invoker {
 	final static Method METHOD_SCOPE_GET_COLLECTION= new Method("getCollection",
 			Types.OBJECT,
 			new Type[]{Types.STRING});
+
+	final static Method INIT= new Method("init",
+			Types.COLLECTION_KEY,
+			new Type[]{Types.STRING});
+	final static Method TO_KEY= new Method("toKey",
+			Types.COLLECTION_KEY,
+			new Type[]{Types.OBJECT});
 
     final static Method[] METHODS_SCOPE_GET = new Method[6];
     static {
@@ -78,7 +93,12 @@ public class Variable extends ExpressionBase implements Invoker {
 			Types.OBJECT,
 			new Type[]{Types.OBJECT,Types.STRING});
 
-    
+    //public Object get(PageContext pc,Object coll, Key[] keys, Object defaultValue) {
+    private final static Method CALLER_UTIL_GET = new Method("get",
+			Types.OBJECT,
+			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT,Types.COLLECTION_KEY_ARRAY,Types.OBJECT});
+
+    	
     // Object getCollection (Object,String)
     private final static Method GET_COLLECTION_KEY = new Method("getCollection",
 			Types.OBJECT,
@@ -90,20 +110,11 @@ public class Variable extends ExpressionBase implements Invoker {
     
 
     
-    // Object getFunction (Object,String,Object[])
-    private final static Method GET_FUNCTION = new Method("getFunction",
-			Types.OBJECT,
-			new Type[]{Types.OBJECT,Types.STRING,Types.OBJECT_ARRAY});
-    // Object getFunctionWithNamedValues (Object,String,Object[])
-    private final static Method GET_FUNCTION_WITH_NAMED_ARGS = new Method("getFunctionWithNamedValues",
-			Types.OBJECT,
-			new Type[]{Types.OBJECT,Types.STRING,Types.OBJECT_ARRAY});
-    
-
-    // Object getFunction (Object,String,Object[])
     private final static Method GET_FUNCTION_KEY = new Method("getFunction",
 			Types.OBJECT,
 			new Type[]{Types.OBJECT,Types.COLLECTION_KEY,Types.OBJECT_ARRAY});
+    
+    
     // Object getFunctionWithNamedValues (Object,String,Object[])
     private final static Method GET_FUNCTION_WITH_NAMED_ARGS_KEY = new Method("getFunctionWithNamedValues",
 			Types.OBJECT,
@@ -120,13 +131,33 @@ public class Variable extends ExpressionBase implements Invoker {
 	private static final Method COLUMNLIST = new Method("columnlist",
 			Types.OBJECT,
 			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
+
+	private static final Method THIS_GET = new Method("thisGet",
+			Types.OBJECT,
+			new Type[]{});
+	private static final Method THIS_TOUCH = new Method("thisTouch",
+			Types.OBJECT,
+			new Type[]{});
+
+	private static final Method THIS_GET_EL = new Method("thisGet",
+			Types.OBJECT,
+			new Type[]{Types.OBJECT});
+	private static final Method THIS_TOUCH_EL = new Method("thisTouch",
+			Types.OBJECT,
+			new Type[]{Types.OBJECT});
+	
+	private static final Type CONSTANTS = Type.getType(Constants.class);
     
     
 	int scope=Scope.SCOPE_UNDEFINED;
-	List members=new ArrayList();
+	List<Member> members=new ArrayList<Member>();
 	int countDM=0;
 	int countFM=0;
 	private boolean ignoredFirstMember;
+
+	private boolean fromHash=false;
+	private Expression defaultValue;
+	private Boolean asCollection;
 
 	public Variable(Position start,Position end) {
 		super(start,end);
@@ -137,6 +168,24 @@ public class Variable extends ExpressionBase implements Invoker {
 		this.scope=scope;
 	}
 	
+
+	
+	public Expression getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(Expression defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	
+	public Boolean getAsCollection() {
+		return asCollection;
+	}
+
+	public void setAsCollection(Boolean asCollection) {
+		this.asCollection = asCollection;
+	}
+
 	/**
 	 * @return the scope
 	 */
@@ -165,36 +214,37 @@ public class Variable extends ExpressionBase implements Invoker {
     }
 
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
-		return _writeOut(bc, mode, null);
+		if(defaultValue!=null && countFM==0 && countDM!=0)
+			return _writeOutCallerUtil(bc, mode);
+		return _writeOut(bc, mode, asCollection);
 	}
 	private Type _writeOut(BytecodeContext bc, int mode,Boolean asCollection) throws BytecodeException {
 		
 		
 		GeneratorAdapter adapter = bc.getAdapter();
-		int count=countFM+countDM;
+		final int count=countFM+countDM;
 		
 		// count 0
-        if(count==0) 						return _writeOutEmpty(bc);
+        if(count==0) return _writeOutEmpty(bc);
        
     	boolean doOnlyScope=scope==Scope.SCOPE_LOCAL;
     	
-    	Type rtn=Types.OBJECT;
+    	
     	//boolean last;
     	for(int i=doOnlyScope?0:1;i<count;i++) {
 			adapter.loadArg(0);
     	}
     	
-		rtn=_writeOutFirst(bc, ((Member)members.get(0)),mode,count==1,doOnlyScope);
+    	Type rtn=_writeOutFirst(bc, (members.get(0)),mode,count==1,doOnlyScope,null,null);
 		
 		// pc.get(
 		for(int i=doOnlyScope?0:1;i<count;i++) {
-			Member member=((Member)members.get(i));
+			Member member=(members.get(i));
 			boolean last=(i+1)==count;
 			
 			// Data Member
 			if(member instanceof DataMember)	{
 				ExprString name = ((DataMember)member).getName();
-				
 				if(last && ASMUtil.isDotKey(name)){
 					LitString ls = (LitString)name;
 					if(ls.getString().equalsIgnoreCase("RECORDCOUNT")){
@@ -221,17 +271,56 @@ public class Variable extends ExpressionBase implements Invoker {
 
 			// UDF
 			else if(member instanceof UDF) {
-				UDF udf=(UDF) member;
-				boolean isKey=registerKey(bc,udf.getName());
-				//udf.getName().writeOut(bc, MODE_REF);
-				ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, udf.getArguments());
-				
-				if(isKey) adapter.invokeVirtual(Types.PAGE_CONTEXT,udf.hasNamedArgs()?GET_FUNCTION_WITH_NAMED_ARGS_KEY:GET_FUNCTION_KEY);
-				else adapter.invokeVirtual(Types.PAGE_CONTEXT,udf.hasNamedArgs()?GET_FUNCTION_WITH_NAMED_ARGS:GET_FUNCTION);
-				rtn=Types.OBJECT;
+				rtn= _writeOutUDF(bc,(UDF) member);
 			}
     	}
     	return rtn;
+	}
+	
+	private Type _writeOutCallerUtil(BytecodeContext bc, int mode) throws BytecodeException {
+		
+		
+		GeneratorAdapter adapter = bc.getAdapter();
+		final int count=countFM+countDM;
+		
+		// count 0
+        if(count==0) return _writeOutEmpty(bc);
+       
+    	
+    	//boolean last;
+    	/*for(int i=doOnlyScope?0:1;i<count;i++) {
+			adapter.loadArg(0);
+    	}*/
+    	
+        // pc
+        //adapter.loadArg(0);
+        adapter.loadArg(0);
+        
+        // collection
+        RefInteger startIndex=new RefIntegerImpl();
+    	_writeOutFirst(bc, (members.get(0)),mode,count==1,true,defaultValue,startIndex);
+		
+    	// keys
+    	Iterator<Member> it = members.iterator();
+    	ArrayVisitor av=new ArrayVisitor();
+    	av.visitBegin(adapter,Types.COLLECTION_KEY,countDM-startIndex.toInt());
+    	int index=0, i=0;
+        while(it.hasNext()) {
+        	DataMember member=(DataMember) it.next();
+        	if(i++<startIndex.toInt()) continue;
+			av.visitBeginItem(adapter, index++);
+				registerKey(bc,member.getName());
+			av.visitEndItem(bc.getAdapter());
+
+    	}
+        av.visitEnd();
+        
+        // defaultValue
+        defaultValue.writeOut(bc, MODE_REF);
+        
+        bc.getAdapter().invokeStatic(CALLER_UTIL, CALLER_UTIL_GET);
+        
+    	return Types.OBJECT;
 	}
 	
 	private boolean asCollection(Boolean asCollection, boolean last) {
@@ -243,30 +332,37 @@ public class Variable extends ExpressionBase implements Invoker {
 		return registerKey(bc, name, false);
 	}
 	
-public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
+	public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
 		
-		if(name instanceof LitString) {
-			LitString lit = (LitString)name;
+		if(name instanceof Literal) {
+			Literal l=(Literal) name;
+			
+			LitString ls = name instanceof LitString?(LitString)l:LitString.toLitString(l.getString());
 			if(doUpperCase){
-				lit=lit.duplicate();
-				lit.upperCase();
+				ls=ls.duplicate();
+				ls.upperCase();
 			}
-			String key=KeyConstants.getFieldName(lit.getString());
+			String key=KeyConstants.getFieldName(ls.getString());
 			if(key!=null){
 				bc.getAdapter().getStatic(KEY_CONSTANTS, key, Types.COLLECTION_KEY);
 				return true;
 			}
-			int index=bc.registerKey(lit);
-			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, 
-					bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
+			int index=bc.registerKey(ls);
+			bc.getAdapter().visitVarInsn(Opcodes.ALOAD, 0);
+			bc.getAdapter().visitFieldInsn(Opcodes.GETFIELD,  bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
 			bc.getAdapter().push(index);
 			bc.getAdapter().visitInsn(Opcodes.AALOAD);
 			
-			//bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, bc.getClassName(), key, "Lrailo/runtime/type/Collection$Key;");
+			
+			//ExpressionUtil.writeOutSilent(lit,bc, Expression.MODE_REF);
+			//bc.getAdapter().invokeStatic(Page.KEY_IMPL, Page.KEY_INTERN);
+			
 			return true;
 		}
 		name.writeOut(bc, MODE_REF);
-		return false;
+		bc.getAdapter().invokeStatic(Page.KEY_IMPL, INIT);
+		//bc.getAdapter().invokeStatic(Types.CASTER, TO_KEY);
+		return true;
 	}
 
 	public static boolean canRegisterKey(Expression name) {
@@ -313,9 +409,10 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	
 	
 
-	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope) throws BytecodeException {
-    	if(member instanceof DataMember)
-    		return _writeOutFirstDataMember(bc,(DataMember)member, scope,last , doOnlyScope);
+	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope, Expression defaultValue, RefInteger startIndex) throws BytecodeException {
+		
+		if(member instanceof DataMember)
+    		return _writeOutFirstDataMember(bc,(DataMember)member, scope,last , doOnlyScope,defaultValue,startIndex);
     	else if(member instanceof UDF)
     		return _writeOutFirstUDF(bc,(UDF)member,scope,doOnlyScope);
     	else
@@ -326,7 +423,10 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
     	GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		// class
-		Type bifClass = Types.toType(bif.getClassName());
+		Class bifClass = bif.getClazz();
+		Type bifType = Type.getType(bifClass);//Types.toType(bif.getClassName());
+		Type rtnType=Types.toType(bif.getReturnType());
+		if(rtnType==Types.VOID)rtnType=Types.STRING;
 		
 		// arguments
 		Argument[] args = bif.getArguments();
@@ -381,6 +481,29 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 					argTypes[y+1]=Types.toType(args[y].getStringType());
 					args[y].writeOutValue(bc, Types.isPrimitiveType(argTypes[y+1])?MODE_VALUE:MODE_REF);
 				}
+				// if no method exists for the exact match of arguments, call the method with all arguments (when exists)
+				if(methodExists(bifClass,"call",argTypes,rtnType)==Boolean.FALSE) {
+					ArrayList<FunctionLibFunctionArg> _args = bif.getFlf().getArg();
+					
+					Type[] tmp = new Type[_args.size()+1];
+					
+					// fill the existing
+					for(int i=0;i<argTypes.length;i++){
+						tmp[i]=argTypes[i];
+					}
+					
+					// get the rest with default values
+					FunctionLibFunctionArg flfa;
+					for(int i=argTypes.length;i<tmp.length;i++){
+						flfa = _args.get(i-1);
+						tmp[i]=Types.toType(flfa.getTypeAsString());
+						getDefaultValue(flfa).value.writeOut(
+								bc, 
+								Types.isPrimitiveType(tmp[i])?MODE_VALUE:MODE_REF);
+					}
+					argTypes=tmp;
+				}
+ 				
 			}
 			
 		}
@@ -392,13 +515,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 			argTypes[1]=Types.OBJECT_ARRAY;
 			ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, args);	
 		}
-		
-		// return type
-		Type rtnType=Types.toType(bif.getReturnType());
-		if(rtnType==Types.VOID)rtnType=Types.STRING;
-		adapter.	invokeStatic(bifClass,new Method("call",rtnType,argTypes));
-		
-		
+		adapter.invokeStatic(bifType,new Method("call",rtnType,argTypes));
 		if(mode==MODE_REF || !last) {
 			if(Types.isPrimitiveType(rtnType)) {
 				adapter.invokeStatic(Types.CASTER,new Method("toRef",Types.toRefType(rtnType),new Type[]{rtnType}));
@@ -413,6 +530,37 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	
 
 	
+	/**
+	 * checks if a method exists
+	 * @param clazz
+	 * @param methodName
+	 * @param args
+	 * @param returnType
+	 * @return returns null when checking fi
+	 */
+
+	private static Boolean methodExists(Class clazz, String methodName, Type[] args, Type returnType)  {
+		try {
+			//Class _clazz=Types.toClass(clazz);
+			Class[] _args=new Class[args.length];
+			for(int i=0;i<_args.length;i++){
+				_args[i]=Types.toClass(args[i]);
+			}
+			Class rtn = Types.toClass(returnType);
+		
+			try {
+				java.lang.reflect.Method m = clazz.getMethod(methodName, _args);
+				return m.getReturnType()==rtn;
+			}
+			catch (Exception e) {
+				return false;
+			}
+			
+		}
+		catch (Exception e) {e.printStackTrace();
+			return null;
+		}
+	}
 
 	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope, boolean doOnlyScope) throws BytecodeException {
 
@@ -420,24 +568,64 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		// pc.getFunction (Object,String,Object[])
 	    // pc.getFunctionWithNamedValues (Object,String,Object[])
 		adapter.loadArg(0);
+		
 		if(!doOnlyScope)adapter.loadArg(0);
 		Type rtn = TypeScope.invokeScope(adapter, scope);
 		if(doOnlyScope) return rtn;
 		
-		boolean isKey=registerKey(bc,udf.getName());
-		ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, udf.getArguments());
-		if(isKey) adapter.invokeVirtual(Types.PAGE_CONTEXT,udf.hasNamedArgs()?GET_FUNCTION_WITH_NAMED_ARGS_KEY:GET_FUNCTION_KEY);
-		else adapter.invokeVirtual(Types.PAGE_CONTEXT,udf.hasNamedArgs()?GET_FUNCTION_WITH_NAMED_ARGS:GET_FUNCTION);
-		return Types.OBJECT;
 		
+		return _writeOutUDF(bc,udf);
 	}
 
-	static Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last, boolean doOnlyScope) throws BytecodeException {
-    	
+	private static Type _writeOutUDF(BytecodeContext bc, UDF udf) throws BytecodeException {
+		registerKey(bc,udf.getName());
+		Argument[] args = udf.getArguments();
 		
-		GeneratorAdapter adapter = bc.getAdapter();
-		adapter.loadArg(0);
-		Type rtn = TypeScope.invokeScope(adapter, scope);
+		// no arguments
+		if(args.length==0) {
+			bc.getAdapter().getStatic(CONSTANTS, "EMPTY_OBJECT_ARRAY", Types.OBJECT_ARRAY);
+		}
+		else ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, args);
+		bc.getAdapter().invokeVirtual(Types.PAGE_CONTEXT,udf.hasNamedArgs()?GET_FUNCTION_WITH_NAMED_ARGS_KEY:GET_FUNCTION_KEY);
+		return Types.OBJECT;
+	}
+
+	Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last, boolean doOnlyScope, Expression defaultValue, RefInteger startIndex) throws BytecodeException {
+    	GeneratorAdapter adapter = bc.getAdapter();
+    	if(startIndex!=null)startIndex.setValue(doOnlyScope?0:1);
+		
+    	// this
+    	if(scope==Scope.SCOPE_UNDEFINED) {
+    		ExprString name = member.getName();
+    		if(ASMUtil.isDotKey(name)){
+    			LitString ls = (LitString)name;
+				if(ls.getString().equalsIgnoreCase("THIS")){
+					if(startIndex!=null)startIndex.setValue(1);
+					adapter.loadArg(0);
+					adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+					if(defaultValue!=null) {
+						defaultValue.writeOut(bc, MODE_REF);
+						adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,(countFM+countDM)==1?THIS_GET_EL:THIS_TOUCH_EL);
+					}
+					else adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,(countFM+countDM)==1?THIS_GET:THIS_TOUCH);
+					return Types.OBJECT;
+				}
+    		}
+    	}
+    	// local
+    	Type rtn;
+    	if(scope==Scope.SCOPE_LOCAL && defaultValue!=null) {
+    		adapter.loadArg(0);
+    		adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+			LitBoolean.FALSE.writeOut(bc, MODE_VALUE);
+    		defaultValue.writeOut(bc, MODE_VALUE);
+    		adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TypeScope.METHOD_LOCAL_EL);
+    		rtn= Types.OBJECT;
+    	}
+    	else {
+    		adapter.loadArg(0);
+    		rtn = TypeScope.invokeScope(adapter, scope);
+    	}
 		if(doOnlyScope) return rtn;
 		
 		if(registerKey(bc,member.getName()))
@@ -452,7 +640,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	/**
 	 * @return the members
 	 */
-	public List getMembers() {
+	public List<Member> getMembers() {
 		return members;
 	}
 
@@ -461,7 +649,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 */
 	public Member getFirstMember() {
 		if(members.isEmpty()) return null;
-		return (Member) members.get(0);
+		return members.get(0);
 	}
 
 	/**
@@ -469,7 +657,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 */
 	public Member getLastMember() {
 		if(members.isEmpty()) return null;
-		return (Member) members.get(members.size()-1);
+		return members.get(members.size()-1);
 	}
 
 	public void ignoredFirstMember(boolean b) {
@@ -498,7 +686,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		if(!StringUtil.isEmpty(alias)) {
 			//String[] arrAlias = railo.runtime.type.List.toStringArray(railo.runtime.type.List.trimItems(railo.runtime.type.List.listToArrayRemoveEmpty(alias, ',')));
 			for(int i=0;i<nargs.length;i++){
-				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
+				if(names[i]!=null && railo.runtime.type.util.ListUtil.listFindNoCase(alias, names[i])!=-1){
 					nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
 					return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 				}
@@ -507,25 +695,25 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		
 		// if not required return the default value
 		if(!flfa.getRequired()) {
-			String defaultValue = flfa.getDefaultValue();
-			String type=flfa.getTypeAsString().toLowerCase();
-			
-			if(defaultValue==null) {
-				if(type.equals("boolean") || type.equals("bool")) 
-					return new VT(LitBoolean.FALSE,type,-1);
-				if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
-					return new VT(LitDouble.ZERO,type,-1);
-				return new VT(null,type,-1);
-			}
-			return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+			return getDefaultValue(flfa);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
 	
-	
-	
+	private static VT getDefaultValue(FunctionLibFunctionArg flfa) {
+		String defaultValue = flfa.getDefaultValue();
+		String type = flfa.getTypeAsString();
+		if(defaultValue==null) {
+			if(type.equals("boolean") || type.equals("bool")) 
+				return new VT(LitBoolean.FALSE,type,-1);
+			if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
+				return new VT(LitDouble.ZERO,type,-1);
+			return new VT(null,type,-1);
+		}
+		return new VT(CastOther.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+	}
 
 	private static String getName(Expression expr) throws BytecodeException {
 		String name = ASMUtil.toString(expr);
@@ -568,6 +756,14 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		
 		
 		return named;
+	}
+
+	public void setFromHash(boolean fromHash) {
+		this.fromHash=fromHash;
+	}
+
+	public boolean fromHash() {
+		return fromHash;
 	}
 	
 }

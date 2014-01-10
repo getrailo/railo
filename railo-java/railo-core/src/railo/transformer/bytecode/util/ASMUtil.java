@@ -23,8 +23,10 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -33,6 +35,7 @@ import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
+import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
@@ -41,7 +44,9 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
+import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Member;
+import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
@@ -52,6 +57,7 @@ import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
+import railo.transformer.bytecode.statement.FlowControlRetry;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -84,7 +90,7 @@ public final class ASMUtil {
 	private static long id=0;
 		
 	/**
-	 * Gibt zurück ob das direkt übergeordnete Tag mit dem übergebenen Full-Name (Namespace und Name) existiert.
+	 * Gibt zurueck ob das direkt uebergeordnete Tag mit dem uebergebenen Full-Name (Namespace und Name) existiert.
 	 * @param el Startelement, von wo aus gesucht werden soll.
 	 * @param fullName Name des gesuchten Tags.
 	 * @return Existiert ein solches Tag oder nicht.
@@ -95,9 +101,9 @@ public final class ASMUtil {
 	
 
 	/**
-	 * Gibt das übergeordnete CFXD Tag Element zurück, falls dies nicht existiert wird null zurückgegeben.
-	 * @param el Element von dem das parent Element zurückgegeben werden soll.
-	 * @return übergeordnete CFXD Tag Element
+	 * Gibt das uebergeordnete CFXD Tag Element zurueck, falls dies nicht existiert wird null zurueckgegeben.
+	 * @param el Element von dem das parent Element zurueckgegeben werden soll.
+	 * @return uebergeordnete CFXD Tag Element
 	 */
 	public static Tag getParentTag(Tag tag)	{
 		Statement p=tag.getParent();
@@ -120,58 +126,47 @@ public final class ASMUtil {
 		
 	}
 	
-	public static boolean hasAncestorBreakFCStatement(Statement stat) {
-		return getAncestorBreakFCStatement(stat,null)!=null;
+	public static boolean hasAncestorRetryFCStatement(Statement stat,String label) {
+		return getAncestorRetryFCStatement(stat,null,label)!=null;
 	}
 	
-	public static boolean hasAncestorContinueFCStatement(Statement stat) {
-		return getAncestorContinueFCStatement(stat,null)!=null;
+	public static boolean hasAncestorBreakFCStatement(Statement stat,String label) {
+		return getAncestorBreakFCStatement(stat,null,label)!=null;
+	}
+	
+	public static boolean hasAncestorContinueFCStatement(Statement stat,String label) {
+		return getAncestorContinueFCStatement(stat,null,label)!=null;
 	}
 	
 	
-	/* *
-	 * get ancestor LoopStatement 
-	 * @param stat
-	 * @param ingoreScript 
-	 * @return
-	 * /
-	public static FlowControl getAncestorFlowControlStatement(Statement stat) {
-		Statement parent = stat;
-		while(true)	{
-			parent=parent.getParent();
-			if(parent==null)return null;
-			if(parent instanceof FlowControl)	{
-				if(parent instanceof ScriptBody){
-					FlowControl scriptBodyParent = getAncestorFlowControlStatement(parent);
-					if(scriptBodyParent!=null) return scriptBodyParent;
-					return (FlowControl)parent;
-				}
-				return (FlowControl) parent;
-			}
-		}
-	}*/
 	
-	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK);
+	public static FlowControlRetry getAncestorRetryFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, String label) {
+		return (FlowControlRetry) getAncestorFCStatement(stat, finallyLabels, FlowControl.RETRY,label);
+	}
+	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, String label) {
+		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK,label);
 	}
 	
-	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlContinue) getAncestorFCStatement(stat, finallyLabels, FlowControl.CONTINUE);
+	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, String label) {
+		return (FlowControlContinue) getAncestorFCStatement(stat, finallyLabels, FlowControl.CONTINUE,label);
 	}
 
-	private static FlowControl getAncestorFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, int flowType) {
+	private static FlowControl getAncestorFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, int flowType, String label) {
 		Statement parent = stat;
 		FlowControlFinal fcf;
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null)return null;
 			if(
+			   ((flowType==FlowControl.RETRY && parent instanceof FlowControlRetry) || 
 			   (flowType==FlowControl.CONTINUE && parent instanceof FlowControlContinue) || 
-			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))	{
+			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))
+			   &&
+				labelMatch((FlowControl)parent,label))	{
 				if(parent instanceof ScriptBody){
 					List<FlowControlFinal> _finallyLabels=finallyLabels==null?null:new ArrayList<FlowControlFinal>();
 					
-					FlowControl scriptBodyParent = getAncestorFCStatement(parent,_finallyLabels,flowType);
+					FlowControl scriptBodyParent = getAncestorFCStatement(parent,_finallyLabels,flowType,label);
 					if(scriptBodyParent!=null) {
 						if(finallyLabels!=null){
 							Iterator<FlowControlFinal> it = _finallyLabels.iterator();
@@ -197,20 +192,43 @@ public final class ASMUtil {
 		}
 	}
 	
-	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType) throws BytecodeException {
+	private static boolean labelMatch(FlowControl fc, String label) {
+		if(StringUtil.isEmpty(label,true)) return true;
+		String fcl = fc.getLabel();
+		if(StringUtil.isEmpty(fcl,true)) return false;
+		
+		return label.trim().equalsIgnoreCase(fcl.trim());
+	}
+
+
+	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType, String label) throws BytecodeException {
 		List<FlowControlFinal> finallyLabels=new ArrayList<FlowControlFinal>();
 		
-		FlowControl fc = flowType==FlowControl.BREAK?
-				ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels):
-				ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels);
-				
+		FlowControl fc;
+		String name;
+		if(FlowControl.BREAK==flowType) {
+			fc=ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels,label);
+			name="break";
+		}
+		else if(FlowControl.CONTINUE==flowType) {
+			fc=ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels,label);
+			name="continue";
+		}
+		else  {
+			fc=ASMUtil.getAncestorRetryFCStatement(stat,finallyLabels,label);
+			name="retry";
+		}
+		
 		if(fc==null)
-			throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
+			throw new BytecodeException(name+" must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
 		
 		GeneratorAdapter adapter = bc.getAdapter();
 		
-		Label end=flowType==FlowControl.BREAK?((FlowControlBreak)fc).getBreakLabel():((FlowControlContinue)fc).getContinueLabel();
-		
+		Label end;
+		if(FlowControl.BREAK==flowType) end=((FlowControlBreak)fc).getBreakLabel();
+		else if(FlowControl.CONTINUE==flowType) end=((FlowControlContinue)fc).getContinueLabel();
+		else  end=((FlowControlRetry)fc).getRetryLabel();
+
 		// first jump to all final labels
 		FlowControlFinal[] arr = finallyLabels.toArray(new FlowControlFinal[finallyLabels.size()]);
 		if(arr.length>0) {
@@ -257,8 +275,8 @@ public final class ASMUtil {
 
 	
 	/**
-	 * Gibt ein übergeordnetes Tag mit dem übergebenen Full-Name (Namespace und Name) zurück, 
-	 * falls ein solches existiert, andernfalls wird null zurückgegeben.
+	 * Gibt ein uebergeordnetes Tag mit dem uebergebenen Full-Name (Namespace und Name) zurueck, 
+	 * falls ein solches existiert, andernfalls wird null zurueckgegeben.
 	 * @param el Startelement, von wo aus gesucht werden soll.
 	 * @param fullName Name des gesuchten Tags.
 	 * @return  Übergeornetes Element oder null.
@@ -275,6 +293,8 @@ public final class ASMUtil {
 			}
 		}
 	}
+	
+	
 
     /**
      * extract the content of a attribut
@@ -359,7 +379,7 @@ public final class ASMUtil {
 	
 
 	/**
-	 * Prüft ob das das angegebene Tag in der gleichen Ebene nach dem angegebenen Tag vorkommt.
+	 * Prueft ob das das angegebene Tag in der gleichen Ebene nach dem angegebenen Tag vorkommt.
 	 * @param tag Ausgangspunkt, nach diesem tag darf das angegebene nicht vorkommen.
 	 * @param nameToFind Tag Name der nicht vorkommen darf
 	 * @return kommt das Tag vor.
@@ -518,7 +538,7 @@ public final class ASMUtil {
     public static byte[] createPojo(String className, ASMProperty[] properties,Class parent,Class[] interfaces, String srcName) throws PageException {
     	className=className.replace('.', '/');
     	className=className.replace('\\', '/');
-    	className=railo.runtime.type.List.trim(className, "/");
+    	className=ListUtil.trim(className, "/");
     	String[] inter=null;
     	if(interfaces!=null){
     		inter=new String[interfaces.length];
@@ -813,12 +833,14 @@ public final class ASMUtil {
 	}*/
 
 
-	public static String createOverfowMethod() {
-		return "_call"+ASMUtil.getId();
+	public static String createOverfowMethod(String prefix, int id) { // pattern is used in function callstackget
+		if(StringUtil.isEmpty(prefix)) prefix="call";
+		return prefix+"_"+StringUtil.addZeros(id,6);
 	}
 	
 	public static boolean isOverfowMethod(String name) {
-		return name.startsWith("_call") && name.length()>=11;
+		return name.length()>6 && Decision.isNumeric(name.substring(name.length()-6,name.length()));
+		//return name.startsWith("_call") && name.length()>=11;
 	}
 
 
@@ -880,13 +902,15 @@ public final class ASMUtil {
 		return true;
 	}
 
-
-	
-	
 	public static boolean isLiteralAttribute(Tag tag, String attrName, short type,boolean required,boolean throwWhenNot) throws EvaluatorException {
-		Attribute attr = tag.getAttribute(attrName);
+		return isLiteralAttribute(tag,tag.getAttribute(attrName), type, required, throwWhenNot);
+	}
+	
+	
+	public static boolean isLiteralAttribute(Tag tag,Attribute attr, short type,boolean required,boolean throwWhenNot) throws EvaluatorException {
 		String strType="/constant";
-		if(attr!=null) {
+		if(attr!=null && !isNull(attr.getValue())) {
+			
 			switch(type){
 			case TYPE_ALL:
 				if(attr.getValue() instanceof Literal) return true;
@@ -905,13 +929,23 @@ public final class ASMUtil {
 			break;
 			}
 			if(!throwWhenNot) return false;
-			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] must be a literal"+strType+" value");
+			throw new EvaluatorException("Attribute ["+attr.getName()+"] of the Tag ["+tag.getFullname()+"] must be a literal"+strType+" value. "+
+					"attributes java class type "+attr.getValue().getClass().getName());
 		}
 		if(required){
 			if(!throwWhenNot) return false;
-			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] is required");
+			throw new EvaluatorException("Attribute ["+attr.getName()+"] of the Tag ["+tag.getFullname()+"] is required");
 		}
-		return true;
+		return false;
+	}
+
+
+	public static boolean isNull(Expression expr) {
+		if(expr instanceof NullExpression) return true;
+		if(expr instanceof Cast) {
+			return isNull(((Cast)expr).getExpr());
+		}
+		return false;
 	}
 
 
@@ -1089,6 +1123,21 @@ public final class ASMUtil {
 	
 	public static String getClassName(byte[] barr){
 		return new ClassReader(barr).getClassName();
+	}
+
+
+	public static String getSourceName(Class clazz) throws IOException {
+		return SourceNameClassVisitor.getSourceName(clazz);
+	}
+
+	public static boolean hasOnlyDataMembers(Variable var) {
+		Iterator<Member> it = var.getMembers().iterator();
+		Member m;
+		while(it.hasNext()){
+			m = it.next();
+			if(!(m instanceof DataMember)) return false;
+		}
+		return true;
 	}
 	
 }

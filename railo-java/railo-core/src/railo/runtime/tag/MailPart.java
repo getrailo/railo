@@ -17,9 +17,7 @@ public final class MailPart extends BodyTagImpl {
 
 	railo.runtime.net.mail.MailPart part=new railo.runtime.net.mail.MailPart();
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		part=new railo.runtime.net.mail.MailPart();
@@ -48,32 +46,24 @@ public final class MailPart extends BodyTagImpl {
         part.setWraptext((int)wraptext);
     }
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 	    
 		return EVAL_BODY_BUFFERED;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
         part.setBody(bodyContent.getString());
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 	    
 		getMail().addPart(part);

@@ -78,7 +78,7 @@ public abstract class CacheSupport implements Cache {
 		}
 		return list;
 	}
-	
+
 	// there was the wrong generic type defined in the older interface, because of that we do not define a generic type at all here, just to be sure
 	@Override
 	public List values() throws IOException {
@@ -92,7 +92,6 @@ public abstract class CacheSupport implements Cache {
 		}
 		return list;
 	}
-	
 
 	// there was the wrong generic type defined in the older interface, because of that we do not define a generic type at all here, just to be sure
 	@Override
@@ -109,7 +108,7 @@ public abstract class CacheSupport implements Cache {
 		}
 		return list;
 	}
-	
+
 	// there was the wrong generic type defined in the older interface, because of that we do not define a generic type at all here, just to be sure
 	@Override
 	public List values(CacheKeyFilter filter) throws IOException {
@@ -124,9 +123,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(railo.commons.io.cache.CacheEntryFilter)
-	 */
+	@Override
 	public int remove(CacheEntryFilter filter) throws IOException {
 		List<String> keys = keys();
 		int count=0;
@@ -145,9 +142,7 @@ public abstract class CacheSupport implements Cache {
 	}
 	
 
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(railo.commons.io.cache.CacheKeyFilter)
-	 */
+	@Override
 	public int remove(CacheKeyFilter filter) throws IOException {
 		List<String> keys = keys();
 		int count=0;
@@ -168,16 +163,12 @@ public abstract class CacheSupport implements Cache {
 	}
 	
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(java.lang.String)
-	 */
+	@Override
 	public Object getValue(String key) throws IOException {
 		return getCacheEntry(key).getValue();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object getValue(String key, Object defaultValue) {
 		CacheEntry entry = getCacheEntry(key,null);
 		if(entry==null) return defaultValue;
@@ -195,9 +186,7 @@ public abstract class CacheSupport implements Cache {
 		return true;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#getCacheEntry(java.lang.String)
-	 */
+	@Override
 	public CacheEntry getCacheEntry(String key) throws IOException {
 		CacheEntry entry = getCacheEntry(key, null);
 		if(entry==null) throw new CacheException("there is no valid cache entry with key ["+key+"]");

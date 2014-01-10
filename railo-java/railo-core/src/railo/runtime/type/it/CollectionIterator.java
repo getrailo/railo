@@ -23,9 +23,7 @@ public class CollectionIterator implements Iterator<Object> {
 		return keys.hasNext();
 	}
 
-	/**
-	 * @see java.util.Iterator#next()
-	 */
+	@Override
 	public Object next() {
 		return coll.get(keys.next(),null);
 	}

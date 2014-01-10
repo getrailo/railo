@@ -11,6 +11,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 public final class CastableArray extends ArrayImpl {
 	
@@ -26,26 +27,20 @@ public final class CastableArray extends ArrayImpl {
 		this.value=value;
 	}
 
-	/**
-	 * @see railo.runtime.type.ArrayImpl#duplicate(boolean)
-	 */
+	@Override
 	public synchronized Collection duplicate(boolean deepCopy) {
 		return duplicate(new CastableArray(value),deepCopy);
 	}
 
 
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(getValue());
 		
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         try {
 			return Caster.toBoolean(getValue(),defaultValue);
@@ -54,16 +49,12 @@ public final class CastableArray extends ArrayImpl {
 		}
     }
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return Caster.toDate(getValue(),null);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         try {
 			return DateCaster.toDateAdvanced(getValue(), true, null,defaultValue);
@@ -72,16 +63,12 @@ public final class CastableArray extends ArrayImpl {
 		}
     }
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return Caster.toDoubleValue(getValue());
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         try {
 			return Caster.toDoubleValue(getValue(),defaultValue);
@@ -90,16 +77,12 @@ public final class CastableArray extends ArrayImpl {
 		}
     }
 	
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return Caster.toString(getValue());
 	}
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		try {
 			return Caster.toString(getValue(),defaultValue);
@@ -108,30 +91,22 @@ public final class CastableArray extends ArrayImpl {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(getValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(getValue(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(getValue(),d);
 	}
 
-	/**
-	 * @see railo.runtime.type.util.ArraySupport#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(getValue(), str);
 	}
@@ -139,12 +114,10 @@ public final class CastableArray extends ArrayImpl {
 
 	private Object getValue() throws PageException {
 		if(value!=null)return value;
-		return List.arrayToList(this, ",");
+		return ListUtil.arrayToList(this, ",");
 	}
 
-	/**
-	 * @see railo.runtime.type.ArrayImpl#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties dp) {
 		DumpTable dt= (DumpTable) super.toDumpData(pageContext, maxlevel, dp);
 		dt.setTitle("Castable Array");

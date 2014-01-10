@@ -9,9 +9,7 @@ import railo.runtime.ext.tag.TagImpl;
  */
 public final class Logout extends TagImpl {
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-     */
+    @Override
     public int doStartTag() throws JspException {
         pageContext.clearRemoteUser();
         return SKIP_BODY;

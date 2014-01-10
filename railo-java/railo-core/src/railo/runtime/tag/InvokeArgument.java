@@ -49,9 +49,7 @@ public final class InvokeArgument extends TagImpl {
 		this.omit = omit;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		Tag parent=getParent();
 		while(parent!=null && !(parent instanceof Invoke)) {
@@ -68,16 +66,12 @@ public final class InvokeArgument extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		value=null;

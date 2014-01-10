@@ -54,9 +54,7 @@ public final class FTPConnectionData {
 
 
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "username:"+username+";password:"+password+";hostname:"+host+";port:"+port;
 	}
@@ -117,10 +115,7 @@ public final class FTPConnectionData {
 	public String getProxyuser() {
 		return proxyuser;
 	}
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(this==obj)return true;
 		if(!(obj instanceof FTPConnectionData)) return false;

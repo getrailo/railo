@@ -18,9 +18,7 @@ public final class ComponentProvider extends RPCProvider {
 	public static final String COMPONENT = Component.class.getName();
  
 	
-	/**
-	 * @see org.apache.axis.providers.java.RPCProvider#invokeMethod(org.apache.axis.MessageContext, java.lang.reflect.Method, java.lang.Object, java.lang.Object[])
-	 */
+	@Override
 	protected Object invokeMethod(MessageContext mc, Method method, Object trg, Object[] args) throws Exception {
 		PageContext pc=(PageContext) mc.getProperty(Constants.PAGE_CONTEXT);
 		Component c= (Component) mc.getProperty(Constants.COMPONENT);

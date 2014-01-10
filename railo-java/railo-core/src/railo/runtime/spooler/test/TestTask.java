@@ -19,9 +19,7 @@ public class TestTask extends SpoolerTaskSupport {
 		this.fail=fail;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#getType()
-	 */
+	@Override
 	public String getType() {
 		return "test";
 	}

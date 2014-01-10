@@ -2,6 +2,7 @@ package railo.transformer.bytecode.util;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.PagePlus;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.ImportDefintionImpl;
@@ -34,11 +37,13 @@ import railo.runtime.op.Operator;
 import railo.runtime.poi.Excel;
 import railo.runtime.poi.ExcelUtil;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.Iteratorable;
-import railo.runtime.type.List;
+import railo.runtime.type.Query;
+import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
@@ -49,6 +54,7 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.NumberRange;
 import railo.runtime.writer.BodyContentUtil;
 import railo.transformer.bytecode.BytecodeException;
@@ -108,6 +114,7 @@ public final class Types {
     public static final Type COMPONENT=Type.getType(railo.runtime.Component.class);
 
     public final static Type PAGE=Type.getType(Page.class);
+    public final static Type PAGE_PLUS=Type.getType(PagePlus.class);
     public final static Type PAGE_SOURCE=Type.getType(PageSource.class);
     public static final Type COMPONENT_PAGE=Type.getType(railo.runtime.ComponentPage.class);
 	public static final Type INTERFACE_PAGE = Type.getType(InterfacePage.class);
@@ -137,12 +144,11 @@ public final class Types {
     public static final Type OBJECT_ARRAY=Type.getType(Object[].class);
 
     public static final Type PAGE_CONTEXT=Type.getType(PageContext.class);
-    //public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
+    public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
 
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);
     public final static Type QUERY_COLUMN=Type.getType(railo.runtime.type.QueryColumn.class);
-    //public final static Type QUERY_IMPL=Type.getType(railo.runtime.type.QueryImpl.class);
     
     public final static Type PAGE_EXCEPTION=Type.getType(PageException.class);
 
@@ -172,7 +178,7 @@ public final class Types {
 	
 	public static final Type VOID = Type.VOID_TYPE;
 	
-	public static final Type LIST = Type.getType(List.class);
+	public static final Type LIST_UTIL = Type.getType(ListUtil.class);
 	public static final Type VARIABLE_INTERPRETER = Type.getType(VariableInterpreter.class);
 	public static final Type VARIABLE_REFERENCE = Type.getType(VariableReference.class);
 	public static final Type JSP_WRITER = Type.getType(JspWriter.class);
@@ -193,7 +199,7 @@ public final class Types {
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
 	public static final Type CLOSURE = Type.getType(Closure.class);
 	public static final Type UDF_PROPERTIES_ARRAY = Type.getType(UDFProperties[].class);
-	public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
+	//public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
 	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
@@ -209,6 +215,7 @@ public final class Types {
 	public static final Type CLASS = Type.getType(Class.class);
 	public static final Type CLASS_ARRAY = Type.getType(Class[].class);
 	public static final Type CLASS_LOADER = Type.getType(ClassLoader.class);
+	public static final Type BIG_DECIMAL = Type.getType(BigDecimal.class);
 	 
 
 	/**
@@ -390,6 +397,22 @@ public final class Types {
 		return type;
 	}
 
+	public static Class toClass(Type type) throws ClassException {
+		if(Types.STRING==type) return String.class;
+		if(Types.BOOLEAN_VALUE==type) return boolean.class;
+		if(Types.DOUBLE_VALUE==type) return double.class;
+		if(Types.PAGE_CONTEXT==type) return PageContext.class;
+		if(Types.OBJECT==type) return Object.class;
+		if(Types.STRUCT==type) return Struct.class;
+		if(Types.ARRAY==type) return Array.class;
+		if(Types.COLLECTION_KEY==type) return Collection.Key.class;
+		if(Types.COLLECTION_KEY_ARRAY==type) return Collection.Key[].class;
+		if(Types.QUERY==type) return Query.class;
+		if(Types.DATE_TIME==type) return railo.runtime.type.dt.DateTime.class;
+		
+		
+		return ClassUtil.toClass(type.getClassName());
+	}
 	
 
 }

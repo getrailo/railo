@@ -106,9 +106,7 @@ public class AccessControl {
 	}
 	
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(){
 		return "displayName:"+displayName+";email:"+email+";id:"+id+";permission:"+permission+";type:"+type+";uri:"+uri;
 	}
@@ -120,9 +118,7 @@ public class AccessControl {
 			return null;
 		}
 	}
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return hash().hashCode();
 	}
@@ -140,7 +136,7 @@ public class AccessControl {
 			throw new S3Exception("ACL Object must be a Array of Structs");
 		
 		Struct sct;
-		Iterator it = arr.valueIterator();
+		Iterator<Object> it = arr.valueIterator();
 		List<AccessControl> acl=new ArrayList<AccessControl>();
 		while(it.hasNext()){
 			sct=Caster.toStruct(it.next(), null);
@@ -159,7 +155,7 @@ public class AccessControl {
         
         
         // Email
-        String email = Caster.toString(sct.get(StoreGetACL.EMAIL,null),null);
+        String email = Caster.toString(sct.get(KeyConstants._email,null),null);
         if(!StringUtil.isEmpty(email)){
         	ac.setType(AccessControl.TYPE_EMAIL);
         	ac.setEmail(email);
@@ -167,7 +163,7 @@ public class AccessControl {
         }
         
         // Group
-        String uri=AccessControl.groupToURI(sct.get(StoreGetACL.GROUP,null));
+        String uri=AccessControl.groupToURI(sct.get(KeyConstants._group,null));
         if(!StringUtil.isEmpty(uri)) {
         	ac.setType(AccessControl.TYPE_GROUP);
         	ac.setUri(uri);

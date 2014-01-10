@@ -33,9 +33,7 @@ public final class DebugPageImpl implements Dumpable, DebugPage {
 		this.file=file;
 	}
 
-	/**
-     * @see railo.runtime.debug.DebugPage#set(long)
-     */
+	@Override
 	public void set(long t) {
 		this.time=t;
 		if(count==0) {
@@ -52,44 +50,32 @@ public final class DebugPageImpl implements Dumpable, DebugPage {
 	}
 	
 	
-	/**
-     * @see railo.runtime.debug.DebugPage#getMinimalExecutionTime()
-     */
+	@Override
 	public int getMinimalExecutionTime() {
 		return min;
 	}
 
-	/**
-     * @see railo.runtime.debug.DebugPage#getMaximalExecutionTime()
-     */
+	@Override
 	public int getMaximalExecutionTime() {
 		return max;
 	}
 	
-	/**
-     * @see railo.runtime.debug.DebugPage#getAverageExecutionTime()
-     */
+	@Override
 	public int getAverageExecutionTime() {
 		return all/count;
 	}
 	
-	/**
-     * @see railo.runtime.debug.DebugPage#getCount()
-     */
+	@Override
 	public int getCount() {
 		return count;
 	}
 	
-	/**
-     * @see railo.runtime.debug.DebugPage#getFile()
-     */
+	@Override
 	public Resource getFile() {
 		return file;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table=new DumpTable("#cccc66","#cccc99","#000000");
 		table.setTitle(file.getAbsolutePath());

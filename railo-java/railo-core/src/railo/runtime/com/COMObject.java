@@ -15,6 +15,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
@@ -56,174 +57,131 @@ public final class COMObject implements Objects, Iteratorable {
 		this.dispatch=dispatch;
 	}
 
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String propertyName) throws PageException {
+    /*public Object get(PageContext pc, String propertyName) throws PageException {
         return COMUtil.toObject(this,Dispatch.call(dispatch,propertyName),propertyName);
-    }
+    }*/
 
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
-		return get(pc, key.getString());
+		return COMUtil.toObject(this,Dispatch.call(dispatch,key.getString()),key.getString());
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object get(PageContext pc, String propertyName, Object defaultValue) {
+    /*public Object get(PageContext pc, String propertyName, Object defaultValue) {
         return COMUtil.toObject(this,Dispatch.call(dispatch,propertyName),propertyName,defaultValue);
-    }
+    }*/
 
-	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
-		return get(pc, key.getString(), defaultValue);
+	@Override
+    public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
+		return COMUtil.toObject(this,Dispatch.call(dispatch,key.getString()),key.getString(),defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object set(PageContext pc, String propertyName, Object value) {
+    /*public Object set(PageContext pc, String propertyName, Object value) {
         return setEL(pc,propertyName,value);
-    }
+    }*/
 
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
-		return setEL(pc,propertyName.toString(),value);
+		Dispatch.put(dispatch,propertyName.getString(),value);
+		return value;
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String propertyName, Object value) {
+    /*public Object setEL(PageContext pc, String propertyName, Object value) {
 		Dispatch.put(dispatch,propertyName,value);
 		return value;
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
-		return setEL(pc, propertyName.toString(), value);
+		Dispatch.put(dispatch,propertyName.getString(),value);
+		return value;
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
-    public Object call(PageContext pc, String methodName, Object[] args) throws PageException {
+    /*public Object call(PageContext pc, String methodName, Object[] args) throws PageException {
         Object[] arr=new Object[args.length];
 		for(int i=0;i<args.length;i++) {
 			if(args[i] instanceof COMObject)arr[i]=((COMObject)args[i]).dispatch;
 			else arr[i]=args[i];
 		}	
 		return COMUtil.toObject(this,Dispatch.callN(dispatch,methodName,arr),methodName);
-    }
+    }*/
 
-	public Object call(PageContext pc, Collection.Key methodName, Object[] arguments) throws PageException {
-		return call(pc, methodName.getString(), arguments) ;
+	@Override
+    public Object call(PageContext pc, Collection.Key key, Object[] args) throws PageException {
+		String methodName=key.getString();
+		Object[] arr=new Object[args.length];
+		for(int i=0;i<args.length;i++) {
+			if(args[i] instanceof COMObject)arr[i]=((COMObject)args[i]).dispatch;
+			else arr[i]=args[i];
+		}	
+		return COMUtil.toObject(this,Dispatch.callN(dispatch,methodName,arr),methodName);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
-    public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
-//      TODO gibt es hier eine bessere möglichkeit?
+    /*public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
+    	// TODO gibt es hier eine bessere moeglichkeit?
         Iterator<Object> it = args.valueIterator();
     	List<Object> values=new ArrayList<Object>();
         while(it.hasNext()) {
             values.add(it.next());
         }   
-        return call(pc,methodName,values.toArray(new Object[values.size()]));
-    }
+        return call(pc,KeyImpl.init(methodName),values.toArray(new Object[values.size()]));
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
-	 */
-	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
-		return callWithNamedValues(pc, methodName.getString(), args);
+	@Override
+	public Object callWithNamedValues(PageContext pc, Collection.Key key, Struct args) throws PageException {
+		String methodName=key.getString();
+		Iterator<Object> it = args.valueIterator();
+    	List<Object> values=new ArrayList<Object>();
+        while(it.hasNext()) {
+            values.add(it.next());
+        }   
+        return call(pc,KeyImpl.init(methodName),values.toArray(new Object[values.size()]));
 	}
 
-    /* *
-     * @see railo.runtime.reflection.wrapper.ObjectWrapper#getEmbededObject()
-     * /
-    public Object getEmbededObject() throws PageException {
-        return dispatch;
-    }*/
-
-    /* *
-     * @see railo.runtime.reflection.wrapper.ObjectWrapper#getEmbededObjectEL()
-     * /
-    public Object getEmbededObjectEL() {
-        return dispatch;
-    }*/
-
-    /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
     public boolean isInitalized() {
         return true;
     }
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table = new DumpTable("com","#ff3300","#ff9966","#660000");
 		table.appendRow(1,new SimpleDumpData("COM Object"),new SimpleDumpData(name));
 		return table;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a String");
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
+    @Override
     public String castToString(String defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a number");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
@@ -254,37 +212,26 @@ public final class COMObject implements Objects, Iteratorable {
         dispatch.safeRelease();
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Com Object with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Com Object with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Com Object with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Com Object with a String");
 	}
     
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
 	public Iterator iterator() {
 		return valueIterator();
 	}
