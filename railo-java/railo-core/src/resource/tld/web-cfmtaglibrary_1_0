@@ -8239,6 +8239,16 @@ Railo uses the number of characters in the file.</description>
 			<description>used to a address this loop from a "break" or "continue" statement (instead of the nearest one).</description>
 		</attribute>
 		
+		
+		<attribute>
+			<type>numeric</type>
+			<name>times</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		    <status>implemented</status>
+			<description>used for a simple loop that is looping n times</description>
+		</attribute>
+		
 	</tag>
 	<!-- Mail -->
 	<tag>
