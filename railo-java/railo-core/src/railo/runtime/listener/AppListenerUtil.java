@@ -179,7 +179,7 @@ public final class AppListenerUtil {
 	public static DataSource[] toDataSources(Object o,DataSource[] defaultValue) {
 		try {
 			return toDataSources(o);
-		} catch (Throwable t) {t.printStackTrace();
+		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
