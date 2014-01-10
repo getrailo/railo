@@ -169,11 +169,11 @@ public final class Application extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setDatasource(Object datasource) throws PageException {
-		this.datasource = ModernApplicationContext.toDefaultDatasource(datasource);
+		this.datasource = AppListenerUtil.toDefaultDatasource(datasource);
 	}
 	
 	public void setDefaultdatasource(Object defaultdatasource) throws PageException {
-		this.defaultdatasource =  ModernApplicationContext.toDefaultDatasource(defaultdatasource);
+		this.defaultdatasource =  AppListenerUtil.toDefaultDatasource(defaultdatasource);
 	}
 	
 	public void setDatasources(Struct datasources) {
