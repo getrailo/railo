@@ -39,6 +39,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -179,7 +180,7 @@ public final class AppListenerUtil {
 	public static DataSource[] toDataSources(Object o,DataSource[] defaultValue) {
 		try {
 			return toDataSources(o);
-		} catch (Throwable t) {t.printStackTrace();
+		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
@@ -417,7 +418,11 @@ public final class AppListenerUtil {
 		
 		// datasource
 		Object o = sct.get(KeyConstants._datasource,null);
-		if(o!=null) ac.setORMDatasource(Caster.toString(o));
+		
+		if(o!=null) {
+			o=toDefaultDatasource(o);
+			if(o!=null) ((ApplicationContextPro)ac).setORMDataSource(o);
+		}
 	}
 	
 	
@@ -498,6 +503,34 @@ public final class AppListenerUtil {
 		int ls=translateLoginStorage(strLoginStorage, -1);
 		if(ls!=-1) return ls;
 	    throw new ApplicationException("invalid loginStorage definition ["+strLoginStorage+"], valid values are [session,cookie]");
+	}
+	
+	public static Object toDefaultDatasource(Object o) throws PageException {
+		if(Decision.isStruct(o)) {
+			Struct sct=(Struct) o;
+			
+			// fix for Jira ticket RAILO-1931
+			if(sct.size()==1) {
+				Key[] keys = CollectionUtil.keys(sct);
+				if(keys.length==1 && keys[0].equalsIgnoreCase(KeyConstants._name)) {
+					return Caster.toString(sct.get(KeyConstants._name));
+				}
+			}
+			
+			try {
+				return AppListenerUtil.toDataSource("__default__",sct);
+			} 
+			catch (PageException pe) { 
+				// again try fix for Jira ticket RAILO-1931
+				String name= Caster.toString(sct.get(KeyConstants._name,null),null);
+				if(!StringUtil.isEmpty(name)) return name;
+				throw pe;
+			}
+			catch (ClassException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return Caster.toString(o);
 	}
 }
 
