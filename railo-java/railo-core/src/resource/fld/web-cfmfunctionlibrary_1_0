@@ -8,24 +8,6 @@
 	<display-name>Railo Core Function Library</display-name>
 	<description>All build in Functions of Railo</description>
 	
-
-	<!-- AnalyzeSmartEntries -->
-	<function>
-		<name>AnalyzeSmartEntries</name>
-		<class>railo.runtime.functions.other.AnalyzeSmartEntries</class>
-		<description></description>
-		<status>hidden</status>
-		<!-- <argument>
-			<name>number</name>
-			<type>number</type>
-			<required>Yes</required>
-			<description>Number to find the absolute value of</description>
-		</argument> -->
-		<return>
-			<type>any</type>
-		</return>
-	</function>
-	
 	<!-- abs -->
 	<function>
 		<name>abs</name>
@@ -41,6 +23,7 @@
 			<type>number</type>
 		</return>
 	</function>
+	
 	<!-- aCos -->
 	<function>
 		<name>aCos</name>
@@ -2308,9 +2291,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>createTimeSpan</name>
 		<class>railo.runtime.functions.dateTime.CreateTimeSpan</class>
-		<description>Creates a date/time object that defines a time period. You
-        can add or subtract it from other date/time objects and use
-        it with the cachedWithin attribute of cfquery.</description>
+		<description>Creates a timespan object that defines a time period. You
+        can use it with the cachedWithin attribute cffunction, cfinclude, cfquery </description>
 		<argument>
 			<name>days</name>
 			<type>number</type>

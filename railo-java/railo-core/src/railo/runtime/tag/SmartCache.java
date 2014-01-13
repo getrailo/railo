@@ -1,0 +1,210 @@
+package railo.runtime.tag;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.Util;
+import railo.runtime.PageContext;
+import railo.runtime.cache.tag.smart.Analyzer;
+import railo.runtime.cache.tag.smart.SmartCacheHandler;
+import railo.runtime.config.ConfigServer;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageException;
+import railo.runtime.ext.tag.TagSupport;
+import railo.runtime.listener.ApplicationContext;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Struct;
+import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.TimeSpan;
+
+// MUST change behavior of multiple headers now is a array, it das so?
+
+/**
+* Lets you execute HTTP POST and GET operations on files. Using cfhttp, you can execute standard 
+*   GET operations and create a query object from a text file. POST operations lets you upload MIME file 
+*   types to a server, or post cookie, formfield, URL, file, or CGI variables directly to a specified server.
+*
+*
+*
+* 
+**/
+public final class SmartCache extends TagSupport {
+
+	private static final short ACTION_ANALYZE=1;
+	private static final short ACTION_SET_RULE=2;
+	private static final short ACTION_REMOVE_RULE=4;
+	private static final short ACTION_CLEAR_RULES=8;
+	private static final short ACTION_GET_RULES=16;
+	private static final short ACTION_INFO=32;
+	private static final short ACTION_START=64;
+	private static final short ACTION_STOP=128;
+	
+	
+	private String returnVariable="smart";
+	private short action=ACTION_ANALYZE;
+
+
+	private Object entryHash;
+	private Object timespan;
+	
+	/**
+	* @see javax.servlet.jsp.tagext.Tag#release()
+	*/
+	public void release()	{
+		super.release();
+		returnVariable="smart";
+		action=ACTION_ANALYZE;
+		entryHash=null;
+		timespan=null;
+	}
+
+	public void setAction(String strAction) throws ApplicationException {
+		if(Util.isEmpty(strAction,true)) return;
+		strAction=strAction.trim().toLowerCase();
+		if(strAction.equals("analyze"))
+			action=ACTION_ANALYZE;
+		else if(strAction.equals("setrule"))
+			action=ACTION_SET_RULE;
+		else if(strAction.equals("clearrules"))
+			action=ACTION_CLEAR_RULES;
+		else if(strAction.equals("removerule"))
+			action=ACTION_REMOVE_RULE;
+		else if(strAction.equals("getrules"))
+			action=ACTION_GET_RULES;
+		else if(strAction.equals("info"))
+			action=ACTION_INFO;
+		else if(strAction.equals("start"))
+			action=ACTION_START;
+		else if(strAction.equals("stop"))
+			action=ACTION_STOP;
+		else
+			throw new ApplicationException("invalid action ["+strAction+"], valid actions are [analyze, setRule, removeRule, clearRules, getRules, info, start, stop]"); 
+		
+	}
+
+	public void setReturnvariable(String var) {
+		if(Util.isEmpty(var,true)) return;
+		returnVariable=var.trim();
+		
+	}
+	
+	public void setEntryhash(Object entryHash) {
+		this.entryHash=entryHash;
+		
+	}
+	public void setTimespan(Object timespan) {
+		this.timespan=timespan;
+	}
+
+
+	@Override
+	public int doStartTag() throws PageException {
+		if(action==ACTION_ANALYZE) doAnalyze();
+		else if(action==ACTION_SET_RULE) doSetRule();
+		else if(action==ACTION_REMOVE_RULE) doRemoveRule();
+		else if(action==ACTION_CLEAR_RULES) doClearRules();
+		else if(action==ACTION_GET_RULES) doGetRules();
+		else if(action==ACTION_INFO) doInfo();
+		else if(action==ACTION_START) doStart();
+		else if(action==ACTION_STOP) doStop();
+		
+		// START
+		return SKIP_BODY;
+	}
+
+	private void doInfo() throws PageException {
+		pageContext.setVariable(returnVariable, SmartCacheHandler.info());
+	}
+
+	private void doGetRules() throws PageException {
+		pageContext.setVariable(returnVariable, SmartCacheHandler.getRules());
+	}
+
+	private void doStart() {
+		SmartCacheHandler.start();
+	}
+	private void doStop() {
+		SmartCacheHandler.stop();
+	}
+
+	private void doClearRules() {
+		SmartCacheHandler.clearRules();
+	}
+
+	private void doRemoveRule() throws PageException {
+		String[] hashes=getEntryHashes();
+		
+		for(int i=0;i<hashes.length;i++){
+			SmartCacheHandler.removeRule(hashes[i]);
+		}
+	}
+
+	private void doSetRule() throws PageException {
+		Pair[] pairs=getPairs();
+		for(int i=0;i<pairs.length;i++){
+			SmartCacheHandler.setRule(pairs[i].entryHash,pairs[i].timespan);
+		}
+	}
+
+	private void doAnalyze() throws PageException {
+		pageContext.setVariable(returnVariable, Analyzer.analyze());
+	}
+	
+	private static class Pair{
+
+		private TimeSpan timespan;
+		private String entryHash;
+
+		public Pair(String entryHash, TimeSpan timespan) {
+			this.entryHash=entryHash;
+			this.timespan=timespan;
+		}
+
+		
+	}
+	
+	
+	private Pair[] getPairs() throws PageException {
+		Pair[] pairs;
+		if(Decision.isArray(entryHash)) {
+			Object[] naEntryHash = Caster.toNativeArray(entryHash);
+			Object[] naTimspan = Caster.toNativeArray(timespan);
+			if(naEntryHash.length!=naTimspan.length)
+				throw new ApplicationException("entry hash array and timespan array has not the same length.");
+			
+			pairs=new Pair[naEntryHash.length];
+			for(int i=0;i<naEntryHash.length;i++){
+				
+				pairs[i]=new Pair(Caster.toString(naEntryHash[i]),Caster.toTimespan(naTimspan[i]));
+			}
+		}
+		else {
+			pairs=new Pair[]{new Pair(Caster.toString(entryHash),Caster.toTimespan(timespan))};
+			
+		}
+		return pairs;
+	}
+	
+	private String[] getEntryHashes() throws PageException {
+		String[] hashes;
+		if(Decision.isArray(entryHash)) {
+			Object[] naEntryHash = Caster.toNativeArray(entryHash);
+			
+			hashes=new String[naEntryHash.length];
+			for(int i=0;i<naEntryHash.length;i++){
+				hashes[i]=Caster.toString(naEntryHash[i]);
+			}
+		}
+		else {
+			hashes=new String[]{Caster.toString(entryHash)};
+			
+		}
+		return hashes;
+	}
+
+}

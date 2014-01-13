@@ -1,4 +1,4 @@
-package railo.runtime.functions.other;
+package railo.runtime.cache.tag.smart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.commons.lang.types.RefInteger;
@@ -16,20 +15,22 @@ import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.cache.tag.smart.SmartEntry;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
-import railo.runtime.functions.other.AnalyzeSmartEntries.Result;
+import railo.runtime.op.Caster;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
-public class AnalyzeSmartEntries extends BIF {
+public class Analyzer {
 	
 
-    public synchronized static Object call(PageContext pc ) {
+    public synchronized static Query analyze() {
 		// TODO input boundries
     	RefInteger counter=new RefIntegerImpl(0);
     	Map<String, SmartEntry> entries = SmartCacheHandler.entries;
-    	Map<String,Entry> data=new HashMap<String, AnalyzeSmartEntries.Entry>();
+    	Map<String,Entry> data=new HashMap<String, Analyzer.Entry>();
     	{
 	    	Iterator<SmartEntry> it = entries.values().iterator();
 	    	SmartEntry se;
@@ -47,14 +48,14 @@ public class AnalyzeSmartEntries extends BIF {
     	}
     	Query qry=new QueryImpl(
     			new String[]{
-    					"entryhash","resulthash","template",
+    					"name","entryhash","resulthash","template",
     					"line","typeid","meta","dependency",
-    					"totalExecutionTime","timeUnchanged","count"}, counter.toInt(), "query");
+    					"totalExecutionTime","executionTimes","createTimes","timeUnchanged","calls","payload"}, counter.toInt(), "query");
     	int row=0;
-    	Iterator<Map.Entry<String, railo.runtime.functions.other.AnalyzeSmartEntries.Entry>> it = data.entrySet().iterator();
-    	Map.Entry<String, railo.runtime.functions.other.AnalyzeSmartEntries.Entry> e;
+    	Iterator<Map.Entry<String, Analyzer.Entry>> it = data.entrySet().iterator();
+    	Map.Entry<String, Analyzer.Entry> e;
     	String eh,rh;
-    	railo.runtime.functions.other.AnalyzeSmartEntries.Entry entry;
+    	Analyzer.Entry entry;
     	Iterator<Map.Entry<String, Result>> iit;
     	Map.Entry<String, Result> ee;
     	Result res;
@@ -71,16 +72,20 @@ public class AnalyzeSmartEntries extends BIF {
     			row++;
     			qry.setAtEL("entryhash", row, eh);
     			qry.setAtEL("resulthash", row, rh);
+    			qry.setAtEL("name", row, entry.name);
     			qry.setAtEL("template", row, entry.template);
     			qry.setAtEL("line", row, entry.line);
     			qry.setAtEL("typeid", row, entry.typeId);
     			qry.setAtEL("meta", row, entry.meta);
     			qry.setAtEL("dependency", row, dependency(res));
     			qry.setAtEL("totalExecutionTime", row, res.totalExecution);
+    			qry.setAtEL("executionTimes", row, toArray(res.executionTimes));
+    			qry.setAtEL("createTimes", row, toArray(res.createTimes));
     			qry.setAtEL("timeUnchanged", row, res.lastExecution-res.firstExecution);
-    			qry.setAtEL("count", row, res.executionTimes.size());
+    			qry.setAtEL("calls", row, res.executionTimes.size());
+    			qry.setAtEL("payload", row, Caster.toDouble(res.payLoad));
     			
-    			
+
     		}
     	}
     	
@@ -89,6 +94,17 @@ public class AnalyzeSmartEntries extends BIF {
 	}
 	
 	
+
+	private static Array toArray(List list) {
+		ArrayImpl arr = new ArrayImpl();
+		Iterator it = list.iterator();
+		while(it.hasNext()){
+			arr.add(it.next());
+		}
+		return arr;
+	}
+
+
 
 	private static String dependency(Result res) {
 		if(res.cfids.size()==1) return "session";
@@ -99,7 +115,7 @@ public class AnalyzeSmartEntries extends BIF {
 	
 	static class Entry {
 		
-		public final Map<String,Result> data=new HashMap<String, AnalyzeSmartEntries.Result>();
+		public final Map<String,Result> data=new HashMap<String, Analyzer.Result>();
     	
 		public final String name; 
 		public final String meta; 
@@ -163,12 +179,4 @@ public class AnalyzeSmartEntries extends BIF {
 		}
 		
 	}
-	
-	
-
-	@Override
-	public Object invoke(PageContext pc, Object[] args) throws PageException {
-		return call(pc);
-	}
-
 }
