@@ -637,11 +637,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private Object executeORM(SQL sql, int returnType, Struct ormoptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pageContext);
 		
-		DataSource ds;
 		String dsn = Caster.toString(ormoptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pageContext);
-		else ds=((PageContextImpl)pageContext).getDataSource(dsn);
-		
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pageContext).getName();
 		
 		// params
 		SQLItem[] _items = sql.getItems();
@@ -658,7 +655,7 @@ offset: Specifies the start index of the resultset from where it has to start th
 cacheable: Whether the result of this query is to be cached in the secondary cache. Default is false.
 cachename: Name of the cache in secondary cache.
 		 */
-		Object res = session.executeQuery(pageContext,ds,sql.getSQLString(),params,unique,ormoptions);
+		Object res = session.executeQuery(pageContext,dsn,sql.getSQLString(),params,unique,ormoptions);
 		if(returnType==RETURN_TYPE_ARRAY_OF_ENTITY) return res;
 		return session.toQuery(pageContext, res, null);
 		
@@ -666,18 +663,16 @@ cachename: Name of the cache in secondary cache.
 	
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		DataSource ds;
 		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pc);
-		else ds=((PageContextImpl)pc).getDataSource(dsn);
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pc).getName();
 		
 		
 		if(Decision.isCastableToArray(params))
-			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))
-			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toStruct(params),unique,queryOptions);
 		else
-			return session.executeQuery(pc,ds,hql,(Array)params,unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,(Array)params,unique,queryOptions);
 	}
 	
 

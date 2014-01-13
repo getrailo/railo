@@ -15,7 +15,6 @@ import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
-import railo.runtime.db.DataSource;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
@@ -468,13 +467,13 @@ public class HibernateCaster {
 
 	private static Query populateQuery(PageContext pc,HibernateORMSession session,Component cfc,Query qry) throws PageException {
 		Property[] properties = CommonUtil.getProperties(cfc,true,true,false,false);
-		DataSource ds = ORMUtil.getDataSource(pc, cfc);
+		String dsn = ORMUtil.getDataSourceName(pc, cfc);
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 		
 		// init
 		if(qry==null){
-			SessionFactory factory = session.getRawSessionFactory(ds);
+			SessionFactory factory = session.getRawSessionFactory(dsn);
 			ClassMetadata md = factory.getClassMetadata(getEntityName(cfc));
 			Array names=CommonUtil.createArray();
 			Array types=CommonUtil.createArray();

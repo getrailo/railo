@@ -42,27 +42,29 @@ import railo.runtime.orm.ORMTransaction;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.scope.Argument;
 
 public class HibernateORMSession implements ORMSession {
 
-	//private Session _session;
-	//private DatasourceConnection dc;
 	private SessionFactoryData data;
-	private DataSource[] sources;
+	//private DataSource[] sources;
 	private DatasourceConnection[] connections;
-	private Map<DataSource,Session> _sessions=new HashMap<DataSource, Session>();
+	//private Map<DataSource,Session> _sessions=new HashMap<DataSource, Session>();
+	
+	//private Map<Key,DataSource> _sources=new HashMap<Key, DataSource>();
+	private Map<Key,Session> _sessions=new HashMap<Key, Session>();
 
 	public HibernateORMSession(PageContext pc,SessionFactoryData data) throws PageException{
 		this.data=data;
 		//this.dc=dc;
-		sources = data.getDataSources();
+		DataSource[] sources = data.getDataSources();
 		connections=new DatasourceConnection[sources.length];
 		
 		for(int i=0;i<sources.length;i++){
 			connections[i]=CommonUtil.getDatasourceConnection(pc, sources[i]);
-			resetSession(data.getFactory(sources[i]),connections[i]);
+			resetSession(data.getFactory(KeyImpl.init(sources[i].getName())),connections[i]);
 		}
 	}
 	
@@ -70,28 +72,34 @@ public class HibernateORMSession implements ORMSession {
 		return _session;
 	}*/
 
-	private Session getSession(DataSource ds) throws PageException{
-		Session s = _sessions.get(ds);
-		if(s!=null) return s;
-		throw ExceptionUtil.createException(data, null, "there is no Session for the datasource ["+ds.getName()+"]",null);
+	private Session getSession(Key datasSourceName) throws PageException{
+		Session s = _sessions.get(datasSourceName);
+		if(s!=null) return s; 
+		
+		railo.commons.lang.ExceptionUtil.similarKeyMessage(
+				_sessions.keySet().toArray(new Key[_sessions.size()])
+				,datasSourceName.getString(),"datasource","datasources",true);
+		
+		throw ExceptionUtil.createException(data, null, "there is no Session for the datasource ["+datasSourceName+"]",null);
 	}
 	
 	public SessionFactoryData getSessionFactoryData(){
 		return data;
 	}
-	SessionFactory getSessionFactory(DataSource ds) throws PageException{
-		Session s = getSession(ds);
+	SessionFactory getSessionFactory(Key datasSourceName) throws PageException{
+		Session s = getSession(datasSourceName);
 		return s.getSessionFactory();
 	}
 
 	
-	void resetSession(PageContext pc,SessionFactory factory, DataSource ds) throws PageException { 
+	void resetSession(PageContext pc,SessionFactory factory, Key dataSourceName, SessionFactoryData data) throws PageException { 
 		for(int i=0;i<connections.length;i++){
-			if(connections[i].getDatasource().equals(ds)) {
+			if(dataSourceName.equals(connections[i].getDatasource().getName())) {
 				resetSession(factory, connections[i]);
 				return;
 			}
 		}
+		DataSource ds = data.getDataSource(dataSourceName);
 		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds);
 		try{
 			resetSession(factory, dc);
@@ -104,7 +112,7 @@ public class HibernateORMSession implements ORMSession {
 	void resetSession(SessionFactory factory, DatasourceConnection dc) { 
 		_sessions.clear();
 		Session session;
-		_sessions.put(dc.getDatasource(), session=factory.openSession(dc.getConnection()));
+		_sessions.put(KeyImpl.init(dc.getDatasource().getName()), session=factory.openSession(dc.getConnection()));
 		session.setFlushMode(FlushMode.MANUAL);
 	}
 
@@ -139,26 +147,27 @@ public class HibernateORMSession implements ORMSession {
 		if(CommonUtil.isArray(obj)){
 			
 			// convert to a usable structure
-			Map<DataSource,List<Component>> cfcs=new HashMap<DataSource, List<Component>>();
+			Map<Key,List<Component>> cfcs=new HashMap<Key, List<Component>>();
 			{
 				Array arr = CommonUtil.toArray(obj);
 				Iterator<?> it = arr.valueIterator();
 				Component cfc;
-				DataSource ds;
+				
+				Key dsn;
 				List<Component> list;
 				while(it.hasNext()){
 					cfc = HibernateCaster.toComponent(it.next());
-					ds = ORMUtil.getDataSource(pc, cfc);
-					list = cfcs.get(ds);
-					if(list==null)cfcs.put(ds, list=new ArrayList<Component>());
+					dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
+					list = cfcs.get(dsn);
+					if(list==null)cfcs.put(dsn, list=new ArrayList<Component>());
 					list.add(cfc);
 				}
 			}
 			
 			
-			Iterator<Entry<DataSource, List<Component>>> it = cfcs.entrySet().iterator();
+			Iterator<Entry<Key, List<Component>>> it = cfcs.entrySet().iterator();
 			while(it.hasNext()){
-				Entry<DataSource, List<Component>> e = it.next();
+				Entry<Key, List<Component>> e = it.next();
 				Transaction trans = getSession(e.getKey()).getTransaction();
 				if(trans.isActive()) trans.begin();
 				else trans=null;
@@ -179,11 +188,11 @@ public class HibernateORMSession implements ORMSession {
 		else _delete(pc,HibernateCaster.toComponent(obj),null);
 	}
 	
-	public void _delete(PageContext pc, Component cfc, DataSource ds) throws PageException {
-		if(ds==null)ds = ORMUtil.getDataSource(pc, cfc);
+	public void _delete(PageContext pc, Component cfc, Key dsn) throws PageException {
+		if(dsn==null)dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
 		data.checkExistent(pc,cfc);
 		try{
-			getSession(ds).delete(HibernateCaster.getEntityName(cfc), cfc);
+			getSession(dsn).delete(HibernateCaster.getEntityName(cfc), cfc);
 		}
 		catch(Throwable t){
 			throw CommonUtil.toPageException(t);
@@ -196,9 +205,10 @@ public class HibernateORMSession implements ORMSession {
 	public void save(PageContext pc, Object obj,boolean forceInsert) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
 		String name = HibernateCaster.getEntityName(cfc);
-		DataSource ds = ORMUtil.getDataSource(pc, cfc);
+		Key dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
+		
 		try {
-			Session session = getSession(ds);
+			Session session = getSession(dsn);
 			if(forceInsert)
 				session.save(name, cfc);
 			else
@@ -212,9 +222,9 @@ public class HibernateORMSession implements ORMSession {
 	@Override
 	public void reload(PageContext pc,Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
-		DataSource ds = ORMUtil.getDataSource(pc, cfc);
+		Key dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
 		data.checkExistent(pc,cfc);
-		getSession(ds).refresh(cfc);
+		getSession(dsn).refresh(cfc);
 	}
 	
 
@@ -230,8 +240,8 @@ public class HibernateORMSession implements ORMSession {
 			it.next().clear();
 		}
 	}
-	public void clear(PageContext pc, DataSource ds) throws PageException {
-		getSession(ds).clear();
+	public void clear(PageContext pc, Key dataSourceName) throws PageException {
+		getSession(dataSourceName).clear();
 	}
 	
 	@Override
@@ -282,27 +292,29 @@ public class HibernateORMSession implements ORMSession {
 	}
 
 	@Override
-	public Object executeQuery(PageContext pc, DataSource ds,String hql, Array params, boolean unique,Struct queryOptions) throws PageException {
-		return _executeQuery(pc, ds,hql, params, unique, queryOptions);
+	public Object executeQuery(PageContext pc, String dataSourceName,String hql, Array params, boolean unique,Struct queryOptions) throws PageException {
+		return _executeQuery(pc, dataSourceName,hql, params, unique, queryOptions);
 	}
 
 	@Override
-	public Object executeQuery(PageContext pc,DataSource ds, String hql, Struct params, boolean unique,Struct queryOptions) throws PageException {
-		return _executeQuery(pc, ds,hql, params, unique, queryOptions);
+	public Object executeQuery(PageContext pc,String dataSourceName, String hql, Struct params, boolean unique,Struct queryOptions) throws PageException {
+		return _executeQuery(pc, dataSourceName,hql, params, unique, queryOptions);
 	}
 	
-	public Object _executeQuery(PageContext pc, DataSource ds,String hql, Object params, boolean unique,Struct queryOptions) throws PageException {
-		if(ds==null)ds=ORMUtil.getDataSource(pc);
+	private Object _executeQuery(PageContext pc, String dataSourceName,String hql, Object params, boolean unique,Struct queryOptions) throws PageException {
+		Key dsn;
+		if(dataSourceName==null)dsn=KeyImpl.init(ORMUtil.getDataSource(pc).getName());
+		else dsn=KeyImpl.init(dataSourceName);
 		
-		Session s=getSession(ds);
+		Session s=getSession(dsn);
 		try{
-			return __executeQuery(pc,s,ds, hql, params, unique, queryOptions);
+			return __executeQuery(pc,s,dsn, hql, params, unique, queryOptions);
 		}
 		catch(QueryException qe) {
 			// argument scope is array and struct at the same time, by default it is handled as struct, if this fails try it as array
 			if(params instanceof Argument) {
 				try{
-					return __executeQuery(pc, s, ds, hql, CommonUtil.toArray((Argument)params), unique, queryOptions);
+					return __executeQuery(pc, s, dsn, hql, CommonUtil.toArray((Argument)params), unique, queryOptions);
 				}
 				catch(Throwable t){t.printStackTrace();}
 			}
@@ -311,7 +323,7 @@ public class HibernateORMSession implements ORMSession {
 		
 	}
 	
-	private Object __executeQuery(PageContext pc, Session session,DataSource ds,String hql, Object params, boolean unique,Struct options) throws PageException {
+	private Object __executeQuery(PageContext pc, Session session,Key dsn,String hql, Object params, boolean unique,Struct options) throws PageException {
 		//Session session = getSession(pc,null);
 		hql=hql.trim();
 		org.hibernate.Query query = session.createQuery(hql); 
@@ -350,7 +362,7 @@ public class HibernateORMSession implements ORMSession {
 		
 		// params
 		if(params!=null){
-			QueryPlanCache cache=data.getQueryPlanCache(ds);
+			QueryPlanCache cache=data.getQueryPlanCache(dsn);
 			HQLQueryPlan plan = cache.getHQLQueryPlan(hql, false, java.util.Collections.EMPTY_MAP);
 			ParameterMetadata meta = plan.getParameterMetadata();
 			Type type;
@@ -487,7 +499,7 @@ public class HibernateORMSession implements ORMSession {
 		
 		String name=HibernateCaster.getEntityName(cfc);
 		
-		return CommonUtil.toComponent(getSession(info.getDataSource()).merge(name, cfc));
+		return CommonUtil.toComponent(getSession(KeyImpl.init(info.getDataSource().getName())).merge(name, cfc));
 	}
 	
 
@@ -530,8 +542,8 @@ public class HibernateORMSession implements ORMSession {
 		
 		
 		Component cfc=data.getEngine().create(pc, this,cfcName,false);
-		DataSource ds = ORMUtil.getDataSource(pc, cfc);
-		Session sess = getSession(ds);
+		Key dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
+		Session sess = getSession(dsn);
 		String name = HibernateCaster.getEntityName(cfc);
 		Object obj=null;
 		try{
@@ -564,10 +576,10 @@ public class HibernateORMSession implements ORMSession {
 	
 	private Object loadByExample(PageContext pc, Object obj,  boolean unique) throws PageException {
 		Component cfc=HibernateCaster.toComponent(obj);
-		DataSource ds = ORMUtil.getDataSource(pc, cfc);
+		Key dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
 		ComponentScope scope = cfc.getComponentScope();
 		String name=HibernateCaster.getEntityName(cfc);
-		Session sess = getSession(ds);
+		Session sess = getSession(dsn);
 		Object rtn=null;
 
 		try{
@@ -608,8 +620,8 @@ public class HibernateORMSession implements ORMSession {
 	
 	private Object load(PageContext pc, String cfcName, Struct filter, Struct options, String order, boolean unique) throws PageException {
 		Component cfc=data.getEngine().create(pc, this,cfcName,false);
-		DataSource ds = ORMUtil.getDataSource(pc, cfc);
-		Session sess = getSession(ds);
+		Key dsn = KeyImpl.init(ORMUtil.getDataSourceName(pc, cfc));
+		Session sess = getSession(dsn);
 
 		String name = HibernateCaster.getEntityName(cfc);
 		ClassMetadata metaData = null;
@@ -717,13 +729,13 @@ public class HibernateORMSession implements ORMSession {
 	
 
 	@Override
-	public Session getRawSession(DataSource ds) throws PageException {
-		return getSession(ds);
+	public Session getRawSession(String dsn) throws PageException {
+		return getSession(KeyImpl.init(dsn));
 	}
 	
 	@Override
-	public SessionFactory getRawSessionFactory(DataSource ds) throws PageException {
-		return getSession(ds).getSessionFactory();
+	public SessionFactory getRawSessionFactory(String dsn) throws PageException {
+		return getSession(KeyImpl.init(dsn)).getSessionFactory();
 	}
 
 	@Override
@@ -743,8 +755,8 @@ public class HibernateORMSession implements ORMSession {
 	}
 
 	@Override
-	public ORMTransaction getTransaction(DataSource ds,boolean autoManage) throws PageException {
-		return new HibernateORMTransaction(getSession(ds),autoManage);
+	public ORMTransaction getTransaction(String dsn,boolean autoManage) throws PageException {
+		return new HibernateORMTransaction(getSession(KeyImpl.init(dsn)),autoManage);
 	}
 	
 	@Override
@@ -755,6 +767,6 @@ public class HibernateORMSession implements ORMSession {
 
 	@Override
 	public DataSource[] getDataSources() {
-		return sources;
+		return data.getDataSources();
 	} 
 }

@@ -39,7 +39,7 @@ public class ORMConnection implements Connection {
 	public ORMConnection(PageContext pc,ORMSession session, DataSource ds) throws PageException {
 		this.session=session;
 		this.ds=ds;
-		trans = session.getTransaction(ds,session.getEngine().getConfiguration(pc).autoManageSession());
+		trans = session.getTransaction(ds.getName(),session.getEngine().getConfiguration(pc).autoManageSession());
 		trans.begin();
 	}
 	

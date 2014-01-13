@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -30,24 +29,22 @@ import railo.runtime.orm.hibernate.naming.DefaultNamingStrategy;
 import railo.runtime.orm.naming.NamingStrategy;
 import railo.runtime.orm.hibernate.naming.SmartNamingStrategy;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.ListUtil;
 
 public class SessionFactoryData {
 
 	public List<Component> tmpList;
-	//private final Map<String, CFCInfo> cfcs=new HashMap<String, CFCInfo>();
-	private final Map<DataSource,Map<String, CFCInfo>> cfcs=new HashMap<DataSource, Map<String,CFCInfo>>();
-	private final Map<DataSource,Configuration> configurations=new HashMap<DataSource,Configuration>();
-	private final Map<DataSource,SessionFactory> factories=new HashMap<DataSource,SessionFactory>();
-	private final Map<DataSource,QueryPlanCache> queryPlanCaches=new HashMap<DataSource,QueryPlanCache>();
+	
+	private final Map<Key,DataSource> sources=new HashMap<Key, DataSource>();
+	private final Map<Key,Map<String, CFCInfo>> cfcs=new HashMap<Key, Map<String,CFCInfo>>();
+	private final Map<Key,Configuration> configurations=new HashMap<Key,Configuration>();
+	private final Map<Key,SessionFactory> factories=new HashMap<Key,SessionFactory>();
+	private final Map<Key,QueryPlanCache> queryPlanCaches=new HashMap<Key,QueryPlanCache>();
 	
 	private final ORMConfiguration ormConf;
-	//private final DataSource datasource;
-	//private Configuration configuration=null;
-	//private SessionFactory factory;
-	
-	//private QueryPlanCache queryPlanCache;
 	private NamingStrategy namingStrategy;
 	private final HibernateORMEngine engine;
 	private Struct tableInfo=CommonUtil.createStruct();
@@ -67,10 +64,10 @@ public class SessionFactoryData {
 		return engine;
 	}
 	
-	public QueryPlanCache getQueryPlanCache(DataSource ds) {
-		QueryPlanCache qpc = queryPlanCaches.get(ds);
+	public QueryPlanCache getQueryPlanCache(Key datasSourceName) {
+		QueryPlanCache qpc = queryPlanCaches.get(datasSourceName);
 		if(qpc==null){
-			queryPlanCaches.put(ds, qpc=new QueryPlanCache((SessionFactoryImplementor) getFactory(ds)));
+			queryPlanCaches.put(datasSourceName, qpc=new QueryPlanCache((SessionFactoryImplementor) getFactory(datasSourceName)));
 		}
 		return qpc;
 	}
@@ -198,23 +195,27 @@ public class SessionFactoryData {
 
 	// Datasource specific
 	public Configuration getConfiguration(DataSource ds){
-		return configurations.get(ds);
+		return configurations.get(KeyImpl.init(ds.getName()));
+	}
+	public Configuration getConfiguration(Key key){
+		return configurations.get(key);
 	}
 
 	public void setConfiguration(Log log,String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
-		configurations.put(dc.getDatasource(),HibernateSessionFactory.createConfiguration(log,mappings,dc,this));
+		configurations.put(KeyImpl.init(dc.getDatasource().getName()),HibernateSessionFactory.createConfiguration(log,mappings,dc,this));
 	}
 
 
-	public void buildSessionFactory(DataSource ds) {
-		Configuration conf = getConfiguration(ds);
+	public void buildSessionFactory(Key datasSourceName) {
+		//Key key=KeyImpl.init(ds.getName());
+		Configuration conf = getConfiguration(datasSourceName);
 		if(conf==null) throw new RuntimeException("cannot build factory because there is no configuration"); // this should never happen
-		factories.put(ds, conf.buildSessionFactory());
+		factories.put(datasSourceName, conf.buildSessionFactory());
 	}
 
-	public SessionFactory getFactory(DataSource ds){
-		SessionFactory factory = factories.get(ds);
-		if(factory==null && getConfiguration(ds)!=null) buildSessionFactory(ds);// this should never be happen
+	public SessionFactory getFactory(Key datasSourceName){
+		SessionFactory factory = factories.get(datasSourceName);
+		if(factory==null && getConfiguration(datasSourceName)!=null) buildSessionFactory(datasSourceName);// this should never be happen
 		return factory;
 	}
 	
@@ -245,9 +246,12 @@ public class SessionFactoryData {
 	// CFC methods
 	public void addCFC(String entityName, CFCInfo info) {
 		DataSource ds = info.getDataSource();
-		Map<String, CFCInfo> map = cfcs.get(ds);
-		if(map==null) cfcs.put(ds, map=new HashMap<String, CFCInfo>());
+		Key dsn=KeyImpl.init(ds.getName());
+				
+		Map<String, CFCInfo> map = cfcs.get(dsn);
+		if(map==null) cfcs.put(dsn, map=new HashMap<String, CFCInfo>());
 		map.put(HibernateUtil.id(entityName), info);
+		sources.put(dsn, ds);
 	}
 	
 
@@ -260,12 +264,19 @@ public class SessionFactoryData {
 		return defaultValue;
 	}
 
-	public Map<DataSource, Map<String, CFCInfo>> getCFCs() {
+	public Map<Key, Map<String, CFCInfo>> getCFCs() {
 		return cfcs;
 	}
 
-	public Map<String, CFCInfo> getCFCs(DataSource ds) {
-		Map<String, CFCInfo> rtn = cfcs.get(ds);
+	/*public Map<String, CFCInfo> getCFCs(DataSource ds) {
+		Key key=KeyImpl.init(ds.getName());
+		Map<String, CFCInfo> rtn = cfcs.get(key);
+		if(rtn==null) return new HashMap<String, CFCInfo>();
+		return rtn;
+	}*/
+	
+	public Map<String, CFCInfo> getCFCs(Key datasSourceName) {
+		Map<String, CFCInfo> rtn = cfcs.get(datasSourceName);
 		if(rtn==null) return new HashMap<String, CFCInfo>();
 		return rtn;
 	}
@@ -284,24 +295,28 @@ public class SessionFactoryData {
 	}
 
 	public DataSource[] getDataSources() {
-		return cfcs.keySet().toArray(new DataSource[cfcs.size()]);
+		return sources.values().toArray(new DataSource[sources.size()]);
 	}
 
 	public void init() {
-		Iterator<DataSource> it = cfcs.keySet().iterator();
+		Iterator<Key> it = cfcs.keySet().iterator();
 		while(it.hasNext()){
 			getFactory(it.next());
 		}
 	}
 	
-	public Map<DataSource, SessionFactory> getFactories() {
-		Iterator<DataSource> it = cfcs.keySet().iterator();
-		Map<DataSource,SessionFactory> map=new HashMap<DataSource, SessionFactory>();
-		DataSource ds;
+	public Map<Key, SessionFactory> getFactories() {
+		Iterator<Key> it = cfcs.keySet().iterator();
+		Map<Key,SessionFactory> map=new HashMap<Key, SessionFactory>();
+		Key key;
 		while(it.hasNext()){
-			ds = it.next();
-			map.put(ds, getFactory(ds));
+			key = it.next();
+			map.put(key, getFactory(key));
 		}
 		return map;
+	}
+
+	public DataSource getDataSource(Key datasSourceName) {
+		return sources.get(datasSourceName);
 	}
 }

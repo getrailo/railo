@@ -154,9 +154,9 @@ public interface ORMSession {
 	
 	public void evictQueries(PageContext pc,String cacheName) throws PageException;
 
-	public Object executeQuery(PageContext pc, DataSource ds,String hql, Array params, boolean unique,Struct queryOptions) throws PageException;
+	public Object executeQuery(PageContext pc, String dataSourceName,String hql, Array params, boolean unique,Struct queryOptions) throws PageException;
 
-	public Object executeQuery(PageContext pc, DataSource ds,String hql, Struct params, boolean unique,Struct queryOptions) throws PageException;
+	public Object executeQuery(PageContext pc, String dataSourceName,String hql, Struct params, boolean unique,Struct queryOptions) throws PageException;
 
 	/**
 	 * close the session
@@ -178,10 +178,10 @@ public interface ORMSession {
 	 */
 	public ORMEngine getEngine();
 	
-	public Object getRawSession(DataSource ds) throws PageException;
-	public Object getRawSessionFactory(DataSource ds) throws PageException;
+	public Object getRawSession(String dataSourceName) throws PageException;
+	public Object getRawSessionFactory(String dataSourceName) throws PageException;
 
-	public ORMTransaction getTransaction(DataSource ds,boolean autoManage) throws PageException;
+	public ORMTransaction getTransaction(String dataSourceName,boolean autoManage) throws PageException;
 
 	public String[] getEntityNames();
 

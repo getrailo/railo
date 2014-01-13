@@ -44,6 +44,7 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.type.Collection.Key;
 
 
 public class HibernateSessionFactory {
@@ -259,11 +260,11 @@ public class HibernateSessionFactory {
     }
 
 
-	public static Map<DataSource,String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
-		Map<DataSource,String> mappings=new HashMap<DataSource,String>();
-		Iterator<Entry<DataSource, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
+	public static Map<Key,String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
+		Map<Key,String> mappings=new HashMap<Key,String>();
+		Iterator<Entry<Key, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
 		while(it.hasNext()){
-			Entry<DataSource, Map<String, CFCInfo>> e = it.next();
+			Entry<Key, Map<String, CFCInfo>> e = it.next();
 			
 			Set<String> done=new HashSet<String>();
 			StringBuilder mapping=new StringBuilder();

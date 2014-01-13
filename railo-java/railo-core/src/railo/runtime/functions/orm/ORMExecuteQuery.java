@@ -40,21 +40,19 @@ public class ORMExecuteQuery {
 	}
 	private static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		DataSource ds;
 		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pc);
-		else ds=((PageContextImpl)pc).getDataSource(dsn);
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pc).getName();
 		
 		if(params==null)
-			return session.executeQuery(pc,ds,hql,new ArrayImpl(),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,new ArrayImpl(),unique,queryOptions);
 		else if(Decision.isStruct(params))
-			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toStruct(params),unique,queryOptions);
 		else if(Decision.isArray(params))
-			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))
-			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toStruct(params),unique,queryOptions);
 		else if(Decision.isCastableToArray(params))
-			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toArray(params),unique,queryOptions);
 		else
 			throw new FunctionException(pc, "ORMExecuteQuery", 2, "params", "cannot convert the params to a array or a struct");
 	}

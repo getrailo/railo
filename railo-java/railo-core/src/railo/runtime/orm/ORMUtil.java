@@ -331,4 +331,15 @@ public class ORMUtil {
 		
 		return getDataSource(pc);
 	}
+	public static String getDataSourceName(PageContext pc, Component cfc) throws PageException {
+		pc=ThreadLocalPageContext.get(pc);
+		
+		// datasource defined with cfc
+		Struct meta = cfc.getMetaData(pc);
+		String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
+		if(!StringUtil.isEmpty(datasourceName,true)) {
+			return datasourceName.trim();
+		}
+		return getDataSource(pc).getName();
+	}
 }
