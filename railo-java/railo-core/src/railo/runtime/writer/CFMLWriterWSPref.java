@@ -13,7 +13,6 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 
 	public static final char CHAR_NL = '\n';
 	public static final char CHAR_RETURN = '\r';
-	public static final char CHAR_SPACE = ' ';
 
 	private static final char CHAR_GT = '>';
 	private static final char CHAR_LT = '<';
