@@ -2277,6 +2277,14 @@ Example:
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>filterDelimiters</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+			Default is the pipe "|" character.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>mode</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -14219,6 +14227,14 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
             whether that item should be included in the result or not.</description>
         </attribute>
+        <attribute>
+            <type>string</type>
+            <name>filterDelimiters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+            Default is the pipe "|" character.</description>
+        </attribute>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -14367,6 +14383,14 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             <description>Optional filter. Can be either a wildcard filter,
             e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
             whether that item should be included in the result or not.</description>
+        </attribute>
+        <attribute>
+            <type>string</type>
+            <name>filterDelimiters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+            Default is the pipe "|" character.</description>
         </attribute>
 		<attribute>
 			<type>string</type>

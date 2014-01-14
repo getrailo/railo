@@ -10,15 +10,15 @@ public class WildcardPatternFilter implements ResourceAndResourceNameFilter {
 	private final WildcardPattern matcher;
 	
 	
-	public WildcardPatternFilter( String patt, boolean ignoreCase ) {
+	public WildcardPatternFilter( String patt, boolean ignoreCase, String patternDelimiters ) {
 		
-		matcher = new WildcardPattern( patt, !ignoreCase );
+		matcher = new WildcardPattern( patt, !ignoreCase, patternDelimiters );
 	}
 	
 	
-	public WildcardPatternFilter( String pattern ) {
+	public WildcardPatternFilter( String pattern, String patternDelimiters ) {
 		
-		this( pattern, SystemUtil.isWindows() );
+		this( pattern, SystemUtil.isWindows(), patternDelimiters );
 	}
 	
 	
