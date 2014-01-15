@@ -1,5 +1,7 @@
 package railo.commons.io.res.util;
 
+import railo.commons.lang.StringUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -26,7 +28,7 @@ public class WildcardPattern {
      * @param isCaseSensitive - if true, does a case-sensitive matching
      * @param isExclude - if true, the filter becomes an Exclude filter so that only items that do not match the pattern are accepted
      */
-    public WildcardPattern( String pattern, boolean isCaseSensitive, boolean isExclude ) {
+    public WildcardPattern( String pattern, boolean isCaseSensitive, boolean isExclude, String delimiters ) {
 
     	if ( pattern.charAt( 0 ) == '!' ) {		// set isExclude to true if the first char of pattern is an exclamation point '!'
     		
@@ -36,8 +38,8 @@ public class WildcardPattern {
     	
         this.pattern = pattern;
         this.isInclude = !isExclude;
-        
-        StringTokenizer tokenizer = new StringTokenizer( pattern, ",;|" );
+
+        StringTokenizer tokenizer = new StringTokenizer( pattern, !StringUtil.isEmpty(delimiters, true) ? delimiters : "|" );
         
         patterns = new ArrayList<ParsedPattern>();
         
@@ -51,10 +53,10 @@ public class WildcardPattern {
     }
     
     
-    /** calls this( pattern, isCaseSensitive, false ); */
-    public WildcardPattern( String pattern, boolean isCaseSensitive ) {
+    /** calls this( pattern, isCaseSensitive, false, delimiters ); */
+    public WildcardPattern( String pattern, boolean isCaseSensitive, String delimiters ) {
     
-        this( pattern, isCaseSensitive, false );
+        this( pattern, isCaseSensitive, false, delimiters );
     }
     
     
