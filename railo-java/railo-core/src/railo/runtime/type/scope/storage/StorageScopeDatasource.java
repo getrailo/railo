@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
@@ -102,7 +103,18 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    
 	    if(query!=null && pc.getConfig().debug()) {
 	    	boolean debugUsage=DebuggerUtil.debugQueryUsage(pc,query);
-	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),pc.getCurrentPageSource(),query.getExecutionTime());
+	    	PageSource ps=null;
+	    	ps=((PageContextImpl)pc).getCurrentPageSource(null);
+	    	
+	    	((DebuggerPro)pc.getDebugger()).addQuery(
+	    			debugUsage?query:null
+	    			,datasourceName
+	    			,""
+	    			,query.getSql()
+	    			,query.getRecordcount()
+	    			,ps
+	    			,query.getExecutionTime()
+	    	);
 	    }
 	    boolean _isNew = query.getRecordcount()==0;
 	    
