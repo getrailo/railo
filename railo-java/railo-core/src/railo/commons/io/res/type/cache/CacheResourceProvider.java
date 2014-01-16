@@ -203,7 +203,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 	}
 	
 
-	private Cache getCache() {
+	public Cache getCache() {
 		Cache c = Util.getDefault(ThreadLocalPageContext.get(),ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
 		if(!inits.contains(c.hashCode())){
 			String k = toKey("null","");

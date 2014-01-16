@@ -8854,7 +8854,7 @@ Each type-value pair must start with a hyphen.</description>
 		<tag-class>railo.runtime.tag.ObjectCache</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
-		<description>Flushes the query cache or returns the current size.</description>
+		<description>Flushes a object cache or returns the current size.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -8864,6 +8864,15 @@ Each type-value pair must start with a hyphen.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>type</name>
+			<values>function,include,object,query,resource,template</values>
+			<default-value>query</default-value>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>cache type to manipulate, query is the default type</description>
 		</attribute>
 		<attribute>
 			<type>object</type>

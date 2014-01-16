@@ -83,8 +83,11 @@ public class TimespanCacheHandler implements CacheHandler {
 
 	@Override
 	public void clear(PageContext pc, CacheHandlerFilter filter) {
+		clear(pc, getCache(pc), filter);
+	}
+	
+	public static void clear(PageContext pc, Cache cache, CacheHandlerFilter filter) {
 		try{
-			Cache cache = getCache(pc);
 			Iterator<CacheEntry> it = cache.entries().iterator();
 			CacheEntry ce;
 			while(it.hasNext()){
