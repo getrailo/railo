@@ -164,7 +164,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Object Cache --->
+				<!--- Query Cache --->
 				<tr>
 					<th scope="row">#stText.setting.queryCache#</th>
 					<td class="fieldPadded">
@@ -179,7 +179,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Component Cache --->
+				<!--- Component Path Cache --->
 				<tr>
 					<th scope="row">#stText.setting.componentCache#</th>
 					<td class="fieldPadded">
@@ -194,7 +194,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Customtag Cache --->
+				<!--- Customtag Path Cache --->
 				<tr>
 					<th scope="row">#stText.setting.ctCache#</th>
 					<td class="fieldPadded">
@@ -208,9 +208,12 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
+				
+				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">
 				</cfif>
+				
 			</tbody>
 			<cfif hasAccess>
 				<tfoot>
