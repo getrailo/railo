@@ -103,18 +103,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    
 	    if(query!=null && pc.getConfig().debug()) {
 	    	boolean debugUsage=DebuggerUtil.debugQueryUsage(pc,query);
-	    	PageSource ps=null;
-	    	ps=((PageContextImpl)pc).getCurrentPageSource(null);
-	    	
-	    	((DebuggerPro)pc.getDebugger()).addQuery(
-	    			debugUsage?query:null
-	    			,datasourceName
-	    			,""
-	    			,query.getSql()
-	    			,query.getRecordcount()
-	    			,ps
-	    			,query.getExecutionTime()
-	    	);
+	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),((PageContextImpl)pc).getCurrentPageSource(null),query.getExecutionTime());
 	    }
 	    boolean _isNew = query.getRecordcount()==0;
 	    
