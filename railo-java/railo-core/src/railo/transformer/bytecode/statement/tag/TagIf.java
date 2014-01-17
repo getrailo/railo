@@ -47,11 +47,10 @@ public final class TagIf extends TagBaseNoFinal {
 					ExpressionUtil.visitLine(bc, t.getStart());
 			        hasElse=true;
 					writeOutElseIfEnd(adapter, endIf, end);
-					//endIf=writeOutElseIfStart(adapter,t);
 					continue;
 				}
 			}
-			stat.writeOut(bc);
+			ExpressionUtil.writeOut(stat, bc);
 		}
 		if(!hasElse)writeOutElseIfEnd(adapter, endIf, end);
 		
