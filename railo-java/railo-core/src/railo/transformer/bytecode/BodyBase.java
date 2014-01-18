@@ -162,7 +162,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 				_bc=bc;
 				a=null;
 			}
-        	ExpressionUtil.writeOut(s, bc);
+        	ExpressionUtil.writeOut(s, _bc);
         }	
         if(a!=null){
         	a.returnValue();
