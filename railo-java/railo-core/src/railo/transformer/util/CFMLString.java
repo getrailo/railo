@@ -11,7 +11,7 @@ import railo.runtime.PageSource;
 import railo.transformer.bytecode.Position;
 
 /**
- * this class is a Parser String optimized for the transfomer (CFML Parser)
+ * this class is a Parser String optimized for the transformer (CFML Parser)
  */
 public final class CFMLString {
 
@@ -51,28 +51,11 @@ public final class CFMLString {
 	private boolean writeLog;
 
 	private String source;
-	
-	//private static final String NL=System.getProperty("line.separator");
 
 	
-	
-	public CFMLString(PageSource ps,String charset,boolean writeLog) throws IOException {
-		this.writeLog=writeLog;
-		this.charset=charset;
-		this.ps=ps;
-		this.source=ps.getPhyscalFile().getAbsolutePath();
-		String content;
-		InputStream is=null;
-		try {
-			is = IOUtil.toBufferedInputStream(ps.getPhyscalFile().getInputStream());
-			if(ClassUtil.isBytecode(is))throw new AlreadyClassException(ps.getPhyscalFile());
-			content=IOUtil.toString(is,charset);
-			
-		}
-		finally {
-			IOUtil.closeEL(is);
-		}
-		init(content.toString().toCharArray());
+	public CFMLString(PageSource ps, String charset, boolean writeLog) throws IOException {
+
+		this(getPageSourceContents(ps, charset), charset, writeLog, ps);
 	}
 
 	/**
@@ -84,10 +67,14 @@ public final class CFMLString {
 	 * @param ps
 	 */
 	public CFMLString(String text,String charset,boolean writeLog,PageSource ps) {
+
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=writeLog;
 		this.ps=ps;
+
+		if (ps != null)
+			this.source=ps.getPhyscalFile().getAbsolutePath();
 	}
 
 	/**
@@ -387,7 +374,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -436,7 +423,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -468,7 +455,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -860,7 +847,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck, ausgehend von der aktuellen Position, 
 	 * wann das naechste Zeichen folgt das gleich ist wie die Eingabe, 
-	 * falls keines folgt wird –1 zurueck gegeben. 
+	 * falls keines folgt wird ï¿½1 zurueck gegeben. 
 	 * Gross- und Kleinschreibung der Zeichen werden igoriert.
 	 * @param c gesuchtes Zeichen
 	 * @return Zeichen das gesucht werden soll.
@@ -929,14 +916,29 @@ public final class CFMLString {
 
 	public String getText() {
 		return new String(text);
-	}
-	
-
+	}	
 
 	/**
 	 * @return the source
 	 */
 	public String getSource() {
 		return source;
+	}
+
+
+	public static String getPageSourceContents(PageSource ps, String charset) throws IOException {
+
+		String content;
+		InputStream is=null;
+		try {
+			is = IOUtil.toBufferedInputStream(ps.getPhyscalFile().getInputStream());
+			if(ClassUtil.isBytecode(is))throw new AlreadyClassException(ps.getPhyscalFile());
+			content=IOUtil.toString(is,charset);
+		}
+		finally {
+			IOUtil.closeEL(is);
+		}
+
+		return content.toString();
 	}
 }

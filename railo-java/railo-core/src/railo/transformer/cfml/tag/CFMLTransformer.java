@@ -13,7 +13,6 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Info;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
-import railo.runtime.SourceFile;
 
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
@@ -131,12 +130,25 @@ public final class CFMLTransformer {
 		boolean writeLog=config.getExecutionLogEnabled();
 		String charset=config.getTemplateCharset();
 		boolean dotUpper = ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
-		
+
+		String ext = ResourceUtil.getExtension(ps.getResource(),"");
 		
 		while(true){
 			try {
-				cfml=new CFMLString(ps,charset,writeLog);
-				p = transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
+
+				if (ext.equalsIgnoreCase(config.getCFSExtension())) {
+
+					String scriptTagName = TagLibFactory.loadFromSystem().getTag( "script" ).getFullName();
+					cfml = new CFMLString("<" + scriptTagName + ">" + CFMLString.getPageSourceContents (ps, charset) + "</" + scriptTagName + ">", charset, writeLog, ps);
+
+					p = transform(config, cfml, tlibs, flibs, ps.getResource().lastModified(), dotUpper);
+				}
+				else {
+
+					cfml=new CFMLString(ps,charset,writeLog);
+					p = transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
+				}
+
 				break;
 			}
 			catch(ProcessingDirectiveException pde) {
@@ -147,9 +159,7 @@ public final class CFMLTransformer {
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		String ext = ResourceUtil.getExtension(ps.getResource(),"");
-		boolean isCFS = ext.equalsIgnoreCase(config.getCFSExtension());
-		if(p.isPage() && (ext.equalsIgnoreCase(config.getCFCExtension()) || isCFS) ) {
+		if(p.isPage() && (ext.equalsIgnoreCase(config.getCFCExtension())) ) {
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 
@@ -183,13 +193,7 @@ public final class CFMLTransformer {
 			}
 			catch (TemplateException e) {
 				//print.printST(e);
-				if (isCFS)
-					throw e;
 			}
-			
-
-			if (isCFS)
-				return p;
 			
 			
 			// try inside a component
