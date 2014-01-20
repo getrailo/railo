@@ -422,6 +422,9 @@ if (variables.bSuppressType) {
 
 	string function setCSS( required struct stClasses
 						  , required struct dumpStructClasses ) {
+
+		var uFormat = ucFirst(variables.format);
+
 		local.sStyle = '<style type="text/css">';
 		// Query reset and remove style
 		sStyle &= '.tdQueryReset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px;}' & variables.NEWLINE;
@@ -434,14 +437,14 @@ if (variables.bSuppressType) {
 			local.sStyleKey = variables.stLookUp[sKey] ?: sKey;
 			if (structKeyExists(arguments.stClasses.stCustomClasses, sStyleKey)) {
 				local.stStyle = arguments.stClasses.stCustomClasses[sStyleKey];
-				sStyle &= '.td' & UCFirst(variables.format) & sStyleKey & "Header {background-color:##" & stStyle.headerColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColorHeader ?: "000") & "} ";
-				sStyle &= '.td' & UCFirst(variables.format) & sStyleKey & "Name {#(stStyle.pointer ?: 1) ? 'cursor:pointer;' : ''# background-color:##" & stStyle.darkColor & " !important; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
-				sStyle &= '.td' & UCFirst(variables.format) & sStyleKey & "Value {background-color:##" & stStyle.lightColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
+				sStyle &= '.td' & uFormat & sStyleKey & "Header {background-color:##" & stStyle.headerColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColorHeader ?: "000") & "} ";
+				sStyle &= '.td' & uFormat & sStyleKey & "Name {#(stStyle.pointer ?: 1) ? 'cursor:pointer;' : ''# background-color:##" & stStyle.darkColor & " !important; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
+				sStyle &= '.td' & uFormat & sStyleKey & "Value {background-color:##" & stStyle.lightColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
 				sStyle &= variables.NEWLINE;
 			} else {
-				local.createdDumpStructStyle = '.td#ucfirst(variables.format)##sStyleKey#Header {background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
-				&'.td#ucfirst(variables.format)##sStyleKey#Name {cursor: pointer;background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
-				&'.td#ucfirst(variables.format)##sStyleKey#Value {background-color: #arguments.dumpStructClasses[sKey]['normalColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} ';
+				local.createdDumpStructStyle = '.td#uFormat##sStyleKey#Header {background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
+				&'.td#uFormat##sStyleKey#Name {cursor: pointer;background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
+				&'.td#uFormat##sStyleKey#Value {background-color: #arguments.dumpStructClasses[sKey]['normalColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} ';
 				sStyle &= createdDumpStructStyle & variables.NEWLINE;
 			}
 		}
