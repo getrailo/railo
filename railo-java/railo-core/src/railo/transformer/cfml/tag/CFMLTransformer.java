@@ -142,14 +142,10 @@ public final class CFMLTransformer {
 					String scriptTagName = config.getTLDs()[0].getTag("script").getFullName();
 					boolean hasScriptTag = false;
 
-					if (cfmlCode.indexOf('<') > -1) {
-
-						int scriptTagLen = scriptTagName.length() + 2;
-						int pos = StringUtil.firstNonWhitespaceChar(cfmlCode);
-						if (cfmlCode.length() > pos + scriptTagLen) {
-							if (cfmlCode.substring(pos, pos + scriptTagLen).equalsIgnoreCase( "<" + scriptTagName + ">" ))
-								hasScriptTag = true;
-						}
+					int pos = StringUtil.firstNonWhitespaceChar(cfmlCode);
+					if (cfmlCode.length() > pos + (scriptTagName.length() + 2)) {
+						if (cfmlCode.substring(pos, pos + (scriptTagName.length() + 2)).equalsIgnoreCase( "<" + scriptTagName + ">" ))
+							hasScriptTag = true;
 					}
 
 					if (!hasScriptTag)
