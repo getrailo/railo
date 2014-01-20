@@ -422,7 +422,7 @@ public final class ScopeContext {
 		return hasExistingJSessionScope(pc);
 	}
 	
-	private synchronized boolean hasExistingJSessionScope(PageContext pc) {
+	private boolean hasExistingJSessionScope(PageContext pc) {
 		HttpSession httpSession=pc.getSession();
         if(httpSession==null) return false;
         
@@ -475,7 +475,7 @@ public final class ScopeContext {
 	 * @return cf session matching the context
 	 * @throws PageException 
 	 */
-	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
 		
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
@@ -542,7 +542,7 @@ public final class ScopeContext {
 			return session;
 	}
 	
-	public synchronized void removeSessionScope(PageContext pc) throws PageException {
+	public void removeSessionScope(PageContext pc) throws PageException {
 		
 		//CFSession
 		Session sess = getCFSessionScope(pc, new RefBooleanImpl());
@@ -560,7 +560,7 @@ public final class ScopeContext {
         }
 	}
 	
-	public synchronized void removeClientScope(PageContext pc) throws PageException {
+	public void removeClientScope(PageContext pc) throws PageException {
 		Client cli = getClientScope(pc);
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		Map<String, Scope> context = getSubMap(cfClientContextes,appContext.getName());
@@ -587,7 +587,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private Session getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart
@@ -647,7 +647,7 @@ public final class ScopeContext {
 	 * @return session matching the context
 	 * @throws PageException 
 	 */
-	public synchronized Application getApplicationScope(PageContext pc, RefBoolean isNew) {
+	public Application getApplicationScope(PageContext pc, RefBoolean isNew) {
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// getApplication Scope from Context
 			ApplicationImpl application;
@@ -923,7 +923,7 @@ public final class ScopeContext {
 		return "0";
 	}
 
-	public synchronized void invalidateUserScope(PageContextImpl pc,boolean migrateSessionData,boolean migrateClientData) throws PageException {
+	public void invalidateUserScope(PageContextImpl pc,boolean migrateSessionData,boolean migrateClientData) throws PageException {
 		ApplicationContext appContext = pc.getApplicationContext();
 
 		// get in memory scopes
