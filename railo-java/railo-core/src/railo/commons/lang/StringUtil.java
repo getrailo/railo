@@ -1139,7 +1139,7 @@ public final class StringUtil {
 
 
 	/**
-	 * returns the index of the first non-whitespace character in a string
+	 * returns the index of the first non-whitespace character in a string, or -1 if no such char is found
 	 * @param input
 	 * @return
 	 */
