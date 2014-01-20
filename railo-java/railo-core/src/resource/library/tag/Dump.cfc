@@ -453,7 +453,7 @@ if (variables.bSuppressType) {
 	}
 
 	string function setJS() {
-		arrayAppend(variables.aOutput, '<script language="JavaScript" type="text/javascript">' & variables.NEWLINE);
+		arrayAppend(variables.aOutput, '<script type="text/javascript">' & variables.NEWLINE);
 		arrayAppend(variables.aOutput, 'var sBase = "' & variables.topElement & '";' & variables.NEWLINE);
 
 /* 		arrayAppend(variables.aOutput, "
