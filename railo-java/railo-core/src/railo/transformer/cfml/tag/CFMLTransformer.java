@@ -107,8 +107,7 @@ public final class CFMLTransformer {
 	
     public static short TAG_LIB_GLOBAL=0;
     public static short TAG_LIB_PAGE=1;
-    
-    
+
 	
 	/**
 	 * Startmethode zum transfomieren einer CFML Datei.
@@ -152,7 +151,6 @@ public final class CFMLTransformer {
 						cfmlCode = "<" + scriptTagName + ">" + cfmlCode + "</" + scriptTagName + ">";
 
 					cfml = new CFMLString(cfmlCode, charset, writeLog, ps);
-
 					p = transform(config, cfml, tlibs, flibs, ps.getResource().lastModified(), dotUpper);
 				}
 				else {
@@ -241,7 +239,7 @@ public final class CFMLTransformer {
 	public static TagLibTag getTLT(CFMLString cfml,String name) throws TemplateException {
 		TagLib tl;
 		try {
-			// this is already loaded, oherwise we where not here
+			// this is already loaded, otherwise we would not be here
 			tl = TagLibFactory.loadFromSystem();
 			return tl.getTag(name);
 		} 
