@@ -39,8 +39,9 @@ component {
 		showUDFs:{required:false,type:"boolean",default:true,hint="show UDFs in cfdump output."},
 		show:{required:false,type:"string",default:"all",hint="show column or keys."},
 		output:{required:false,type:"string",default:"browser",hint="Where to send the results:
+- browser: the result is written the the browser response stream (default).
 - console: the result is written to the console (System.out).
-- browser (default): the result is written the the browser response stream."},
+- false: output will not be written, effectively disabling the dump."},
 		metainfo:{required:false,type:"boolean",default:true,hint="Includes information about the query in the cfdump results."},
 		keys:{required:false,type:"number",default:9999,hint="For a structure, number of keys to display."},
 		hide:{required:false,type:"string",default:"all",hint="hide column or keys."},
