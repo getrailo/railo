@@ -136,10 +136,26 @@ public final class CFMLTransformer {
 		while(true){
 			try {
 
-				if (ext.equalsIgnoreCase(config.getCFSExtension())) {
+				if (ext.equalsIgnoreCase(config.getCFSExtension())) {   // .cfs file
 
-					String scriptTagName = TagLibFactory.loadFromSystem().getTag( "script" ).getFullName();
-					cfml = new CFMLString("<" + scriptTagName + ">" + CFMLString.getPageSourceContents (ps, charset) + "</" + scriptTagName + ">", charset, writeLog, ps);
+					String cfmlCode = CFMLString.getPageSourceContents(ps, charset);
+					String scriptTagName = config.getTLDs()[0].getTag("script").getFullName();
+					boolean hasScriptTag = false;
+
+					if (cfmlCode.indexOf('<') > -1) {
+
+						int scriptTagLen = scriptTagName.length() + 2;
+						int pos = StringUtil.firstNonWhitespaceChar(cfmlCode);
+						if (cfmlCode.length() > pos + scriptTagLen) {
+							if (cfmlCode.substring(pos, pos + scriptTagLen).equalsIgnoreCase( "<" + scriptTagName + ">" ))
+								hasScriptTag = true;
+						}
+					}
+
+					if (!hasScriptTag)
+						cfmlCode = "<" + scriptTagName + ">" + cfmlCode + "</" + scriptTagName + ">";
+
+					cfml = new CFMLString(cfmlCode, charset, writeLog, ps);
 
 					p = transform(config, cfml, tlibs, flibs, ps.getResource().lastModified(), dotUpper);
 				}

@@ -1136,4 +1136,25 @@ public final class StringUtil {
         
         return result;
     }
+
+
+	/**
+	 * returns the index of the first non-whitespace character in a string
+	 * @param input
+	 * @return
+	 */
+	public static int firstNonWhitespaceChar(String input) {
+
+		if (!StringUtil.isEmpty(input)) {
+
+			int len = input.length();
+			for (int i=0; i<len; i++) {
+				if (!Character.isWhitespace( input.charAt(i) ))
+					return i;
+			}
+		}
+
+		return -1;
+	}
+
 }
