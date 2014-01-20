@@ -24,7 +24,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 	
 	public void function testStruct(){
-		http method="get" result="local.result" url="#createURL("Jira2856/array/index.cfm")#" addtoken="false";
+		http method="get" result="local.result" url="#createURL("Jira2856/struct/index.cfm")#" addtoken="false";
 		//echo(result.filecontent);abort;
 		assertEquals(200,result.status_code);
 		assertEquals('',trim(result.filecontent));
