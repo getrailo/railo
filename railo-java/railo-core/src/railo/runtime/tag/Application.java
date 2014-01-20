@@ -328,8 +328,7 @@ public final class Application extends TagImpl {
 	}
 	
 	public void setComponentpaths(Object mappings) throws PageException	{
-	    this.componentMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings);
-		//getAppContext().setCustomTagMappings(AppListenerUtil.toCustomTagMappings(pageContext, mappings));
+	    this.componentMappings=AppListenerUtil.toComponentMappings(pageContext.getConfig(), mappings);
 	}
 	
 

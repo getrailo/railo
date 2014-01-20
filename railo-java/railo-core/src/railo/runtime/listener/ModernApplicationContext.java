@@ -549,7 +549,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toCustomTagMappings(config,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;
