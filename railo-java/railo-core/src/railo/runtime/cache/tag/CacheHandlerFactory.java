@@ -55,7 +55,7 @@ public class CacheHandlerFactory {
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
 	private int cacheDefaultType;
 	
-	private CacheHandlerFactory(int cacheDefaultType){
+	private CacheHandlerFactory(int cacheDefaultType) {
 		this.cacheDefaultType=cacheDefaultType;
 		rch=new RequestCacheHandler(cacheDefaultType);
 		sch=new SmartCacheHandler(cacheDefaultType);
