@@ -319,10 +319,14 @@ public abstract class AbstrCFMLExprTransformer {
             comments(data);
             if(data.mode==STATIC) expr=new DynAssign(expr,assignOp(data));
 			else {
-				if(expr instanceof Variable)
-					expr=new Assign((Variable)expr,assignOp(data));
+				if(expr instanceof Variable) {
+					Expression value = assignOp(data);
+					expr=new Assign((Variable)expr,value,data.cfml.getPosition());
+				}
 				else if(expr instanceof Null) {
-					expr=new Assign(((Null)expr).toVariable(),assignOp(data));
+					Variable var = ((Null)expr).toVariable();
+					Expression value = assignOp(data);
+					expr=new Assign(var,value,data.cfml.getPosition());
 				}
 				else
 					throw new TemplateException(data.cfml,"invalid assignment left-hand side ("+expr.getClass().getName()+")");
@@ -661,7 +665,7 @@ public abstract class AbstrCFMLExprTransformer {
 				comments(data);
 				Expression right = assignOp(data);
 				ExprString res = OpString.toExprString(expr, right);
-				expr=new OpVariable((Variable)expr,res);
+				expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			else {
 	            comments(data);
@@ -703,7 +707,7 @@ public abstract class AbstrCFMLExprTransformer {
 			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,opr);
-			expr=new OpVariable((Variable)expr,res);
+			expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
 		}
 		/*/ ++
 		else if (data.cfml.isCurrent(opr==OpDouble.PLUS?'+':'-') && expr instanceof Variable) {
@@ -749,7 +753,7 @@ public abstract class AbstrCFMLExprTransformer {
 			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,OpDouble.MODULUS);
-			return new OpVariable((Variable)expr,res);
+			return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 		}
         comments(data);
         return OpDouble.toExprDouble(expr, expoOp(data), OpDouble.MODULUS);
@@ -802,7 +806,7 @@ public abstract class AbstrCFMLExprTransformer {
 			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,iOp);
-			return new OpVariable((Variable)expr,res);
+			return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 		}
         comments(data);
         return OpDouble.toExprDouble(expr, expoOp(data), iOp);
@@ -849,7 +853,7 @@ public abstract class AbstrCFMLExprTransformer {
 		}
 		
 		ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,start,end),opr);
-		expr=new OpVariable((Variable)expr,res);
+		expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
 		return OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D,start,end),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
 	}
 	
@@ -869,7 +873,7 @@ public abstract class AbstrCFMLExprTransformer {
 				comments(data);
 				Expression expr = clip(data);
 				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.MINUS);
-				return new OpVariable((Variable)expr,res);
+				return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			comments(data);
 			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line,data.cfml.getPosition());
@@ -880,7 +884,7 @@ public abstract class AbstrCFMLExprTransformer {
 				comments(data);
 				Expression expr = clip(data);
 				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
-				return new OpVariable((Variable)expr,res);
+				return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			comments(data);
 			return CastDouble.toExprDouble(clip(data));//OpNegateNumber.toExprDouble(clip(),OpNegateNumber.PLUS,line);
@@ -1190,9 +1194,9 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		// Extract Scope from the Variable
 		//int c=data.cfml.getColumn();
-		Position l=data.cfml.getPosition();
+		//Position l=data.cfml.getPosition();
 		var = startElement(data,id,line);
-		var.setStart(l);
+		var.setStart(line);
 		var.setEnd(data.cfml.getPosition());
 		return var;
 	}

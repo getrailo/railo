@@ -13,4 +13,11 @@ public class Position {
 		this.column=column;
 		this.pos=position;
 	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder("line:").append(line)
+			.append(";column:").append(column)
+			.append(";pos:").append(pos).toString();
+	}
 }

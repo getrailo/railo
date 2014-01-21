@@ -648,25 +648,25 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
 		<member-name>merge</member-name>
-		<description>This function merges two arrays to a single one.</description>
+		<description>This function creates a new array with data from the two passed arrays. To add all the data from one array into another without creating a new array see the built in function ArrayAppend(arr1, arr2, true).</description>
 		<argument>
 			<name>array1</name>
 			<type>array</type>
 			<required>Yes</required>
 			<description>first array</description>
-    </argument>
-		<argument>
-			<name>array2</name>
-			<type>array</type>
-			<required>Yes</required>
-			<description>second array</description>
-    </argument>
-		<argument>
-			<name>leaveIndex</name>
-			<type>boolean</type>
-			<required>No</required>
-			<description>defines whether the merged arrays will maintain their index values or if the second array will simply append to the first one. If both arrays contain the same index and you specified the parameter leaveIndex to true, the corresponding index in the resulting array will always contain the value of the index of the first array.</description>
-    </argument>
+        </argument>
+        <argument>
+            <name>array2</name>
+            <type>array</type>
+            <required>Yes</required>
+            <description>second array</description>
+        </argument>
+        <argument>
+            <name>leaveIndex</name>
+            <type>boolean</type>
+            <required>No</required>
+            <description>defines whether the merged arrays will maintain their index values or if the second array will simply append to the first one. If both arrays contain the same index and you specified the parameter leaveIndex to true, the corresponding index in the resulting array will always contain the value of the index of the first array.</description>
+        </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -10903,8 +10903,8 @@ The following things are considered to be empty:
 - double
 - short
 - string
-- null
-- xxx[] where xxx is one of the following: any of the preceding types, except for null
+- {type}[] - where {type} is any of the preceding types, e.g. string[]
+- null - see also the built in function nullValue()
 - a Java class name</description>
     </argument>
 		<argument>
