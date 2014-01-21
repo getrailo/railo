@@ -572,15 +572,37 @@ function dump_resetColumns(oObj, iCol) {
 	}
 
 	private struct function getCSS( string sFormat = "modern" ) {
-		local.stClasses = {};
-		try {
-			if (fileExists('railo/dump/skins/#arguments.sFormat#.cfm')) {
-				include template='railo/dump/skins/#arguments.sFormat#.cfm';
-			} else {
-				include template='railo/dump/skins/modern.cfm';
+		
+		var stClasses = { 
+			stCustomClasses : {
+				Array:{headerColor:'9c3', darkColor:'9c3', lightColor:'cf3' },
+				Mongo:{headerColor:'393', darkColor:'393', lightColor:'966' },
+				Object:{headerColor:'c99', darkColor:'c99', lightColor:'fcc' },
+				Query:{headerColor:'c9c', darkColor:'c9c', lightColor:'fcf' },
+				SimpleValue:{headerColor:'f60', darkColor:'f60', lightColor:'fc9', pointer:0 },
+				Struct:{headerColor:'99f', darkColor:'99f', lightColor:'ccf' },
+				SubXML:{headerColor:'996', darkColor:'996', lightColor:'cc9' }, 
+				XML:{headerColor:'c99', darkColor:'c99', lightColor:'fff' },
+				white: {headerColor:'fff', darkColor:'fff', lightColor:'ccc' },
+				Component:{headerColor:'9c9', darkColor:'9c9', lightColor:'cfc'},
+				PublicMethods:{headerColor:'fc9', darkColor:'fc9', lightColor:'ffc'},
+				PrivateMethods:{headerColor:'fc3', darkColor:'fc3', lightColor:'f96'},
+				Method:{headerColor:'c6f', darkColor:'c6f', lightColor:'fcf'}
+			},
+			stBaseClasses : {
+				tdBase: {		style:'{border: 1px solid ##000;padding: 2px;vertical-align: top;}'},
+				tableDump: {	style:'{font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: 11px;background-color: ##eee;color: ##000;border-spacing: 1px;border-collapse:separate;}'},
+				baseHeader: {	style:'{border: 1px solid ##000;padding: 2px;text-align: left;vertical-align: top;cursor:pointer;margin: 1px 1px 0px 1px;}'},
+				header: {		style:'{font-weight: bold; border:1px solid ##000;}'},
+				meta: {			style:'{font-weight: normal}'},
+				tdClickName: { 	style:'{empty-cells: show}'}
 			}
-		} catch (e) {
+		};
+		
+		if (sFormat != "modern" && fileExists("railo/dump/skins/#arguments.sFormat#.cfm")) {			
+			include "railo/dump/skins/#arguments.sFormat#.cfm";
 		}
+		
 		return stClasses;
 	}
 
