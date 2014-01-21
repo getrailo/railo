@@ -68,7 +68,7 @@
             <cfelse>
                 <cfcookie expires="Now" name="railo_admin_pw_#ad#" value="">
             </cfif>
-            <cfif isDefined("cookie.railoa_dmin_lastpage") and cookie.railo_admin_lastpage neq "logout">
+            <cfif isDefined("cookie.railo_admin_lastpage") and cookie.railo_admin_lastpage neq "logout">
                 <cfset url.action = cookie.railo_admin_lastpage>
             </cfif>
         </cfif>

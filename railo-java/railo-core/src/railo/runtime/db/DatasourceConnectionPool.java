@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
@@ -19,7 +20,7 @@ import railo.runtime.type.util.ArrayUtil;
 
 public class DatasourceConnectionPool {
 
-	private Map<String,DCStack> dcs=new HashMap<String,DCStack>();
+	private ConcurrentHashMap<String,DCStack> dcs=new ConcurrentHashMap<String,DCStack>();
 	private Map<String,RefInteger> counter=new HashMap<String,RefInteger>();
 	
 	public DatasourceConnection getDatasourceConnection(PageContext pc,DataSource datasource, String user, String pass) throws PageException {

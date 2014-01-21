@@ -162,14 +162,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 				_bc=bc;
 				a=null;
 			}
-        	        	
-        	if(ExpressionUtil.doLog(bc)) {
-        		String id=id();
-        		ExpressionUtil.callStartLog(bc, s,id);
-            	s.writeOut(_bc);
-            	ExpressionUtil.callEndLog(bc, s,id);
-        	}
-        	else s.writeOut(_bc);
+        	ExpressionUtil.writeOut(s, _bc);
         }	
         if(a!=null){
         	a.returnValue();
@@ -177,7 +170,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
         } 
     }
     
-	private static synchronized String id() {
+	public static synchronized String id() {
 		counter++;
 		if(counter<0) counter=1;
 		return Long.toString(counter, Character.MAX_RADIX);
