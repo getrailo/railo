@@ -11,6 +11,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -19,6 +20,9 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.ext.function.Function;
+import railo.runtime.functions.string.Len;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -26,6 +30,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
@@ -78,7 +83,84 @@ public final class DumpStruct implements Function {
 		RefBoolean hasReference=new RefBooleanImpl(false);
 		Struct sct = toStruct(dd,object,hasReference);
 		sct.setEL("hasReference", hasReference.toBoolean());
+
+		addMetaData(sct, object);
+
 		return sct;
+	}
+
+	private static void addMetaData(Struct sct, Object o) {
+
+		String simpleType  = "unknown";                             // simpleType will replace colorId and colors
+		String simpleValue = "";
+
+		try {
+
+			if (o == null) {
+				simpleType  = "null";
+			}
+			else if (o instanceof Scope) {
+				simpleType  = "struct";
+				simpleValue = "Scope (" + getSize(o) + ")";
+			}
+			else if (Decision.isStruct(o)) {
+				simpleType  = "struct";
+				simpleValue = "Struct (" + getSize(o) + ")";
+			}
+			else if (Decision.isArray(o)) {
+				simpleType  = "array";
+				simpleValue = "Array (" + getSize(o) + ")";
+			}
+			else if (Decision.isQuery(o)) {
+				simpleType  = "query";
+				simpleValue = "Query (" + getSize(o) + ")";
+			}
+			else if (Decision.isComponent(o)) {
+				simpleType  = "component";
+				simpleValue = "Component: " + ((ComponentImpl)o).getDisplayName();
+			}
+			else if (Decision.isFunction(o) || Decision.isUserDefinedFunction(o) || Decision.isClosure(o)) {
+				simpleType  = "function";
+//				simpleValue = "Function: " + ((Function)o).();      // TODO: add signature
+			}
+			else if (Decision.isDate(o, false)) {
+				simpleType  = "date";
+				simpleValue = o.toString();
+			}
+			else if (Decision.isBoolean(o, false)) {
+				simpleType  = "boolean";
+				simpleValue = o.toString();
+			}
+			else if (Decision.isInteger(o, false)) {
+				simpleType  = "numeric";
+				simpleValue = Caster.toInteger(o).toString();
+			}
+			else if (Decision.isNumeric(o, false)) {
+				simpleType  = "numeric";
+				simpleValue = o.toString();
+			}
+			else if (Decision.isSimpleValue(o)) {
+				simpleType  = "string";
+				simpleValue = Caster.toString(o);
+				if (simpleValue.length() > 64)
+					simpleValue = "String (" + simpleValue.length() + ")";
+			}
+			else {
+				simpleType  = o.getClass().getSimpleName().toLowerCase();
+			}
+
+		}
+		catch (Throwable t) {
+			simpleValue = "{error}";
+		}
+
+		sct.setEL("simpleType", simpleType);
+		sct.setEL("simpleValue", simpleValue);
+	}
+
+	private static String getSize(Object o) {
+
+		return Caster.toInteger( Len.invoke(o, 0) ).toString();
 	}
 
 	private static Struct toStruct(DumpData dd, Object object, RefBoolean hasReference) {
