@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+import railo.print;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
@@ -39,29 +40,41 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.KeyConstants;
 
 public class SmartCacheHandler implements CacheHandler {
 
-	private int cacheType;
-	private Cache _cache;
-	private Config config;
-	private Log log; 
-	public static Map<String,SmartEntry> entries=new LinkedHashMap<String,SmartEntry>();
-	public static Map<String,TimeSpan> rules=new ConcurrentHashMap<String,TimeSpan>();
-	//public static Map<String,CE> cachew=new ConcurrentHashMap<String,CE>();
-	
 	private static boolean running;
 	private static long startTime;
 	
+	private PageContext pc; 
+	private Config config;
+	
+	private int cacheType;
+	private Cache _cache;
+	private Log log;
+	private Map<String,SmartEntry> entries=new LinkedHashMap<String,SmartEntry>();
+	private Map<String,TimeSpan> rules=new ConcurrentHashMap<String,TimeSpan>();
+	//public static Map<String,CE> cachew=new ConcurrentHashMap<String,CE>();
+	
 
 	public SmartCacheHandler(int cacheType) {
-		this.config=ThreadLocalPageContext.getConfig();
+		this.pc=ThreadLocalPageContext.get();
+		this.config=ThreadLocalPageContext.getConfig(pc);
 		this.cacheType=cacheType;
-		try {
-			this._cache=getCache();
-		}
-		catch (PageException pe) {
-			throw new PageRuntimeException(pe); // TODO handle this in a better way
+		
+		// get default cache
+		this._cache=Util.getDefault(pc, cacheType,null);
+		
+		// get smart cache
+		if(_cache==null) {
+			if(true)throw new PageRuntimeException(new ApplicationException("no default cache found"));
+			try {
+				this._cache=getCache();
+			}
+			catch (PageException pe) {
+				throw new PageRuntimeException(pe); // TODO handle this in a better way
+			}
 		}
 		log = ((ConfigImpl)config).getLog("smartcache");
 	}
@@ -206,6 +219,14 @@ public class SmartCacheHandler implements CacheHandler {
 		((ConfigImpl)pc.getConfig()).getLog("application").error(CacheHandlerFactory.toStringCacheName(cacheType, null),msg);
 	}*/
 
+	public static void setRule(int type, String id, TimeSpan timeSpan) { 
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+			CacheHandlerFactory.include.getSmartCacheHandler().setRule(id, timeSpan);
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
+			CacheHandlerFactory.query.getSmartCacheHandler().setRule(id, timeSpan);
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+			CacheHandlerFactory.function.getSmartCacheHandler().setRule(id, timeSpan);
+	}
 	public void setRule(String id, TimeSpan timeSpan) { 
 		// flush all cached elements for the old rule
 		if(rules.containsKey(id)) {
@@ -217,34 +238,77 @@ public class SmartCacheHandler implements CacheHandler {
 		rules.put(id, timeSpan);
 	}
 
-	public static void clearRules() {
-		rules.clear();
+	public static void clearAllRules() {
+		clearRules(ConfigImpl.CACHE_DEFAULT_NONE);
+	}
+	public static void clearRules(int type) {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+			CacheHandlerFactory.include.getSmartCacheHandler().rules.clear();
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
+			CacheHandlerFactory.query.getSmartCacheHandler().rules.clear();
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+			CacheHandlerFactory.function.getSmartCacheHandler().rules.clear();
 	}
 
-	public static void removeRule(String id) { 
-		rules.remove(id);
+	public static void removeRule(int type, String id) {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+			CacheHandlerFactory.include.getSmartCacheHandler().rules.remove(id);
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
+			CacheHandlerFactory.query.getSmartCacheHandler().rules.remove(id);
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+			CacheHandlerFactory.function.getSmartCacheHandler().rules.remove(id);
 	}
 	
-	public static Query getRules() {
-		Query qry=new QueryImpl(new String[]{"entryHash","timespan"},0,"rules");
+	public static Query getAllRules() {
+		return getRules(ConfigImpl.CACHE_DEFAULT_NONE);
+	}
+	
+	public static Query getRules(int type) {
+		Query qry=new QueryImpl(new String[]{"type","entryHash","timespan"},0,"rules");
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+			CacheHandlerFactory.include.getSmartCacheHandler()._getRules(qry, "include");
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
+			CacheHandlerFactory.query.getSmartCacheHandler()._getRules(qry, "query");
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+			CacheHandlerFactory.function.getSmartCacheHandler()._getRules(qry, "function");
+		return qry;
+	}
+	
+	public void _getRules(Query qry, String type) {
 		Iterator<Entry<String, TimeSpan>> it = rules.entrySet().iterator();
 		int row;
 		while(it.hasNext()){
 			Entry<String, TimeSpan> e = it.next();
 			row=qry.addRow();
+			qry.setAtEL("type", row, type);
 			qry.setAtEL("entryHash", row, e.getKey());
 			qry.setAtEL("timespan", row, e.getValue());
 		}
-		return qry;
 	}
 	
-	public Struct info() {
+	public static Struct info(int type) {
 		Struct info=new StructImpl();
-		info.setEL("entries", entries.size());
-		info.setEL("rules", rules.size());
-		info.setEL("cache", size());
-		info.setEL("starttime", running?new DateTimeImpl(startTime,true):"");// TODO muss von richtigem start kommen
+		//Struct caches=new StructImpl();
+		Query caches=new QueryImpl(new String[]{"type","entryHash","timespan"},0,"caches");
+		
+		info.setEL("starttime", running?new DateTimeImpl(startTime,true):"");
+		info.setEL("running", running);
+		info.setEL("caches", caches);
+		
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+			CacheHandlerFactory.include.getSmartCacheHandler()._info(caches,"include");
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
+			CacheHandlerFactory.query.getSmartCacheHandler()._info(caches,"query");
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+			CacheHandlerFactory.function.getSmartCacheHandler()._info(caches,"function");
 		return info;
+	}
+	
+	private void _info(Query qry, String type) {
+		int row=qry.addRow();
+		qry.setAtEL(KeyConstants._type, row, type);
+		qry.setAtEL("rules", row, rules.size());
+		qry.setAtEL("entries", row, entries.size());
 	}
 
 	public static void start() {
@@ -254,6 +318,11 @@ public class SmartCacheHandler implements CacheHandler {
 
 	public static void stop() {
 		running=false;
+	}
+
+
+	public Map<String, SmartEntry> getEntries() {
+		return entries;
 	}
 
 	

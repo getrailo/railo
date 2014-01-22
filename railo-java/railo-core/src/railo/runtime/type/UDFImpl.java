@@ -213,7 +213,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
     private Object _callCachedWithin(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id=CacheHandlerFactory.createId(this,args,values);
-    	CacheHandler ch = CacheHandlerFactory.udf.getInstance(pc.getConfig(), properties.cachedWithin);
+    	CacheHandler ch = CacheHandlerFactory.function.getInstance(pc.getConfig(), properties.cachedWithin);
 		Object o=ch.get(pc, id);
 		
 		// get from cache

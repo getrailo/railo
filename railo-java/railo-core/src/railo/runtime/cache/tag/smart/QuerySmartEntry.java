@@ -12,8 +12,8 @@ public class QuerySmartEntry extends StandardSmartEntry {
 	private long executionTime;
 
 	public QuerySmartEntry(PageContext pc, Query qry, String id, int cacheType) { 
-		super(pc, qry, id, cacheType);
-		// TODO template,line
+		super(pc, id,toResultHash(qry), cacheType);
+		
 		this.name=qry.getName();
 		this.payLoad=qry.getRecordcount();
 		this.meta=qry.getSql().getSQLString();

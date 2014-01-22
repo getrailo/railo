@@ -9,6 +9,7 @@ import railo.loader.util.Util;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.smart.Analyzer;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ApplicationException;
@@ -51,6 +52,7 @@ public final class SmartCache extends TagSupport {
 
 	private Object entryHash;
 	private Object timespan;
+	private int type=ConfigImpl.CACHE_DEFAULT_NONE;
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -61,6 +63,7 @@ public final class SmartCache extends TagSupport {
 		action=ACTION_ANALYZE;
 		entryHash=null;
 		timespan=null;
+		type=ConfigImpl.CACHE_DEFAULT_NONE;
 	}
 
 	public void setAction(String strAction) throws ApplicationException {
@@ -84,6 +87,17 @@ public final class SmartCache extends TagSupport {
 			action=ACTION_STOP;
 		else
 			throw new ApplicationException("invalid action ["+strAction+"], valid actions are [analyze, setRule, removeRule, clearRules, getRules, info, start, stop]"); 
+		
+	}
+	
+	public void setType(String strType) throws ApplicationException {
+		if(Util.isEmpty(strType,true)) return;
+		strType=strType.trim().toLowerCase();
+		if(strType.equals("function"))		type=ConfigImpl.CACHE_DEFAULT_FUNCTION;
+		else if(strType.equals("include"))	type=ConfigImpl.CACHE_DEFAULT_INCLUDE;
+		else if(strType.equals("query"))	type=ConfigImpl.CACHE_DEFAULT_QUERY;
+		else
+			throw new ApplicationException("invalid type ["+strType+"], valid types are [function, include, template]"); 
 		
 	}
 
@@ -118,11 +132,11 @@ public final class SmartCache extends TagSupport {
 	}
 
 	private void doInfo() throws PageException {
-		pageContext.setVariable(returnVariable, SmartCacheHandler.info());
+		pageContext.setVariable(returnVariable, SmartCacheHandler.info(type));
 	}
 
 	private void doGetRules() throws PageException {
-		pageContext.setVariable(returnVariable, SmartCacheHandler.getRules());
+		pageContext.setVariable(returnVariable, SmartCacheHandler.getRules(type));
 	}
 
 	private void doStart() {
@@ -132,27 +146,38 @@ public final class SmartCache extends TagSupport {
 		SmartCacheHandler.stop();
 	}
 
-	private void doClearRules() {
-		SmartCacheHandler.clearRules();
+	private void doClearRules() throws ApplicationException {
+		typeRequired();
+		SmartCacheHandler.clearRules(type);
 	}
 
 	private void doRemoveRule() throws PageException {
+		typeRequired();
 		String[] hashes=getEntryHashes();
 		
 		for(int i=0;i<hashes.length;i++){
-			SmartCacheHandler.removeRule(hashes[i]);
+			SmartCacheHandler.removeRule(type,hashes[i]);
 		}
 	}
 
+
 	private void doSetRule() throws PageException {
+		typeRequired();
 		Pair[] pairs=getPairs();
 		for(int i=0;i<pairs.length;i++){
-			SmartCacheHandler.setRule(pairs[i].entryHash,pairs[i].timespan);
+			SmartCacheHandler.setRule(type,pairs[i].entryHash,pairs[i].timespan);
 		}
 	}
 
 	private void doAnalyze() throws PageException {
-		pageContext.setVariable(returnVariable, Analyzer.analyze());
+		typeRequired();
+		pageContext.setVariable(returnVariable, Analyzer.analyze(type));
+	}
+	
+
+	private void typeRequired() throws ApplicationException {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)
+			throw new ApplicationException("attribute type is required for tag smartcache with this action");
 	}
 	
 	private static class Pair{

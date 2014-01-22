@@ -15,21 +15,22 @@ public abstract class StandardSmartEntry implements SmartEntry {
 	private final String id;
 	private final String typeId;
 	private final String entryHash;
-	private String resultHash=null;
+	private final String resultHash;
 	private final long createTime;
 	private final String applicationName;
 	private final String cfid;
-	private final Object value;
+	//private final Object value;
 	private TemplateLine templateLine;
 
-	public StandardSmartEntry(PageContext pc, Object value, String id, int cacheType) {
+	public StandardSmartEntry(PageContext pc, String entryHash, String resultHash, int cacheType) {
 		this.id=CreateUUID.invoke();// TODO better impl
 		this.typeId=CacheHandlerFactory.toStringCacheName(cacheType, null);
-		this.entryHash=id;
+		this.entryHash=entryHash;
+		this.resultHash=resultHash;
 		this.createTime=System.currentTimeMillis();
 		this.applicationName=pc.getApplicationContext().getName();
 		this.cfid=pc.getCFID();
-		this.value=value;
+		//this.value=value;
 		this.templateLine  = SystemUtil.getCurrentContext();
 		
 		
@@ -48,8 +49,6 @@ public abstract class StandardSmartEntry implements SmartEntry {
 	}
 
 	public String getResultHash() {
-		if(this.resultHash==null)
-			this.resultHash=Long.toString(HashUtil.create64BitHash(UDFArgConverter.serialize(value)));
 		return resultHash;
 	}
 
@@ -73,4 +72,7 @@ public abstract class StandardSmartEntry implements SmartEntry {
 		return templateLine.line;
 	}
 
+	public static String toResultHash(Object value) {
+		return Long.toString(HashUtil.create64BitHash(UDFArgConverter.serialize(value)));
+	}
 }

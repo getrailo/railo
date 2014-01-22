@@ -11575,6 +11575,14 @@ dWord: creates a value of 0 (zero)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>type</name>
+			<values>include,query,function</values>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>type of the data you need, if not defined all types are returned</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>returnvariable</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
