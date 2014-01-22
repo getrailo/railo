@@ -35,7 +35,8 @@ import railo.runtime.type.dt.TimeSpan;
 * 
 **/
 public final class SmartCache extends TagSupport {
-
+	
+	private static final short ACTION_NONE=0;
 	private static final short ACTION_ANALYZE=1;
 	private static final short ACTION_SET_RULE=2;
 	private static final short ACTION_REMOVE_RULE=4;
@@ -68,24 +69,8 @@ public final class SmartCache extends TagSupport {
 
 	public void setAction(String strAction) throws ApplicationException {
 		if(Util.isEmpty(strAction,true)) return;
-		strAction=strAction.trim().toLowerCase();
-		if(strAction.equals("analyze"))
-			action=ACTION_ANALYZE;
-		else if(strAction.equals("setrule"))
-			action=ACTION_SET_RULE;
-		else if(strAction.equals("clearrules"))
-			action=ACTION_CLEAR_RULES;
-		else if(strAction.equals("removerule"))
-			action=ACTION_REMOVE_RULE;
-		else if(strAction.equals("getrules"))
-			action=ACTION_GET_RULES;
-		else if(strAction.equals("info"))
-			action=ACTION_INFO;
-		else if(strAction.equals("start"))
-			action=ACTION_START;
-		else if(strAction.equals("stop"))
-			action=ACTION_STOP;
-		else
+		action=toAction(strAction, ACTION_NONE);
+		if(action==ACTION_NONE)
 			throw new ApplicationException("invalid action ["+strAction+"], valid actions are [analyze, setRule, removeRule, clearRules, getRules, info, start, stop]"); 
 		
 	}
@@ -146,7 +131,7 @@ public final class SmartCache extends TagSupport {
 		SmartCacheHandler.stop();
 	}
 
-	private void doClearRules() throws ApplicationException {
+	private void doClearRules() throws PageException {
 		typeRequired();
 		SmartCacheHandler.clearRules(type);
 	}
@@ -175,11 +160,39 @@ public final class SmartCache extends TagSupport {
 	}
 	
 
-	private void typeRequired() throws ApplicationException {
+	private void typeRequired() throws PageException {
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE)
-			throw new ApplicationException("attribute type is required for tag smartcache with this action");
+			required("smartcache", toAction(action,null), "type", null);
+			//throw new ApplicationException("attribute type is required for tag smartcache with this action");
 	}
 	
+	private String toAction(short action, String defaultValue) {
+		switch(action){
+			case ACTION_ANALYZE: return "analyze";
+			case ACTION_SET_RULE: return "setrule";
+			case ACTION_CLEAR_RULES: return "clearrules";
+			case ACTION_REMOVE_RULE: return "removerule";
+			case ACTION_GET_RULES: return "getrules";
+			case ACTION_INFO: return "info";
+			case ACTION_START: return "start";
+			case ACTION_STOP: return "stop";
+		}
+		return defaultValue;
+	}
+	
+	private short toAction(String strAction, short defaultValue) {
+		strAction=strAction.trim().toLowerCase();
+		if(strAction.equals("analyze")) return ACTION_ANALYZE;
+		else if(strAction.equals("setrule")) return ACTION_SET_RULE;
+		else if(strAction.equals("clearrules")) return ACTION_CLEAR_RULES;
+		else if(strAction.equals("removerule")) return ACTION_REMOVE_RULE;
+		else if(strAction.equals("getrules")) return ACTION_GET_RULES;
+		else if(strAction.equals("info")) return ACTION_INFO;
+		else if(strAction.equals("start")) return ACTION_START;
+		else if(strAction.equals("stop")) return ACTION_STOP;
+		else return defaultValue;
+	}
+
 	private static class Pair{
 
 		private TimeSpan timespan;

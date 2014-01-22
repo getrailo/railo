@@ -117,12 +117,8 @@ public class SmartCacheHandler implements CacheHandler {
 	@Override
 	public Object get(PageContext pc, String id) throws PageException {
 		if(!running) return null;
-		try {
-			return _cache.getValue(id);
-		}
-		catch (IOException e) {
-			throw Caster.toPageException(e);
-		}
+		
+		return _cache.getValue(id,null);
 		
 		/*
 		CE ce = cache.get(id);
