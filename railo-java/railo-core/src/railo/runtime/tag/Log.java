@@ -226,7 +226,7 @@ public final class Log extends TagImpl {
 	    else if(!StringUtil.isEmpty(text)) 
 	    	logger.log(type,contextName,text);
 	    else
-	    	throw new ApplicationException("you must define attribute text r attribute exception with the tag cflog");
+	    	throw new ApplicationException("you must define attribute text or attribute exception with the tag cflog");
         //logger.write(toStringType(type),contextName,text);
 		return SKIP_BODY;
 	}
