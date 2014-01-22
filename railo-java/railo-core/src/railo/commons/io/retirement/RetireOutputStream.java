@@ -12,6 +12,7 @@ public class RetireOutputStream extends OutputStream {
 	private OutputStream os;
 	private long lastAccess=0;
 	private long retireRange;
+	private RetireListener listener;
 
 	/**
 	 * 
@@ -19,10 +20,11 @@ public class RetireOutputStream extends OutputStream {
 	 * @param append
 	 * @param retireRange retire the stream after given time in minutes
 	 */
-	public RetireOutputStream(Resource res, boolean append, int retireRangeInMinutes){
+	public RetireOutputStream(Resource res, boolean append, int retireRangeInSeconds, RetireListener listener){
 		this.res=res;
 		this.append=append;
-		retireRange = retireRangeInMinutes>0?retireRangeInMinutes*60000:0;
+		retireRange = retireRangeInSeconds>0?retireRangeInSeconds*1000:0;
+		this.listener=listener;
 	}
 
 	private OutputStream getOutputStream() throws IOException {
@@ -31,7 +33,7 @@ public class RetireOutputStream extends OutputStream {
 			//print.e("start "+res);
 			os=res.getOutputStream(append);
 			RetireOutputStreamFactory.list.add(this);
-			RetireOutputStreamFactory.startThread();
+			RetireOutputStreamFactory.startThread(retireRange);
 		}
 		lastAccess=System.currentTimeMillis();
 		return os;
@@ -58,6 +60,7 @@ public class RetireOutputStream extends OutputStream {
 	@Override
 	public void close() throws IOException {
 		if(os!=null){
+			if(listener!=null) listener.retire(this);
 			try{
 				os.close();
 			}
