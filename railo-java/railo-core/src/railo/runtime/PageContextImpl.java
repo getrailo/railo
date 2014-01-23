@@ -91,6 +91,7 @@ import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.functions.dateTime.Now;
 import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
@@ -543,17 +544,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	ormSession=null;
         }
         
-		
-		close();
-        thread=null;
-        base=null;
-        //RequestImpl r = request;
-        
+
         // Scopes
         if(hasFamily) {
         	if(!isChild){
         		req.disconnect();
         	}
+        	
+        	close();
+            thread=null;
+            base=null;
+            
         	
         	request=null;
         	_url=null;
@@ -566,6 +567,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             
         }
         else {
+        	close();
+            thread=null;
+            base=null;
+            
+        	
             if(variables.isBind()) {
             	variables=null;
             	variablesRoot=null;

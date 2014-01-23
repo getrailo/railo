@@ -394,8 +394,7 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 				barr=IOUtil.toBytes(req.getInputStream(),true);
 			}
 			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// e.printStackTrace();
 			}
 		}
 		disconnected=true;
