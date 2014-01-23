@@ -212,4 +212,11 @@ public final class TimeSpanImpl implements TimeSpan {
     public int getSecond() {
         return second;
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this==obj) return true;
+		if(!(obj instanceof TimeSpan)) return false;
+		return getMillis()==((TimeSpan)obj).getMillis();
+	}
 }

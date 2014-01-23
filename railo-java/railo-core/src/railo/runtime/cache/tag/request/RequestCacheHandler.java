@@ -9,13 +9,14 @@ import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFilter;
+import railo.runtime.cache.tag.CacheItem;
 
 public class RequestCacheHandler implements CacheHandler {
 	
-	private static ThreadLocal<Map<String,Object>> data=new ThreadLocal<Map<String,Object>>() {
+	private static ThreadLocal<Map<String,CacheItem>> data=new ThreadLocal<Map<String,CacheItem>>() {
 		@Override 
-		protected Map<String,Object> initialValue() {
-			return new HashMap<String, Object>();
+		protected Map<String,CacheItem> initialValue() {
+			return new HashMap<String, CacheItem>();
 		}
 	};
 	private final int cacheType;
@@ -25,7 +26,7 @@ public class RequestCacheHandler implements CacheHandler {
 	}
 
 	@Override
-	public Object get(PageContext pc, String id) {
+	public CacheItem get(PageContext pc, String id) {
 		return data.get().get(id);
 	}
 
@@ -35,7 +36,7 @@ public class RequestCacheHandler implements CacheHandler {
 	}
 
 	@Override
-	public void set(PageContext pc, String id,Object cachedwithin, Object value) {
+	public void set(PageContext pc, String id,Object cachedwithin, CacheItem value) {
 		// cachedwithin is ignored in this cache, it should be "request"
 		data.get().put(id,value);
 	}
@@ -47,8 +48,8 @@ public class RequestCacheHandler implements CacheHandler {
 
 	@Override
 	public void clear(PageContext pc, CacheHandlerFilter filter) {
-		Iterator<Entry<String, Object>> it = data.get().entrySet().iterator();
-		Entry<String, Object> e;
+		Iterator<Entry<String, CacheItem>> it = data.get().entrySet().iterator();
+		Entry<String, CacheItem> e;
 		while(it.hasNext()){
 			e = it.next();
 			if(filter==null || filter.accept(e.getValue()))

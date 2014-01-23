@@ -1,16 +1,15 @@
 package railo.runtime.cache.tag.smart;
 
-
-import railo.print;
 import railo.commons.digest.HashUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.SystemUtil.TemplateLine;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.CacheItem;
 import railo.runtime.cache.tag.udf.UDFArgConverter;
 import railo.runtime.functions.other.CreateUUID;
 
-public abstract class StandardSmartEntry implements SmartEntry {
+public final class SmartEntryImpl implements SmartEntry {
 
 	private final String id;
 	private final String typeId;
@@ -21,12 +20,23 @@ public abstract class StandardSmartEntry implements SmartEntry {
 	private final String cfid;
 	//private final Object value;
 	private TemplateLine templateLine;
+	
+	private String name;
+	private int payLoad;
+	private String meta;
+	private long executionTime;
 
-	public StandardSmartEntry(PageContext pc, String entryHash, String resultHash, int cacheType) {
+	public SmartEntryImpl(PageContext pc, CacheItem item, String entryHash, int cacheType) { 
+		
+		this.name=item.getName();
+		this.payLoad=item.getPayload();
+		this.meta=item.getMeta();
+		this.executionTime=item.getExecutionTime();
+	
 		this.id=CreateUUID.invoke();// TODO better impl
 		this.typeId=CacheHandlerFactory.toStringCacheName(cacheType, null);
 		this.entryHash=entryHash;
-		this.resultHash=resultHash;
+		this.resultHash=item.getHashFromValue();
 		this.createTime=System.currentTimeMillis();
 		this.applicationName=pc.getApplicationContext().getName();
 		this.cfid=pc.getCFID();
@@ -34,6 +44,26 @@ public abstract class StandardSmartEntry implements SmartEntry {
 		this.templateLine  = SystemUtil.getCurrentContext();
 		
 		
+	}
+
+	@Override
+	public long getExecutionTime() {
+		return executionTime;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public int getPayLoad() {
+		return payLoad;
+	}
+
+	@Override
+	public String getMeta() {
+		return meta;
 	}
 
 	public final String getId() {

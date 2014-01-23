@@ -37,7 +37,7 @@ import railo.runtime.type.comparator.SortRegisterComparator;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
-public class CacheHandlerFactory {
+public class CacheHandlerFactory { 
 
 	public static final int TYPE_TIMESPAN=1;
 	public static final int TYPE_REQUEST=2;

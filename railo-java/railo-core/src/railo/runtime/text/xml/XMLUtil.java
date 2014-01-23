@@ -1064,8 +1064,8 @@ public final class XMLUtil {
 		return null;
 	}
 	
-	public static InputSource toInputSource(Resource res) throws IOException {
-        	String str = IOUtil.toString((res), (Charset)null);
+	public static InputSource toInputSource(Resource res, Charset cs) throws IOException {
+        	String str = IOUtil.toString((res), cs);
         	return new InputSource(new StringReader(str));
     }
 

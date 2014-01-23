@@ -109,7 +109,7 @@ public class HibernateSessionFactory {
 		Resource conf = ormConf.getOrmConfig();
 		if(conf!=null){
 			try {
-				Document doc = CommonUtil.toDocument(conf);
+				Document doc = CommonUtil.toDocument(conf,null);
 				configuration.configure(doc);
 			} 
 			catch (Throwable t) {
