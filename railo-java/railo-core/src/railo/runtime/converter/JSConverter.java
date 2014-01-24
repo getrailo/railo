@@ -76,8 +76,8 @@ public final class JSConverter extends ConverterSupport {
 			sb.append(NULL+";");
 			return;
 		}
-		// String
-		if(object instanceof String || object instanceof StringBuilder) {
+		// CharSequence (String, StringBuilder ...)
+		if(object instanceof CharSequence) {
 			sb.append(goIn());
 			sb.append("\"");
 			sb.append(StringUtil.escapeJS(object.toString()));
