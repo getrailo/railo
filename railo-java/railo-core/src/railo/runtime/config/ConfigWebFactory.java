@@ -1250,13 +1250,13 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!displayDir.exists())
 			displayDir.mkdirs();
 
-		f = displayDir.getRealResource(Constants.APP_CFM);
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/templates/display/Application.cfm", f);
+		//f = displayDir.getRealResource(Constants.APP_CFM);
+		//if (!f.exists() || doNew)
+		//	createFileFromResourceEL("/resource/context/templates/display/Application.cfm", f);
 
-		f = displayDir.getRealResource(Constants.APP_CFC);
-		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/templates/display/Application.cfc", f);
+		//f = displayDir.getRealResource(Constants.APP_CFC);
+		//if (!f.exists() || doNew)
+		//	createFileFromResourceEL("/resource/context/templates/display/Application.cfc", f);
 
 		Resource lib = ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
 		f = lib.getRealResource("jfreechart-patch.jar");
