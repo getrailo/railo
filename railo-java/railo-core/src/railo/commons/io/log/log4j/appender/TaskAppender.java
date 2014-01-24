@@ -17,12 +17,15 @@ import railo.runtime.spooler.ExecutionPlan;
 import railo.runtime.spooler.ExecutionPlanImpl;
 import railo.runtime.spooler.SpoolerEngine;
 
-public class TaskAppender implements Appender {
+public class TaskAppender implements Appender,AppenderState {
 	
 	private Appender appender;
 	private SpoolerEngine spoolerEngine;
+	private boolean closed;
 
 	public TaskAppender(Config config,Appender appender){
+		if(appender instanceof AppenderState)
+			closed=((AppenderState)appender).isClosed();
 		this.appender=appender;
 		spoolerEngine = config.getSpoolerEngine();
 		
@@ -45,6 +48,7 @@ public class TaskAppender implements Appender {
 
 	@Override
 	public void close() {
+		closed=true;
 		appender.close();
 	}
 
@@ -86,5 +90,10 @@ public class TaskAppender implements Appender {
 	@Override
 	public void setName(String arg0) {
 		appender.setName(arg0);
+	}
+
+	@Override
+	public boolean isClosed() {
+		return closed;
 	}
 }

@@ -18,7 +18,7 @@ public final class LoggerAndSourceData {
     
     private LogAdapter _log;
     private final String strAppender;
-    private Appender appender;
+    private Appender _appender;
 	private final Map<String, String> appenderArgs;
 	private final String strLayout;
 	private Layout layout;
@@ -51,8 +51,19 @@ public final class LoggerAndSourceData {
 	
 	public Appender getAppender() {
 		getLog();// initilaize if necessary
-		return appender;
+		return _appender;
 	}
+	
+	public void close() {
+		if(_log!=null) {
+			Appender a = _appender;
+    		_log=null;
+			layout = null;
+    		if(a!=null)a.close();
+    		_appender=null;
+    	}
+	}
+
 
 	public Map<String, String> getAppenderArgs() {
 		getLog();// initilaize if necessary
@@ -83,10 +94,10 @@ public final class LoggerAndSourceData {
     public Log getLog() {
     	if(_log==null) {
     		layout = Log4jUtil.getLayout(strLayout, layoutArgs);
-    		appender = Log4jUtil.getAppender(config, layout,name, strAppender, appenderArgs);
-    		_log=new LogAdapter(Log4jUtil.getLogger(config, appender, name, level));
+    		_appender = Log4jUtil.getAppender(config, layout,name, strAppender, appenderArgs);
+    		_log=new LogAdapter(Log4jUtil.getLogger(config, _appender, name, level));
     	}
-        return _log;
+    	return _log;
     }
     
     public Logger getLogger() {

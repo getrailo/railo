@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Layout;
@@ -26,6 +27,7 @@ import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.appender.AppenderState;
 import railo.commons.io.log.log4j.appender.ConsoleAppender;
 import railo.commons.io.log.log4j.appender.RollingResourceAppender;
 import railo.commons.io.log.log4j.appender.TaskAppender;
@@ -87,13 +89,27 @@ public class Log4jUtil {
 		else fullname="server."+name;
 		
 		Logger l = LogManager.exists(fullname);
-		if(l!=null)return l;
-		l = LogManager.getLogger(fullname);
+		boolean hasClosedAppenders=false;
+		if(l!=null) {
+			
+			Enumeration<Appender> e = l.getAllAppenders();
+			Appender a;
+			if(e!=null)while(e.hasMoreElements()){
+				a = e.nextElement();
+				
+				if(a instanceof AppenderState)
+					hasClosedAppenders=((AppenderState)a).isClosed();
+				else
+					hasClosedAppenders=true;// if it is not possible to terminate if a appender is closed, the Logger is not used!
+			}
+			if(!hasClosedAppenders)return l;
+		}
+		else l = LogManager.getLogger(fullname);
 		
 		l.setAdditivity(false);
     	Enumeration e = l.getAllAppenders();
 
-    	//l.removeAllAppenders();
+    	if(hasClosedAppenders)l.removeAllAppenders();
     	l.addAppender(appender);
     	
     	l.setLevel(level);
@@ -291,8 +307,6 @@ public class Log4jUtil {
     }
     
     //private static LoggerRepository repository=new Hierarchy(null); 
-
-	
 
 	public static Level toLevel(int level) {
 		switch(level){

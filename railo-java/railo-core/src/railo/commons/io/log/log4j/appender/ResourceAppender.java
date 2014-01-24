@@ -15,7 +15,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.retirement.RetireListener;
 import railo.commons.io.retirement.RetireOutputStream;
 
-public class ResourceAppender extends WriterAppender {
+public class ResourceAppender extends WriterAppender implements AppenderState {
 
   private static final int DEFAULT_BUFFER_SIZE = 8*1024; 
 
@@ -45,7 +45,6 @@ public class ResourceAppender extends WriterAppender {
   private final int timeout;
 
 private final RetireListener listener; 
-
 
   /**
      Instantiate a FileAppender and open the file designated by
@@ -217,4 +216,9 @@ private final RetireListener listener;
     closeFile();
     super.reset();
   }
+
+@Override
+public boolean isClosed() {
+	return closed;
+}
 }
