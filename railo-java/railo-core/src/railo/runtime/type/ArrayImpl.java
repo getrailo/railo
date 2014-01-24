@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import railo.commons.lang.SizeOf;
-import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
@@ -66,13 +65,12 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @param objects Objects array data to fill
 	 */
 	public ArrayImpl(Object[] objects) {
-
-		arr    = new Object[ Math.max(cap, objects.length) ];           // ensure we don't create 0-length array when called from JsonArray, e.g. var arr = [];
-
-		size   = objects.length;
-		offset = 0;
-
-		System.arraycopy(objects, offset, arr, offset, objects.length);
+		arr=new Object[objects.length];
+		for(int i=0;i<arr.length;i++){
+			arr[i]=objects[i];
+		}
+		size=arr.length;
+		offset=0;
 	}
 	
 	/**
@@ -213,15 +211,13 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		arr[(offset+key)-1]=checkValue(value);
 		return value;		
 	}	
-
+	
 	public synchronized int ensureCapacity(int cap) {
-
 		if (cap > arr.length)
 			enlargeCapacity(cap);
-
 		return arr.length;
 	}
-
+	
 	/**
      * !!! all methods that use this method must be sync
 	 * enlarge the inner array to given size
@@ -229,15 +225,21 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 */
 	private void enlargeCapacity(int key) {
 		int diff=offCount-offset;
-		if (( key + offset + diff ) > arr.length) {
-			int newSize = MathUtil.nextPowerOf2( key + offset + diff+1);
-			Object[] na = new Object[newSize];
-			System.arraycopy(arr, offset, na, offset + diff, arr.length);
+		int newSize=arr.length;
+		if(newSize<1) newSize=1;
+		while(newSize<key+offset+diff) {
+			newSize*=2;
+		}
+		if(newSize>arr.length) {
+			Object[] na=new Object[newSize];
+			for(int i=offset;i<offset+size;i++) {
+				na[i+diff]=arr[i];
+			}
 			arr=na;
 			offset+=diff;
 		}
 	}
-
+	
 	/**
 	 * !!! all methods that use this method must be sync
      * enlarge the offset if 0
