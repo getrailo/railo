@@ -24,7 +24,6 @@
 		<cfset drivers[tmp.getClass()]=tmp>
 	</cfif>
 </cfloop>
-
 <cfadmin 
 	action="securityManager"
 	type="#request.adminType#"

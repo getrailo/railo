@@ -25,7 +25,7 @@
 			"radio","off,automatic,manual"),
 		
 		
-		group("Automatic","settings for automatic discovery (see selection above) only",3),
+		group("Automatic Discovery" ,"Settings for automatic discovery. only used when ""Distribution Type"" above is set to ""automatic""",3),
 		
 		
 		
@@ -41,7 +41,7 @@
 		
 		field("Addional","automatic_addional","",true,"addional properties","textarea","true"),
 		
-		group("Manual","settings for manual discovery (see selection above) only",3),
+		group("Manual Discovery","Settings for manual discovery. only used when ""Distribution Type"" above is set to ""manual""",3),
 		
 		field("RMI Urls","manual_rmiUrls","",false,"specify a pipe separated list of rmiUrls, in the form ""//hostname:port""","textarea"),
 		field("Host Name","manual_hostName","",false,"the hostname is the hostname of the remote CacheManager peer. The port is the listening
@@ -102,7 +102,7 @@
 	)>
 
 	<cffunction name="getClass" returntype="string">
-    	<cfreturn "railo.extension.io.cache.eh.EHCache">
+    	<cfreturn "railo.runtime.cache.eh.EHCache">
     </cffunction>
     
 	<cffunction name="getLabel" returntype="string" output="no">

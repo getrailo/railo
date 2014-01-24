@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -39,7 +40,8 @@ public class EHCache extends EHCacheSupport {
 	private static final boolean REPLICATE_REMOVALS = true;
 	private static final boolean REPLICATE_ASYNC = true;
 	private static final int ASYNC_REP_INTERVAL = 1000; 
-	private static Map managers=new HashMap();
+	//private static Map managers=new HashMap();
+	private static Map<String,CacheManagerAndHash> managers=new HashMap<String,CacheManagerAndHash>();
 	
 	//private net.sf.ehcache.Cache cache;
 	private int hits;
@@ -58,8 +60,8 @@ public class EHCache extends EHCacheSupport {
 		String[] hashArgs=createHash(arguments);
 		
 		// create all xml
-		HashMap mapXML = new HashMap();
-		HashMap newManagers = new HashMap();
+		HashMap<String,String> mapXML = new HashMap<String,String>();
+		HashMap<String,CacheManagerAndHash> newManagers = new HashMap<String,CacheManagerAndHash>();
 		for(int i=0;i<hashArgs.length;i++){
 			if(mapXML.containsKey(hashArgs[i])) continue;
 			
@@ -67,7 +69,7 @@ public class EHCache extends EHCacheSupport {
 			String xml=createXML(hashDir.getAbsolutePath(), cacheNames,arguments,hashArgs,hashArgs[i]);
 			String hash=MD5.getDigestAsString(xml);
 			
-			CacheManagerAndHash manager=(CacheManagerAndHash) managers.remove(hashArgs[i]);
+			CacheManagerAndHash manager= managers.remove(hashArgs[i]);
 			if(manager!=null && manager.hash.equals(hash)) {
 				newManagers.put(hashArgs[i], manager);
 			}	
@@ -75,27 +77,30 @@ public class EHCache extends EHCacheSupport {
 		}
 		
 		// shutdown all existing managers that have changed
-		Map.Entry entry;
-		Iterator it;
-		synchronized(managers){
-			it = managers.entrySet().iterator();
-			while(it.hasNext()){
-				entry=(Entry) it.next();
-				if(entry.getKey().toString().startsWith(dir.getAbsolutePath())){
-					((CacheManagerAndHash)entry.getValue()).manager.shutdown();
+		{
+			Iterator<Entry<String, CacheManagerAndHash>> it = managers.entrySet().iterator();
+			Entry<String, CacheManagerAndHash> entry;
+			synchronized(managers){
+				it = managers.entrySet().iterator();
+				while(it.hasNext()){
+					entry= it.next();
+					if(entry.getKey().toString().startsWith(dir.getAbsolutePath())){
+						entry.getValue().manager.shutdown();
+					}
+					else newManagers.put(entry.getKey(), entry.getValue());
+					
 				}
-				else newManagers.put(entry.getKey(), entry.getValue());
-				
+				managers=newManagers;
 			}
-			managers=newManagers;
 		}
 		
-		it = mapXML.entrySet().iterator();
+		Iterator<Entry<String, String>> it = mapXML.entrySet().iterator();
+		Entry<String, String> entry;
 		String xml,hashArg,hash;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			hashArg=(String) entry.getKey();
-			xml=(String) entry.getValue();
+			entry = it.next();
+			hashArg=entry.getKey();
+			xml=entry.getValue();
 			
 			hashDir=dir.getRealResource(hashArg);
 			if(!hashDir.isDirectory())hashDir.createDirectory(true);
@@ -113,12 +118,12 @@ public class EHCache extends EHCacheSupport {
 	}
 	
 	public static void flushAllCaches() {
-		Map.Entry entry;
 		String[] names;
-		Iterator it = managers.entrySet().iterator();
+		Iterator<Entry<String, CacheManagerAndHash>> it = managers.entrySet().iterator();
+		Entry<String, CacheManagerAndHash> entry;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			CacheManager manager=((CacheManagerAndHash)entry.getValue()).manager;
+			entry = it.next();
+			CacheManager manager=entry.getValue().manager;
 			names = manager.getCacheNames();
 			for(int i=0;i<names.length;i++){
 				manager.getCache(names[i]).flush();
@@ -184,7 +189,7 @@ public class EHCache extends EHCacheSupport {
 	}
 	
 	private static void deleteData(Resource dir, String[] cacheNames) {
-		HashSet names=new HashSet();
+		Set<String> names=new HashSet<String>();
 		for(int i=0;i<cacheNames.length;i++){
 			names.add(cacheNames[i]);
 		}
@@ -444,8 +449,7 @@ public class EHCache extends EHCacheSupport {
 		if(isDistributed){
 			xml.append(" <cacheEventListenerFactory \n");
 			//xml.append(" class=\"net.sf.ehcache.distribution.RMICacheReplicatorFactory\" ");
-			xml.append(" class=\"railo.extension.io.cache.eh.RailoRMICacheReplicatorFactory\" \n");
-			
+			xml.append(" class=\""+RailoRMICacheReplicatorFactory.class.getName()+"\" \n");
 			
 			xml.append(" properties=\"replicateAsynchronously="+replicateAsynchronously+
 					", asynchronousReplicationIntervalMillis="+asynchronousReplicationInterval+
@@ -487,7 +491,7 @@ public class EHCache extends EHCacheSupport {
 		
 		setClassLoader();
 		Resource hashDir = config.getConfigDir().getRealResource("ehcache").getRealResource(createHash(arguments));
-		manager =((CacheManagerAndHash) managers.get(hashDir.getAbsolutePath())).manager;
+		manager =managers.get(hashDir.getAbsolutePath()).manager;
 		
 		
 	} 

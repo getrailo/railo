@@ -163,8 +163,8 @@ Redirtect to entry --->
 				</cfif>
 			</table>
 		</cfform>
-	</cfif>
-
+		</cfif>
+		
 	<!--- LIST CACHE --->
 	<cfif srcLocal.recordcount and access EQ "yes">
 		<h2>#stText.Settings.cache.titleExisting#</h2>
