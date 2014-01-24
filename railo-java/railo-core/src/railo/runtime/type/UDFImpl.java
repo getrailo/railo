@@ -19,6 +19,8 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.udf.UDFCacheItem;
 import railo.runtime.component.MemberSupport;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
@@ -36,7 +38,6 @@ import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.writer.BodyContentUtil;
@@ -213,12 +214,12 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
     private Object _callCachedWithin(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id=CacheHandlerFactory.createId(this,args,values);
-    	CacheHandler ch = CacheHandlerFactory.udf.getInstance(pc.getConfig(), properties.cachedWithin);
-		Object o=ch.get(pc, id);
+    	CacheHandler ch = CacheHandlerFactory.function.getInstance(pc.getConfig(), properties.cachedWithin);
+		CacheItem ci=ch.get(pc, id);
 		
 		// get from cache
-		if(o instanceof UDFCacheEntry ) {
-			UDFCacheEntry entry = (UDFCacheEntry)o;
+		if(ci instanceof UDFCacheItem ) {
+			UDFCacheItem entry = (UDFCacheItem)ci;
 			//if(entry.creationdate+properties.cachedWithin>=System.currentTimeMillis()) {
 				try {
 					pc.write(entry.output);
@@ -231,13 +232,16 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 			//cache.remove(id);
 		}
     	
+		long start = System.currentTimeMillis();
+    	
 		// execute the function
 		BodyContent bc =  pci.pushBody();
 	    
 	    try {
 	    	Object rtn = _call(pci,calledName, args, values, doIncludePath);
 	    	String out = bc.getString();
-	    	ch.set(pc, id,properties.cachedWithin,new UDFCacheEntry(out, rtn));
+	    	
+	    	ch.set(pc, id,properties.cachedWithin,new UDFCacheItem(out, rtn,getFunctionName(),getPageSource().getDisplayPath(),System.currentTimeMillis()-start));
 			// cache.put(id, new UDFCacheEntry(out, rtn),properties.cachedWithin,properties.cachedWithin);
 	    	return rtn;
 		}

@@ -11,8 +11,11 @@ import java.util.Set;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.PageContext;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.cache.tag.smart.SmartEntry;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
@@ -26,10 +29,20 @@ import railo.runtime.type.dt.DateTimeImpl;
 public class Analyzer {
 	
 
-    public synchronized static Query analyze() {
+    public synchronized static Query analyze(int type) throws ApplicationException {
 		// TODO input boundries
     	RefInteger counter=new RefIntegerImpl(0);
-    	Map<String, SmartEntry> entries = SmartCacheHandler.entries;
+    	Map<String, SmartEntry> entries;
+    	if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+    		entries=CacheHandlerFactory.include.getSmartCacheHandler().getEntries();
+    	else if(type==ConfigImpl.CACHE_DEFAULT_QUERY)
+    		entries=CacheHandlerFactory.query.getSmartCacheHandler().getEntries();
+    	else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+    		entries=CacheHandlerFactory.function.getSmartCacheHandler().getEntries();
+    	else
+    		throw new ApplicationException("invalid type defintion");
+    	
+    	//Map<String, SmartEntry> entries = SmartCacheHandler.entries;
     	Map<String,Entry> data=new HashMap<String, Analyzer.Entry>();
     	{
 	    	Iterator<SmartEntry> it = entries.values().iterator();

@@ -212,6 +212,12 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return value;		
 	}	
 	
+	public synchronized int ensureCapacity(int cap) {
+		if (cap > arr.length)
+			enlargeCapacity(cap);
+		return arr.length;
+	}
+	
 	/**
      * !!! all methods that use this method must be sync
 	 * enlarge the inner array to given size

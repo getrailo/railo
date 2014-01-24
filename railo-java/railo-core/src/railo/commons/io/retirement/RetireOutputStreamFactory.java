@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 
 public class RetireOutputStreamFactory {
@@ -11,28 +12,41 @@ public class RetireOutputStreamFactory {
 	static List<RetireOutputStream> list=new ArrayList<RetireOutputStream>();
 	private static RetireThread thread;
 	
-	static void startThread() {
+	static void startThread(long timeout) {
+		if(timeout<1000) timeout=1000;
 		if(thread==null || !thread.isAlive()) {
-			thread=new RetireThread();
+			thread=new RetireThread(timeout);
 			thread.start();
+		}
+		else if(thread.sleepTime>timeout) {
+			thread.sleepTime=timeout;print.e("notify");
+			SystemUtil.notify(thread);
 		}
 	}
 
 	static class RetireThread extends Thread {
+		
+		public long sleepTime;
+		
+		public RetireThread(long sleepTime){
+			this.sleepTime=sleepTime;
+		}
+		
 		
 		public void run(){
 			//print.e("start thread");
 			while(true){
 				try{
 					if(list.size()==0) break;
-					SystemUtil.sleep(60000);
-					Iterator<RetireOutputStream> it = list.iterator();
-					while(it.hasNext()){
-						it.next().retire();
+					SystemUtil.wait(this,sleepTime);
+					//SystemUtil.sleep(sleepTime);
+					RetireOutputStream[] arr = list.toArray(new RetireOutputStream[list.size()]); // not using iterator to avoid ConcurrentModificationException
+					for(int i=0;i<arr.length;i++){
+						arr[i].retire();
 					}
 					
 				}
-				catch(Throwable t){}
+				catch(Throwable t){t.printStackTrace();}
 			}
 			//print.e("stop thread");
 			thread=null;

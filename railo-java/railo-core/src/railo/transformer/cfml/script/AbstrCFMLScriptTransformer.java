@@ -878,8 +878,8 @@ int pos=data.cfml.getPos();
 		}
 		func.setEnd(data.cfml.getPosition());
 		
-		comments(data);
-		
+		if(closure) comments(data);
+
 		return func;
 	}
 	

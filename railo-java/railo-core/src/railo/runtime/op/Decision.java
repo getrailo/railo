@@ -481,15 +481,12 @@ public final class Decision {
         else if(o instanceof Struct) {
             Struct sct=(Struct) o;
             Iterator<Key> it = sct.keyIterator();
-            try {
-                while(it.hasNext()) {
-                	Caster.toIntValue(it.next().getString());
-                }
-                return true;
-            } 
-            catch (Throwable t) {
-                return false;
+
+            while (it.hasNext()) {
+                if (!isInteger( it.next(), false ))
+	                return false;
             }
+            return true;
         }
         return false;
     }

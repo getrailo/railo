@@ -8010,6 +8010,15 @@ Valid only for cfinput type="text".</description>
             exist, it is created automatically, with the suffix .log.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>spoolenable</name>
+			<alias>async</alias>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<default>false</default>
+			<description>only works in combination with the attribute "file", if set to true the file is written in a seperate thread.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>type</name>
 			<alias>level</alias>
@@ -8446,6 +8455,7 @@ Railo uses the number of characters in the file.</description>
 		<attribute>
 			<type>boolean</type>
 			<name>spoolenable</name>
+			<alias>async</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies whether to spool mail or always send it
@@ -11581,6 +11591,14 @@ dWord: creates a value of 0 (zero)</description>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>type</name>
+			<values>include,query,function</values>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>type of the data you need, if not defined all types are returned</description>
 		</attribute>
 		<attribute>
 			<type>string</type>

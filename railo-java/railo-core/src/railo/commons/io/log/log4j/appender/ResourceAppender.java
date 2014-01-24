@@ -12,9 +12,10 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.QuietWriter;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.retirement.RetireListener;
 import railo.commons.io.retirement.RetireOutputStream;
 
-public class ResourceAppender extends WriterAppender {
+public class ResourceAppender extends WriterAppender implements AppenderState {
 
   private static final int DEFAULT_BUFFER_SIZE = 8*1024; 
 
@@ -43,6 +44,7 @@ public class ResourceAppender extends WriterAppender {
 
   private final int timeout;
 
+private final RetireListener listener; 
 
   /**
      Instantiate a FileAppender and open the file designated by
@@ -50,8 +52,8 @@ public class ResourceAppender extends WriterAppender {
     destination for this appender.
 
     <p>The file will be appended to.  */
-  public ResourceAppender(Layout layout, Resource res,Charset charset) throws IOException {
-    this(layout, res,charset, true,false,1,DEFAULT_BUFFER_SIZE);
+  public ResourceAppender(Layout layout, Resource res,Charset charset,RetireListener listener) throws IOException {
+    this(layout, res,charset, true,false,60/* a minute */,DEFAULT_BUFFER_SIZE,listener);
   }
 
 
@@ -64,13 +66,13 @@ public class ResourceAppender extends WriterAppender {
     appended to. Otherwise, the file designated by
     <code>filename</code> will be truncated before being opened.
   */
-  public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append) throws IOException {
-	  this(layout,res,charset,append,false,1,DEFAULT_BUFFER_SIZE);
+  public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append,RetireListener listener) throws IOException {
+	  this(layout,res,charset,append,false,60/* a minute */,DEFAULT_BUFFER_SIZE,listener);
   }
   
 
-  public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append, int timeout) throws IOException {
-	  this(layout,res,charset,append,false,timeout,DEFAULT_BUFFER_SIZE);
+  public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append, int timeout,RetireListener listener) throws IOException {
+	  this(layout,res,charset,append,false,timeout,DEFAULT_BUFFER_SIZE,listener);
   }
 
   /**
@@ -87,13 +89,14 @@ public class ResourceAppender extends WriterAppender {
 
   */
   public ResourceAppender(Layout layout, Resource res,Charset charset, boolean append, boolean bufferedIO,
-	int timeout,int bufferSize) throws IOException {
+	int timeout,int bufferSize,RetireListener listener) throws IOException {
     this.layout = layout;
     this.bufferedIO=bufferedIO;
     this.bufferSize=bufferSize;
     this.timeout=timeout;
     this.fileAppend=append;
     this.res=res;
+    this.listener=listener;
     setEncoding(charset.name());
     this.setFile(append);
   }
@@ -186,7 +189,7 @@ public class ResourceAppender extends WriterAppender {
     Resource parent = res.getParentResource();
     if(!parent.exists()) parent.createDirectory(true);
     boolean writeHeader = !append || res.length()==0;// this must happen before we open the stream
-    Writer fw = createWriter(new RetireOutputStream(res, append, timeout));
+    Writer fw = createWriter(new RetireOutputStream(res, append, timeout,listener));
     if(bufferedIO) {
       fw = new BufferedWriter(fw, bufferSize);
     }
@@ -213,4 +216,9 @@ public class ResourceAppender extends WriterAppender {
     closeFile();
     super.reset();
   }
+
+@Override
+public boolean isClosed() {
+	return closed;
+}
 }

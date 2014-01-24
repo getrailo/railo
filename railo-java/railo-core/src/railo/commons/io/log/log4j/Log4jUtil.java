@@ -3,30 +3,38 @@ package railo.commons.io.log.log4j;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.HTMLLayout;
+import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SyslogAppender;
+import org.apache.log4j.spi.LoggerRepository;
+import org.apache.log4j.spi.NOPLoggerRepository;
 import org.apache.log4j.xml.XMLLayout;
 
 import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.appender.AppenderState;
 import railo.commons.io.log.log4j.appender.ConsoleAppender;
 import railo.commons.io.log.log4j.appender.RollingResourceAppender;
+import railo.commons.io.log.log4j.appender.TaskAppender;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.io.retirement.RetireListener;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
@@ -45,15 +53,21 @@ public class Log4jUtil {
 
 
 
-	public static Logger getResourceLog(Config config, Resource res, Charset charset, String name, Level level, int timeout) throws IOException {
-		RollingResourceAppender a = new RollingResourceAppender(
+	public static Logger getResourceLog(Config config, Resource res, Charset charset, String name, Level level, int timeout,RetireListener listener, boolean async) throws IOException {
+		Appender a = new RollingResourceAppender(
 				new ClassicLayout()
 				,res
 				,charset
 				,true
 				,RollingResourceAppender.DEFAULT_MAX_FILE_SIZE
 				,RollingResourceAppender.DEFAULT_MAX_BACKUP_INDEX
-				,timeout); // no open stream at all
+				,timeout,listener); // no open stream at all
+		
+		if(async) {
+			a=new TaskAppender(config, a);
+		}
+		
+		
 		return getLogger(config, a, name, level);
 	}
 
@@ -66,17 +80,43 @@ public class Log4jUtil {
 	}
 	
 	public static final Logger getLogger(Config config,Appender appender, String name, Level level){
+		// fullname
 		String fullname=name;
 		if(config instanceof ConfigWeb) {
 	    	ConfigWeb cw=(ConfigWeb) config;
-	    	fullname=cw.getLabel()+"."+name;
+	    	fullname="web."+cw.getLabel()+"."+name;
 	    }
-		Logger logger = getLogger(fullname);
-    	logger.addAppender(appender);
-    	logger.setLevel(level);
+		else fullname="server."+name;
+		
+		Logger l = LogManager.exists(fullname);
+		boolean hasClosedAppenders=false;
+		if(l!=null) {
+			
+			Enumeration<Appender> e = l.getAllAppenders();
+			Appender a;
+			if(e!=null)while(e.hasMoreElements()){
+				a = e.nextElement();
+				
+				if(a instanceof AppenderState)
+					hasClosedAppenders=((AppenderState)a).isClosed();
+				else
+					hasClosedAppenders=true;// if it is not possible to terminate if a appender is closed, the Logger is not used!
+			}
+			if(!hasClosedAppenders)return l;
+		}
+		else l = LogManager.getLogger(fullname);
+		
+		l.setAdditivity(false);
+    	Enumeration e = l.getAllAppenders();
+
+    	if(hasClosedAppenders)l.removeAllAppenders();
+    	l.addAppender(appender);
     	
-    	return logger;
+    	l.setLevel(level);
+    	
+    	return l;
 	}
+	
     
     public static final Appender getAppender(Config config,Layout layout,String name,String strAppender, Map<String, String> appenderArgs){
     	if(appenderArgs==null)appenderArgs=new HashMap<String, String>();
@@ -143,11 +183,11 @@ public class Log4jUtil {
 				appenderArgs.put("maxfilesize",Caster.toString(maxfilesize));
 				
 				// timeout
-				int timeout = Caster.toIntValue(appenderArgs.get("timeout"),1);
+				int timeout = Caster.toIntValue(appenderArgs.get("timeout"),60); // timeout in seconds
 				appenderArgs.put("timeout",Caster.toString(timeout));
 				
 				try {
-					appender=new RollingResourceAppender(layout,res,charset,true,maxfilesize,maxfiles,timeout);
+					appender=new RollingResourceAppender(layout,res,charset,true,maxfilesize,maxfiles,timeout,null);
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -155,7 +195,6 @@ public class Log4jUtil {
 			}
 			// class defintion
 			else {
-				print.e(strAppender);
 				Object obj = ClassUtil.loadInstance(strAppender,null,null);
 				if(obj instanceof Appender) {
 					appender=(Appender) obj;
@@ -167,13 +206,10 @@ public class Log4jUtil {
 							Reflector.callSetter(obj, e.getKey(), e.getValue());
 						}
 						catch (PageException e1) {
-							print.e(e1);
 							e1.printStackTrace(); // TODO log
 						}
 					}
 					org.apache.log4j.net.SyslogAppender s=(SyslogAppender) appender;
-					print.e(s.getFacility());
-					print.e(s.getSyslogHost());
 				}
 			}
 		}
@@ -269,57 +305,8 @@ public class Log4jUtil {
 		if(layout!=null) return layout;
 		return new ClassicLayout();
     }
-
-    /*public static Logger getConsole(Config config,String type, Level level) {
-    	if(config instanceof ConfigWeb) {
-    		ConfigWeb cw=(ConfigWeb) config;
-    		type=cw.getLabel()+"."+type;
-    	}
-    	Logger logger = getLogger(type);
-    	
-    	// get PrintWriter
-    	PrintWriter pw;
-    	if(config.getOutWriter()==null)pw=new PrintWriter(System.out);
-    	else pw=config.getOutWriter();
-    	
-    	// Layouts (one appender for every layout)
-    	Layout[] layouts = ((ConfigImpl)config).getConsoleLayouts();
-    	for(int i=0;i<layouts.length;i++){
-    		logger.addAppender(new ConsoleAppender(pw,layouts[i]));
-    	}
-    	return logger;
-    }*/
-
-	/*public static Logger getResource(Config config,Resource res, String type, Level level, Charset charset) throws SecurityException, IOException {
-    	if(config instanceof ConfigWeb) {
-    		ConfigWeb cw=(ConfigWeb) config;
-    		type=cw.getLabel()+"."+type;
-    	}
-    	
-    	
-    	//ClassicLayout layout = new ClassicLayout();
-    	Logger logger = getLogger(type);
-    	
-    	
-    	// Layouts (one appender for every layout)
-    	Layout[] layouts = ((ConfigImpl)config).getResourceLayouts();
-    	for(int i=0;i<layouts.length;i++){
-    		logger.addAppender(new RollingResourceAppender(layouts[i],res,charset,true,MAX_FILE_SIZE,MAX_FILES));
-    	}
-    	
-    	
-    	
-    	return logger;
-    }*/
-
-	public static Logger getLogger(String name) { 
-		
-		Logger l = LogManager.getLogger(name);
-    	l.setAdditivity(false);
-    	l.removeAllAppenders();
-    	l.setLevel(org.apache.log4j.Level.TRACE);
-		return l;
-	}
+    
+    //private static LoggerRepository repository=new Hierarchy(null); 
 
 	public static Level toLevel(int level) {
 		switch(level){

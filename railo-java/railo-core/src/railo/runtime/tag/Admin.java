@@ -3217,12 +3217,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	}
 
 	private Object toStruct(Map<String, String> map) {
-		Iterator<Entry<String, String>> it = map.entrySet().iterator();
-		Entry<String, String> e;
 		Struct sct=new StructImpl();
-		while(it.hasNext()){
-			e = it.next();
-			sct.setEL(e.getKey(), e.getValue());	
+		if(map!=null) {
+			Iterator<Entry<String, String>> it = map.entrySet().iterator();
+			Entry<String, String> e;
+			while(it.hasNext()){
+				e = it.next();
+				sct.setEL(e.getKey(), e.getValue());	
+			}
 		}
 		return sct;
 	}

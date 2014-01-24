@@ -14,6 +14,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import railo.print;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
+import railo.commons.io.retirement.RetireListener;
 
 public class RollingResourceAppender extends ResourceAppender {
 	
@@ -33,8 +34,8 @@ public class RollingResourceAppender extends ResourceAppender {
     destination for this appender.
 
     <p>The file will be appended to.  */
-  public RollingResourceAppender(Layout layout, Resource res,Charset charset) throws IOException {
-    this(layout, res,charset, true,DEFAULT_MAX_FILE_SIZE,DEFAULT_MAX_BACKUP_INDEX,1);
+  public RollingResourceAppender(Layout layout, Resource res,Charset charset,RetireListener listener) throws IOException {
+    this(layout, res,charset, true,DEFAULT_MAX_FILE_SIZE,DEFAULT_MAX_BACKUP_INDEX,60,listener);
   }
 
 
@@ -47,8 +48,8 @@ public class RollingResourceAppender extends ResourceAppender {
     appended to. Otherwise, the file desginated by
     <code>filename</code> will be truncated before being opened.
   */
-  public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append) throws IOException {
-    this(layout, res,charset, append,DEFAULT_MAX_FILE_SIZE,DEFAULT_MAX_BACKUP_INDEX,1);
+  public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append,RetireListener listener) throws IOException {
+    this(layout, res,charset, append,DEFAULT_MAX_FILE_SIZE,DEFAULT_MAX_BACKUP_INDEX,60,listener);
   }
   
 
@@ -61,8 +62,8 @@ public class RollingResourceAppender extends ResourceAppender {
     appended to. Otherwise, the file desginated by
     <code>filename</code> will be truncated before being opened.
   */
-  public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append, long maxFileSize,int maxBackupIndex, int timeout) throws IOException {
-    super(layout, res,charset, append,timeout);
+  public RollingResourceAppender(Layout layout, Resource res,Charset charset, boolean append, long maxFileSize,int maxBackupIndex, int timeout,RetireListener listener) throws IOException {
+    super(layout, res,charset, append,timeout,listener);
     this.maxFileSize=maxFileSize;
     this.maxBackupIndex=maxBackupIndex;
   }

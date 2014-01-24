@@ -37,7 +37,7 @@ import railo.runtime.type.comparator.SortRegisterComparator;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
-public class CacheHandlerFactory {
+public class CacheHandlerFactory { 
 
 	public static final int TYPE_TIMESPAN=1;
 	public static final int TYPE_REQUEST=2;
@@ -47,7 +47,7 @@ public class CacheHandlerFactory {
 	public static final char CACHE_DEL2 = ':';
 
 	public static CacheHandlerFactory query=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_QUERY);
-	public static CacheHandlerFactory udf=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+	public static CacheHandlerFactory function=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
 	public static CacheHandlerFactory include=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 	
 	private final RequestCacheHandler rch;
@@ -63,7 +63,7 @@ public class CacheHandlerFactory {
 	
 	public static void release(PageContext pc){
 		query.rch.clear(pc);
-		udf.rch.clear(pc);
+		function.rch.clear(pc);
 		include.rch.clear(pc);
 	}
 
@@ -87,6 +87,10 @@ public class CacheHandlerFactory {
 		if(TYPE_REQUEST==type) return rch;
 		if(TYPE_SMART==type) return sch;
 		return null;
+	}
+
+	public SmartCacheHandler getSmartCacheHandler() {
+		return sch;
 	}
 	
 	private CacheHandler getTimespanCacheHandler(Config config) {

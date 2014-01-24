@@ -11,7 +11,8 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
-import railo.runtime.cache.tag.request.CacheEntry;
+import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.query.QueryCacheItem;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
@@ -487,9 +488,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		else if(hasCached) {
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
-			Object obj=ch.get(pageContext, id);
-			if(obj instanceof CacheEntry) {
-				CacheEntry ce = (CacheEntry) obj;
+			CacheItem ci = ch.get(pageContext, id);
+			if(ci instanceof QueryCacheItem) {
+				QueryCacheItem ce = (QueryCacheItem) ci;
 				if(ce.isCachedAfter(cachedAfter))
 					query= ce.query;
 			}
@@ -537,7 +538,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				//if(cachedWithin!=null)
 				String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
-				ch.set(pageContext, id,cachedWithin,new CacheEntry(query));
+				ch.set(pageContext, id,cachedWithin,new QueryCacheItem(query));
 				
 				//cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
 	            //pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);

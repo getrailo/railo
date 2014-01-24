@@ -6,8 +6,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -49,6 +52,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	//private LinkedList<SpoolerTask> openTaskss=new LinkedList<SpoolerTask>();
 	//private LinkedList<SpoolerTask> closedTasks=new LinkedList<SpoolerTask>();
+	private SimpleThread simpleThread;
 	private SpoolerThread thread;
 	//private ExecutionPlan[] plans;
 	private Resource persisDirectory;
@@ -102,6 +106,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	@Override
 	public synchronized void add(SpoolerTask task) {
+		// if there is no plan execute and forget
+		if(task.getPlans()==null) {
+			start(task);
+			return;
+		}
+		
 		//openTasks.add(task);
 		add++;
 		task.setNextExecution(System.currentTimeMillis());
@@ -110,6 +120,18 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		start();
 	}
 
+
+	private void start(SpoolerTask task) {
+		if(simpleThread==null || !simpleThread.isAlive()) {
+			simpleThread=new SimpleThread(config,task);
+			simpleThread.setPriority(Thread.MIN_PRIORITY);
+			simpleThread.start();
+		}
+		else {
+			simpleThread.tasks.add(task);
+			simpleThread.interrupt();
+		}
+	}
 
 	private void start() {
 		if(thread==null || !thread.isAlive()) {
@@ -120,7 +142,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		else if(thread.sleeping) {
 			thread.interrupt();
 		}
-		//else print.out("- existing");
 	}
 
 	@Override
@@ -166,7 +187,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	        oos = new ObjectOutputStream(persis.getOutputStream());
 	        oos.writeObject(task);
         } 
-        catch (IOException e) {}
+        catch (IOException e) {e.printStackTrace();}
         finally {
         	IOUtil.closeEL(oos);
         }
@@ -309,6 +330,30 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			sct.setEL(KeyConstants._time,new DateTimeImpl(Caster.toLongValue(sct.get(KeyConstants._time,null),0),true));
 		}
 		return exp;
+	}
+	
+	class SimpleThread extends Thread {
+		
+		LinkedList<SpoolerTask> tasks=new LinkedList<SpoolerTask>();
+		private Config config;
+		
+		public SimpleThread(Config config, SpoolerTask task){
+			this.config=config;
+			tasks.add(task);
+		}
+		
+		
+		public void run() {
+			SpoolerTask task;
+			while(tasks.size()>0){
+				try {
+					task= tasks.poll();
+					if(task!=null)task.execute(config);
+				}
+				catch (Throwable t) {}
+			}
+		}
+		
 	}
 
 	class SpoolerThread extends Thread {

@@ -20,18 +20,18 @@ public final class ArrayMerge extends BIF {
 		return call(pc,arr1,arr2,false);
 	}
 	public static Array call(PageContext pc , Array arr1, Array arr2, boolean leaveIndex) throws PageException {
+
+		ArrayImpl arr = new ArrayImpl();
+		arr.ensureCapacity(arr1.size() + arr2.size());
+
 		if(leaveIndex) {
-			Array arr = new ArrayImpl();
-			set(arr,arr2);
-			set(arr,arr1);
-			return arr;			
-		}
-		
-			Array arr = new ArrayImpl();
-			append(arr,arr1);
-			append(arr,arr2);
+			set(arr, arr2);
+			set(arr, arr1);
 			return arr;
-		
+		}
+		append(arr, arr1);
+		append(arr, arr2);
+		return arr;
 	}
 	
 	@Override
@@ -39,8 +39,7 @@ public final class ArrayMerge extends BIF {
 		if(args.length==2)return call(pc,Caster.toArray(args[0]),Caster.toArray(args[1]));
 		return call(pc,Caster.toArray(args[0]),Caster.toArray(args[1]), Caster.toBooleanValue(args[2]));
 	}
-	
-	
+
 
 	public static void set(Array target,Array source) throws PageException {
 		int[] srcKeys=source.intKeys();
