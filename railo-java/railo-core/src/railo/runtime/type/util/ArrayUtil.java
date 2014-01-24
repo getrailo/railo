@@ -852,10 +852,7 @@ public final class ArrayUtil {
 
 
 	/**
-	 * efficiently copy the contents of one native array into another by using System.arraycopy()
-	 *
-	 * this method
-	 *
+	 * this method efficiently copy the contents of one native array into another by using System.arraycopy()	 *
 	 *
 	 * @param dst - the array that will be modified
 	 * @param src - the data to be copied
