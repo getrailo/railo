@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.config.Configuration;
+import net.sf.ehcache.config.ConfigurationFactory;
+
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
@@ -108,7 +111,9 @@ public class EHCacheLite extends EHCacheSupport {
 			
 			moveData(dir,hashArg,cacheNames,arguments);
 			
-			CacheManagerAndHashLite m = new CacheManagerAndHashLite(new CacheManager(new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8))),hash);
+			Configuration conf = ConfigurationFactory.parseConfiguration(new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8)));
+			conf.setName("ehcachelite_"+config.getId());
+			CacheManagerAndHashLite m = new CacheManagerAndHashLite(CacheManager.newInstance(conf),hash);
 			newManagers.put(hashDir.getAbsolutePath(), m);
 		}
 		
