@@ -13,6 +13,7 @@ import java.util.Set;
 import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
@@ -848,4 +849,42 @@ public final class ArrayUtil {
 		}
 		return list;
 	}
+
+
+	/**
+	 * efficiently copy the contents of one native array into another by using System.arraycopy()
+	 *
+	 * this method
+	 *
+	 *
+	 * @param dst - the array that will be modified
+	 * @param src - the data to be copied
+	 * @param dstPosition - pass -1 to append to the end of the dst array, or a valid position to add it elsewhere
+	 * @param doPowerOf2 - if true, and the array needs to be resized, it will be resized to the next power of 2 size
+	 * @return - either the original dst array if it had enough capacity, or a new array.
+	 */
+	public static Object[] mergeNativeArrays(Object[] dst, Object[] src, int dstPosition, boolean doPowerOf2) {
+
+		Object[] result = dst;
+
+		if (dstPosition < 0)
+			dstPosition = dst.length;
+
+		int newSize = dstPosition + src.length;
+
+		if (result.length < newSize) {
+
+			if (doPowerOf2)
+				newSize = MathUtil.nextPowerOf2(newSize);
+
+			result = new Object[newSize];
+			System.arraycopy(dst, 0, result, 0, dst.length);
+		}
+
+		System.arraycopy(src, 0, result, dstPosition, src.length);
+
+		return result;
+	}
+
+
 }
