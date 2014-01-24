@@ -21,7 +21,12 @@
 	
 	<cfif n NEQ "Cache" and n NEQ "Field" and n NEQ "Group">
 		<cfset tmp = createObject("component",fn)>
-		<cfset drivers[tmp.getClass()]=tmp>
+		<!--- Workaround for EHCache Extension --->
+		<cfset clazz=tmp.getClass()>
+		<cfif "railo.extension.io.cache.eh.EHCache" EQ clazz>
+			<cfset clazz="railo.runtime.cache.eh.EHCache">
+		</cfif>
+		<cfset drivers[clazz]=tmp>
 	</cfif>
 </cfloop>
 <cfadmin 

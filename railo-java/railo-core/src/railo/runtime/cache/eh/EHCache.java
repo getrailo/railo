@@ -12,6 +12,9 @@ import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.config.Configuration;
+import net.sf.ehcache.config.ConfigurationFactory;
+
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
@@ -109,8 +112,10 @@ public class EHCache extends EHCacheSupport {
 			hash=MD5.getDigestAsString(xml);
 			
 			moveData(dir,hashArg,cacheNames,arguments);
-			
-			CacheManagerAndHash m = new CacheManagerAndHash(new CacheManager(new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8))),hash);
+			//print.e(xml);
+			Configuration conf = ConfigurationFactory.parseConfiguration(new ByteArrayInputStream(xml.getBytes(CharsetUtil.UTF8)));
+			conf.setName("ehcache_"+config.getId());
+			CacheManagerAndHash m = new CacheManagerAndHash(CacheManager.newInstance(conf),hash);
 			newManagers.put(hashDir.getAbsolutePath(), m);
 		}
 		
