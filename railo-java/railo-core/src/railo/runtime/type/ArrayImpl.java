@@ -24,6 +24,7 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListIteratorImpl;
 
 
@@ -66,11 +67,13 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @param objects Objects array data to fill
 	 */
 	public ArrayImpl(Object[] objects) {
-		arr=new Object[ Math.max(objects.length, cap) ];
-		for(int i=0;i<objects.length;i++){
-			arr[i]=objects[i];
-		}
 		size=objects.length;
+
+		arr=new Object[ Math.max(size, cap) ];
+
+		if (size > 0)
+			arr = ArrayUtil.mergeNativeArrays(arr, objects, 0, false);
+
 		offset=0;
 	}
 	
@@ -226,13 +229,12 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 */
 	private void enlargeCapacity(int key) {
 		int diff=offCount-offset;
-		int newSize = MathUtil.nextPowerOf2(Math.max(arr.length, key + offset + diff + 1));
+		int newSize = Math.max(arr.length, key + offset + diff + 1);
 		if(newSize>arr.length) {
-			Object[] na=new Object[newSize];
-			for(int i=offset;i<offset+size;i++) {
-				na[i+diff]=arr[i];
-			}
-			arr=na;
+
+			Object[] narr = new Object[newSize];
+			arr = ArrayUtil.mergeNativeArrays(narr, arr, diff, true);
+
 			offset+=diff;
 		}
 	}
