@@ -15003,14 +15003,20 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description>Structure that contains the value to return</description>
-    </argument>
+            <description>Structure that contains the value to return</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>Key whose value to return</description>
-    </argument>
+            <description>Key whose value to return</description>
+        </argument>
+		<argument>
+			<name>defaultValue</name>
+			<type>any</type>
+			<required>false</required>
+            <description>Default value which will be returned if the key does not exist or if null was found</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>
