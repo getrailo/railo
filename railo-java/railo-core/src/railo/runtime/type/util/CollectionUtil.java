@@ -7,6 +7,7 @@ import java.util.Map;
 
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
 
 public class CollectionUtil {
@@ -102,4 +103,12 @@ public class CollectionUtil {
 		}
 		return hashCode;
 	}*/
+	
+	public static Collection.Key[] toKeys(String[] strArr, boolean trim) {
+		Collection.Key[] keyArr=new Collection.Key[strArr.length];
+		for(int i=0	;i<keyArr.length;i++) {
+			keyArr[i]=KeyImpl.init(trim?strArr[i].trim():strArr[i]);
+		}
+		return keyArr;
+	}
 }
