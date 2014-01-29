@@ -45,7 +45,7 @@ public final class CallStackGet implements Function {
 
 			try {
 
-				return new JSONConverter(true).serialize( pc, arr, false );
+				return new JSONConverter(true,null).serialize( pc, arr, false );
 			}
 			catch (Throwable t) {
 

@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +19,7 @@ import java.util.Set;
 
 import org.w3c.dom.Node;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
@@ -61,12 +64,15 @@ public final class JSONConverter extends ConverterSupport {
 
 	private boolean ignoreRemotingFetch;
 
+	private CharsetEncoder charsetEncoder;
 
 	/**
-     * constructor of the class
-     */
-    public JSONConverter(boolean ignoreRemotingFetch) {
+	 * @param ignoreRemotingFetch
+	 * @param charset if set, characters not supported by the charset are escaped.
+	 */
+    public JSONConverter(boolean ignoreRemotingFetch, Charset charset) {
     	this.ignoreRemotingFetch=ignoreRemotingFetch;
+    	charsetEncoder = charset!=null?charset.newEncoder():null;//.canEncode("string");
     }
 	
 	
@@ -635,9 +641,10 @@ public final class JSONConverter extends ConverterSupport {
 	}
 
 	
-	public static String escape(String str) {
+	private String escape(String str) {
 		char[] arr=str.toCharArray();
 		StringBuilder rtn=new StringBuilder(arr.length);
+		
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i] < 128){
 				switch(arr[i]) {
@@ -652,13 +659,16 @@ public final class JSONConverter extends ConverterSupport {
 					default : rtn.append(arr[i]); break;
 				}
 			}
-			else {
+			else if(charsetEncoder!=null && !charsetEncoder.canEncode(arr[i])) {
 				if (arr[i] < 0x10)			rtn.append("\\u000");
-			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
-			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
-			    else 						rtn.append( "\\u");
+				else if (arr[i] < 0x100) 	rtn.append( "\\u00");
+				else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
+				else 						rtn.append( "\\u");
+				
 				rtn.append(Integer.toHexString(arr[i]));
+				
 			}
+			else rtn.append(arr[i]);
 		}
 		return rtn.toString();
 	}
