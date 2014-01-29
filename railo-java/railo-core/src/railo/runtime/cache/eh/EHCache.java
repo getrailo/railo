@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.Configuration;
@@ -20,10 +21,14 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.lang.ExceptionUtil;
 import railo.loader.util.Util;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 public class EHCache extends EHCacheSupport {
 	
@@ -53,7 +58,7 @@ public class EHCache extends EHCacheSupport {
 	private CacheManager manager;
 	private ClassLoader classLoader;
 
-	
+
 	public static void init(Config config,String[] cacheNames,Struct[] arguments) throws IOException {
 		System.setProperty("net.sf.ehcache.enableShutdownHook", "true");
 		Thread.currentThread().setContextClassLoader(config.getClassLoader());
@@ -490,15 +495,12 @@ public class EHCache extends EHCacheSupport {
 	}
 	@Override
 	public void init(Config config,String cacheName, Struct arguments) {
-		
 		this.classLoader=config.getClassLoader();
 		this.cacheName=cacheName;
 		
 		setClassLoader();
 		Resource hashDir = config.getConfigDir().getRealResource("ehcache").getRealResource(createHash(arguments));
 		manager =managers.get(hashDir.getAbsolutePath()).manager;
-		
-		
 	} 
 
 	private void setClassLoader() {
@@ -508,7 +510,10 @@ public class EHCache extends EHCacheSupport {
 
 	protected net.sf.ehcache.Cache getCache() {
 		setClassLoader();
-		return manager.getCache(cacheName);
+		Cache c = manager.getCache(cacheName);
+		if(c==null)
+			throw new PageRuntimeException(new ApplicationException(ExceptionUtil.similarKeyMessage(CollectionUtil.toKeys(manager.getCacheNames(),false), cacheName, "cache name", "caches", true)));
+		return c;
 	}
 
 	@Override
