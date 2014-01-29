@@ -28,7 +28,7 @@ public final class StructFind extends BIF {
 		return struct.get( Caster.toKey(key), defaultValue );
 	}
 
-	public static Object call(PageContext pc, Struct struct, Collection.Key key, Object defaultValue) throws PageException {
+	public static Object call(PageContext pc, Struct struct, Collection.Key key, Object defaultValue) {
 
 		return struct.get( key, defaultValue );
 	}
