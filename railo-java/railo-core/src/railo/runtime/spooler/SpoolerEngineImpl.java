@@ -125,12 +125,14 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		start();
 	}
 	
-	public synchronized void add(Task task) {
+	// add to interface
+	public void add(Task task) {
 		start(task);
 	}
 
 
 	private void start(Task task) {
+		if(task==null) return;
 		if(simpleThread==null || !simpleThread.isAlive()) {
 			simpleThread=new SimpleThread(config,task);
 			simpleThread.setPriority(Thread.MIN_PRIORITY);

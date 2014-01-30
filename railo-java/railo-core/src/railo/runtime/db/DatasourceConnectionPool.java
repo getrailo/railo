@@ -7,15 +7,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.spooler.SpoolerEngine;
+import railo.runtime.spooler.SpoolerEngineImpl;
+import railo.runtime.spooler.SpoolerTask;
 import railo.runtime.type.util.ArrayUtil;
 
 public class DatasourceConnectionPool {
@@ -80,6 +85,11 @@ public class DatasourceConnectionPool {
     }
 	
 	public void releaseDatasourceConnection(DatasourceConnection dc) {
+		// 
+		_releaseDatasourceConnection(dc);
+	}
+	
+	public void _releaseDatasourceConnection(DatasourceConnection dc) {
 		if(dc==null) return;
 		
 		DCStack stack=getDCStack(dc.getDatasource(), dc.getUsername(), dc.getPassword());
