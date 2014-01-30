@@ -12,7 +12,7 @@ class DCStack {
 	DCStack() {
 	}
 
-	public synchronized void add(DatasourceConnection dc){
+	public void add(DatasourceConnection dc){
 		// make sure the connection is not already in stack, this can happen when the conn is released twice
 		Item test = item;
 		while(test!=null){
@@ -26,7 +26,7 @@ class DCStack {
 		item=new Item(item,dc);
 	}
 
-	public synchronized DatasourceConnection get(PageContext pc){
+	public DatasourceConnection get(PageContext pc){
 		if(item==null) return null;
 		DatasourceConnection rtn = item.dc;
 		item=item.prev;
@@ -41,11 +41,11 @@ class DCStack {
 		return null;
 	}
 
-	public synchronized boolean isEmpty(){
+	public boolean isEmpty(){
 		return item==null;
 	}
 
-	public synchronized int size(){
+	public int size(){
 		int count=0;
 		Item i = item;
 		while(i!=null){
@@ -54,6 +54,7 @@ class DCStack {
 		}
 		return count;
 	}
+	
 	public int openConnections(){
 		int count=0;
 		Item i = item;
