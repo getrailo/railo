@@ -8524,6 +8524,13 @@ Railo uses the number of characters in the file.</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>remove all attachments from filesystem after the mail is successfully sent</description>
 		</attribute>
+		<attribute>
+            <type>datetime</type>
+            <name>sendTime</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set a future date time to send an email in the future via the spooler.</description>
+        </attribute>
 	</tag>
 	<!-- MailPart -->
 	<tag>
