@@ -61,7 +61,7 @@ public class SmartCacheHandler implements CacheHandler {
 	private Cache _cache;
 	private Log log;
 	private Map<String,SmartEntry> entries=new LinkedHashMap<String,SmartEntry>();
-	private Map<String,TimeSpan> rules=new ConcurrentHashMap<String,TimeSpan>();
+	private Map<String,Rule> rules=new ConcurrentHashMap<String,Rule>();
 
 	public SmartCacheHandler(int cacheType) {
 		this.pc=ThreadLocalPageContext.get();
@@ -78,7 +78,12 @@ public class SmartCacheHandler implements CacheHandler {
 	public CacheItem get(PageContext pc, String id) throws PageException {
 		if(!running) return null;
 		log.debug("smartcache", "get("+id+")");
-		return (CacheItem) _cache.getValue(id,null);
+		CacheItem ci = (CacheItem) _cache.getValue(id,null);
+		if(ci!=null) {
+			// TODO async ?
+			rules.get(id).used++;
+		}
+		return ci;
 	}
 
 	@Override
@@ -92,12 +97,13 @@ public class SmartCacheHandler implements CacheHandler {
 		if(!running) return;
 		
 		// add do cache if necessary
-		TimeSpan ts = rules.get(id);
-		if(ts!=null) {
-			log.debug("smartcache", "set("+id+")");
-			_cache.put(id, ci, null, Long.valueOf(ts.getMillis()));
+		Rule rule = rules.get(id);
+		if(rule!=null) {
+			log.debug("smartcache", "add to cache ("+id+")");
+			_cache.put(id, ci, null, Long.valueOf(rule.timespan.getMillis()));
 		}
 		SmartEntry se = new SmartEntryImpl(pc,ci,id,cacheType);
+		log.debug("smartcache", "add to entries ("+id+")");
 		entries.put(se.getId(),se);
 		
 		// TODO else handle all other types
@@ -169,16 +175,16 @@ public class SmartCacheHandler implements CacheHandler {
 	public void setRule(String id, TimeSpan timeSpan) { 
 		log.debug("smartcache", "setRule("+id+","+timeSpan+")");
 		// flush all cached elements for the old rule
-		TimeSpan existing = rules.get(id);
-		if(existing!=null) {
-			if(existing.equals(timeSpan)) return;
+		Rule rule = rules.get(id);
+		if(rule!=null) {
+			if(rule.timespan.equals(timeSpan)) return;
 			try {
 				log.debug("smartcache", "remove cache item with id: "+id);
 				_cache.remove(id);
 			}
 			catch (IOException e) {}
 		}		
-		rules.put(id, timeSpan);
+		rules.put(id, new Rule(timeSpan));
 		setRuleElement(id, timeSpan);
 	}
 
@@ -229,14 +235,18 @@ public class SmartCacheHandler implements CacheHandler {
 	}
 	
 	public void _getRules(Query qry, String type) {
-		Iterator<Entry<String, TimeSpan>> it = rules.entrySet().iterator();
+		Iterator<Entry<String, Rule>> it = rules.entrySet().iterator();
 		int row;
+		Rule r;
 		while(it.hasNext()){
-			Entry<String, TimeSpan> e = it.next();
+			Entry<String, Rule> e = it.next();
 			row=qry.addRow();
+			r = e.getValue();
 			qry.setAtEL("type", row, type);
 			qry.setAtEL("entryHash", row, e.getKey());
-			qry.setAtEL("timespan", row, e.getValue());
+			qry.setAtEL("timespan", row,r.timespan );
+			qry.setAtEL("crated", row, new DateTimeImpl(r.created,false));
+			qry.setAtEL("used", row, r.used);
 		}
 	}
 	
@@ -353,7 +363,7 @@ public class SmartCacheHandler implements CacheHandler {
 				e = it.next();
 				rules.put(
 						dec(e.getAttribute("id")), 
-						TimeSpanImpl.fromMillis(Caster.toLongValue(dec(e.getAttribute("timespan"))))
+						new Rule(TimeSpanImpl.fromMillis(Caster.toLongValue(dec(e.getAttribute("timespan")))))
 				);
 			}
 		}
