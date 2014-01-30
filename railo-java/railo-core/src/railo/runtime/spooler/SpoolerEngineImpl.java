@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import railo.print;
+//import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -114,7 +114,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		
 		//openTasks.add(task);
 		add++;
-		task.setNextExecution(System.currentTimeMillis());
+		if (task.nextExecution() == 0)
+			task.setNextExecution(System.currentTimeMillis());
 		task.setId(createId(task));
 		store(task);
 		start();
@@ -393,7 +394,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 					if(task==null) continue;
 					
 					if(task.nextExecution()<=System.currentTimeMillis()) {
-						//print.o("- execute");
+						//print.o("- execute " + task.getId());
 						tt=new TaskThread(engine,task);
 						tt.start();
 						runningTasks.add(tt);
@@ -521,7 +522,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	/**
 	 * execute task by id and return eror throwd by task
 	 * @param id
-	 * @throws SpoolerException
 	 */
 	public PageException execute(String id) {
 		SpoolerTask task = getTaskById(openDirectory,id);
