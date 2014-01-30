@@ -155,7 +155,7 @@ public final class SmartCache extends TagSupport {
 	}
 
 	private void doAnalyze() throws PageException {
-		typeRequired();
+		//typeRequired();
 		pageContext.setVariable(returnVariable, Analyzer.analyze(type));
 	}
 	
