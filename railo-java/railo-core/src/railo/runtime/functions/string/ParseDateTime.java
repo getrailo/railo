@@ -6,6 +6,8 @@ import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 
 /**
@@ -25,7 +27,6 @@ public final class ParseDateTime implements Function {
 		return _call(oDate,strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	private static railo.runtime.type.dt.DateTime _call( Object oDate,TimeZone tz) throws PageException {
-		// MUSt implement popConversion
-		return DateCaster.toDateAdvanced(oDate,tz);
+		return DateCaster.toDateAdvanced(oDate,false,tz);
 	}
 }

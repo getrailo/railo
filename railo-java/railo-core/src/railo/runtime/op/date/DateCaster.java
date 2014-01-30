@@ -108,15 +108,16 @@ public final class DateCaster {
 	/**
 	 * converts a String to a DateTime Object (Advanced but slower), returns null if invalid string
 	 * @param str String to convert
+	 * @param numbersAsOffset if set to true, numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as year AS LONG they are in the following range (-10000 - 10000)
 	 * @param timeZone
 	 * @param defaultValue 
 	 * @return Date Time Object
 	 */
-	public static DateTime toDateAdvanced(String str,boolean alsoNumbers,TimeZone timeZone, DateTime defaultValue) {
+	public static DateTime toDateAdvanced(String str,boolean numbersAsOffset,TimeZone timeZone, DateTime defaultValue) {
 		str=str.trim();
 		if(StringUtil.isEmpty(str)) return defaultValue;
 		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
-		DateTime dt=toDateSimple(str,alsoNumbers,true,timeZone,defaultValue);
+		DateTime dt=toDateSimple(str,numbersAsOffset,true,timeZone,defaultValue);
 		if(dt==null) {	
 	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
 		    synchronized(formats){
@@ -304,18 +305,19 @@ public final class DateCaster {
 	/**
 	 * converts a Object to a DateTime Object, returns null if invalid string
 	 * @param o Object to Convert
+	 * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
 	 * @param timeZone
 	 * @return coverted Date Time Object
 	 * @throws PageException
 	 */
-	public static DateTime toDateSimple(Object o, boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone) throws PageException {
+	public static DateTime toDateSimple(Object o, boolean numbersAsOffset,boolean alsoMonthString, TimeZone timeZone) throws PageException {
 		if(o instanceof DateTime) 		return (DateTime)o;
 		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime();
-		else if(o instanceof String) 	return toDateSimple(o.toString(),alsoNumbers,alsoMonthString, timeZone);
+		else if(o instanceof String) 	return toDateSimple(o.toString(),numbersAsOffset,alsoMonthString, timeZone);
 		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
-		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),alsoNumbers,alsoMonthString,timeZone);
+		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),numbersAsOffset,alsoMonthString,timeZone);
 		else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
 		}
@@ -325,18 +327,26 @@ public final class DateCaster {
 		
 		throw new ExpressionException("can't cast ["+Caster.toTypeName(o)+"] to date value");
 	}
-	
-	public static DateTime toDateSimple(Object o, boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
+	/**
+	 * 
+	 * @param o
+	 * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
+	 * @param alsoMonthString
+	 * @param timeZone
+	 * @param defaultValue
+	 * @return
+	 */
+	public static DateTime toDateSimple(Object o, boolean numbersAsOffset,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
 		if(o instanceof DateTime) 		return (DateTime)o;
 		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime(defaultValue);
-		else if(o instanceof String) 	return toDateSimple(o.toString(),alsoNumbers,alsoMonthString, timeZone,defaultValue);
+		else if(o instanceof String) 	return toDateSimple(o.toString(),numbersAsOffset,alsoMonthString, timeZone,defaultValue);
 		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
 		else if(o instanceof ObjectWrap) {
 			Object eo = ((ObjectWrap)o).getEmbededObject(NULL);
 			if(eo==NULL) return defaultValue;
-			return toDateSimple(eo,alsoNumbers,alsoMonthString,timeZone,defaultValue);
+			return toDateSimple(eo,numbersAsOffset,alsoMonthString,timeZone,defaultValue);
 		}
 		else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
@@ -381,24 +391,34 @@ public final class DateCaster {
 		}
 		throw new ExpressionException("can't cast ["+Caster.toClassName(o)+"] to time value");
 	}
-	 
-	 public static DateTime toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
-        return _toDateAdvanced(o, alsoNumbers, timeZone, defaultValue, true);
+	
+	/**
+	 * 
+	 * @param o
+	 * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
+	 * @param timeZone
+	 * @param defaultValue
+	 * @return
+	 */
+	public static DateTime toDateAdvanced(Object o,boolean numbersAsOffset, TimeZone timeZone, DateTime defaultValue) {
+        return _toDateAdvanced(o, numbersAsOffset, timeZone, defaultValue, true);
 	 }
 	 
-	 private static DateTime _toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue, boolean advanced) {
+	 private static DateTime _toDateAdvanced(Object o,boolean numbersAsOffset, TimeZone timeZone, DateTime defaultValue, boolean advanced) {
         if(o instanceof DateTime)       return (DateTime)o;
         else if(o instanceof Date)      return new DateTimeImpl((Date)o);
         else if(o instanceof Castable)  {
             return ((Castable)o).castToDateTime(defaultValue);
         }
         else if(o instanceof String)    {
-        	if(advanced)return toDateAdvanced(o.toString(),alsoNumbers, timeZone,defaultValue);
-        	return toDateSimple(o.toString(),alsoNumbers,true, timeZone,defaultValue);
+        	if(advanced)return toDateAdvanced(o.toString(),numbersAsOffset, timeZone,defaultValue);
+        	return toDateSimple(o.toString(),numbersAsOffset,true, timeZone,defaultValue);
         }
-        else if(alsoNumbers && o instanceof Number)     return util.toDateTime(((Number)o).doubleValue());
+        else if(o instanceof Number){
+        	return numberToDate(timeZone, ((Number)o).doubleValue(), numbersAsOffset, defaultValue);
+        }
         else if(o instanceof ObjectWrap) {
-        	return _toDateAdvanced(((ObjectWrap)o).getEmbededObject(defaultValue),alsoNumbers,timeZone,defaultValue,advanced);
+        	return _toDateAdvanced(((ObjectWrap)o).getEmbededObject(defaultValue),numbersAsOffset,timeZone,defaultValue,advanced);
         }
         else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
@@ -411,19 +431,19 @@ public final class DateCaster {
     /**
      * converts a Object to a DateTime Object, returns null if invalid string
      * @param str Stringt to Convert
-     * @param alsoNumbers
-     * @param timeZone
+     * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
+	 * @param timeZone
      * @return coverted Date Time Object
      * @throws PageException  
      */
-    public static DateTime toDateSimple(String str,boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone) throws PageException {
-        DateTime dt = toDateSimple(str,alsoNumbers,alsoMonthString,timeZone,null);
+    public static DateTime toDateSimple(String str,boolean numbersAsOffset,boolean alsoMonthString, TimeZone timeZone) throws PageException {
+        DateTime dt = toDateSimple(str,numbersAsOffset,alsoMonthString,timeZone,null);
         if(dt==null) throw new ExpressionException("can't cast value to a Date Object");
         return dt;
     }
     
-    public static DateTime toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone) throws PageException {
-        DateTime dt = toDateAdvanced(o,alsoNumbers,timeZone,null);
+    public static DateTime toDateAdvanced(Object o,boolean numbersAsOffset, TimeZone timeZone) throws PageException {
+        DateTime dt = toDateAdvanced(o,numbersAsOffset,timeZone,null);
         if(dt==null) throw new ExpressionException("can't cast value to a Date Object");
         return dt;
     }
@@ -561,13 +581,13 @@ public final class DateCaster {
 	/**
 	 * converts a String to a DateTime Object, returns null if invalid string
 	 * @param str String to convert
-	 * @param alsoNumbers
+	 * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
 	 * @param alsoMonthString allow that the month is a english name
 	 * @param timeZone
 	 * @param defaultValue 
 	 * @return Date Time Object
 	 */	
-	private static DateTime parseDateTime(String str,DateString ds,boolean alsoNumbers,boolean alsoMonthString,TimeZone timeZone, DateTime defaultValue) {
+	private static DateTime parseDateTime(String str,DateString ds,boolean numbersAsOffset,boolean alsoMonthString,TimeZone timeZone, DateTime defaultValue) {
 		int month=0;
 		int first=ds.readDigits();
 		// first
@@ -578,7 +598,7 @@ public final class DateCaster {
 			month=1;
 		}
 		
-		if(ds.isAfterLast()) return month==1?defaultValue:toNumberDate(str,alsoNumbers,defaultValue);
+		if(ds.isAfterLast()) return month==1?defaultValue:numberToDate(timeZone,Caster.toDoubleValue(str,Double.NaN),numbersAsOffset,defaultValue);
 		
 		char del=ds.current();
 		if(del!='.' && del!='/' && del!='-' && del!=' ' && del!='\t') {
@@ -779,13 +799,13 @@ public final class DateCaster {
 	/**
 	 * converts the given string to a date following simple and fast parsing rules (no international formats)
 	 * @param str
-	 * @param alsoNumbers
+	 * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
 	 * @param alsoMonthString allow that the month is defined as english word (jan,janauary ...)
 	 * @param timeZone
 	 * @param defaultValue
 	 * @return
 	 */
-	public static DateTime toDateSimple(String str,boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
+	public static DateTime toDateSimple(String str,boolean numbersAsOffset,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
 		str=StringUtil.trim(str,"");
 		DateString ds=new DateString(str);
 		
@@ -793,12 +813,37 @@ public final class DateCaster {
 		if(ds.isCurrent('{') && ds.isLast('}')) {
 			return _toDateSimpleTS(ds,timeZone,defaultValue);
 		}
-		DateTime res = parseDateTime(str,ds,alsoNumbers,alsoMonthString,timeZone,defaultValue);
-		if(alsoNumbers && res==defaultValue && Decision.isNumeric(str)) {
-	        double dbl = Caster.toDoubleValue(str,Double.NaN);
-	        if(Decision.isValid(dbl))return util.toDateTime(dbl);
+		DateTime res = parseDateTime(str,ds,numbersAsOffset,alsoMonthString,timeZone,defaultValue);
+		if(res==defaultValue && Decision.isNumeric(str)) {
+			return numberToDate(timeZone,Caster.toDoubleValue(str,Double.NaN),numbersAsOffset,defaultValue);
 	    }
 		return res;
+	}
+	
+	/**
+	 * 
+	 * @param timeZone
+	 * @param d
+	 * @param numbersAsOffset if set to true, the number is a floating point number or outsite the following range (-10000 - 10000), numbers are handled as offset in days to 1899-12-30, otherwise numbers are handled as years)
+	 * @return
+	 */
+	private static DateTime numberToDate(TimeZone timeZone, double d, boolean numbersAsOffset, DateTime defaultValue) {
+		
+		
+		if(!numbersAsOffset) {
+			int i=(int) d;
+			if(i==d && i>=-10000 && i<=10000) {
+				timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
+				Calendar c = Calendar.getInstance(timeZone);
+				c.set(Calendar.MILLISECOND, 0);
+				c.set(i, 0, 1, 0, 0, 0);
+				return new DateTimeImpl(c);
+			}
+		} 
+		
+		if(Decision.isValid(d))return util.toDateTime(d);
+		
+		return defaultValue;
 	}
 
 	private static DateTime _toDateSimpleTS(DateString ds, TimeZone timeZone, DateTime defaultValue) {
@@ -927,12 +972,7 @@ public final class DateCaster {
 		else return defaultValue;
 	}
 
-	private static DateTime toNumberDate(String str,boolean alsoNumbers, DateTime defaultValue) {
-	    if(!alsoNumbers) return defaultValue;
-		double dbl = Caster.toDoubleValue(str,Double.NaN);
-		if(Decision.isValid(dbl))return util.toDateTime(dbl);
-	    return defaultValue;
-	}
+
 
     /**
 	 * reads a offset definition at the end of a date string
