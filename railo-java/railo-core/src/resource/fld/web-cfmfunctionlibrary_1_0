@@ -2199,6 +2199,7 @@ the usage of this argument depend on type defined with argument "type":
 	<function>
 		<name>createODBCDate</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDate</class>
+		<status>deprecated</status>
 		<description>Creates an ODBC date object.</description>
 		<argument>
 			<name>date</name>
@@ -2214,6 +2215,7 @@ the usage of this argument depend on type defined with argument "type":
 	<function>
 		<name>createODBCDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDateTime</class>
+		<status>deprecated</status>
 		<description>Creates an ODBC date-time object.</description>
 		<argument>
 			<name>date</name>
