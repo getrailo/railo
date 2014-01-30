@@ -19,7 +19,7 @@ public interface SmartEntry {
 
 	public String getName();
 
-	public int getPayLoad();
+	public long getPayLoad();
 
 	public String getMeta();
 

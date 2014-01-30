@@ -168,7 +168,7 @@ public class Analyzer {
 		public final List<DateTime> createTimes=new ArrayList<DateTime>();
 		public final List<Long> executionTimes=new ArrayList<Long>();
 		public final Set<String> cfids=new HashSet<String>();
-		public final int payLoad;
+		public final long payLoad;
 		
 		private long totalExecution=0;
 		private long firstExecution=Long.MAX_VALUE;

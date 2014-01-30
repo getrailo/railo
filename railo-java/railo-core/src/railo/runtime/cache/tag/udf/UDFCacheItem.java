@@ -2,6 +2,8 @@ package railo.runtime.cache.tag.udf;
 
 import java.io.Serializable;
 
+import net.sf.ehcache.pool.sizeof.SizeOf;
+
 import railo.commons.digest.HashUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheItem;
@@ -20,15 +22,18 @@ public class UDFCacheItem implements CacheItem, Serializable, Dumpable {
 	public final Object returnValue;
 	private String udfName;
 	private String meta;
-	private long executionTime;
+	private long executionTimeNS;
+
+	private final long payload;
 
 	
-	public UDFCacheItem(String output, Object returnValue, String udfName, String meta, long executionTime) {
+	public UDFCacheItem(String output, Object returnValue, String udfName, String meta, long executionTimeNS) {
 		this.output = output;
 		this.returnValue = returnValue;
 		this.udfName = udfName;
 		this.meta = meta;
-		this.executionTime=executionTime;
+		this.executionTimeNS=executionTimeNS;
+		this.payload=railo.commons.lang.SizeOf.size(returnValue)+output.length();
 	}
 
 	@Override
@@ -55,8 +60,8 @@ public class UDFCacheItem implements CacheItem, Serializable, Dumpable {
 	}
 
 	@Override
-	public int getPayload() {
-		return 1;
+	public long getPayload() {
+		return payload;
 	}
 
 	@Override
@@ -66,7 +71,7 @@ public class UDFCacheItem implements CacheItem, Serializable, Dumpable {
 
 	@Override
 	public long getExecutionTime() {
-		return executionTime;
+		return executionTimeNS;
 	}
 
 }

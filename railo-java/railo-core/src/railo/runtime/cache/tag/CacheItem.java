@@ -6,7 +6,7 @@ public interface CacheItem {
 
 	public String getName();
 
-	public int getPayload();
+	public long getPayload();
 
 	public String getMeta();
 

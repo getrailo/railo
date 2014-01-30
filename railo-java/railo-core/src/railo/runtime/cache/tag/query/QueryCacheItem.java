@@ -35,7 +35,7 @@ public class QueryCacheItem implements CacheItem, Dumpable, Serializable {
 	}
 
 	@Override
-	public int getPayload() {
+	public long getPayload() {
 		return query.getRecordcount();
 	}
 	

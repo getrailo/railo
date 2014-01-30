@@ -38,7 +38,7 @@ public class StoredProcCacheItem implements CacheItem, Serializable {
 	}
 
 	@Override
-	public int getPayload() {
+	public long getPayload() {
 		return sct.size();
 	}
 	

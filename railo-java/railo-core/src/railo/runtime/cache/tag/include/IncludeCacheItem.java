@@ -18,15 +18,17 @@ public class IncludeCacheItem implements CacheItem, Serializable, Dumpable {
 	private static final long serialVersionUID = -3616023500492159529L;
 
 	public final String output;
-	private long executionTime;
+	private long executionTimeNS;
 	private String path;
 	private String name;
+	private final int payload;
 	
-	public IncludeCacheItem(String output, PageSource ps, long executionTime) {
+	public IncludeCacheItem(String output, PageSource ps, long executionTimeNS) {
 		this.output=output;
 		this.path=ps.getDisplayPath();
 		this.name=ps.getFileName();
-		this.executionTime=executionTime;
+		this.executionTimeNS=executionTimeNS;
+		this.payload=output==null?0:output.length();
 	}
 
 	@Override
@@ -57,19 +59,18 @@ public class IncludeCacheItem implements CacheItem, Serializable, Dumpable {
 	}
 
 	@Override
-	public int getPayload() {
-		return 1;
+	public long getPayload() {
+		return payload;
 	}
 
 	@Override
 	public String getMeta() {
-		// TODO Auto-generated method stub
 		return path;
 	}
 
 	@Override
 	public long getExecutionTime() {
-		return executionTime;
+		return executionTimeNS;
 	}
 
 }
