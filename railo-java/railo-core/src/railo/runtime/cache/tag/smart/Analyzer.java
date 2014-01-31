@@ -108,7 +108,7 @@ public class Analyzer {
     			qry.setAtEL("name", row, entry.name);
     			qry.setAtEL("template", row, entry.template);
     			qry.setAtEL("line", row, entry.line);
-    			qry.setAtEL("type", row, entry.typeId);
+    			qry.setAtEL("type", row, entry.type);
     			qry.setAtEL("meta", row, entry.meta);
     			qry.setAtEL("dependency", row, dependency(res));
     			qry.setAtEL("totalExecutionTime", row, res.totalExecution);
@@ -149,7 +149,7 @@ public class Analyzer {
     	
 		public final String name; 
 		public final String meta; 
-		public final String typeId; 
+		public final String type; 
 		public final String template; 
 		public final int line;
 
@@ -161,7 +161,7 @@ public class Analyzer {
 			// Meta
 			name=se.getName();
 			meta=se.getMeta();
-			typeId=se.getTypeId();
+			type=se.getType();
 			template=se.getTemplate();
 			line=se.getLine();
 		}

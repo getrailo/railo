@@ -3,7 +3,7 @@ package railo.runtime.cache.tag.smart;
 public interface SmartEntry {
 	public String getId();
 
-	public String getTypeId();
+	public String getType();
 
 	public String getEntryHash();
 

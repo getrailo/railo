@@ -70,7 +70,7 @@ public final class SmartEntryImpl implements SmartEntry {
 		return id;
 	}
 
-	public String getTypeId() {
+	public String getType() {
 		return typeId;
 	}
 
