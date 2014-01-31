@@ -1643,7 +1643,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 		String name,appender,appenderArgs,layout,layoutArgs;
 		Level level=Level.ERROR;
 		boolean readOnly=false;
-		config.clearLoggers();
 		for(int i=0;i<children.length;i++){
 			child=children[i];
 			name=StringUtil.trim(child.getAttribute("name"),"");
@@ -1653,7 +1652,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 			layoutArgs=StringUtil.trim(child.getAttribute("layout-arguments"),"");
 			level=Log4jUtil.toLevel(StringUtil.trim(child.getAttribute("level"),""),Level.ERROR);
 			readOnly=Caster.toBooleanValue(child.getAttribute("read-only"),false);
-			
 			// ignore when no appender/name is defined
 			if(!StringUtil.isEmpty(appender) && !StringUtil.isEmpty(name)) {
 				Map<String, String> appArgs = toArguments(appenderArgs, true,true);

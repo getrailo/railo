@@ -57,8 +57,7 @@ public class SmartCacheHandler implements CacheHandler {
 	private Config config;
 	
 	private int cacheType;
-	private Cache cache;
-	private Log log;
+	private Log _log;
 	private Map<String,SmartEntry> entries=new LinkedHashMap<String,SmartEntry>();
 	private Map<String,Rule> rules=new ConcurrentHashMap<String,Rule>();
 
@@ -67,8 +66,12 @@ public class SmartCacheHandler implements CacheHandler {
 		this.config=ThreadLocalPageContext.getConfig(pc);
 		this.cacheType=cacheType;
 		
-		log = ((ConfigImpl)config).getLog("smartcache");
+		//log = ((ConfigImpl)config).getLog("smartcache");
 		loadRules();
+	}
+	
+	public Log getLog(Config config) {
+		return ((ConfigImpl)config).getLog("smartcache");
 	}
 	
 	public Cache getCache(PageContext pc) throws PageException {
@@ -85,7 +88,7 @@ public class SmartCacheHandler implements CacheHandler {
 	@Override
 	public CacheItem get(PageContext pc, String id) throws PageException {
 		if(!running) return null;
-		log.debug("smartcache", "get("+id+")");
+		getLog(config).debug("smartcache", "get("+id+")");
 		CacheItem ci = (CacheItem) getCache(pc).getValue(id,null);
 		if(ci!=null) {
 			// TODO async ?
@@ -96,7 +99,7 @@ public class SmartCacheHandler implements CacheHandler {
 
 	@Override
 	public boolean remove(PageContext pc, String id) {
-		log.debug("smartcache", "remove("+id+")");
+		getLog(config).debug("smartcache", "remove("+id+")");
 		return rules.remove(id)!=null;
 	}
 
@@ -107,11 +110,11 @@ public class SmartCacheHandler implements CacheHandler {
 		// add do cache if necessary
 		Rule rule = rules.get(id);
 		if(rule!=null) {
-			log.debug("smartcache", "add to cache ("+id+")");
+			getLog(config).debug("smartcache", "add to cache ("+id+")");
 			getCache(pc).put(id, ci, null, Long.valueOf(rule.timespan.getMillis()));
 		}
 		SmartEntry se = new SmartEntryImpl(pc,ci,id,cacheType);
-		log.debug("smartcache", "add to entries ("+id+")");
+		getLog(config).debug("smartcache", "add to entries ("+id+")");
 		entries.put(se.getId(),se);
 		
 		// TODO else handle all other types
@@ -119,7 +122,7 @@ public class SmartCacheHandler implements CacheHandler {
 
 	@Override
 	public void clear(PageContext pc) throws PageException {
-		log.debug("smartcache", "clear()");
+		getLog(config).debug("smartcache", "clear()");
 		
 		try {
 			getCache(pc).remove(CacheKeyFilterAll.getInstance());
@@ -130,7 +133,7 @@ public class SmartCacheHandler implements CacheHandler {
 
 	@Override
 	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
-		log.debug("smartcache", "clear("+filter+")");
+		getLog(config).debug("smartcache", "clear("+filter+")");
 		Cache _cache = getCache(pc);
 		try{
 			Iterator<railo.commons.io.cache.CacheEntry> it = _cache.entries().iterator();
@@ -152,7 +155,7 @@ public class SmartCacheHandler implements CacheHandler {
 	@Override
 	public int size(PageContext pc) throws PageException {
 		if(!running)return 0;
-		log.debug("smartcache", "size()");
+		getLog(config).debug("smartcache", "size()");
 		
 		try {
 			return getCache(pc).keys().size();
@@ -176,13 +179,13 @@ public class SmartCacheHandler implements CacheHandler {
 			CacheHandlerFactory.function.getSmartCacheHandler().setRule(pc,id, timeSpan);
 	}
 	public void setRule(PageContext pc,String id, TimeSpan timeSpan) throws PageException { 
-		log.debug("smartcache", "setRule("+id+","+timeSpan+")");
+		getLog(config).debug("smartcache", "setRule("+id+","+timeSpan+")");
 		// flush all cached elements for the old rule
 		Rule rule = rules.get(id);
 		if(rule!=null) {
 			if(rule.timespan.equals(timeSpan)) return;
 			try {
-				log.debug("smartcache", "remove cache item with id: "+id);
+				getLog(config).debug("smartcache", "remove cache item with id: "+id);
 				getCache(pc).remove(id);
 			}
 			catch (IOException e) {
@@ -196,6 +199,7 @@ public class SmartCacheHandler implements CacheHandler {
 	public static void clearAllRules() {
 		clearRules(ConfigImpl.CACHE_DEFAULT_NONE);
 	}
+	
 	public static void clearRules(int type) {
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
 			CacheHandlerFactory.include.getSmartCacheHandler().clearRules();
@@ -373,7 +377,7 @@ public class SmartCacheHandler implements CacheHandler {
 			}
 		}
 		catch (Throwable t) {
-			LogUtil.log(log, Log.LEVEL_ERROR, "smartcache", t);
+			LogUtil.log(getLog(config), Log.LEVEL_ERROR, "smartcache", t);
 		}
 	}
 
