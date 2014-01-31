@@ -131,9 +131,9 @@ public final class SmartCache extends TagSupport {
 		SmartCacheHandler.stop();
 	}
 
-	private void doClearRules() throws PageException {
-		typeRequired();
-		SmartCacheHandler.clearRules(type);
+	private void doClearRules() {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules();
+		else SmartCacheHandler.clearRules(type);
 	}
 
 	private void doRemoveRule() throws PageException {
