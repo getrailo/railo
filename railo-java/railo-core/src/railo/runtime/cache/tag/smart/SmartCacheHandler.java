@@ -54,31 +54,39 @@ public class SmartCacheHandler implements CacheHandler {
 	private static boolean running;
 	private static long startTime;
 	
-	private PageContext pc; 
 	private Config config;
 	
 	private int cacheType;
-	private Cache _cache;
+	private Cache cache;
 	private Log log;
 	private Map<String,SmartEntry> entries=new LinkedHashMap<String,SmartEntry>();
 	private Map<String,Rule> rules=new ConcurrentHashMap<String,Rule>();
 
 	public SmartCacheHandler(int cacheType) {
-		this.pc=ThreadLocalPageContext.get();
+		PageContext pc = ThreadLocalPageContext.get();
 		this.config=ThreadLocalPageContext.getConfig(pc);
 		this.cacheType=cacheType;
 		
-		// get default cache
-		this._cache=Util.getDefault(pc, cacheType,null);
 		log = ((ConfigImpl)config).getLog("smartcache");
 		loadRules();
 	}
+	
+	public Cache getCache(PageContext pc) throws PageException {
+		try {
+			return Util.getDefault(pc, cacheType);
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+			//throw new PageRuntimeException(Caster.toPageException(e));
+		}
+	}
+	
 
 	@Override
 	public CacheItem get(PageContext pc, String id) throws PageException {
 		if(!running) return null;
 		log.debug("smartcache", "get("+id+")");
-		CacheItem ci = (CacheItem) _cache.getValue(id,null);
+		CacheItem ci = (CacheItem) getCache(pc).getValue(id,null);
 		if(ci!=null) {
 			// TODO async ?
 			rules.get(id).used++;
@@ -100,7 +108,7 @@ public class SmartCacheHandler implements CacheHandler {
 		Rule rule = rules.get(id);
 		if(rule!=null) {
 			log.debug("smartcache", "add to cache ("+id+")");
-			_cache.put(id, ci, null, Long.valueOf(rule.timespan.getMillis()));
+			getCache(pc).put(id, ci, null, Long.valueOf(rule.timespan.getMillis()));
 		}
 		SmartEntry se = new SmartEntryImpl(pc,ci,id,cacheType);
 		log.debug("smartcache", "add to entries ("+id+")");
@@ -110,20 +118,20 @@ public class SmartCacheHandler implements CacheHandler {
 	}
 
 	@Override
-	public void clear(PageContext pc) {
+	public void clear(PageContext pc) throws PageException {
 		log.debug("smartcache", "clear()");
 		
 		try {
-			_cache.remove(CacheKeyFilterAll.getInstance());
+			getCache(pc).remove(CacheKeyFilterAll.getInstance());
 		}
 		catch (IOException e) {}
 	}
 	
 
 	@Override
-	public void clear(PageContext pc, CacheHandlerFilter filter) {
+	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
 		log.debug("smartcache", "clear("+filter+")");
-		
+		Cache _cache = getCache(pc);
 		try{
 			Iterator<railo.commons.io.cache.CacheEntry> it = _cache.entries().iterator();
 			railo.commons.io.cache.CacheEntry ce;
@@ -142,20 +150,15 @@ public class SmartCacheHandler implements CacheHandler {
 	}
 
 	@Override
-	public int size(PageContext pc) {
+	public int size(PageContext pc) throws PageException {
+		if(!running)return 0;
 		log.debug("smartcache", "size()");
 		
-		return size();
-	}
-	
-	public int size() {
-		if(!running)return 0;
-		
 		try {
-			return _cache.keys().size();
+			return getCache(pc).keys().size();
 		}
 		catch (IOException e) {
-			return 0;
+			throw Caster.toPageException(e);
 		}
 	}
 
@@ -164,15 +167,15 @@ public class SmartCacheHandler implements CacheHandler {
 		((ConfigImpl)pc.getConfig()).getLog("application").error(CacheHandlerFactory.toStringCacheName(cacheType, null),msg);
 	}*/
 
-	public static void setRule(int type, String id, TimeSpan timeSpan) { 
+	public static void setRule(PageContext pc,int type, String id, TimeSpan timeSpan) throws PageException { 
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().setRule(id, timeSpan);
+			CacheHandlerFactory.include.getSmartCacheHandler().setRule(pc,id, timeSpan);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().setRule(id, timeSpan);
+			CacheHandlerFactory.query.getSmartCacheHandler().setRule(pc,id, timeSpan);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().setRule(id, timeSpan);
+			CacheHandlerFactory.function.getSmartCacheHandler().setRule(pc,id, timeSpan);
 	}
-	public void setRule(String id, TimeSpan timeSpan) { 
+	public void setRule(PageContext pc,String id, TimeSpan timeSpan) throws PageException { 
 		log.debug("smartcache", "setRule("+id+","+timeSpan+")");
 		// flush all cached elements for the old rule
 		Rule rule = rules.get(id);
@@ -180,9 +183,11 @@ public class SmartCacheHandler implements CacheHandler {
 			if(rule.timespan.equals(timeSpan)) return;
 			try {
 				log.debug("smartcache", "remove cache item with id: "+id);
-				_cache.remove(id);
+				getCache(pc).remove(id);
 			}
-			catch (IOException e) {}
+			catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
 		}		
 		rules.put(id, new Rule(timeSpan));
 		setRuleElement(id, timeSpan);

@@ -150,7 +150,7 @@ public final class SmartCache extends TagSupport {
 		typeRequired();
 		Pair[] pairs=getPairs();
 		for(int i=0;i<pairs.length;i++){
-			SmartCacheHandler.setRule(type,pairs[i].entryHash,pairs[i].timespan);
+			SmartCacheHandler.setRule(pageContext,type,pairs[i].entryHash,pairs[i].timespan);
 		}
 	}
 
