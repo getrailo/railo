@@ -63,7 +63,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	ByteArrayOutputStream output;
 	
 	
-	// only used for type deamon
+	// only used for type daemon
 	private Page page;
 	
 	// only used for type task, demon attrs are not Serializable
