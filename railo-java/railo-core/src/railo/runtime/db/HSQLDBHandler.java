@@ -364,7 +364,7 @@ public final class HSQLDBHandler {
 	    	finally {
 	    		removeAll(conn,usedTables);
                 DBUtil.setAutoCommitEL(conn,true);
-	    		pool.releaseDatasourceConnection(dc);
+	    		pool.releaseDatasourceConnection(config,dc,true);
 	    		
 	    		//manager.releaseConnection(dc);
 	    	}

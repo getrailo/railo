@@ -630,7 +630,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	java.util.Iterator<Entry<String, DatasourceConnection>> it = conns.entrySet().iterator();
         	DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
         	while(it.hasNext())	{
-        		pool.releaseDatasourceConnection((it.next().getValue()));
+        		pool.releaseDatasourceConnection(config,(it.next().getValue()),true);
         	}
         	conns.clear();
         }

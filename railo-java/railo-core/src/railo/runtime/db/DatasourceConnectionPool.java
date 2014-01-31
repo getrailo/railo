@@ -84,12 +84,12 @@ public class DatasourceConnectionPool {
         return new DatasourceConnectionImpl(conn,ds,user,pass);
     }
 	
-	public void releaseDatasourceConnection(DatasourceConnection dc) {
-		// 
-		_releaseDatasourceConnection(dc);
+	public void releaseDatasourceConnection(Config config,DatasourceConnection dc, boolean async) {
+		if(async)((SpoolerEngineImpl)config.getSpoolerEngine()).add((DatasourceConnectionImpl)dc);
+		else releaseDatasourceConnection(dc);
 	}
 	
-	public void _releaseDatasourceConnection(DatasourceConnection dc) {
+	public void releaseDatasourceConnection(DatasourceConnection dc) {
 		if(dc==null) return;
 		
 		DCStack stack=getDCStack(dc.getDatasource(), dc.getUsername(), dc.getPassword());
