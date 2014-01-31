@@ -218,7 +218,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(key,true,null,defaultValue);
+        return DateCaster.toDateAdvanced(key,DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 
 	@Override

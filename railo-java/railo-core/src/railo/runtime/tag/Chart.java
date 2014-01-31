@@ -1197,7 +1197,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
         		if(smallest>cdb.getValue())smallest=cdb.getValue();
         		if(biggest<cdb.getValue())biggest=cdb.getValue();
         		//if(seriesCount>1)
-        		ts.addOrUpdate(new Second(DateCaster.toDateSimple(cdb.getItem(),false,false, tz,null)), cdb.getValue());
+        		ts.addOrUpdate(new Second(DateCaster.toDateSimple(cdb.getItem(),DateCaster.CONVERTING_TYPE_NONE,false, tz,null)), cdb.getValue());
         		
         		//else dataset.addValue(cdb.getValue(), cdb.getItem(),"");
         		

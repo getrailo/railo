@@ -57,7 +57,7 @@ public final class CastableArray extends ArrayImpl {
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         try {
-			return DateCaster.toDateAdvanced(getValue(), true, null,defaultValue);
+			return DateCaster.toDateAdvanced(getValue(), DateCaster.CONVERTING_TYPE_OFFSET, null,defaultValue);
 		} catch (PageException e) {
 			return defaultValue;
 		}
