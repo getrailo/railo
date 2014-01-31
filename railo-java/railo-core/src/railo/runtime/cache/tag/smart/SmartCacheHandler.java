@@ -259,6 +259,23 @@ public class SmartCacheHandler implements CacheHandler {
 		}
 	}
 	
+	public static void clearAllEntries() {
+		clearRules(ConfigImpl.CACHE_DEFAULT_NONE);
+	}
+	
+	public static void clearEntries(int type) {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+			CacheHandlerFactory.include.getSmartCacheHandler().clearEntries();
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
+			CacheHandlerFactory.query.getSmartCacheHandler().clearEntries();
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+			CacheHandlerFactory.function.getSmartCacheHandler().clearEntries();
+	}
+	
+	public void clearEntries(){
+		entries.clear();
+	}
+	
 	public static Struct info(int type) {
 		Struct info=new StructImpl();
 		//Struct caches=new StructImpl();
