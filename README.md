@@ -54,7 +54,7 @@ The root of that server should point to the **/railo-cfml** folder in the source
 
         <Set name="resourceBase"><SystemProperty name="jetty.home" default="."/>C:/workspace/railo-source/railo-cfml/</Set>
         
-        TIP: Later versions of Railo Express may have a www.xml file instead of a railo.xml file.  Simply rename the file from www.xml to railo.xml and modify the contents as instructed above.
+        TIP: Later versions of Railo Express may have a www.xml file instead of a railo.xml file.  Rename the file from www.xml to railo.xml and modify the resourceBase element as indicated above.
 
 2. Start the Railo Express instance by running {railo-express}/start or {railo-express}/start.bat
 
