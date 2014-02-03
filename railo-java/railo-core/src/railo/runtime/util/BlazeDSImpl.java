@@ -48,7 +48,6 @@ public class BlazeDSImpl implements BlazeDS {
         	MessageException me = new MessageException(Caster.toClassName(e) + " : " + msg);
         	me.setRootCause(e);
             me.setCode("Server.Processing");
-            me.setRootCause(e);
             
             if(e instanceof PageException){
             	PageException pe=(PageException) e;
