@@ -59,6 +59,7 @@ import railo.loader.util.ExtensionFilter;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
+import railo.runtime.cache.eh.EHCache;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
@@ -1550,7 +1551,8 @@ public final class ConfigWebAdmin {
     }
 
 	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly,boolean storage) throws PageException {
-    	checkWriteAccess();
+    	
+		checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
 		if(!hasAccess)
             throw new SecurityException("no access to update cache connection");
@@ -1564,7 +1566,10 @@ public final class ConfigWebAdmin {
     		//throw new ExpressionException("name ["+name+"] is not allowed for a cache connection, the following names are reserved words [object,template]");	
         
         try {
-        	Class clazz = ClassUtil.loadClass(config.getClassLoader(),classname);
+        	Class clazz;
+        	if("railo.extension.io.cache.eh.EHCacheLite".equals(classname)) clazz=EHCache.class;
+        	else if("railo.runtime.cache.eh.EHCacheLite".equals(classname)) clazz=EHCache.class;
+        	else clazz = ClassUtil.loadClass(config.getClassLoader(),classname);
 			if(!Reflector.isInstaneOf(clazz, Cache.class))
 				throw new ExpressionException("class ["+clazz.getName()+"] is not of type ["+Cache.class.getName()+"]");
 		}

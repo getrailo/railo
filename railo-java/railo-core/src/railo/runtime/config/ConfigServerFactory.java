@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -180,8 +181,22 @@ public final class ConfigServerFactory extends ConfigFactory{
 		// Cache Drivers
 		Resource cDir = adminDir.getRealResource("cdriver");
 		create("/resource/context/admin/cdriver/",new String[]{
-		"Cache.cfc","RamCache.cfc","EHCacheLite.cfc","Field.cfc","Group.cfc"}
+		"Cache.cfc","RamCache.cfc","EHCache.cfc","Field.cfc","Group.cfc"}
 		,cDir,doNew);
+		
+		delete(cDir,new String[]{"EHCacheLite.cfc"});
+		
+		Resource wcdDir = configDir.getRealResource("web-context-deployment/admin");
+		Resource cdDir = wcdDir.getRealResource("cdriver");
+		delete(cdDir,new String[]{"EHCache.cfc","EHCacheLite.cfc"});
+		try {
+			ResourceUtil.deleteEmptyFolders(wcdDir);
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		// Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");

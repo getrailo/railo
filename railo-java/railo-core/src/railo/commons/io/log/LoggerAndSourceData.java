@@ -1,15 +1,20 @@
 package railo.commons.io.log;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.collections.FastHashMap;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import railo.commons.digest.HashUtil;
 import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.log.log4j.LogAdapter;
 import railo.runtime.config.Config;
+import railo.runtime.functions.string.Hash;
 
 /**
  * 
@@ -27,11 +32,13 @@ public final class LoggerAndSourceData {
 	private final String name;
 	private final Config config;
 	private final boolean readOnly;
+	private final String id;
 
  
-    public LoggerAndSourceData(Config config,String name,String appender, Map<String, String> appenderArgs, String layout, Map<String, String> layoutArgs, Level level, boolean readOnly) {
+    public LoggerAndSourceData(Config config,String id,String name,String appender, Map<String, String> appenderArgs, String layout, Map<String, String> layoutArgs, Level level, boolean readOnly) {
     	//this.log=new LogAdapter(logger);
     	this.config=config;
+    	this.id=id;
     	this.name=name;
     	this.strAppender=appender;
     	this.appenderArgs=appenderArgs;
@@ -41,6 +48,9 @@ public final class LoggerAndSourceData {
     	this.readOnly=readOnly;
     }
 
+	public String id() {
+		return id;
+	}
 	public String getName() {
 		return name;
 	}
@@ -104,6 +114,37 @@ public final class LoggerAndSourceData {
     	getLog();// make sure it exists
         return _log.getLogger();
     }
+
+	public static String id(String name
+			,String strAppender, Map<String, String> appenderArgs
+			,String strLayout, Map<String, String> layoutArgs
+			,Level level,
+			boolean readOnly) {
+		StringBuilder sb = new StringBuilder(name)
+		.append(';')
+		.append(strAppender)
+		.append(';');
+		toString(sb,appenderArgs);
+		sb.append(';')
+		.append(strLayout)
+		.append(';');
+		toString(sb,layoutArgs);
+		sb.append(';')
+		.append(level.toInt())
+		.append(';')
+		.append(readOnly);
+		
+		return HashUtil.create64BitHashAsString( sb.toString(),Character.MAX_RADIX);
+	}
+
+	private static void toString(StringBuilder sb, Map<String, String> map) {
+		Iterator<Entry<String, String>> it = map.entrySet().iterator();
+		Entry<String, String> e;
+		while(it.hasNext()){
+			e = it.next();
+			sb.append(e.getKey()).append(':').append(e.getValue()).append('|');
+		}
+	}
 
     
 }

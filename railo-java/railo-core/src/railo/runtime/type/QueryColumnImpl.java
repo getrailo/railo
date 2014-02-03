@@ -476,7 +476,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     public DateTime castToDateTime(DateTime defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
 		if(value==NullSupportHelper.NULL()) return defaultValue;
-		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
+		return DateCaster.toDateAdvanced(value,DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 
 

@@ -127,7 +127,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	
 	@Override
 	public void releaseConnection(PageContext pc,DatasourceConnection dc) {
-		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
+		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(config,dc,true);
 	}
 	
 	

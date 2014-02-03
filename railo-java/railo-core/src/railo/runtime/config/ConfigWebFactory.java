@@ -70,7 +70,8 @@ import railo.runtime.MappingImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
-import railo.runtime.cache.eh.EHCacheLite;
+import railo.runtime.cache.eh.EHCache;
+
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
@@ -1177,7 +1178,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// delete Cache Driver
 		Resource cDir = adminDir.getRealResource("cdriver");
 		delete(cDir,new String[]{
-		"RamCache.cfc","EHCacheLite.cfc"
+		"RamCache.cfc","EHCacheLite.cfc","EHCache.cfc"
 		});
 		
 		// add Cache Drivers
@@ -1642,7 +1643,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 		String name,appender,appenderArgs,layout,layoutArgs;
 		Level level=Level.ERROR;
 		boolean readOnly=false;
-		config.clearLoggers();
 		for(int i=0;i<children.length;i++){
 			child=children[i];
 			name=StringUtil.trim(child.getAttribute("name"),"");
@@ -1652,7 +1652,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 			layoutArgs=StringUtil.trim(child.getAttribute("layout-arguments"),"");
 			level=Log4jUtil.toLevel(StringUtil.trim(child.getAttribute("level"),""),Level.ERROR);
 			readOnly=Caster.toBooleanValue(child.getAttribute("read-only"),false);
-			
 			// ignore when no appender/name is defined
 			if(!StringUtil.isEmpty(appender) && !StringUtil.isEmpty(name)) {
 				Map<String, String> appArgs = toArguments(appenderArgs, true,true);
@@ -2007,14 +2006,31 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 				//
 				try {
-
-					// Workaround for old EHCacheLite class defintion
-					if ("railo.extension.io.cache.eh.EHCacheLite".equals(clazzName))
-						cacheClazz = EHCacheLite.class;
+					Struct custom = toStruct(eConnection.getAttribute("custom"));
+					
+					// Workaround for old EHCache class defintions
+					if ("railo.extension.io.cache.eh.EHCacheLite".equals(clazzName)
+							|| "railo.runtime.cache.eh.EHCacheLite".equals(clazzName)) {
+						cacheClazz = EHCache.class;
+						if(!custom.containsKey("distributed")) 
+							custom.setEL("distributed", "off");
+						if(!custom.containsKey("asynchronousReplicationIntervalMillis")) 
+							custom.setEL("asynchronousReplicationIntervalMillis", "1000");
+						if(!custom.containsKey("maximumChunkSizeBytes")) 
+							custom.setEL("maximumChunkSizeBytes", "5000000");
+						
+						
+					}
+					else if ("railo.extension.io.cache.eh.EHCache".equals(clazzName))
+						cacheClazz = EHCache.class;
 					else
 						cacheClazz = ClassUtil.loadClass(config.getClassLoader(), clazzName);
 
-					cc = new CacheConnectionImpl(config, name, cacheClazz, toStruct(eConnection.getAttribute("custom")), Caster.toBooleanValue(
+					
+					
+					
+					
+					cc = new CacheConnectionImpl(config, name, cacheClazz, custom, Caster.toBooleanValue(
 							eConnection.getAttribute("read-only"), false), Caster.toBooleanValue(eConnection.getAttribute("storage"), false));
 					if (!StringUtil.isEmpty(name)) {
 						caches.put(name.toLowerCase(), cc);

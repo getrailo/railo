@@ -2199,6 +2199,7 @@ the usage of this argument depend on type defined with argument "type":
 	<function>
 		<name>createODBCDate</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDate</class>
+		<status>deprecated</status>
 		<description>Creates an ODBC date object.</description>
 		<argument>
 			<name>date</name>
@@ -2214,6 +2215,7 @@ the usage of this argument depend on type defined with argument "type":
 	<function>
 		<name>createODBCDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDateTime</class>
+		<status>deprecated</status>
 		<description>Creates an ODBC date-time object.</description>
 		<argument>
 			<name>date</name>
@@ -14268,6 +14270,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>No</required>
 			<description>A Boolean value that specifies how to serialize CFML queries.</description>
 		</argument>
+		<argument>
+			<name>charset</name>
+			<alias>charsetName</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>string characters that cannot be encoded by this charset get escaped, 
+			if not set the web charset is used.</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -15015,14 +15025,20 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description>Structure that contains the value to return</description>
-    </argument>
+            <description>Structure that contains the value to return</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>Key whose value to return</description>
-    </argument>
+            <description>Key whose value to return</description>
+        </argument>
+		<argument>
+			<name>defaultValue</name>
+			<type>any</type>
+			<required>false</required>
+            <description>Default value which will be returned if the key does not exist or if null was found</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>

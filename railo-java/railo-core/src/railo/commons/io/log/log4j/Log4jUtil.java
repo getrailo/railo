@@ -89,31 +89,11 @@ public class Log4jUtil {
 		else fullname="server."+name;
 		
 		Logger l = LogManager.exists(fullname);
-		boolean hasClosedAppenders=false;
-		if(l!=null) {
-			
-			Enumeration<Appender> e = l.getAllAppenders();
-			Appender a;
-			if(e!=null)while(e.hasMoreElements()){
-				a = e.nextElement();
-				
-				if(a instanceof AppenderState)
-					hasClosedAppenders=((AppenderState)a).isClosed();
-				else
-					hasClosedAppenders=true;// if it is not possible to terminate if a appender is closed, the Logger is not used!
-			}
-			if(!hasClosedAppenders)return l;
-		}
+		if(l!=null) l.removeAllAppenders();
 		else l = LogManager.getLogger(fullname);
-		
 		l.setAdditivity(false);
-    	Enumeration e = l.getAllAppenders();
-
-    	if(hasClosedAppenders)l.removeAllAppenders();
     	l.addAppender(appender);
-    	
     	l.setLevel(level);
-    	
     	return l;
 	}
 	

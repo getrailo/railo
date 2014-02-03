@@ -22,7 +22,7 @@ public final class SmartEntryImpl implements SmartEntry {
 	private TemplateLine templateLine;
 	
 	private String name;
-	private int payLoad;
+	private long payLoad;
 	private String meta;
 	private long executionTime;
 
@@ -57,7 +57,7 @@ public final class SmartEntryImpl implements SmartEntry {
 	}
 
 	@Override
-	public int getPayLoad() {
+	public long getPayLoad() {
 		return payLoad;
 	}
 
@@ -70,7 +70,7 @@ public final class SmartEntryImpl implements SmartEntry {
 		return id;
 	}
 
-	public String getTypeId() {
+	public String getType() {
 		return typeId;
 	}
 

@@ -149,7 +149,7 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
     public DateTime castToDateTime(DateTime defaultValue) {
         Object value = get(key,defaultValue);
         if(value==null)return defaultValue;
-    	return DateCaster.toDateAdvanced(value, true, null, defaultValue); 
+    	return DateCaster.toDateAdvanced(value, DateCaster.CONVERTING_TYPE_OFFSET, null, defaultValue); 
     }
 
     @Override

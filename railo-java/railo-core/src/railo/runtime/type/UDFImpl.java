@@ -232,7 +232,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 			//cache.remove(id);
 		}
     	
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime();
     	
 		// execute the function
 		BodyContent bc =  pci.pushBody();
@@ -241,7 +241,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	    	Object rtn = _call(pci,calledName, args, values, doIncludePath);
 	    	String out = bc.getString();
 	    	
-	    	ch.set(pc, id,properties.cachedWithin,new UDFCacheItem(out, rtn,getFunctionName(),getPageSource().getDisplayPath(),System.currentTimeMillis()-start));
+	    	ch.set(pc, id,properties.cachedWithin,new UDFCacheItem(out, rtn,getFunctionName(),getPageSource().getDisplayPath(),System.nanoTime()-start));
 			// cache.put(id, new UDFCacheEntry(out, rtn),properties.cachedWithin,properties.cachedWithin);
 	    	return rtn;
 		}

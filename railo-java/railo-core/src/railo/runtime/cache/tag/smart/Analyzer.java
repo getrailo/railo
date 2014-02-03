@@ -28,8 +28,33 @@ import railo.runtime.type.dt.DateTimeImpl;
 
 public class Analyzer {
 	
+	
 
     public synchronized static Query analyze(int type) throws ApplicationException {
+    	Query qry=new QueryImpl(
+    			new String[]{
+    					"name","entryhash","resulthash","template",
+    					"line","type","meta","dependency",
+    					"totalExecutionTime","executionTimes","createTimes","timeUnchanged","calls","payload"}, 0/*TODO counter.toInt()*/, "query");
+    	if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+    		analyze(qry, type);
+    	else if(type==ConfigImpl.CACHE_DEFAULT_QUERY)
+    		analyze(qry, type);
+    	else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+    		analyze(qry, type);
+    	else {
+    		analyze(qry, ConfigImpl.CACHE_DEFAULT_INCLUDE);
+    		analyze(qry, ConfigImpl.CACHE_DEFAULT_QUERY);
+    		analyze(qry, ConfigImpl.CACHE_DEFAULT_FUNCTION);
+    	}
+    	
+    	return qry;
+    }
+
+    private static void analyze(Query qry,int type) throws ApplicationException {
+    	
+    	
+    	
 		// TODO input boundries
     	RefInteger counter=new RefIntegerImpl(0);
     	Map<String, SmartEntry> entries;
@@ -59,12 +84,7 @@ public class Analyzer {
 	    		else data.put(se.getEntryHash(), entry=new Entry(se,counter));
 	    	}
     	}
-    	Query qry=new QueryImpl(
-    			new String[]{
-    					"name","entryhash","resulthash","template",
-    					"line","typeid","meta","dependency",
-    					"totalExecutionTime","executionTimes","createTimes","timeUnchanged","calls","payload"}, counter.toInt(), "query");
-    	int row=0;
+    	int row;//=0;
     	Iterator<Map.Entry<String, Analyzer.Entry>> it = data.entrySet().iterator();
     	Map.Entry<String, Analyzer.Entry> e;
     	String eh,rh;
@@ -82,13 +102,13 @@ public class Analyzer {
     			rh = ee.getKey();
     			res = ee.getValue();
     			
-    			row++;
+    			row=qry.addRow();//row++;
     			qry.setAtEL("entryhash", row, eh);
     			qry.setAtEL("resulthash", row, rh);
     			qry.setAtEL("name", row, entry.name);
     			qry.setAtEL("template", row, entry.template);
     			qry.setAtEL("line", row, entry.line);
-    			qry.setAtEL("typeid", row, entry.typeId);
+    			qry.setAtEL("type", row, entry.type);
     			qry.setAtEL("meta", row, entry.meta);
     			qry.setAtEL("dependency", row, dependency(res));
     			qry.setAtEL("totalExecutionTime", row, res.totalExecution);
@@ -101,9 +121,6 @@ public class Analyzer {
 
     		}
     	}
-    	
-    	
-    	return qry;
 	}
 	
 	
@@ -132,7 +149,7 @@ public class Analyzer {
     	
 		public final String name; 
 		public final String meta; 
-		public final String typeId; 
+		public final String type; 
 		public final String template; 
 		public final int line;
 
@@ -144,7 +161,7 @@ public class Analyzer {
 			// Meta
 			name=se.getName();
 			meta=se.getMeta();
-			typeId=se.getTypeId();
+			type=se.getType();
 			template=se.getTemplate();
 			line=se.getLine();
 		}
@@ -168,7 +185,7 @@ public class Analyzer {
 		public final List<DateTime> createTimes=new ArrayList<DateTime>();
 		public final List<Long> executionTimes=new ArrayList<Long>();
 		public final Set<String> cfids=new HashSet<String>();
-		public final int payLoad;
+		public final long payLoad;
 		
 		private long totalExecution=0;
 		private long firstExecution=Long.MAX_VALUE;

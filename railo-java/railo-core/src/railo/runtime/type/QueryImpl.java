@@ -585,7 +585,7 @@ public class QueryImpl implements Query,Objects {
 	 */
 
 	public QueryImpl(String[] strColumnNames, Array[] arrColumns, String name) throws DatabaseException {
-		this(_toKeys(strColumnNames),arrColumns,name);		
+		this(CollectionUtil.toKeys(strColumnNames,true),arrColumns,name);		
 	}	
 	
 	private static void validateColumnNames(Key[] columnNames) throws DatabaseException {
@@ -603,13 +603,7 @@ public class QueryImpl implements Query,Objects {
 	}
 	
 
-	private static Collection.Key[] _toKeys(String[] strColumnNames) {
-		Collection.Key[] columnNames=new Collection.Key[strColumnNames.length];
-		for(int i=0	;i<columnNames.length;i++) {
-			columnNames[i]=KeyImpl.init(strColumnNames[i].trim());
-		}
-		return columnNames;
-	}
+	
 	private static String[] _toStringKeys(Collection.Key[] columnNames) {
 		String[] strColumnNames=new String[columnNames.length];
 		for(int i=0	;i<strColumnNames.length;i++) {

@@ -108,7 +108,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	public synchronized void add(SpoolerTask task) {
 		// if there is no plan execute and forget
 		if(task.getPlans()==null) {
-			start(task);
+			if(task instanceof Task)
+				start((Task)task);
+			else {
+				start(new TaskWrap(task));
+				log.error("spooler", "make class "+task.getClass().getName()+" a Task class");
+			}
 			return;
 		}
 		
@@ -120,9 +125,15 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		store(task);
 		start();
 	}
+	
+	// add to interface
+	public void add(Task task) {
+		start(task);
+	}
 
 
-	private void start(SpoolerTask task) {
+	private void start(Task task) {
+		if(task==null) return;
 		if(simpleThread==null || !simpleThread.isAlive()) {
 			simpleThread=new SimpleThread(config,task);
 			simpleThread.setPriority(Thread.MIN_PRIORITY);
@@ -335,17 +346,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	
 	class SimpleThread extends Thread {
 		
-		LinkedList<SpoolerTask> tasks=new LinkedList<SpoolerTask>();
+		LinkedList<Task> tasks=new LinkedList<Task>();
 		private Config config;
 		
-		public SimpleThread(Config config, SpoolerTask task){
+		public SimpleThread(Config config, Task task){
 			this.config=config;
 			tasks.add(task);
 		}
 		
 		
 		public void run() {
-			SpoolerTask task;
+			Task task;
 			while(tasks.size()>0){
 				try {
 					task= tasks.poll();

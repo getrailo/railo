@@ -207,7 +207,11 @@ public abstract class ConfigFactory {
 
 	static void delete(Resource dbDir, String name) {
 		Resource f = dbDir.getRealResource(name);
-		if (f.exists()) f.delete();
+		if (f.exists()) {
+			SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT), "delete file:" + f);
+			
+			f.delete();
+		}
 		
 	}
 	

@@ -15,12 +15,15 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
 
-public class CustomTagUtil {
-	
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+public class CustomTagUtil {
 
 
 	public static InitFile loadInitFile(PageContext pc, String name) throws PageException  {
+		
 		InitFile initFile = loadInitFile(pc, name, null);
 		if(initFile!=null) {
     		return initFile;
@@ -28,38 +31,52 @@ public class CustomTagUtil {
     	 // EXCEPTION
     	ConfigWeb config = pc.getConfig();
         // message
-    	StringBuilder msg=new StringBuilder("custom tag \"");
-        msg.append(getDisplayName(config,name));
-        msg.append("\" is not defined in directory \"");
-        msg.append(ResourceUtil.getResource(pc, pc.getCurrentPageSource()).getParent());
-        msg.append('"');
-        
-        Mapping[] actms = pc.getApplicationContext().getCustomTagMappings();
-        Mapping[] cctms = config.getCustomTagMappings();
-        int asize=ArrayUtil.size(actms);
-        int csize=ArrayUtil.size(cctms);
-        int size=asize+csize;
-        
-        if(size>0){
-        	if(size==1)msg.append(" and directory ");
-        	else msg.append(" and directories ");
-        	msg.append("\"");
-        	
-        	String list;
-        	if(asize>0) {
-        		list=toString(actms);
-        		if(csize>0) list+=", "+toString(cctms);
-        	}
-        	else {
-        		list=toString(cctms);
-        	}
-        	
-        	
-        	msg.append(list);
-        	msg.append("\"");
-        }
-        throw new ExpressionException(msg.toString(),getDetail(config));
-    	
+		StringBuilder msg=new StringBuilder("Custom tag \"").append(getDisplayName(config,name)).append("\" was not found.");
+
+		List<String> dirs = new ArrayList();
+
+		if (config.doLocalCustomTag()) {
+
+			dirs.add(ResourceUtil.getResource(pc, pc.getCurrentPageSource()).getParent());
+		}
+
+		Mapping[] actms = pc.getApplicationContext().getCustomTagMappings();
+		Mapping[] cctms = config.getCustomTagMappings();
+
+		Resource r;
+
+		if (actms != null) {
+			for (Mapping m : actms) {
+
+				r = m.getPhysical();
+				if (r != null)
+					dirs.add(r.toString());
+			}
+		}
+
+		if (cctms != null) {
+			for (Mapping m : cctms) {
+
+				r = m.getPhysical();
+				if (r != null)
+					dirs.add(r.toString());
+			}
+		}
+
+		if(!dirs.isEmpty()) {
+
+			msg.append(" Directories searched: ");
+
+			Iterator<String> it = dirs.iterator();
+			while (it.hasNext()) {
+
+				msg.append('"').append(it.next()).append('"');
+				if (it.hasNext())
+					msg.append(", ");
+			}
+		}
+
+		throw new ExpressionException(msg.toString(),getDetail(config));
 	}
 	
 	public static InitFile loadInitFile(PageContext pc, String name, InitFile defaultValue) throws PageException  {

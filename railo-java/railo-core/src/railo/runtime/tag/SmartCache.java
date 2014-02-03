@@ -45,6 +45,7 @@ public final class SmartCache extends TagSupport {
 	private static final short ACTION_INFO=32;
 	private static final short ACTION_START=64;
 	private static final short ACTION_STOP=128;
+	private static final short ACTION_CLEAR_ENTRIES=256;
 	
 	
 	private String returnVariable="smart";
@@ -82,7 +83,7 @@ public final class SmartCache extends TagSupport {
 		else if(strType.equals("include"))	type=ConfigImpl.CACHE_DEFAULT_INCLUDE;
 		else if(strType.equals("query"))	type=ConfigImpl.CACHE_DEFAULT_QUERY;
 		else
-			throw new ApplicationException("invalid type ["+strType+"], valid types are [function, include, template]"); 
+			throw new ApplicationException("invalid type ["+strType+"], valid types are [function, include, query]"); 
 		
 	}
 
@@ -107,6 +108,7 @@ public final class SmartCache extends TagSupport {
 		else if(action==ACTION_SET_RULE) doSetRule();
 		else if(action==ACTION_REMOVE_RULE) doRemoveRule();
 		else if(action==ACTION_CLEAR_RULES) doClearRules();
+		else if(action==ACTION_CLEAR_ENTRIES) doClearEntries();
 		else if(action==ACTION_GET_RULES) doGetRules();
 		else if(action==ACTION_INFO) doInfo();
 		else if(action==ACTION_START) doStart();
@@ -131,9 +133,13 @@ public final class SmartCache extends TagSupport {
 		SmartCacheHandler.stop();
 	}
 
-	private void doClearRules() throws PageException {
-		typeRequired();
-		SmartCacheHandler.clearRules(type);
+	private void doClearRules() {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules();
+		else SmartCacheHandler.clearRules(type);
+	}
+	private void doClearEntries() {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries();
+		else SmartCacheHandler.clearEntries(type);
 	}
 
 	private void doRemoveRule() throws PageException {
@@ -150,12 +156,12 @@ public final class SmartCache extends TagSupport {
 		typeRequired();
 		Pair[] pairs=getPairs();
 		for(int i=0;i<pairs.length;i++){
-			SmartCacheHandler.setRule(type,pairs[i].entryHash,pairs[i].timespan);
+			SmartCacheHandler.setRule(pageContext,type,pairs[i].entryHash,pairs[i].timespan);
 		}
 	}
 
 	private void doAnalyze() throws PageException {
-		typeRequired();
+		//typeRequired();
 		pageContext.setVariable(returnVariable, Analyzer.analyze(type));
 	}
 	
@@ -170,6 +176,7 @@ public final class SmartCache extends TagSupport {
 		switch(action){
 			case ACTION_ANALYZE: return "analyze";
 			case ACTION_SET_RULE: return "setrule";
+			case ACTION_CLEAR_ENTRIES: return "clearentries";
 			case ACTION_CLEAR_RULES: return "clearrules";
 			case ACTION_REMOVE_RULE: return "removerule";
 			case ACTION_GET_RULES: return "getrules";
@@ -185,6 +192,7 @@ public final class SmartCache extends TagSupport {
 		if(strAction.equals("analyze")) return ACTION_ANALYZE;
 		else if(strAction.equals("setrule")) return ACTION_SET_RULE;
 		else if(strAction.equals("clearrules")) return ACTION_CLEAR_RULES;
+		else if(strAction.equals("clearentries")) return ACTION_CLEAR_ENTRIES;
 		else if(strAction.equals("removerule")) return ACTION_REMOVE_RULE;
 		else if(strAction.equals("getrules")) return ACTION_GET_RULES;
 		else if(strAction.equals("info")) return ACTION_INFO;

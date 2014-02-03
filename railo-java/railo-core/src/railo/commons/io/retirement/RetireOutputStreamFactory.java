@@ -19,7 +19,7 @@ public class RetireOutputStreamFactory {
 			thread.start();
 		}
 		else if(thread.sleepTime>timeout) {
-			thread.sleepTime=timeout;print.e("notify");
+			thread.sleepTime=timeout;
 			SystemUtil.notify(thread);
 		}
 	}

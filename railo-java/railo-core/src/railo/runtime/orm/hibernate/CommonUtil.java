@@ -536,7 +536,7 @@ public class CommonUtil {
 	}
 	
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
-		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc); // TODO use reflection
+		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(pc.getConfig(),dc,true); // TODO use reflection
 	}
 
 	public static MappingImpl createMapping(Config config, String virtual, String physical) {

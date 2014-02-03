@@ -101,19 +101,19 @@ public class CacheHandlerFactory {
 		return tsch;
 	}
 
-	public int size(PageContext pc) {
+	public int size(PageContext pc) throws PageException {
 		int size=rch.size(pc);
 		size+=getTimespanCacheHandler(pc.getConfig()).size(pc);
 		return size;
 	}
 
 
-	public void clear(PageContext pc) {
+	public void clear(PageContext pc) throws PageException {
 		rch.clear(pc);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc);
 	}
 	
-	public void clear(PageContext pc, CacheHandlerFilter filter) {
+	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
 		rch.clear(pc,filter);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}

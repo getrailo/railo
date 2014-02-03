@@ -529,13 +529,13 @@ public final class Caster {
     }
     
     private static double toDoubleValueViaDate(String str) throws CasterException {
-		DateTime date = DateCaster.toDateSimple(str, false,false, null, null);// not advanced here, neo also only support simple
+		DateTime date = DateCaster.toDateSimple(str, DateCaster.CONVERTING_TYPE_NONE,false, null, null);// not advanced here, neo also only support simple
 		if(date==null)throw new CasterException("can't cast ["+str+"] string to a number value");
     	return date.castToDoubleValue(0);
 	}
     
     private static double toDoubleValueViaDate(String str,double defaultValue) {
-    	DateTime date = DateCaster.toDateSimple(str, false,false, null, null);// not advanced here, neo also only support simple
+    	DateTime date = DateCaster.toDateSimple(str, DateCaster.CONVERTING_TYPE_NONE,false, null, null);// not advanced here, neo also only support simple
 		if(date==null)return defaultValue;
     	return date.castToDoubleValue(0);
 	}
@@ -2683,7 +2683,7 @@ public final class Caster {
      * @throws PageException 
      */
     public static DateTime toDate(Object o,boolean alsoNumbers, TimeZone tz) throws PageException {
-        return DateCaster.toDateAdvanced(o,alsoNumbers,tz);
+        return DateCaster.toDateAdvanced(o,alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,tz);
     }
     
     /**
@@ -2695,7 +2695,7 @@ public final class Caster {
      * @return casted DateTime Object
      */
     public static DateTime toDate(Object o,boolean alsoNumbers, TimeZone tz, DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(o,alsoNumbers,tz,defaultValue);
+        return DateCaster.toDateAdvanced(o,alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,tz,defaultValue);
     }
 
     /**
@@ -2707,7 +2707,7 @@ public final class Caster {
      * @return casted DateTime Object
      */
     public static DateTime toDate(String str,boolean alsoNumbers, TimeZone tz, DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(str,alsoNumbers,tz,defaultValue);
+        return DateCaster.toDateAdvanced(str,alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,tz,defaultValue);
     }
 
     /**

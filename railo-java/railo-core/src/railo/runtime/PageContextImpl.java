@@ -630,7 +630,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	java.util.Iterator<Entry<String, DatasourceConnection>> it = conns.entrySet().iterator();
         	DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
         	while(it.hasNext())	{
-        		pool.releaseDatasourceConnection((it.next().getValue()));
+        		pool.releaseDatasourceConnection(config,(it.next().getValue()),true);
         	}
         	conns.clear();
         }
@@ -827,7 +827,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				throw Caster.toPageException(e);
 			}
 		}
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime();
     	
 		BodyContent bc =  pushBody();
 	    
@@ -837,7 +837,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	ch.set(this, id,cachedWithin,new IncludeCacheItem(
 	    			out
 	    			,ArrayUtil.isEmpty(sources)?null:sources[0]
-	    			,System.currentTimeMillis()-start));
+	    			,System.nanoTime()-start));
 			return;
 		}
         finally {
