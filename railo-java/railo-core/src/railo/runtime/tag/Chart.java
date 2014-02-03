@@ -40,10 +40,15 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.urls.PieURLGenerator;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
+import org.jfree.chart.urls.StandardPieURLGenerator;
+import org.jfree.chart.urls.URLUtilities;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -185,9 +190,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		yoffset=0.1;
 		xaxistype="category";
 		yaxistype="category";
-		
-		
-		
+				
 		xaxistitle="";
 		yaxistitle="";
 		legendMultiLine=false;
@@ -532,7 +535,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
             count++;
     	}
         
-        writeOut(chart);
+    	writeOut(chart);
 	}
 	
 
@@ -681,7 +684,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		// map name
 		chartIndex++;
 		if(chartIndex<0)chartIndex=0;
-		String mapName="chart_"+(chartIndex++);
+		String mapName="chart_"+chartIndex;
+		setUrl(jfc);
 		
 		// write out to variable
 		if(!StringUtil.isEmpty(name)){
@@ -698,20 +702,18 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		if(!res.exists()) {
 			clean(graph);
 			copy(res.getOutputStream(),jfc,info);
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			copy(baos, jfc,info);			
 		}
-		
 		String src="/railo-context/graph.cfm?img="+id+"&type="+formatToString(format);
 		if(!StringUtil.isEmpty(source)) {
 			pageContext.setVariable(source, src);
 			return;
 		}
 		try {
-			// Tooltip
-			if(showtooltip) {
-				ToolTipTagFragmentGenerator tttfg = new ToolTipTagFragmentGeneratorImpl(url);
-				URLTagFragmentGenerator utfg=new EmptyURLTagFragmentGenerator();
-				
-				String map=ImageMapUtilities.getImageMap(mapName, info,tttfg,utfg).trim();
+			if(showtooltip || !StringUtil.isEmpty(url)) {
+				String map=ChartUtilities.getImageMap(mapName,info).trim();
 				pageContext.write(map);
 			}
 			pageContext.write("<img border=\"0\" usemap=\"#"+mapName+"\" src=\""+src+"\">");
@@ -965,6 +967,41 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		
 	}
 
+	private void setUrl(JFreeChart chart) {
+		Plot plot = chart.getPlot();
+		if(plot instanceof PiePlot) {
+			PiePlot pp = (PiePlot)plot;		
+			pp.setURLGenerator(new PieURLGenerator() {
+			    public String generateURL(PieDataset dataset, Comparable key, int pieIndex) {
+			    	if(!StringUtil.contains(url, "?")) url += "?series=$SERIESLABEL$&category=$ITEMLABEL$&value=$VALUE$";
+			    	String retUrl=StringUtil.replace(url, "$ITEMLABEL$", URLUtilities.encode(key.toString(),"UTF-8"),false,true);
+			    	retUrl = StringUtil.replace(retUrl,"$SERIESLABEL$",Integer.toString(pieIndex),false,true);
+			    	retUrl = StringUtil.replace(retUrl,"$VALUE$",URLUtilities.encode(dataset.getValue(key).toString(),"UTF-8"),false,true);
+			    	return retUrl;
+			    }
+			});
+		}
+		else if(plot instanceof CategoryPlot) {
+			CategoryPlot cp=(CategoryPlot) plot;
+			CategoryItemRenderer renderer = cp.getRenderer();
+			renderer.setBaseItemURLGenerator(new StandardCategoryURLGenerator(url) {
+			    public String generateURL(CategoryDataset dataset, int series,int category) {
+			    	if(!StringUtil.contains(url, "?")) url += "?series=$SERIESLABEL$&category=$ITEMLABEL$&value=$VALUE$";
+			    	String retUrl=StringUtil.replace(url, "$ITEMLABEL$", URLUtilities.encode(dataset.getColumnKey(category).toString(),"UTF-8"),false,true);
+			    	retUrl = StringUtil.replace(retUrl,"$SERIESLABEL$",URLUtilities.encode(dataset.getRowKey(series).toString(),"UTF-8"),false,true);
+			    	retUrl = StringUtil.replace(retUrl,"$VALUE$",URLUtilities.encode(dataset.getValue(series, category).toString(),"UTF-8"),false,true);
+			    	return retUrl;
+			    }
+			});
+		}
+		/*else if(plot instanceof XYPlot) {
+			XYPlot cp=(XYPlot) plot;
+			XYItemRenderer renderer = cp.getRenderer();
+			renderer.setBaseToolTipGenerator(new XYToolTipGeneratorImpl(labelFormat));
+		}*/
+		
+	}
+	
 
 
 	private void setScale(JFreeChart chart) {
