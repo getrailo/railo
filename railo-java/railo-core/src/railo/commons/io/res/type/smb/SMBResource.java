@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import jcifs.smb.NtlmPasswordAuthentication;
@@ -74,7 +76,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 		}
 	}
 	
-	/*
+	
 	private static String _userInfo (NtlmPasswordAuthentication auth,boolean addAtSign) {
 		String result = "";
 		if( auth != null) {
@@ -92,7 +94,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 			}
 		}
 		return result;
-	}*/
+	}
 	
 	private NtlmPasswordAuthentication _extractAuth(String path) {
 		return new NtlmPasswordAuthentication( _userInfo(path) );
@@ -125,7 +127,20 @@ public class SMBResource extends ResourceSupport implements Resource{
 	}
 	
 	private String _calculatePath(String path) {
-		if ( !path.startsWith( _scheme() ) ) path = _scheme().concat( path );
+		return _calculatePath(path,null);
+	}
+	
+	private String _calculatePath(String path, NtlmPasswordAuthentication auth) {
+		
+		if ( !path.startsWith( _scheme() ) ) {
+			if(path.startsWith("/") || path.startsWith("\\")) {
+				path = path.substring(1);
+			}
+			if (auth != null) {
+				path = SMBResourceProvider.encryptUserInfo(_userInfo(auth,false)).concat("@").concat(path);
+			}
+			path = _scheme().concat( path );
+		}
 		return path;
 	}
 	
@@ -148,14 +163,52 @@ public class SMBResource extends ResourceSupport implements Resource{
 	@Override
 	public boolean isWriteable() {
 		SmbFile file = _file();
+		if(file == null) return false;
 		try {
-			return file != null && file.canWrite();
+			if(file.canWrite()) return true;
+		}
+		catch (SmbException e1) {
+			return false;
+		}
+		
+		try {
+			if (file.getType() == SmbFile.TYPE_SHARE) {
+				// canWrite() doesn't work on shares. always returns false even if you can truly write, test this by opening a file on the share
+				
+				SmbFile testFile = _getTempFile(file,auth);
+				if (testFile == null) return false;
+				if (testFile.canWrite()) return true;
+				
+				OutputStream os=null;
+				try {
+					os = testFile.getOutputStream();
+				}
+				catch (IOException e) {
+					return false;
+				}
+				finally {
+					if (os != null) IOUtils.closeQuietly(os);
+					testFile.delete();
+				}
+				return true;
+				
+			}
+			return file.canWrite();
 		}
 		catch (SmbException e) {
 			return false;
 		}
 	}
 
+	private SmbFile _getTempFile(SmbFile directory, NtlmPasswordAuthentication auth) throws SmbException {
+		if (!directory.isDirectory()) return null;
+		Random r = new Random();
+		
+		SmbFile result = provider.getFile(directory.getCanonicalPath() + "/write-test-file.unknown." + r.nextInt(), auth);
+		if (result.exists()) return _getTempFile(directory,auth); //try again
+		return result;
+	}
+	
 	@Override
 	public void remove(boolean alsoRemoveChildren) throws IOException {
 		if(alsoRemoveChildren)ResourceUtil.removeChildren(this);
@@ -172,6 +225,8 @@ public class SMBResource extends ResourceSupport implements Resource{
 				file = _file(true);
 			}
 			file.delete();
+		} catch (SmbException e) {
+			throw new IOException(e);// for cfcatch type="java.io.IOException"
 		} finally {
 			provider.unlock(this);
 		}
@@ -222,7 +277,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 
 	@Override
 	public String getPath() {
-		return _calculatePath(path);
+		return _calculatePath(path,auth);
 	}
 
 	@Override
@@ -307,10 +362,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 		if(isFile()) return null;
 		try {
 			SmbFile dir = _file(true);
-			System.out.println("dir:" + dir.getPath());
-			System.out.println("dir-isdir:" + dir.isDirectory());
 			SmbFile[] files = dir.listFiles();
-			System.out.println("dir-files:" + files.length);
 			
 			Resource[] result = new Resource[files.length];
 			for(int i = 0; i < files.length ; i++) {
@@ -320,7 +372,6 @@ public class SMBResource extends ResourceSupport implements Resource{
 			return result;
 		}
 		catch (SmbException e) {
-			e.printStackTrace();
 			return new Resource[0];
 		}
 		
@@ -367,9 +418,14 @@ public class SMBResource extends ResourceSupport implements Resource{
 
 	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
-		ResourceUtil.checkCreateFileOK(this, createParentWhenNotExists);
-		//client.unregisterFTPFile(this);
-		IOUtil.copy(new ByteArrayInputStream(new byte[0]), getOutputStream(), true, true);
+		try {
+			
+			ResourceUtil.checkCreateFileOK(this, createParentWhenNotExists);
+			//client.unregisterFTPFile(this);
+			IOUtil.copy(new ByteArrayInputStream(new byte[0]), getOutputStream(), true, true);
+		} catch (SmbException e) {
+			throw new IOException(e); // for cfcatch type="java.io.IOException"
+		}
 	
 	}
 
@@ -381,6 +437,8 @@ public class SMBResource extends ResourceSupport implements Resource{
 		try {
 			provider.lock(this);
 			file.mkdir();
+		} catch (SmbException e) {
+			throw new IOException(e); // for cfcatch type="java.io.IOException"
 		}
 		finally {
 			provider.unlock(this);
@@ -390,7 +448,11 @@ public class SMBResource extends ResourceSupport implements Resource{
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return _file().getInputStream();
+		try {
+			return _file().getInputStream();
+		} catch (SmbException e) {
+			throw new IOException(e);// for cfcatch type="java.io.IOException"
+		}
 	}
 
 	@Override
@@ -404,7 +466,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 		}
 		catch (IOException e) {
 			provider.unlock(this);
-			throw e;
+			throw new IOException(e);// just in case it is an SmbException too... for cfcatch type="java.io.IOException"
 		}
 	}
 
@@ -452,6 +514,8 @@ public class SMBResource extends ResourceSupport implements Resource{
 				atts = atts & (~newAttribute);
 			}
 			file.setAttributes(atts);
+		} catch (SmbException e) {
+			throw new IOException(e); // for cfcatch type="java.io.IOException"
 		} finally {
 			provider.unlock(this);
 		}	
@@ -459,12 +523,16 @@ public class SMBResource extends ResourceSupport implements Resource{
 
 	@Override
 	public void moveTo(Resource dest) throws IOException {
-		if(dest instanceof SMBResource) {
-			SMBResource destination = (SMBResource)dest;
-			SmbFile file = _file();
-			file.renameTo(destination._file());
-		} else {
-			ResourceUtil.moveTo(this, dest,false);
+		try {
+			if(dest instanceof SMBResource) {
+				SMBResource destination = (SMBResource)dest;
+				SmbFile file = _file();
+				file.renameTo(destination._file());
+			} else {
+				ResourceUtil.moveTo(this, dest,false);
+			}
+		} catch (SmbException e) {
+			throw new IOException(e); // for cfcatch type="java.io.IOException"
 		}
 	}
 	
@@ -478,6 +546,10 @@ public class SMBResource extends ResourceSupport implements Resource{
 			return false;
 		}
 		
+	}
+	
+	public SmbFile getSmbFile() {
+		return _file();
 	}
 	
 	private int _lookupAttribute(short attribute) {
