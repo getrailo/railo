@@ -13,7 +13,6 @@ import org.hibernate.type.Type;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
@@ -53,9 +52,9 @@ public class CFCGetter implements Getter {
 			PageContext pc = CommonUtil.pc();
 			ORMSession session = ORMUtil.getSession(pc);
 			Component cfc = CommonUtil.toComponent(trg);
-			DataSource ds = ORMUtil.getDataSource(pc, cfc);
+			String dsn = ORMUtil.getDataSourceName(pc, cfc);
 			String name = HibernateCaster.getEntityName(cfc);
-			SessionFactory sf=(SessionFactory) session.getRawSessionFactory(ds);
+			SessionFactory sf=(SessionFactory) session.getRawSessionFactory(dsn);
 			ClassMetadata metaData = sf.getClassMetadata(name);
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 

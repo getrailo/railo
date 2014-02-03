@@ -60,6 +60,8 @@ import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.include.IncludeCacheItem;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -95,6 +97,7 @@ import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.functions.dateTime.Now;
 import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
@@ -166,6 +169,7 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.PageContextUtil;
@@ -550,17 +554,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	ormSession=null;
         }
         
-		
-		close();
-        thread=null;
-        base=null;
-        //RequestImpl r = request;
-        
+
         // Scopes
         if(hasFamily) {
         	if(!isChild){
         		req.disconnect(this);
         	}
+        	
+        	close();
+            thread=null;
+            base=null;
+            
         	
         	request=null;
         	_url=null;
@@ -573,6 +577,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             
         }
         else {
+        	close();
+            thread=null;
+            base=null;
+            
+        	
             if(variables.isBind()) {
             	variables=null;
             	variablesRoot=null;
@@ -620,7 +629,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	java.util.Iterator<Entry<String, DatasourceConnection>> it = conns.entrySet().iterator();
         	DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
         	while(it.hasNext())	{
-        		pool.releaseDatasourceConnection((it.next().getValue()));
+        		pool.releaseDatasourceConnection(config,(it.next().getValue()),true);
         	}
         	conns.clear();
         }
@@ -807,23 +816,27 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		// get cached data
 		String id=CacheHandlerFactory.createId(sources);
 		CacheHandler ch = CacheHandlerFactory.include.getInstance(getConfig(), cachedWithin);
-		Object obj=ch.get(this, id);
+		CacheItem ci=ch.get(this, id);
 		
-		if(obj!=null && obj instanceof String) {
+		if(ci instanceof IncludeCacheItem) {
 			try {
-				write((String) obj);
+				write(((IncludeCacheItem)ci).getOutput());
 				return;
 			} catch (IOException e) {
 				throw Caster.toPageException(e);
 			}
 		}
-		
+		long start = System.nanoTime();
+    	
 		BodyContent bc =  pushBody();
 	    
 	    try {
 	    	doInclude(sources, runOnce);
 	    	String out = bc.getString();
-	    	ch.set(this, id,cachedWithin,out);
+	    	ch.set(this, id,cachedWithin,new IncludeCacheItem(
+	    			out
+	    			,ArrayUtil.isEmpty(sources)?null:sources[0]
+	    			,System.nanoTime()-start));
 			return;
 		}
         finally {

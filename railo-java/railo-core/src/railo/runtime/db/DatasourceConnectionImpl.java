@@ -5,12 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.spooler.Task;
 
 /**
  * wrap for datasorce and connection from it
  */
-public final class DatasourceConnectionImpl implements DatasourceConnection {
+public final class DatasourceConnectionImpl implements DatasourceConnection,Task {
     
     //private static final int MAX_PS = 100;
 	private Connection connection;
@@ -202,29 +206,11 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		//closePreparedStatements(-1);
 		getConnection().close();
 	}
-	
 
-	/*public void closePreparedStatements(int maxDelete) throws SQLException {
-		Iterator<Entry<String, PreparedStatement>> it = preparedStatements.entrySet().iterator();
-		int count=0;
-		while(it.hasNext()){
-			try {
-				Entry<String, PreparedStatement> entry = it.next();
-				entry.getValue().close();
-				it.remove();
-				if(maxDelete!=0 && ++count>=maxDelete) break;
-			} 
-			catch (SQLException e) {}
-		}
-		
-	}*/
+	@Override
+	public Object execute(Config config) throws PageException {
+		((ConfigImpl)config).getDatasourceConnectionPool().releaseDatasourceConnection(this);
+		return null;
+	}
 	
-	
-	/*protected void finalize() throws Throwable {
-	    try {
-	        close();        // close open files
-	    } finally {
-	        super.finalize();
-	    }
-	}*/
 }

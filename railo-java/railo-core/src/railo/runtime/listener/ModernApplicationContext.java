@@ -14,7 +14,6 @@ import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
@@ -50,7 +49,6 @@ import railo.runtime.type.UDFCustomType;
 
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
 public class ModernApplicationContext extends ApplicationContextSupport {
@@ -270,13 +268,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		// datasource
 		Object o = get(component,KeyConstants._datasource,null);
 		if(o!=null) {
-			
-			this.ormDatasource=this.defaultDataSource = toDefaultDatasource(o);
+			this.ormDatasource=this.defaultDataSource = AppListenerUtil.toDefaultDatasource(o);
 		}
 
 		// default datasource
 		o=get(component,DEFAULT_DATA_SOURCE,null);
-		if(o!=null) this.defaultDataSource =toDefaultDatasource(o);
+		if(o!=null) this.defaultDataSource =AppListenerUtil.toDefaultDatasource(o);
 		
 		// ormenabled
 		o = get(component,ORM_ENABLED,null);
@@ -291,38 +288,6 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			AppListenerUtil.setORMConfiguration(pc, this, settings);
 		}
 	}
-
-
-
-	public static Object toDefaultDatasource(Object o) throws PageException {
-		if(Decision.isStruct(o)) {
-			Struct sct=(Struct) o;
-			
-			// fix for Jira ticket RAILO-1931
-			if(sct.size()==1) {
-				Key[] keys = CollectionUtil.keys(sct);
-				if(keys.length==1 && keys[0].equalsIgnoreCase(KeyConstants._name)) {
-					return Caster.toString(sct.get(KeyConstants._name));
-				}
-			}
-			
-			try {
-				return AppListenerUtil.toDataSource("__default__",sct);
-			} 
-			catch (PageException pe) { 
-				// again try fix for Jira ticket RAILO-1931
-				String name= Caster.toString(sct.get(KeyConstants._name,null),null);
-				if(!StringUtil.isEmpty(name)) return name;
-				throw pe;
-			}
-			catch (ClassException e) {
-				throw Caster.toPageException(e);
-			}
-		}
-		return Caster.toString(o);
-	}
-
-
 
 	@Override
 	public boolean hasName() {
@@ -690,7 +655,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toCustomTagMappings(config,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;
@@ -819,12 +784,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		if(!initDataSources) {
 			Object o = get(component,KeyConstants._datasources,null);
 			// if "this.datasources" does not exists, check if "this.datasource" exists and contains a struct
-			if(o==null){
+			/*if(o==null){
 				o = get(component,KeyConstants._datasource,null);
 				if(!Decision.isStruct(o)) o=null;
-			}
+			}*/
 			
-			if(o!=null)dataSources=AppListenerUtil.toDataSources(o,dataSources);
+			if(o!=null) dataSources=AppListenerUtil.toDataSources(o,dataSources);
+			
 			initDataSources=true; 
 		}
 		return dataSources;

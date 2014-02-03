@@ -342,8 +342,8 @@ public class CommonUtil {
 	}
 	
 
-	public static Document toDocument(Resource res) throws IOException, SAXException {
-		return XMLUtil.parse(XMLUtil.toInputSource(res), null, false);
+	public static Document toDocument(Resource res, Charset cs) throws IOException, SAXException {
+		return XMLUtil.parse(XMLUtil.toInputSource(res,cs), null, false);
 	}
 	
 	
@@ -534,7 +534,7 @@ public class CommonUtil {
 	}
 	
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
-		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc); // TODO use reflection
+		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(pc.getConfig(),dc,true); // TODO use reflection
 	}
 
 	public static MappingImpl createMapping(Config config, String virtual, String physical) {

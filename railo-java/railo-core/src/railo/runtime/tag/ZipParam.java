@@ -20,6 +20,8 @@ public final class ZipParam extends TagImpl {
 	private Object content;
 	private String entryPath;
 	private ResourceFilter filter;
+	private String pattern;
+	private String patternDelimiters;
 	private String prefix;
 	private railo.commons.io.res.Resource source;
 	private Boolean recurse=null;
@@ -38,6 +40,8 @@ public final class ZipParam extends TagImpl {
 		source=null;
 		recurse=null;
 		zip=null;
+		pattern = null;
+		patternDelimiters = null;
 	}
 	
 	
@@ -65,9 +69,12 @@ public final class ZipParam extends TagImpl {
 	/**
 	 * @param filter the filter to set
 	 */
-	public void setFilter(Object filter) throws PageException	{
+	public void setFilter(Object filter) throws PageException {
 
-		this.filter = UDFFilter.createResourceAndResourceNameFilter(filter);
+		if (filter instanceof UDF)
+			this.setFilter((UDF)filter);
+		else if (filter instanceof String)
+			this.setFilter((String)filter);
 	}
 
 	public void setFilter(UDF filter) throws PageException	{
@@ -77,7 +84,12 @@ public final class ZipParam extends TagImpl {
 
 	public void setFilter(String pattern) {
 
-		this.filter = UDFFilter.createResourceAndResourceNameFilter(pattern);
+		this.pattern = pattern;
+	}
+
+	public void setFilterdelimiters(String patternDelimiters) {
+
+		this.patternDelimiters = patternDelimiters;
 	}
 
 	/**
@@ -107,6 +119,9 @@ public final class ZipParam extends TagImpl {
 
 	@Override
 	public int doStartTag() throws PageException	{
+
+		if (this.filter == null && !StringUtil.isEmpty(this.pattern))
+			this.filter = new WildcardPatternFilter(pattern, patternDelimiters);
 		
 		if(source!=null) {
 			notAllowed("source","charset", charset);

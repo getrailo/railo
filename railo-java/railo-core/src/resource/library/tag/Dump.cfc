@@ -39,8 +39,9 @@ component {
 		showUDFs:{required:false,type:"boolean",default:true,hint="show UDFs in cfdump output."},
 		show:{required:false,type:"string",default:"all",hint="show column or keys."},
 		output:{required:false,type:"string",default:"browser",hint="Where to send the results:
+- browser: the result is written the the browser response stream (default).
 - console: the result is written to the console (System.out).
-- browser (default): the result is written the the browser response stream."},
+- false: output will not be written, effectively disabling the dump."},
 		metainfo:{required:false,type:"boolean",default:true,hint="Includes information about the query in the cfdump results."},
 		keys:{required:false,type:"number",default:9999,hint="For a structure, number of keys to display."},
 		hide:{required:false,type:"string",default:"all",hint="hide column or keys."},
@@ -421,6 +422,9 @@ if (variables.bSuppressType) {
 
 	string function setCSS( required struct stClasses
 						  , required struct dumpStructClasses ) {
+
+		var uFormat = ucFirst(variables.format);
+
 		local.sStyle = '<style type="text/css">';
 		// Query reset and remove style
 		sStyle &= '.tdQueryReset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px;}' & variables.NEWLINE;
@@ -433,14 +437,14 @@ if (variables.bSuppressType) {
 			local.sStyleKey = variables.stLookUp[sKey] ?: sKey;
 			if (structKeyExists(arguments.stClasses.stCustomClasses, sStyleKey)) {
 				local.stStyle = arguments.stClasses.stCustomClasses[sStyleKey];
-				sStyle &= '.td' & UCFirst(variables.format) & sStyleKey & "Header {background-color:##" & stStyle.headerColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColorHeader ?: "000") & "} ";
-				sStyle &= '.td' & UCFirst(variables.format) & sStyleKey & "Name {#(stStyle.pointer ?: 1) ? 'cursor:pointer;' : ''# background-color:##" & stStyle.darkColor & " !important; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
-				sStyle &= '.td' & UCFirst(variables.format) & sStyleKey & "Value {background-color:##" & stStyle.lightColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
+				sStyle &= '.td' & uFormat & sStyleKey & "Header {background-color:##" & stStyle.headerColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColorHeader ?: "000") & "} ";
+				sStyle &= '.td' & uFormat & sStyleKey & "Name {#(stStyle.pointer ?: 1) ? 'cursor:pointer;' : ''# background-color:##" & stStyle.darkColor & " !important; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
+				sStyle &= '.td' & uFormat & sStyleKey & "Value {background-color:##" & stStyle.lightColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
 				sStyle &= variables.NEWLINE;
 			} else {
-				local.createdDumpStructStyle = '.td#ucfirst(variables.format)##sStyleKey#Header {background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
-				&'.td#ucfirst(variables.format)##sStyleKey#Name {cursor: pointer;background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
-				&'.td#ucfirst(variables.format)##sStyleKey#Value {background-color: #arguments.dumpStructClasses[sKey]['normalColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} ';
+				local.createdDumpStructStyle = '.td#uFormat##sStyleKey#Header {background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
+				&'.td#uFormat##sStyleKey#Name {cursor: pointer;background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
+				&'.td#uFormat##sStyleKey#Value {background-color: #arguments.dumpStructClasses[sKey]['normalColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} ';
 				sStyle &= createdDumpStructStyle & variables.NEWLINE;
 			}
 		}
@@ -449,7 +453,7 @@ if (variables.bSuppressType) {
 	}
 
 	string function setJS() {
-		arrayAppend(variables.aOutput, '<script language="JavaScript" type="text/javascript">' & variables.NEWLINE);
+		arrayAppend(variables.aOutput, '<script type="text/javascript">' & variables.NEWLINE);
 		arrayAppend(variables.aOutput, 'var sBase = "' & variables.topElement & '";' & variables.NEWLINE);
 
 /* 		arrayAppend(variables.aOutput, "
@@ -568,15 +572,37 @@ function dump_resetColumns(oObj, iCol) {
 	}
 
 	private struct function getCSS( string sFormat = "modern" ) {
-		local.stClasses = {};
-		try {
-			if (fileExists('railo/dump/skins/#arguments.sFormat#.cfm')) {
-				include template='railo/dump/skins/#arguments.sFormat#.cfm';
-			} else {
-				include template='railo/dump/skins/modern.cfm';
+		
+		var stClasses = { 
+			stCustomClasses : {
+				Array:{headerColor:'9c3', darkColor:'9c3', lightColor:'cf3' },
+				Mongo:{headerColor:'393', darkColor:'393', lightColor:'966' },
+				Object:{headerColor:'c99', darkColor:'c99', lightColor:'fcc' },
+				Query:{headerColor:'c9c', darkColor:'c9c', lightColor:'fcf' },
+				SimpleValue:{headerColor:'f60', darkColor:'f60', lightColor:'fc9', pointer:0 },
+				Struct:{headerColor:'99f', darkColor:'99f', lightColor:'ccf' },
+				SubXML:{headerColor:'996', darkColor:'996', lightColor:'cc9' }, 
+				XML:{headerColor:'c99', darkColor:'c99', lightColor:'fff' },
+				white: {headerColor:'fff', darkColor:'fff', lightColor:'ccc' },
+				Component:{headerColor:'9c9', darkColor:'9c9', lightColor:'cfc'},
+				PublicMethods:{headerColor:'fc9', darkColor:'fc9', lightColor:'ffc'},
+				PrivateMethods:{headerColor:'fc3', darkColor:'fc3', lightColor:'f96'},
+				Method:{headerColor:'c6f', darkColor:'c6f', lightColor:'fcf'}
+			},
+			stBaseClasses : {
+				tdBase: {		style:'{border: 1px solid ##000;padding: 2px;vertical-align: top;}'},
+				tableDump: {	style:'{font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: 11px;background-color: ##eee;color: ##000;border-spacing: 1px;border-collapse:separate;}'},
+				baseHeader: {	style:'{border: 1px solid ##000;padding: 2px;text-align: left;vertical-align: top;cursor:pointer;margin: 1px 1px 0px 1px;}'},
+				header: {		style:'{font-weight: bold; border:1px solid ##000;}'},
+				meta: {			style:'{font-weight: normal}'},
+				tdClickName: { 	style:'{empty-cells: show}'}
 			}
-		} catch (e) {
+		};
+		
+		if (sFormat != "modern" && fileExists("railo/dump/skins/#arguments.sFormat#.cfm")) {			
+			include "railo/dump/skins/#arguments.sFormat#.cfm";
 		}
+		
 		return stClasses;
 	}
 

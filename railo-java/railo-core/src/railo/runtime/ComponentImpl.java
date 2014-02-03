@@ -1325,7 +1325,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				if(udf.getReturnType()==CFTypes.TYPE_DATETIME && udf.getFunctionArguments().length==0) {
 					
 					try {
-						return DateCaster.toDateAdvanced(_call(pc, KeyConstants.__toDateTime,udf, null, new Object[0]),true,pc.getTimeZone(),defaultValue);
+						return DateCaster.toDateAdvanced(
+								_call(pc, KeyConstants.__toDateTime,udf, null, new Object[0])
+								,DateCaster.CONVERTING_TYPE_OFFSET
+								,pc.getTimeZone()
+								,defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}

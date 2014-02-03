@@ -1,5 +1,7 @@
 package railo.commons.io.res.util;
 
+import railo.commons.lang.StringUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -26,7 +28,7 @@ public class WildcardPattern {
      * @param isCaseSensitive - if true, does a case-sensitive matching
      * @param isExclude - if true, the filter becomes an Exclude filter so that only items that do not match the pattern are accepted
      */
-    public WildcardPattern( String pattern, boolean isCaseSensitive, boolean isExclude ) {
+    public WildcardPattern( String pattern, boolean isCaseSensitive, boolean isExclude, String delimiters ) {
 
     	if ( pattern.charAt( 0 ) == '!' ) {		// set isExclude to true if the first char of pattern is an exclamation point '!'
     		
@@ -36,8 +38,8 @@ public class WildcardPattern {
     	
         this.pattern = pattern;
         this.isInclude = !isExclude;
-        
-        StringTokenizer tokenizer = new StringTokenizer( pattern, ",;|" );
+
+        StringTokenizer tokenizer = new StringTokenizer( pattern, !StringUtil.isEmpty(delimiters, true) ? delimiters : "|" );
         
         patterns = new ArrayList<ParsedPattern>();
         
@@ -51,20 +53,18 @@ public class WildcardPattern {
     }
     
     
-    /** calls this( pattern, isCaseSensitive, false ); */
-    public WildcardPattern( String pattern, boolean isCaseSensitive ) {
+    /** calls this( pattern, isCaseSensitive, false, delimiters ); */
+    public WildcardPattern( String pattern, boolean isCaseSensitive, String delimiters ) {
     
-        this( pattern, isCaseSensitive, false );
+        this( pattern, isCaseSensitive, false, delimiters );
     }
     
     
     public boolean isMatch( String input ) {
         
         for ( ParsedPattern pp : this.patterns ) {
-            
-            boolean match = pp.isMatch( input );
-            
-            if ( match )
+
+            if (pp.isMatch(input))
                 return isInclude;
         }
         
@@ -82,46 +82,40 @@ public class WildcardPattern {
         public final static String MATCH_ANY = "*";
         public final static String MATCH_ONE = "?";
 
-        private List<String> parts;
+	    private String[] parts;
         private final boolean isCaseSensitive;
 
-        private final boolean isLastPartMatchAny;
-        
 
         public ParsedPattern( String pattern, boolean isCaseSensitive ) {
 
             this.isCaseSensitive = isCaseSensitive;
 
-            if ( !isCaseSensitive )
+            if (!isCaseSensitive)
                 pattern = pattern.toLowerCase();
 
-            parts = new ArrayList<String>();
+	        List<String> lsp = new ArrayList<String>();
 
             int len = pattern.length();
-
             int subStart = 0;
 
-            for ( int i=subStart; i<len; i++ ) {
+            for (int i=subStart; i<len; i++) {
 
                 char c = pattern.charAt( i );
 
-                if ( c == '*' || c == '?' ) {
+                if (c == '*' || c == '?') {
 
-                    if ( i > subStart )
-                        parts.add( pattern.substring( subStart, i ) );
+                    if (i > subStart)
+                        lsp.add( pattern.substring( subStart, i ) );
 
-                    parts.add( c == '*' ? MATCH_ANY : MATCH_ONE );
-
+                    lsp.add(c == '*' ? MATCH_ANY : MATCH_ONE);
                     subStart = i + 1;
                 }
             }
 
-            if ( len > subStart ) {
+            if (len > subStart)
+                lsp.add(pattern.substring(subStart));
 
-                parts.add( pattern.substring( subStart ) );
-            }
-
-            isLastPartMatchAny = ( parts.get( parts.size() - 1 ) == MATCH_ANY );
+	        this.parts = lsp.toArray(new String[ lsp.size()] );
         }
 
 
@@ -138,12 +132,24 @@ public class WildcardPattern {
             if ( !isCaseSensitive )
                 input = input.toLowerCase();
 
+	        if (parts.length == 1)
+		        return ( parts[0] == MATCH_ANY || parts[0].equals(input) );
+
+	        if (parts.length == 2) {
+
+				if (parts[0] == MATCH_ANY)
+					return input.endsWith( parts[1] );
+
+		        if (parts[ parts.length - 1 ] == MATCH_ANY)
+			        return input.startsWith( parts[0] );
+	        }
+
             int pos = 0;
             int len = input.length();
 
             boolean doMatchAny = false;
 
-            for ( String part : parts ) {
+            for (String part : parts) {
 
                 if ( part == MATCH_ANY ) {
 
@@ -170,7 +176,7 @@ public class WildcardPattern {
                 doMatchAny = false;
             }
 
-            if ( !isLastPartMatchAny && ( len != pos ) )        // if pattern doesn't end with * then we shouldn't have any more characters in input
+            if ( (parts[ parts.length - 1 ] != MATCH_ANY) && (len != pos) )        // if pattern doesn't end with * then we shouldn't have any more characters in input
                 return false;
 
             return true;
@@ -182,16 +188,10 @@ public class WildcardPattern {
 
             StringBuilder sb = new StringBuilder();
 
-            for ( String s : parts ) {
-
+            for (String s : parts)
                 sb.append( s );
-                sb.append( ':' );
-            }
 
-            if ( sb.length() > 0 )
-                sb.setLength( sb.length() - 1 );
-
-            return "[" + sb.toString() + "]";
+            return sb.toString();
         }
     }
 }

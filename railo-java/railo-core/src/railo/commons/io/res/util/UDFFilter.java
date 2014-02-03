@@ -56,12 +56,12 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
 	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(UDF filter) throws PageException	{
 		return new UDFFilter(filter);
 	}
-	
+
 	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(String pattern) {
 
 		if( !StringUtil.isEmpty(pattern, true) )
-	    	return new WildcardPatternFilter( pattern );
-        
+	    	return new WildcardPatternFilter( pattern, "|" );
+
 	    return null;
 	}
 }

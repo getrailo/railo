@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,6 +21,7 @@ import railo.commons.net.http.Header;
 import railo.runtime.ComponentPage;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
@@ -243,7 +245,8 @@ public class HTTPClient implements Objects, Iteratorable {
 		String str;
 		try {
 			if(UDF.RETURN_FORMAT_JSON==argumentsCollectionFormat)	{
-				str = new JSONConverter(true).serialize(pc,args,false);
+				Charset cs = ((PageContextImpl)pc).getWebCharset();
+				str = new JSONConverter(true,cs).serialize(pc,args,false);
 				formfields.put("argumentCollectionFormat", "json");
 			}
 			else if(UDF.RETURN_FORMAT_SERIALIZE==argumentsCollectionFormat)	{

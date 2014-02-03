@@ -368,7 +368,7 @@ public final class Decision {
 		if(value instanceof DateTime) 		return true;
 		else if(value instanceof Date) 		return true;
 		// wrong timezone but this isent importend because date will not be importend
-		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers,alsoMonthString,TimeZone.getDefault(),null)!=null;
+		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,alsoMonthString,TimeZone.getDefault(),null)!=null;
 		else if(value instanceof ObjectWrap) {
         	return isDateSimple(((ObjectWrap)value).getEmbededObject(null),alsoNumbers);
         }
@@ -386,7 +386,7 @@ public final class Decision {
 		if(value instanceof DateTime) 		return true;
 		else if(value instanceof Date) 		return true;
 		// wrong timezone but this isent importend because date will not be importend
-		else if(value instanceof String) 	return DateCaster.toDateAdvanced(value.toString(),alsoNumbers,TimeZone.getDefault(),null)!=null;
+		else if(value instanceof String) 	return DateCaster.toDateAdvanced(value.toString(),alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,TimeZone.getDefault(),null)!=null;
 		else if(value instanceof Castable) 	{
 		    return ((Castable)value).castToDateTime(null)!=null;
              
@@ -481,15 +481,12 @@ public final class Decision {
         else if(o instanceof Struct) {
             Struct sct=(Struct) o;
             Iterator<Key> it = sct.keyIterator();
-            try {
-                while(it.hasNext()) {
-                	Caster.toIntValue(it.next().getString());
-                }
-                return true;
-            } 
-            catch (Throwable t) {
-                return false;
+
+            while (it.hasNext()) {
+                if (!isInteger( it.next(), false ))
+	                return false;
             }
+            return true;
         }
         return false;
     }

@@ -53,6 +53,8 @@ import railo.runtime.orm.hibernate.event.PreUpdateEventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.ListUtil;
 
 public class HibernateORMEngine implements ORMEngine {
@@ -109,7 +111,6 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		// datasource
-		//DataSource ds = ORMUtil.getDataSource(pc);
 		ORMConfiguration ormConf=appContext.getORMConfiguration();
 		String key = hash(ormConf);
 		SessionFactoryData data = factories.get(key);
@@ -180,13 +181,13 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		Log log = ((ConfigImpl)pc.getConfig()).getLog("orm");
 		
-		Iterator<Entry<DataSource, String>> it = HibernateSessionFactory.createMappings(ormConf,data).entrySet().iterator();
-		Entry<DataSource, String> e;
+		Iterator<Entry<Key, String>> it = HibernateSessionFactory.createMappings(ormConf,data).entrySet().iterator();
+		Entry<Key, String> e;
 		while(it.hasNext()) {
 			e = it.next();
 			if(data.getConfiguration(e.getKey())!=null) continue;
-
-			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,e.getKey());
+			
+			DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,data.getDataSource(e.getKey()));
 			try{
 				data.setConfiguration(log,e.getValue(),dc);
 			} 
@@ -208,7 +209,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return data;
 	}
 	
-	private static void addEventListeners(PageContext pc, SessionFactoryData data, DataSource ds) throws PageException {
+	private static void addEventListeners(PageContext pc, SessionFactoryData data, Key key) throws PageException {
 		if(!data.getORMConfiguration().eventHandling()) return;
 		String eventHandler = data.getORMConfiguration().eventHandler();
 		AllEventListener listener=null;
@@ -220,10 +221,10 @@ public class HibernateORMEngine implements ORMEngine {
 		        //config.setInterceptor(listener);
 			//}catch (PageException e) {e.printStackTrace();}
 		}
-		Configuration conf = data.getConfiguration(ds);
+		Configuration conf = data.getConfiguration(key);
 		conf.setInterceptor(new InterceptorImpl(listener));
         EventListeners listeners = conf.getEventListeners();
-        Map<String, CFCInfo> cfcs = data.getCFCs(ds);
+        Map<String, CFCInfo> cfcs = data.getCFCs(key);
         // post delete
 		List<EventListener> 
 		list=merge(listener,cfcs,CommonUtil.POST_DELETE);
@@ -297,26 +298,10 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	private static Object hash(PageContext pc) {
-		ApplicationContext appContext= pc.getApplicationContext();
-		Object o=appContext.getORMDataSource();
-		//DataSource ds;
-		//if(o instanceof DataSource) ds=(DataSource) o;
-		//else ds=CommonUtil.getDataSource(pc,CommonUtil.toString(o));
-		return hash(appContext.getORMConfiguration());
+		return hash(pc.getApplicationContext().getORMConfiguration());
 	}
 	
 	private static String hash(ORMConfiguration ormConf) {
-		/*String id;
-		try{
-			Method m = ds.getClass().getMethod("id", new Class[0]);
-			id=(String) m.invoke(ds, new Object[0]);
-		}
-		catch(Throwable t){
-			id=ds.getClazz()+":"+ds.getDsnTranslated();
-		}
-		return id+":"+ormConf.hash();
-		*/
-		
 		return ormConf.hash();
 	}
 
@@ -440,18 +425,18 @@ public class HibernateORMEngine implements ORMEngine {
 		if(cfc!=null)return cfc;
 		
 		SessionFactoryData oldData = getSessionFactoryData(pc, INIT_NOTHING);
-		Map<DataSource, SessionFactory> oldFactories = oldData.getFactories();
+		Map<Key, SessionFactory> oldFactories = oldData.getFactories();
 		SessionFactoryData newData = getSessionFactoryData(pc, INIT_CFCS);
-		Map<DataSource, SessionFactory> newFactories = newData.getFactories();
+		Map<Key, SessionFactory> newFactories = newData.getFactories();
 		
-		Iterator<Entry<DataSource, SessionFactory>> it = oldFactories.entrySet().iterator();
-		Entry<DataSource, SessionFactory> e;
+		Iterator<Entry<Key, SessionFactory>> it = oldFactories.entrySet().iterator();
+		Entry<Key, SessionFactory> e;
 		SessionFactory newSF;
 		while(it.hasNext()){
 			e = it.next();
 			newSF = newFactories.get(e.getKey());
 			if(e.getValue()!=newSF){
-				session.resetSession(pc,newSF,e.getKey());
+				session.resetSession(pc,newSF,e.getKey(),oldData);
 				cfc = _create(pc,entityName,unique,data);
 				if(cfc!=null)return cfc;
 			}

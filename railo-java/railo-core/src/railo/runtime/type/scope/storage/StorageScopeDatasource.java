@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
@@ -97,12 +98,12 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			throw Caster.toPageException(se);
 		}
 	    finally {
-	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
+	    	if(dc!=null) pool.releaseDatasourceConnection(config,dc,true);
 	    }
 	    
 	    if(query!=null && pc.getConfig().debug()) {
 	    	boolean debugUsage=DebuggerUtil.debugQueryUsage(pc,query);
-	    	pc.getDebugger().addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),pc.getCurrentPageSource(),query.getExecutionTime());
+	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),((PageContextImpl)pc).getCurrentPageSource(null),query.getExecutionTime());
 	    }
 	    boolean _isNew = query.getRecordcount()==0;
 	    
@@ -146,7 +147,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			ScopeContext.error(log, t);
 		}
 		finally {
-			if(dc!=null) pool.releaseDatasourceConnection(dc);
+			if(dc!=null) pool.releaseDatasourceConnection(config,dc,true);
 		}
 	}
 	
@@ -170,7 +171,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			ScopeContext.error(log, t);
 		}
 		finally {
-			if(dc!=null) pool.releaseDatasourceConnection(dc);
+			if(dc!=null) pool.releaseDatasourceConnection(ci,dc,true);
 		}
 	}
 	

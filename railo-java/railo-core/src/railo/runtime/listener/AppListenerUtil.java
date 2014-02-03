@@ -2,6 +2,7 @@ package railo.runtime.listener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
 import railo.commons.io.res.Resource;
@@ -39,6 +40,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -179,7 +181,7 @@ public final class AppListenerUtil {
 	public static DataSource[] toDataSources(Object o,DataSource[] defaultValue) {
 		try {
 			return toDataSources(o);
-		} catch (Throwable t) {t.printStackTrace();
+		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
@@ -294,23 +296,55 @@ public final class AppListenerUtil {
 		return virtual;
 	}
 	
+	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o) throws PageException {
+		return toMappings(cw, o,false);
+	}
 
-	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o,Mapping[] defaultValue) {
+	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o, Mapping[] defaultValue) {
 		try {
-			return toCustomTagMappings(cw, o);
+			return toMappings(cw, o,false);
 		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
 
-	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o) throws PageException {
+	public static Mapping[] toComponentMappings(ConfigWeb cw, Object o) throws PageException {
+		return toMappings(cw, o,true);
+	}
+
+	public static Mapping[] toComponentMappings(ConfigWeb cw, Object o,Mapping[] defaultValue) {
+		try {
+			return toMappings(cw, o,true);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	private static Mapping[] toMappings(ConfigWeb cw, Object o, boolean useStructNames) throws PageException {
+		ConfigWebImpl config=(ConfigWebImpl) cw;
 		Array array;
 		if(o instanceof String){
 			array=ListUtil.listToArrayRemoveEmpty(Caster.toString(o),',');
 		}
 		else if(o instanceof Struct){
-			array=new ArrayImpl();
 			Struct sct=(Struct) o;
+			if(useStructNames) {
+				Iterator<Entry<Key, Object>> it = sct.entryIterator();
+				List<Mapping> list=new ArrayList<Mapping>();
+				Entry<Key, Object> e;
+				String virtual;
+				while(it.hasNext()) {
+					e = it.next();
+					virtual=e.getKey().getString();
+					if(virtual.length()==0) virtual="/";
+					if(!virtual.startsWith("/")) virtual="/"+virtual;
+			        if(!virtual.equals("/") && virtual.endsWith("/"))virtual=virtual.substring(0,virtual.length()-1);
+			        list.add(config.createCustomTagAppMappings(virtual,Caster.toString(e.getValue()).trim()));
+				}
+				return list.toArray(new Mapping[list.size()]);
+			}
+			
+			array=new ArrayImpl();
 			Iterator<Object> it = sct.valueIterator();
 			while(it.hasNext()) {
 				array.append(it.next());
@@ -320,15 +354,8 @@ public final class AppListenerUtil {
 			array=Caster.toArray(o);
 		}
 		MappingImpl[] mappings=new MappingImpl[array.size()];
-		ConfigWebImpl config=(ConfigWebImpl) cw;
 		for(int i=0;i<mappings.length;i++) {
-			
 			mappings[i]=(MappingImpl) config.createCustomTagAppMappings("/"+i,Caster.toString(array.getE(i+1)).trim());
-			/*mappings[i]=new MappingImpl(
-					config,"/"+i,
-					Caster.toString(array.getE(i+1)).trim(),
-					null,false,true,false,false,false
-					);*/
 		}
 		return mappings;
 	}
@@ -417,7 +444,11 @@ public final class AppListenerUtil {
 		
 		// datasource
 		Object o = sct.get(KeyConstants._datasource,null);
-		if(o!=null) ac.setORMDatasource(Caster.toString(o));
+		
+		if(o!=null) {
+			o=toDefaultDatasource(o);
+			if(o!=null) ((ApplicationContextPro)ac).setORMDataSource(o);
+		}
 	}
 	
 	
@@ -498,6 +529,34 @@ public final class AppListenerUtil {
 		int ls=translateLoginStorage(strLoginStorage, -1);
 		if(ls!=-1) return ls;
 	    throw new ApplicationException("invalid loginStorage definition ["+strLoginStorage+"], valid values are [session,cookie]");
+	}
+	
+	public static Object toDefaultDatasource(Object o) throws PageException {
+		if(Decision.isStruct(o)) {
+			Struct sct=(Struct) o;
+			
+			// fix for Jira ticket RAILO-1931
+			if(sct.size()==1) {
+				Key[] keys = CollectionUtil.keys(sct);
+				if(keys.length==1 && keys[0].equalsIgnoreCase(KeyConstants._name)) {
+					return Caster.toString(sct.get(KeyConstants._name));
+				}
+			}
+			
+			try {
+				return AppListenerUtil.toDataSource("__default__",sct);
+			} 
+			catch (PageException pe) { 
+				// again try fix for Jira ticket RAILO-1931
+				String name= Caster.toString(sct.get(KeyConstants._name,null),null);
+				if(!StringUtil.isEmpty(name)) return name;
+				throw pe;
+			}
+			catch (ClassException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return Caster.toString(o);
 	}
 }
 

@@ -11,7 +11,8 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
-import railo.runtime.cache.tag.request.CacheEntry;
+import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.query.QueryCacheItem;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
@@ -488,9 +489,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		else if(hasCached) {
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
-			Object obj=ch.get(pageContext, id);
-			if(obj instanceof CacheEntry) {
-				CacheEntry ce = (CacheEntry) obj;
+			CacheItem ci = ch.get(pageContext, id);
+			if(ci instanceof QueryCacheItem) {
+				QueryCacheItem ce = (QueryCacheItem) ci;
 				if(ce.isCachedAfter(cachedAfter))
 					query= ce.query;
 			}
@@ -538,7 +539,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				//if(cachedWithin!=null)
 				String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
-				ch.set(pageContext, id,cachedWithin,new CacheEntry(query));
+				ch.set(pageContext, id,cachedWithin,new QueryCacheItem(query));
 				
 				//cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
 	            //pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
@@ -638,11 +639,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private Object executeORM(SQL sql, int returnType, Struct ormoptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pageContext);
 		
-		DataSource ds;
 		String dsn = Caster.toString(ormoptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pageContext);
-		else ds=((PageContextImpl)pageContext).getDataSource(dsn);
-		
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pageContext).getName();
 		
 		// params
 		SQLItem[] _items = sql.getItems();
@@ -659,7 +657,7 @@ offset: Specifies the start index of the resultset from where it has to start th
 cacheable: Whether the result of this query is to be cached in the secondary cache. Default is false.
 cachename: Name of the cache in secondary cache.
 		 */
-		Object res = session.executeQuery(pageContext,ds,sql.getSQLString(),params,unique,ormoptions);
+		Object res = session.executeQuery(pageContext,dsn,sql.getSQLString(),params,unique,ormoptions);
 		if(returnType==RETURN_TYPE_ARRAY_OF_ENTITY) return res;
 		return session.toQuery(pageContext, res, null);
 		
@@ -667,18 +665,16 @@ cachename: Name of the cache in secondary cache.
 	
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		DataSource ds;
 		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) ds=ORMUtil.getDataSource(pc);
-		else ds=((PageContextImpl)pc).getDataSource(dsn);
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pc).getName();
 		
 		
 		if(Decision.isCastableToArray(params))
-			return session.executeQuery(pc,ds,hql,Caster.toArray(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toArray(params),unique,queryOptions);
 		else if(Decision.isCastableToStruct(params))
-			return session.executeQuery(pc,ds,hql,Caster.toStruct(params),unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,Caster.toStruct(params),unique,queryOptions);
 		else
-			return session.executeQuery(pc,ds,hql,(Array)params,unique,queryOptions);
+			return session.executeQuery(pc,dsn,hql,(Array)params,unique,queryOptions);
 	}
 	
 

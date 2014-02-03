@@ -246,7 +246,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		if(str.equals("now"))return 0;
 		else if(str.equals("never"))return NEVER;
 		else {
-			DateTime dt = DateCaster.toDateAdvanced(expires,false,null,null);
+			DateTime dt = DateCaster.toDateAdvanced(expires,DateCaster.CONVERTING_TYPE_NONE,null,null);
 			if(dt!=null) {
 		        return toExpires(dt);
 		    }

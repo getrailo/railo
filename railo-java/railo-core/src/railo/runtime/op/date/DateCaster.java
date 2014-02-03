@@ -31,6 +31,10 @@ import railo.runtime.type.dt.TimeImpl;
  */
 public final class DateCaster {
 
+	public static final short CONVERTING_TYPE_NONE=0;
+	public static final short CONVERTING_TYPE_YEAR=1;
+	public static final short CONVERTING_TYPE_OFFSET=2;
+	
 	private static final Object NULL = new Object();
 
 	//private static short MODE_DAY_STR=1;
@@ -108,15 +112,19 @@ public final class DateCaster {
 	/**
 	 * converts a String to a DateTime Object (Advanced but slower), returns null if invalid string
 	 * @param str String to convert
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
 	 * @param timeZone
 	 * @param defaultValue 
 	 * @return Date Time Object
 	 */
-	public static DateTime toDateAdvanced(String str,boolean alsoNumbers,TimeZone timeZone, DateTime defaultValue) {
+	public static DateTime toDateAdvanced(String str,short convertingType,TimeZone timeZone, DateTime defaultValue) {
 		str=str.trim();
 		if(StringUtil.isEmpty(str)) return defaultValue;
 		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
-		DateTime dt=toDateSimple(str,alsoNumbers,true,timeZone,defaultValue);
+		DateTime dt=toDateSimple(str,convertingType,true,timeZone,defaultValue);
 		if(dt==null) {	
 	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
 		    synchronized(formats){
@@ -243,7 +251,7 @@ public final class DateCaster {
 	            //}catch (ParseException e) {}
 	        }
         //}
-        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false,true, tz, defaultValue);
+        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, CONVERTING_TYPE_NONE,true, tz, defaultValue);
         return defaultValue;
     }
     
@@ -258,7 +266,7 @@ public final class DateCaster {
 	
 	
 	public static DateTime toDateAdvanced(String str, TimeZone timeZone, DateTime defaultValue) {
-	    return toDateAdvanced(str, true, timeZone,defaultValue);
+	    return toDateAdvanced(str, CONVERTING_TYPE_OFFSET, timeZone,defaultValue);
 	}
 	
 	/**
@@ -304,18 +312,22 @@ public final class DateCaster {
 	/**
 	 * converts a Object to a DateTime Object, returns null if invalid string
 	 * @param o Object to Convert
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
 	 * @param timeZone
 	 * @return coverted Date Time Object
 	 * @throws PageException
 	 */
-	public static DateTime toDateSimple(Object o, boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone) throws PageException {
+	public static DateTime toDateSimple(Object o, short convertingType,boolean alsoMonthString, TimeZone timeZone) throws PageException {
 		if(o instanceof DateTime) 		return (DateTime)o;
 		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime();
-		else if(o instanceof String) 	return toDateSimple(o.toString(),alsoNumbers,alsoMonthString, timeZone);
+		else if(o instanceof String) 	return toDateSimple(o.toString(),convertingType,alsoMonthString, timeZone);
 		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
-		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),alsoNumbers,alsoMonthString,timeZone);
+		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),convertingType,alsoMonthString,timeZone);
 		else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
 		}
@@ -325,18 +337,29 @@ public final class DateCaster {
 		
 		throw new ExpressionException("can't cast ["+Caster.toTypeName(o)+"] to date value");
 	}
-	
-	public static DateTime toDateSimple(Object o, boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
+	/**
+	 * 
+	 * @param o
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
+	 * @param alsoMonthString
+	 * @param timeZone
+	 * @param defaultValue
+	 * @return
+	 */
+	public static DateTime toDateSimple(Object o, short convertingType,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
 		if(o instanceof DateTime) 		return (DateTime)o;
 		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime(defaultValue);
-		else if(o instanceof String) 	return toDateSimple(o.toString(),alsoNumbers,alsoMonthString, timeZone,defaultValue);
+		else if(o instanceof String) 	return toDateSimple(o.toString(),convertingType,alsoMonthString, timeZone,defaultValue);
 		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
 		else if(o instanceof ObjectWrap) {
 			Object eo = ((ObjectWrap)o).getEmbededObject(NULL);
 			if(eo==NULL) return defaultValue;
-			return toDateSimple(eo,alsoNumbers,alsoMonthString,timeZone,defaultValue);
+			return toDateSimple(eo,convertingType,alsoMonthString,timeZone,defaultValue);
 		}
 		else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
@@ -352,7 +375,7 @@ public final class DateCaster {
 	 * @throws PageException
 	 */
 	public static DateTime toDateSimple(String str, TimeZone timeZone) throws PageException {
-		 DateTime dt=toDateSimple(str,true,true, timeZone,null);
+		 DateTime dt=toDateSimple(str,CONVERTING_TYPE_OFFSET,true, timeZone,null);
 		 if(dt==null)
 			 throw new ExpressionException("can't cast ["+str+"] to date value");
 		 return dt;
@@ -381,24 +404,37 @@ public final class DateCaster {
 		}
 		throw new ExpressionException("can't cast ["+Caster.toClassName(o)+"] to time value");
 	}
-	 
-	 public static DateTime toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
-        return _toDateAdvanced(o, alsoNumbers, timeZone, defaultValue, true);
+	
+	/**
+	 * 
+	 * @param o
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
+	 * @param timeZone
+	 * @param defaultValue
+	 * @return
+	 */
+	public static DateTime toDateAdvanced(Object o,short convertingType, TimeZone timeZone, DateTime defaultValue) {
+        return _toDateAdvanced(o, convertingType, timeZone, defaultValue, true);
 	 }
 	 
-	 private static DateTime _toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue, boolean advanced) {
+	 private static DateTime _toDateAdvanced(Object o,short convertingType, TimeZone timeZone, DateTime defaultValue, boolean advanced) {
         if(o instanceof DateTime)       return (DateTime)o;
         else if(o instanceof Date)      return new DateTimeImpl((Date)o);
         else if(o instanceof Castable)  {
             return ((Castable)o).castToDateTime(defaultValue);
         }
         else if(o instanceof String)    {
-        	if(advanced)return toDateAdvanced(o.toString(),alsoNumbers, timeZone,defaultValue);
-        	return toDateSimple(o.toString(),alsoNumbers,true, timeZone,defaultValue);
+        	if(advanced)return toDateAdvanced(o.toString(),convertingType, timeZone,defaultValue);
+        	return toDateSimple(o.toString(),convertingType,true, timeZone,defaultValue);
         }
-        else if(alsoNumbers && o instanceof Number)     return util.toDateTime(((Number)o).doubleValue());
+        else if(o instanceof Number){
+        	return numberToDate(timeZone, ((Number)o).doubleValue(), convertingType, defaultValue);
+        }
         else if(o instanceof ObjectWrap) {
-        	return _toDateAdvanced(((ObjectWrap)o).getEmbededObject(defaultValue),alsoNumbers,timeZone,defaultValue,advanced);
+        	return _toDateAdvanced(((ObjectWrap)o).getEmbededObject(defaultValue),convertingType,timeZone,defaultValue,advanced);
         }
         else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
@@ -411,19 +447,22 @@ public final class DateCaster {
     /**
      * converts a Object to a DateTime Object, returns null if invalid string
      * @param str Stringt to Convert
-     * @param alsoNumbers
-     * @param timeZone
+     * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
+	 * @param timeZone
      * @return coverted Date Time Object
      * @throws PageException  
      */
-    public static DateTime toDateSimple(String str,boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone) throws PageException {
-        DateTime dt = toDateSimple(str,alsoNumbers,alsoMonthString,timeZone,null);
+    public static DateTime toDateSimple(String str,short convertingType,boolean alsoMonthString, TimeZone timeZone) throws PageException {
+        DateTime dt = toDateSimple(str,convertingType,alsoMonthString,timeZone,null);
         if(dt==null) throw new ExpressionException("can't cast value to a Date Object");
         return dt;
     }
     
-    public static DateTime toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone) throws PageException {
-        DateTime dt = toDateAdvanced(o,alsoNumbers,timeZone,null);
+    public static DateTime toDateAdvanced(Object o,short convertingType, TimeZone timeZone) throws PageException {
+        DateTime dt = toDateAdvanced(o,convertingType,timeZone,null);
         if(dt==null) throw new ExpressionException("can't cast value to a Date Object");
         return dt;
     }
@@ -561,13 +600,16 @@ public final class DateCaster {
 	/**
 	 * converts a String to a DateTime Object, returns null if invalid string
 	 * @param str String to convert
-	 * @param alsoNumbers
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
 	 * @param alsoMonthString allow that the month is a english name
 	 * @param timeZone
 	 * @param defaultValue 
 	 * @return Date Time Object
 	 */	
-	private static DateTime parseDateTime(String str,DateString ds,boolean alsoNumbers,boolean alsoMonthString,TimeZone timeZone, DateTime defaultValue) {
+	private static DateTime parseDateTime(String str,DateString ds,short convertingType,boolean alsoMonthString,TimeZone timeZone, DateTime defaultValue) {
 		int month=0;
 		int first=ds.readDigits();
 		// first
@@ -578,7 +620,7 @@ public final class DateCaster {
 			month=1;
 		}
 		
-		if(ds.isAfterLast()) return month==1?defaultValue:toNumberDate(str,alsoNumbers,defaultValue);
+		if(ds.isAfterLast()) return month==1?defaultValue:numberToDate(timeZone,Caster.toDoubleValue(str,Double.NaN),convertingType,defaultValue);
 		
 		char del=ds.current();
 		if(del!='.' && del!='/' && del!='-' && del!=' ' && del!='\t') {
@@ -779,13 +821,16 @@ public final class DateCaster {
 	/**
 	 * converts the given string to a date following simple and fast parsing rules (no international formats)
 	 * @param str
-	 * @param alsoNumbers
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
 	 * @param alsoMonthString allow that the month is defined as english word (jan,janauary ...)
 	 * @param timeZone
 	 * @param defaultValue
 	 * @return
 	 */
-	public static DateTime toDateSimple(String str,boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
+	public static DateTime toDateSimple(String str,short convertingType,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
 		str=StringUtil.trim(str,"");
 		DateString ds=new DateString(str);
 		
@@ -793,12 +838,39 @@ public final class DateCaster {
 		if(ds.isCurrent('{') && ds.isLast('}')) {
 			return _toDateSimpleTS(ds,timeZone,defaultValue);
 		}
-		DateTime res = parseDateTime(str,ds,alsoNumbers,alsoMonthString,timeZone,defaultValue);
-		if(alsoNumbers && res==defaultValue && Decision.isNumeric(str)) {
-	        double dbl = Caster.toDoubleValue(str,Double.NaN);
-	        if(Decision.isValid(dbl))return util.toDateTime(dbl);
+		DateTime res = parseDateTime(str,ds,convertingType,alsoMonthString,timeZone,defaultValue);
+		if(res==defaultValue && Decision.isNumeric(str)) {
+			return numberToDate(timeZone,Caster.toDoubleValue(str,Double.NaN),convertingType,defaultValue);
 	    }
 		return res;
+	}
+	
+	/**
+	 * 
+	 * @param timeZone
+	 * @param d
+	 * @param convertingType one of the following values:
+	 * - CONVERTING_TYPE_NONE: number are not converted at all
+	 * - CONVERTING_TYPE_YEAR: integers are handled as years
+	 * - CONVERTING_TYPE_OFFSET: numbers are handled as offset from 1899-12-30 00:00:00 UTC
+	 * @return
+	 */
+	private static DateTime numberToDate(TimeZone timeZone, double d, short convertingType, DateTime defaultValue) {
+		if(!Decision.isValid(d)) return defaultValue;
+		
+		if(convertingType==CONVERTING_TYPE_YEAR) {
+			int i=(int) d;
+			if(i==d) {
+				timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
+				Calendar c = Calendar.getInstance(timeZone);
+				c.set(Calendar.MILLISECOND, 0);
+				c.set(i, 0, 1, 0, 0, 0);
+				return new DateTimeImpl(c);
+			}
+		} 
+		if(convertingType==CONVERTING_TYPE_OFFSET)return util.toDateTime(d);
+		
+		return defaultValue;
 	}
 
 	private static DateTime _toDateSimpleTS(DateString ds, TimeZone timeZone, DateTime defaultValue) {
@@ -927,12 +999,7 @@ public final class DateCaster {
 		else return defaultValue;
 	}
 
-	private static DateTime toNumberDate(String str,boolean alsoNumbers, DateTime defaultValue) {
-	    if(!alsoNumbers) return defaultValue;
-		double dbl = Caster.toDoubleValue(str,Double.NaN);
-		if(Decision.isValid(dbl))return util.toDateTime(dbl);
-	    return defaultValue;
-	}
+
 
     /**
 	 * reads a offset definition at the end of a date string

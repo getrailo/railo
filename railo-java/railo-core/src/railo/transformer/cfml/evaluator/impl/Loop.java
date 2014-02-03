@@ -80,6 +80,15 @@ public final class Loop extends EvaluatorSupport {
 			loop.setType(TagLoop.TYPE_ARRAY);
             return;
 		}
+        // array loop
+        if(tag.containsAttribute("times")) {
+        	
+			if(tag.getAttributes().size()>1)
+				throw new EvaluatorException("Wrong Context, when you use attribute times, no other attributes are allowed");
+			loop.setType(TagLoop.TYPE_TIMES);
+            return;
+		}
+        
         // collection loop      
         if(tag.containsAttribute("collection")) {
         	if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
@@ -88,12 +97,29 @@ public final class Loop extends EvaluatorSupport {
             return;
         }
 		// index loop	
-		if(tag.containsAttribute("index")) {
+		/*if(tag.containsAttribute("index")) {
 			if(!tag.containsAttribute("from") || !tag.containsAttribute("to"))
 				throw new EvaluatorException("Wrong Context, when you use attribute index you must also use attribute from and to or list or file");
 			loop.setType(TagLoop.TYPE_INDEX);
             return;
+		}*/
+		if(tag.containsAttribute("from") || tag.containsAttribute("to")) {
+			if(!tag.containsAttribute("from"))
+				throw new EvaluatorException("Wrong Context, when you use attribute to, you must also use attribute from.");
+			if(!tag.containsAttribute("to"))
+				throw new EvaluatorException("Wrong Context, when you use attribute from, you must also use attribute to.");
+			if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+				throw new EvaluatorException("Wrong Context, when you use attribute from and to, you must define attribute index or item.");
+			
+			if(tag.containsAttribute("index") && tag.containsAttribute("item"))
+				throw new EvaluatorException("For this type of loop, you cannot use attribute index and item at the same time.");
+			
+			
+			loop.setType(TagLoop.TYPE_FROM_TO);
+            return;
 		}
+		
+		
 		// condition loop
 		if(tag.containsAttribute("condition")){
 			if(tag.isScriptBase())

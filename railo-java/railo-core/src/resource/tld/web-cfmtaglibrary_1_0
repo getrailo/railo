@@ -2277,6 +2277,14 @@ Example:
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>filterDelimiters</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+			Default is the pipe "|" character.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>mode</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -5605,7 +5613,6 @@ To use cached data, the function must be called with the exact same arguments.</
 	an absolute URL, including the protocol (http or https) and hostname. It may optionally contain a port
 	number. Port numbers specified in the url attribute override the port attribute.</description>
 		</attribute>
-		
 		<attribute>
 			<type>boolean</type>
 			<name>encodeurl</name>
@@ -5616,7 +5623,6 @@ To use cached data, the function must be called with the exact same arguments.</
 			if set to true (default value) URL encodes the value of the attribute "URL" if necessary (no double encoding is happeing).
 			This setting has no influence on the values from httpparam type="url", for this use the attribute "encoded" from httpparam</description>
 		</attribute>
-		
 		<attribute>
 			<type>string</type>
 			<name>compression</name>
@@ -5628,8 +5634,6 @@ To use cached data, the function must be called with the exact same arguments.</
 - none (deprecated): use "false" instead
 </description>
 		</attribute>
-		
-		
 		<attribute>
 			<type>string</type>
 			<name>result</name>
@@ -5748,7 +5752,9 @@ To use cached data, the function must be called with the exact same arguments.</
 			<name>delimiter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Required for creating a query. Options are a tab or comma. Default is a comma.</description>
+			<description>Used only when creating a query from an http request that returns data in a CSV format. This
+			value specifies the Field delimiter for the CSV data. Only the first character is used. Default is a comma.
+			</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8004,6 +8010,15 @@ Valid only for cfinput type="text".</description>
             exist, it is created automatically, with the suffix .log.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>spoolenable</name>
+			<alias>async</alias>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<default>false</default>
+			<description>only works in combination with the attribute "file", if set to true the file is written in a seperate thread.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>type</name>
 			<alias>level</alias>
@@ -8241,6 +8256,16 @@ Railo uses the number of characters in the file.</description>
 			<description>used to a address this loop from a "break" or "continue" statement (instead of the nearest one).</description>
 		</attribute>
 		
+		
+		<attribute>
+			<type>numeric</type>
+			<name>times</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		    <status>implemented</status>
+			<description>used for a simple loop that is looping n times</description>
+		</attribute>
+		
 	</tag>
 	<!-- Mail -->
 	<tag>
@@ -8430,6 +8455,7 @@ Railo uses the number of characters in the file.</description>
 		<attribute>
 			<type>boolean</type>
 			<name>spoolenable</name>
+			<alias>async</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies whether to spool mail or always send it
@@ -8498,6 +8524,13 @@ Railo uses the number of characters in the file.</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>remove all attachments from filesystem after the mail is successfully sent</description>
 		</attribute>
+		<attribute>
+            <type>datetime</type>
+            <name>sendTime</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set a future date time to send an email in the future via the spooler.</description>
+        </attribute>
 	</tag>
 	<!-- MailPart -->
 	<tag>
@@ -8838,7 +8871,7 @@ Each type-value pair must start with a hyphen.</description>
 		<tag-class>railo.runtime.tag.ObjectCache</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
-		<description>Flushes the query cache or returns the current size.</description>
+		<description>Flushes a object cache or returns the current size.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -8848,6 +8881,15 @@ Each type-value pair must start with a hyphen.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>type</name>
+			<values>function,include,object,query,resource,template</values>
+			<default-value>query</default-value>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>cache type to manipulate, query is the default type</description>
 		</attribute>
 		<attribute>
 			<type>object</type>
@@ -11535,6 +11577,60 @@ dWord: creates a value of 0 (zero)</description>
 			if set to false the content to body is ignored and not disabled when a failure in the body of the tag occur.</description>
 		</attribute>
 	</tag>
+	
+	<!-- SmartCache -->
+	<tag>
+		<name>SmartCache</name>
+		<tag-class>railo.runtime.tag.SmartCache</tag-class>
+		<body-content>empty</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<handle-exception>false</handle-exception>
+		<status>hidden</status>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<description></description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>action</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>type</name>
+			<values>include,query,function</values>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>type of the data you need, if not defined all types are returned</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>returnvariable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>entryhash</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>timespan</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+	</tag>
+	
+	
 	<!-- Slider -->
 	<tag>
 		<name>Slider</name>
@@ -14219,6 +14315,14 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
             whether that item should be included in the result or not.</description>
         </attribute>
+        <attribute>
+            <type>string</type>
+            <name>filterDelimiters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+            Default is the pipe "|" character.</description>
+        </attribute>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -14367,6 +14471,14 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             <description>Optional filter. Can be either a wildcard filter,
             e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
             whether that item should be included in the result or not.</description>
+        </attribute>
+        <attribute>
+            <type>string</type>
+            <name>filterDelimiters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+            Default is the pipe "|" character.</description>
         </attribute>
 		<attribute>
 			<type>string</type>

@@ -774,7 +774,7 @@ public abstract class ComponentPage extends PagePlus  {
     			else if(strQF.equalsIgnoreCase("column"))byColumn=true;
     			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
     		}
-    		JSONConverter converter = new JSONConverter(false);
+    		JSONConverter converter = new JSONConverter(false,cs);
     		String prefix="";
     		if(props.secureJson) {
     			prefix=pc.getApplicationContext().getSecureJsonPrefix();
@@ -881,9 +881,9 @@ public abstract class ComponentPage extends PagePlus  {
         // JSON
 		else if(UDF.RETURN_FORMAT_JSON==format) {
         	boolean byColumn = false;
-    		JSONConverter converter = new JSONConverter(false);
+        	cs = getCharset(pc);
+            JSONConverter converter = new JSONConverter(false,cs);
     		String str = converter.serialize(pc,rtn,byColumn);
-            cs = getCharset(pc);
             is = new ByteArrayInputStream(str.getBytes(cs));
     		
         }
@@ -935,7 +935,9 @@ public abstract class ComponentPage extends PagePlus  {
 
 	private Charset getCharset(PageContext pc) {
 		HttpServletResponse rsp = pc.getHttpServletResponse();
-        return ReqRspUtil.getCharacterEncoding(pc,rsp);
+        Charset cs = ReqRspUtil.getCharacterEncoding(pc,rsp);
+        if(cs==null)cs=((PageContextImpl)pc).getWebCharset();
+        return cs;
 	}
 
 	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {

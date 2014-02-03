@@ -9,10 +9,12 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageRuntimeException;
 
 public abstract class DataSourceSupport implements DataSource, Cloneable {
 
-    private Class clazz;
+    private final Class clazz;
 	private final boolean blob;
     private final boolean clob;
     private final int connectionLimit;
@@ -28,6 +30,7 @@ public abstract class DataSourceSupport implements DataSource, Cloneable {
     
 	
 	private Map<String,ProcMetaCollection> procedureColumnCache;
+
 
 	public DataSourceSupport(String name, Class clazz,String username, String password, boolean blob,boolean clob,int connectionLimit, int connectionTimeout, long metaCacheTimeout, TimeZone timezone, int allow, boolean storage, boolean readOnly){
 		this.name=name;
@@ -96,7 +99,8 @@ public abstract class DataSourceSupport implements DataSource, Cloneable {
 
 	@Override
 	public final void setClazz(Class clazz) {
-        this.clazz = clazz;
+		throw new PageRuntimeException(new ApplicationException("this method is no longer supported")); 
+        //this.clazz = clazz;
     }
 
 	@Override
@@ -143,10 +147,40 @@ public abstract class DataSourceSupport implements DataSource, Cloneable {
 	} 
 	
 
+	@Override
+	public int hashCode() {
+		return id().hashCode();
+	}
+	
+
 	public String id() {
-		return getConnectionStringTranslated()+":"+getConnectionLimit()+":"+getConnectionTimeout()+":"+getMetaCacheTimeout()+":"+getName()+":"
-			+getUsername()+":"+getPassword()+":"+getClazz().getName()+":"+(getTimeZone()==null?"null":getTimeZone().getID())+":"+isBlob()+":"+isClob()+":"
-			+isReadOnly()+":"+isStorage();
+		
+		return new StringBuilder(getConnectionStringTranslated())
+		.append(':')
+		.append(getConnectionLimit())
+		.append(':')
+		.append(getConnectionTimeout())
+		.append(':')
+		.append(getMetaCacheTimeout())
+		.append(':')
+		.append(getName().toLowerCase())
+		.append(':')
+		.append(getUsername())
+		.append(':')
+		.append(getPassword())
+		.append(':')
+		.append(getClazz().getName())
+		.append(':')
+		.append((getTimeZone()==null?"null":getTimeZone().getID()))
+		.append(':')
+		.append(isBlob())
+		.append(':')
+		.append(isClob())
+		.append(':')
+		.append(isReadOnly())
+		.append(':')
+		.append(isStorage()).toString();
+		
 	} 
 
     @Override

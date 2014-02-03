@@ -448,7 +448,7 @@ public final class Operator {
 	 */ 
 	public static int compare(Date left, String right) throws PageException { 
 		if(Decision.isNumeric(right)) return compare(left.getTime()/1000,Caster.toDoubleValue(right));
-		DateTime dt=DateCaster.toDateAdvanced(right,true,null,null);
+		DateTime dt=DateCaster.toDateAdvanced(right,DateCaster.CONVERTING_TYPE_OFFSET,null,null);
 		if(dt!=null) {
 			return compare(left.getTime()/1000,dt.getTime()/1000);  	
 		}

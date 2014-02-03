@@ -29,6 +29,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.writer.BodyContentUtil;
 
 public class ComponentLoader {
@@ -61,9 +62,28 @@ public class ComponentLoader {
     	boolean isRealPath=!StringUtil.startsWith(pathWithCFC,'/');
     	PageSource currPS = pc.getCurrentPageSource();
     	Page currP=((PageSourceImpl)currPS).loadPage(pc,(Page)null);
-    	
     	PageSource ps=null;
     	Page page=null;
+    	
+    	// no cache for per application pathes
+    	Mapping[] acm = pc.getApplicationContext().getComponentMappings();
+    	if(!ArrayUtil.isEmpty(acm)) {
+    		Mapping m;
+        	for(int y=0;y<acm.length;y++){
+        		m=acm[y];
+        		ps=m.getPageSource(pathWithCFC);
+        		page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
+	    		if(page!=null)	{
+	    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	        	}
+        	}
+    	}
+    	
+    	
+    	
+    	
+    	
+    	
     	
 	    if(searchLocal==null)
 	    	searchLocal=Caster.toBoolean(config.getComponentLocalSearch());

@@ -27,12 +27,13 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 	
 	private SMTPClient client;
 
-	public MailSpoolerTask(ExecutionPlan[] plans,SMTPClient client) {
-		super(plans);
+	public MailSpoolerTask(ExecutionPlan[] plans,SMTPClient client, long sendTime) {
+		super(plans, sendTime);
 		this.client=client;
 	}
-	public MailSpoolerTask(SMTPClient client) {
-		this(EXECUTION_PLANS,client);
+
+	public MailSpoolerTask(SMTPClient client, long sendTime) {
+		this(EXECUTION_PLANS,client, sendTime);
 	}
 	
 

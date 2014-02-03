@@ -13,6 +13,7 @@ import java.util.Set;
 import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
@@ -848,4 +849,51 @@ public final class ArrayUtil {
 		}
 		return list;
 	}
+
+
+	/**
+	 * this method efficiently copy the contents of one native array into another by using System.arraycopy()
+	 *
+	 * @param dst - the array that will be modified
+	 * @param src - the data to be copied
+	 * @param dstPosition - pass -1 to append to the end of the dst array, or a valid position to add it elsewhere
+	 * @param doPowerOf2 - if true, and the array needs to be resized, it will be resized to the next power of 2 size
+	 * @return - either the original dst array if it had enough capacity, or a new array.
+	 */
+	public static Object[] mergeNativeArrays(Object[] dst, Object[] src, int dstPosition, boolean doPowerOf2) {
+
+		if (dstPosition < 0)
+			dstPosition = dst.length;
+
+		Object[] result = resizeIfNeeded(dst, dstPosition + src.length, doPowerOf2);
+
+		System.arraycopy(src, 0, result, dstPosition, src.length);
+
+		return result;
+	}
+
+
+	/**
+	 * this method returns the original array if its length is equal or greater than the minSize, or create a new array
+	 * and copies the data from the original array into the new one.
+	 *
+	 * @param arr - the array to check
+	 * @param minSize - the required minimum size
+	 * @param doPowerOf2 - if true, and a resize is required, the new size will be a power of 2
+	 * @return - either the original arr array if it had enough capacity, or a new array.
+	 */
+	public static Object[] resizeIfNeeded(Object[] arr, int minSize, boolean doPowerOf2) {
+
+		if (arr.length >= minSize)
+			return arr;
+
+		if (doPowerOf2)
+			minSize = MathUtil.nextPowerOf2(minSize);
+
+		Object[] result = new Object[minSize];
+		System.arraycopy(arr, 0, result, 0, arr.length);
+
+		return result;
+	}
+
 }

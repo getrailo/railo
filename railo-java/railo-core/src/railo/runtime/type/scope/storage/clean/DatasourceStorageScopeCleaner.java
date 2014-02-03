@@ -55,7 +55,7 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 			executor.clean(config, dc, type, engine,this, listener, log);
 		}
 	    finally {
-	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
+	    	if(dc!=null) pool.releaseDatasourceConnection(config,dc,true);
 	    }
 	}
 }

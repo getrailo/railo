@@ -26,6 +26,7 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.loader.util.Util;
 import railo.runtime.Component;
@@ -44,6 +45,7 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.type.Collection.Key;
 
 
 public class HibernateSessionFactory {
@@ -111,7 +113,7 @@ public class HibernateSessionFactory {
 		Resource conf = ormConf.getOrmConfig();
 		if(conf!=null){
 			try {
-				Document doc = CommonUtil.toDocument(conf);
+				Document doc = CommonUtil.toDocument(conf,null);
 				configuration.configure(doc);
 			} 
 			catch (Throwable t) {
@@ -131,11 +133,14 @@ public class HibernateSessionFactory {
         
         // Database connection settings
         .setProperty("hibernate.connection.driver_class", ds.getClazz().getName())
-    	.setProperty("hibernate.connection.url", ds.getDsnTranslated())
-    	.setProperty("hibernate.connection.username", ds.getUsername())
-    	.setProperty("hibernate.connection.password", ds.getPassword())
+    	.setProperty("hibernate.connection.url", ds.getDsnTranslated());
+		if(!StringUtil.isEmpty(ds.getUsername())) {
+			configuration.setProperty("hibernate.connection.username", ds.getUsername());
+			if(!StringUtil.isEmpty(ds.getPassword()))
+				configuration.setProperty("hibernate.connection.password", ds.getPassword());
+		}
     	//.setProperty("hibernate.connection.release_mode", "after_transaction")
-    	.setProperty("hibernate.transaction.flush_before_completion", "false")
+    	configuration.setProperty("hibernate.transaction.flush_before_completion", "false")
     	.setProperty("hibernate.transaction.auto_close_session", "false")
     	
     	// JDBC connection pool (use the built-in)
@@ -259,11 +264,11 @@ public class HibernateSessionFactory {
     }
 
 
-	public static Map<DataSource,String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
-		Map<DataSource,String> mappings=new HashMap<DataSource,String>();
-		Iterator<Entry<DataSource, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
+	public static Map<Key,String> createMappings(ORMConfiguration ormConf, SessionFactoryData data) {
+		Map<Key,String> mappings=new HashMap<Key,String>();
+		Iterator<Entry<Key, Map<String, CFCInfo>>> it = data.getCFCs().entrySet().iterator();
 		while(it.hasNext()){
-			Entry<DataSource, Map<String, CFCInfo>> e = it.next();
+			Entry<Key, Map<String, CFCInfo>> e = it.next();
 			
 			Set<String> done=new HashSet<String>();
 			StringBuilder mapping=new StringBuilder();

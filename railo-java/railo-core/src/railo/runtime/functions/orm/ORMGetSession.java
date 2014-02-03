@@ -17,10 +17,10 @@ public class ORMGetSession extends BIF {
 
 	public static Object call(PageContext pc, String datasource) throws PageException {
 		ORMSession session = ORMUtil.getSession(pc);
-		DataSource ds;
-		if(StringUtil.isEmpty(datasource,true)) ds=ORMUtil.getDataSource(pc);
-		else ds=((PageContextImpl)pc).getDataSource(datasource.trim());
-		return session.getRawSession(ds);
+		String dsn;
+		if(StringUtil.isEmpty(datasource,true)) dsn=ORMUtil.getDataSource(pc).getName();
+		else dsn=((PageContextImpl)pc).getDataSource(datasource.trim()).getName();
+		return session.getRawSession(dsn);
 	}
 
 	@Override

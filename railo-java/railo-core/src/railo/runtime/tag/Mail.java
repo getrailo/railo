@@ -18,6 +18,7 @@ import railo.runtime.net.mail.MailPart;
 import railo.runtime.net.smtp.SMTPClient;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.dt.DateTime;
 // TODO test proxy
 /**
  * 
@@ -49,7 +50,6 @@ public final class Mail extends BodyTagImpl {
 
 	/** Specifies the row in the query to start from. */
 	private double startrow;
-    
 
 
 	//private railo.runtime.mail.Mail mail=new railo.runtime.mail.Mail();
@@ -59,9 +59,10 @@ public final class Mail extends BodyTagImpl {
 	private Charset charset;
 
 	private int priority;
-
 	private boolean remove;
-	
+
+	/** specify the time for the message to be sent when using the spooler */
+	private DateTime sendTime;
 	
 
 	@Override
@@ -78,6 +79,7 @@ public final class Mail extends BodyTagImpl {
 		startrow=0d;
 		charset=null;
 		remove=false;
+		sendTime=null;
 	}
 	
 	
@@ -507,7 +509,7 @@ public final class Mail extends BodyTagImpl {
 	public int doEndTag() throws PageException	{
 		smtp.setTimeZone(pageContext.getTimeZone());
 		try {
-			smtp.send(pageContext.getConfig());
+			smtp.send(pageContext.getConfig(), sendTime!=null ? sendTime.getTime() : 0);
 		} 
 		catch (MailException e) {
 			throw Caster.toPageException(e);
@@ -561,4 +563,11 @@ public final class Mail extends BodyTagImpl {
 		if(charset==null)charset=pageContext.getConfig().getMailDefaultCharset();
 		return charset;
 	}
+
+
+	public void setSendtime(DateTime dt) {
+
+		this.sendTime = dt;
+	}
+
 }

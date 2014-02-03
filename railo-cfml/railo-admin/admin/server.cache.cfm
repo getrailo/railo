@@ -1,3 +1,4 @@
+<cfsilent>
 <cfset error.message="">
 <cfset error.detail="">
 
@@ -17,23 +18,89 @@ Defaults --->
 <cfparam name="url.action2" default="list">
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
+<cfset objectCache={}>
+<!--- Query --->
 <cftry>
-	<cfobjectcache action="size" result="qrySize">
+	<cfobjectcache type="query" action="size" result="objectCache.query">
     <cfcatch>
-    	<cfset qrySize=-1>
+    	<cfset objectCache.query=-1>
     </cfcatch>
 </cftry>
 
-<cfset btnClearTemplateCache=replace(stText.setting.templateCacheClearCount,'{count}',arrayLen(pagePoolList()))>
+<!--- Function --->
+<cftry>
+	<cfobjectcache type="function" action="size" result="objectCache.function">
+    <cfcatch>
+    	<cfset objectCache.function=-1>
+    </cfcatch>
+</cftry>
 
+<!--- Include --->
+<cftry>
+	<cfobjectcache type="include" action="size" result="objectCache.include">
+    <cfcatch>
+    	<cfset objectCache.include=-1>
+    </cfcatch>
+</cftry>
+
+<!--- Object --->
+<cftry>
+	<cfobjectcache type="object" action="size" result="objectCache.object">
+    <cfcatch>
+    	<cfset objectCache.object=-1>
+    </cfcatch>
+</cftry>
+
+<!--- Query --->
+<cftry>
+	<cfobjectcache type="query" action="size" result="objectCache.query">
+    <cfcatch>
+    	<cfset objectCache.query=-1>
+    </cfcatch>
+</cftry>
+
+<!--- Resource --->
+<cftry>
+	<cfobjectcache type="resource" action="size" result="objectCache.resource">
+    <cfcatch>
+    	<cfset objectCache.resource=-1>
+    </cfcatch>
+</cftry>
+
+<!--- template --->
+<cftry>
+	<cfobjectcache type="template" action="size" result="objectCache.template">
+    <cfcatch>
+    	<cfset objectCache.template=-1>
+    </cfcatch>
+</cftry>
+
+
+<cfset clearButton={}>
+<cfloop collection="#objectCache#" index="cacheType" item="cacheSize">
+	<cfset clearButton[cacheType]=stText.setting["CacheClear"]>
+	<cfif cacheSize GTE 0>
+		<cfset clearButton[cacheType]=replace(stText.setting["CacheClearCount"],'{count}',cacheSize)>
+	</cfif>
+	<cfset clearButton[cacheType]=replace(clearButton[cacheType],'{name}',ucFirst(string:cacheType,doLowerIfAllUppercase:true))>
+</cfloop>
+
+
+<cfset btnClearTemplateCache=replace(stText.setting.templateCacheClearCount,'{count}',arrayLen(pagePoolList()))>
+<!--- 
+<cfset qrySize=objectCache.query>
 <cfset btnClearQueryCache=stText.setting.queryCacheClear>
 <cfif qrySize GTE 0>
 	<cfset btnClearQueryCache=replace(stText.setting.queryCacheClearCount,'{count}',qrySize)>
 </cfif>
+--->
+
+
+
 
 <cfset btnClearComponentCache=replace(stText.setting.componentCacheClear,'{count}',structCount(componentCacheList()))>
 <cfset btnClearCTCache=replace(stText.setting.ctCacheClear,'{count}',structCount(ctCacheList()))>
-
+</cfsilent>
 <cfif hasAccess>
 	<cftry>
 		<cfswitch expression="#form.mainAction#">
@@ -47,8 +114,23 @@ Defaults --->
 			<cfcase value="#btnClearTemplateCache#">
 				<cfset pagePoolClear()>
 			</cfcase>
-			<cfcase value="#btnClearQueryCache#">
-				<cfobjectcache action="clear">
+			<cfcase value="#clearButton.function#">
+				<cfobjectcache type="function" action="clear">
+			</cfcase>
+			<cfcase value="#clearButton.include#">
+				<cfobjectcache type="include" action="clear">
+			</cfcase>
+			<cfcase value="#clearButton.object#">
+				<cfobjectcache type="object" action="clear">
+			</cfcase>
+			<cfcase value="#clearButton.query#">
+				<cfobjectcache type="query" action="clear">
+			</cfcase>
+			<cfcase value="#clearButton.resource#">
+				<cfobjectcache type="resource" action="clear">
+			</cfcase>
+			<cfcase value="#clearButton.template#">
+				<cfobjectcache type="template" action="clear">
 			</cfcase>
 			<!--- Update ---->
 			<cfcase value="#stText.Buttons.Update#">
@@ -184,20 +266,29 @@ Create Datasource --->
 				
 				<!--- Object Cache --->
 				<tr>
-					<th scope="row">#stText.setting.queryCache#</th>
+					<th scope="row">#stText.setting.objectCache#</th>
 					<td class="fieldPadded">
-						<input class="button submit" type="submit" name="mainAction" value="#btnClearQueryCache#">
-						<div class="comment">#stText.setting.queryCacheClearDesc#</div>
-
+						<cfloop collection="#objectCache#" index="cacheType" item="cacheSize">
+							<cfif cacheSize EQ -1><cfcontinue></cfif>
+							<input class="button submit" type="submit" name="mainAction" value="#clearButton[cacheType]#">
+							<div class="comment">#replace(stText.setting.cacheClearDesc,'{name}',ucFirst(string:cacheType,doLowerIfAllUppercase:true))#</div>
+						</cfloop>
+						
+						
 
 						<cfsavecontent variable="codeSample">
-							&lt;cfobjectcache action="clear"&gt;
+&lt;cfobjectcache type="function"	action="clear"&gt;
+&lt;cfobjectcache type="include"	action="clear"&gt;
+&lt;cfobjectcache type="object"	action="clear"&gt;
+&lt;cfobjectcache type="query"		action="clear"&gt;
+&lt;cfobjectcache type="resource"	action="clear"&gt;
+&lt;cfobjectcache type="template"	action="clear"&gt;
 						</cfsavecontent>
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
 				
-				<!--- Component Cache --->
+				<!--- Component Path Cache --->
 				<tr>
 					<th scope="row">#stText.setting.componentCache#</th>
 					<td class="fieldPadded">
@@ -212,7 +303,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Customtag Cache --->
+				<!--- Customtag Path Cache --->
 				<tr>
 					<th scope="row">#stText.setting.ctCache#</th>
 					<td class="fieldPadded">
@@ -226,9 +317,12 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
+				
+				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">
 				</cfif>
+				
 			</tbody>
 			<cfif hasAccess>
 				<tfoot>

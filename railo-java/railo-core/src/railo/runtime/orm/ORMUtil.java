@@ -280,7 +280,7 @@ public class ORMUtil {
 		Object o=pc.getApplicationContext().getORMDataSource();
 		
 		if(StringUtil.isEmpty(o))
-			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
+			throw ExceptionUtil.createException((ORMSession)null/* no session here, otherwise we get a infiniti loop*/,null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
 		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
 	}
 	
@@ -328,5 +328,16 @@ public class ORMUtil {
 		
 		
 		return getDataSource(pc);
+	}
+	public static String getDataSourceName(PageContext pc, Component cfc) throws PageException {
+		pc=ThreadLocalPageContext.get(pc);
+		
+		// datasource defined with cfc
+		Struct meta = cfc.getMetaData(pc);
+		String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
+		if(!StringUtil.isEmpty(datasourceName,true)) {
+			return datasourceName.trim();
+		}
+		return getDataSource(pc).getName();
 	}
 }

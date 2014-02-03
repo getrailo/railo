@@ -39,7 +39,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 
 	public static final int TYPE_FILE = 1;
 	public static final int TYPE_LIST = 2;
-	public static final int TYPE_INDEX = 3;
+	public static final int TYPE_FROM_TO = 3;
 	public static final int TYPE_CONDITION = 4;
 	public static final int TYPE_QUERY = 5;
 	public static final int TYPE_COLLECTION = 6;
@@ -48,6 +48,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	public static final int TYPE_INNER_GROUP = 9;
 	public static final int TYPE_INNER_QUERY = 10;
 	public static final int TYPE_NOTHING = 11;
+	public static final int TYPE_TIMES = 12;
 	
 
 	
@@ -231,8 +232,8 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		case TYPE_FILE:
 			writeOutTypeFile(bc);
 		break;
-		case TYPE_INDEX:
-			writeOutTypeIndex(bc);
+		case TYPE_FROM_TO:
+			writeOutTypeFromTo(bc);
 		break;
 		case TYPE_LIST:
 			writeOutTypeListArray(bc,false);
@@ -265,6 +266,9 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			TagGroupUtil.writeOutTypeInnerQuery(this,bc);
 			bc.changeDoSubFunctions(old);
 		break;
+		case TYPE_TIMES:
+		//	writeOutTypeTimes(bc);
+		//break;
 		case TYPE_NOTHING:
 			GeneratorAdapter a = bc.getAdapter();
 			DoWhileVisitor dwv=new DoWhileVisitor();
@@ -642,7 +646,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeIndex(BytecodeContext bc) throws BytecodeException {
+	private void writeOutTypeFromTo(BytecodeContext bc) throws BytecodeException {
 		ForDoubleVisitor forDoubleVisitor = new ForDoubleVisitor();
 		loopVisitor=forDoubleVisitor;
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -691,7 +695,9 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			// VariableReference index>=VariableInterpreter.getVariableReference(pc,@index));
 			int index = adapter.newLocal(Types.VARIABLE_REFERENCE);
 			adapter.loadArg(0);
-			ExpressionUtil.writeOutSilent(getAttribute("index").getValue(), bc, Expression.MODE_REF);
+			Attribute attr = getAttribute("index");
+			if(attr==null) attr = getAttribute("item");
+			ExpressionUtil.writeOutSilent(attr.getValue(), bc, Expression.MODE_REF);
 			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
 			adapter.storeLocal(index);
 			

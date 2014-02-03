@@ -8,24 +8,6 @@
 	<display-name>Railo Core Function Library</display-name>
 	<description>All build in Functions of Railo</description>
 	
-
-	<!-- AnalyzeSmartEntries -->
-	<function>
-		<name>AnalyzeSmartEntries</name>
-		<class>railo.runtime.functions.other.AnalyzeSmartEntries</class>
-		<description></description>
-		<status>hidden</status>
-		<!-- <argument>
-			<name>number</name>
-			<type>number</type>
-			<required>Yes</required>
-			<description>Number to find the absolute value of</description>
-		</argument> -->
-		<return>
-			<type>any</type>
-		</return>
-	</function>
-	
 	<!-- abs -->
 	<function>
 		<name>abs</name>
@@ -41,6 +23,7 @@
 			<type>number</type>
 		</return>
 	</function>
+	
 	<!-- aCos -->
 	<function>
 		<name>aCos</name>
@@ -665,25 +648,25 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
 		<member-name>merge</member-name>
-		<description>This function merges two arrays to a single one.</description>
+		<description>This function creates a new array with data from the two passed arrays. To add all the data from one array into another without creating a new array see the built in function ArrayAppend(arr1, arr2, true).</description>
 		<argument>
 			<name>array1</name>
 			<type>array</type>
 			<required>Yes</required>
 			<description>first array</description>
-    </argument>
-		<argument>
-			<name>array2</name>
-			<type>array</type>
-			<required>Yes</required>
-			<description>second array</description>
-    </argument>
-		<argument>
-			<name>leaveIndex</name>
-			<type>boolean</type>
-			<required>No</required>
-			<description>defines whether the merged arrays will maintain their index values or if the second array will simply append to the first one. If both arrays contain the same index and you specified the parameter leaveIndex to true, the corresponding index in the resulting array will always contain the value of the index of the first array.</description>
-    </argument>
+        </argument>
+        <argument>
+            <name>array2</name>
+            <type>array</type>
+            <required>Yes</required>
+            <description>second array</description>
+        </argument>
+        <argument>
+            <name>leaveIndex</name>
+            <type>boolean</type>
+            <required>No</required>
+            <description>defines whether the merged arrays will maintain their index values or if the second array will simply append to the first one. If both arrays contain the same index and you specified the parameter leaveIndex to true, the corresponding index in the resulting array will always contain the value of the index of the first array.</description>
+        </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -2313,6 +2296,7 @@ the usage of this argument depend on type defined with argument "type":
 	<function>
 		<name>createODBCDate</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDate</class>
+		<status>deprecated</status>
 		<description>Creates an ODBC date object.</description>
 		<argument>
 			<name>date</name>
@@ -2328,6 +2312,7 @@ the usage of this argument depend on type defined with argument "type":
 	<function>
 		<name>createODBCDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDateTime</class>
+		<status>deprecated</status>
 		<description>Creates an ODBC date-time object.</description>
 		<argument>
 			<name>date</name>
@@ -2405,9 +2390,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>createTimeSpan</name>
 		<class>railo.runtime.functions.dateTime.CreateTimeSpan</class>
-		<description>Creates a date/time object that defines a time period. You
-        can add or subtract it from other date/time objects and use
-        it with the cachedWithin attribute of cfquery.</description>
+		<description>Creates a timespan object that defines a time period. You
+        can use it with the cachedWithin attribute cffunction, cfinclude, cfquery </description>
 		<argument>
 			<name>days</name>
 			<type>number</type>
@@ -4593,7 +4577,7 @@ EntitySave(entity, [forceinsert])</description>
 	<function>
 		<name>ContractPath</name>
 		<class>railo.runtime.functions.system.ContractPath</class>
-		<description>Does the opposite of the function expandPath(), tries to match given absolute path, to the mappings in the enviroment, when no mapping match, railo creates a relatie path from the current position,</description>
+		<description>Does the opposite of the function expandPath(). Tries to match given absolute path to the mappings in the enviroment.  When no mappings match, railo creates a relative path from the current position.</description>
 		<argument>
 			<name>path</name>
 			<alias>absolute_path,absolutePath</alias>
@@ -11030,8 +11014,8 @@ The following things are considered to be empty:
 - double
 - short
 - string
-- null
-- xxx[] where xxx is one of the following: any of the preceding types, except for null
+- {type}[] - where {type} is any of the preceding types, e.g. string[]
+- null - see also the built in function nullValue()
 - a Java class name</description>
     </argument>
 		<argument>
@@ -14395,6 +14379,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>No</required>
 			<description>A Boolean value that specifies how to serialize CFML queries.</description>
 		</argument>
+		<argument>
+			<name>charset</name>
+			<alias>charsetName</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>string characters that cannot be encoded by this charset get escaped, 
+			if not set the web charset is used.</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -15142,14 +15134,20 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description>Structure that contains the value to return</description>
-    </argument>
+            <description>Structure that contains the value to return</description>
+        </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>Key whose value to return</description>
-    </argument>
+            <description>Key whose value to return</description>
+        </argument>
+		<argument>
+			<name>defaultValue</name>
+			<type>any</type>
+			<required>false</required>
+            <description>Default value which will be returned if the key does not exist or if null was found</description>
+        </argument>
 		<return>
 			<type>any</type>
 		</return>

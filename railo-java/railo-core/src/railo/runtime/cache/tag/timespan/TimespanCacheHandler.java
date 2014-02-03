@@ -13,6 +13,7 @@ import railo.runtime.PageContext;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFilter;
+import railo.runtime.cache.tag.CacheItem;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
@@ -32,8 +33,8 @@ public class TimespanCacheHandler implements CacheHandler {
 	}
 
 	@Override
-	public Object get(PageContext pc, String id) {
-		return getCache(pc).getValue(id,null);
+	public CacheItem get(PageContext pc, String id) {
+		return (CacheItem) getCache(pc).getValue(id,null);
 	}
 	
 	@Override
@@ -47,7 +48,7 @@ public class TimespanCacheHandler implements CacheHandler {
 	
 
 	@Override
-	public void set(PageContext pc, String id, Object cachedWithin, Object value) throws PageException {
+	public void set(PageContext pc, String id, Object cachedWithin, CacheItem value) throws PageException {
 		long timeSpan;
 		if(Decision.isDate(cachedWithin, false) && !(cachedWithin instanceof TimeSpan))
 			timeSpan=Caster.toDate(cachedWithin, null).getTime()-System.currentTimeMillis();
@@ -83,8 +84,11 @@ public class TimespanCacheHandler implements CacheHandler {
 
 	@Override
 	public void clear(PageContext pc, CacheHandlerFilter filter) {
+		clear(pc, getCache(pc), filter);
+	}
+	
+	public static void clear(PageContext pc, Cache cache, CacheHandlerFilter filter) {
 		try{
-			Cache cache = getCache(pc);
 			Iterator<CacheEntry> it = cache.entries().iterator();
 			CacheEntry ce;
 			while(it.hasNext()){

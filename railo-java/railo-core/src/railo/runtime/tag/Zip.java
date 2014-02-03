@@ -46,6 +46,8 @@ public final class Zip extends BodyTagImpl {
 	private String entryPath;
 	private Resource file;
 	private ResourceFilter filter;
+	private String pattern;
+	private String patternDelimiters;
 	private String name;
 	private boolean overwrite;
 	private String prefix;
@@ -76,6 +78,8 @@ public final class Zip extends BodyTagImpl {
     	source=null;
     	storePath=true;
     	variable=null;
+	    pattern = null;
+	    patternDelimiters = null;
 
     	if(params!=null)params.clear();
     	if(alreadyUsed!=null)alreadyUsed.clear();
@@ -145,9 +149,12 @@ public final class Zip extends BodyTagImpl {
 	/**
 	 * @param filter the filter to set
 	 */
-	public void setFilter(Object filter) throws PageException	{
+	public void setFilter(Object filter) throws PageException {
 
-		this.filter = UDFFilter.createResourceAndResourceNameFilter(filter);
+		if (filter instanceof UDF)
+			this.setFilter((UDF)filter);
+		else if (filter instanceof String)
+			this.setFilter((String)filter);
 	}
 
 	public void setFilter(UDF filter) throws PageException	{
@@ -157,9 +164,13 @@ public final class Zip extends BodyTagImpl {
 
 	public void setFilter(String pattern) {
 
-		this.filter = UDFFilter.createResourceAndResourceNameFilter(pattern);
+		this.pattern = pattern;
 	}
 
+	public void setFilterdelimiters(String patternDelimiters) {
+
+		this.patternDelimiters = patternDelimiters;
+	}
 
 
 	/**
@@ -614,6 +625,10 @@ public final class Zip extends BodyTagImpl {
     @Override
 	public int doEndTag() throws PageException	{//print.out("doEndTag"+doCaching+"-"+body);
 		try {
+
+			if (this.filter == null && !StringUtil.isEmpty(this.pattern))
+				this.filter = new WildcardPatternFilter(pattern, patternDelimiters);
+
 			if(action.equals("delete")) actionDelete();
 			else if(action.equals("list")) actionList();
 			else if(action.equals("read")) actionRead(false);

@@ -199,12 +199,14 @@ public final class DebuggerImpl implements Debugger {
 	
 	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
-		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+		addQuery(query, datasource, name, sql, recordcount, src, (long)time);
 	}
 	
 	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time) {
-		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+		String path="";
+		if(src!=null) path=src.getDisplayPath();
+		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,path,time));
 	}
 	
 	@Override

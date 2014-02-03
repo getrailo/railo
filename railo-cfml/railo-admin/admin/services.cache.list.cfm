@@ -163,8 +163,8 @@ Redirtect to entry --->
 				</cfif>
 			</table>
 		</cfform>
-	</cfif>
-
+		</cfif>
+		
 	<!--- LIST CACHE --->
 	<cfif srcLocal.recordcount and access EQ "yes">
 		<h2>#stText.Settings.cache.titleExisting#</h2>
@@ -325,8 +325,12 @@ this.cache.include = "#!hasInc?"&lt;cache-name>":defaults.include#";
 								<select name="class" class="xlarge">
 									<cfloop list="#_drivers#" index="key">
 										<cfset driver=drivers[key]>
-										<cfset v=trim(driver.getClass())>
-										<option value="#v#">#trim(driver.getLabel())#</option>
+										<!--- Workaround for EHCache Extension --->
+										<cfset clazz=trim(driver.getClass())>
+										<cfif "railo.extension.io.cache.eh.EHCache" EQ clazz>
+											<cfset clazz="railo.runtime.cache.eh.EHCache">
+										</cfif>
+										<option value="#clazz#">#trim(driver.getLabel())#</option>
 									</cfloop>
 								</select>
 							</td>

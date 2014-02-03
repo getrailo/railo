@@ -69,7 +69,6 @@ Redirtect to entry --->
 	<cfset connection.custom=struct()>
 	<cfset driver=drivers[form.class]>
 </cfif>
-
 <cfoutput>
 	<!--- 
 	Error Output --->

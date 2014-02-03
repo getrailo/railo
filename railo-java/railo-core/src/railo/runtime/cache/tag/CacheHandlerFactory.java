@@ -37,7 +37,7 @@ import railo.runtime.type.comparator.SortRegisterComparator;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
-public class CacheHandlerFactory {
+public class CacheHandlerFactory { 
 
 	public static final int TYPE_TIMESPAN=1;
 	public static final int TYPE_REQUEST=2;
@@ -47,7 +47,7 @@ public class CacheHandlerFactory {
 	public static final char CACHE_DEL2 = ':';
 
 	public static CacheHandlerFactory query=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_QUERY);
-	public static CacheHandlerFactory udf=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
+	public static CacheHandlerFactory function=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
 	public static CacheHandlerFactory include=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 	
 	private final RequestCacheHandler rch;
@@ -55,7 +55,7 @@ public class CacheHandlerFactory {
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
 	private int cacheDefaultType;
 	
-	private CacheHandlerFactory(int cacheDefaultType){
+	private CacheHandlerFactory(int cacheDefaultType) {
 		this.cacheDefaultType=cacheDefaultType;
 		rch=new RequestCacheHandler(cacheDefaultType);
 		sch=new SmartCacheHandler(cacheDefaultType);
@@ -63,7 +63,7 @@ public class CacheHandlerFactory {
 	
 	public static void release(PageContext pc){
 		query.rch.clear(pc);
-		udf.rch.clear(pc);
+		function.rch.clear(pc);
 		include.rch.clear(pc);
 	}
 
@@ -88,6 +88,10 @@ public class CacheHandlerFactory {
 		if(TYPE_SMART==type) return sch;
 		return null;
 	}
+
+	public SmartCacheHandler getSmartCacheHandler() {
+		return sch;
+	}
 	
 	private CacheHandler getTimespanCacheHandler(Config config) {
 		TimespanCacheHandler tsch = tschs.get(config);
@@ -97,19 +101,19 @@ public class CacheHandlerFactory {
 		return tsch;
 	}
 
-	public int size(PageContext pc) {
+	public int size(PageContext pc) throws PageException {
 		int size=rch.size(pc);
 		size+=getTimespanCacheHandler(pc.getConfig()).size(pc);
 		return size;
 	}
 
 
-	public void clear(PageContext pc) {
+	public void clear(PageContext pc) throws PageException {
 		rch.clear(pc);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc);
 	}
 	
-	public void clear(PageContext pc, CacheHandlerFilter filter) {
+	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
 		rch.clear(pc,filter);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}

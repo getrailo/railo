@@ -33,6 +33,8 @@ import javax.mail.internet.MimePart;
 import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
+import railo.commons.date.DateTimeException;
+import railo.commons.date.DateTimeUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
@@ -624,7 +626,7 @@ public final class SMTPClient implements Serializable  {
 
 	
 	
-	public void send(ConfigWeb config) throws MailException {
+	public void send(ConfigWeb config, long sendTime) throws MailException {
 		if(ArrayUtil.isEmpty(config.getMailServers()) && ArrayUtil.isEmpty(host))
 			throw new MailException("no SMTP Server defined");
 		
@@ -633,7 +635,7 @@ public final class SMTPClient implements Serializable  {
 		
 		///if(timeout<1)timeout=config.getMailTimeout()*1000;
 		if(spool==SPOOL_YES || (spool==SPOOL_UNDEFINED && config.isMailSpoolEnable())) {
-        	config.getSpoolerEngine().add(new MailSpoolerTask(this));
+			config.getSpoolerEngine().add(new MailSpoolerTask(this, sendTime));
         }
 		else
 			_send(config);

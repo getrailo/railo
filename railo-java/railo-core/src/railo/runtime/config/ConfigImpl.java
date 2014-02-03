@@ -31,7 +31,6 @@ import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LoggerAndSourceData;
 import railo.commons.io.log.log4j.LogAdapter;
-import railo.commons.io.log.log4j.appender.ResourceAppender;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -96,7 +95,6 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.rest.RestSettings;
 import railo.runtime.schedule.Scheduler;
@@ -3467,18 +3465,31 @@ public abstract class ConfigImpl implements Config {
 
 	protected void clearLoggers() {
 		if(loggers.size()==0) return;
-		Iterator<LoggerAndSourceData> it = loggers.values().iterator();
-		while(it.hasNext()){
-			it.next().getAppender().close();
+		try{
+			Iterator<LoggerAndSourceData> it = loggers.values().iterator();
+			while(it.hasNext()){
+				it.next().close();
+			}
 		}
+		catch(Throwable t){}
 		loggers.clear();
 	}
 	
 	protected LoggerAndSourceData addLogger(String name, Level level,
 			String strAppender, Map<String, String> appenderArgs, 
 			String strLayout, Map<String, String> layoutArgs, boolean readOnly) {
-	
-		LoggerAndSourceData las = new LoggerAndSourceData(this,name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
+		LoggerAndSourceData existing = loggers.get(name.toLowerCase());
+		String id=LoggerAndSourceData.id(name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
+		
+		if(existing!=null) {
+			if(existing.id().equals(id)) {
+				return existing;
+			}
+			existing.close();
+		}
+		
+		
+		LoggerAndSourceData las = new LoggerAndSourceData(this,id,name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
 		loggers.put(name.toLowerCase(),las);
 		return las;
 	}
@@ -3505,6 +3516,7 @@ public abstract class ConfigImpl implements Config {
 	public LoggerAndSourceData getLoggerAndSourceData(String name, boolean createIfNecessary){
 		LoggerAndSourceData las = loggers.get(name.toLowerCase());
 		if(las==null) {
+			
 			if(!createIfNecessary) return null;
 			return addLogger(name, Level.ERROR, "console", null, "pattern", null,true);
 		}

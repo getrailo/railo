@@ -189,7 +189,7 @@ Error Output --->
 				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar in your lib directory
 				<br>
 				<cfif !isNull(info.javaAgentPath) && len( info.javaAgentPath )>
-					in this environment that would be: <em>-javaagent=#replace( info.javaAgentPath, server.java.executionPath, "" )#</em>
+					in this environment that would be: <em>-javaagent:#replace( info.javaAgentPath, server.java.executionPath, "" )#</em>
 				<cfelse>
 
 					if the railo-inst.jar is not present in your lib folder you can download it from <a href="http://www.getrailo.org/download" target="new">here</a>.					

@@ -368,8 +368,13 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 		// cookies
 		{
 			Cookie[] _cookies = req.getCookies();
-			disconnectData.cookies=new Cookie[_cookies.length];
-			for(int i=0;i<_cookies.length;i++) disconnectData.cookies[i]=_cookies[i];
+			if(!ArrayUtil.isEmpty(_cookies)) {
+				disconnectData.cookies=new Cookie[_cookies.length];
+				for(int i=0;i<_cookies.length;i++) 
+					disconnectData.cookies[i]=_cookies[i];
+			}
+			else
+				disconnectData.cookies=new Cookie[0];
 		}
 		
 		disconnectData.authType = req.getAuthType();
@@ -402,8 +407,7 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 				barr=IOUtil.toBytes(req.getInputStream(),true);
 			}
 			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// e.printStackTrace();
 			}
 		}
 		disconnected=true;

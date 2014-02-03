@@ -24,10 +24,7 @@ import railo.commons.io.res.type.s3.S3;
 import railo.commons.io.res.type.s3.S3Constants;
 import railo.commons.io.res.type.s3.S3Exception;
 import railo.commons.io.res.type.s3.S3Resource;
-import railo.commons.io.res.util.ModeObjectWrap;
-import railo.commons.io.res.util.ResourceAndResourceNameFilter;
-import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.io.res.util.UDFFilter;
+import railo.commons.io.res.util.*;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
@@ -78,6 +75,9 @@ public final class Directory extends TagImpl  {
 	** 		returned names. For example: *m. Only one mask filter can be applied at a time. */
 	private ResourceFilter filter;
 	private ResourceAndResourceNameFilter nameFilter;
+
+	private String pattern;
+	private String patternDelimiters;
 
 	/** The name of the directory to perform the action against. */
 	private Resource directory;
@@ -144,6 +144,9 @@ public final class Directory extends TagImpl  {
 
         nameconflict = NAMECONFLICT_DEFAULT;
         createPath=true;
+
+		pattern = null;
+		patternDelimiters = null;
 	}
 
 
@@ -157,8 +160,12 @@ public final class Directory extends TagImpl  {
 	 * @param filter
 	 * @throws PageException
 	 **/
-	public void setFilter(Object filter) throws PageException	{
-		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(filter);
+	public void setFilter(Object filter) throws PageException {
+
+		if (filter instanceof UDF)
+			this.setFilter((UDF)filter);
+		else if (filter instanceof String)
+			this.setFilter((String)filter);
 	}
 
 	public void setFilter(UDF filter) throws PageException	{
@@ -166,8 +173,11 @@ public final class Directory extends TagImpl  {
 	}
 
 	public void setFilter(String pattern) {
+		this.pattern = pattern;
+	}
 
-		this.filter = nameFilter = UDFFilter.createResourceAndResourceNameFilter( pattern );
+	public void setFilterdelimiters(String patternDelimiters) {
+		this.patternDelimiters = patternDelimiters;
 	}
 
 	/** set the value acl
@@ -314,6 +324,9 @@ public final class Directory extends TagImpl  {
 
 	@Override
 	public int doStartTag() throws PageException	{
+
+		if (this.filter == null && !StringUtil.isEmpty(this.pattern))
+			this.filter = nameFilter = new WildcardPatternFilter(pattern, patternDelimiters);
 
 	    //securityManager = pageContext.getConfig().getSecurityManager();
 		if(action.equals("list")) {

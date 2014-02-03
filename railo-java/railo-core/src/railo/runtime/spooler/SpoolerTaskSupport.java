@@ -27,11 +27,18 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	 * @param plans
 	 * @param timeOffset offset from the local time to the config time
 	 */
-	public SpoolerTaskSupport(ExecutionPlan[] plans) {
+	public SpoolerTaskSupport(ExecutionPlan[] plans, long nextExecution) {
 		this.plans=plans;
 		creation=System.currentTimeMillis();
+
+		if (nextExecution > 0)
+			this.nextExecution = nextExecution;
 	}
 
+	public SpoolerTaskSupport(ExecutionPlan[] plans) {
+
+		this(plans, 0);
+	}
 	
 	public final String getId() {
 		return id;

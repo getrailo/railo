@@ -57,7 +57,7 @@ public final class ModeObjectWrap implements ObjectWrap,Castable {
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(toString(),true,null,defaultValue);
+        return DateCaster.toDateAdvanced(toString(),DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 
 	@Override

@@ -19,6 +19,9 @@ import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.query.QueryCacheItem;
+import railo.runtime.cache.tag.query.StoredProcCacheItem;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
@@ -499,10 +502,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				hasCached=false;
 				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
-				cacheValue = ch.get(pageContext, id);
+				
+				CacheItem ci = ch.get(pageContext, id);
+				cacheValue=((StoredProcCacheItem)ci).getStruct();
 				//cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
 			}
 			int count=0;
+			long start=System.currentTimeMillis();
 			if(cacheValue==null){
 				// execute
 				boolean isResult=callStat.execute();
@@ -557,7 +563,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    	cache.set(COUNT, Caster.toDouble(count));
 			    	String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
 					CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
-					ch.set(pageContext, id, cachedWithin, cache);
+					ch.set(pageContext, id, cachedWithin, new StoredProcCacheItem(cache,procedure, System.currentTimeMillis()-start));
 			    	//pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
 			    }
 			    
