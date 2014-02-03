@@ -9,7 +9,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
+import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
+import railo.loader.engine.CFMLEngineFactory;
 
 public class BundleUtil {
 	public static Bundle addBundle(BundleContext context,File bundle, boolean start) throws IOException, BundleException {
@@ -17,11 +19,14 @@ public class BundleUtil {
     }
 	
 	public static Bundle addBundle(BundleContext context,String id,File bundle, boolean start) throws IOException, BundleException {
-		
-		InputStream is = new FileInputStream(bundle);
+		CFMLEngineFactory.log(Log.LEVEL_INFO,"add bundle");
+    	InputStream is = new FileInputStream(bundle);
 		try {
         	Bundle b = context.installBundle(id,is);
-        	if(start)b.start();
+        	if(start){
+        		CFMLEngineFactory.log(Log.LEVEL_INFO,"start bundle");
+            	b.start();
+        	}
         	return b;
         }
         finally {

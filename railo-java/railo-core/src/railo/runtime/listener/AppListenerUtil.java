@@ -447,7 +447,7 @@ public final class AppListenerUtil {
 		
 		if(o!=null) {
 			o=toDefaultDatasource(o);
-			if(o!=null) ((ApplicationContextPro)ac).setORMDataSource(o);
+			if(o!=null) ac.setORMDataSource(o);
 		}
 	}
 	

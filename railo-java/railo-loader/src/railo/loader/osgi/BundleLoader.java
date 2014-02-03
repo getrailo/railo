@@ -28,6 +28,7 @@ public class BundleLoader {
 	 */
 	public static Bundle buildAndLoad(BundleContext bc,File bundleDir,File jarDirectory, File rc) throws IOException, BundleException, BundleBuilderFactoryException {
 		
+		// org.osgi.framework.bootdelegation
 		// get version from Manifest if necessary
 		//if(version<=0) { TODO can we cache this step
 			JarFile jf = new JarFile(rc);// TODO this should work in any case, but we should still improve this code
@@ -43,7 +44,15 @@ public class BundleLoader {
 		File bundle = new File(bundleDir,version+".bundle");
 		if(bundle.isFile()) return load(bc,bundle);
 		
-		BundleBuilderFactory factory=new BundleBuilderFactory("Railo Core ", "railo.core", null, null, null);
+		BundleBuilderFactory factory=new BundleBuilderFactory("Railo Core ", "railo.core");
+		factory.setVersion(rcv);
+		//factory.addImportPackage("railo.loader.engine");
+		//factory.addExportPackage("railo.runtime.loader.*");
+		//factory.addExportPackage("railo.*");
+		factory.addClassPath(".");
+		factory.setActivator("railo.runtime.engine.CFMLEngineActivator	");
+		
+		
 		factory.addJar(rc);
 		
 		
@@ -53,15 +62,25 @@ public class BundleLoader {
 		if(Util.isEmpty(cp)) throw new IOException("railo core ["+rc+"] is invalid, no Class-Path defintion found in the META-INF/MANIFEST.MF File");
 		
 		// add jars to bundle
-		StringTokenizer st=new StringTokenizer(cp,";");
-		String jarName;
+		StringTokenizer st=new StringTokenizer(cp,",");
+		String line,jarName,jarVersion;
+		int index;
 		File jar;
 		while (st.hasMoreTokens()) {
-			jarName=st.nextToken().trim();
-			if(Util.isEmpty(jarName))continue;
+			line=st.nextToken().trim();
+			if(Util.isEmpty(line))continue;
+			index=line.lastIndexOf(';');
+			if(index==-1) {
+				jarName=line.trim();
+				jarVersion="0";
+			}
+			else {
+				jarName=line.substring(0,index).trim();
+				jarVersion=line.substring(index+1).trim();
+			}
 			jar=new File(jarDirectory,jarName);
 			if(!jar.isFile()) {
-				throw new BundleException("Missing jar "+jar); // MUST try to download jar
+				throw new BundleException("Missing jar "+jar+" ("+jarVersion+")"); // MUST try to download jar
 			}
 			factory.addJar(jar);
 	     }
@@ -76,7 +95,6 @@ public class BundleLoader {
 	
 	public static void main(String[] args) throws BundleException, IOException, ClassNotFoundException {
 		Felix felix = OSGiUtil.loadFelix();
-		
 		File file=new File("/Users/mic/Tmp/4020000.bundle");
     	Bundle b = load(felix.getBundleContext(),file);
     	System.out.println(b.loadClass("railo.runtime.engine.CFMLEngineImpl"));

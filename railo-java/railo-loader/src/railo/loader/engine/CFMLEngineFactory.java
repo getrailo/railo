@@ -26,6 +26,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 import railo.Version;
+import railo.commons.io.log.Log;
 import railo.loader.TP;
 import railo.loader.osgi.BundleLoader;
 import railo.loader.osgi.BundleUtil;
@@ -296,14 +297,24 @@ public class CFMLEngineFactory {
     
 
     private Bundle loadBundle(File railo) throws BundleException, IOException, BundleBuilderFactoryException {
-    	if(felix==null)felix=OSGiUtil.loadFelix();
+    	if(felix==null){
+    		log(Log.LEVEL_INFO,"load felix");
+    		System.setProperty("org.osgi.framework.bootdelegation", "railo.*");
+        	felix=OSGiUtil.loadFelix();
+    	}
     	else if(bundle!=null) remove(bundle); // uninstall already loaded bundles
     	return BundleLoader.buildAndLoad(felix.getBundleContext(),getBundleDirectory(),getJarDirectory(),railo);
 	}
 
 	private static void remove(Bundle bundle) throws BundleException {
+		log(Log.LEVEL_INFO,"remove existing bundle");
     	bundle.stop();
     	bundle.uninstall();
+	}
+
+	public static void log(int level, String msg) {
+		//System.out.println(msg);
+		System.err.println(msg);
 	}
 
 	private String getCoreExtension() throws ServletException {
@@ -677,7 +688,7 @@ public class CFMLEngineFactory {
      */
     private CFMLEngine getEngine(Bundle bundle) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         log("state:"+BundleUtil.bundleState(bundle.getState(),""));
-    	
+    	//bundle.getBundleContext().getServiceReference(CFMLEngine.class.getName());
     	Class<?> clazz = bundle.loadClass("railo.runtime.engine.CFMLEngineImpl");
         log("class:"+clazz.getName());
         Method m = clazz.getMethod("getInstance",new Class[]{CFMLEngineFactory.class});
