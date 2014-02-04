@@ -15,9 +15,9 @@ public final class Right implements Function {
 
 		if (len == 0) throw new ExpressionException("parameter 2 of the function right can not be 0");
 
-		if (Math.abs(len) >= str.length()) return str;
-
 		int l=str.length();
+
+		if (Math.abs(len) >= l) return str;
 
 		if (len < 0)
 			len = l + len;
