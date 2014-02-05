@@ -11,8 +11,6 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.LogUtil;
-import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.util.ResourceSnippet;
 import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.commons.lang.StringUtil;

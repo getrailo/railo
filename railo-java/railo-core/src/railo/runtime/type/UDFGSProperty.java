@@ -3,7 +3,6 @@ package railo.runtime.type;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;

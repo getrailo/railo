@@ -2,8 +2,6 @@ package railo.runtime.functions.orm;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
@@ -19,7 +17,7 @@ public class ORMGetSession extends BIF {
 		ORMSession session = ORMUtil.getSession(pc);
 		String dsn;
 		if(StringUtil.isEmpty(datasource,true)) dsn=ORMUtil.getDataSource(pc).getName();
-		else dsn=((PageContextImpl)pc).getDataSource(datasource.trim()).getName();
+		else dsn=pc.getDataSource(datasource.trim()).getName();
 		return session.getRawSession(dsn);
 	}
 

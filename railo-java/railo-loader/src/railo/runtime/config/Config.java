@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -100,6 +101,7 @@ public interface Config {
 	public static final short INSPECT_ONCE = 1;
 	public static final short INSPECT_NEVER = 2;
 	// Hibernate Extension has hardcoded this 4, do not change!!!!
+	public static final short INSPECT_UNDEFINED = 4;
 
     /*public static final int CUSTOM_TAG_MODE_NONE = 0;
     public static final int CUSTOM_TAG_MODE_CLASSIC = 1;
@@ -377,20 +379,23 @@ public interface Config {
     public abstract CFXTagPool getCFXTagPool() throws PageException;
     
     /**
+     * @deprecated use instead getLogger()
      * @return returns the application logger
      */
-    public abstract LogAndSource getApplicationLogger();  // FUTURE deprecated, use instead getLogger()
+    public abstract LogAndSource getApplicationLogger();
 
 
     /**
+     * @deprecated use instead getLogger()
      * @return returns the exception logger
      */
-    public abstract LogAndSource getExceptionLogger();  // FUTURE deprecated, use instead getLogger()
+    public abstract LogAndSource getExceptionLogger();
 
     /**
+     * @deprecated use instead getLogger()
      * @return returns the trace logger
      */
-    public abstract LogAndSource getTraceLogger();  // FUTURE deprecated, use instead getLogger()
+    public abstract LogAndSource getTraceLogger();
     
     /**
      * @param password
@@ -402,19 +407,22 @@ public interface Config {
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException;
     
     /**
+     * @deprecated use instead getLogger()
      * @return Returns the mailLogger.
      */
-    public abstract LogAndSource getMailLogger(); // FUTURE deprecated, use instead getLogger()
+    public abstract LogAndSource getMailLogger();
     
     /**
+     * @deprecated use instead getLogger()
      * @return Returns the request timeout Directory.
      */
-    public LogAndSource getRequestTimeoutLogger();  // FUTURE deprecated, use instead getLogger()
+    public LogAndSource getRequestTimeoutLogger();
     
     /**
+     * @deprecated use instead getLogger()
      * @return returns schedule logger
      */
-    public LogAndSource getScheduleLogger(); // FUTURE deprecated, use instead getLogger()
+    public LogAndSource getScheduleLogger();
     
     /**
      * reload the time offset to a time server 
@@ -703,7 +711,11 @@ public interface Config {
     
     public Resource getRemoteClientDirectory();
     
-	public LogAndSource getRemoteClientLog(); // FUTURE deprecated, use instead getLogger()
+    /**
+     * @deprecated use instead getLogger()
+     * @return
+     */
+    public LogAndSource getRemoteClientLog();
 	
 	public RemoteClient[] getRemoteClients();
 	
@@ -754,4 +766,6 @@ public interface Config {
     public void checkPermGenSpace(boolean check);
     
     public boolean allowRequestTimeout();
+
+	public Log getLog(String name);
 }

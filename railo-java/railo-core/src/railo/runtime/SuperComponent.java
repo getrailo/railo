@@ -23,7 +23,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 

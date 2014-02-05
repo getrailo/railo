@@ -4,7 +4,6 @@ import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
-import railo.runtime.component.Member;
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
@@ -15,7 +14,6 @@ import railo.runtime.type.util.UDFUtil;
 
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.type.util.UDFUtil;
 
 public class TOUDF extends TOObjects implements UDF {
 

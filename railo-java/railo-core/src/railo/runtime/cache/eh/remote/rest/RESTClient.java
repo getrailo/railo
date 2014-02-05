@@ -11,8 +11,8 @@ import java.util.Date;
 
 import org.xml.sax.SAXException;
 
+import railo.commons.io.IOUtil;
 import railo.commons.io.cache.CacheEntry;
-import railo.loader.util.Util;
 import railo.runtime.cache.eh.remote.Converter;
 import railo.runtime.cache.eh.remote.rest.sax.CacheFactory;
 import railo.runtime.cache.eh.remote.rest.sax.CacheMeta;
@@ -58,7 +58,7 @@ public class RESTClient {
 	    	return new CacheFactory(is).getMeta();
 		} 
     	finally	{
-    		Util.closeEL(is);
+    		IOUtil.closeEL(is);
     		disconnectEL(connection);
     	}
 	}	
@@ -75,7 +75,7 @@ public class RESTClient {
 	    	
 		} 
     	finally	{
-    		Util.closeEL(is);
+    		IOUtil.closeEL(is);
     		disconnectEL(connection);
     	}
     	return null;
@@ -204,7 +204,7 @@ public class RESTClient {
 	    	return null;
 	    }
     	finally	{
-    		Util.closeEL(is);
+    		IOUtil.closeEL(is);
     	}
 		
 	}

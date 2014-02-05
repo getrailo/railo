@@ -1,17 +1,15 @@
 package railo.runtime.engine;
 
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
 
-public class CFMLEngineActivator implements BundleActivator {
+public class CFMLEngineActivator  {
     
 private ServiceRegistration<?> registration;
 
-@Override
+	//@Override
     public void start(BundleContext bundleContext) throws Exception {
         registration = bundleContext.registerService(
                 CFMLEngine.class.getName(),
@@ -19,7 +17,7 @@ private ServiceRegistration<?> registration;
                 null);
     }
   
-    @Override
+    //@Override
     public void stop(BundleContext bundleContext) throws Exception {
         registration.unregister();
     }

@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
 
-import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;

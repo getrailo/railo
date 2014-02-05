@@ -1,4 +1,18 @@
 railo-core-version: 5.0.0.000
+felix-log-level: debug
+org-osgi-framework-storage-clean: onFirstInit
+org-osgi-framework-bundle-parent: framework
+org-osgi-framework-bootdelegation: 
+ railo.*,
+ javax.*,
+ org.xml.*,
+ sun.*,
+ coldfusion.*,
+ com.allaire.cfx,
+ com.integral.fusiondebug.server,
+ org.apache.xerces.*,
+ org.apache.xml.*,
+ org.w3c.*
 Class-Path: 
  antlr.jar;2.7.6,
  apache-commons-httpclient.jar;4.1.3,

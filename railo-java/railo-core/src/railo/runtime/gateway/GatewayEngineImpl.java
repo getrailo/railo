@@ -10,11 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.Md5;
 import railo.commons.lang.Pair;
-import railo.loader.util.Util;
+import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.ComponentPage;
@@ -282,7 +281,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 			throw new PageRuntimeException(pe);
 		}
 		String cfcPath = entry.getListenerCfcPath();
-		if(!Util.isEmpty(cfcPath,true)){
+		if(!StringUtil.isEmpty(cfcPath,true)){
 			try {
 				if(!callOneWay(cfcPath,gatewayId, method, Caster.toStruct(data,null,false), false))
 					log(gatewayId,LOGLEVEL_ERROR, "function ["+method+"] does not exist in cfc ["+toRequestURI(cfcPath)+"]");

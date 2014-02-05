@@ -1,6 +1,5 @@
 package railo.runtime.functions.system;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,8 +37,6 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
-import railo.transformer.library.tag.TagLib;
-import railo.transformer.library.tag.TagLibTagAttr;
 
 public class GetApplicationSettings {
 	public static Struct call(PageContext pc) {

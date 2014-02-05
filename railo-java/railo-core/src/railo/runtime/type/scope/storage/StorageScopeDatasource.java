@@ -5,13 +5,11 @@ import java.sql.SQLException;
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -83,7 +81,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	protected static Struct _loadData(PageContext pc, String datasourceName,String strType,int type, Log log, boolean mxStyle) throws PageException	{
 		ConfigImpl config = (ConfigImpl)pc.getConfig();
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
-		DatasourceConnection dc=pool.getDatasourceConnection(pc,((PageContextImpl)pc).getDataSource(datasourceName),null,null);
+		DatasourceConnection dc=pool.getDatasourceConnection(pc,pc.getDataSource(datasourceName),null,null);
 		SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 		
 		
@@ -137,7 +135,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		try {
 			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
 			DataSource ds;
-			if(pc!=null) ds=((PageContextImpl)pc).getDataSource(datasourceName);
+			if(pc!=null) ds=pc.getDataSource(datasourceName);
 			else ds=config.getDataSource(datasourceName);
 			dc=pool.getDatasourceConnection(null,ds,null,null);
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
@@ -161,7 +159,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		try {
 			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
 			DataSource ds;
-			if(pc!=null) ds=((PageContextImpl)pc).getDataSource(datasourceName);
+			if(pc!=null) ds=pc.getDataSource(datasourceName);
 			else ds=config.getDataSource(datasourceName);
 			dc=pool.getDatasourceConnection(null,ds,null,null);
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);

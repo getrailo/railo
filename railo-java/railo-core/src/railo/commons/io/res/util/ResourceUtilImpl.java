@@ -3,6 +3,7 @@ package railo.commons.io.res.util;
 import java.io.IOException;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
@@ -192,5 +193,25 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 	@Override
 	public String contractPath(PageContext pc, String path) {
 		return ContractPath.call(pc, path);
+	}
+
+	@Override
+	public Resource getHomeDirectory() {
+		return SystemUtil.getHomeDirectory();
+	}
+
+	@Override
+	public Resource getSystemDirectory() {
+		return SystemUtil.getSystemDirectory();
+	}
+	
+	@Override
+	public Resource getTempDirectory() {
+		return SystemUtil.getTempDirectory();
+	}
+	
+	@Override
+	public String parsePlaceHolder(String path) {
+		return SystemUtil.parsePlaceHolder(path);
 	}
 }

@@ -26,7 +26,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -281,7 +280,7 @@ public class ORMUtil {
 		
 		if(StringUtil.isEmpty(o))
 			throw ExceptionUtil.createException((ORMSession)null/* no session here, otherwise we get a infiniti loop*/,null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
-		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		return o instanceof DataSource?(DataSource)o:pc.getDataSource(Caster.toString(o));
 	}
 	
 	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
@@ -290,7 +289,7 @@ public class ORMUtil {
 		if(StringUtil.isEmpty(o))
 			return defaultValue;
 		try {
-			return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+			return o instanceof DataSource?(DataSource)o:pc.getDataSource(Caster.toString(o));
 		}
 		catch (PageException e) {
 			return defaultValue;
@@ -306,7 +305,7 @@ public class ORMUtil {
 			Struct meta = cfc.getMetaData(pc);
 			String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
 			if(!StringUtil.isEmpty(datasourceName,true)) {
-				DataSource ds = ((PageContextImpl)pc).getDataSource(datasourceName,null);
+				DataSource ds = pc.getDataSource(datasourceName,null);
 				if(ds!=null) return ds;
 			}
 		}
@@ -323,7 +322,7 @@ public class ORMUtil {
 		Struct meta = cfc.getMetaData(pc);
 		String datasourceName = Caster.toString(meta.get(KeyConstants._datasource,null),null);
 		if(!StringUtil.isEmpty(datasourceName,true)) {
-			return ((PageContextImpl)pc).getDataSource(datasourceName);
+			return pc.getDataSource(datasourceName);
 		}
 		
 		

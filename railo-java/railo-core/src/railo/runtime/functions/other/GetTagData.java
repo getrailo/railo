@@ -4,7 +4,6 @@
 package railo.runtime.functions.other;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;

@@ -203,5 +203,42 @@ public final class Info {
 		
 	}*/
 	
-	
+	/**
+     * cast a railo string version to a int version
+     * @param version
+     * @return int version
+     */
+    public static int toInVersion(String version) {
+        
+        int	rIndex = version.lastIndexOf(".rcs");
+        if(rIndex==-1)	rIndex = version.lastIndexOf(".rc");
+        
+        if(rIndex!=-1) {
+            version=version.substring(0,rIndex);
+        }
+        
+        //1.0.0.090
+        int beginIndex=0;
+        
+        //Major
+        int endIndex=version.indexOf('.',beginIndex);
+        int intVersion=0;
+        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000000; // FUTURE 10000000
+
+        // Minor
+        beginIndex=endIndex+1;
+        endIndex=version.indexOf('.',beginIndex);
+        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000; // FUTURE 100000
+
+        // releases
+        beginIndex=endIndex+1;
+        endIndex=version.indexOf('.',beginIndex);
+        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100; // FUTURE 1000
+        
+        // patches
+        beginIndex=endIndex+1;
+        intVersion+=Integer.parseInt(version.substring(beginIndex));
+        
+        return intVersion;
+    }
 }

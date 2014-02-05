@@ -3,12 +3,10 @@ package railo.runtime.tag;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
-import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheItem;
@@ -23,9 +21,7 @@ import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
-import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
-import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
@@ -229,7 +225,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			this.datasource=AppListenerUtil.toDataSource("__temp__", Caster.toStruct(datasource));
 		} 
 		else if (Decision.isString(datasource)) {
-			this.datasource=((PageContextImpl)pageContext).getDataSource(Caster.toString(datasource));
+			this.datasource=pageContext.getDataSource(Caster.toString(datasource));
 		} 
 		else {
 			throw new ApplicationException("attribute [datasource] must be datasource name or a datasource definition(struct)");
@@ -430,7 +426,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 			
-			datasource=obj instanceof DataSource?(DataSource)obj:((PageContextImpl)pageContext).getDataSource(Caster.toString(obj));
+			datasource=obj instanceof DataSource?(DataSource)obj:pageContext.getDataSource(Caster.toString(obj));
 		}
 		
 		

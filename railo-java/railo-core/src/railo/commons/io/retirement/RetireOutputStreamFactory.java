@@ -1,10 +1,8 @@
 package railo.commons.io.retirement;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import railo.print;
 import railo.commons.io.SystemUtil;
 
 public class RetireOutputStreamFactory {

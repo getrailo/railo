@@ -14,10 +14,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import railo.loader.engine.CFMLEngineFactorySupport;
 import railo.loader.util.Util;
 
 public class BundleBuilderFactory {
@@ -87,8 +89,17 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 
 	public void addExportPackage(String strExportPackage) {
+		if(Util.isEmpty(strExportPackage)) return;
 		if(exportPackage==null)exportPackage=new ArrayList<String>();
-		exportPackage.add(strExportPackage);
+		addPackages(exportPackage,strExportPackage);
+		
+	}
+	
+	private static void addPackages(List<String> packages, String str) {
+		StringTokenizer st=new StringTokenizer(str,",");
+		while(st.hasMoreTokens()){
+			packages.add(st.nextToken().trim());
+		}
 	}
 
 	public List<String> getImportPackage() {
@@ -96,8 +107,9 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 
 	public void addImportPackage(String strImportPackage) {
+		if(Util.isEmpty(strImportPackage)) return;
 		if(importPackage==null)importPackage=new ArrayList<String>();
-		importPackage.add(strImportPackage);
+		addPackages(importPackage,strImportPackage);
 	}
 
 	public List<String> getClassPath() {
@@ -236,7 +248,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	            copy(is,zos);
 	        } 
 	        finally {
-	        	Util.closeEL(is);
+	        	CFMLEngineFactorySupport.closeEL(is);
 	            zos.closeEntry();
 	        }
 		
@@ -244,7 +256,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		
 		}
 		finally {
-			Util.closeEL(zos);
+			CFMLEngineFactorySupport.closeEL(zos);
 		}
 	}
 	
@@ -259,7 +271,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 			}
 		}
 		finally {
-			Util.closeEL(zis);
+			CFMLEngineFactorySupport.closeEL(zis);
 		}
 	}
 

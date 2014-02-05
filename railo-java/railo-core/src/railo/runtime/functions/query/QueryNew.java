@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;

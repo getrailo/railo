@@ -182,20 +182,8 @@ public final class XMLUtil {
      * @return returns a singelton TransformerFactory
      */
     public static TransformerFactory getTransformerFactory() {
-        // Saxon
-        //if(transformerFactory==null)transformerFactory=new com.icl.saxon.TransformerFactoryImpl();
-        // Xalan
-        if(transformerFactory==null)transformerFactory=new TransformerFactoryImpl();
-        // Trax
-        //if(transformerFactory==null)transformerFactory=new com.jclark.xsl.trax.TransformerFactoryImpl();
-        // Trax
-        //if(transformerFactory==null)transformerFactory=new jd.xml.xslt.trax.TransformerFactoryImpl();
-        // Caucho
-        //if(transformerFactory==null)transformerFactory=new Xsl();
-        // xsltc
-        //if(transformerFactory==null)transformerFactory=new org.apache.xalan.xsltc.trax.TransformerFactoryImpl();
-        
-        
+    	//return TransformerFactory.newInstance();
+    	if(transformerFactory==null)transformerFactory=new TransformerFactoryImpl();
         return transformerFactory;
     }
     

@@ -30,7 +30,6 @@ import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQLItem;

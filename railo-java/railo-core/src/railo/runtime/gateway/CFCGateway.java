@@ -4,7 +4,6 @@ import java.util.Map;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
-import railo.runtime.gateway.proxy.GatewayFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

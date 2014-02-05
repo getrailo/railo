@@ -264,4 +264,15 @@ public interface ResourceUtil {
 
 		public String contractPath(PageContext pc, String path);
 
+
+		public Resource getHomeDirectory();
+
+
+		public Resource getSystemDirectory();
+
+
+		public Resource getTempDirectory();
+		
+		public String parsePlaceHolder(String path);
+
 }

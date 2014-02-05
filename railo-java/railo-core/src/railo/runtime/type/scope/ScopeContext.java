@@ -211,7 +211,7 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc,getLog());
 				}
 				else{
-					DataSource ds = ((PageContextImpl)pc).getDataSource(storage,null);
+					DataSource ds = pc.getDataSource(storage,null);
 					if(ds!=null)client=ClientDatasource.getInstance(storage,pc,getLog());
 					else client=ClientCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					
@@ -512,7 +512,7 @@ public final class ScopeContext {
 				else if("cookie".equals(storage))
 					session=SessionCookie.getInstance(appContext.getName(),pc,getLog());
 				else{
-					DataSource ds = ((PageContextImpl)pc).getDataSource(storage,null);
+					DataSource ds = pc.getDataSource(storage,null);
 					if(ds!=null && ds.isStorage())session=SessionDatasource.getInstance(storage,pc,getLog(),null);
 					else session=SessionCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					

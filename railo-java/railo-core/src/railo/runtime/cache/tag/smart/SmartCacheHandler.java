@@ -14,7 +14,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.cache.Cache;
@@ -31,19 +30,16 @@ import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
@@ -66,7 +62,6 @@ public class SmartCacheHandler implements CacheHandler {
 		this.config=ThreadLocalPageContext.getConfig(pc);
 		this.cacheType=cacheType;
 		
-		//log = ((ConfigImpl)config).getLog("smartcache");
 		loadRules();
 	}
 	

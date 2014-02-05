@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.Charset;
 
-import railo.loader.util.Util;
+import railo.commons.io.IOUtil;
 
 public class Converter {
 	public static Object toObject(String contentType,InputStream is) throws IOException, ClassNotFoundException {
@@ -16,10 +17,10 @@ public class Converter {
 	    		return ois.readObject();
 		    }
 		    // other
-		    return Util.toString(is);
+		    return IOUtil.toString(is,(Charset)null);
 		}
     	finally	{
-    		Util.closeEL(is);
+    		IOUtil.closeEL(is);
     	}
 	}
 	

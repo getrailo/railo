@@ -33,8 +33,6 @@ import javax.mail.internet.MimePart;
 import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
-import railo.commons.date.DateTimeException;
-import railo.commons.date.DateTimeUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -25,8 +24,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.comparator.TextComparator;
-import railo.transformer.library.function.FunctionLibFunction;
-import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
  * 

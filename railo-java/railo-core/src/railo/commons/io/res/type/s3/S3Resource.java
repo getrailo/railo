@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
+import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
@@ -62,7 +63,7 @@ public final class S3Resource extends ResourceSupport {
 		this.provider=provider;
 		this.newPattern=newPattern;
 		
-		if(path.equals("/") || Util.isEmpty(path,true)) {
+		if(path.equals("/") || StringUtil.isEmpty(path,true)) {
 			this.bucketName=null;
 			this.objectName="";
 		}
@@ -137,7 +138,7 @@ public final class S3Resource extends ResourceSupport {
 		ResourceUtil.checkGetInputStreamOK(this);
 		provider.read(this);
 		try {
-			return Util.toBufferedInputStream(s3.getInputStream(bucketName, objectName));
+			return IOUtil.toBufferedInputStream(s3.getInputStream(bucketName, objectName));
 		} 
 		catch (Exception e) {
 			throw new IOException(e.getMessage());
@@ -241,20 +242,20 @@ public final class S3Resource extends ResourceSupport {
 				try{
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					os=baos;
-					Util.copy(is=getInputStream(), baos);
+					IOUtil.copy(is=getInputStream(), baos,false,false);
 					barr=baos.toByteArray();
 				}
 				catch (Exception e) {
 					throw new PageRuntimeException(Caster.toPageException(e));
 				}
 				finally{
-					Util.closeEL(is);
-					Util.closeEL(os);
+					IOUtil.closeEL(is);
+					IOUtil.closeEL(os);
 				}
 			}
 			S3ResourceOutputStream os = new S3ResourceOutputStream(s3,bucketName,objectName,acl);
 			if(append && !(barr==null || barr.length==0))
-				Util.copy(new ByteArrayInputStream(barr),os);
+				IOUtil.copy(new ByteArrayInputStream(barr),os,true,true);
 			return os;
 		}
 		catch(IOException e) {
@@ -421,7 +422,7 @@ public final class S3Resource extends ResourceSupport {
 					key=ResourceUtil.translatePath(contents[i].getKey(), false, false);
 					if(!isb && !key.startsWith(objectName+"/")) continue;
 					if(Util.isEmpty(key)) continue;
-					index=key.indexOf('/',Util.length(objectName)+1);
+					index=key.indexOf('/',StringUtil.length(objectName)+1);
 					if(index==-1) { 
 						name=key;
 						path=null;

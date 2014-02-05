@@ -43,7 +43,6 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.orm.ORMUtil;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection.Key;
 

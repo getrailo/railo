@@ -5,7 +5,6 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
-import railo.runtime.orm.hibernate.SessionFactoryData;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;

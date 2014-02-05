@@ -12,7 +12,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
-import railo.loader.util.Util;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -213,7 +212,7 @@ public final class Import extends EvaluatorSupport {
         }
         catch (IOException ioe) {}
         finally {
-            Util.closeEL(zis);
+        	IOUtil.closeEL(zis);
         }   
         return null;
     }

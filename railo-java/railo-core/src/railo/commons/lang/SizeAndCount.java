@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.commons.io.IOUtil;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
@@ -150,7 +150,7 @@ public class SizeAndCount {
         }
         catch(Throwable t){}
         finally {
-           Util.closeEL(oos);
+        	IOUtil.closeEL(oos);
         }
         return os.toByteArray().length;
     }

@@ -77,6 +77,8 @@ public final class ConfigServerFactory extends ConfigFactory{
     	boolean doNew=doNew(configDir);
     	
     	Resource configFile=configDir.getRealResource("railo-server.xml");
+    	print.e("len3:"+configFile.length()+"->"+configFile.exists());
+		
         if(!configFile.exists()) {
 		    configFile.createFile(true);
 			//InputStream in = new TextFile("").getClass().getResourceAsStream("/resource/config/server.xml");
@@ -87,6 +89,8 @@ public final class ConfigServerFactory extends ConfigFactory{
 			);
 		}
 		//print.out(configFile);
+        print.e("len2:"+configFile.length());
+		
         Document doc=loadDocument(configFile);
        
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);

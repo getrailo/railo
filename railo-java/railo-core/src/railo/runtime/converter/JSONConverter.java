@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.w3c.dom.Node;
 
-import railo.commons.io.CharsetUtil;
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;

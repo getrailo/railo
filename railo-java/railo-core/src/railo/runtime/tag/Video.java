@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Random;
 
+import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -362,9 +363,9 @@ public class Video extends TagSupport {
 			os=out.getOutputStream();
 		}
 		catch(IOException ioe) {
-			Util.closeEL(is1);
-			Util.closeEL(is2);
-			Util.closeEL(os);
+			IOUtil.closeEL(is1);
+			IOUtil.closeEL(is2);
+			IOUtil.closeEL(os);
 			throw ioe;
 		}
 
@@ -373,9 +374,9 @@ public class Video extends TagSupport {
 			copy(is2, os);
 		} 
 		finally {
-			Util.closeEL(is1);
-			Util.closeEL(is2);
-			Util.closeEL(os);
+			IOUtil.closeEL(is1);
+			IOUtil.closeEL(is2);
+			IOUtil.closeEL(os);
 		}
 	}
 

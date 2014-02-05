@@ -19,7 +19,6 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.ExpressionAsStatement;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 

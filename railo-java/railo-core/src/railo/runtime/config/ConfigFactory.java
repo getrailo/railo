@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,12 +11,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Info;
+import railo.runtime.text.xml.XMLUtil;
 
 public abstract class ConfigFactory {
 	static boolean doNew(Resource contextDir) {
@@ -55,7 +56,7 @@ public abstract class ConfigFactory {
 	 * @throws IOException
 	 */
 	static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
-
+		print.e("len1:"+xmlFile.length());
 		InputStream is = null;
 		try {
 			return _loadDocument(is = IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
@@ -75,11 +76,16 @@ public abstract class ConfigFactory {
 	 * @throws IOException
 	 */
 	private static Document _loadDocument(InputStream is) throws SAXException, IOException {
-		DOMParser parser = new DOMParser();
 		InputSource source = new InputSource(is);
+		
+		return XMLUtil.parse(source, null, false);
+		/*
+		DOMParser parser = new DOMParser();
+		oracle.xml.parser.v2.DOMParser parser = new oracle.xml.parser.v2.DOMParser();
+		//InputSource source = new InputSource(is);
 		parser.parse(source);
 		is.close();
-		return parser.getDocument();
+		return parser.getDocument();*/
 	}
 	
 

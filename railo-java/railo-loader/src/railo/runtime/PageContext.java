@@ -2,6 +2,7 @@ package railo.runtime;
  
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -15,6 +16,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.io.res.Resource;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.debug.Debugger;
 import railo.runtime.err.ErrorPage;
@@ -1083,6 +1085,12 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 	public abstract void setTimeZone(TimeZone timeZone);
 
 	public abstract short getSessionType();
+	
+	public abstract DataSource getDataSource(String datasource) throws PageException;
+		
+	public abstract DataSource getDataSource(String datasource, DataSource defaultValue);
 
+	public abstract Charset getResourceCharset();
 
+	public abstract Charset getWebCharset();
 }

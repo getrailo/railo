@@ -132,8 +132,7 @@ import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
  */
 public abstract class ConfigImpl implements Config {
 
-	public static final short INSPECT_UNDEFINED = 4;// FUTURE move to Config; Hibernate Extension has hardcoded this 4, do not change!!!!
-
+	
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
 	public static final int CLIENT_BOOLEAN_FALSE = 1;
@@ -3497,6 +3496,8 @@ public abstract class ConfigImpl implements Config {
 	public Map<String,LoggerAndSourceData> getLoggers(){
 		return loggers;
 	}
+	
+	@Override
 	public Log getLog(String name){
 		return getLog(name, true);
 	}

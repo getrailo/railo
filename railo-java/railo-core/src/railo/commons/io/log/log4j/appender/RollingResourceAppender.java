@@ -3,16 +3,12 @@ package railo.commons.io.log.log4j.appender;
 import org.apache.log4j.*;
 import java.io.IOException;
 import java.io.Writer;
-import java.io.File;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.helpers.OptionConverter;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.CountingQuietWriter;
 import org.apache.log4j.spi.LoggingEvent;
 
-import railo.print;
-import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.retirement.RetireListener;
 

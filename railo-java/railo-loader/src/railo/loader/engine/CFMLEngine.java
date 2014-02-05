@@ -21,8 +21,10 @@ import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtil;
+import railo.runtime.util.IO;
 import railo.runtime.util.Operation;
 import railo.runtime.util.ResourceUtil;
+import railo.runtime.util.Strings;
 import railo.runtime.util.ZipUtil;
 import railo.runtime.video.VideoUtil;
 
@@ -173,13 +175,23 @@ public interface CFMLEngine {
      */ 
     public Excepton getExceptionUtil();
     
-    
-    
     /** 
      * returns the decision util 
      * @return decision util 
      */ 
     public Creation getCreationUtil();
+    
+
+    /** 
+     * returns the IO util 
+     * @return decision util 
+     */ 
+    public IO getIOUtil();
+    /** 
+     * returns the IO util 
+     * @return decision util 
+     */ 
+    public Strings getStringUtil();
 
 	/**
 	 * returns the FusionDebug Engine

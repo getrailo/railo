@@ -21,8 +21,10 @@ import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtil;
+import railo.runtime.util.IO;
 import railo.runtime.util.Operation;
 import railo.runtime.util.ResourceUtil;
+import railo.runtime.util.Strings;
 import railo.runtime.util.ZipUtil;
 import railo.runtime.video.VideoUtil;
 
@@ -168,6 +170,11 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
     public Creation getCreationUtil() {
         return engine.getCreationUtil();
     }
+    
+    @Override
+    public IO getIOUtil() {
+        return engine.getIOUtil();
+    }
 
 	/**
 	 *
@@ -198,30 +205,27 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 		return engine.getResourceUtil();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getThreadPageContext()
-	 */
+	@Override
 	public PageContext getThreadPageContext() {
 		return engine.getThreadPageContext();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getVideoUtil()
-	 */
+	@Override
 	public VideoUtil getVideoUtil() {
 		return engine.getVideoUtil();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getZipUtil()
-	 */
+	@Override
 	public ZipUtil getZipUtil() {
 		return engine.getZipUtil();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getState()
-	 */
+	@Override
+	public Strings getStringUtil() {
+		return engine.getStringUtil();
+	}
+
+	@Override
 	public String getState() {
 		return engine.getState();
 	}

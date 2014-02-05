@@ -15,8 +15,10 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,13 +26,13 @@ import javax.servlet.ServletException;
 import org.apache.felix.framework.Felix;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 
 import railo.Version;
 import railo.commons.io.log.Log;
 import railo.loader.TP;
 import railo.loader.osgi.BundleLoader;
 import railo.loader.osgi.BundleUtil;
-import railo.loader.osgi.OSGiUtil;
 import railo.loader.osgi.factory.BundleBuilderFactoryException;
 import railo.loader.util.ExtensionFilter;
 import railo.loader.util.Util;
@@ -40,7 +42,7 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
 /**
  * Factory to load CFML Engine
  */
-public class CFMLEngineFactory {
+public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 	
 	 // set to false to disable patch loading, for example in major alpha releases
     private static final boolean PATCH_ENABLED = true;
@@ -164,7 +166,7 @@ public class CFMLEngineFactory {
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-root");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-dir");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server");
-        initParam=Util.parsePlaceHolder(Util.removeQuotes(initParam,true));
+        initParam=parsePlaceHolder(removeQuotes(initParam,true));
         
         try {
             if(!Util.isEmpty(initParam)) {
@@ -234,12 +236,12 @@ public class CFMLEngineFactory {
                 else if(patches[i].lastModified()<coreCreated) {
                     patches[i].delete();
                 }
-                else if(railo==null || isNewerThan(Util.toInVersion(patches[i].getName()),Util.toInVersion(railo.getName()))) {
+                else if(railo==null || isNewerThan(toInVersion(patches[i].getName()),toInVersion(railo.getName()))) {
                     railo=patches[i];
                 }
             }
         }
-        if(railo!=null && isNewerThan(coreVersion,Util.toInVersion(railo.getName())))railo=null;
+        if(railo!=null && isNewerThan(coreVersion,toInVersion(railo.getName())))railo=null;
         
         // Load Railo
         //URL url=null;
@@ -256,12 +258,15 @@ public class CFMLEngineFactory {
                if(PATCH_ENABLED) {
 	                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
 	                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
-	                Util.copy(bis,bos);
-	                Util.closeEL(bis,bos);
+	                copy(bis,bos);
+	                closeEL(bis);
+	                closeEL(bos);
                 }
             }
             else {
-            	bundle=loadBundle(railo);
+
+            	bundle = BundleLoader.buildAndLoad(this,getFelixCacheDirectory(),getBundleDirectory(),getJarDirectory(),railo);
+            	//bundle=loadBundle(railo);
             	log("loaded bundle2:"+bundle.getSymbolicName());
             	engine=getEngine(bundle);
             	log("loaded engine2:"+engine);
@@ -272,7 +277,7 @@ public class CFMLEngineFactory {
             		engine=getCore(getCoreExtension());
             	}*/
             }
-            version=Util.toInVersion(engine.getVersion());
+            version=toInVersion(engine.getVersion());
             
             tlog("Loaded Railo Version "+engine.getVersion());
         }
@@ -295,15 +300,57 @@ public class CFMLEngineFactory {
         
     }
     
+    
 
-    private Bundle loadBundle(File railo) throws BundleException, IOException, BundleBuilderFactoryException {
-    	if(felix==null){
-    		log(Log.LEVEL_INFO,"load felix");
-    		System.setProperty("org.osgi.framework.bootdelegation", "railo.*");
-        	felix=OSGiUtil.loadFelix();
-    	}
-    	else if(bundle!=null) remove(bundle); // uninstall already loaded bundles
-    	return BundleLoader.buildAndLoad(felix.getBundleContext(),getBundleDirectory(),getJarDirectory(),railo);
+	public Felix getFelix(File cacheRootDir, String storageClean,String bootDelegation, String parentClassLoader, int logLevel) throws BundleException {
+		// felix already exist
+		if(felix!=null){
+			log(Log.LEVEL_INFO,"remove existing bundle");
+    		remove(bundle);
+			return felix;
+		}
+		
+		log(Log.LEVEL_INFO,"load felix");
+    	
+		
+		Map<String,Object> config = new HashMap<String,Object>();
+		
+		// storage clean
+		if(!Util.isEmpty(storageClean))
+			config.put(Constants.FRAMEWORK_STORAGE_CLEAN, storageClean);
+		else
+			config.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+
+		// boot delegation
+		if(!Util.isEmpty(bootDelegation))
+			config.put(Constants.FRAMEWORK_BOOTDELEGATION, bootDelegation);
+
+		// parent classLoader
+		if(!Util.isEmpty(parentClassLoader))
+			config.put(Constants.FRAMEWORK_BUNDLE_PARENT, parentClassLoader);
+		else
+			config.put(Constants.FRAMEWORK_BUNDLE_PARENT, Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK);
+	    
+		// felix.cache.rootdir
+		if(!cacheRootDir.exists()) {
+			cacheRootDir.mkdirs();
+		}
+		if(cacheRootDir.isDirectory()) {
+			config.put("felix.cache.rootdir", cacheRootDir.getAbsolutePath());
+		}
+		
+		//
+		// felix.log.level
+		config.put("felix.log.level", ""+logLevel);
+		
+		// TODO felix.log.logger 
+		
+		
+		
+		Felix felix = new Felix(config);
+        felix.start();
+        
+		return felix;
 	}
 
 	private static void remove(Bundle bundle) throws BundleException {
@@ -328,23 +375,22 @@ public class CFMLEngineFactory {
 	}
 
 	private CFMLEngine getCore(String ext) throws BundleBuilderFactoryException, IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		File rc = new File(Util.getTempDirectory(),"tmp_"+System.currentTimeMillis()+".rc");
+		File rc = new File(getTempDirectory(),"tmp_"+System.currentTimeMillis()+".rc");
 		try {
 			InputStream is = null;
 			OutputStream os = null;
 	    	try {
 	    		is = new TP().getClass().getResourceAsStream("/core/core."+ext);
 	    		os=new FileOutputStream(rc);
-	    		Util.copy(is, os);
+	    		copy(is, os);
 	    		
 	    	}
 	    	finally {
-	    		Util.closeEL(is);
-	    		Util.closeEL(os);
+	    		closeEL(is);
+	    		closeEL(os);
 	    	}
-	    	
-			bundle=loadBundle(rc);
-	    	log("loaded bundle3:"+bundle.getSymbolicName());
+	    	bundle = BundleLoader.buildAndLoad(this,getFelixCacheDirectory(),getBundleDirectory(),getJarDirectory(),rc);
+        	log("loaded bundle3:"+bundle.getSymbolicName());
 	    	engine = getEngine(bundle);
         	log("loaded engine3:"+engine);
         	return engine;
@@ -428,22 +474,22 @@ public class CFMLEngineFactory {
         
         tlog("Check for update at "+hostUrl);
         
-        String availableVersion = Util.toString((InputStream)infoUrl.getContent()).trim();
+        String availableVersion = toString((InputStream)infoUrl.getContent()).trim();
         
         if(availableVersion.length()!=9) throw new IOException("can't get update info from ["+infoUrl+"]");
-        if(!isNewerThan(Util.toInVersion(availableVersion),version)) {
+        if(!isNewerThan(toInVersion(availableVersion),version)) {
             tlog("There is no newer Version available");
             return false;
         }
         
-        tlog("Found a newer Version \n - current Version "+Util.toStringVersion(version)+"\n - available Version "+availableVersion);
+        tlog("Found a newer Version \n - current Version "+toStringVersion(version)+"\n - available Version "+availableVersion);
         
         URL updateUrl=new URL(hostUrl,"/railo/remote/version/update.cfm?ext="+getCoreExtension()+"&version="+availableVersion);
         File patchDir=getPatchDirectory();
         File newRailo=new File(patchDir,availableVersion+("."+getCoreExtension()));//isSecure?".rcs":".rc"
         
         if(newRailo.createNewFile()) {
-            Util.copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
+            copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
         }
         else {
             tlog("File for new Version already exists, won't copy new one");
@@ -461,14 +507,14 @@ public class CFMLEngineFactory {
         String v="";
         try {
         	
-        	bundle=loadBundle(newRailo);
+        	bundle = BundleLoader.buildAndLoad(this,getFelixCacheDirectory(),getBundleDirectory(),getJarDirectory(),newRailo);
         	log("loaded bundle1:"+bundle.getSymbolicName());
             CFMLEngine e = getEngine(bundle);
         	log("loaded engine1:"+e);
             if(e==null)throw new IOException("can't load engine");
             v=e.getVersion();
             engine=e;
-            version=Util.toInVersion(v);
+            version=toInVersion(v);
             //e.reset();
             callListeners(e);
         }
@@ -542,7 +588,7 @@ public class CFMLEngineFactory {
         File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
         File patch=null;
         for(int i=0;i<patches.length;i++) {
-        	 if(patch==null || isNewerThan(Util.toInVersion(patches[i].getName()),Util.toInVersion(patch.getName()))) {
+        	 if(patch==null || isNewerThan(toInVersion(patches[i].getName()),toInVersion(patch.getName()))) {
                  patch=patches[i];
              }
         }
@@ -599,6 +645,13 @@ public class CFMLEngineFactory {
         File bd = new File(getResourceRoot(),"jars");
         if(!bd.exists())bd.mkdirs();
         return bd;
+    }
+    
+    private File getFelixCacheDirectory() throws IOException {
+    	return getResourceRoot();
+        //File bd = new File(getResourceRoot(),"felix-cache");
+        //if(!bd.exists())bd.mkdirs();
+        //return bd;
     }
 
     /**
@@ -689,6 +742,11 @@ public class CFMLEngineFactory {
     private CFMLEngine getEngine(Bundle bundle) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         log("state:"+BundleUtil.bundleState(bundle.getState(),""));
     	//bundle.getBundleContext().getServiceReference(CFMLEngine.class.getName());
+        log(Constants.FRAMEWORK_BOOTDELEGATION+":"+bundle.getBundleContext().getProperty(Constants.FRAMEWORK_BOOTDELEGATION));
+        log("felix.cache.rootdir:"+bundle.getBundleContext().getProperty("felix.cache.rootdir"));
+    	
+        
+        log(bundle.loadClass(TP.class.getName()).getClassLoader().toString());
     	Class<?> clazz = bundle.loadClass("railo.runtime.engine.CFMLEngineImpl");
         log("class:"+clazz.getName());
         Method m = clazz.getMethod("getInstance",new Class[]{CFMLEngineFactory.class});

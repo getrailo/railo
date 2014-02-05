@@ -2,7 +2,6 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
-import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.res.ResourceProvider;
@@ -21,10 +20,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
-import railo.runtime.query.QueryCacheFilter;
-import railo.runtime.query.QueryCacheFilterImpl;
-import railo.runtime.query.QueryCacheFilterUDF;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.UDF;
 
 /**

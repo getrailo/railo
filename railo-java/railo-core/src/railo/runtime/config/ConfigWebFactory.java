@@ -20,11 +20,7 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.log4j.HTMLLayout;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.xml.XMLLayout;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
 import org.w3c.dom.Document;
@@ -33,7 +29,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -151,7 +146,6 @@ import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
-import com.jacob.com.LibraryLoader;
 
 /**
  * 

@@ -28,14 +28,11 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
-import railo.commons.io.log.LogUtil;
-import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.log.log4j.appender.ConsoleAppender;
 import railo.commons.io.log.log4j.appender.RollingResourceAppender;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
@@ -3267,7 +3264,7 @@ public final class ConfigWebAdmin {
     	File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
         File patch=null;
         for(int i=0;i<patches.length;i++) {
-        	 if(patch==null || isNewerThan(railo.loader.util.Util.toInVersion(patches[i].getName()),railo.loader.util.Util.toInVersion(patch.getName()))) {
+        	 if(patch==null || isNewerThan(Info.toInVersion(patches[i].getName()),Info.toInVersion(patch.getName()))) {
                  patch=patches[i];
              }
         }

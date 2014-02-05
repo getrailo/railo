@@ -15,8 +15,6 @@ import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 
-import railo.runtime.debug.DebuggerImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.debug.DebuggerUtil;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;

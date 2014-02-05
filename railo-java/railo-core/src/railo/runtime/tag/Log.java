@@ -2,16 +2,13 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.log.log4j.Log4jUtil;
@@ -32,8 +29,6 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.KeyImpl;
-import railo.transformer.cfml.evaluator.EvaluatorException;
-import sun.awt.datatransfer.DataTransferer.CharsetComparator;
 
 /**
 * Writes a message to a log file.

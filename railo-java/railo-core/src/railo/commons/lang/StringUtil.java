@@ -653,8 +653,7 @@ public final class StringUtil {
      * @param firstOnly - if true then only the first occurrence of {@code find} will be replaced
      * @return - calls replace( input, find, repl, firstOnly, false )
 	 */
-	public static String replace( String input, String find, String repl, boolean firstOnly ) {
-	 
+	public static String replace( String input, String find, String repl, boolean firstOnly) {
 		return replace( input, find, repl, firstOnly, false );
 	}
 	
@@ -910,7 +909,11 @@ public final class StringUtil {
 	 * @return
 	 */
 	public static String removeQuotes(String string,boolean trim) {
+		if(string==null) return string;
 		if(trim)string=string.trim();
+		if(string.length()<2) return string;
+		
+		
 		if((StringUtil.startsWith(string, '"') && StringUtil.endsWith(string, '"')) || (StringUtil.startsWith(string, '\'') && StringUtil.endsWith(string, '\''))){
 			string= string.substring(1,string.length()-1);
 			if(trim)string=string.trim();

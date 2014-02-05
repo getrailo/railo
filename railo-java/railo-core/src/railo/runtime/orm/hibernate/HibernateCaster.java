@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.util.Util;
 import railo.runtime.Component;
@@ -257,9 +258,9 @@ public class HibernateCaster {
 	//calendar: A type mapping for a Calendar object that represents a datetime.
 	public static String toHibernateType(String type, String defaultValue)	{
 		type=type.trim().toLowerCase();
-		type=Util.replace(type, "java.lang.", "", true);
-		type=Util.replace(type, "java.util.", "", true);
-		type=Util.replace(type, "java.sql.", "", true);
+		type=StringUtil.replace(type, "java.lang.", "", true);
+		type=StringUtil.replace(type, "java.util.", "", true);
+		type=StringUtil.replace(type, "java.sql.", "", true);
 		
 		// return same value
 		if("long".equals(type)) return type;

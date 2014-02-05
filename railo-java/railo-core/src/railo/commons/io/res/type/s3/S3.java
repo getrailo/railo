@@ -267,7 +267,7 @@ public final class S3 implements S3Constants {
 		headers.add(header("Host",bucketName+"."+host));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
-		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
+		if(StringUtil.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
 		
 		
 		char amp='?';
@@ -381,7 +381,7 @@ public final class S3 implements S3Constants {
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
-		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
+		if(StringUtil.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
 		
 		
 		
@@ -404,7 +404,7 @@ public final class S3 implements S3Constants {
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
-		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
+		if(StringUtil.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
 		
 		URL url = new URL(strUrl);
 		
@@ -432,7 +432,7 @@ public final class S3 implements S3Constants {
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
-		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
+		if(StringUtil.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
 		
 		
 		return strUrl+"?AWSAccessKeyId="+getAccessKeyIdValidate()+"&Expires="+epoch+"&Signature="+signature;
@@ -467,7 +467,7 @@ public final class S3 implements S3Constants {
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
-		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
+		if(StringUtil.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
 		URL url = new URL(strUrl);
 		
 		
@@ -499,7 +499,7 @@ public final class S3 implements S3Constants {
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
-		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
+		if(StringUtil.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
 		
 		
 		

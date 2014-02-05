@@ -2,8 +2,6 @@ package railo.runtime.functions.orm;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.db.DataSource;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;

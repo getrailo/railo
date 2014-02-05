@@ -1,6 +1,5 @@
 package railo.runtime.orm.hibernate;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.engine.query.QueryPlanCache;
 import org.hibernate.event.EventListeners;
 import org.hibernate.event.PostDeleteEventListener;
 import org.hibernate.event.PostInsertEventListener;
@@ -54,7 +52,6 @@ import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.ListUtil;
 
 public class HibernateORMEngine implements ORMEngine {

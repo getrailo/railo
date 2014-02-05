@@ -10,7 +10,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import railo.loader.util.Util;
+import railo.commons.io.IOUtil;
 import railo.runtime.text.xml.XMLUtil;
 
 public class CacheFactory extends DefaultHandler {
@@ -65,7 +65,7 @@ public class CacheFactory extends DefaultHandler {
 			
 		}
 		finally {
-			Util.closeEL(r);
+			IOUtil.closeEL(r);
 		}
     }
 

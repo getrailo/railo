@@ -41,7 +41,6 @@ import railo.intergral.fusiondebug.server.FDControllerImpl;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.CFMLEngineWrapper;
-import railo.loader.util.Util;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
@@ -65,7 +64,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
 import railo.runtime.op.ExceptonImpl;
+import railo.runtime.op.IOImpl;
 import railo.runtime.op.OperationImpl;
+import railo.runtime.op.StringsImpl;
 import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.StructImpl;
 import railo.runtime.util.Cast;
@@ -73,13 +74,15 @@ import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtilImpl;
+import railo.runtime.util.IO;
 import railo.runtime.util.Operation;
+import railo.runtime.util.Strings;
 import railo.runtime.util.ZipUtil;
 import railo.runtime.util.ZipUtilImpl;
 import railo.runtime.video.VideoUtil;
 import railo.runtime.video.VideoUtilImpl;
 
-import com.intergral.fusiondebug.server.FDControllerFactory;
+//import com.intergral.fusiondebug.server.FDControllerFactory;
 
 /**
  * The CFMl Engine
@@ -105,6 +108,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
     private CFMLEngineImpl(CFMLEngineFactory factory) {
     	this.factory=factory; 
+    	Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader()); // MUST better location for this
+		
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
         ConfigServerImpl cs = getConfigServerImpl();
     	
@@ -230,7 +235,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         else if(strConfig.startsWith("/WEB-INF/railo/"))strConfig="{web-root-directory}"+strConfig;
         
         
-        strConfig=Util.removeQuotes(strConfig,true);
+        strConfig=StringUtil.removeQuotes(strConfig,true);
         
         
         
@@ -336,7 +341,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         finally {
         	queue.exit(pc);
             factory.releaseRailoPageContext(pc);
-            FDControllerFactory.notifyPageComplete();
+            //FDControllerFactory.notifyPageComplete();
         }
     }
 
@@ -381,7 +386,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         finally {
         	queue.exit(pc);
             factory.releaseRailoPageContext(pc);
-            FDControllerFactory.notifyPageComplete();
+            //FDControllerFactory.notifyPageComplete();
         }
 		
 		
@@ -484,7 +489,17 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
     @Override
     public Creation getCreationUtil() {
-        return CreationImpl.getInstance(this);
+    	return CreationImpl.getInstance(this);
+    }
+
+    @Override
+    public IO getIOUtil() {
+        return IOImpl.getInstance();
+    }
+
+    @Override
+    public Strings getStringUtil() {
+        return StringsImpl.getInstance();
     }
 
 	@Override
@@ -563,17 +578,17 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
 		// webroot
 		String strWebroot=config.get("webroot");
-		if(Util.isEmpty(strWebroot,true)) throw new IOException("missing webroot configuration");
+		if(StringUtil.isEmpty(strWebroot,true)) throw new IOException("missing webroot configuration");
 		Resource root=ResourcesImpl.getFileResourceProvider().getResource(strWebroot);
 		root.mkdirs();
 		
 		// serverName
 		String serverName=config.get("server-name");
-		if(Util.isEmpty(serverName,true))serverName="localhost";
+		if(StringUtil.isEmpty(serverName,true))serverName="localhost";
 		
 		// uri
 		String strUri=config.get("uri");
-		if(Util.isEmpty(strUri,true)) throw new IOException("missing uri configuration");
+		if(StringUtil.isEmpty(strUri,true)) throw new IOException("missing uri configuration");
 		URI uri;
 		try {
 			uri = railo.commons.net.HTTPUtil.toURI(strUri);
@@ -584,7 +599,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		// cookie
 		Cookie[] cookies;
 		String strCookie=config.get("cookie");
-		if(Util.isEmpty(strCookie,true)) cookies=new Cookie[0];
+		if(StringUtil.isEmpty(strCookie,true)) cookies=new Cookie[0];
 		else {
 			Map<String,String> mapCookies=HTTPUtil.parseParameterList(strCookie,false,null);
 			int index=0;

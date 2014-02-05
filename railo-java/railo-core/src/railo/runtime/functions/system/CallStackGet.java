@@ -15,7 +15,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.KeyConstants;
 
 import java.util.Iterator;

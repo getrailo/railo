@@ -214,16 +214,13 @@ public class ProfileCollection  {
 
 		if(bin.exists()) return;
 		
-		try {
-			Util.copy(
+		
+			IOUtil.copy(
 		            is=new VideoInputImpl(null).getClass().getResourceAsStream(path),
 		            os=bin.getOutputStream()
+		            ,true,true
 	        );
-		} 
-		finally {
-			Util.closeEL(is);
-			Util.closeEL(os);
-		}
+		
 	}
 	
 	private static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
@@ -232,7 +229,7 @@ public class ProfileCollection  {
     		return loadDocument(is=xmlFile.getInputStream());
     	}
         finally {
-        	Util.closeEL(is);
+        	IOUtil.closeEL(is);
         }
     }
     

@@ -17,6 +17,7 @@ import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 
 import railo.commons.io.CharsetUtil;
+import railo.commons.io.IOUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.io.res.Resource;
@@ -228,12 +229,9 @@ public class EHCache extends EHCacheSupport {
 		OutputStream os=null;
 		try{
 			os = hashDir.getRealResource("ehcache.xml").getOutputStream();
-			Util.copy(is, os);
+			IOUtil.copy(is, os,false,true);
 		}
 		catch(IOException ioe){ioe.printStackTrace();}
-		finally{
-			Util.closeEL(os);
-		}
 	}
 
 	private static String createHash(Struct args) {

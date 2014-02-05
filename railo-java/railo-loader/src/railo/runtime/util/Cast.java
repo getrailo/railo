@@ -3,6 +3,7 @@ package railo.runtime.util;
 import java.awt.Color;
 import java.io.File;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -1347,4 +1348,7 @@ public interface Cast {
 	 * @return
 	 */
 	public Serializable toSerializable(Object object, Serializable defaultValue);
+
+	public Charset toCharset(String str) throws PageException;
+	public Charset toCharset(String str,Charset defaultValue);
 }

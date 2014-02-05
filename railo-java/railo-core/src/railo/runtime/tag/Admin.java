@@ -23,7 +23,6 @@ import javax.servlet.jsp.tagext.Tag;
 import org.apache.log4j.Level;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
 import railo.commons.digest.MD5;
@@ -92,7 +91,6 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.functions.cache.Util;
-import railo.runtime.functions.system.ContractPath;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
@@ -143,7 +141,6 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterEntryImpl;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.runtime.type.wrap.MapAsStruct;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 

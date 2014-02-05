@@ -10,7 +10,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;

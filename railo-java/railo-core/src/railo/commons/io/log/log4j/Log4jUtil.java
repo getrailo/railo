@@ -3,31 +3,23 @@ package railo.commons.io.log.log4j;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.HTMLLayout;
-import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SyslogAppender;
-import org.apache.log4j.spi.LoggerRepository;
-import org.apache.log4j.spi.NOPLoggerRepository;
 import org.apache.log4j.xml.XMLLayout;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogUtil;
-import railo.commons.io.log.log4j.appender.AppenderState;
 import railo.commons.io.log.log4j.appender.ConsoleAppender;
 import railo.commons.io.log.log4j.appender.RollingResourceAppender;
 import railo.commons.io.log.log4j.appender.TaskAppender;
@@ -38,7 +30,6 @@ import railo.commons.io.retirement.RetireListener;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.PageException;
@@ -150,7 +141,7 @@ public class Log4jUtil {
 				// charset
 				Charset charset = CharsetUtil.toCharset(Caster.toString(appenderArgs.get("charset"),null),null);
 				if(charset==null){
-					charset=((ConfigImpl)config).getResourceCharset();
+					charset=config.getResourceCharset();
 					appenderArgs.put("charset",charset.name());
 				}
 				

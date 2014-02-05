@@ -1,9 +1,11 @@
 package railo;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import railo.loader.TP;
-import railo.loader.util.Util;
 
 /**
  * returns th current built in version
@@ -36,7 +38,7 @@ public class Version {
         if(version!=-1) return;
         String content="9000000:"+System.currentTimeMillis();
         try {
-            content= Util.getContentAsString(
+            content= getContentAsString(
                     new TP().getClass().getClassLoader().getResourceAsStream("railo/version"),
                     "UTF-8");
             
@@ -49,4 +51,22 @@ public class Version {
         created=Long.parseLong(content.substring(index+1));
         
     }
+    
+    private static String getContentAsString(InputStream is, String charset) throws IOException {
+        
+        BufferedReader br = (charset==null)?
+                new BufferedReader(new InputStreamReader(is)):
+                new BufferedReader(new InputStreamReader(is,charset)); 
+        StringBuffer content=new StringBuffer();
+        
+        String line=br.readLine();
+        if(line!=null) {
+            content.append(line);
+            while((line=br.readLine())!=null)   {
+                content.append("\n"+line);
+            }
+        }
+        br.close();
+        return content.toString();
+     }
 }

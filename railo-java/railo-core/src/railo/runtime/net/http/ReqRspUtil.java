@@ -32,7 +32,6 @@ import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -45,7 +44,6 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
-import railo.runtime.type.scope.FormImpl;
 
 public final class ReqRspUtil {
 

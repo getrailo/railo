@@ -16,7 +16,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.IOUtil;
-import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -24,7 +23,6 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;

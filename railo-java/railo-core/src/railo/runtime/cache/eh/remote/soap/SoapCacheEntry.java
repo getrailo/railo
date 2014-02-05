@@ -2,10 +2,11 @@ package railo.runtime.cache.eh.remote.soap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
+import java.nio.charset.Charset;
 import java.util.Date;
 
+import railo.commons.io.IOUtil;
 import railo.commons.io.cache.CacheEntry;
-import railo.loader.util.Util;
 import railo.runtime.cache.CacheUtil;
 import railo.runtime.type.Struct;
 
@@ -73,7 +74,7 @@ public class SoapCacheEntry implements CacheEntry {
     		return ois.readObject();
 	    }
 	    // other
-	    return Util.toString(bais);
+	    return IOUtil.toString(bais,(Charset)null);
 		}
 		catch(Throwable t){
 			return null;

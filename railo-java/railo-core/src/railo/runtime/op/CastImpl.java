@@ -3,6 +3,7 @@ package railo.runtime.op;
 import java.awt.Color;
 import java.io.File;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -13,6 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import railo.commons.color.ColorCaster;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
@@ -898,6 +900,15 @@ public final class CastImpl implements Cast {
 	@Override
 	public Serializable toSerializable(Object object, Serializable defaultValue) {
 		return Caster.toSerializable(object, defaultValue);
+	}
+
+	@Override
+	public Charset toCharset(String strCharset) {
+		return CharsetUtil.toCharset(strCharset);
+	}
+	@Override
+	public Charset toCharset(String strCharset, Charset defaultValue) {
+		return CharsetUtil.toCharset(strCharset,defaultValue);
 	}
 
 }
