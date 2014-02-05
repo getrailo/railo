@@ -26,6 +26,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private static final long serialVersionUID = 940663152793150953L;
 
 	private String name;
+	private String sessionClusterKey;
     private boolean setClientCookies;
     private boolean setDomainCookies;
     private boolean setSessionManagement;
@@ -446,6 +447,11 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	public void setSessionCluster(boolean sessionCluster) {
 		this.sessionCluster = sessionCluster;
 	}
+	
+	
+	public void setSessionClusterKey(String key) {
+		this.sessionClusterKey = key;
+	}
 
 
 	/**
@@ -488,6 +494,12 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public boolean getTriggerComponentDataMember() {
 		return triggerComponentDataMember;
+	}
+
+	public String getSessionClusterKey() {
+		if(this.sessionClusterKey == null)
+			return this.name;
+		return this.sessionClusterKey;
 	}
 
 	@Override
