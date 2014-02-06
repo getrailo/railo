@@ -99,13 +99,17 @@ public class BundleLoader {
 		// Export-Package
 		str = attrs.getValue("Export-Package");
 		if(!Util.isEmpty(str)) factory.addExportPackage(str);
-		
+
 		// Import-Package
 		str = attrs.getValue("Import-Package");
 		if(!Util.isEmpty(str)) factory.addImportPackage(str);
 		
+		// DynamicImport-Package
+		str = attrs.getValue("DynamicImport-Package");
+		if(!Util.isEmpty(str)) factory.addDynamicImportPackage(str);
 		
-		factory.setVersion(rcv);
+		
+		factory.setBundleVersion(rcv);
 		
 		
 		factory.addJar(rc);
@@ -118,9 +122,9 @@ public class BundleLoader {
 		
 		// add jars to bundle
 		StringTokenizer st=new StringTokenizer(cp,",");
-		String line,jarName,jarVersion;
+		String line,jarName,jarVersion,jarNameNoExt;
 		int index;
-		File jar;
+		File jar,jarBundle;
 		while (st.hasMoreTokens()) {
 			line=st.nextToken().trim();
 			if(Util.isEmpty(line))continue;
@@ -133,17 +137,32 @@ public class BundleLoader {
 				jarName=line.substring(0,index).trim();
 				jarVersion=line.substring(index+1).trim();
 			}
+			jarNameNoExt=jarName.substring(0,jarName.length()-4); // remove .jar
+			
 			jar=new File(jarDirectory,jarName);
+			jarBundle=new File("/Users/mic/Tmp2/",jarNameNoExt+"-"+toVarname(jarVersion)+".bundle"); 
 			if(!jar.isFile()) {
 				throw new BundleException("Missing jar "+jar+" ("+jarVersion+")"); // MUST try to download jar
 			}
 			factory.addJar(jar);
+			
+			BundleBuilderFactory bbf=new BundleBuilderFactory(jarNameNoExt, null);
+			bbf.setBundleVersion(jarVersion);
+			bbf.addJar(jar);
+			bbf.addExportPackage("*");
+			bbf.build(jarBundle);
+			
 	     }
 		
 		factory.build(bundle);
 		return load(bc,bundle);
 	}
 	
+	private static String toVarname(String str) {
+		str=str.replace('.', '-');
+		return str;
+	}
+
 	private static Bundle load(BundleContext bc,File bundle) throws IOException, BundleException {
         return BundleUtil.addBundle(bc, bundle, true);
 	}

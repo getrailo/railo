@@ -116,6 +116,8 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
+import railo.runtime.osgi.BundleBuilderFactory;
+import railo.runtime.osgi.BundleFile;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.rest.RestUtil;
 import railo.runtime.security.SecurityManager;
@@ -258,6 +260,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
         
         // Generals
+        if(action.equals("buildbundle")) {
+            doBuildBundle();
+            return SKIP_BODY;
+        }
+        if(action.equals("readbundle")) {
+            doReadBundle();
+            return SKIP_BODY;
+        }
         if(action.equals("getlocales")) {
             doGetLocales();
             return SKIP_BODY;
@@ -340,7 +350,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         return Tag.SKIP_BODY;
     }
 
-    private void doAddDump() throws ApplicationException {
+
+	private void doAddDump() throws ApplicationException {
 		DebuggerPro debugger=(DebuggerPro) pageContext.getDebugger();
 		PageSource ps = pageContext.getCurrentTemplatePageSource();
 		debugger.addDump(ps, getString("admin",action,"dump",true));
@@ -4421,6 +4432,69 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         store();
     }
+    
+
+    private void doReadBundle() throws PageException {
+    	String ret=getString("admin",action,"returnvariable");
+    	Resource res=ResourceUtil.toResourceExisting(pageContext, getString("admin",action,"bundle"));
+    	if(!res.isFile())
+    		throw new ApplicationException("["+res+"] is not a file");
+    	Struct sct=new StructImpl();
+    	pageContext.setVariable(ret, sct);
+    	try {
+			BundleFile bundle=new BundleFile(res);
+			sct.set(KeyConstants._Name, bundle.getName());
+			sct.set("Activator", bundle.getActivator());
+			sct.set("ClassPath", bundle.getClassPath());
+			sct.set("Description", bundle.getDescription());
+			sct.set("DynamicImportPackage", bundle.getDynamicImportPackage());
+			sct.set("ExportPackage", bundle.getExportPackage());
+			sct.set("ImportPackage", bundle.getImportPackage());
+			sct.set("SymbolicName", bundle.getSymbolicName());
+			sct.set("Version", bundle.getVersion().toString());
+			sct.set("ManifestVersion", bundle.getManifestVersion());
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    	
+    	
+    }
+
+    private void doBuildBundle() throws PageException {
+    	String name=getString("admin",action,"name");
+    	String symName=getString("symbolicname",null);
+    	String activator=getString("activator",null);
+    	String version=getString("version",null);
+    	String description=getString("description",null);
+    	String classPath=getString("classPath",null);
+    	String dynamicImportPackage=getString("dynamicimportpackage",null);
+    	String importPackage=getString("importpackage",null);
+    	String exportPackage=getString("exportpackage",null);
+    	String jars=getString("admin",action,"jars");
+    	Resource dest=ResourceUtil.toResourceNotExisting(pageContext, getString("admin",action,"destination"));
+    	
+    	BundleBuilderFactory factory=new BundleBuilderFactory(name, StringUtil.isEmpty(symName,true)?null:symName.trim());
+    	
+    	if(!StringUtil.isEmpty(activator,true))factory.setActivator(activator.trim());
+    	if(!StringUtil.isEmpty(version,true))factory.setBundleVersion(version.trim());
+    	if(!StringUtil.isEmpty(description,true))factory.setDescription(description.trim());
+    	if(!StringUtil.isEmpty(classPath,true))factory.addClassPath(classPath.trim());
+    	if(!StringUtil.isEmpty(dynamicImportPackage,true))factory.addDynamicImportPackage(dynamicImportPackage.trim());
+    	if(!StringUtil.isEmpty(importPackage,true))factory.addImportPackage(importPackage.trim());
+    	if(!StringUtil.isEmpty(exportPackage,true))factory.addExportPackage(exportPackage.trim());
+    	if(!StringUtil.isEmpty(jars,true))factory.addJars(pageContext,jars);
+    	
+    	try {
+			factory.build(dest);
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    	
+	}
+    
+    
     private void doUpdateRemoteClientUsage() throws PageException {
         admin.updateRemoteClientUsage(
      		   getString("admin",action,"code"),

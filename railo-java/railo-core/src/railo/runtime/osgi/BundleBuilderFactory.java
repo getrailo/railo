@@ -1,10 +1,8 @@
-package railo.loader.osgi.factory;
+package railo.runtime.osgi;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,10 +17,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.engine.CFMLEngineFactorySupport;
-import railo.loader.osgi.BundleVersion;
-import railo.loader.util.Util;
+import railo.commons.io.IOUtil;
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageException;
 
 public class BundleBuilderFactory {
 	
@@ -49,14 +50,14 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 
 	public void setBundleVersion(String version) {
-		if(Util.isEmpty(version,true))return ;
+		if(StringUtil.isEmpty(version,true))return ;
 		this.bundleVersion=new BundleVersion(version);
 		
 		System.out.println(version+"->"+bundleVersion.toString());
 	}
 	private String activator;
 
-	private List<File> jars=new ArrayList<File>();
+	private List<Resource> jars=new ArrayList<Resource>();
 
 	private List<String> exportPackage;
 	private List<String> importPackage; 
@@ -73,10 +74,10 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	 * @param name 
 	 * @throws BundleBuilderFactoryException 
 	 */
-	public BundleBuilderFactory(String name, String symbolicName) throws BundleBuilderFactoryException{
-		if(Util.isEmpty(symbolicName)) {
-			if(Util.isEmpty(name))
-				throw new BundleBuilderFactoryException("symbolic name is reqired");
+	public BundleBuilderFactory(String name, String symbolicName) throws ApplicationException {
+		if(StringUtil.isEmpty(symbolicName)) {
+			if(StringUtil.isEmpty(name))
+				throw new ApplicationException("symbolic name is reqired");
 			symbolicName=toSymbolicName(name);
 		}
 		this.name=name;
@@ -96,7 +97,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 
 	public void addExportPackage(String strExportPackage) {
-		if(Util.isEmpty(strExportPackage)) return;
+		if(StringUtil.isEmpty(strExportPackage)) return;
 		if(exportPackage==null)exportPackage=new ArrayList<String>();
 		addPackages(exportPackage,strExportPackage);
 		
@@ -118,13 +119,13 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 
 	public void addImportPackage(String strImportPackage) {
-		if(Util.isEmpty(strImportPackage)) return;
+		if(StringUtil.isEmpty(strImportPackage)) return;
 		if(importPackage==null)importPackage=new ArrayList<String>();
 		addPackages(importPackage,strImportPackage);
 	}
 	
 	public void addDynamicImportPackage(String strDynImportPackage) {
-		if(Util.isEmpty(strDynImportPackage)) return;
+		if(StringUtil.isEmpty(strDynImportPackage)) return;
 		if(dynImportPackage==null)dynImportPackage=new ArrayList<String>();
 		addPackages(dynImportPackage,strDynImportPackage);
 	}
@@ -135,7 +136,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 
 	public void addClassPath(String str) {
 		if(classPath==null)classPath=new ArrayList<String>();
-		classPath.add(str);
+		addPackages(classPath,str);
 	}
 
 	public String getDescription() {
@@ -157,15 +158,15 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	private String buildManifestSource(List<String> jarsUsed){
 		StringBuilder sb=new StringBuilder();
 			sb.append("Bundle-ManifestVersion: ").append(MANIFEST_VERSION).append('\n');
-		if(!Util.isEmpty(name))
+		if(!StringUtil.isEmpty(name))
 			sb.append("Bundle-Name: ").append(name).append('\n');
 			sb.append("Bundle-SymbolicName: ").append(symbolicName).append('\n');
-		if(!Util.isEmpty(description))
+		if(!StringUtil.isEmpty(description))
 			sb.append("Bundle-Description: ").append(description).append('\n');
 		if(bundleVersion!=null)
 			sb.append("Bundle-Version: ").append(bundleVersion.toString()).append('\n');
 		
-		if(!Util.isEmpty(activator)) {
+		if(!StringUtil.isEmpty(activator)) {
 			addImportPackage("org.osgi.framework");
 			sb.append("Bundle-Activator: ").append(activator).append('\n');
 		}
@@ -173,13 +174,6 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		addPackage(sb,"Import-Package",importPackage);
 		addPackage(sb,"DynamicImport-Package",dynImportPackage);
 		addPackage(sb,"Bundle-ClassPath",classPath);
-		// TODO :
-		try {
-			log(new File(".").getCanonicalPath());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		log(sb.toString());
 		return sb.toString();// NL at the end is needed, so no trim
@@ -201,18 +195,29 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		}
 	}
 
-	public void addJar(File jar){
+	public void addJar(Resource jar) throws ApplicationException{
+		if(!jar.isFile())
+			throw new ApplicationException("["+jar+"] is not a file");
 		log("add "+jar+" to the bundle");
 		jars.add(jar);
 	}
+
+	public void addJars(PageContext pc,String jars) throws PageException{
+		StringTokenizer st=new StringTokenizer(jars,",");
+		while(st.hasMoreTokens()){
+			addJar(ResourceUtil.toResourceExisting(pc,st.nextToken().trim()));
+		}
+	}
 	
-	public void build(File target) throws IOException {
-		OutputStream os = new FileOutputStream(target);
+	
+	
+	public void build(Resource target) throws IOException {
+		OutputStream os = target.getOutputStream();
 		try{
 			build(os);
 		}
 		finally {
-			CFMLEngineFactory.closeEL(os);
+			IOUtil.closeEL(os);
 		}
 	}
 	
@@ -225,8 +230,8 @@ Import-Package: Indicates which Java packages will be required from the outside 
 			// jars
 			List<String> jarsUsed=new ArrayList<String>();
 			{
-				File jar;
-				Iterator<File> it = jars.iterator();
+				Resource jar;
+				Iterator<Resource> it = jars.iterator();
 				while(it.hasNext()){
 					jar=it.next();
 					log("jar:"+jar.getName());
@@ -244,7 +249,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	            copy(is,zos);
 	        } 
 	        finally {
-	        	CFMLEngineFactorySupport.closeEL(is);
+	        	IOUtil.closeEL(is);
 	            zos.closeEntry();
 	        }
 		
@@ -252,13 +257,13 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		
 		}
 		finally {
-			CFMLEngineFactorySupport.closeEL(zos);
+			IOUtil.closeEL(zos);
 		}
 	}
 	
 
-	private void handleEntry(ZipOutputStream target, File file, EntryListener listener) throws IOException {
-		ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+	private void handleEntry(ZipOutputStream target, Resource file, EntryListener listener) throws IOException {
+		ZipInputStream zis = new ZipInputStream(file.getInputStream());
 		try{
 			ZipEntry entry;
 			while((entry=zis.getNextEntry())!=null){
@@ -267,7 +272,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 			}
 		}
 		finally {
-			CFMLEngineFactorySupport.closeEL(zis);
+			IOUtil.closeEL(zis);
 		}
 	}
 
@@ -280,7 +285,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		}
 
 		@Override
-		public void handleEntry(File zipFile,ZipInputStream source,ZipEntry entry) throws IOException {
+		public void handleEntry(Resource zipFile,ZipInputStream source,ZipEntry entry) throws IOException {
 			System.out.println("- "+entry.getName());
 			// manifest
 			if("META-INF/MANIFEST.MF".equalsIgnoreCase(entry.getName())) {
@@ -332,13 +337,13 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	
 	public interface EntryListener {
 
-		public void handleEntry(File zipFile, ZipInputStream source, ZipEntry entry) throws IOException;
+		public void handleEntry(Resource zipFile, ZipInputStream source, ZipEntry entry) throws IOException;
 
 	}
 	
 	public class MyZipOutputStream extends ZipOutputStream {
 		
-		private Map<String,File> names=new HashMap<String,File>();
+		private Map<String,Resource> names=new HashMap<String,Resource>();
 		
 		public MyZipOutputStream(OutputStream out,Charset charset) {
 			super(out);
@@ -347,7 +352,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		
 		@Override
 		public void putNextEntry(ZipEntry e) throws IOException {
-			File file = names.get(e.getName());
+			Resource file = names.get(e.getName());
 			if(names.containsKey(e.getName()))
 				throw new NameAlreadyExistsException(e.getName(),file,e.getSize());
 			
@@ -359,19 +364,19 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	
 	public class MyZipEntry extends ZipEntry {
 
-		private File file;
+		private Resource file;
 		
 		public MyZipEntry(String name) {
 			super(name);
 		}
-		public void setFile(File file) {
+		public void setFile(Resource file) {
 			this.file=file;
 		}
 		public MyZipEntry(ZipEntry e) {
 			super(e);
 		}
 		
-		public File getFile(){
+		public Resource getFile(){
 			return file;
 		}
 	}

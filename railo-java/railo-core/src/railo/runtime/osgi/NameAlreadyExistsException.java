@@ -1,15 +1,16 @@
-package railo.loader.osgi.factory;
+package railo.runtime.osgi;
 
-import java.io.File;
 import java.io.IOException;
+
+import railo.commons.io.res.Resource;
 
 public class NameAlreadyExistsException extends IOException {
 
 	private String name;
-	private File file;
+	private Resource file;
 	private long size;
 
-	public NameAlreadyExistsException(String name, File file, long size) { 
+	public NameAlreadyExistsException(String name, Resource file, long size) { 
 		super("a entry with name "+name+" is already assigned to the Zip File");
 		this.name=name;
 		this.file=file;
@@ -20,7 +21,7 @@ public class NameAlreadyExistsException extends IOException {
 		return name;
 	}
 	
-	public File getFile() {
+	public Resource getFile() {
 		return file;
 	}
 	
