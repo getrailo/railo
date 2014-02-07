@@ -931,6 +931,11 @@ public abstract class AbstrCFMLExprTransformer {
 				data.mode=DYNAMIC;
 				return expr;
 			} 
+			// lambda
+			if((expr=lambda(data))!=null) {
+				data.mode=DYNAMIC;
+				return expr;
+			} 
 			
 		// Dynamic
 			if((expr=dynamic(data))!=null) {
@@ -1237,6 +1242,39 @@ public abstract class AbstrCFMLExprTransformer {
 	}
 	
 	protected  abstract Function closurePart(ExprData data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException;
+	
+	private Expression lambda(ExprData data) throws TemplateException {
+		int pos = data.cfml.getPos();
+		boolean isLambda = true;
+		if(!data.cfml.forwardIfCurrent("(")) return null;
+		ArrayList<railo.transformer.bytecode.statement.Argument> args = null;
+		//data.cfml.previous();
+		try {
+			args = getScriptFunctionArguments(data);
+		} catch (TemplateException e) {
+			// if there is a template exception, the argument syntax is not correct, and must not be a lambda expression
+			//TODO find a better way to test for lambda than to attempt processing the arguments and catch an exception if it fails.
+			isLambda = false;
+		}
+		
+		if(isLambda && !data.cfml.forwardIfCurrent(")")) isLambda=false;
+		
+		if(isLambda) {
+			data.cfml.removeSpace();
+			if(!data.cfml.forwardIfCurrent("->")) isLambda = false;
+		}
+		
+		
+		if (!isLambda) {
+			data.cfml.setPos(pos);
+			return null;
+		}
+		
+		return new ClosureAsExpression((Closure) lambdaPart(data, "lambda_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.cfml.getPosition(),args));
+	}
+	
+	protected  abstract Function lambdaPart(ExprData data, String id, int access, String rtnType, Position line, ArrayList<railo.transformer.bytecode.statement.Argument> args) throws TemplateException;
+	protected  abstract ArrayList<railo.transformer.bytecode.statement.Argument> getScriptFunctionArguments(ExprData data) throws TemplateException;
 
 	
 	protected FunctionLibFunction getFLF(ExprData data,String name) {
