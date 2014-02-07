@@ -47,6 +47,7 @@ import railo.transformer.bytecode.statement.tag.TagParam;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
+import railo.transformer.bytecode.statement.Argument;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.AbstrCFMLExprTransformer;
@@ -730,108 +731,11 @@ int pos=data.cfml.getPos();
 				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
 		
 			// arguments
-			LitBoolean passByRef;
-			Expression displayName;
-			Expression hint;
-			Map<String,Attribute> meta;
-			String _name;
-			do	{
-				comments(data);
-				// finish
-				if(data.cfml.isCurrent(')'))break;
-				
-				// attribute
-				
-				// name
-				//String idName=identifier(data,false,true);
-				boolean required=false;
-				
-				String idName = variableDec(data, false);
-				// required
-				if("required".equalsIgnoreCase(idName)){
-					comments(data);
-					String idName2=variableDec(data, false);
-					if(idName2!=null){
-						idName=idName2;
-						required=true;
-					}
-				}
-				
-				
-				String typeName="any";
-				if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
-				comments(data);
-				if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
-					typeName=idName.toLowerCase();
-					idName=identifier(data,false); // MUST was upper case before, is this a problem?
-				}
-				else if(idName.indexOf('.')!=-1 || idName.indexOf('[')!=-1) {
-					throw new TemplateException(data.cfml,"invalid argument name ["+idName+"] definition");
-				}
-				
-				comments(data);
-				Expression defaultValue;
-				if(data.cfml.isCurrent('=') || data.cfml.isCurrent(':')) {
-					data.cfml.next();
-					comments(data);
-					defaultValue=expression(data);
-				}
-				else defaultValue=null;
-				
-				// assign meta data defined in doc comment
-				passByRef = LitBoolean.TRUE;
-				displayName=LitString.EMPTY;
-				hint=LitString.EMPTY;
-				meta=null;
-				if(data.docComment!=null){
-					Map<String, Attribute> params = data.docComment.getParams();
-					Attribute[] attrs = params.values().toArray(new Attribute[params.size()]);
-					Attribute attr;
-					String name;
-					
-					for(int i=0;i<attrs.length;i++){
-						attr=attrs[i];
-						name=attr.getName();
-						// hint
-						if(idName.equalsIgnoreCase(name) || name.equalsIgnoreCase(idName+".hint")) {
-							hint=CastString.toExprString(attr.getValue());
-							params.remove(name);
-						}
-						//meta
-						if(StringUtil.startsWithIgnoreCase(name, idName+".")) {
-							if(name.length()>idName.length()+1){
-								if(meta==null) meta=new HashMap<String, Attribute>();
-								_name=name.substring(idName.length()+1);
-								meta.put(_name, new Attribute(attr.isDynamicType(), _name,attr.getValue(), attr.getType()));
-							}
-							params.remove(name);
-						}
-					}
-					
-				}
-				
-				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false);
-				Attribute _attr;
-				if(!ArrayUtil.isEmpty(_attrs)){
-					if(meta==null) meta=new HashMap<String, Attribute>();
-					for(int i=0;i<_attrs.length;i++){
-						_attr=_attrs[i];
-						meta.put(_attr.getName(), _attr);
-					}
-				}
-				
-				func.addArgument(
-						LitString.toExprString(idName),
-						LitString.toExprString(typeName),
-						LitBoolean.toExprBoolean(required),
-						defaultValue,passByRef,displayName,hint,meta);
-				
-				comments(data);
-			}
-			while(data.cfml.forwardIfCurrent(','));
-
-		
+			ArrayList<Argument> args = getScriptFunctionArguments(data);
+			
+			for(Argument arg : args) {
+				func.addArgument(arg.getName(),arg.getType(),arg.getRequired(),arg.getDefaultValue(),arg.isPassByReference(),arg.getDisplayName(),arg.getHint(),arg.getMetaData());
+			}	
 		// end )
 			comments(data);
 			if(!data.cfml.forwardIfCurrent(')'))
@@ -883,7 +787,151 @@ int pos=data.cfml.getPos();
 		return func;
 	}
 	
+	public ArrayList<Argument> getScriptFunctionArguments(ExprData data) throws TemplateException {
+		// arguments
+		LitBoolean passByRef;
+		Expression displayName;
+		Expression hint;
+		Map<String,Attribute> meta;
+		String _name;
+		ArrayList<Argument> result = new ArrayList<Argument>();
+		do	{
+			comments(data);
+			// finish
+			if(data.cfml.isCurrent(')'))break;
+			
+			// attribute
+			
+			// name
+			//String idName=identifier(data,false,true);
+			boolean required=false;
+			
+			String idName = variableDec(data, false);
+			// required
+			if("required".equalsIgnoreCase(idName)){
+				comments(data);
+				String idName2=variableDec(data, false);
+				if(idName2!=null){
+					idName=idName2;
+					required=true;
+				}
+			}
+			
+			
+			String typeName="any";
+			if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
+			comments(data);
+			if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
+				typeName=idName.toLowerCase();
+				idName=identifier(data,false); // MUST was upper case before, is this a problem?
+			}
+			else if(idName.indexOf('.')!=-1 || idName.indexOf('[')!=-1) {
+				throw new TemplateException(data.cfml,"invalid argument name ["+idName+"] definition");
+			}
+			
+			comments(data);
+			Expression defaultValue;
+			if(data.cfml.isCurrent('=') || data.cfml.isCurrent(':')) {
+				data.cfml.next();
+				comments(data);
+				defaultValue=expression(data);
+			}
+			else defaultValue=null;
+			
+			// assign meta data defined in doc comment
+			passByRef = LitBoolean.TRUE;
+			displayName=LitString.EMPTY;
+			hint=LitString.EMPTY;
+			meta=null;
+			if(data.docComment!=null){
+				Map<String, Attribute> params = data.docComment.getParams();
+				Attribute[] attrs = params.values().toArray(new Attribute[params.size()]);
+				Attribute attr;
+				String name;
+				
+				for(int i=0;i<attrs.length;i++){
+					attr=attrs[i];
+					name=attr.getName();
+					// hint
+					if(idName.equalsIgnoreCase(name) || name.equalsIgnoreCase(idName+".hint")) {
+						hint=CastString.toExprString(attr.getValue());
+						params.remove(name);
+					}
+					//meta
+					if(StringUtil.startsWithIgnoreCase(name, idName+".")) {
+						if(name.length()>idName.length()+1){
+							if(meta==null) meta=new HashMap<String, Attribute>();
+							_name=name.substring(idName.length()+1);
+							meta.put(_name, new Attribute(attr.isDynamicType(), _name,attr.getValue(), attr.getType()));
+						}
+						params.remove(name);
+					}
+				}
+				
+			}
+			
+			// argument attributes
+			Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false);
+			Attribute _attr;
+			if(!ArrayUtil.isEmpty(_attrs)){
+				if(meta==null) meta=new HashMap<String, Attribute>();
+				for(int i=0;i<_attrs.length;i++){
+					_attr=_attrs[i];
+					meta.put(_attr.getName(), _attr);
+				}
+			}
+			
+			result.add(new Argument(
+					LitString.toExprString(idName),
+					LitString.toExprString(typeName),
+					LitBoolean.toExprBoolean(required),
+					defaultValue,passByRef,displayName,hint,meta));
+			
+			comments(data);
+		}
+		while(data.cfml.forwardIfCurrent(','));	
+		return result;
+	}
+	
+	protected  final Function lambdaPart(ExprData data, String id, int access, String rtnType, Position line, ArrayList<Argument> args) throws TemplateException {
+		Body body=new FunctionBody();
+		Function func= new Closure(data.page,id,access,rtnType,body,line,null);
+			//:new FunctionImpl(data.page,id,access,rtnType,body,line,null);
+	
+		comments(data);
 
+		for(Argument arg : args) {
+			func.addArgument(arg.getName(),arg.getType(),arg.getRequired(),arg.getDefaultValue(),arg.isPassByReference(),arg.getDisplayName(),arg.getHint(),arg.getMetaData());
+		}	
+
+		comments(data);
+			
+		// body
+		boolean oldInsideFunction=data.insideFunction;
+		data.insideFunction=true;
+				
+		try {
+		// ex block
+			short prior = data.context;
+			data.context = CTX_FUNCTION;
+			comments( data );
+			Expression expr = expression( data );
+	    	//checkSemiColonLineFeed( data, true ,true );
+	    	Return rtn = new Return( expr, line, data.cfml.getPosition() );
+	    	body.addStatement( rtn );
+			data.docComment = null;
+			data.context = prior;
+		}
+		finally{
+			data.insideFunction=oldInsideFunction;
+		}
+		func.setEnd(data.cfml.getPosition());
+		
+		comments(data);
+
+		return func;
+		
+	}
 	
 	private Statement tagStatement(ExprData data, Body parent) throws TemplateException {
 		Statement child;
