@@ -108,5 +108,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/xmlbeans.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javasysmon.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/slf4j-nop.jar"/>
+	<classpathentry kind="lib" path="D:/files/sites/v11/server/railo/jcifs-1.3.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
