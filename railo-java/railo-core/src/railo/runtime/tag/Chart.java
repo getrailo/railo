@@ -1057,6 +1057,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	}
 
 	private void setUrl(JFreeChart chart) {
+		if(StringUtil.isEmpty(url)) return;
 		Plot plot = chart.getPlot();
 		if(plot instanceof PiePlot) {
 			PiePlot pp = (PiePlot)plot;		
