@@ -22,6 +22,7 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.UDFUtil;
 
 public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
@@ -272,5 +273,15 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
     	if(Decision.isSimpleValue(value)) return "the value ["+Caster.toString(value,null)+"] is not in  ["+format+"] format";
     	return "cannot convert object from type ["+Caster.toTypeName(value)+"] to a ["+format+"] format";
     }   
+	
+	@Override
+	public Object callMemberFunction(PageContext pc, Key key, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc, this, key, args, CFTypes.TYPE_FUNCTION, "function");
+	}
+
+	@Override
+	public Object callMemberFunction(PageContext pc, Key key, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, key, args, CFTypes.TYPE_FUNCTION, "function");
+	}
 	
 }

@@ -1,5 +1,6 @@
 package railo.runtime.type.trace;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
@@ -12,7 +13,9 @@ import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.UDFUtil;
 
 public class TOUDF extends TOObjects implements UDFPlus,Member {
@@ -211,5 +214,13 @@ public class TOUDF extends TOObjects implements UDFPlus,Member {
 		udf.setOwnerComponent(cfc);
 	}
 	
-	
+	@Override
+	public Object callMemberFunction(PageContext pc, Key key, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc, udf, key, args, CFTypes.TYPE_FUNCTION, "function");
+	}
+
+	@Override
+	public Object callMemberFunction(PageContext pc, Key key, Object[] args) throws PageException {
+		return MemberUtil.call(pc, udf, key, args, CFTypes.TYPE_FUNCTION, "function");
+	}
 }

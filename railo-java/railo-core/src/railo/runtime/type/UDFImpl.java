@@ -39,6 +39,7 @@ import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.writer.BodyContentUtil;
 
@@ -554,6 +555,16 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	
 	public int getIndex(){
 		return properties.index;
+	}
+
+	@Override
+	public Object callMemberFunction(PageContext pc, Key key, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc, this, key, args, CFTypes.TYPE_FUNCTION, "function");
+	}
+
+	@Override
+	public Object callMemberFunction(PageContext pc, Key key, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, key, args, CFTypes.TYPE_FUNCTION, "function");
 	}
 	
 }

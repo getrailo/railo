@@ -3,6 +3,7 @@ package railo.runtime.type;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection.Key;
 
 // FUTURE add to interface UDF
 
@@ -42,4 +43,9 @@ public interface UDFPlus extends UDF {
 	 
 	 public abstract int getReturnFormat(int defaultFormat);
 	    
+}
+
+	public abstract Object callMemberFunction(PageContext pc, Key key, Struct args) throws PageException;
+
+	public abstract Object callMemberFunction(PageContext pc, Key key, Object[] args) throws PageException;
 }

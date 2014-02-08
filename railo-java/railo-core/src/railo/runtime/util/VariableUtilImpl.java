@@ -721,6 +721,12 @@ public final class VariableUtilImpl implements VariableUtil {
         if(coll instanceof Objects) {
         	return ((Objects)coll).call(pc,key,args);
         }
+        
+        // call UDF member function
+        if(coll instanceof UDFPlus) {
+        	return ((UDFPlus)coll).callMemberFunction(pc,key,args);
+        }
+        
         // call UDF
 	    Object prop=getLight(pc,coll,key,null);	
 	    if(prop instanceof UDFPlus) {
@@ -747,6 +753,11 @@ public final class VariableUtilImpl implements VariableUtil {
         if(coll instanceof Objects) {
             return ((Objects)coll).callWithNamedValues(pc,key, Caster.toFunctionValues(args));
         }
+        
+        // call UDF member function
+        if(coll instanceof UDFPlus) {
+        	return ((UDFPlus)coll).callMemberFunction(pc,key,args);
+        }
         // call UDF
 		Object prop=getLight(pc,coll,key,null);	
         if(prop instanceof UDFPlus) 		{
@@ -759,6 +770,11 @@ public final class VariableUtilImpl implements VariableUtil {
 		// Objects
         if(coll instanceof Objects) {
             return ((Objects)coll).callWithNamedValues(pc,key, args);
+        }
+        
+        // call UDF member function
+        if(coll instanceof UDFPlus) {
+        	return ((UDFPlus)coll).callMemberFunction(pc,key,args);
         }
         // call UDF
 		Object prop=getLight(pc,coll,key,null);	
