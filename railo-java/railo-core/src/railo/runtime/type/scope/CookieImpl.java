@@ -97,9 +97,12 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	private void set(Config config,javax.servlet.http.Cookie cookie) throws PageException {
 		
 		String name=StringUtil.toLowerCase(ReqRspUtil.decode(cookie.getName(),charset,false));
-		raw.put(name,cookie.getValue());
-    	if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(dec(cookie.getValue())));
-        else super.set (KeyImpl.init(name),dec(cookie.getValue()));
+		if (!raw.containsKey(name) || !StringUtil.isEmpty(cookie.getPath())) {
+			// when there are multiple cookies with the same name let the cookies with a path overwrite a cookie without a path.
+			raw.put(name,cookie.getValue());
+			if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(dec(cookie.getValue())));
+			else super.set (KeyImpl.init(name),dec(cookie.getValue()));
+		}
 	}
 	
     @Override
