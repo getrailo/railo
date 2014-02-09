@@ -139,7 +139,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 			sct.setEL(HITCOUNT, new Double(hitcount++));
 		}
 		else {
-			sct.setEL(SESSION_ID, pc.getApplicationContext().getName()+"_"+pc.getCFID()+"_"+pc.getCFToken());
+			sct.setEL(SESSION_ID, pc.getApplicationContext().getSessionClusterKey()+"_"+pc.getCFID()+"_"+pc.getCFToken());
 		}
 		sct.setEL(TIMECREATED, timecreated);
 	}

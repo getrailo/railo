@@ -86,6 +86,7 @@ public class GetApplicationSettings {
 
 		sct.setEL("clientCluster", Caster.toBoolean(ac.getClientCluster()));
 		sct.setEL("sessionCluster", Caster.toBoolean(ac.getSessionCluster()));
+		sct.setEL("sessionClusterKey", Caster.toString(ac.getSessionClusterKey()));
 		
 
 		sct.setEL("invokeImplicitAccessor", Caster.toBoolean(ac.getTriggerComponentDataMember()));

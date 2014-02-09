@@ -107,8 +107,10 @@ public interface ApplicationContext extends Serializable {
 	public TimeSpan getClientTimeout();
 	
 	public short getSessionType();
-	
+
 	public boolean getSessionCluster();
+	
+	public String getSessionClusterKey();
 
 	public boolean getClientCluster();
 
@@ -141,6 +143,7 @@ public interface ApplicationContext extends Serializable {
 	public void setSessionType(short sessionType);
 	public void setClientCluster(boolean clientCluster);
 	public void setSessionCluster(boolean sessionCluster);
+	public void setSessionClusterKey(String key);
 	public void setS3(Properties s3);
 	public void setORMEnabled(boolean ormenabled);
 	public void setORMConfiguration(ORMConfiguration ormConf);

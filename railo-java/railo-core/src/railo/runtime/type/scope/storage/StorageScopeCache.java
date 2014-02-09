@@ -98,7 +98,12 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		Cache cache = getCache(pc.getConfig(),cacheName);
 		String key=getKey(pc.getCFID(),appName,strType);
 		
-		Struct s = (Struct) cache.getValue(key,null);
+		// if cache does not have a struct stored at that key, instead of throwing
+		// an exception repeatedly until the cache is flushed, return null so the
+		// session is restarted.
+		Object o = cache.getValue(key,null);
+		Struct s = null;
+		if (o instanceof Struct) s = (Struct) o;
 		
 		if(s!=null)
 			ScopeContext.info(log,"load existing data from  cache ["+cacheName+"] to create "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID());

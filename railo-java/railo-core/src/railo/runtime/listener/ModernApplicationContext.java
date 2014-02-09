@@ -78,6 +78,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key LOCAL_MODE = KeyImpl.intern("localMode");
 	private static final Collection.Key BUFFER_OUTPUT = KeyImpl.intern("bufferOutput");
 	private static final Collection.Key SESSION_CLUSTER = KeyImpl.intern("sessionCluster");
+	private static final Collection.Key SESSION_CLUSTER_KEY = KeyImpl.intern("sessionClusterKey");
 	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.intern("clientCluster");
 	
 
@@ -121,6 +122,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private String clientStorage;
 	private String sessionStorage;
+	private String sessionClusterKey;
 	private String secureJsonPrefix="//";
 	private boolean secureJson; 
 	private Mapping[] mappings;
@@ -152,6 +154,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSecureJson;
 	private boolean initSessionStorage;
 	private boolean initSessionCluster;
+	private boolean initSessionClusterKey;
 	private boolean initClientCluster;
 	private boolean initLoginStorage;
 	private boolean initSessionType;
@@ -494,6 +497,17 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return sessionCluster;
 	}
 
+	public String getSessionClusterKey() {
+		if(!initSessionClusterKey) {
+			Object o = get(component,SESSION_CLUSTER_KEY,getName()); // return application name if cluster key does not exist.
+			if(o!=null) sessionClusterKey=Caster.toString(o,sessionClusterKey);
+			initSessionClusterKey=true;
+		}
+		return sessionClusterKey;
+	}
+	/**
+	 * @see railo.runtime.listener.ApplicationContext#getClientCluster()
+	 */
 	@Override
 	public boolean getClientCluster() {
 		if(!initClientCluster) {
@@ -1017,6 +1031,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		this.sessionCluster=sessionCluster;
 	}
 
+	public void setSessionClusterKey(String sessionClusterKey) {
+		this.sessionClusterKey = sessionClusterKey;
+		this.initSessionClusterKey =true;
+	}
 	@Override
 	public void setS3(Properties s3) {
 		initS3=true;
