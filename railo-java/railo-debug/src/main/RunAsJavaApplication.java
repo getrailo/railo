@@ -9,8 +9,12 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.mortbay.util.MultiException;
 
+import railo.print;
+
 import java.io.File;
 import java.util.List;
+
+import javax.smartcardio.ATR;
 
 
 /**
@@ -18,16 +22,18 @@ import java.util.List;
  */
 public class RunAsJavaApplication {
 
-    private static String port = "8888";
+    private static final int DEFAULT_PORT = 8888;
 
-    public static void addContext(HttpServer server, String strContext, String host, String path, String appDir, String webContextDir, String adminContextDir) {
+    public static void addContext(HttpServer server, String strContext, String host, String path, String strWebContext, String strServerContext) {
 
-        if (appDir == null) appDir = "./web";
-        if (webContextDir == null) webContextDir = appDir + "/WEB-INF/railo";
-        if (adminContextDir == null) adminContextDir = appDir + "/WEB-INF/lib/railo-server";
-        System.out.println("appdir:" + appDir);
-        System.out.println("webcontext:" + webContextDir);
-        System.out.println("servercontext:" + adminContextDir);
+    	if (strWebContext == null) strWebContext = "./web";
+    	if (strServerContext == null) strServerContext = "./server";
+        //String webContextDir = strWebContext + "/WEB-INF/railo";
+        //String serverContextDir = strWebContext + "/WEB-INF/railo";
+        //if (adminContextDir == null) adminContextDir = appDir + "/WEB-INF/lib/railo-server";
+        //System.out.println("appdir:" + appDir);
+        //System.out.println("webcontext:" + webContextDir);
+        //System.out.println("servercontext:" + adminContextDir);
 
         HttpContext context = new HttpContext();
         //context.setClassLoader(new ContextClassloader());
@@ -48,9 +54,8 @@ public class RunAsJavaApplication {
         ServletHolder servlet = servlets.addServlet("CFMLServlet", "*.cfc/*,*.cfm/*,*.cfml/*,*.cfc,*.cfm,*.cfml", "railo.debug.loader.servlet.CFMLServlet");
         servlet.setInitOrder(0);
 
-        if (adminContextDir == null) webContextDir = appDir;
-        servlet.setInitParameter("railo-server-directory", adminContextDir);
-        servlet.setInitParameter("railo-web-directory", webContextDir);
+        servlet.setInitParameter("railo-server-directory", strServerContext);
+        //servlet.setInitParameter("railo-web-directory", strWebContext);
 
         // Uncomment line below to debug Railo REST Servlet
         //servlet = servlets.addServlet("RESTServlet", "/rest/*", "railo.debug.loader.servlet.RESTServlet");
@@ -64,12 +69,12 @@ public class RunAsJavaApplication {
         servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
         //*/
 
-        appDir += path;
-        context.setResourceBase(appDir);
+        strWebContext += path;
+        context.setResourceBase(strWebContext);
         context.addHandler(new ResourceHandler());
     }
 
-    public static void addWebXmlContext(HttpServer server, String strContext, String host, String path, String appDir, String webContextDir, String adminContextDir) {
+    /*public static void addWebXmlContext(HttpServer server, String strContext, String host, String path, String strWebContext, String strServerContext) {
 
         if (appDir == null) appDir = "./web";
         if (webContextDir == null) webContextDir = appDir + "/WEB-INF/railo";
@@ -86,7 +91,7 @@ public class RunAsJavaApplication {
         server.addContext(context);
         appDir += path;
         context.addHandler(new ResourceHandler());
-    }
+    }*/
 
     /**
      * @param args
@@ -110,40 +115,35 @@ public class RunAsJavaApplication {
             throws Exception {
         // Create the server
         HttpServer server = new HttpServer();
-        String portArg = port;
-        String appDir = "./web";
-        String webContextDir = appDir + "/WEB-INF/railo";
-        String serverContextDir = appDir + "/WEB-INF/lib/railo";
+        int port = DEFAULT_PORT; 
+        String strWebContext = "./web";
+        String strServerContext="./server";
         if (args.length > 0) {
-            portArg = args[0];
+            port = Integer.parseInt(args[0]);
         }
         if (args.length > 1) {
-            appDir = args[1];
-            webContextDir = appDir + "/WEB-INF/railo";
-            serverContextDir = appDir + "/WEB-INF/lib/railo-server";
+        	strWebContext = args[1];
         }
         if (args.length > 2) {
-            webContextDir = args[1];
+        	strServerContext = args[2];
         }
-        if (args.length > 3) {
-            serverContextDir = args[2];
-        }
+        
 
         // Create a port listener
         SocketListener listener = new SocketListener();
-        int port = Integer.parseInt(portArg);
-
+        
         listener.setPort(port);
         server.addListener(listener);
 
 	    String host = null;
 
         // Create a context
-        File webxml = new File(appDir + "/WEB-INF/web.xml");
+        File webxml = new File(strServerContext + "/web.xml");
         if (webxml.exists()) {
-            addWebXmlContext(server, "/", host, "/", appDir, webContextDir, serverContextDir);
+        	System.err.println("not supported atm");
+            //addWebXmlContext(server, "/", host, "/", strWebContext, strServerContext);
         } else {
-            addContext(server, "/", host, "/", appDir, webContextDir, serverContextDir);
+            addContext(server, "/", host, "/", strWebContext, strServerContext);
         }
 
         //addContext(server,"/susi/","localhost","/jm/",null,null);
