@@ -4,7 +4,7 @@
 		field("Connection String","dsn","",true,"The Datasource Connection String")
 	)>
 	
-	<cfset this.className="net.sourceforge.jtds.jdbc.Driver">
+	<cfset this.className="">
 	<cfset this.type.port=this.TYPE_HIDDEN>
 	<cfset this.type.host=this.TYPE_HIDDEN>
 	<cfset this.type.database=this.TYPE_HIDDEN>
