@@ -3,6 +3,7 @@
 
 <cfset stText.setting.typeChecking="UDF Type Checking">
 <cfset stText.setting.typeCheckingDesc="If disabled Railo ignores type defintions with function arguments and return values">
+<cfparam name="stText.general.elements" default="item(s)">
 
 <cfadmin 
 	action="securityManager"
@@ -24,15 +25,11 @@ Defaults --->
     </cfcatch>
 </cftry>
 
-<cfset btnClearTemplateCache=replace(stText.setting.templateCacheClearCount,'{count}',arrayLen(pagePoolList()))>
 
-<cfset btnClearQueryCache=stText.setting.queryCacheClear>
-<cfif qrySize GTE 0>
-	<cfset btnClearQueryCache=replace(stText.setting.queryCacheClearCount,'{count}',qrySize)>
-</cfif>
-
-<cfset btnClearComponentCache=replace(stText.setting.componentCacheClear,'{count}',structCount(componentCacheList()))>
-<cfset btnClearCTCache=replace(stText.setting.ctCacheClear,'{count}',structCount(ctCacheList()))>
+<cfset btnClearTemplateCache  = stText.setting.templateCacheClearCount>
+<cfset btnClearQueryCache     = stText.setting.queryCacheClear>
+<cfset btnClearComponentCache = stText.setting.componentCacheClear>
+<cfset btnClearCTCache        = stText.setting.ctCacheClear>
 
 <cfif hasAccess>
 	<cftry>
