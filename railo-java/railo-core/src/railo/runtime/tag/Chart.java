@@ -21,6 +21,7 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.ColumnArrangement;
 import org.jfree.chart.block.LineBorder;
@@ -114,6 +115,13 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	public static final int TIP_STYLE_MOUSEDOWN = 2;
 	public static final int TIP_STYLE_MOUSEOVER = 3;
 	
+	public static final CategoryLabelPositions LABEL_HORIZONTAL = CategoryLabelPositions.STANDARD;
+	public static final CategoryLabelPositions LABEL_VERTICAL = CategoryLabelPositions.DOWN_90;
+	public static final CategoryLabelPositions LABEL_DOWN_90 = CategoryLabelPositions.DOWN_90;
+	public static final CategoryLabelPositions LABEL_DOWN_45 = CategoryLabelPositions.DOWN_45;
+	public static final CategoryLabelPositions LABEL_UP_45 = CategoryLabelPositions.UP_45;
+	public static final CategoryLabelPositions LABEL_UP_90 = CategoryLabelPositions.UP_90;
+
 	private static final int NONE = 0;
 	private static final int YES = 1;
 	private static final int NO = 2;
@@ -140,6 +148,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private int gridlines=10;
 	
 	private int labelFormat=LabelFormatUtil.LABEL_FORMAT_NUMBER;
+	private CategoryLabelPositions labelPosition=LABEL_HORIZONTAL;
 	private int markersize=-1;
 	
 	private String name=null;
@@ -208,6 +217,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		gridlines=10;
 		
 		labelFormat=LabelFormatUtil.LABEL_FORMAT_NUMBER;
+		labelPosition=LABEL_HORIZONTAL;
+
 		markersize=-1;
 		name=null;
 		
@@ -236,6 +247,17 @@ public final class Chart extends BodyTagImpl implements Serializable {
 
 	public void setShowxlabel(boolean showXLabel) {
 		this.showXLabel = showXLabel;
+	}
+	public void setCategorylabelpositions(String strOrientation) {
+		strOrientation=strOrientation.trim().toLowerCase();
+		if("vertical".equals(strOrientation))labelPosition=LABEL_VERTICAL;
+		else if("up_45".equals(strOrientation))labelPosition=LABEL_UP_45;
+		else if("up_90".equals(strOrientation))labelPosition=LABEL_UP_90;
+		else if("down_45".equals(strOrientation))labelPosition=LABEL_DOWN_45;
+		else if("down_90".equals(strOrientation))labelPosition=LABEL_DOWN_90;
+		else if("standard".equals(strOrientation))labelPosition=LABEL_HORIZONTAL;
+		else labelPosition=LABEL_HORIZONTAL;
+		//else throw new ExpressionException("invalid value ["+strOrientation+"] for attribute CategoryLabelPositions, for this attribute only the following values are supported [horizontal,vertical,up_90,up_45,down_90,down_45]");
 	}
 	public void setSource(String source) {
 		this.source = source;
@@ -1023,6 +1045,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			
 			CategoryAxis da = cp.getDomainAxis();
 			if(!showXLabel)da.setTickLabelsVisible(false);
+			da.setCategoryLabelPositions(labelPosition);
 			//da.setVisible(false);
 		}
 		if(plot instanceof XYPlot) {
