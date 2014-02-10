@@ -43,7 +43,6 @@ import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -2589,7 +2588,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 
     public void removeUDF() {
-    	if(!udfs.isEmpty())udfs.pop();
+    	if(!udfs.isEmpty())udfs.removeLast();
     }
 
     @Override
