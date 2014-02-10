@@ -119,7 +119,7 @@ public final class ObjectCache extends TagImpl {
 		CacheHandlerFactory factory=null;
 		Cache cache=null;
 		
-		if(type==TYPE_FUNCTION) factory=CacheHandlerFactory.udf;
+		if(type==TYPE_FUNCTION) factory=CacheHandlerFactory.function;
 		else if(type==TYPE_INCLUDE) factory=CacheHandlerFactory.include;
 		else if(type==TYPE_QUERY) factory=CacheHandlerFactory.query;
 		else if(type==TYPE_RESOURCE) {
