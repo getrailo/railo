@@ -700,7 +700,9 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			copy(res.getOutputStream(),jfc,info);
 		}
 		
-		String src="/railo-context/graph.cfm?img="+id+"&type="+formatToString(format);
+		String contextPath = pageContext.getHttpServletRequest().getContextPath();
+		contextPath = StringUtil.isEmpty(contextPath) ? "/" : contextPath+"/";
+		String src=contextPath+"railo-context/graph.cfm?img="+id+"&type="+formatToString(format);
 		if(!StringUtil.isEmpty(source)) {
 			pageContext.setVariable(source, src);
 			return;
