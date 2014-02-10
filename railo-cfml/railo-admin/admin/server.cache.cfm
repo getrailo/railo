@@ -4,6 +4,7 @@
 
 <cfset stText.setting.typeChecking="UDF Type Checking">
 <cfset stText.setting.typeCheckingDesc="If disabled Railo ignores type defintions with function arguments and return values">
+<cfparam name="stText.general.elements" default="item(s)">
 
 <cfadmin 
 	action="securityManager"

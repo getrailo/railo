@@ -1294,6 +1294,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<description>Format for Y-axis labels.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>categoryLabelPositions</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Label postion relative to axis: standard, up_45, up_90, down_45, down_90 or horizontal (standard) and vertical (down_90).  Default is horizontal.</description>
+		</attribute>
+		<attribute>
 			<type>number</type>
 			<name>markerSize</name>
 			<required>false</required>

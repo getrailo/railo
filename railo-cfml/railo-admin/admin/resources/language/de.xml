@@ -414,6 +414,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="general.seconds">Sekunden</data>
 	<data key="general.days">Tage</data>
 	<data key="general.no">Nein</data>
+	<data key="general.elements">Element(e)</data>
+
 	<data key="search.directorypath">Verzeichnispfad</data>
 	<data key="search.mapped">Mapped</data>
 	<data key="search.searchthecollection">Collection durchsuchen</data>
@@ -640,6 +642,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
 </data>
 	<data key="setting.cacheclearcount">{name} Cache leeren ( {count} Element(e) )</data>
+	<data key="setting.querycacheclearcount">Query Cache leeren</data>
 	<data key="setting.inspecttemplateneverdesc">
 When checked, any requested found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.
 </data>
@@ -650,9 +653,9 @@ When checked, any requested files will be inspected only once for potential upda
 </data>
 	<data key="setting.whitespace">Whitespace management</data>
 	<data key="setting.whitespacedescription">Unterdrückt alle Whitespace (Leerzeichen, Tabs und Zeilenumbrüche), die in der Ausgabe einem Whitespace folgen</data>
-	<data key="setting.templatecacheclearcount">Page Pool Cache leeren ( {count} Element(e) )</data>
-	<data key="setting.componentcacheclear">Komponentenpfad Cache leeren ( {count} Element(e) )</data>
-	<data key="setting.ctcacheclear">Customtag Pfad Cache leeren ( {count} Element(e) )</data>
+	<data key="setting.templatecacheclearcount">Page Pool Cache leeren</data>
+	<data key="setting.componentcacheclear">Komponentenpfad Cache leeren</data>
+	<data key="setting.ctcacheclear">Customtag Pfad Cache leeren</data>
 	<data key="scopes.sessiontimeoutdescription">Legt die Zeit fest, wie lange Railo für inaktive Sessions den Session-Scope erhält. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client Cookies</data>
