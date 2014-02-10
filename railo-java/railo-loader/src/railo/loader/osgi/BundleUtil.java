@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -19,21 +21,21 @@ public class BundleUtil {
     }
 	
 	public static Bundle addBundle(BundleContext context,String id,File bundle, boolean start) throws IOException, BundleException {
-		CFMLEngineFactory.log(Log.LEVEL_INFO,"add bundle");
+		CFMLEngineFactory.log(Log.LEVEL_INFO,"add bundle:"+bundle);
     	InputStream is = new FileInputStream(bundle);
 		try {
         	Bundle b = context.installBundle(id,is);
         	if(start){
-        		CFMLEngineFactory.log(Log.LEVEL_INFO,"start bundle");
+        		CFMLEngineFactory.log(Log.LEVEL_INFO,"start bundle:"+bundle);
             	b.start();
         	}
         	return b;
         }
         finally {
-        	is.close();
+        	CFMLEngineFactory.closeEL(is);
         }
 	}
-    
+
 	public static Bundle addBundle(BundleContext context,Resource bundle, boolean start) throws IOException, BundleException {
     	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
     }
@@ -50,6 +52,18 @@ public class BundleUtil {
         	is.close();
         }
 	}
+	
+
+	public static void start(List<Bundle> bundles) throws BundleException {
+		if(bundles==null || bundles.isEmpty()) return;
+		
+		Iterator<Bundle> it = bundles.iterator();
+		while(it.hasNext()){
+			it.next().start();
+		}
+	}
+	
+	
 	
 	public static String bundleState(int state, String defaultValue) {
 		switch(state){

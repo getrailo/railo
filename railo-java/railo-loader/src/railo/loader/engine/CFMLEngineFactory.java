@@ -33,7 +33,6 @@ import railo.commons.io.log.Log;
 import railo.loader.TP;
 import railo.loader.osgi.BundleLoader;
 import railo.loader.osgi.BundleUtil;
-import railo.loader.osgi.factory.BundleBuilderFactoryException;
 import railo.loader.util.ExtensionFilter;
 import railo.loader.util.Util;
 
@@ -265,7 +264,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
             }
             else {
 
-            	bundle = BundleLoader.buildAndLoad(this,getFelixCacheDirectory(),getBundleDirectory(),getJarDirectory(),railo);
+            	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),railo);
             	//bundle=loadBundle(railo);
             	log("loaded bundle2:"+bundle.getSymbolicName());
             	engine=getEngine(bundle);
@@ -324,7 +323,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 		// boot delegation
 		if(!Util.isEmpty(bootDelegation))
 			config.put(Constants.FRAMEWORK_BOOTDELEGATION, bootDelegation);
-
+		System.err.println(">>>"+bootDelegation);
 		// parent classLoader
 		if(!Util.isEmpty(parentClassLoader))
 			config.put(Constants.FRAMEWORK_BUNDLE_PARENT, parentClassLoader);
@@ -374,7 +373,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
         throw new ServletException("missing core file");
 	}
 
-	private CFMLEngine getCore(String ext) throws BundleBuilderFactoryException, IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+	private CFMLEngine getCore(String ext) throws IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		File rc = new File(getTempDirectory(),"tmp_"+System.currentTimeMillis()+".rc");
 		try {
 			InputStream is = null;
@@ -389,7 +388,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 	    		closeEL(is);
 	    		closeEL(os);
 	    	}
-	    	bundle = BundleLoader.buildAndLoad(this,getFelixCacheDirectory(),getBundleDirectory(),getJarDirectory(),rc);
+	    	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),rc);
         	log("loaded bundle3:"+bundle.getSymbolicName());
 	    	engine = getEngine(bundle);
         	log("loaded engine3:"+engine);
@@ -507,7 +506,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
         String v="";
         try {
         	
-        	bundle = BundleLoader.buildAndLoad(this,getFelixCacheDirectory(),getBundleDirectory(),getJarDirectory(),newRailo);
+        	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),newRailo);
         	log("loaded bundle1:"+bundle.getSymbolicName());
             CFMLEngine e = getEngine(bundle);
         	log("loaded engine1:"+e);
@@ -633,12 +632,6 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
         File pd = new File(getResourceRoot(),"patches");
         if(!pd.exists())pd.mkdirs();
         return pd;
-    }
-    
-    private File getBundleDirectory() throws IOException {
-        File bd = new File(getResourceRoot(),"bundles");
-        if(!bd.exists())bd.mkdirs();
-        return bd;
     }
     
     private File getJarDirectory() throws IOException {

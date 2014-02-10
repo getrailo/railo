@@ -4453,12 +4453,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			sct.set("SymbolicName", bundle.getSymbolicName());
 			sct.set("Version", bundle.getVersion().toString());
 			sct.set("ManifestVersion", bundle.getManifestVersion());
+			sct.set("RequireBundle", bundle.getRequireBundle());
 		}
 		catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
-    	
-    	
     }
 
     private void doBuildBundle() throws PageException {

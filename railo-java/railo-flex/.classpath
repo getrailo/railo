@@ -3,11 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Railo-Loader"/>
-	<classpathentry kind="lib" path="/Railo-Libs/flex-messaging-common.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/flex-messaging-core.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/flex-messaging-opt.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/flex-messaging-proxy.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/flex-messaging-remoting.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/flex-messaging-core-3-3-0-22497.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

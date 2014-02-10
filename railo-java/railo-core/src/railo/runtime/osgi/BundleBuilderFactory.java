@@ -1,7 +1,6 @@
 package railo.runtime.osgi;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,41 +8,51 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import railo.print;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.loader.util.Util;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 
 public class BundleBuilderFactory {
-	
-	/*
-TODO
-
-Export-Package: org.wikipedia.helloworld;version="1.0.0"
-Import-Package: org.osgi.framework;version="1.3.0"
-
-Export-Package: Expresses which Java packages contained in a bundle will be made available to the outside world.
-Import-Package: Indicates which Java packages will be required from the outside world to fulfill the dependencies needed in a bundle.
-	 * */
-	
+		
 	//Indicates the OSGi specification to use for reading this bundle.
 	private static final int MANIFEST_VERSION=2;
+
+	private static final Set<String> INDIVIDUAL_FILTER = new HashSet<String>();
+	private static final Set<String> MAIN_FILTER = new HashSet<String>();
+	static {
+		MAIN_FILTER.add("SHA1-Digest-Manifest");
+		MAIN_FILTER.add("MD5-Digest-Manifest");
+		//MAIN_FILTER.add("Sealed");
+		
+		INDIVIDUAL_FILTER.add("SHA1-Digest");
+		INDIVIDUAL_FILTER.add("MD5-Digest");
+		//INDIVIDUAL_FILTER.add("Sealed");
+	}
 
 	private final String name;
 	private final String symbolicName;
 	private String description;
 	private BundleVersion bundleVersion;
+	private Manifest manifest;
 	
 	public BundleVersion getBundleVersion() {
 		return bundleVersion;
@@ -52,8 +61,6 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	public void setBundleVersion(String version) {
 		if(StringUtil.isEmpty(version,true))return ;
 		this.bundleVersion=new BundleVersion(version);
-		
-		System.out.println(version+"->"+bundleVersion.toString());
 	}
 	private String activator;
 
@@ -155,44 +162,45 @@ Import-Package: Indicates which Java packages will be required from the outside 
 		this.activator = activator;
 	}
 
-	private String buildManifestSource(List<String> jarsUsed){
-		StringBuilder sb=new StringBuilder();
-			sb.append("Bundle-ManifestVersion: ").append(MANIFEST_VERSION).append('\n');
-		if(!StringUtil.isEmpty(name))
-			sb.append("Bundle-Name: ").append(name).append('\n');
-			sb.append("Bundle-SymbolicName: ").append(symbolicName).append('\n');
-		if(!StringUtil.isEmpty(description))
-			sb.append("Bundle-Description: ").append(description).append('\n');
-		if(bundleVersion!=null)
-			sb.append("Bundle-Version: ").append(bundleVersion.toString()).append('\n');
+	private void extendManifest(Manifest mf){
+		Attributes attrs = mf.getMainAttributes();
+		attrs.putValue("Bundle-ManifestVersion", ""+MANIFEST_VERSION);
+		if(!StringUtil.isEmpty(name)) attrs.putValue("Bundle-Name",name);
+		attrs.putValue("Bundle-SymbolicName",symbolicName);	
+		if(!StringUtil.isEmpty(description))attrs.putValue("Bundle-Description",description);
+		if(bundleVersion!=null) attrs.putValue("Bundle-Version",bundleVersion.toString());
 		
 		if(!StringUtil.isEmpty(activator)) {
+			attrs.putValue("Bundle-Activator",activator);
 			addImportPackage("org.osgi.framework");
-			sb.append("Bundle-Activator: ").append(activator).append('\n');
 		}
-		addPackage(sb,"Export-Package",exportPackage);
-		addPackage(sb,"Import-Package",importPackage);
-		addPackage(sb,"DynamicImport-Package",dynImportPackage);
-		addPackage(sb,"Bundle-ClassPath",classPath);
+		String str = attrs.getValue("Export-Package");
+		if(Util.isEmpty(str,true)) addList(attrs,"Export-Package",exportPackage);
 		
-		log(sb.toString());
-		return sb.toString();// NL at the end is needed, so no trim
+		str = attrs.getValue("Import-Package");
+		if(Util.isEmpty(str,true)) addList(attrs,"Import-Package",importPackage);
+		
+		str = attrs.getValue("DynamicImport-Package");
+		if(Util.isEmpty(str,true)) addList(attrs,"DynamicImport-Package",dynImportPackage);
+		
+		str = attrs.getValue("Bundle-ClassPath");
+		if(Util.isEmpty(str,true)) addList(attrs,"Bundle-ClassPath",classPath);
 	}
 
-	private void addPackage(StringBuilder sb,String label, List<String> pack) {
-		if(pack!=null && pack.size()>0) {
-			sb.append(label).append(": ");
-			Iterator<String> it = pack.iterator();
-			boolean first=true;
-			while(it.hasNext()) {
-				if(!first) {
-					sb.append(',');
-				}
-				sb.append(it.next());
-				first=false;
+	private void addList(Attributes attrs,String name,List<String> values) {
+		if(values==null || values.size()==0) return;
+		
+		StringBuilder sb=new StringBuilder();
+		Iterator<String> it = values.iterator();
+		boolean first=true;
+		while(it.hasNext()) {
+			if(!first) {
+				sb.append(',');
 			}
-			sb.append('\n');
+			sb.append(it.next());
+			first=false;
 		}
+		attrs.putValue(name, sb.toString());
 	}
 
 	public void addJar(Resource jar) throws ApplicationException{
@@ -222,10 +230,8 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	}
 	
 	public void build(OutputStream os) throws IOException {
-		Charset charset = Charset.forName("UTF-8");
-		ZipOutputStream zos=new MyZipOutputStream(os,charset);
+		ZipOutputStream zos=new MyZipOutputStream(os,CharsetUtil.UTF8);
 		try{
-		
 			
 			// jars
 			List<String> jarsUsed=new ArrayList<String>();
@@ -234,15 +240,20 @@ Import-Package: Indicates which Java packages will be required from the outside 
 				Iterator<Resource> it = jars.iterator();
 				while(it.hasNext()){
 					jar=it.next();
-					log("jar:"+jar.getName());
+					//log("jar:"+jar.getName());
 					jarsUsed.add(jar.getName());
 					handleEntry(zos,jar, new JarEntryListener(zos));
 				}
 			}
 			
 			// manifest
-			String mani = buildManifestSource(jarsUsed);
-			InputStream is=new ByteArrayInputStream(mani.getBytes(charset));
+			if(manifest==null)manifest=new Manifest();
+			extendManifest(manifest);
+			
+			String mf = ManifestUtil.toString(manifest,128,MAIN_FILTER,INDIVIDUAL_FILTER);
+			//print.e("+++++++++++++++++++++++++++++++++++");
+			//print.e(mf);
+			InputStream is=new ByteArrayInputStream(mf.getBytes(CharsetUtil.UTF8));
 			ZipEntry ze=new ZipEntry("META-INF/MANIFEST.MF");
 			zos.putNextEntry(ze);
 	        try {
@@ -284,15 +295,56 @@ Import-Package: Indicates which Java packages will be required from the outside 
 			this.zos=zos;
 		}
 
+		
 		@Override
 		public void handleEntry(Resource zipFile,ZipInputStream source,ZipEntry entry) throws IOException {
-			System.out.println("- "+entry.getName());
+			// security
+			if("META-INF/IDRSIG.DSA".equalsIgnoreCase(entry.getName()) 
+					|| "META-INF/IDRSIG.SF".equalsIgnoreCase(entry.getName())
+					|| "META-INF/INDEX.LIST".equalsIgnoreCase(entry.getName())) {
+				print.e(zipFile+"->"+entry.getName());
+				return;
+			}
+			
 			// manifest
 			if("META-INF/MANIFEST.MF".equalsIgnoreCase(entry.getName())) {
-				ByteArrayOutputStream baos=new ByteArrayOutputStream();
-				copy(source,baos);
-				//log(zipFile+" -> META-INF/MANIFEST.MF");
-				//log(new String(baos.toByteArray()));
+				manifest = new Manifest(source);
+				Attributes attrs = manifest.getMainAttributes();
+				
+				// they are in bootdelegation
+				ManifestUtil.removeFromList(attrs,"Import-Package","javax.*"); 
+				ManifestUtil.removeFromList(attrs,"Import-Package","org.osgi.*");
+				
+				
+				//manifest.getEntries().clear();
+				
+				
+				/*while((line=br.readLine())!=null){
+					if(StringUtil.isEmpty(line,true)) continue;
+					if(line.startsWith("Bundle-Name:") || line.startsWith("Bundle-ManifestVersion:")) {}
+					else if(line.startsWith("Bundle-SymbolicName:")) { 
+						if(!line.trim().equals("Bundle-SymbolicName: "+symbolicName))
+							throw new  IOException("jar Manifest already has a [Bundle-SymbolicName] line with a different value ["+line+"], your name is ["+symbolicName+"]");
+					}
+					else if(line.startsWith("Bundle-Version:")) { 
+						if(!line.trim().equals("Bundle-Version: "+bundleVersion)) {
+							BundleVersion bv = new BundleVersion(StringUtil.replace(line, "Bundle-Version:", "",true));
+							if(!bv.equals(bundleVersion))
+								throw new  IOException("jar Manifest already has a [Bundle-Version] line with a different value ["+line+"], your name is ["+bundleVersion+"]");
+						}
+					}
+					else {
+						if(StringUtil.startsWithIgnoreCase(line, "SHA1-Digest:")) {
+							print.e("zip:"+zipFile);
+							System.exit(0);
+						}
+						
+						mani.append(line).append('\n');
+						
+					}
+				}*/
+				
+				
 				return;
 			}
 			
@@ -328,10 +380,7 @@ Import-Package: Indicates which Java packages will be required from the outside 
             finally {
                 zos.closeEntry();
             }
-			
 		}
-
-		
 	}
 	
 	
@@ -390,16 +439,4 @@ Import-Package: Indicates which Java packages will be required from the outside 
 	public void log(String str) {
 		System.out.println(str);
 	}
-	
-
-	/*public static void test(String[] jars, String trg) throws Exception {
-		File target=new File(trg);
-		BundleBuilderFactory bf = new BundleBuilderFactory("Test", "test", "", "1.0.0", null);
-		for(int i=0;i<jars.length;i++){
-			bf.addJar(caster.toResource(jars[i]));
-		}
-		bf.build(target);
-		
-		
-	}*/
 }

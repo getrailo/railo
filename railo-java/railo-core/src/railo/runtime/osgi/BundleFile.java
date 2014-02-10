@@ -23,6 +23,7 @@ public class BundleFile extends JarFile {
 	private final String description;
 	private final String dynamicImportPackage;
 	private final String classPath;
+	private final String requireBundle;
 
 	public BundleFile(Resource file) throws IOException {
 		super(toFileResource(file));
@@ -42,7 +43,12 @@ public class BundleFile extends JarFile {
 		activator = attrs.getValue("Bundle-Activator");
 		description = attrs.getValue("Bundle-Description");
 		classPath = attrs.getValue("Bundle-ClassPath");
+		requireBundle = attrs.getValue("Require-Bundle");
 		
+	}
+
+	public String getRequireBundle() {
+		return requireBundle;
 	}
 
 	private static File toFileResource(Resource file) throws IOException {

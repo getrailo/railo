@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Railo-Libs/felix.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/org-apache-felix-main-4-2-1.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
