@@ -83,6 +83,7 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.functions.system.ContractPath;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
@@ -1758,6 +1759,15 @@ public abstract class ConfigImpl implements Config {
     public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
         	baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,getBaseComponentTemplate(),false,false,true));
+        	if(!baseComponentPageSource.exists()) {
+        		String baseTemplate = getBaseComponentTemplate();
+        		String mod = ContractPath.call(pc, getBaseComponentTemplate(), false);
+        		if(!mod.equals(baseTemplate)) {
+        			baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,mod,false,false,true));
+                	
+        		}
+        	}
+
         }
         return baseComponentPageSource;
     }
