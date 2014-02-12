@@ -19,6 +19,18 @@ public class ClosureScope extends ScopeSupport implements Variables {
 	private Argument arg;
 	private Local local;
 	private Variables var;
+	public Argument getArgument() {
+		return arg;
+	}
+
+	public Variables getVariables() {
+		return var;
+	}
+
+	public Undefined getUndefined() {
+		return und;
+	}
+
 	private boolean debug;
 	private Undefined und; 
 

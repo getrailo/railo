@@ -46,7 +46,6 @@ import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -97,7 +96,6 @@ import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
 import railo.runtime.exp.PageServletException;
-import railo.runtime.functions.dateTime.Now;
 import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
@@ -146,6 +144,7 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Client;
+import railo.runtime.type.scope.ClosureScope;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
@@ -923,9 +922,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	ps=includePathList.get(i);
         	if(i==0) {
         		if(!ps.equals(getBasePageSource()))
-        			sva.append(ResourceUtil.getResource(this,getBasePageSource()).getAbsolutePath());
+        			sva.append(getBasePageSource().getResourceTranslated(this).getAbsolutePath());
         	}
-        	sva.append(ResourceUtil.getResource(this, ps).getAbsolutePath());
+        	sva.append(ps.getResourceTranslated(this).getAbsolutePath());
         }
         //sva.setPosition(sva.size());
         return sva;
@@ -2504,14 +2503,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	this.variables=variables;
         undefinedScope().setVariableScope(variables);
         
+        if(variables instanceof ClosureScope) {
+        	variables = ((ClosureScope)variables).getVariables();
+        }
+        
         if(variables instanceof ComponentScope) {
         	activeComponent=((ComponentScope)variables).getComponent();
-            /*if(activeComponent.getAbsName().equals("jm.pixeltex.supersuperApp")){
-            	print.dumpStack();
-            }*/
         }
         else {
-            activeComponent=null;
+        	activeComponent=null;
         }
     }
 
@@ -2655,7 +2655,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 
     public void removeUDF() {
-    	if(!udfs.isEmpty())udfs.pop();
+    	if(!udfs.isEmpty())udfs.removeLast();
     }
 
     @Override
