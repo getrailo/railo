@@ -4470,10 +4470,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	String dynamicImportPackage=getString("dynamicimportpackage",null);
     	String importPackage=getString("importpackage",null);
     	String exportPackage=getString("exportpackage",null);
+    	String fragmentHost=getString("fragmentHost",null);
     	String jars=getString("admin",action,"jars");
+    	boolean ignoreExistingManifest=getBoolV("ignoreExistingManifest",false);
     	Resource dest=ResourceUtil.toResourceNotExisting(pageContext, getString("admin",action,"destination"));
     	
-    	BundleBuilderFactory factory=new BundleBuilderFactory(name, StringUtil.isEmpty(symName,true)?null:symName.trim());
+    	BundleBuilderFactory factory=new BundleBuilderFactory(name, StringUtil.isEmpty(symName,true)?null:symName.trim(),ignoreExistingManifest);
     	
     	if(!StringUtil.isEmpty(activator,true))factory.setActivator(activator.trim());
     	if(!StringUtil.isEmpty(version,true))factory.setBundleVersion(version.trim());
@@ -4482,7 +4484,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	if(!StringUtil.isEmpty(dynamicImportPackage,true))factory.addDynamicImportPackage(dynamicImportPackage.trim());
     	if(!StringUtil.isEmpty(importPackage,true))factory.addImportPackage(importPackage.trim());
     	if(!StringUtil.isEmpty(exportPackage,true))factory.addExportPackage(exportPackage.trim());
+    	if(!StringUtil.isEmpty(fragmentHost,true))factory.addFragmentHost(fragmentHost.trim());
     	if(!StringUtil.isEmpty(jars,true))factory.addJars(pageContext,jars);
+    	
     	
     	try {
 			factory.build(dest);

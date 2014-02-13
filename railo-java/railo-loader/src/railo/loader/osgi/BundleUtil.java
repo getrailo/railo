@@ -10,23 +10,23 @@ import java.util.List;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.res.Resource;
 import railo.loader.engine.CFMLEngineFactory;
 
 public class BundleUtil {
-	public static Bundle addBundle(BundleContext context,File bundle, boolean start) throws IOException, BundleException {
+	/*public static Bundle addBundlex(BundleContext context,File bundle, boolean start) throws IOException, BundleException {
     	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
-    }
-	
+    }*/
+
 	public static Bundle addBundle(BundleContext context,String id,File bundle, boolean start) throws IOException, BundleException {
-		CFMLEngineFactory.log(Log.LEVEL_INFO,"add bundle:"+bundle);
+		CFMLEngineFactory.log(Log.LEVEL_INFO,"add bundle:"+id);
     	InputStream is = new FileInputStream(bundle);
 		try {
-        	Bundle b = context.installBundle(id,is);
-        	if(start){
-        		CFMLEngineFactory.log(Log.LEVEL_INFO,"start bundle:"+bundle);
+			Bundle b = context.installBundle(bundle.getAbsolutePath(),is);
+			if(start){
+        		CFMLEngineFactory.log(Log.LEVEL_INFO,"start bundle:"+id);
             	b.start();
         	}
         	return b;
@@ -36,10 +36,11 @@ public class BundleUtil {
         }
 	}
 
+/*
 	public static Bundle addBundle(BundleContext context,Resource bundle, boolean start) throws IOException, BundleException {
     	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
     }
-    
+	
 	public static Bundle addBundle(BundleContext context,String id,Resource bundle, boolean start) throws IOException, BundleException {
 		
 		InputStream is = bundle.getInputStream();
@@ -52,7 +53,7 @@ public class BundleUtil {
         	is.close();
         }
 	}
-	
+	*/
 
 	public static void start(List<Bundle> bundles) throws BundleException {
 		if(bundles==null || bundles.isEmpty()) return;
@@ -62,8 +63,6 @@ public class BundleUtil {
 			it.next().start();
 		}
 	}
-	
-	
 	
 	public static String bundleState(int state, String defaultValue) {
 		switch(state){
@@ -76,5 +75,19 @@ public class BundleUtil {
 		}
 		
 		return defaultValue;
+	}
+	
+
+
+	public static String toFrameworkBundleParent(String str) throws IOException {
+		if(str!=null) {
+			str=str.trim();
+			if(Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK.equalsIgnoreCase(str)) return Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK;
+			if(Constants.FRAMEWORK_BUNDLE_PARENT_APP.equalsIgnoreCase(str)) return Constants.FRAMEWORK_BUNDLE_PARENT_APP;
+			if(Constants.FRAMEWORK_BUNDLE_PARENT_BOOT.equalsIgnoreCase(str)) return Constants.FRAMEWORK_BUNDLE_PARENT_BOOT;
+			if(Constants.FRAMEWORK_BUNDLE_PARENT_EXT.equalsIgnoreCase(str)) return Constants.FRAMEWORK_BUNDLE_PARENT_EXT;
+		}
+		throw new IOException("value ["+str+"] for ["+Constants.FRAMEWORK_BUNDLE_PARENT+"] defintion is invalid, " +
+				"valid values are ["+Constants.FRAMEWORK_BUNDLE_PARENT_APP+", "+Constants.FRAMEWORK_BUNDLE_PARENT_BOOT+", "+Constants.FRAMEWORK_BUNDLE_PARENT_EXT+", "+Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK+"]");
 	}
 }

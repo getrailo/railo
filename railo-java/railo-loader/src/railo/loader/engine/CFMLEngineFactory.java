@@ -324,12 +324,14 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 		if(!Util.isEmpty(bootDelegation))
 			config.put(Constants.FRAMEWORK_BOOTDELEGATION, bootDelegation);
 		System.err.println(">>>"+bootDelegation);
+		
 		// parent classLoader
 		if(!Util.isEmpty(parentClassLoader))
-			config.put(Constants.FRAMEWORK_BUNDLE_PARENT, parentClassLoader);
+			config.put(Constants.FRAMEWORK_BUNDLE_PARENT,parentClassLoader);
 		else
 			config.put(Constants.FRAMEWORK_BUNDLE_PARENT, Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK);
-	    
+		System.err.println(">>>>"+parentClassLoader);
+		
 		// felix.cache.rootdir
 		if(!cacheRootDir.exists()) {
 			cacheRootDir.mkdirs();
@@ -345,8 +347,16 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 		// TODO felix.log.logger 
 		
 		
+		/*
+		 FrameworkFactory frameworkFactory = ServiceLoader.load(
+                FrameworkFactory.class).iterator().next();
+Map<String, String> config = new HashMap<String, String>();
+//TODO: add some config properties
+Framework framework = frameworkFactory.newFramework(config);
+framework.start();
+		 */
 		
-		Felix felix = new Felix(config);
+		felix = new Felix(config);
         felix.start();
         
 		return felix;

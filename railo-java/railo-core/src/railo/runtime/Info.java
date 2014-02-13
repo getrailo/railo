@@ -1,11 +1,10 @@
 package railo.runtime;
 
 import java.io.InputStream;
-import java.util.Map;
+import java.util.Properties;
 
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
-import railo.commons.io.ini.IniFile;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
@@ -52,16 +51,20 @@ public final class Info {
     private static final int fullVersion;
     
     static {
-    	InputStream is = Info.class.getClassLoader().getResourceAsStream("railo/runtime/Info.ini");
+    	
+    	InputStream is = Info.class.getClassLoader().getResourceAsStream("default.properties");
+    	
     	try{
-    		IniFile ini=new IniFile(is);
-    		Map verIni=ini.getSection("version");
-    		versionName=(String) verIni.get("name");
-    		versionNameExplanation=(String) verIni.get("name-explanation");
-    		releaseDate=DateCaster.toDateAdvanced((String) verIni.get("release-date"), TimeZoneConstants.EUROPE_ZURICH);
-    		state=toIntState((String) verIni.get("state"));
-    		level=(String) verIni.get("level");
-    		version=(String) verIni.get("number");
+    		Properties prop = new Properties();
+    		prop.load(is);
+    		//IniFile ini=new IniFile(is);
+    		//Map verIni=ini.getSection("version");
+    		versionName=StringUtil.removeQuotes(prop.getProperty("railo.core.name"),true);
+    		versionNameExplanation=StringUtil.removeQuotes(prop.getProperty("railo.core.name.explanation"),true);
+    		releaseDate=DateCaster.toDateAdvanced(StringUtil.removeQuotes(prop.getProperty("railo.core.release.date"),true), TimeZoneConstants.EUROPE_ZURICH);
+    		state=toIntState(StringUtil.removeQuotes(prop.getProperty("railo.core.state"),true));
+    		level="os";
+    		version=StringUtil.removeQuotes(prop.getProperty("railo.core.version"),true);
     		String[] aVersion = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(version,'.'));
 
     	    major=Caster.toIntValue(aVersion[0]);
@@ -86,8 +89,8 @@ public final class Info {
         intVersion=(major*1000000)+(minor*10000)+(releases*100)+patches;
         fullVersion=intVersion+state;       
     }
-    
-    public static int toIntVersion(String version, int defaultValue) {
+
+	public static int toIntVersion(String version, int defaultValue) {
     	try{
 	    	String[] aVersion = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(version,'.'));
 	    	int ma = Caster.toIntValue(aVersion[0]);

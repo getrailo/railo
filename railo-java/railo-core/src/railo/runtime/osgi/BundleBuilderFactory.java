@@ -53,6 +53,8 @@ public class BundleBuilderFactory {
 	private String description;
 	private BundleVersion bundleVersion;
 	private Manifest manifest;
+	private final boolean ignoreExistingManifest;
+
 	
 	public BundleVersion getBundleVersion() {
 		return bundleVersion;
@@ -65,8 +67,9 @@ public class BundleBuilderFactory {
 	private String activator;
 
 	private List<Resource> jars=new ArrayList<Resource>();
-
+	
 	private List<String> exportPackage;
+	private List<String> fragmentHost;
 	private List<String> importPackage; 
 	private List<String> dynImportPackage; 
 	private List<String> classPath; 
@@ -81,7 +84,7 @@ public class BundleBuilderFactory {
 	 * @param name 
 	 * @throws BundleBuilderFactoryException 
 	 */
-	public BundleBuilderFactory(String name, String symbolicName) throws ApplicationException {
+	public BundleBuilderFactory(String name, String symbolicName, boolean ignoreExistingManifest) throws ApplicationException {
 		if(StringUtil.isEmpty(symbolicName)) {
 			if(StringUtil.isEmpty(name))
 				throw new ApplicationException("symbolic name is reqired");
@@ -89,7 +92,7 @@ public class BundleBuilderFactory {
 		}
 		this.name=name;
 		this.symbolicName=symbolicName;
-		
+		this.ignoreExistingManifest=ignoreExistingManifest;
 	}
 
 	private String toSymbolicName(String name) {
@@ -107,6 +110,17 @@ public class BundleBuilderFactory {
 		if(StringUtil.isEmpty(strExportPackage)) return;
 		if(exportPackage==null)exportPackage=new ArrayList<String>();
 		addPackages(exportPackage,strExportPackage);
+		
+	}
+
+	public List<String> getFragmentHost() {
+		return fragmentHost;
+	}
+	
+	public void addFragmentHost(String strExportPackage) {
+		if(StringUtil.isEmpty(strExportPackage)) return;
+		if(fragmentHost==null)fragmentHost=new ArrayList<String>();
+		addPackages(fragmentHost,strExportPackage);
 		
 	}
 	
@@ -177,6 +191,11 @@ public class BundleBuilderFactory {
 		String str = attrs.getValue("Export-Package");
 		if(Util.isEmpty(str,true)) addList(attrs,"Export-Package",exportPackage);
 		
+		//str = attrs.getValue("Fragment-Host");
+		//if(Util.isEmpty(str,true)) 
+		attrs.remove("Fragment-Host");
+		addList(attrs,"Fragment-Host",fragmentHost);
+		
 		str = attrs.getValue("Import-Package");
 		if(Util.isEmpty(str,true)) addList(attrs,"Import-Package",importPackage);
 		
@@ -189,7 +208,7 @@ public class BundleBuilderFactory {
 
 	private void addList(Attributes attrs,String name,List<String> values) {
 		if(values==null || values.size()==0) return;
-		
+
 		StringBuilder sb=new StringBuilder();
 		Iterator<String> it = values.iterator();
 		boolean first=true;
@@ -206,7 +225,6 @@ public class BundleBuilderFactory {
 	public void addJar(Resource jar) throws ApplicationException{
 		if(!jar.isFile())
 			throw new ApplicationException("["+jar+"] is not a file");
-		log("add "+jar+" to the bundle");
 		jars.add(jar);
 	}
 
@@ -251,8 +269,6 @@ public class BundleBuilderFactory {
 			extendManifest(manifest);
 			
 			String mf = ManifestUtil.toString(manifest,128,MAIN_FILTER,INDIVIDUAL_FILTER);
-			//print.e("+++++++++++++++++++++++++++++++++++");
-			//print.e(mf);
 			InputStream is=new ByteArrayInputStream(mf.getBytes(CharsetUtil.UTF8));
 			ZipEntry ze=new ZipEntry("META-INF/MANIFEST.MF");
 			zos.putNextEntry(ze);
@@ -290,7 +306,7 @@ public class BundleBuilderFactory {
 	class JarEntryListener implements EntryListener {
 
 		private ZipOutputStream zos;
-
+		
 		public JarEntryListener(ZipOutputStream zos) { 
 			this.zos=zos;
 		}
@@ -308,43 +324,16 @@ public class BundleBuilderFactory {
 			
 			// manifest
 			if("META-INF/MANIFEST.MF".equalsIgnoreCase(entry.getName())) {
-				manifest = new Manifest(source);
-				Attributes attrs = manifest.getMainAttributes();
-				
-				// they are in bootdelegation
-				ManifestUtil.removeFromList(attrs,"Import-Package","javax.*"); 
-				ManifestUtil.removeFromList(attrs,"Import-Package","org.osgi.*");
-				
-				
-				//manifest.getEntries().clear();
-				
-				
-				/*while((line=br.readLine())!=null){
-					if(StringUtil.isEmpty(line,true)) continue;
-					if(line.startsWith("Bundle-Name:") || line.startsWith("Bundle-ManifestVersion:")) {}
-					else if(line.startsWith("Bundle-SymbolicName:")) { 
-						if(!line.trim().equals("Bundle-SymbolicName: "+symbolicName))
-							throw new  IOException("jar Manifest already has a [Bundle-SymbolicName] line with a different value ["+line+"], your name is ["+symbolicName+"]");
-					}
-					else if(line.startsWith("Bundle-Version:")) { 
-						if(!line.trim().equals("Bundle-Version: "+bundleVersion)) {
-							BundleVersion bv = new BundleVersion(StringUtil.replace(line, "Bundle-Version:", "",true));
-							if(!bv.equals(bundleVersion))
-								throw new  IOException("jar Manifest already has a [Bundle-Version] line with a different value ["+line+"], your name is ["+bundleVersion+"]");
-						}
-					}
-					else {
-						if(StringUtil.startsWithIgnoreCase(line, "SHA1-Digest:")) {
-							print.e("zip:"+zipFile);
-							System.exit(0);
-						}
-						
-						mani.append(line).append('\n');
-						
-					}
-				}*/
-				
-				
+				if(!ignoreExistingManifest) {
+					manifest = new Manifest(source);
+					Attributes attrs = manifest.getMainAttributes();
+					
+					// they are in bootdelegation
+					ManifestUtil.removeFromList(attrs,"Import-Package","javax.*"); 
+					ManifestUtil.removeOptional(attrs,"Import-Package"); 
+					
+					//ManifestUtil.removeFromList(attrs,"Import-Package","org.osgi.*");
+				}
 				return;
 			}
 			

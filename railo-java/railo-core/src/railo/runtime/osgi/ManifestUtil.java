@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
@@ -94,9 +95,17 @@ public class ManifestUtil {
 			add(sb,name.toString(),value,null);
 		}
 	}
-
+	
 	private static String split(String value, int max) {
+		StringTokenizer st=new StringTokenizer(value,"\n");
 		StringBuilder sb=new StringBuilder();
+		while(st.hasMoreTokens()){
+			_split(sb,st.nextToken(), max);
+		}
+		return sb.toString();
+	}
+
+	private static void _split(StringBuilder sb,String value, int max) {
 		int index=0;
 		while(index+max <= value.length()){
 			if(sb.length()>0)sb.append("\n ");
@@ -107,7 +116,6 @@ public class ManifestUtil {
 			if(sb.length()>0)sb.append("\n ");
 			sb.append(value.substring(index,value.length()));
 		}
-		return sb.toString();
 	}
 	
 	private static void add(StringBuilder sb, String name, String value, String defaultValue) {
@@ -137,13 +145,52 @@ public class ManifestUtil {
 			String str;
 			while(it.hasNext()){
 				str=it.next();
+				str=str.trim();
+				//print.e("=="+str);
+				
 				if(wildcard?str.startsWith(valueToRemove):(str.equals(valueToRemove) || ListUtil.first(str, ";").trim().equals(valueToRemove))) {
-					print.e(str);
+					print.e("=>"+str);
 					removed=true;
 					continue;
 				}
 				
-				if(sb.length()>0)sb.append(',');
+				if(sb.length()>0)sb.append(",\n ");
+				sb.append(str);
+			}
+		}
+		catch (Throwable e) {}
+		if(removed) {
+			if(sb.length()>0)
+				attrs.putValue(key, sb.toString());
+			else
+				attrs.remove(key);
+		}
+		
+	}
+	
+	public static void removeOptional(Attributes attrs,String key) { 
+		String val = attrs.getValue(key);
+		if(StringUtil.isEmpty(val)) return;
+		StringBuilder sb=new StringBuilder();
+		boolean removed=false;
+		
+		
+		try {
+			
+			Iterator<String> it = toList(val).iterator();//ListUtil.toStringArray(ListUtil.listToArrayTrim(val, ','));
+			String str;
+			while(it.hasNext()){
+				str=it.next();
+				str=str.trim();
+				//print.e("=="+str);
+				
+				if(str.indexOf("resolution:=optional")!=-1) {
+					removed=true;
+					print.e("+"+str);
+					continue;
+				}
+				
+				if(sb.length()>0)sb.append(",\n ");
 				sb.append(str);
 			}
 		}
@@ -202,18 +249,18 @@ public class ManifestUtil {
 		print.e(str);
 		//print.e(new Manifest(new ByteArrayInputStream(str.getBytes())).getMainAttributes().getValue("Implementation-Title"));
 	}*/
-
 	
 	public static void main(String[] args) throws IOException {
 		Resource res = ResourcesImpl.getFileResourceProvider()
-		.getResource("/Users/mic/Tmp2/mysql-connector-java-bin/META-INF/MANIFEST.MF");
+		.getResource("/Users/mic/Projects/Railo/webroot/jm/jira/test/jars/h2/META-INF/MANIFEST.MF");
 		
 		//String str = IOUtil.toString(res, "utf-8");
 		InputStream is=null;
 		try{
 			Manifest m = new Manifest(is=res.getInputStream());
 			ManifestUtil.removeFromList(m.getMainAttributes(),"Import-Package","javax.*"); 
-			//ManifestUtil.removeFromList(m.getMainAttributes(),"Import-Package","org.osgi.*");
+			ManifestUtil.removeFromList(m.getMainAttributes(),"Import-Package","org.osgi.*");
+			ManifestUtil.removeFromList(m.getMainAttributes(),"Import-Package","org.apache.*");
 			
 			String str = toString(m,100,null,null);
 			print.e(str);

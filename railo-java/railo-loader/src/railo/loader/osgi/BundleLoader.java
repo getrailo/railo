@@ -54,7 +54,7 @@ public class BundleLoader {
 		
 	// default properties
 		Properties defProp = loadDefaultProperties(jf);
-	
+		
 	// Get data from Manifest and default.properties
 		
 		// Railo Core Version
@@ -75,8 +75,10 @@ public class BundleLoader {
 		// org.osgi.framework.bundle.parent
 		String parentClassLoader = unwrap(defProp.getProperty("org.osgi.framework.bundle.parent"));
 		if(Util.isEmpty(parentClassLoader)) parentClassLoader=Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK;
-		CFMLEngineFactory.log(Log.LEVEL_INFO, "org.osgi.framework.bundle.parent:"+parentClassLoader);
+		else parentClassLoader=BundleUtil.toFrameworkBundleParent(parentClassLoader);
 		
+		CFMLEngineFactory.log(Log.LEVEL_INFO, "org.osgi.framework.bundle.parent:"+parentClassLoader);
+
 		// felix.log.level
 		int logLevel=1; // 1 = error, 2 = warning, 3 = information, and 4 = debug
 		String strLogLevel = unwrap(defProp.getProperty("felix.log.level"));
@@ -107,24 +109,41 @@ public class BundleLoader {
 		Iterator<Entry<String, String>> it = requiredBundles.entrySet().iterator();
 		Entry<String, String> e;
 		File f;
+		String id;
 		List<Bundle> bundles=new ArrayList<Bundle>();
 		while(it.hasNext()){
 			e = it.next();
-			f = availableBundles.get(e.getKey()+"|"+e.getValue());
-			if(f==null) throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
-			bundles.add(BundleUtil.addBundle(bc, f, false));
+			id=e.getKey()+"|"+e.getValue();
+			f = availableBundles.get(id);
+			if(f==null) {
+				getBundleFromRemote(e.getKey(),e.getValue(),jarDirectory);
+				//throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
+			}
+			bundles.add(BundleUtil.addBundle(bc,id, f, false));
 		}
 		
+		/* list existing bundles
+		Bundle[] _bundles = bc.getBundles();
+		for(int i=0;i<_bundles.length;i++){
+			System.err.println(">"+_bundles[i].getSymbolicName()+":"+_bundles[i].getVersion()+":"+BundleUtil.bundleState(_bundles[i].getState(),""));
+		}*/
+			
 		// Add Railo core Bundle
 		Bundle bundle;
-		bundles.add(bundle=BundleUtil.addBundle(bc, rc, false));
+		bundles.add(bundle=BundleUtil.addBundle(bc,"railo.core", rc, false));
 		
 		// Start the bundles
 		BundleUtil.start(bundles);
+		//bundle.start(); // only start main bundle, not fragment bundles
 		
 		return bundle;
 	}
 	
+	private static void getBundleFromRemote(String key, String value, File jarDirectory) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private static Map<String, File> loadAvailableBundles(File jarDirectory) throws IOException {
 		Map<String,File> rtn=new HashMap<String, File>();
 		File[] jars = jarDirectory.listFiles();
