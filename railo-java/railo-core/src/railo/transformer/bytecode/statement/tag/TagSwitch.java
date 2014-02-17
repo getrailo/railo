@@ -78,25 +78,6 @@ public final class TagSwitch extends TagBaseNoFinal {
 		if(def!=null)setDefaultCase(bc,cv,def);
 		
 		cv.visitAfter(bc);
-		
-		
-		/*
-		 
-<!-- cases -->
-	<xsl:for-each select="./body/tag[@name='case']">
-		if(List.listFindNoCase(case.value,expression,
-			<xsl:if test="./attribute[@name='delimiters']">,delimiters)!=-1) {
-		<xsl:apply-templates select="./body/*"/>
-		}
-	</xsl:for-each>
-	
-<!-- default -->
-	<xsl:if test="./body/tag[@name='defaultcase']">
-		<xsl:if test="count(./body/tag[@name='case'])&gt;0">else </xsl:if> {
-			<xsl:apply-templates select="./body/tag[@name='defaultcase']/body/*"/>
-		}
-	</xsl:if>
-</xsl:template>*/
 	}
 
 	private void setDefaultCase(BytecodeContext bc, ConditionVisitor cv, Tag tag) throws BytecodeException {
