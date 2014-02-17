@@ -29,13 +29,13 @@ public final class TagIf extends TagBaseNoFinal {
 		Label end = new Label();
 		Body ifBody=getBody();
 		
-		List stats = ifBody.getStatements();
-		Iterator it = stats.iterator();
+		List<Statement> stats = ifBody.getStatements();
+		Iterator<Statement> it = stats.iterator();
 		Tag t;
 		Label endIf=writeOutElseIfStart(bc, this);
 		boolean hasElse=false;
 		while(it.hasNext()) {
-			Statement stat = ((Statement)it.next());
+			Statement stat = it.next();
 			if(!hasElse && stat instanceof Tag) {
 				t=(Tag) stat;
 				if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.ElseIf")) {
