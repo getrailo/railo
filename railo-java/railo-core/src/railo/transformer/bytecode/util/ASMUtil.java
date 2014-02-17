@@ -1,6 +1,8 @@
 package railo.transformer.bytecode.util;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,12 +11,14 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -61,6 +65,7 @@ import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlRetry;
+import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -70,7 +75,7 @@ import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
-
+	
 	//private static final int VERSION_2=1;
 	//private static final int VERSION_3=2;
 
@@ -88,7 +93,7 @@ public final class ASMUtil {
 	private static final Method _SRC_NAME = new Method("_srcName",
         			Types.STRING,
         			new Type[]{}
-            		);;
+            		);
 	//private static final String VERSION_MESSAGE = "you use an invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
@@ -552,7 +557,7 @@ public final class ASMUtil {
     // CREATE CLASS	
 		//ClassWriter cw = new ClassWriter(true);
     	ClassWriter cw = ASMUtil.getClassWriter();
-        cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
+        cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
         String md5;
         try{
     		md5=createMD5(properties);
@@ -1161,6 +1166,102 @@ public final class ASMUtil {
 			if(!(m instanceof DataMember)) return false;
 		}
 		return true;
+	}
+
+
+	public static int count(List<Statement> statements, boolean recursive) {
+		if(statements==null) return 0;
+		int count=0;
+		Iterator<Statement> it = statements.iterator();
+		while(it.hasNext()){
+			count+=count(it.next(),recursive);
+		}
+		return count;
+	}
+
+
+	public static int count(Statement s, boolean recursive) {
+		int count=1;
+		if(recursive && s instanceof HasBody) {
+			Body b = ((HasBody) s).getBody();
+			if(b!=null) count+=count(b.getStatements(),recursive);
+		}
+		return count;
+	}
+
+	public static void dump(Statement s, int level) {
+		
+		for(int i=0;i<level;i++)System.err.print("-");
+		print.e(s.getClass().getName());
+		
+		if(s instanceof HasBody) {
+			Body b = ((HasBody) s).getBody();
+			if(b!=null) {
+				Iterator<Statement> it = b.getStatements().iterator();
+				while(it.hasNext()){
+					dump(it.next(),level+1);
+				}
+			}
+		}
+	}
+	
+
+
+	public static void size(ClassWriter cw) {
+		try {
+			MethodVisitor mw=null;
+			
+			Field[] fields = cw.getClass().getDeclaredFields();
+			Field f;
+			for(int i=0;i<fields.length;i++){
+				f=fields[i];
+				if(f.getType().getName().equals("org.objectweb.asm.MethodWriter")) {
+					f.setAccessible(true);
+					mw = (MethodVisitor) f.get(cw);
+					break;
+				}
+			}
+			
+			if(mw!=null)print.e(getName(mw));
+			
+			
+			//Field f = cw.getClass().getDeclaredField("firstMethod");
+            //
+            //Object value = f.get(cw);
+			//print.e(value);
+		}
+		catch (Throwable t) {
+			// TODO Auto-generated catch block
+			t.printStackTrace();
+		}
+	}
+
+
+	private static Object getName(MethodVisitor mw) throws IllegalArgumentException {
+		java.lang.reflect.Method[] methods = mw.getClass().getDeclaredMethods();
+		java.lang.reflect.Method m;
+		for(int i=0;i<methods.length;i++){
+			m=methods[i];
+			if(m.getReturnType()==int.class);
+				print.e(Modifier.toString(m.getModifiers()));
+			
+			
+		}
+		
+		
+		
+		/*Field[] fields = mw.getClass().getDeclaredFields();
+		Field f;
+		for(int i=0;i<fields.length;i++){
+			f=fields[i];
+			//print.e(f);
+			if(f.getType().getName().equals("java.lang.String")) {
+				f.setAccessible(true);
+				print.e(f.get(mw));
+				
+			}
+		}*/
+		return null;
 	}
 	
 }

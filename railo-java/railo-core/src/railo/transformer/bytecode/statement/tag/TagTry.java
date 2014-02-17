@@ -114,7 +114,8 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 		if(!tryBody.hasStatements()) {
 			
 			if(_finally!=null && _finally.getBody()!=null){
-				ExpressionUtil.writeOut(_finally.getBody(), bc);
+				BodyBase.writeOut(bc, _finally.getBody());
+				//ExpressionUtil.writeOut(_finally.getBody(), bc);
 			}
 			return;
 		}
@@ -124,7 +125,8 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 				if(_finally!=null) {
 					
 					ExpressionUtil.visitLine(bc, _finally.getStart());
-					ExpressionUtil.writeOut(_finally.getBody(), bc);
+					BodyBase.writeOut(bc, _finally.getBody());
+					//ExpressionUtil.writeOut(_finally.getBody(), bc);
 				}
 			}
 		},getFlowControlFinal());
@@ -132,7 +134,8 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 		
 		// Try
 		tcfv.visitTryBegin(bc);
-			ExpressionUtil.writeOut(tryBody, bc);
+			BodyBase.writeOut(bc, tryBody);
+			//ExpressionUtil.writeOut(tryBody, bc);
 		int e=tcfv.visitTryEndCatchBeging(bc);
 			// if(e instanceof railo.runtime.exp.Abort) throw e;
 			Label abortEnd=new Label();
@@ -229,7 +232,8 @@ public final class TagTry extends TagBase implements FlowControlRetry {
         adapter.push(caugth);
         adapter.push(store);
         adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
-		ExpressionUtil.writeOut(tag.getBody(), bc);
+        BodyBase.writeOut(bc, tag.getBody());
+		//ExpressionUtil.writeOut(tag.getBody(), bc);
     	
 	}
 	
