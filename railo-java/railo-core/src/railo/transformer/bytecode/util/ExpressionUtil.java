@@ -16,11 +16,11 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 
 public final class ExpressionUtil {
 	

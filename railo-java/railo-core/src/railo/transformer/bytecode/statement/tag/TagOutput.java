@@ -1,6 +1,7 @@
 package railo.transformer.bytecode.statement.tag;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -20,8 +21,8 @@ public final class TagOutput extends TagGroup {
 	private int type;
 	
 
-	public TagOutput(Position start,Position end) {
-		super(start,end);
+	public TagOutput(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 

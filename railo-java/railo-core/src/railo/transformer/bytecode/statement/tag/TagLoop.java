@@ -9,11 +9,10 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
@@ -33,6 +32,7 @@ import railo.transformer.bytecode.visitor.LoopVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
+import railo.transformer.expression.Expression;
 
 public final class TagLoop extends TagGroup implements FlowControlBreak,FlowControlContinue {
 
@@ -206,8 +206,8 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	private LoopVisitor loopVisitor;
 	private String label;
 
-	public TagLoop(Position start,Position end) {
-		super(start,end);
+	public TagLoop(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	public void setType(int type) {
@@ -409,7 +409,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		WhileVisitor whileVisitor = new WhileVisitor();
 		loopVisitor=whileVisitor;
 		whileVisitor.visitBeforeExpression(bc);
-			CastBoolean.toExprBoolean(getAttribute("condition").getValue()).writeOut(bc, Expression.MODE_VALUE);
+			bc.getFactory().toExprBoolean(getAttribute("condition").getValue()).writeOut(bc, Expression.MODE_VALUE);
 		whileVisitor.visitAfterExpressionBeforeBody(bc);
 			getBody().writeOut(bc);
 		whileVisitor.visitAfterBody(bc,getEnd());

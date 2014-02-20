@@ -7,6 +7,7 @@ import java.util.List;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -29,12 +30,13 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 	private int[] values=new int[0];
 	private short type;
 	
-	public NativeSwitch(int value, short type, Position start, Position end) {
-		super(start, end);
+	public NativeSwitch(Factory f, int value, short type, Position start, Position end) {
+		super(f,start, end);
 		this.value=value;
 		this.type=type;
 	}
 
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		end = new Label();
 		GeneratorAdapter adapter = bc.getAdapter();

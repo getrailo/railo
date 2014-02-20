@@ -2,7 +2,6 @@ package railo.transformer.cfml.evaluator.impl;
 
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
-import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagOutput;
@@ -31,13 +30,13 @@ public final class Mail extends EvaluatorSupport {
 		    TagLib lib = libTag.getTagLib();
 		    TagLibTag outputTag = lib.getTag("output");
 		    
-		    TagOutput output=new TagOutput(tag.getStart(),null);
+		    TagOutput output=new TagOutput(tag.getFactory(),tag.getStart(),null);
 		    output.setFullname(outputTag.getFullName());
 		    output.setTagLibTag(outputTag);
-		    output.addAttribute(new Attribute(false,"output",LitBoolean.TRUE,"boolean"));
-		    output.addAttribute(new Attribute(false,"formail",LitBoolean.TRUE,"boolean"));
+		    output.addAttribute(new Attribute(false,"output",tag.getFactory().TRUE(),"boolean"));
+		    output.addAttribute(new Attribute(false,"formail",tag.getFactory().TRUE(),"boolean"));
 		    
-		    Body body=new BodyBase();//output.getBody();
+		    Body body=new BodyBase(tag.getFactory());//output.getBody();
 		    output.setBody(body);
 		    
 		    ASMUtil.replace(tag,output,false);

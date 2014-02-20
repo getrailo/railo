@@ -1,16 +1,17 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.Return;
+import railo.transformer.expression.Expression;
 
 public final class TagReturn extends TagBaseNoFinal {
 
-	public TagReturn(Position start,Position end) {
-		super(start,end);
+	public TagReturn(Factory f, Position start,Position end) {
+		super(f, start,end);
 		setHasFlowController(true);
 	}
 

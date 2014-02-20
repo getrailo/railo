@@ -4,14 +4,13 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class TagInclude extends TagBaseNoFinal {
 
@@ -25,8 +24,8 @@ public final class TagInclude extends TagBaseNoFinal {
 			Type.VOID_TYPE,
 			new Type[]{Types.STRING,Types.BOOLEAN_VALUE, Types.OBJECT});
 	
-	public TagInclude(Position start,Position end) {
-		super(start,end);
+	public TagInclude(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	/**
@@ -55,8 +54,8 @@ public final class TagInclude extends TagBaseNoFinal {
 		// run Once
 		attr = getAttribute("runonce");
 		ExprBoolean expr = (attr==null)?
-				LitBoolean.FALSE:
-				CastBoolean.toExprBoolean(attr.getValue());
+				bc.getFactory().FALSE():
+					bc.getFactory().toExprBoolean(attr.getValue());
 		expr.writeOut(bc, Expression.MODE_VALUE);
 
 		// cachedwithin

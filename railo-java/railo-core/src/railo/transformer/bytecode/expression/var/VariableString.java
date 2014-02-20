@@ -10,22 +10,23 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeFactory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.literal.Identifier;
-import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
+import railo.transformer.expression.var.DataMember;
 
 public final class VariableString extends ExpressionBase implements ExprString {
 
 	private Expression expr;
 
 	public VariableString(Expression expr) {
-		super(expr.getStart(),expr.getEnd());
+		super(expr.getFactory(),expr.getStart(),expr.getEnd());
 		this.expr=expr;
 	}
  
+	@Override
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 		return translateVariableToExprString(expr,false).writeOut(bc, mode);
 	}
@@ -37,7 +38,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 	
 	public static ExprString translateVariableToExprString(Expression expr, boolean rawIfPossible) throws BytecodeException {
 		if(expr instanceof ExprString) return (ExprString) expr;
-		return LitString.toExprString(translateVariableToString(expr,rawIfPossible), expr.getStart(),expr.getEnd());
+		return expr.getFactory().createLitString(translateVariableToString(expr,rawIfPossible), expr.getStart(),expr.getEnd());
 	}
 	
 	private static String translateVariableToString(Expression expr, boolean rawIfPossible) throws BytecodeException {

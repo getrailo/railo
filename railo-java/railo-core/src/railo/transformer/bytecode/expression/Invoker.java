@@ -2,7 +2,8 @@ package railo.transformer.bytecode.expression;
 
 import java.util.List;
 
-import railo.transformer.bytecode.expression.var.Member;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.Member;
 
 public interface Invoker extends Expression {
 

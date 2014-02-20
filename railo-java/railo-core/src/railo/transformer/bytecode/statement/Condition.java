@@ -3,16 +3,16 @@ package railo.transformer.bytecode.statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class Condition extends StatementBaseNoFinal implements HasBodies {
     
@@ -25,8 +25,8 @@ public final class Condition extends StatementBaseNoFinal implements HasBodies {
      * @param body
      * @param line
      */
-    public Condition(Position start,Position end) {
-        super(start,end);
+    public Condition(Factory f, Position start,Position end) {
+        super(f,start,end);
     }
     
     /**
@@ -35,15 +35,15 @@ public final class Condition extends StatementBaseNoFinal implements HasBodies {
      * @param body
      * @param line
      */
-    public Condition(ExprBoolean condition, Statement body, Position start,Position end) {
-        super(start,end);
+    public Condition(Factory f, ExprBoolean condition, Statement body, Position start,Position end) {
+        super(condition.getFactory(),start,end);
         addElseIf(condition,body,start,end);
         
         body.setParent(this);
     }
     
     public Condition(boolean b, Statement body, Position start,Position end) {
-		this(LitBoolean.toExprBoolean(b),body,start,end);
+		this(body.getFactory(),body.getFactory().createLitBoolean(b),body,start,end);
 	}
 
 	/**

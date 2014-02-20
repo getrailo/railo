@@ -2,21 +2,22 @@ package railo.transformer.bytecode.statement.tag;
 
 import org.objectweb.asm.Label;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.visitor.WhileVisitor;
+import railo.transformer.expression.Expression;
 
 public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,FlowControlContinue {
 
 	private WhileVisitor wv;
 	private String label;
 
-	public TagWhile(Position start,Position end) {
-		super(start,end);
+	public TagWhile(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 

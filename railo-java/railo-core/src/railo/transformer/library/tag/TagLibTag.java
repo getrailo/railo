@@ -17,12 +17,9 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitDouble;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagOther;
@@ -31,6 +28,7 @@ import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.Evaluator;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
+import railo.transformer.expression.Expression;
 
 /**
  * Die Klasse TagLibTag repaesentiert ein einzelne Tag Definition einer TagLib, 
@@ -52,7 +50,7 @@ public final class TagLibTag {
 	 * Definition des Attribut Type 
 	 */
 	
-	private final static Class[] CONSTRUCTOR_PARAMS=new Class[]{Position.class,Position.class};
+	private final static Class[] CONSTRUCTOR_PARAMS3=new Class[]{Factory.class,Position.class,Position.class};
 	
 	private int attributeType;
 	private String name;
@@ -93,7 +91,7 @@ public final class TagLibTag {
 	private TagLibTagScript script;
 	private final static TagLibTagAttr UNDEFINED=new TagLibTagAttr(null);
 	private TagLibTagAttr singleAttr=UNDEFINED;
-	private Expression attributeDefaultValue;
+	private Object attrDefaultValue;
 
 	public TagLibTag duplicate(boolean cloneAttributes) {
 		TagLibTag tlt = new TagLibTag(tagLib);
@@ -667,10 +665,10 @@ public final class TagLibTag {
 	 * @return
 
 	 */
-	public Tag getTag(Position start,Position end) throws TagLibException {
-		if(StringUtil.isEmpty(tttClass)) return new TagOther(start,end);
+	public Tag getTag(Factory f, Position start,Position end) throws TagLibException {
+		if(StringUtil.isEmpty(tttClass)) return new TagOther(f,start,end);
 		try {
-			return _getTag(start,end);
+			return _getTag(f,start,end);
 		} 
 		catch (ClassException e) {
 			throw new TagLibException(e.getMessage());
@@ -682,12 +680,12 @@ public final class TagLibTag {
 			throw new TagLibException(e);
 		}
 	}
-	private Tag _getTag(Position start,Position end) throws ClassException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private Tag _getTag(Factory f, Position start,Position end) throws ClassException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		if(tttConstructor==null) {
 			Class clazz = ClassUtil.loadClass(tttClass);
-			tttConstructor = clazz.getConstructor(CONSTRUCTOR_PARAMS);
+			tttConstructor = clazz.getConstructor(CONSTRUCTOR_PARAMS3);
 		}
-		return (Tag) tttConstructor.newInstance(new Object[]{start,end});
+		return (Tag) tttConstructor.newInstance(new Object[]{f,start,end});
 	}
 
 	public void setAllowRemovingLiteral(boolean allowRemovingLiteral) {
@@ -803,9 +801,9 @@ public final class TagLibTag {
 	 * attribute value set, if the attribute has no value defined
 	 * @return
 	 */
-	public Expression getAttributeDefaultValue() {
-		if(attributeDefaultValue==null) return LitBoolean.TRUE;
-		return attributeDefaultValue;
+	public Expression getAttributeDefaultValue(Factory factory) {
+		if(attrDefaultValue==null) return factory.TRUE();
+		return factory.createLiteral(attrDefaultValue,factory.TRUE());
 	}
 	
 	public void setAttributeDefaultValue(String defaultValue) {
@@ -815,7 +813,7 @@ public final class TagLibTag {
 			String str=defaultValue.substring(8).trim();
 			Boolean b = Caster.toBoolean(str,null);
 			if(b!=null){
-				this.attributeDefaultValue=LitBoolean.toExprBoolean(b.booleanValue());
+				this.attrDefaultValue=b;
 				return;
 			}
 			
@@ -825,11 +823,11 @@ public final class TagLibTag {
 			String str=defaultValue.substring(7).trim();
 			Double d = Caster.toDouble(str,null);
 			if(d!=null){
-				this.attributeDefaultValue=LitDouble.toExprDouble(d.doubleValue());
+				this.attrDefaultValue=d;
 				return;
 			}
 			
 		}
-		else this.attributeDefaultValue=LitString.toExprString(defaultValue);
+		else this.attrDefaultValue=defaultValue;
 	}
 }

@@ -13,8 +13,8 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
 
 public final class Switch extends StatementBaseNoFinal implements FlowControlBreak,HasBodies {
     
@@ -48,7 +48,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 
 
     public Switch(Expression expr,Position start, Position end) {
-		super(start, end);
+		super(expr.getFactory(),start, end);
 		this.expr=expr;
 	}
     
@@ -80,9 +80,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
         }
     }
 
-	/**
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+    @Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
@@ -115,7 +113,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 		adapter.storeLocal(result);
 		
 		// switch(result)
-		ns=new NativeSwitch(result,NativeSwitch.LOCAL_REF,getStart(),getEnd());
+		ns=new NativeSwitch(bc.getFactory(),result,NativeSwitch.LOCAL_REF,getStart(),getEnd());
 		it = cases.iterator();
 		int count=1;
 		while(it.hasNext()) {

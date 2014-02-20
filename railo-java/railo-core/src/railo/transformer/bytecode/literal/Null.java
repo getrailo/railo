@@ -3,11 +3,11 @@ package railo.transformer.bytecode.literal;
 import org.objectweb.asm.Type;
 
 import railo.runtime.type.scope.Scope;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.Types;
@@ -15,8 +15,8 @@ import railo.transformer.bytecode.util.Types;
 public class Null extends ExpressionBase  {
 
 
-	public Null(Position start, Position end) {
-		super(start, end);
+	public Null(Factory f,Position start, Position end) {
+		super(f,start, end);
 	}
 
 	@Override
@@ -26,8 +26,8 @@ public class Null extends ExpressionBase  {
 	}
 
 	public Variable toVariable() {
-		Variable v = new Variable(Scope.SCOPE_UNDEFINED,getStart(),getEnd());
-		v.addMember(new DataMember(LitString.toExprString("null")));
+		Variable v = new Variable(getFactory(),Scope.SCOPE_UNDEFINED,getStart(),getEnd());
+		v.addMember(getFactory().createDataMember(getFactory().createLitString("null")));
 		return v;
 	}
 

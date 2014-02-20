@@ -9,22 +9,20 @@ import railo.runtime.functions.other.PreserveSingleQuotes;
 import railo.runtime.functions.other.QuotedValueList;
 import railo.runtime.functions.query.ValueList;
 import railo.transformer.bytecode.Body;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
-import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.expression.var.Variable;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
+import railo.transformer.expression.var.Member;
 
 
 /**
@@ -68,15 +66,15 @@ public final class Query extends EvaluatorSupport {
 								arr.add(args[0]);
 								arr.add(args[1]);
 								if(args.length>=3)arr.add(args[2]);
-								else arr.add(new Argument(LitString.toExprString(","),"string"));
+								else arr.add(new Argument(expr.getFactory().createLitString(","),"string"));
 								if(args.length>=4)arr.add(args[3]);
-								else arr.add(new Argument(LitString.toExprString("all"),"string"));
+								else arr.add(new Argument(expr.getFactory().createLitString("all"),"string"));
 								if(args.length>=5)arr.add(args[4]);
-								else arr.add(new Argument(LitBoolean.toExprBoolean(false),"boolean"));
+								else arr.add(new Argument(expr.getFactory().createLitBoolean(false),"boolean"));
 								
 								
 								// PSQ-BIF DO NOT REMOVE THIS COMMENT
-								arr.add(new Argument(LitBoolean.toExprBoolean(true),"boolean"));
+								arr.add(new Argument(expr.getFactory().createLitBoolean(true),"boolean"));
 								bif.setArguments(arr.toArray(new Argument[arr.size()]));
 								continue;
 							}

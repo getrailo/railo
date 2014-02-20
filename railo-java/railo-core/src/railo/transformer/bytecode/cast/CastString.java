@@ -5,15 +5,14 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.ExprDouble;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.ExprDouble;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
 
 /**
  * Cast to a String
@@ -27,7 +26,7 @@ public final class CastString extends ExpressionBase implements ExprString,Cast 
      * @param expr
      */
     private CastString(Expression expr) {
-        super(expr.getStart(),expr.getEnd());
+        super(expr.getFactory(),expr.getStart(),expr.getEnd());
         this.expr=expr;
     }
     
@@ -39,12 +38,12 @@ public final class CastString extends ExpressionBase implements ExprString,Cast 
      */
     public static ExprString toExprString(Expression expr) {
         if(expr instanceof ExprString) return (ExprString) expr;
-        if(expr instanceof Literal) return new LitString(((Literal)expr).getString(),expr.getStart(),expr.getEnd());
+        if(expr instanceof Literal) return expr.getFactory().createLitString(((Literal)expr).getString(),expr.getStart(),expr.getEnd());
         return new CastString(expr);
     }
 
     /**
-     * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
+     * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
     public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 

@@ -5,14 +5,15 @@ import java.util.Stack;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
+import railo.transformer.expression.Expression;
 
 /**
  * Return Statement
@@ -25,8 +26,8 @@ public final class Return extends StatementBaseNoFinal {
 	 * Constructor of the class
 	 * @param line
 	 */
-	public Return(Position start,Position end) {
-		super(start,end);
+	public Return(Factory f, Position start,Position end) {
+		super(f,start,end);
 		setHasFlowController(true);
 		//expr=LitString.toExprString("", line);
 	}
@@ -37,7 +38,7 @@ public final class Return extends StatementBaseNoFinal {
 	 * @param line
 	 */
 	public Return(Expression expr, Position start,Position end) {
-		super(start,end);
+		super(expr.getFactory(),start,end);
 		this.expr=expr;
 		setHasFlowController(true);
 		//if(expr==null)expr=LitString.toExprString("", line);

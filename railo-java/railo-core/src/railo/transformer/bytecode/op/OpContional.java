@@ -7,12 +7,11 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class OpContional extends ExpressionBase {
 
@@ -61,10 +60,10 @@ public final class OpContional extends ExpressionBase {
     
     
     private OpContional(Expression cont, Expression left, Expression right) {
-        super(left.getStart(),right.getEnd());
-        this.cont=CastBoolean.toExprBoolean(cont);
-        this.left=left;  
-        this.right=right;  
+        super(left.getFactory(),left.getStart(),right.getEnd());
+        this.cont=left.getFactory().toExprBoolean(cont);
+        this.left=left;
+        this.right=right;
     }
     
 

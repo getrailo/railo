@@ -12,23 +12,22 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.scope.Scope;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
 import railo.transformer.bytecode.expression.var.VariableString;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 
 /**
  * produce  try-catch-finally
@@ -89,8 +88,8 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 * @param body
 	 * @param line
 	 */
-	public TryCatchFinally(Body body,Position start, Position end) {
-		super(start,end);
+	public TryCatchFinally(Factory factory,Body body,Position start, Position end) {
+		super(factory,start,end);
 		this.tryBody=body;
 		body.setParent(this);
 	}
@@ -244,7 +243,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 				
 				// pe.typeEqual(type)
 				if(ct.type==null){
-					LitBoolean.TRUE.writeOut(bc, Expression.MODE_VALUE);
+					getFactory().TRUE().writeOut(bc, Expression.MODE_VALUE);
 				}
 				else {
 					adapter.loadLocal(pe);
@@ -344,8 +343,8 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		
 		// name
 		if(name instanceof LitString){
-			Variable v = new Variable(Scope.SCOPE_UNDEFINED,name.getStart(),name.getEnd());
-			v.addMember(new DataMember(name));
+			Variable v = new Variable(name.getFactory(),Scope.SCOPE_UNDEFINED,name.getStart(),name.getEnd());
+			v.addMember(name.getFactory().createDataMember(name.getFactory().toExprString(name)));
 			name=new VariableRef(v);
 		}
 		else if(name instanceof Variable) name=new VariableRef((Variable) name);

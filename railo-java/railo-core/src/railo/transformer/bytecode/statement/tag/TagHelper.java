@@ -19,10 +19,8 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastOther;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.type.LiteralStringArray;
 import railo.transformer.bytecode.expression.var.Variable;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -31,6 +29,7 @@ import railo.transformer.bytecode.visitor.ArrayVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
+import railo.transformer.expression.Expression;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 
@@ -217,12 +216,12 @@ public final class TagHelper {
 		            for(int i=0;i<missings.length;i++){
 		            	miss = missings[i];
 		            	av.visitBeginItem(adapter, count++);
-		    				Variable.registerKey(bc, LitString.toExprString(miss.getName()));
+		    				Variable.registerKey(bc, bc.getFactory().createLitString(miss.getName()));
 			    			adapter.push(miss.getType());
 			    			if(ArrayUtil.isEmpty(miss.getAlias()))
 		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX2);
 		    				else {
-		    					new LiteralStringArray(miss.getAlias()).writeOut(bc, Expression.MODE_REF); 
+		    					new LiteralStringArray(bc.getFactory(),miss.getAlias()).writeOut(bc, Expression.MODE_REF); 
 		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX3);
 		    				}
 		    			av.visitEndItem(bc.getAdapter());
@@ -280,7 +279,7 @@ public final class TagHelper {
 				adapter.loadLocal(currLocal);
 				adapter.visitInsn(Opcodes.ACONST_NULL);
 				//adapter.push(attr.getName());
-				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
+				Variable.registerKey(bc, bc.getFactory().createLitString(attr.getName()));
 				attr.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}

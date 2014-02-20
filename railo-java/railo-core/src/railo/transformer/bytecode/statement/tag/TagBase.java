@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import railo.runtime.op.Caster;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -34,8 +35,8 @@ public abstract class TagBase extends StatementBase implements Tag {
 	//private Label finallyLabel;
 
 
-	public TagBase(Position start, Position end) {
-    	super(start,end);
+	public TagBase(Factory factory,Position start, Position end) {
+    	super(factory,start,end);
 	}
 
     

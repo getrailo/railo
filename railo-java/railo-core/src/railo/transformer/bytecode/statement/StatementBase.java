@@ -1,6 +1,8 @@
 package railo.transformer.bytecode.statement;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Context;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -16,21 +18,26 @@ public abstract class StatementBase implements Statement {
 	private Position end;
 	private Statement parent;
 	private int hasReturnChild=-1;
+	private Factory factory;
 	
 	/**
      * constructor of the class
      * @param line
      */
-    public StatementBase(Position start, Position end) {
-        this.start=start;
+    public StatementBase(Factory factory,Position start, Position end) {
+       this.factory=factory;
+    	this.start=start;
         this.end=end;
     }
-    
-    /**
-	 * @see railo.transformer.bytecode.Statement#getParent()
-	 */
-	public Statement getParent() {
+
+	@Override
+    public Statement getParent() {
 		return parent;
+	}
+
+	@Override
+    public Factory getFactory() {
+		return factory;
 	}
 
 
@@ -49,7 +56,8 @@ public abstract class StatementBase implements Statement {
      * @param adapter
      * @throws TemplateException
      */
-    public final void writeOut(BytecodeContext bc) throws BytecodeException {
+    public final void writeOut(Context c) throws BytecodeException {
+    	BytecodeContext bc=(BytecodeContext) c;
     	ExpressionUtil.visitLine(bc, start);
         _writeOut(bc);
     	ExpressionUtil.visitLine(bc, end);

@@ -13,16 +13,16 @@ import org.objectweb.asm.commons.Method;
 import railo.runtime.op.Elvis;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.var.DataMember;
-import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
 
 public final class OpElvis extends ExpressionBase {
 
@@ -176,7 +176,7 @@ public final class OpElvis extends ExpressionBase {
     
     
     private OpElvis(Variable left, Expression right) {
-        super(left.getStart(),right.getEnd());
+        super(left.getFactory(),left.getStart(),right.getEnd());
         this.left=left;
         this.right=right;  
     }

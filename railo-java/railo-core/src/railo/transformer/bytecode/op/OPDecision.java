@@ -8,12 +8,12 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Methods_Operator;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class OPDecision extends ExpressionBase implements ExprBoolean {
     
@@ -37,7 +37,7 @@ public final class OPDecision extends ExpressionBase implements ExprBoolean {
 			new Type[]{Types.OBJECT,Types.OBJECT});
 	
     private OPDecision(Expression left, Expression right, int operation) {
-        super(left.getStart(),right.getEnd());
+        super(left.getFactory(),left.getStart(),right.getEnd());
         this.left=left;
         this.right=right;  
         this.operation=operation;

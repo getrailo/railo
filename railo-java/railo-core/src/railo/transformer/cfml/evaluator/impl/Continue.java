@@ -1,14 +1,13 @@
 package railo.transformer.cfml.evaluator.impl;
 
 import railo.commons.lang.StringUtil;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagContinue;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.tag.TagLibTag;
 
 
@@ -36,7 +35,7 @@ public final class Continue extends EvaluatorSupport {
 				tag.removeAttribute("label");
 			}
 			else if(ASMUtil.isLiteralAttribute(tag, attrLabel, ASMUtil.TYPE_STRING, false, true)) {
-				LitString ls=(LitString) CastString.toExprString(tag.getAttribute("label").getValue());
+				LitString ls=(LitString) tag.getFactory().toExprString(tag.getAttribute("label").getValue());
 				label = ls.getString();
 				if(!StringUtil.isEmpty(label,true)) {
 					tc.setLabel(label=label.trim());
@@ -47,7 +46,7 @@ public final class Continue extends EvaluatorSupport {
 		}
 		
 		if(ASMUtil.isLiteralAttribute(tag, "label", ASMUtil.TYPE_STRING, false, true)) {
-			LitString ls=(LitString) CastString.toExprString(tag.getAttribute("label").getValue());
+			LitString ls=(LitString) tag.getFactory().toExprString(tag.getAttribute("label").getValue());
 			TagContinue tc=(TagContinue) tag;
 			label = ls.getString();
 			if(!StringUtil.isEmpty(label,true)) {

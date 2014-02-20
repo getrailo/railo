@@ -10,13 +10,14 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.StatementBaseNoFinal;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 
 /**
  * Base Body implementation
@@ -32,8 +33,8 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	/**
 	 * Constructor of the class
 	 */
-	public BodyBase() {
-    	super(null,null);
+	public BodyBase(Factory f) {
+    	super(f,null,null);
 	}
 
     
@@ -88,10 +89,11 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 		statements.clear();
 	}
 
-	public void addPrintOut(String str, Position start,Position end) {
+	@Override
+	public void addPrintOut(Factory f,String str, Position start,Position end) {
 		if(concatPrintouts(str)) return;
 		
-		last=new PrintOut(new LitString(str,start,end),start,end);
+		last=new PrintOut(f.createLitString(str,start,end),start,end);
         last.setParent(this);
         this.statements.add(last);
 	}
@@ -103,7 +105,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 			if(expr instanceof LitString) {
 				LitString lit=(LitString)expr;
 				if(lit.getString().length()<1024) {
-					po.setExpr(LitString.toExprString(lit.getString().concat(str),lit.getStart(),lit.getEnd()));
+					po.setExpr(lit.getFactory().createLitString(lit.getString().concat(str),lit.getStart(),lit.getEnd()));
 					return true;
 				}
 			}

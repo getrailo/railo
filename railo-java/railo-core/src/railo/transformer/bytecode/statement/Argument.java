@@ -3,24 +3,15 @@ package railo.transformer.bytecode.statement;
 import java.util.Map;
 
 import railo.runtime.type.FunctionArgumentImpl;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitInteger;
-import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.Factory;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
 
 public final class Argument {
 
-	
-	private static final Expression DEFAULT_TYPE_NULL = 				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_NULL);
-	private static final Expression DEFAULT_TYPE_LITERAL =				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_LITERAL);
-	private static final Expression DEFAULT_TYPE_RUNTIME_EXPRESSION =	LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_RUNTIME_EXPRESSION);
-	private static final LitString RUNTIME_EXPRESSION =				(LitString) LitString.toExprString("[runtime expression]");
-	
-	
 	private ExprString name;
 	private ExprString type;
 	private ExprBoolean required;
@@ -43,18 +34,20 @@ public final class Argument {
 	 * @param meta 
 	 */
 	public Argument(Expression name, Expression type, Expression required, Expression defaultValue, ExprBoolean passByReference,Expression displayName, Expression hint, Map meta) {
-		this.name=CastString.toExprString(name);
-		this.type=CastString.toExprString(type);
-		this.required=CastBoolean.toExprBoolean(required);
+		LitString re = name.getFactory().createLitString("[runtime expression]");
+		
+		this.name=name.getFactory().toExprString(name);
+		this.type=name.getFactory().toExprString(type);
+		this.required=name.getFactory().toExprBoolean(required);
 		this.defaultValue=defaultValue;
-		this.displayName=litString(CastString.toExprString(displayName),RUNTIME_EXPRESSION);
-		this.hint=litString(hint, RUNTIME_EXPRESSION);
+		this.displayName=litString(name.getFactory().toExprString(displayName),re);
+		this.hint=litString(hint, re);
 		this.passByReference=passByReference;
 		this.meta=meta;
 	}
 
 	private LitString litString(Expression expr, LitString defaultValue) {
-		ExprString str = CastString.toExprString(expr);
+		ExprString str = expr.getFactory().toExprString(expr);
 		if(str instanceof LitString) return (LitString) str;
 		return defaultValue;
 	}
@@ -66,10 +59,10 @@ public final class Argument {
 		return defaultValue;
 	}
 	
-	public Expression getDefaultValueType(){
-		if(defaultValue==null) return DEFAULT_TYPE_NULL;
-		if(defaultValue instanceof Literal) return DEFAULT_TYPE_LITERAL;
-		return DEFAULT_TYPE_RUNTIME_EXPRESSION;
+	public Expression getDefaultValueType(Factory f){
+		if(defaultValue==null) return f.createLitInteger(FunctionArgumentImpl.DEFAULT_TYPE_NULL);
+		if(defaultValue instanceof Literal) return f.createLitInteger(FunctionArgumentImpl.DEFAULT_TYPE_LITERAL);
+		return f.createLitInteger(FunctionArgumentImpl.DEFAULT_TYPE_RUNTIME_EXPRESSION);
 	}
 
 	/**

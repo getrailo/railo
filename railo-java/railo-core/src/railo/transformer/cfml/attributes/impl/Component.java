@@ -1,11 +1,11 @@
 package railo.transformer.cfml.attributes.impl;
 
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.cfml.attributes.AttributeEvaluator;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
 import railo.transformer.library.tag.TagLibTag;
 
 /**

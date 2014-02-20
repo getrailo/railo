@@ -4,52 +4,42 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.runtime.op.Caster;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.literal.LitLong;
 
 /**
  * Literal Double Value
  */
-public final class LitLong extends ExpressionBase implements Literal {
-    
+public final class LitLongImpl extends ExpressionBase implements LitLong {
+
     private long l;
 
-	public static Expression toExpr(long l, Position start,Position end) {
-		return new LitLong(l,start,end);
-	}
-    
     /**
      * constructor of the class
      * @param d
      * @param line 
      */
-	public LitLong(long l, Position start,Position end) {
-        super(start,end);        
+	public LitLongImpl(Factory f,long l, Position start,Position end) {
+        super(f,start,end);
         this.l=l;
     }
 
-	/**
-     * @return return value as int
-     */ 
+	@Override
     public long getLongValue() {
         return l;
     }
     
-    /**
-     * @return return value as Double Object
-     */
+	@Override
     public Long getLong() {
         return new Long(l);
     }
     
-    /**
-     * @see railo.transformer.bytecode.Literal#getString()
-     */
+	@Override
     public String getString() {
         return Caster.toString(l);
     }
@@ -69,7 +59,7 @@ public final class LitLong extends ExpressionBase implements Literal {
     }
 
     /**
-     * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
+     * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
     public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
@@ -81,9 +71,7 @@ public final class LitLong extends ExpressionBase implements Literal {
         return Types.LONG_VALUE;
     }
 
-    /**
-     * @see railo.transformer.bytecode.Literal#getDouble(java.lang.Double)
-     */
+    @Override
     public Double getDouble(Double defaultValue) {
         return getDouble();
     }
@@ -92,9 +80,7 @@ public final class LitLong extends ExpressionBase implements Literal {
 		return new Double(l);
 	}
 
-	/**
-     * @see railo.transformer.bytecode.Literal#getBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean getBoolean(Boolean defaultValue) {
         return getBoolean();
     }

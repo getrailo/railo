@@ -2,6 +2,8 @@ package railo.transformer.bytecode;
 
 import java.util.List;
 
+import railo.transformer.Factory;
+
 
 /**
  * Body tag (Statement collector)
@@ -35,7 +37,7 @@ public interface Body extends Statement {
 	 */
 	public abstract boolean isEmpty();
 	
-	public void addPrintOut(String str, Position start,Position end);
+	public void addPrintOut(Factory f,String str, Position start,Position end);
 
 	public void remove(Statement stat);
 

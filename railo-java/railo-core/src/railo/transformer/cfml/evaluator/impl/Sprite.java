@@ -10,21 +10,20 @@ import railo.commons.lang.Md5;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.Expression;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLibTag;
 
 
 public final class Sprite extends EvaluatorSupport {
 	
-	private static final Expression DELIMITER = LitString.toExprString(",");
+	//private static final Expression DELIMITER = LitString.toExprString(",");
 	private static Map<String,Previous> sprites=new HashMap<String,Previous>(); 
 	
 	
@@ -56,7 +55,7 @@ public final class Sprite extends EvaluatorSupport {
 			previous.ids.add(id);
 			if(previous.src==null)previous.src=src;
 			else {
-				previous.src=OpString.toExprString(previous.src,DELIMITER);
+				previous.src=OpString.toExprString(previous.src,tag.getFactory().createLitString(","));
 				previous.src=OpString.toExprString(previous.src,src);
 			}
 			
@@ -66,14 +65,14 @@ public final class Sprite extends EvaluatorSupport {
 					new Attribute(
 							false,
 							"_id",
-							LitString.toExprString(id),
+							tag.getFactory().createLitString(id),
 							"string"
 					));
 			tag.addAttribute(
 					new Attribute(
 							false,
 							"_ids",
-							LitString.toExprString(railo.runtime.type.util.ListUtil.listToList(previous.ids, ",")),
+							tag.getFactory().createLitString(railo.runtime.type.util.ListUtil.listToList(previous.ids, ",")),
 							"string"
 					));
 

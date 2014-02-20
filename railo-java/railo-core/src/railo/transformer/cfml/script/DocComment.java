@@ -3,9 +3,9 @@ package railo.transformer.cfml.script;
 import java.util.HashMap;
 import java.util.Map;
 
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.statement.tag.Attribute;
+import railo.transformer.expression.literal.Literal;
 
 public class DocComment {
 
@@ -38,8 +38,8 @@ public class DocComment {
 		return hint;
 	}
 
-	public Attribute getHintAsAttribute() {
-		return new Attribute(true,"hint",LitString.toExprString(getHint()),"string");
+	public Attribute getHintAsAttribute(Factory factory) {
+		return new Attribute(true,"hint",factory.createLitString(getHint()),"string");
 	}
 	
 	

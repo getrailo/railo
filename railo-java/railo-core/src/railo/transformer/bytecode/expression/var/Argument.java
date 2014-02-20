@@ -5,9 +5,9 @@ import org.objectweb.asm.Type;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastOther;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.ExpressionUtil;
+import railo.transformer.expression.Expression;
 
 
 public class Argument extends ExpressionBase {
@@ -16,7 +16,7 @@ public class Argument extends ExpressionBase {
 		private String type;
 
 		public Argument(Expression value, String type) {
-			super(value.getStart(),value.getEnd());
+			super(value.getFactory(),value.getStart(),value.getEnd());
 			this.raw=value;//Cast.toExpression(value,type);
 			this.type=type;
 		}

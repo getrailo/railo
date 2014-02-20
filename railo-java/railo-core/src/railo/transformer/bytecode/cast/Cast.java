@@ -1,6 +1,6 @@
 package railo.transformer.bytecode.cast;
 
-import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.expression.Expression;
 
 public interface Cast {
 	public Expression getExpr();

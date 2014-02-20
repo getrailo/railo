@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -10,8 +11,8 @@ import railo.transformer.bytecode.util.ASMUtil;
 
 public final class TagRetry extends TagBase {
 	
-	public TagRetry(Position start,Position end) {
-		super(start,end);
+	public TagRetry(Factory f, Position start,Position end) {
+		super(f,start,end);
 		setHasFlowController(true);
 	}
 

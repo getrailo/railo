@@ -53,11 +53,11 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPropertiesImpl;
 
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
+import railo.transformer.expression.literal.LitString;
 // TODO doc
 public final class ComponentUtil {
 	

@@ -7,10 +7,9 @@ import org.objectweb.asm.commons.Method;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
 
 public final class PrintOut extends StatementBaseNoFinal {
 
@@ -35,8 +34,8 @@ public final class PrintOut extends StatementBaseNoFinal {
      * @param line 
      */
     public PrintOut(Expression expr, Position start,Position end) {
-        super(start,end);
-        this.expr=CastString.toExprString(expr);
+        super(expr.getFactory(),start,end);
+        this.expr=expr.getFactory().toExprString(expr);
     }
 
 
@@ -46,7 +45,7 @@ public final class PrintOut extends StatementBaseNoFinal {
     public void _writeOut(BytecodeContext bc) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.loadArg(0);
-        ExprString es=CastString.toExprString(expr);
+        ExprString es=bc.getFactory().toExprString(expr);
         boolean usedExternalizer=false;
         
         /*if(es instanceof LitString) {

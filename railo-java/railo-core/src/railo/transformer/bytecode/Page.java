@@ -32,9 +32,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.literal.LitString.Range;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.statement.Argument;
 import railo.transformer.bytecode.statement.HasBodies;
 import railo.transformer.bytecode.statement.HasBody;
@@ -55,6 +53,9 @@ import railo.transformer.bytecode.visitor.ConditionVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
 
 /**
  * represent a single Page like "index.cfm"
@@ -383,7 +384,8 @@ public final class Page extends BodyBase {
     
 	
 	
-    public Page(PageSource pageSource,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean suppressWSbeforeArg) {
+    public Page(Factory factory,PageSource pageSource,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean suppressWSbeforeArg) {
+    	super(factory);
     	name=name.replace('.', '/');
     	//body.setParent(this);
         this.name=name;
@@ -395,8 +397,8 @@ public final class Page extends BodyBase {
         this.suppressWSbeforeArg=suppressWSbeforeArg;
         this.pageSource=pageSource;
     }
-    
-    /**
+
+	/**
      * result byte code as binary array
      * @param classFile 
      * @return byte code
@@ -760,7 +762,7 @@ public final class Page extends BodyBase {
 	}
 
 	private void writeOutUdfCallInner(BytecodeContext bc,Function[] functions, int offset, int length) throws BytecodeException {
-		NativeSwitch ns=new NativeSwitch(2,NativeSwitch.ARG_REF,null,null);
+		NativeSwitch ns=new NativeSwitch(bc.getFactory(),2,NativeSwitch.ARG_REF,null,null);
 		
 		for(int i=offset;i<length;i++) {
         	ns.addCase(i, functions[i].getBody(),functions[i].getStart(),functions[i].getEnd(),true);
@@ -1061,7 +1063,7 @@ public final class Page extends BodyBase {
 		if(attr!=null) {
 			Expression value = attr.getValue();
 			if(!(value instanceof Literal)){
-				value=LitString.toExprString("[runtime expression]");
+				value=bc.getFactory().createLitString("[runtime expression]");
 			}
 			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
 		}
@@ -1499,5 +1501,4 @@ public final class Page extends BodyBase {
 			mv.visitEnd();
 			return mv;
 		}
-
 	}

@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 
@@ -10,8 +11,8 @@ public class TagComponent extends TagBase{
 	 * @param startLine
 	 * @param endLine
 	 */
-	public TagComponent(Position start,Position end) {
-		super(start, end);
+	public TagComponent(Factory f, Position start,Position end) {
+		super(f,start, end);
 	}
 
 	

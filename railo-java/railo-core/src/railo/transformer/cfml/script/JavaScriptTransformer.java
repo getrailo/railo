@@ -1,6 +1,7 @@
 package railo.transformer.cfml.script;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.statement.tag.Tag;
@@ -26,7 +27,8 @@ import railo.transformer.util.CFMLString;
  */
 public final class JavaScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {
 	
-	public void transform(Page page,CFMLTransformer parent, EvaluatorPool ep,
+	@Override
+	public void transform(Factory factory,Page page,CFMLTransformer parent, EvaluatorPool ep,
 			FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings)
 			throws TemplateException {
 		
@@ -54,7 +56,7 @@ public final class JavaScriptTransformer extends CFMLExprTransformer implements 
 		try {
 			//MUST add again CompilationUnit cu = JavaParser.parse(bais);
 			//MUST add again DataBag db = new DataBag();
-			ScriptBody body=new ScriptBody();
+			ScriptBody body=new ScriptBody(factory);
 			tag.setBody(body);
 			//MUST add again new JavaParserVisitor(body,start,end).visit(cu, db);
 			

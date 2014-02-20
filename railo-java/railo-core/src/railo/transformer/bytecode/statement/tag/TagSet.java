@@ -2,16 +2,17 @@ package railo.transformer.bytecode.statement.tag;
 
 import org.objectweb.asm.Type;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.expression.Expression;
 
 public final class TagSet extends TagBaseNoFinal  {
 
-	public TagSet(Position start,Position end) {
-		super(start,end);
+	public TagSet(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	/**

@@ -6,6 +6,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -34,8 +35,8 @@ public final class TagSilent extends TagBase {
 
 	private FlowControlFinalImpl fcf;
 	
-	public TagSilent(Position start,Position end) {
-		super(start,end);
+	public TagSilent(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	/**

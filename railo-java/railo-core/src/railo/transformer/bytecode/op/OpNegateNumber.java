@@ -7,15 +7,13 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastDouble;
-import railo.transformer.bytecode.expression.ExprDouble;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprDouble;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
 
 public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
 
@@ -26,8 +24,8 @@ public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
 	public static final int MINUS = 1;
 
 	private OpNegateNumber(Expression expr, Position start, Position end) {
-        super(start,end);
-        this.expr=CastDouble.toExprDouble(expr);
+        super(expr.getFactory(),start,end);
+        this.expr=expr.getFactory().toExprDouble(expr);
     }
     
     /**
@@ -42,7 +40,7 @@ public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
         if(expr instanceof Literal) {
         	Double d=((Literal) expr).getDouble(null);
         	if(d!=null) {
-        		return LitDouble.toExprDouble(-d.doubleValue(),start,end);
+        		return expr.getFactory().createLitDouble(-d.doubleValue(),start,end);
         	}
         }
         return new OpNegateNumber(expr,start,end);
@@ -50,7 +48,7 @@ public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
     
     public static ExprDouble toExprDouble(Expression expr, int operation, Position start, Position end) {
     	if(operation==MINUS) return toExprDouble(expr, start,end);
-    	return CastDouble.toExprDouble(expr);
+    	return expr.getFactory().toExprDouble(expr);
     }
 	
 	

@@ -32,30 +32,17 @@ import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.Cast;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.cast.CastDouble;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprDouble;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
-import railo.transformer.bytecode.expression.var.DataMember;
-import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitDouble;
-import railo.transformer.bytecode.literal.LitLong;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
@@ -69,6 +56,15 @@ import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagComponent;
 import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.cfml.evaluator.EvaluatorException;
+import railo.transformer.expression.ExprDouble;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
+import railo.transformer.expression.literal.LitDouble;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
 
 public final class ASMUtil {
 
@@ -920,15 +916,15 @@ public final class ASMUtil {
 				if(attr.getValue() instanceof Literal) return true;
 			break;
 			case TYPE_BOOLEAN:
-				if(CastBoolean.toExprBoolean(attr.getValue()) instanceof LitBoolean) return true;
+				if(tag.getFactory().toExprBoolean(attr.getValue()) instanceof LitBoolean) return true;
 				strType=" boolean";
 			break;
 			case TYPE_NUMERIC:
-				if(CastDouble.toExprDouble(attr.getValue()) instanceof LitDouble) return true;
+				if(tag.getFactory().toExprDouble(attr.getValue()) instanceof LitDouble) return true;
 				strType=" numeric";
 			break;
 			case TYPE_STRING:
-				if(CastString.toExprString(attr.getValue()) instanceof LitString) return true;
+				if(tag.getFactory().toExprString(attr.getValue()) instanceof LitString) return true;
 				strType=" string";
 			break;
 			}
@@ -1072,16 +1068,16 @@ public final class ASMUtil {
 			// double == days
 			Double d = l.getDouble(null);
 			if(d!=null) {
-				return new LitLong(TimeSpanImpl.fromDays(d.doubleValue()).getMillis(), null, null);
+				return val.getFactory().createLitLong(TimeSpanImpl.fromDays(d.doubleValue()).getMillis(), null, null);
 			}
 			
 			// request
 			String str=l.getString();
 			if(str!=null && "request".equalsIgnoreCase(str.trim()))
-				return new LitString("request",null,null);
+				return val.getFactory().createLitString("request");
 			
 			if(str!=null && "smart".equalsIgnoreCase(str.trim()))
-				return new LitString("smart",null,null);
+				return val.getFactory().createLitString("smart");
 			
 			throw cacheWithinException();
 		}
@@ -1101,7 +1097,7 @@ public final class ASMUtil {
 							double minutes=toDouble(args[2].getValue());
 							double seconds=toDouble(args[3].getValue());
 							double millis=len==5?toDouble(args[4].getValue()):0;
-							return new LitLong(new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis(),null,null);
+							return val.getFactory().createLitLong(new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis(),null,null);
 						}
 					}
 				}

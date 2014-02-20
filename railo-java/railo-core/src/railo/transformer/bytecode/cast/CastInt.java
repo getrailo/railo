@@ -7,14 +7,13 @@ import org.objectweb.asm.commons.Method;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.expression.ExprInt;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.literal.LitInteger;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprInt;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
 
 /**
  * cast a Expression to a Double
@@ -24,7 +23,7 @@ public final class CastInt extends ExpressionBase implements ExprInt,Cast {
     private Expression expr;
     
     private CastInt(Expression expr) {
-        super(expr.getStart(),expr.getEnd());
+        super(expr.getFactory(),expr.getStart(),expr.getEnd());
     	this.expr=expr;
     }
     
@@ -38,13 +37,13 @@ public final class CastInt extends ExpressionBase implements ExprInt,Cast {
     	if(expr instanceof ExprInt) return (ExprInt) expr;
         if(expr instanceof Literal) {
             Double dbl = ((Literal)expr).getDouble(null);
-            if(dbl!=null) return new LitInteger((int)dbl.doubleValue(),expr.getStart(),expr.getEnd());
+            if(dbl!=null) return expr.getFactory().createLitInteger((int)dbl.doubleValue(),expr.getStart(),expr.getEnd());
         }
         return new CastInt(expr);
     }
 
     /**
-     * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
+     * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
     public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();

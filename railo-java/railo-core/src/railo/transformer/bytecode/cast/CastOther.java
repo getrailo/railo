@@ -9,12 +9,12 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.util.Methods_Caster;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
 
 /**
  * cast a Expression to a Double
@@ -26,7 +26,7 @@ public final class CastOther extends ExpressionBase implements Cast {
     private String lcType;
     
     private CastOther(Expression expr, String type, String lcType) {
-        super(expr.getStart(),expr.getEnd());
+        super(expr.getFactory(),expr.getStart(),expr.getEnd());
         this.expr=expr;
         this.type=type;
         this.lcType=lcType;
@@ -44,15 +44,15 @@ public final class CastOther extends ExpressionBase implements Cast {
             }
     	break;
     	case 'b':
-            if("boolean".equals(type) || "bool".equals(lcType)) return CastBoolean.toExprBoolean(expr);
+            if("boolean".equals(type) || "bool".equals(lcType)) return expr.getFactory().toExprBoolean(expr);
         break;
     	case 'd':
-    		if("double".equals(type))							return CastDouble.toExprDouble(expr);
+    		if("double".equals(type))							return expr.getFactory().toExprDouble(expr);
     	break;
     	case 'i':
-        	if("int".equals(lcType))							return CastInt.toExprInt(expr);
+        	if("int".equals(lcType))							return expr.getFactory().toExprInt(expr);
     	case 'n':
-        	if("number".equals(lcType) || "numeric".equals(lcType))return CastDouble.toExprDouble(expr);
+        	if("number".equals(lcType) || "numeric".equals(lcType))return expr.getFactory().toExprDouble(expr);
         break;
     	case 'o':
         	if("object".equals(lcType))							{
@@ -60,11 +60,11 @@ public final class CastOther extends ExpressionBase implements Cast {
         	}
         break;
         case 's':
-        	if("string".equals(lcType))							return CastString.toExprString(expr);
+        	if("string".equals(lcType))							return expr.getFactory().toExprString(expr);
         	//if("string_array".equals(lcType))					return StringArray.toExpr(expr);     
         break;
         case 'u':
-        	if("uuid".equals(lcType)) 							return  CastString.toExprString(expr);
+        	if("uuid".equals(lcType)) 							return  expr.getFactory().toExprString(expr);
         break;
         case 'v':
         	if("variablename".equals(lcType))					return VariableString.toExprString(expr);
@@ -73,10 +73,6 @@ public final class CastOther extends ExpressionBase implements Cast {
         	if("variable_string".equals(lcType))				return VariableString.toExprString(expr);
         	if("void".equals(lcType))							return expr;
         break;
-        
-        
-        
-        
     	}
         return new CastOther(expr,type,lcType);
     }
@@ -126,10 +122,8 @@ public final class CastOther extends ExpressionBase implements Cast {
     final public static Method TO_EXCEL = new Method("toExcel",
 			Types.EXCEL,
 			new Type[]{Types.OBJECT}); 
-    
-    /**
-     * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
-     */
+
+    @Override
     public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 //Caster.toDecimal(null);
     	GeneratorAdapter adapter = bc.getAdapter();
@@ -170,7 +164,7 @@ public final class CastOther extends ExpressionBase implements Cast {
                 return Types.BYTE;
             }
             if("boolean".equals(lcType)) {
-            	return CastBoolean.toExprBoolean(expr).writeOut(bc, MODE_REF);
+            	return bc.getFactory().toExprBoolean(expr).writeOut(bc, MODE_REF);
             }
         break;
         case 'c':
@@ -201,7 +195,7 @@ public final class CastOther extends ExpressionBase implements Cast {
         break;
         case 'd':
             if("double".equals(lcType))	{
-            	return CastDouble.toExprDouble(expr).writeOut(bc, MODE_REF);
+            	return bc.getFactory().toExprDouble(expr).writeOut(bc, MODE_REF);
             }
             if("date".equals(lcType) || "datetime".equals(lcType)) {
                 // First Arg
@@ -269,13 +263,13 @@ public final class CastOther extends ExpressionBase implements Cast {
         case 'j':
 
             if("java.lang.boolean".equals(lcType))	{
-            	return CastBoolean.toExprBoolean(expr).writeOut(bc, MODE_REF);
+            	return bc.getFactory().toExprBoolean(expr).writeOut(bc, MODE_REF);
             }
             if("java.lang.double".equals(lcType))	{
-            	return CastDouble.toExprDouble(expr).writeOut(bc, MODE_REF);
+            	return bc.getFactory().toExprDouble(expr).writeOut(bc, MODE_REF);
             }
             if("java.lang.string".equals(lcType))	{
-            	return CastString.toExprString(expr).writeOut(bc, MODE_REF);
+            	return bc.getFactory().toExprString(expr).writeOut(bc, MODE_REF);
             }
             if("java.lang.stringbuffer".equals(lcType)) {
             	rtn=expr.writeOut(bc,MODE_REF);
@@ -442,13 +436,6 @@ public final class CastOther extends ExpressionBase implements Cast {
         adapter.checkCast(t);
         return t;
     }
-
-    /*
-    private int writeExprx(BytecodeContext bc) throws TemplateException {
-    	return Types.getType(expr.writeOut(bc,MODE_VALUE));
-	}*/
-
-	
 
 	public static Type getType(String type) throws BytecodeException {
 		if(StringUtil.isEmpty(type)) return Types.OBJECT;

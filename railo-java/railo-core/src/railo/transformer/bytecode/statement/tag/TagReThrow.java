@@ -3,6 +3,7 @@ package railo.transformer.bytecode.statement.tag;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -10,8 +11,8 @@ import railo.transformer.bytecode.util.Types;
 
 public final class TagReThrow extends TagBaseNoFinal {
 
-	public TagReThrow(Position start,Position end) {
-		super(start,end);
+	public TagReThrow(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	// void throwCatch()

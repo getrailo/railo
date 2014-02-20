@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -7,8 +8,8 @@ import railo.transformer.bytecode.visitor.IfVisitor;
 
 public final class TagJavaScript extends TagBaseNoFinal {
 	
-	public TagJavaScript(Position start,Position end) {
-		super(start,end);
+	public TagJavaScript(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	/**

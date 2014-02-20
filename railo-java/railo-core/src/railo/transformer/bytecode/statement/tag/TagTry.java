@@ -10,15 +10,13 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.statement.FlowControlRetry;
@@ -27,10 +25,12 @@ import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 
 public final class TagTry extends TagBase implements FlowControlRetry {
 
-	private static final ExprString ANY=LitString.toExprString("any");
+	//private static final ExprString ANY=LitString.toExprString("any");
 
 	private static final Method GET_VARIABLE = new Method(
 			"getVariable",
@@ -70,18 +70,15 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 	private Label begin = new Label();
 
 	
-	public TagTry(Position start,Position end) {
-		super(start,end);
+	public TagTry(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.visitLabel(begin);
-		Body tryBody=new BodyBase();
+		Body tryBody=new BodyBase(getFactory());
 		List<Tag> catches=new ArrayList<Tag>();
 		Tag tmpFinal=null;
 
@@ -173,7 +170,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 				tag=it.next();
 				Label endIf=new Label();
 				attrType = tag.getAttribute("type");
-				type=ANY;
+				type=bc.getFactory().createLitString("any");
 				if(attrType!=null)type=attrType.getValue();
 
 				if(type instanceof LitString && ((LitString)type).getString().equalsIgnoreCase("any")){

@@ -1,13 +1,14 @@
 package railo.transformer.cfml.expression;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
@@ -16,18 +17,6 @@ import railo.transformer.util.CFMLString;
  * Zum lesen von Attributen bei dem CFML expressions nicht geparst werden sollen (cfloop condition) 
  */
 public final class SimpleExprTransformer implements ExprTransformer {
-	
-	//char specialChar=0;
-	//protected CFMLString cfml;
-
-	/* *
-	 * Setzt welcher Character speziell behandelt werden soll.
-	 * @param c char der speziell behandelt werden soll.
-	 * /
-	public void setSpecialChar(char c) {
-		specialChar=c;
-	}*/
-	
 
 	private char specialChar;
 
@@ -35,31 +24,27 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		this.specialChar=specialChar;
 	}
 
-	/**
-	 * @see railo.transformer.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
-	 */
-	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
-		return transform(page,ep,fld,scriptTags, cfml,settings);
+	@Override
+	public Expression transformAsString(Factory factory,Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
+		return transform(factory,page,ep,fld,scriptTags, cfml,settings);
 	}
 	
-	/**
-	 * @see railo.transformer.cfml.ExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
-	 */
-	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
+	@Override
+	public Expression transform(Factory factory,Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
 			Expression expr=null;
 			// String
-				if((expr=string(cfml))!=null) {
+				if((expr=string(factory,cfml))!=null) {
 					return expr;
 				}
 			// Simple
-				return simple(cfml);
+				return simple(factory,cfml);
 	}
 	/**
 	 * Liest den String ein
 	 * @return Element 
 	 * @throws TemplateException
 	 */
-	public Expression string(CFMLString cfml)
+	public Expression string(Factory f,CFMLString cfml)
 		throws TemplateException {
 		cfml.removeSpace();
 		char quoter=cfml.getCurrentLower();
@@ -99,7 +84,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		if(!cfml.forwardIfCurrent(quoter))
 			throw new TemplateException(cfml,"Invalid Syntax Closing ["+quoter+"] not found");
 	
-		LitString rtn = new LitString(str.toString(),line,cfml.getPosition());
+		LitString rtn = f.createLitString(str.toString(),line,cfml.getPosition());
 		cfml.removeSpace();
 		return rtn;
 	}
@@ -109,7 +94,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 * @return Element
 	 * @throws TemplateException
 	 */
-	public Expression simple(CFMLString cfml) throws TemplateException {
+	public Expression simple(Factory f,CFMLString cfml) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
 		Position line = cfml.getPosition();
 		while(cfml.isValidIndex()) {
@@ -122,7 +107,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		}
 		cfml.removeSpace();
 		
-		return new LitString(sb.toString(),line,cfml.getPosition());
+		return f.createLitString(sb.toString(),line,cfml.getPosition());
 	}
 	
 

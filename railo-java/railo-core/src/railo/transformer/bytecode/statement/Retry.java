@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -8,8 +9,8 @@ import railo.transformer.bytecode.util.ASMUtil;
 
 public final class Retry extends StatementBaseNoFinal {
 
-	public Retry(Position start, Position end) {
-		super(start,end);
+	public Retry(Factory f, Position start, Position end) {
+		super(f,start,end);
 		//setHasFlowController(true);
 	}
 

@@ -5,16 +5,14 @@ import java.util.List;
 
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
+import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.tag.TagLibTag;
 
 
@@ -97,7 +95,7 @@ public class Component extends EvaluatorSupport {
 		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehändelt
 		Attribute attr = tag.getAttribute("output");
 		if(attr!=null) {
-			Expression expr = CastBoolean.toExprBoolean(attr.getValue());
+			Expression expr = tag.getFactory().toExprBoolean(attr.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute output of the Tag "+tlt.getFullName()+", must contain a static boolean value (true or false, yes or no)");
 			//boolean output = ((LitBoolean)expr).getBooleanValue();
@@ -107,7 +105,7 @@ public class Component extends EvaluatorSupport {
 		// extends
 		attr = tag.getAttribute("extends");
 		if(attr!=null) {
-			Expression expr = CastString.toExprString(attr.getValue());
+			Expression expr = tag.getFactory().toExprString(attr.getValue());
 			if(!(expr instanceof LitString)) throw new EvaluatorException("Attribute extends of the Tag "+tlt.getFullName()+", must contain a literal string value");
 		}
 		
@@ -115,7 +113,7 @@ public class Component extends EvaluatorSupport {
 		if(isComponent){
 			attr = tag.getAttribute("implements");
 			if(attr!=null) {
-				Expression expr = CastString.toExprString(attr.getValue());
+				Expression expr = tag.getFactory().toExprString(attr.getValue());
 				if(!(expr instanceof LitString)) throw new EvaluatorException("Attribute implements of the Tag "+tlt.getFullName()+", must contain a literal string value");
 			}
 		}

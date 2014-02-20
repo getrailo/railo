@@ -1,9 +1,10 @@
 package railo.transformer.bytecode.literal;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Position;
 
 
-public class Identifier extends LitString {
+public class Identifier extends LitStringImpl {
 
 	public static short CASE_ORIGNAL=0;
 	public static short CASE_UPPER=1;
@@ -13,16 +14,16 @@ public class Identifier extends LitString {
 	
 
 
-	public static Identifier toIdentifier(String str, Position start,Position end) {
-		return new Identifier(str, CASE_ORIGNAL,start,end);
+	public static Identifier toIdentifier(Factory f,String str, Position start,Position end) {
+		return new Identifier(f,str, CASE_ORIGNAL,start,end);
 	}
 
-	public static Identifier toIdentifier(String str, short _case, Position start,Position end) {
-		return new Identifier(str, _case,start,end);
+	public static Identifier toIdentifier(Factory f,String str, short _case, Position start,Position end) {
+		return new Identifier(f,str, _case,start,end);
 	}
 	
-	private Identifier(String str, short _case,Position start,Position end) {
-		super(convert(str,_case), start,end);
+	private Identifier(Factory f,String str, short _case,Position start,Position end) {
+		super(f,convert(str,_case), start,end);
 		this.raw=str;
 		this._case=_case;
 	}

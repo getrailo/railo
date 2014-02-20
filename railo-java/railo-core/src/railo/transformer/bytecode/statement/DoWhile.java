@@ -8,9 +8,8 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class DoWhile extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
 
@@ -30,8 +29,8 @@ public final class DoWhile extends StatementBaseNoFinal implements FlowControlBr
 	 * @param line
 	 */
 	public DoWhile(Expression expr,Body body,Position start, Position end, String label) {
-		super(start,end);
-		this.expr=CastBoolean.toExprBoolean(expr);
+		super(expr.getFactory(),start,end);
+		this.expr=expr.getFactory().toExprBoolean(expr);
 		this.body=body;
 		body.setParent(this);
 		this.label=label;

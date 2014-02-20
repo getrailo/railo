@@ -11,6 +11,7 @@ import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.BytecodeFactory;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -52,7 +53,7 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 			if(!classFileDirectory.exists()) classFileDirectory.mkdirs(); 
 			
 	        try {
-	        	page = cfmlTransformer.transform(config,source,tld,fld);
+	        	page = cfmlTransformer.transform(BytecodeFactory.getInstance(),config,source,tld,fld);
 	        	page.setSplitIfNecessary(false);
 	        	try {
 	        		barr = page.execute(source,classFile);

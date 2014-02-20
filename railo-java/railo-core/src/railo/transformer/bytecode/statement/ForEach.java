@@ -11,13 +11,13 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
+import railo.transformer.expression.Expression;
 
 public final class ForEach extends StatementBase implements FlowControlBreak,FlowControlContinue,HasBody {
 
@@ -48,7 +48,7 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 	 * @param line
 	 */
 	public ForEach(Variable key,Variable value,Body body,Position start, Position end,String label) {
-		super(start,end);
+		super(key.getFactory(),start,end);
 		this.key=new VariableRef(key);
 		this.value=value;
 		this.body=body;

@@ -21,25 +21,26 @@ import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.CallerUtil;
 import railo.runtime.util.VariableUtilImpl;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.Invoker;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitDouble;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -159,12 +160,12 @@ public class Variable extends ExpressionBase implements Invoker {
 	private Expression defaultValue;
 	private Boolean asCollection;
 
-	public Variable(Position start,Position end) {
-		super(start,end);
+	public Variable(Factory factory,Position start,Position end) {
+		super(factory,start,end);
 	}
 	
-	public Variable(int scope,Position start,Position end) {
-		super(start,end);
+	public Variable(Factory factory,int scope,Position start,Position end) {
+		super(factory,start,end);
 		this.scope=scope;
 	}
 	
@@ -337,7 +338,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		if(name instanceof Literal) {
 			Literal l=(Literal) name;
 			
-			LitString ls = name instanceof LitString?(LitString)l:LitString.toLitString(l.getString());
+			LitString ls = name instanceof LitString?(LitString)l:bc.getFactory().createLitString(l.getString());
 			if(doUpperCase){
 				ls=ls.duplicate();
 				ls.upperCase();
@@ -386,17 +387,17 @@ public class Variable extends ExpressionBase implements Invoker {
 		Method m;
 		Type t=Types.PAGE_CONTEXT;
 		if(scope==Scope.SCOPE_ARGUMENTS) {
-			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
+			getFactory().TRUE().writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_ARGUMENT_BIND;
 		}
 		else if(scope==Scope.SCOPE_LOCAL) {
 			t=Types.PAGE_CONTEXT;
-			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
+			getFactory().TRUE().writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_LOCAL_BIND;
 		}
 		else if(scope==ScopeSupport.SCOPE_VAR) {
 			t=Types.PAGE_CONTEXT;
-			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
+			getFactory().TRUE().writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_VAR_BIND;
 		}
 		else m = TypeScope.METHODS[scope]; 
@@ -455,7 +456,7 @@ public class Variable extends ExpressionBase implements Invoker {
 				VT vt;
 				while(it.hasNext()) {
 					flfa =it.next();
-					vt = getMatchingValueAndType(flfa,nargs,names,line);
+					vt = getMatchingValueAndType(bc.getFactory(),flfa,nargs,names,line);
 					if(vt.index!=-1) 
 						names[vt.index]=null;
 					argTypes[++index]=Types.toType(vt.type);
@@ -497,7 +498,7 @@ public class Variable extends ExpressionBase implements Invoker {
 					for(int i=argTypes.length;i<tmp.length;i++){
 						flfa = _args.get(i-1);
 						tmp[i]=Types.toType(flfa.getTypeAsString());
-						getDefaultValue(flfa).value.writeOut(
+						getDefaultValue(bc.getFactory(),flfa).value.writeOut(
 								bc, 
 								Types.isPrimitiveType(tmp[i])?MODE_VALUE:MODE_REF);
 					}
@@ -617,7 +618,7 @@ public class Variable extends ExpressionBase implements Invoker {
     	if(scope==Scope.SCOPE_LOCAL && defaultValue!=null) {
     		adapter.loadArg(0);
     		adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-			LitBoolean.FALSE.writeOut(bc, MODE_VALUE);
+    		getFactory().FALSE().writeOut(bc, MODE_VALUE);
     		defaultValue.writeOut(bc, MODE_VALUE);
     		adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TypeScope.METHOD_LOCAL_EL);
     		rtn= Types.OBJECT;
@@ -670,7 +671,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	
 	
 
-	private static VT getMatchingValueAndType(FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, Position line) throws BytecodeException {
+	private static VT getMatchingValueAndType(Factory factory,FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, Position line) throws BytecodeException {
 		String flfan=flfa.getName();
 		
 		// first search if a argument match
@@ -695,24 +696,24 @@ public class Variable extends ExpressionBase implements Invoker {
 		
 		// if not required return the default value
 		if(!flfa.getRequired()) {
-			return getDefaultValue(flfa);
+			return getDefaultValue(factory,flfa);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
 	
-	private static VT getDefaultValue(FunctionLibFunctionArg flfa) {
+	private static VT getDefaultValue(Factory factory,FunctionLibFunctionArg flfa) {
 		String defaultValue = flfa.getDefaultValue();
 		String type = flfa.getTypeAsString();
 		if(defaultValue==null) {
 			if(type.equals("boolean") || type.equals("bool")) 
-				return new VT(LitBoolean.FALSE,type,-1);
+				return new VT(factory.FALSE(),type,-1);
 			if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
-				return new VT(LitDouble.ZERO,type,-1);
+				return new VT(factory.DOUBLE_ZERO(),type,-1);
 			return new VT(null,type,-1);
 		}
-		return new VT(CastOther.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+		return new VT(CastOther.toExpression(factory.createLitString(defaultValue), type),type,-1);
 	}
 
 	private static String getName(Expression expr) throws BytecodeException {

@@ -1,12 +1,13 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 
 public abstract class TagBaseNoFinal extends TagBase { 
 
-	public TagBaseNoFinal(Position start, Position end) {
-		super(start, end);
+	public TagBaseNoFinal(Factory factory,Position start, Position end) {
+		super(factory,start, end);
 	}
 
 	@Override

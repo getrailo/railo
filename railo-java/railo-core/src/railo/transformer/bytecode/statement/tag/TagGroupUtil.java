@@ -11,9 +11,6 @@ import railo.runtime.util.NumberIterator;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.CastInt;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.NotVisitor;
@@ -21,6 +18,8 @@ import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 
 public class TagGroupUtil {
 	
@@ -192,7 +191,7 @@ public class TagGroupUtil {
 			if(attrStartRow!=null){
 				// NumberRange.range(@startrow,1)
 				//attrStartRow.getValue().writeOut(bc, Expression.MODE_VALUE);
-				CastInt.toExprInt(attrStartRow.getValue()).writeOut(bc, Expression.MODE_VALUE);
+				bc.getFactory().toExprInt(attrStartRow.getValue()).writeOut(bc, Expression.MODE_VALUE);
 				//adapter.visitInsn(Opcodes.D2I);
 				adapter.push(1);
 				adapter.invokeStatic(Types.NUMBER_RANGE, RANGE);
@@ -214,11 +213,11 @@ public class TagGroupUtil {
 			Attribute attrMaxRow = tag.getAttribute("maxrows");
 			Attribute attrEndRow = tag.getAttribute("endrow");
 			if(attrMaxRow!=null) {
-				CastInt.toExprInt(attrMaxRow.getValue()).writeOut(bc, Expression.MODE_VALUE);
+				bc.getFactory().toExprInt(attrMaxRow.getValue()).writeOut(bc, Expression.MODE_VALUE);
 				adapter.invokeStatic(NUMBER_ITERATOR, LOAD_MAX);
 			}
 			else if(attrEndRow!=null) {
-				CastInt.toExprInt(attrEndRow.getValue()).writeOut(bc, Expression.MODE_VALUE);
+				bc.getFactory().toExprInt(attrEndRow.getValue()).writeOut(bc, Expression.MODE_VALUE);
 				adapter.invokeStatic(NUMBER_ITERATOR, LOAD_END);
 			}
 			else {

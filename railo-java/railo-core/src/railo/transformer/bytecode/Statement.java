@@ -1,6 +1,8 @@
 package railo.transformer.bytecode;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Context;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 
 
@@ -19,6 +21,9 @@ public interface Statement {
     public boolean hasFlowController();
     public void setHasFlowController(boolean has);
     
+    
+    
+    
     /**
      * @return returns the parent statement
      */
@@ -26,10 +31,10 @@ public interface Statement {
     
     /**
      * write out the stament to adapter
-     * @param adapter
+     * @param c
      * @throws TemplateException
      */
-    public void writeOut(BytecodeContext bc) throws BytecodeException;    
+    public void writeOut(Context c) throws BytecodeException;    
 
     
     /**
@@ -59,4 +64,6 @@ public interface Statement {
 	 * @return return the label where the finally block of this tags starts, IF there is a finally block, otherwise return null; 
 	 */
 	public FlowControlFinal getFlowControlFinal();
+
+	public Factory getFactory();
 }

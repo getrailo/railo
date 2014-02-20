@@ -1,5 +1,7 @@
 package railo.transformer.bytecode.expression.var;
 
+import railo.transformer.expression.var.Member;
+
 
 public abstract class FunctionMember implements Member{
 	private Argument[] arguments=new Argument[0];

@@ -10,12 +10,13 @@ import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
 
 public class Assign extends ExpressionBase {
 
@@ -92,7 +93,7 @@ public class Assign extends ExpressionBase {
 	 * @param value
 	 */
 	public Assign(Variable variable, Expression value, Position end) {
-		super(variable.getStart(),end);
+		super(variable.getFactory(),variable.getStart(),end);
 		this.variable=variable;
 		this.value=value;
 		//this.returnOldValue=returnOldValue;
@@ -220,7 +221,7 @@ public class Assign extends ExpressionBase {
 		else {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_UNDEFINED);
-			Variable.registerKey(bc,LitString.toExprString(ScopeFactory.toStringScope(variable.scope,"undefined")));
+			Variable.registerKey(bc,bc.getFactory().createLitString(ScopeFactory.toStringScope(variable.scope,"undefined")));
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeInterface(TypeScope.SCOPES[Scope.SCOPE_UNDEFINED],METHOD_SCOPE_SET_KEY);
 		}

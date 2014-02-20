@@ -8,21 +8,21 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ExpressionUtil;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class TagIf extends TagBaseNoFinal {
 
 	
-	public TagIf(Position start,Position end) {
-		super(start,end);
+	public TagIf(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
@@ -73,7 +73,7 @@ public final class TagIf extends TagBaseNoFinal {
 	private static Label writeOutElseIfStart(BytecodeContext bc, Tag tag) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
-		ExprBoolean cont = CastBoolean.toExprBoolean(tag.getAttribute("condition").getValue());
+		ExprBoolean cont = bc.getFactory().toExprBoolean(tag.getAttribute("condition").getValue());
 		
 		Label endIf = new Label();
         

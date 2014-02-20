@@ -4,49 +4,43 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.runtime.op.Caster;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.ExprFloat;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprFloat;
+import railo.transformer.expression.literal.LitFloat;
 
 /**
  * Literal Double Value
  */
-public final class LitFloat extends ExpressionBase implements Literal,ExprFloat {
+public final class LitFloatImpl extends ExpressionBase implements LitFloat,ExprFloat {
     
     private float f;
 
-	public static ExprFloat toExprFloat(float f, Position start,Position end) {
-		return new LitFloat(f,start,end);
-	}
-    
     /**
      * constructor of the class
      * @param d
      * @param line 
      */
-	public LitFloat(float f, Position start,Position end) {
-        super(start,end);
+	public LitFloatImpl(Factory fac,float f, Position start,Position end) {
+        super(fac,start,end);
         this.f=f;
     }
 
-	/**
-     * @return return value as double value
-     */ 
+	@Override
     public float getFloatValue() {
         return f;
     }
     
+    @Override
     public Float getFloat() {
         return new Float(f);
     }
     
-    /**
-     * @see railo.transformer.bytecode.Literal#getString()
-     */
+    @Override
     public String getString() {
         return Caster.toString(f);
     }
@@ -65,9 +59,7 @@ public final class LitFloat extends ExpressionBase implements Literal,ExprFloat 
         return Caster.toBooleanValue(f);
     }
 
-    /**
-     * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
-     */
+    @Override
     public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.push(f);
@@ -78,16 +70,12 @@ public final class LitFloat extends ExpressionBase implements Literal,ExprFloat 
         return Types.FLOAT_VALUE;
     }
 
-    /**
-     * @see railo.transformer.bytecode.Literal#getDouble(java.lang.Double)
-     */
+    @Override
     public Double getDouble(Double defaultValue) {
         return new Double(getFloatValue());
     }
 
-    /**
-     * @see railo.transformer.bytecode.Literal#getBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean getBoolean(Boolean defaultValue) {
         return getBoolean();
     }

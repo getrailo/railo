@@ -7,15 +7,16 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
+import railo.transformer.expression.Expression;
 
 public final class TagSwitch extends TagBaseNoFinal {
 
@@ -30,8 +31,8 @@ public final class TagSwitch extends TagBaseNoFinal {
 	 * @param sl
 	 * @param el
 	 */
-	public TagSwitch(Position start,Position end) {
-		super(start,end);
+	public TagSwitch(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 	
 	/**

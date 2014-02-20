@@ -5,13 +5,13 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastInt;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.impl.Argument;
+import railo.transformer.expression.Expression;
 
 public final class TagParam extends TagBaseNoFinal {
 
@@ -37,19 +37,13 @@ public final class TagParam extends TagBaseNoFinal {
 			new Type[]{Types.STRING,Types.STRING,Types.OBJECT,Types.INT_VALUE}
 	);
 	
-	public TagParam(Position start,Position end) {
-		super(start,end);
+	public TagParam(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
-		//PageContextImpl pc=null;
-		//pc.param("", "", "");
-		
 		Argument.checkDefaultValue(this);
 		
 		// pc
@@ -87,7 +81,7 @@ public final class TagParam extends TagBaseNoFinal {
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE_REGEX);
 		}
 		else if(maxLength!=null) {
-			CastInt.toExprInt(maxLength.getValue()).writeOut(bc, Expression.MODE_VALUE);
+			bc.getFactory().toExprInt(maxLength.getValue()).writeOut(bc, Expression.MODE_VALUE);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE_MAXLENGTH);
 		}
 		else adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE);

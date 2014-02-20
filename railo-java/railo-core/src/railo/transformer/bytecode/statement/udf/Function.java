@@ -19,23 +19,13 @@ import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.FunctionArgumentImpl;
 import railo.runtime.type.FunctionArgumentLight;
 import railo.runtime.type.util.ComponentUtil;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.cast.CastInt;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.ExprInt;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitInteger;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Argument;
 import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.bytecode.statement.IFunction;
@@ -46,6 +36,14 @@ import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.EvaluatorException;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.ExprInt;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
+import railo.transformer.expression.literal.LitInteger;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
 
 public abstract class Function extends StatementBaseNoFinal implements Opcodes, IFunction,HasBody {
 
@@ -93,7 +91,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 
 	
 	
-	private static final ExprString ANY = LitString.toExprString("any");
+	//private static final ExprString ANY = LitString.toExprString("any");
 	
 	// <init>(Page,FunctionArgument[],int String,String,boolean);
 	private static final Type FUNCTION_ARGUMENT = Type.getType(FunctionArgument.class);
@@ -265,13 +263,13 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 	
 	ExprString name;
-	ExprString returnType=ANY;
-	ExprBoolean output=LitBoolean.TRUE;
+	ExprString returnType;
+	ExprBoolean output;
 	ExprBoolean bufferOutput;
 	//ExprBoolean abstry=LitBoolean.FALSE;
 	int access=Component.ACCESS_PUBLIC;
-	ExprString displayName=LitString.EMPTY;
-	ExprString hint=LitString.EMPTY;
+	ExprString displayName;
+	ExprString hint;
 	Body body;
 	List<Argument> arguments=new ArrayList<Argument>();
 	Map<String,Attribute> metadata;
@@ -288,33 +286,39 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 
 	public Function(Page page,String name,int access,String returnType,Body body,Position start, Position end) {
-		super(start,end);
-		this.name=LitString.toExprString(name);
+		super(page.getFactory(),start,end);
+		this.name=page.getFactory().createLitString(name);
 		this.access=access;
-		if(!StringUtil.isEmpty(returnType))this.returnType=LitString.toExprString(returnType);
+		if(!StringUtil.isEmpty(returnType))
+			this.returnType=page.getFactory().createLitString(returnType);
+		else
+			this.returnType=page.getFactory().createLitString("any");
 		this.body=body;
 		body.setParent(this);
 		int[] indexes = page.addFunction(this);
 		valueIndex=indexes[VALUE_INDEX];
 		arrayIndex=indexes[ARRAY_INDEX];
+		output=page.getFactory().TRUE();
+		displayName=page.getFactory().EMPTY();
+		hint=page.getFactory().EMPTY();
 	}
 	
 	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression bufferOutput,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
 			Expression verifyClient,Expression localMode,Literal cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
-		super(start,end);
+		super(page.getFactory(),start,end);
 		
-		this.name=CastString.toExprString(name);
-		this.returnType=CastString.toExprString(returnType);
-		this.returnFormat=returnFormat!=null?CastString.toExprString(returnFormat):null;
-		this.output=CastBoolean.toExprBoolean(output);
-		this.bufferOutput=bufferOutput==null?null:CastBoolean.toExprBoolean(bufferOutput);
+		this.name=page.getFactory().toExprString(name);
+		this.returnType=page.getFactory().toExprString(returnType);
+		this.returnFormat=returnFormat!=null?page.getFactory().toExprString(returnFormat):null;
+		this.output=page.getFactory().toExprBoolean(output);
+		this.bufferOutput=bufferOutput==null?null:page.getFactory().toExprBoolean(bufferOutput);
 		this.access=access;
-		this.description=description!=null?CastString.toExprString(description):null;
-		this.displayName=CastString.toExprString(displayName);
-		this.hint=CastString.toExprString(hint);
-		this.secureJson=secureJson!=null?CastBoolean.toExprBoolean(secureJson):null;
-		this.verifyClient=verifyClient!=null?CastBoolean.toExprBoolean(verifyClient):null;
+		this.description=description!=null?page.getFactory().toExprString(description):null;
+		this.displayName=page.getFactory().toExprString(displayName);
+		this.hint=page.getFactory().toExprString(hint);
+		this.secureJson=secureJson!=null?page.getFactory().toExprBoolean(secureJson):null;
+		this.verifyClient=verifyClient!=null?page.getFactory().toExprBoolean(verifyClient):null;
 		this.cachedWithin=cachedWithin;
 		this._abstract=_abstract;
 		this._final=_final;
@@ -325,7 +329,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		int[] indexes=page.addFunction(this);
 		valueIndex=indexes[VALUE_INDEX];
 		arrayIndex=indexes[ARRAY_INDEX];
-		
 	}
 
 
@@ -337,7 +340,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 			mode = AppListenerUtil.toLocalMode(str,-1);
 		}
 		if(mode==-1) return defaultValue;
-		return LitInteger.toExpr(mode);
+		return expr.getFactory().createLitInteger(mode);
 	}
 	
 
@@ -426,9 +429,9 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		writeOutAccess(bc, access);
 		
 		boolean light=type!=-1;
-		if(light && !LitString.EMPTY.equals(displayName))light=false;
-		if(light && description!=null && !LitString.EMPTY.equals(description))light=false;
-		if(light && !LitString.EMPTY.equals(hint))light=false;
+		if(light && !bc.getFactory().EMPTY().equals(displayName))light=false;
+		if(light && description!=null && !bc.getFactory().EMPTY().equals(description))light=false;
+		if(light && !bc.getFactory().EMPTY().equals(hint))light=false;
 		if(light && secureJson!=null)light=false;
 		if(light && verifyClient!=null)light=false;
 		if(light && cachedWithin!=null)light=false;
@@ -531,7 +534,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
     		boolean useReq=!canHaveKey || toBoolean(_req,null)!=Boolean.FALSE;
     		
     		// default-type
-    		Expression _def = arg.getDefaultValueType();
+    		Expression _def = arg.getDefaultValueType(bc.getFactory());
     		boolean useDef=!canHaveKey || toInt(_def,-1)!=FunctionArgument.DEFAULT_TYPE_NULL;
     		
     		// pass by reference
@@ -641,15 +644,15 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		bc.getAdapter().push(access);
 	}
 
-	public final void addArgument(String name, String type, boolean required, Expression defaultValue) {
+	public final void addArgument(Factory factory,String name, String type, boolean required, Expression defaultValue) {
 		addArgument(
-				LitString.toExprString(name), 
-				LitString.toExprString(type), 
-				LitBoolean.toExprBoolean(required),
+				factory.createLitString(name), 
+				factory.createLitString(type), 
+				factory.createLitBoolean(required),
 				defaultValue, 
-				LitBoolean.TRUE,
-				LitString.EMPTY,
-				LitString.EMPTY,null);
+				factory.TRUE(),
+				factory.EMPTY(),
+				factory.EMPTY(),null);
 	}
 
 	public final void addArgument(Expression name, Expression type, Expression required, Expression defaultValue,ExprBoolean passByReference, 
@@ -675,8 +678,8 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		this.metadata=metadata;
 	}
 	
-	public final void setHint(String hint){
-		this.hint=LitString.toExprString(hint);
+	public final void setHint(Factory factory,String hint){
+		this.hint=factory.createLitString(hint);
 	}
 
 	public final void addAttribute(Attribute attr) throws TemplateException {
@@ -684,7 +687,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		// name
 		if("name".equals(name))	{
 			throw new BytecodeException("name cannot be defined twice",getStart());
-			//this.name=CastString.toExprString(attr.getValue());
 		}
 		else if("returntype".equals(name))	{
 			this.returnType=toLitString(name,attr.getValue());
@@ -714,7 +716,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 				String str = ASMUtil.toString(v,null);
 				if(!StringUtil.isEmpty(str)){
 					int mode = AppListenerUtil.toLocalMode(str, -1);
-					if(mode!=-1) this.localMode=LitInteger.toExpr(mode);
+					if(mode!=-1) this.localMode=v.getFactory().createLitInteger(mode);
 					else throw new BytecodeException("Attribute localMode of the Tag Function, must be a literal value (modern, classic, true or false)",getStart());
 				}
 			}
@@ -746,21 +748,21 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	}
 
 	private final LitString toLitString(String name, Expression value) throws BytecodeException {
-		ExprString es = CastString.toExprString(value);
+		ExprString es = value.getFactory().toExprString(value);
 		if(!(es instanceof LitString))
 			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitString) es;
 	}
 	
 	private final LitBoolean toLitBoolean(String name, Expression value) throws BytecodeException {
-		 ExprBoolean eb = CastBoolean.toExprBoolean(value);
+		 ExprBoolean eb = value.getFactory().toExprBoolean(value);
 		if(!(eb instanceof LitBoolean))
 			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitBoolean) eb;
 	}
 	
 	private final ExprInt toLitInt(String name, Expression value) throws BytecodeException {
-		ExprInt eb = CastInt.toExprInt(value);
+		ExprInt eb = value.getFactory().toExprInt(value);
 		if(!(eb instanceof Literal))
 			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return eb;

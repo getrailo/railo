@@ -10,10 +10,13 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.transformer.Context;
-import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.visitor.OnFinally;
+import railo.transformer.expression.literal.LitString;
 
 public class BytecodeContext implements Context {
+	
+
 	
 
 	private ClassWriter classWriter;
@@ -67,6 +70,11 @@ public class BytecodeContext implements Context {
 		this.page=bc.getPage();
 		this.suppressWSbeforeArg=bc.suppressWSbeforeArg;
 		this.source=bc.source;
+	}
+	
+	@Override
+	public Factory getFactory() {
+		return page.getFactory();
 	}
 	
 	/**

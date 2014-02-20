@@ -8,10 +8,8 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
 
 public final class While extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
 	
@@ -32,8 +30,8 @@ public final class While extends StatementBaseNoFinal implements FlowControlBrea
 	 * @param line
 	 */
 	public While(Expression expr,Body body,Position start,Position end, String label) {
-		super(start,end);
-		this.expr=CastBoolean.toExprBoolean(expr);
+		super(expr.getFactory(),start,end);
+		this.expr=expr.getFactory().toExprBoolean(expr);
 		this.body=body;
 		body.setParent(this);
 		this.label=label;
@@ -47,7 +45,7 @@ public final class While extends StatementBaseNoFinal implements FlowControlBrea
 	 * @param line
 	 */
 	public While(boolean b, Body body,Position start,Position end, String label) {
-		this(LitBoolean.toExprBoolean(b),body,start, end, label);
+		this(body.getFactory().createLitBoolean(b),body,start, end, label);
 	}
 
 	@Override

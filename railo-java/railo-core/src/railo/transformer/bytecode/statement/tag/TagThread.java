@@ -6,13 +6,13 @@ import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.RandomUtil;
 import railo.runtime.tag.ThreadTag;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -27,18 +27,11 @@ public final class TagThread extends TagBaseNoFinal {
 			"register",Types.VOID,new Type[]{Types.PAGE,Types.INT_VALUE});
 
 
-	public TagThread(Position start,Position end) {
-		super(start,end);
+	public TagThread(Factory f, Position start,Position end) {
+		super(f,start,end);
 	}
-	
-	
-	
-	
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		String action=ASMUtil.getAttributeString(this, "action","run");
 		// no body
@@ -49,7 +42,7 @@ public final class TagThread extends TagBaseNoFinal {
 		
 		Attribute name = getAttribute("name");
 		if(name==null){
-			addAttribute(new Attribute(false, "name",LitString.toExprString("thread"+RandomUtil.createRandomStringLC(20)), "string"));
+			addAttribute(new Attribute(false, "name",bc.getFactory().createLitString("thread"+RandomUtil.createRandomStringLC(20)), "string"));
 		}
 
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -73,7 +66,7 @@ public final class TagThread extends TagBaseNoFinal {
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#getBody()
 	 */
 	public Body getBody() {
-		return new BodyBase();
+		return new BodyBase(getFactory());
 	}
 	
 	public Body getRealBody() {

@@ -23,13 +23,8 @@ import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastOther;
-import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Condition;
 import railo.transformer.bytecode.statement.Condition.Pair;
 import railo.transformer.bytecode.statement.DoWhile;
@@ -51,6 +46,9 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.AbstrCFMLExprTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibTag;
@@ -125,8 +123,8 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 	}
 
-	private static final Expression NULL = LitString.toExprString("NULL"); 
-	private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
+	//private static final Expression NULL = LitString.toExprString("NULL"); 
+	//private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
 
 	
 	/** 
@@ -138,7 +136,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	protected final Body statements(ExprData data) throws TemplateException {
-		ScriptBody body=new ScriptBody();
+		ScriptBody body=new ScriptBody(data.factory);
 		
 		statements(data,body,true);
 	return body;
@@ -215,8 +213,8 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		Position line = data.cfml.getPosition();
 		
-		Body body=new BodyBase();
-		Condition cont=new Condition(condition(data),body,line,null);
+		Body body=new BodyBase(data.factory);
+		Condition cont=new Condition(data.factory,condition(data),body,line,null);
 		
 		if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"if statement must end with a [)]");
 		// ex block
@@ -254,7 +252,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 			
 		Position line = data.cfml.getPosition();
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		Pair pair = cont.addElseIf(condition(data), body, line,null);
 
 		if(!data.cfml.forwardIfCurrent(')'))
@@ -281,7 +279,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		// start (
 		data.cfml.previous();
 		// ex block
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		Pair p = cont.setElse(body, data.cfml.getPosition(),null);
 		statement(data,body,CTX_ELSE);
 		p.end=data.cfml.getPosition();
@@ -296,7 +294,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		// start (
 		data.cfml.previous();
 		// ex block
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		tcf.setFinally(body, data.cfml.getPosition());
 		statement(data,body,CTX_FINALLY);
 		
@@ -343,7 +341,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 		
 		Position line = data.cfml.getPosition();
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		While whil=new While(condition(data),body,line,null,id);
 		
 		if(!data.cfml.forwardIfCurrent(')'))
@@ -418,7 +416,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent(':'))
 			throw new TemplateException(data.cfml,"case body must start with [:]");
 		
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		switchBlock(data,body);
 		swit.addCase(expr, body);
 		return true;
@@ -435,7 +433,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		//int line=data.cfml.getLine();
 		
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		swit.setDefaultCase(body);
 		switchBlock(data,body);
 		return true;
@@ -499,7 +497,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		//	return null;
 		
 		Position line = data.cfml.getPosition();
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		
 		//data.cfml.previous();
 		statement(data,body,CTX_DO_WHILE);
@@ -567,7 +565,7 @@ int pos=data.cfml.getPos();
 		
 		
 		Expression left=null;
-		Body body=new BodyBase();
+		Body body=new BodyBase(data.factory);
 		Position line = data.cfml.getPosition();
 		comments(data);
 		if(!data.cfml.isCurrent(';')) {
@@ -601,7 +599,7 @@ int pos=data.cfml.getPos();
 				// ex block
 				statement(data,body,CTX_FOR);
 		
-				return new For(left,cont,update,body,line,data.cfml.getPosition(),id);					
+				return new For(data.factory,left,cont,update,body,line,data.cfml.getPosition(),id);					
 			}
 		// middle foreach
 			else if(data.cfml.forwardIfCurrent("in")) {
@@ -718,9 +716,10 @@ int pos=data.cfml.getPos();
 			return closurePart(data, id,access,rtnType,line,false);
 	}
 
+	@Override
 	protected  final Function closurePart(ExprData data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException {		
 		
-		Body body=new FunctionBody();
+		Body body=new FunctionBody(data.factory);
 		Function func=closure?
 				new Closure(data.page,id,access,rtnType,body,line,null)
 				:new FunctionImpl(data.page,id,access,rtnType,body,line,null);
@@ -779,9 +778,9 @@ int pos=data.cfml.getPos();
 				else defaultValue=null;
 				
 				// assign meta data defined in doc comment
-				passByRef = LitBoolean.TRUE;
-				displayName=LitString.EMPTY;
-				hint=LitString.EMPTY;
+				passByRef = data.factory.TRUE();
+				displayName=data.factory.EMPTY();
+				hint=data.factory.EMPTY();
 				meta=null;
 				if(data.docComment!=null){
 					Map<String, Attribute> params = data.docComment.getParams();
@@ -794,7 +793,7 @@ int pos=data.cfml.getPos();
 						name=attr.getName();
 						// hint
 						if(idName.equalsIgnoreCase(name) || name.equalsIgnoreCase(idName+".hint")) {
-							hint=CastString.toExprString(attr.getValue());
+							hint=data.factory.toExprString(attr.getValue());
 							params.remove(name);
 						}
 						//meta
@@ -811,7 +810,7 @@ int pos=data.cfml.getPos();
 				}
 				
 				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false);
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,data.factory.EMPTY(),Boolean.TRUE,null,false);
 				Attribute _attr;
 				if(!ArrayUtil.isEmpty(_attrs)){
 					if(meta==null) meta=new HashMap<String, Attribute>();
@@ -822,9 +821,9 @@ int pos=data.cfml.getPos();
 				}
 				
 				func.addArgument(
-						LitString.toExprString(idName),
-						LitString.toExprString(typeName),
-						LitBoolean.toExprBoolean(required),
+						data.factory.createLitString(idName),
+						data.factory.createLitString(typeName),
+						data.factory.createLitBoolean(required),
 						defaultValue,passByRef,displayName,hint,meta);
 				
 				comments(data);
@@ -841,19 +840,7 @@ int pos=data.cfml.getPos();
 		
 		// doc comment
 		if(data.docComment!=null){
-			func.setHint(data.docComment.getHint());
-			
-			
-			// params
-			/*Map<String, Attribute> params = data.docComment.getParams();
-			Iterator<Attribute> it = params.values().iterator();
-			Attribute attr;
-			String name;
-			while(it.hasNext()){
-				attr=it.next();
-				name=attr.getName();
-			}*/
-			
+			func.setHint(data.factory,data.docComment.getHint());
 			func.setMetaData(data.docComment.getParams());
 			data.docComment=null;
 		}
@@ -861,7 +848,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false);
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,data.factory.EMPTY(),Boolean.TRUE,null,false);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -1019,7 +1006,7 @@ int pos=data.cfml.getPos();
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false);
+		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,data.factory.EMPTY(),script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false);
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1029,7 +1016,7 @@ int pos=data.cfml.getPos();
 	
 		// body
 		if(tlt.getHasBody()){
-			Body body=new BodyBase();
+			Body body=new BodyBase(data.factory);
 			boolean wasSemiColon=statement(data,body,script.getContext());
 			if(!wasSemiColon || !tlt.isBodyFree() || body.hasStatements())
 				tag.setBody(body);
@@ -1050,7 +1037,7 @@ int pos=data.cfml.getPos();
 		if(data.docComment==null) return;
 		
 
-		tag.addMetaData(data.docComment.getHintAsAttribute());
+		tag.addMetaData(data.docComment.getHintAsAttribute(data.factory));
 		
 		Map<String, Attribute> params = data.docComment.getParams();
 		Iterator<Attribute> it = params.values().iterator();
@@ -1088,7 +1075,7 @@ int pos=data.cfml.getPos();
 		Position line = data.cfml.getPosition();
 		
 		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"property");
-		Tag property=new TagOther(line,null);
+		Tag property=new TagOther(data.factory,line,null);
 		addMetaData(data, property,IGNORE_LIST_PROPERTY);
 		
 
@@ -1102,7 +1089,7 @@ int pos=data.cfml.getPos();
 		String tmp=variableDec(data, true);
 		if(!StringUtil.isEmpty(tmp)) {
 			if(tmp.indexOf('.')!=-1) {
-				property.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+				property.addAttribute(new Attribute(false,"type",data.factory.createLitString(tmp),"string"));
 				hasType=true;
 			}
 			else {
@@ -1114,7 +1101,7 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true);
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	data.factory.NULL(),Boolean.FALSE,"name",true);
 		
 		checkSemiColonLineFeed(data,true,true);
 
@@ -1127,14 +1114,12 @@ int pos=data.cfml.getPos();
 		// first fill all regular attribute -> name="value"
 		for(int i=attrs.length-1;i>=0;i--){
 			attr=attrs[i];
-			if(!attr.getValue().equals(NULL)){
+			if(!attr.getValue().equals(data.factory.NULL())){
 				if(attr.getName().equalsIgnoreCase("name")){
 					hasName=true;
-					//attr=new Attribute(attr.isDynamicType(),attr.getName(),CastString.toExprString(attr.getValue()),"string");
 				}
 				else if(attr.getName().equalsIgnoreCase("type")){
 					hasType=true;
-					//attr=new Attribute(attr.isDynamicType(),attr.getName(),CastString.toExprString(attr.getValue()),"string");
 				}
 				property.addAttribute(attr);
 			}
@@ -1146,7 +1131,7 @@ int pos=data.cfml.getPos();
 		for(int i=0;i<attrs.length;i++){
 			attr=attrs[i];
 			
-			if(attr.getValue().equals(NULL)){
+			if(attr.getValue().equals(data.factory.NULL())){
 				// type
 				if(first==null && (!hasName || !hasType)){
 					first=attr.getName();
@@ -1161,7 +1146,7 @@ int pos=data.cfml.getPos();
 				}
 				// attr with no value
 				else {
-					attr=new Attribute(true,attr.getName(),LitString.EMPTY,"string");
+					attr=new Attribute(true,attr.getName(),data.factory.EMPTY(),"string");
 					property.addAttribute(attr);
 				}
 			}
@@ -1173,17 +1158,17 @@ int pos=data.cfml.getPos();
 				hasName=true;
 			if(second!=null){
 				hasType=true;
-				property.addAttribute(new Attribute(false,"name",LitString.toExprString(second),"string"));
-				property.addAttribute(new Attribute(false,"type",LitString.toExprString(first),"string"));
+				property.addAttribute(new Attribute(false,"name",data.factory.createLitString(second),"string"));
+				property.addAttribute(new Attribute(false,"type",data.factory.createLitString(first),"string"));
 			}
 			else {
-				property.addAttribute(new Attribute(false,"name",LitString.toExprString(first),"string"));
+				property.addAttribute(new Attribute(false,"name",data.factory.createLitString(first),"string"));
 			}
 		}
 		
-		if(!hasType)
-			property.addAttribute(ANY);
-		
+		if(!hasType) {
+			property.addAttribute(new Attribute(false,"type",data.factory.createLitString("any"),"string"));
+		}
 		if(!hasName)
 			throw new TemplateException(data.cfml,"missing name declaration for property");
 
@@ -1217,7 +1202,7 @@ int pos=data.cfml.getPos();
 		Position line = data.cfml.getPosition();
 		
 		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"param");
-		TagParam param=new TagParam(line,null);
+		TagParam param=new TagParam(data.factory,line,null);
 		
 		// type
 		boolean hasType=false;
@@ -1225,7 +1210,7 @@ int pos=data.cfml.getPos();
 		String tmp=variableDec(data, true);
 		if(!StringUtil.isEmpty(tmp)) {
 			if(tmp.indexOf('.')!=-1) {
-				param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+				param.addAttribute(new Attribute(false,"type",data.factory.createLitString(tmp),"string"));
 				hasType=true;
 			}
 			else data.cfml.setPos(pos);
@@ -1235,7 +1220,7 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true);
+		Attribute[] attrs = attributes(param,tlt,data,SEMI,	data.factory.NULL(),Boolean.TRUE,"name",true);
 		checkSemiColonLineFeed(data,true,true);
 
 		param.setTagLibTag(tlt);
@@ -1249,7 +1234,7 @@ int pos=data.cfml.getPos();
 		boolean hasName=false;
 		for(int i=attrs.length-1;i>=0;i--){
 			attr=attrs[i];
-			if(!attr.getValue().equals(NULL)){
+			if(!attr.getValue().equals(data.factory.NULL())){
 				if(attr.getName().equalsIgnoreCase("name")){
 					hasName=true;
 					param.addAttribute(attr);
@@ -1262,7 +1247,7 @@ int pos=data.cfml.getPos();
 					hasName=true;
 					if(hasDynamic) throw attrNotSupported(data.cfml,tlt,attr.getName());
 					hasDynamic=true;
-					param.addAttribute(new Attribute(false,"name",LitString.toExprString(attr.getName()),"string"));
+					param.addAttribute(new Attribute(false,"name",data.factory.createLitString(attr.getName()),"string"));
 					param.addAttribute(new Attribute(false,"default",attr.getValue(),"any"));
 				}
 				else 
@@ -1275,7 +1260,7 @@ int pos=data.cfml.getPos();
 		for(int i=0;i<attrs.length;i++){
 			attr=attrs[i];
 			
-			if(attr.getValue().equals(NULL)){
+			if(attr.getValue().equals(data.factory.NULL())){
 				// type
 				if(first==null && (!hasName || !hasType)){
 					first=attr.getName();
@@ -1286,7 +1271,7 @@ int pos=data.cfml.getPos();
 				}
 				// attr with no value
 				else {
-					attr=new Attribute(true,attr.getName(),LitString.EMPTY,"string");
+					attr=new Attribute(true,attr.getName(),data.factory.EMPTY(),"string");
 					param.addAttribute(attr);
 				}
 			}
@@ -1299,11 +1284,11 @@ int pos=data.cfml.getPos();
 				hasType=true;
 				if(hasDynamic) throw attrNotSupported(data.cfml,tlt,first);
 				hasDynamic=true;
-				param.addAttribute(new Attribute(false,"name",LitString.toExprString(second),"string"));
-				param.addAttribute(new Attribute(false,"type",LitString.toExprString(first),"string"));
+				param.addAttribute(new Attribute(false,"name",data.factory.createLitString(second),"string"));
+				param.addAttribute(new Attribute(false,"type",data.factory.createLitString(first),"string"));
 			}
 			else {
-				param.addAttribute(new Attribute(false,hasName?"type":"name",LitString.toExprString(first),"string"));
+				param.addAttribute(new Attribute(false,hasName?"type":"name",data.factory.createLitString(first),"string"));
 				hasName=true;
 			}
 		}
@@ -1370,7 +1355,7 @@ int pos=data.cfml.getPos();
 	    Return rtn;
 	    
 	    comments(data);
-	    if(checkSemiColonLineFeed(data, false,false)) rtn=new Return(line,data.cfml.getPosition());
+	    if(checkSemiColonLineFeed(data, false,false)) rtn=new Return(data.factory,line,data.cfml.getPosition());
 	    else {
 	    	Expression expr = expression(data);
 	    	checkSemiColonLineFeed(data, true,true);
@@ -1521,7 +1506,7 @@ int pos=data.cfml.getPos();
 
 	private final Tag getTag(ExprData data,Body parent, TagLibTag tlt, Position start,Position end) throws TemplateException {
 		try {
-			Tag tag = tlt.getTag(start, end);
+			Tag tag = tlt.getTag(data.factory,start, end);
 			tag.setParent(parent);
 			return tag;
 		} catch (TagLibException e) {
@@ -1605,8 +1590,8 @@ int pos=data.cfml.getPos();
 			return null;
 		data.cfml.previous();
 
-		Body body=new BodyBase();
-		TryCatchFinally tryCatchFinally=new TryCatchFinally(body,data.cfml.getPosition(),null);
+		Body body=new BodyBase(data.factory);
+		TryCatchFinally tryCatchFinally=new TryCatchFinally(data.factory,body,data.cfml.getPosition(),null);
 		
 		statement(data,body,CTX_TRY);
 		comments(data);
@@ -1641,7 +1626,7 @@ int pos=data.cfml.getPos();
 			        throw new TemplateException(data.cfml,"a catch statement must begin with the throwing type (query, application ...).");
 			}
 			else {
-				type=LitString.toExprString(sbType.toString());
+				type=data.factory.createLitString(sbType.toString());
 			} 
             
             
@@ -1655,11 +1640,11 @@ int pos=data.cfml.getPos();
 			else {
 				data.cfml.setPos(pos);
 				name=expression(data);
-				type = LitString.toExprString( "any" );
+				type = data.factory.createLitString( "any" );
 			}
 			comments(data);
 
-            Body b=new BodyBase();
+            Body b=new BodyBase(data.factory);
 			try {
 				tryCatchFinally.addCatch(type,name,b,line);
 			} 

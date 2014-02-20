@@ -8,23 +8,21 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.expression.ExprBoolean;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.ExprBoolean;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
 
 public final class OpNegate extends ExpressionBase implements ExprBoolean {
 
 	private ExprBoolean expr;
 
 	private OpNegate(Expression expr, Position start, Position end)  {
-        super(start,end);
-        this.expr=CastBoolean.toExprBoolean(expr);
+        super(expr.getFactory(),start,end);
+        this.expr=expr.getFactory().toExprBoolean(expr);
     }
     
     /**
@@ -39,7 +37,7 @@ public final class OpNegate extends ExpressionBase implements ExprBoolean {
         if(expr instanceof Literal) {
         	Boolean b=((Literal) expr).getBoolean(null);
         	if(b!=null) {
-        		return new LitBoolean(!b.booleanValue(),start,end);
+        		return expr.getFactory().createLitBoolean(!b.booleanValue(),start,end);
         	}
         }
         return new OpNegate(expr,start,end);

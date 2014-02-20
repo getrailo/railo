@@ -7,12 +7,10 @@ import org.objectweb.asm.commons.Method;
 import railo.runtime.type.FunctionValueImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
+import railo.transformer.expression.Expression;
 
 public final class NamedArgument extends Argument {
 	
@@ -41,7 +39,7 @@ public final class NamedArgument extends Argument {
 
 	public NamedArgument(Expression name, Expression value, String type, boolean varKeyUpperCase) {
 		super(value,type);
-		this.name=name instanceof Null?LitString.toExprString(varKeyUpperCase?"NULL":"null"):name;
+		this.name=name instanceof Null?name.getFactory().createLitString(varKeyUpperCase?"NULL":"null"):name;
 		this.varKeyUpperCase=varKeyUpperCase;
 	}
 
@@ -67,14 +65,12 @@ public final class NamedArgument extends Argument {
 			else {
 				//VariableString.toExprString(name).writeOut(bc, MODE_REF);
 				String str = VariableString.variableToString((Variable) name,true);
-				name=LitString.toExprString(varKeyUpperCase?str.toUpperCase():str);
+				name=bc.getFactory().createLitString(varKeyUpperCase?str.toUpperCase():str);
 				type=Variable.registerKey(bc, VariableString.toExprString(name))?KEY:STRING;
 			}
 		}
-		else  {
-			//CastString.toExprString(name).writeOut(bc, MODE_REF);
-			type=Variable.registerKey(bc, CastString.toExprString(name))?KEY:STRING;
-			
+		else {
+			type=Variable.registerKey(bc, name.getFactory().toExprString(name))?KEY:STRING;
 		}
 		//name.writeOut(bc, MODE_REF);
 		super._writeOut(bc, MODE_REF);

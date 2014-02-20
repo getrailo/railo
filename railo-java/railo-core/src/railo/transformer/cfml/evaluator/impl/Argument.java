@@ -1,17 +1,14 @@
 package railo.transformer.cfml.evaluator.impl;
 
 import railo.runtime.op.Caster;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitDouble;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.tag.TagLibTag;
 
 
@@ -42,7 +39,7 @@ public final class Argument extends EvaluatorSupport {
 			// check attribute passby
 			Attribute attrPassBy = tag.getAttribute("passby");
 			if(attrPassBy!=null) {
-				ExprString expr = CastString.toExprString(attrPassBy.getValue());
+				ExprString expr = tag.getFactory().toExprString(attrPassBy.getValue());
 				if(!(expr instanceof LitString))
 					throw new EvaluatorException("Attribute passby of the Tag Argument, must be a literal string");
 				LitString lit = (LitString)expr;
@@ -69,7 +66,7 @@ public final class Argument extends EvaluatorSupport {
 	public static void checkDefaultValue(Tag tag) {
 		Attribute _type = tag.getAttribute("type");
 		if(_type!=null) {
-			ExprString typeValue = CastString.toExprString(_type.getValue());
+			ExprString typeValue = tag.getFactory().toExprString(_type.getValue());
 			if(typeValue instanceof LitString) {
 				String strType=((LitString)typeValue).getString();
 				Attribute _default = tag.getAttribute("default");
@@ -83,16 +80,16 @@ public final class Argument extends EvaluatorSupport {
 						// check for boolean
 						if("boolean".equalsIgnoreCase(strType)) {
 							if("true".equalsIgnoreCase(strDefault) || "yes".equalsIgnoreCase(strDefault))
-								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.TRUE, _default.getType()));
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), tag.getFactory().TRUE(), _default.getType()));
 							if("false".equalsIgnoreCase(strDefault) || "no".equalsIgnoreCase(strDefault))
-								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.FALSE, _default.getType()));
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), tag.getFactory().FALSE(), _default.getType()));
 						}
 
 						// check for numbers
 						if("number".equalsIgnoreCase(strType) || "numeric".equalsIgnoreCase(strType)) {
 							Double dbl = Caster.toDouble(strDefault,null);
 							if(dbl!=null) {
-								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitDouble.toExprDouble(dbl.doubleValue()), _default.getType()));
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), tag.getFactory().createLitDouble(dbl.doubleValue()), _default.getType()));
 							}
 						}
 					}

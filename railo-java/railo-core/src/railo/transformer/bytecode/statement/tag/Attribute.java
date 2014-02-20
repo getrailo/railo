@@ -1,6 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
-import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.expression.Expression;
 
 public final class Attribute {
 	

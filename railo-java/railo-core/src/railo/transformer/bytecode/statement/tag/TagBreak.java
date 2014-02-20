@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -12,8 +13,8 @@ public final class TagBreak extends TagBase {
 	
 	private String label;
 
-	public TagBreak(Position start,Position end) {
-		super(start,end);
+	public TagBreak(Factory f, Position start,Position end) {
+		super(f,start,end);
 		setHasFlowController(true);
 	}
 

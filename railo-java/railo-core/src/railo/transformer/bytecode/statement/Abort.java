@@ -4,6 +4,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -20,14 +21,11 @@ public final class Abort extends StatementBaseNoFinal {
 			new Type[]{Types.INT_VALUE});
 
 	
-	public Abort(Position start, Position end) {
-		super(start,end);
+	public Abort(Factory f, Position start, Position end) {
+		super(f,start,end);
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.push(railo.runtime.exp.Abort.SCOPE_PAGE);

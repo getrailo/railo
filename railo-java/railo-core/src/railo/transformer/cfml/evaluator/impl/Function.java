@@ -10,19 +10,17 @@ import railo.runtime.functions.system.CFFunction;
 import railo.runtime.listener.AppListenerUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.tag.TagLibTag;
@@ -58,7 +56,7 @@ public final class Function extends EvaluatorSupport {
 		// attribute modifier
 		Attribute attrModifier = tag.getAttribute("modifier");
 		if(attrModifier!=null) {
-			ExprString expr = CastString.toExprString(attrModifier.getValue());
+			ExprString expr = tag.getFactory().toExprString(attrModifier.getValue());
 			if(!(expr instanceof Literal))
 				throw new EvaluatorException("Attribute modifier of the Tag Function, must be one of the following literal string values: [abstract] or [final]");
 			String modifier=StringUtil.emptyIfNull(((Literal)expr).getString()).trim();
@@ -97,7 +95,7 @@ public final class Function extends EvaluatorSupport {
 		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehändelt
 		Attribute attrOutput = tag.getAttribute("output");
 		if(attrOutput!=null) {
-			Expression expr = CastBoolean.toExprBoolean(attrOutput.getValue());
+			Expression expr = tag.getFactory().toExprBoolean(attrOutput.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute output of the Tag Function, must be a literal boolean value (true or false, yes or no)");
 			//boolean output = ((LitBoolean)expr).getBooleanValue();
@@ -106,7 +104,7 @@ public final class Function extends EvaluatorSupport {
 		
 		Attribute attrBufferOutput = tag.getAttribute("bufferoutput");
 		if(attrBufferOutput!=null) {
-			Expression expr = CastBoolean.toExprBoolean(attrBufferOutput.getValue());
+			Expression expr = tag.getFactory().toExprBoolean(attrBufferOutput.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute bufferOutput of the Tag Function, must be a literal boolean value (true or false, yes or no)");
 			//boolean output = ((LitBoolean)expr).getBooleanValue();

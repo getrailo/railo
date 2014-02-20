@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Position;
 
 public class TagImport extends TagBaseNoFinal {
@@ -12,8 +13,8 @@ public class TagImport extends TagBaseNoFinal {
 	 * @param startLine
 	 * @param endLine
 	 */
-	public TagImport(Position start,Position end) {
-		super(start, end);
+	public TagImport(Factory f, Position start,Position end) {
+		super(f,start, end);
 	}
 
 	/**

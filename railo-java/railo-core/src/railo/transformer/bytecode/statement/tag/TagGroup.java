@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Position;
 
 public abstract class TagGroup extends TagBase {
@@ -12,8 +13,8 @@ public abstract class TagGroup extends TagBase {
 	 private int group=-1;
 	 private int pid;
 	
-	public TagGroup(Position start, Position end) {
-		super(start, end);
+	public TagGroup(Factory f, Position start, Position end) {
+		super(f,start, end);
 		// TODO Auto-generated constructor stub
 	}
 

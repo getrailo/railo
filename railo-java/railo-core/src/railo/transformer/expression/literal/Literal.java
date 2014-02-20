@@ -1,6 +1,6 @@
-package railo.transformer.bytecode;
+package railo.transformer.expression.literal;
 
-import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.expression.Expression;
 
 
 /**

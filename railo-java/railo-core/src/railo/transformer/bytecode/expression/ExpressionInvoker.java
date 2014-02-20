@@ -9,11 +9,12 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.expression.var.DataMember;
-import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
 
 public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 
@@ -46,7 +47,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 	private List members=new ArrayList();
 
 	public ExpressionInvoker(Expression expr) {
-		super(expr.getStart(),expr.getEnd());
+		super(expr.getFactory(),expr.getStart(),expr.getEnd());
 		this.expr=expr;
 	}
 
@@ -91,7 +92,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 
 	/**
 	 *
-	 * @see railo.transformer.bytecode.expression.Invoker#addMember(railo.transformer.bytecode.expression.var.Member)
+	 * @see railo.transformer.bytecode.expression.Invoker#addMember(railo.transformer.expression.var.Member)
 	 */
 	public void addMember(Member member) {
 		members.add(member);

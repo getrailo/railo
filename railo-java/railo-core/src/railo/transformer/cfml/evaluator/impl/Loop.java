@@ -6,12 +6,9 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.BytecodeFactory;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.CastBoolean;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
@@ -21,6 +18,8 @@ import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
@@ -34,7 +33,7 @@ public final class Loop extends EvaluatorSupport {
 		// label
 		try {
 			if(ASMUtil.isLiteralAttribute(tag, "label", ASMUtil.TYPE_STRING, false, true)) {
-				LitString ls=(LitString) CastString.toExprString(tag.getAttribute("label").getValue());
+				LitString ls=(LitString) tag.getFactory().toExprString(tag.getAttribute("label").getValue());
 				String l = ls.getString();
 				if(!StringUtil.isEmpty(l,true)) {
 					loop.setLabel(l.trim());
@@ -133,8 +132,8 @@ public final class Loop extends EvaluatorSupport {
 				ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
 				transformer = tagLib.getExprTransfomer();
 				Page page = ASMUtil.getAncestorPage(tag);
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,CharsetUtil.UTF8),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
-				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
+				Expression expr=transformer.transform(BytecodeFactory.getInstance(),ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,CharsetUtil.UTF8),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
+				tag.addAttribute(new Attribute(false,"condition",page.getFactory().toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {
 				throw new EvaluatorException(e.getMessage());

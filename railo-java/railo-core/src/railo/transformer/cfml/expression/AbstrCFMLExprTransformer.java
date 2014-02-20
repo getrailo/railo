@@ -13,32 +13,22 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.UDFUtil;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.CastDouble;
-import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
-import railo.transformer.bytecode.expression.ExprDouble;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionInvoker;
 import railo.transformer.bytecode.expression.Invoker;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.Assign;
 import railo.transformer.bytecode.expression.var.BIF;
-import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.DynAssign;
 import railo.transformer.bytecode.expression.var.FunctionMember;
-import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.NamedArgument;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.Identifier;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitDouble;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.op.OPDecision;
 import railo.transformer.bytecode.op.OpBool;
@@ -49,7 +39,6 @@ import railo.transformer.bytecode.op.OpNegate;
 import railo.transformer.bytecode.op.OpNegateNumber;
 import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
-import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -59,6 +48,14 @@ import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.script.DocComment;
 import railo.transformer.cfml.script.DocCommentTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
+import railo.transformer.expression.ExprDouble;
+import railo.transformer.expression.ExprString;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitDouble;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -171,10 +168,6 @@ public abstract class AbstrCFMLExprTransformer {
 	protected short ATTR_TYPE_OPTIONAL=TagLibTagAttr.SCRIPT_SUPPORT_OPTIONAL;
 	protected short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
 	
-	protected static final Expression NULL = LitString.toExprString("NULL"); 
-	protected static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
-
-
 	protected static EndCondition SEMI_BLOCK=new EndCondition() {
 		public boolean isEnd(ExprData data) {
 			return data.cfml.isCurrent('{') || data.cfml.isCurrent(';');
@@ -213,8 +206,8 @@ public abstract class AbstrCFMLExprTransformer {
 		public short context=CTX_NONE; 
 		public DocComment docComment;
 		
-		public ExprData(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
-			super(page,cfml,ep,settings,flibs,scriptTags);
+		public ExprData(Factory factory,Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
+			super(factory,page,cfml,ep,settings,flibs,scriptTags);
 			this.allowLowerThan=allowLowerThan;
 		}
 	}
@@ -246,8 +239,8 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param fld Function Libraries zum validieren der Funktionen
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected ExprData init(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
-		ExprData data = new ExprData(page,ep,cfml,fld,settings,allowLowerThan,scriptTags);
+	protected ExprData init(Factory factory,Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
+		ExprData data = new ExprData(factory,page,ep,cfml,fld,settings,allowLowerThan,scriptTags);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
 		return data;
@@ -852,9 +845,9 @@ public abstract class AbstrCFMLExprTransformer {
 			end=new Position(leftEnd.line, leftEnd.column+2, leftEnd.pos+2);
 		}
 		
-		ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,start,end),opr);
+		ExprDouble res = OpDouble.toExprDouble(expr, data.factory.createLitDouble(1D,start,end),opr);
 		expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
-		return OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D,start,end),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
+		return OpDouble.toExprDouble(expr,data.factory.createLitDouble(1D,start,end),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
 	}
 	
 	
@@ -872,7 +865,7 @@ public abstract class AbstrCFMLExprTransformer {
 			if (data.cfml.forwardIfCurrent('-')) {
 				comments(data);
 				Expression expr = clip(data);
-				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.MINUS);
+				ExprDouble res = OpDouble.toExprDouble(expr, data.factory.createLitDouble(1D),OpDouble.MINUS);
 				return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			comments(data);
@@ -883,11 +876,11 @@ public abstract class AbstrCFMLExprTransformer {
 			if (data.cfml.forwardIfCurrent('+')) {
 				comments(data);
 				Expression expr = clip(data);
-				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
+				ExprDouble res = OpDouble.toExprDouble(expr, data.factory.createLitDouble(1D),OpDouble.PLUS);
 				return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			comments(data);
-			return CastDouble.toExprDouble(clip(data));//OpNegateNumber.toExprDouble(clip(),OpNegateNumber.PLUS,line);
+			return data.factory.toExprDouble(clip(data));//OpNegateNumber.toExprDouble(clip(),OpNegateNumber.PLUS,line);
 		}
 		return clip(data);
 	}
@@ -1014,7 +1007,7 @@ public abstract class AbstrCFMLExprTransformer {
 					
 					ExprString exprStr=null;
 					if(str.length()!=0) {
-						exprStr=new LitString(str.toString(),line,data.cfml.getPosition());
+						exprStr=data.factory.createLitString(str.toString(),line,data.cfml.getPosition());
 						if(expr!=null){
 							expr = OpString.toExprString(expr, exprStr);
 						}
@@ -1050,9 +1043,9 @@ public abstract class AbstrCFMLExprTransformer {
 			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+quoter+"] not found");
 		
 		if(expr==null)
-			expr=new LitString(str.toString(),line,data.cfml.getPosition());
+			expr=data.factory.createLitString(str.toString(),line,data.cfml.getPosition());
 		else if(str.length()!=0) {
-			expr = OpString.toExprString(expr, new LitString(str.toString(),line,data.cfml.getPosition()));
+			expr = OpString.toExprString(expr, data.factory.createLitString(str.toString(),line,data.cfml.getPosition()));
 		}
         comments(data);
         
@@ -1114,7 +1107,7 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
         
 		try {
-			return LitDouble.toExprDouble(Caster.toDoubleValue(rtn.toString()),line,data.cfml.getPosition());
+			return data.factory.createLitDouble(Caster.toDoubleValue(rtn.toString()),line,data.cfml.getPosition());
 		} catch (CasterException e) {
 			throw new TemplateException(data.cfml,e.getMessage());
 		}
@@ -1181,15 +1174,15 @@ public abstract class AbstrCFMLExprTransformer {
 		// Boolean constant 
 		if(id.getString().equalsIgnoreCase("TRUE"))	{// || name.equals("YES"))	{
 			comments(data);
-			return new LitBoolean(true,line,data.cfml.getPosition());
+			return id.getFactory().createLitBoolean(true,line,data.cfml.getPosition());
 		}
 		else if(id.getString().equalsIgnoreCase("FALSE"))	{// || name.equals("NO"))	{
 			comments(data);
-			return new LitBoolean(false,line,data.cfml.getPosition());
+			return id.getFactory().createLitBoolean(false,line,data.cfml.getPosition());
 		}
 		else if(NullSupportHelper.full() && id.getString().equalsIgnoreCase("NULL"))	{
 			comments(data);
-			return new Null(line,data.cfml.getPosition());
+			return new Null(id.getFactory(),line,data.cfml.getPosition());
 		}
 		
 		// Extract Scope from the Variable
@@ -1207,7 +1200,8 @@ public abstract class AbstrCFMLExprTransformer {
 		if(!data.cfml.forwardIfCurrent(start))return null;
 		
 		Position line = data.cfml.getPosition();
-		BIF bif=new BIF(flf.getName(),flf);
+		
+		BIF bif=new BIF(data.factory,flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
 		bif.setClass(flf.getClazz());
 		bif.setReturnType(flf.getReturnTypeAsString());
@@ -1225,7 +1219,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if (!data.cfml.forwardIfCurrent(end))
 			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+end+"] not found");
 		comments(data);
-		Variable var=new Variable(line,data.cfml.getPosition());
+		Variable var=new Variable(data.factory,line,data.cfml.getPosition());
 		var.addMember(bif);
 		return var;
 	}
@@ -1268,8 +1262,8 @@ public abstract class AbstrCFMLExprTransformer {
 				if(name==null) 
 					throw new TemplateException(data.cfml, "Invalid identifier");
                 comments(data);
-				nameProp=Identifier.toIdentifier(name,line,data.cfml.getPosition());
-				namePropUC=Identifier.toIdentifier(name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line,data.cfml.getPosition());
+				nameProp=Identifier.toIdentifier(data.factory,name,line,data.cfml.getPosition());
+				namePropUC=Identifier.toIdentifier(data.factory,name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line,data.cfml.getPosition());
 			}
 			// []
 			else if (data.cfml.forwardIfCurrent('[')) {
@@ -1311,12 +1305,12 @@ public abstract class AbstrCFMLExprTransformer {
             }
 			// Method
 			if (data.cfml.isCurrent('(')) {
-				if(nameProp==null && name!=null)nameProp=Identifier.toIdentifier(name, Identifier.CASE_ORIGNAL,null,null);// properly this is never used
+				if(nameProp==null && name!=null)nameProp=Identifier.toIdentifier(data.factory,name, Identifier.CASE_ORIGNAL,null,null);// properly this is never used
 				invoker.addMember(getFunctionMember(data,nameProp, false));
 			}
 			
 			// property
-			else invoker.addMember(new DataMember(namePropUC));
+			else invoker.addMember(data.factory.createDataMember(namePropUC));
 			
 		}
 		
@@ -1365,13 +1359,13 @@ public abstract class AbstrCFMLExprTransformer {
 				else break;
 			}
 			
-			exprName=LitString.toExprString(fullName.toString());
+			exprName=data.factory.createLitString(fullName.toString());
 		}
 		else {
 			
 			Expression str=string(data);
 			if(str!=null){
-				exprName=CastString.toExprString(str);
+				exprName=data.factory.toExprString(str);
 			}
 			else {
 				data.cfml.setPos(start);
@@ -1382,9 +1376,9 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
         
         if (data.cfml.isCurrent('(')) {
-			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier("_createComponent",Identifier.CASE_ORIGNAL,null,null), true);
+			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier(data.factory,"_createComponent",Identifier.CASE_ORIGNAL,null,null), true);
 			func.addArgument(new Argument(exprName,"string"));
-			Variable v=new Variable(expr.getStart(),expr.getEnd());
+			Variable v=new Variable(expr.getFactory(),expr.getStart(),expr.getEnd());
 			v.addMember(func);
             comments(data);
 			return v;
@@ -1417,7 +1411,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if (data.cfml.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,name, true);
 			
-			Variable var=new Variable(line,data.cfml.getPosition());
+			Variable var=new Variable(name.getFactory(),line,data.cfml.getPosition());
 			var.addMember(func);
             comments(data);
 			return var;
@@ -1428,8 +1422,8 @@ public abstract class AbstrCFMLExprTransformer {
 		if(var!=null) return var;
 		
 		// undefined variable
-		var=new Variable(line,data.cfml.getPosition());
-		var.addMember(new DataMember(name));
+		var=new Variable(name.getFactory(),line,data.cfml.getPosition());
+		var.addMember(data.factory.createDataMember(name));
 
         comments(data);
 		return var;
@@ -1451,25 +1445,25 @@ public abstract class AbstrCFMLExprTransformer {
 	private Variable scope(ExprData data,Identifier id, Position line) throws TemplateException {
 		String idStr=id.getUpper();
 		if(data.ignoreScopes)return null;
-		if (idStr.equals("CGI")) 				return new Variable(Scope.SCOPE_CGI,line,data.cfml.getPosition());
-		else if (idStr.equals("ARGUMENTS"))  	return new Variable(Scope.SCOPE_ARGUMENTS,line,data.cfml.getPosition());
-		else if (idStr.equals("REQUEST"))		return new Variable(Scope.SCOPE_REQUEST,line,data.cfml.getPosition());
-		else if (idStr.equals("SESSION"))		return new Variable(Scope.SCOPE_SESSION,line,data.cfml.getPosition());
-		else if (idStr.equals("APPLICATION"))	return new Variable(Scope.SCOPE_APPLICATION,line,data.cfml.getPosition());
-		else if (idStr.equals("VARIABLES"))		return new Variable(Scope.SCOPE_VARIABLES,line,data.cfml.getPosition());
-		else if (idStr.equals("FORM")) 			return new Variable(Scope.SCOPE_FORM,line,data.cfml.getPosition());
-		else if (idStr.equals("URL"))			return new Variable(Scope.SCOPE_URL,line,data.cfml.getPosition());
-		else if (idStr.equals("SERVER")) 		return new Variable(Scope.SCOPE_SERVER,line,data.cfml.getPosition());
-		else if (idStr.equals("CLIENT"))		return new Variable(Scope.SCOPE_CLIENT,line,data.cfml.getPosition());
-		else if (idStr.equals("COOKIE"))		return new Variable(Scope.SCOPE_COOKIE,line,data.cfml.getPosition());
-		else if (idStr.equals("CLUSTER"))		return new Variable(Scope.SCOPE_CLUSTER,line,data.cfml.getPosition());
-		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line,data.cfml.getPosition());
+		if (idStr.equals("CGI")) 				return new Variable(data.factory,Scope.SCOPE_CGI,line,data.cfml.getPosition());
+		else if (idStr.equals("ARGUMENTS"))  	return new Variable(data.factory,Scope.SCOPE_ARGUMENTS,line,data.cfml.getPosition());
+		else if (idStr.equals("REQUEST"))		return new Variable(data.factory,Scope.SCOPE_REQUEST,line,data.cfml.getPosition());
+		else if (idStr.equals("SESSION"))		return new Variable(data.factory,Scope.SCOPE_SESSION,line,data.cfml.getPosition());
+		else if (idStr.equals("APPLICATION"))	return new Variable(data.factory,Scope.SCOPE_APPLICATION,line,data.cfml.getPosition());
+		else if (idStr.equals("VARIABLES"))		return new Variable(data.factory,Scope.SCOPE_VARIABLES,line,data.cfml.getPosition());
+		else if (idStr.equals("FORM")) 			return new Variable(data.factory,Scope.SCOPE_FORM,line,data.cfml.getPosition());
+		else if (idStr.equals("URL"))			return new Variable(data.factory,Scope.SCOPE_URL,line,data.cfml.getPosition());
+		else if (idStr.equals("SERVER")) 		return new Variable(data.factory,Scope.SCOPE_SERVER,line,data.cfml.getPosition());
+		else if (idStr.equals("CLIENT"))		return new Variable(data.factory,Scope.SCOPE_CLIENT,line,data.cfml.getPosition());
+		else if (idStr.equals("COOKIE"))		return new Variable(data.factory,Scope.SCOPE_COOKIE,line,data.cfml.getPosition());
+		else if (idStr.equals("CLUSTER"))		return new Variable(data.factory,Scope.SCOPE_CLUSTER,line,data.cfml.getPosition());
+		else if (idStr.equals("LOCAL"))			return new Variable(data.factory,Scope.SCOPE_LOCAL,line,data.cfml.getPosition());
 		else if (idStr.equals("VAR")) {
 			Identifier _id = identifier(data,false,true);
 			if(_id!=null){
 				comments(data);
-				Variable local = new Variable(ScopeSupport.SCOPE_VAR,line,data.cfml.getPosition());
-				if(!"LOCAL".equalsIgnoreCase(_id.getString()))local.addMember(new DataMember(_id));
+				Variable local = new Variable(data.factory,ScopeSupport.SCOPE_VAR,line,data.cfml.getPosition());
+				if(!"LOCAL".equalsIgnoreCase(_id.getString()))local.addMember(data.factory.createDataMember(_id));
 				else {
 					local.ignoredFirstMember(true);
 				}
@@ -1503,7 +1497,7 @@ public abstract class AbstrCFMLExprTransformer {
 				}
 		}
 		while (data.cfml.isValidIndex());
-		return Identifier.toIdentifier(data.cfml.substring(start.pos,data.cfml.getPos()-start.pos), 
+		return Identifier.toIdentifier(data.factory,data.cfml.substring(start.pos,data.cfml.getPos()-start.pos), 
 				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start,data.cfml.getPosition());
 	}
 	
@@ -1535,7 +1529,7 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private ExprString structElement(ExprData data) throws TemplateException {
         comments(data);
-        ExprString name = CastString.toExprString(assignOp(data));
+        ExprString name = data.factory.toExprString(assignOp(data));
 		if(name instanceof LitString)((LitString)name).fromBracket(true);
         comments(data);
 		return name;
@@ -1592,8 +1586,8 @@ public abstract class AbstrCFMLExprTransformer {
         			if(arg.getDefaultValue()!=null)
         				bif.addArgument(
         						new NamedArgument(
-        								LitString.toExprString(arg.getName()),
-        								LitString.toExprString(arg.getDefaultValue()),
+        								data.factory.createLitString(arg.getName()),
+        								data.factory.createLitString(arg.getDefaultValue()),
         								arg.getTypeAsString(),false
         								));
         		}
@@ -1745,7 +1739,7 @@ public abstract class AbstrCFMLExprTransformer {
 		}
         comments(data);
 		
-		return LitString.toExprString(sb.toString(),line,data.cfml.getPosition());
+		return data.factory.createLitString(sb.toString(),line,data.cfml.getPosition());
 	}
     
 
@@ -1798,7 +1792,7 @@ public abstract class AbstrCFMLExprTransformer {
         }
         if(isDocComment) {
         	String comment = cfml.substring(pos-2,cfml.getPos()-pos);
-        	data.docComment=docCommentTransformer.transform(comment);
+        	data.docComment=docCommentTransformer.transform(data.factory,comment);
         }
         return true;
     }

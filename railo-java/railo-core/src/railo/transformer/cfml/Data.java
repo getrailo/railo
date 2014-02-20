@@ -1,6 +1,7 @@
 package railo.transformer.cfml;
 
 import railo.runtime.config.Config;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Page;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
@@ -16,9 +17,10 @@ public abstract class Data {
 		public final Page page;
 		public final TagLibTag[] scriptTags;
 		public final EvaluatorPool ep;
+		public final Factory factory;
 		
 		
-	    public Data(Page page,CFMLString cfml,EvaluatorPool ep,TransfomerSettings settings,FunctionLib[] flibs,TagLibTag[] scriptTags) {
+	    public Data(Factory factory,Page page,CFMLString cfml,EvaluatorPool ep,TransfomerSettings settings,FunctionLib[] flibs,TagLibTag[] scriptTags) {
 	    	this.config = page.getPageSource().getMapping().getConfig();
 	    	this.page = page;
 	    	this.cfml = cfml;
@@ -26,5 +28,8 @@ public abstract class Data {
 			this.flibs = flibs;
 			this.scriptTags = scriptTags;
 			this.ep = ep;
+			this.factory = factory;
 		}
+	    
+	    
 	}

@@ -7,55 +7,48 @@ import java.util.Map;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.LitBoolean;
+import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
  
 public final class TagFunction extends TagBase implements IFunction {
-
-	private static final ExprString ANY = LitString.toExprString("any");
-
-	private static final Expression PUBLIC = LitString.toExprString("public");
-
-	private static final Expression EMPTY = LitString.toExprString("");
 	
-	public TagFunction(Position start,Position end) {
-		super(start,end);
+	public TagFunction(Factory f,Position start,Position end) {
+		super(f,start,end);
 		
 	}
 	
-	/**
-	 * @see railo.transformer.bytecode.statement.IFunction#writeOut(railo.transformer.bytecode.BytecodeContext, int)
-	 */
+	@Override
 	public void writeOut(BytecodeContext bc, int type) throws BytecodeException {
     	//ExpressionUtil.visitLine(bc, getStartLine());
     	_writeOut(bc,type);
     	//ExpressionUtil.visitLine(bc, getEndLine());
 	}
 	
-	/**
-	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		_writeOut(bc,Function.PAGE_TYPE_REGULAR);
 	}
 
 	public void _writeOut(BytecodeContext bc, int type) throws BytecodeException {
-		Body functionBody = new BodyBase();
+
+		//private static final Expression EMPTY = LitString.toExprString("");
+		
+		Body functionBody = new BodyBase(bc.getFactory());
 		Function func = createFunction(bc.getPage(),functionBody);
 		func.setParent(getParent());
 
@@ -138,11 +131,11 @@ public final class TagFunction extends TagBase implements IFunction {
 		
 		// type
 		attr = tag.removeAttribute("type");
-		Expression type = (attr == null) ? ANY : attr.getValue();
+		Expression type = (attr == null) ? tag.getFactory().createLitString("any") : attr.getValue();
 
 		// required
 		attr = tag.removeAttribute("required");
-		Expression required = (attr == null) ? LitBoolean.FALSE : attr
+		Expression required = (attr == null) ? tag.getFactory().FALSE() : attr
 				.getValue();
 
 		// default
@@ -151,18 +144,18 @@ public final class TagFunction extends TagBase implements IFunction {
 		
 		// passby
 		attr = tag.removeAttribute("passby");
-		LitBoolean passByReference = LitBoolean.TRUE;
+		LitBoolean passByReference = tag.getFactory().TRUE();
 		if(attr!=null) {
 			// i can cast irt to LitString because he evulator check this before
 			 String str = ((LitString)attr.getValue()).getString();
 			 if(str.trim().equalsIgnoreCase("value"))
-				 passByReference=LitBoolean.FALSE;
+				 passByReference=tag.getFactory().FALSE();
 		}
 		
 		
 		// displayname
 		attr = tag.removeAttribute("displayname");
-		Expression displayName = (attr == null) ? EMPTY : attr.getValue();
+		Expression displayName = (attr == null) ? tag.getFactory().EMPTY() : attr.getValue();
 
 		// hint
 		attr = tag.removeAttribute("hint");
@@ -170,7 +163,7 @@ public final class TagFunction extends TagBase implements IFunction {
 			attr = tag.removeAttribute("description");
 		
 		Expression hint;
-		if(attr == null)hint=EMPTY;
+		if(attr == null)hint=tag.getFactory().EMPTY();
 		else hint=attr.getValue();
 		
 		func.addArgument(name, type, required, defaultValue, passByReference,displayName, hint,tag.getAttributes());
@@ -179,7 +172,9 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	private Function createFunction(Page page, Body body) throws BytecodeException {
 		Attribute attr;
-
+		LitString ANY = body.getFactory().createLitString("any");
+		LitString PUBLIC = body.getFactory().createLitString("public");
+		
 		// name
 		Expression name = removeAttribute("name").getValue();
 		/*if(name instanceof LitString) {
@@ -193,7 +188,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 		// output
 		attr = removeAttribute("output");
-		Expression output = (attr == null) ? LitBoolean.TRUE : attr.getValue();
+		Expression output = (attr == null) ? page.getFactory().FALSE() : attr.getValue();
 		
 		// bufferOutput
 		attr = removeAttribute("bufferoutput");
@@ -218,15 +213,15 @@ public final class TagFunction extends TagBase implements IFunction {
 
 		// dspLabel
 		attr = removeAttribute("displayname");
-		Expression displayname = (attr == null) ? EMPTY : attr.getValue();
+		Expression displayname = (attr == null) ? body.getFactory().EMPTY() : attr.getValue();
 
 		// hint
 		attr = removeAttribute("hint");
-		Expression hint = (attr == null) ? EMPTY : attr.getValue();
+		Expression hint = (attr == null) ? body.getFactory().EMPTY() : attr.getValue();
 
 		// description
 		attr = removeAttribute("description");
-		Expression description = (attr == null) ? EMPTY : attr.getValue();
+		Expression description = (attr == null) ? body.getFactory().EMPTY() : attr.getValue();
 
 		// returnformat
 		attr = removeAttribute("returnformat");

@@ -1,13 +1,12 @@
 package railo.transformer.cfml.evaluator.func.impl;
 
 import railo.runtime.exp.TemplateException;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.op.OpBigDecimal;
 import railo.transformer.bytecode.op.OpDouble;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
+import railo.transformer.expression.Expression;
 import railo.transformer.library.function.FunctionLibFunction;
 
 
@@ -21,7 +20,7 @@ public class PrecisionEvaluate implements FunctionEvaluator {
 		for (Argument arg : args) {
 			Expression value = arg.getValue();
 			if (value instanceof OpDouble) {
-				arg.setValue(CastString.toExprString(toOpBigDecimal(((OpDouble)value))), "any");
+				arg.setValue(value.getFactory().toExprString(toOpBigDecimal(((OpDouble)value))), "any");
 			}
 		}
 	}

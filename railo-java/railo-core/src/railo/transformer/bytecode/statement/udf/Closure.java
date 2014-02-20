@@ -3,10 +3,10 @@ package railo.transformer.bytecode.statement.udf;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
 
 public final class Closure extends Function {
 

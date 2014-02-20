@@ -1,12 +1,13 @@
 package railo.transformer.bytecode.expression.var;
 
-import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.Factory;
+import railo.transformer.expression.ExprString;
 import railo.transformer.library.function.FunctionLibFunction;
 
 
 
 public final class BIF extends FunctionMember {
+	
 		private static String ANY="any";
 	
 		private ExprString name;
@@ -15,17 +16,26 @@ public final class BIF extends FunctionMember {
 		private String returnType=ANY;
 		private FunctionLibFunction flf;
 
+		private final Factory factory;
+
 
 
 		public BIF(ExprString name, FunctionLibFunction flf) {
 			this.name=name;
 			this.flf=flf;
+			this.factory=name.getFactory();
 		}
-		public BIF(String name, FunctionLibFunction flf) {
-			this.name=LitString.toExprString(name);
+		
+		public BIF(Factory factory,String name, FunctionLibFunction flf) {
+			this.name=factory.createLitString(name);
 			this.flf=flf;
+			this.factory=factory;
 		}
 
+		public Factory getFactory() {
+			return factory;
+		}
+		
 		public void setArgType(int argType) {
 			this.argType=argType;
 		}

@@ -3,6 +3,7 @@ package railo.transformer.bytecode.expression.type;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -14,15 +15,16 @@ public class LiteralStringArray extends ExpressionBase {
 
 	private String[] arr;
 
-	public LiteralStringArray(String[] arr){
-		super(null,null);
+	public LiteralStringArray(Factory f,String[] arr){
+		super(f,null,null);
 		this.arr=arr;
 	}
-	public LiteralStringArray(String[] arr, Position start,Position end){
-		super(start,end);
+	public LiteralStringArray(Factory f,String[] arr, Position start,Position end){
+		super(f,start,end);
 		this.arr=arr;
 	}
 	
+	@Override
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		ArrayVisitor av=new ArrayVisitor();

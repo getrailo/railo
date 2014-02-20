@@ -9,6 +9,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.var.DataMember;
 
 public final class VariableRef extends ExpressionBase {
 
@@ -33,7 +34,7 @@ public final class VariableRef extends ExpressionBase {
 			new Type[]{Types.OBJECT,Types.COLLECTION_KEY});
 
 	public VariableRef(Variable variable) {
-		super(variable.getStart(),variable.getEnd());
+		super(variable.getFactory(),variable.getStart(),variable.getEnd());
 		this.variable=variable;
 	}
 

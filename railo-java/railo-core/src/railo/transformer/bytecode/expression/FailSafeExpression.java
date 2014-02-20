@@ -8,6 +8,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
 
 public class FailSafeExpression  extends ExpressionBase implements Opcodes {
 
@@ -17,7 +18,7 @@ public class FailSafeExpression  extends ExpressionBase implements Opcodes {
 
 	
 	public FailSafeExpression(Expression expr,Expression defaultValue) {
-		super(expr.getStart(), expr.getEnd());
+		super(expr.getFactory(),expr.getStart(), expr.getEnd());
 		this.expr=expr;
 		this.defaultValue=defaultValue;
 	}

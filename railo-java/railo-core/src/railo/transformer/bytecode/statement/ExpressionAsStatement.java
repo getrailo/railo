@@ -5,10 +5,10 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.literal.Literal;
 
 public final class ExpressionAsStatement extends StatementBaseNoFinal {
 
@@ -20,7 +20,7 @@ public final class ExpressionAsStatement extends StatementBaseNoFinal {
 	 * @param expr
 	 */
 	public ExpressionAsStatement(Expression expr) {
-		super(expr.getStart(),expr.getEnd());
+		super(expr.getFactory(),expr.getStart(),expr.getEnd());
 		this.expr=expr;
 	}
 
