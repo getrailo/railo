@@ -5675,14 +5675,26 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
-	
+
 	<!-- GetLocalHostIP -->
 	<function>
 		<name>GetLocalHostIP</name>
 		<class>railo.runtime.functions.system.GetLocalHostIP</class>
 		<description>Returns the localhost IP address, which is 127.0.0.1 for IPv4 and ::1 for IPv6 addresses.</description>
+		<argument>
+		    <name>all</name>
+		    <type>boolean</type>
+		    <required>false</required>
+		    <description>pass true to get an Array with all of the local IP addresses. default [false] will return a String with one value.</description>
+		</argument>
+		<argument>
+            <name>refresh</name>
+            <type>boolean</type>
+            <required>false</required>
+            <description>on some systems getting all of the IP addresses can take some time so the result is cached after the first call, if the system's IP addresses were modified, pass true to refresh that cache.</description>
+        </argument>
 		<return>
-			<type>string</type>
+			<type>any</type>
 		</return>
 	</function>
 	
