@@ -46,12 +46,6 @@ public class BundleLoader {
 		if(mani==null) throw new IOException("railo core ["+rc+"] is invalid, there is no META-INF/MANIFEST.MF File");
 		Attributes attrs = mani.getMainAttributes();
 		
-		/*Iterator<Object> itt = attrs.keySet().iterator();
-		System.err.println("---------------->");
-		while(itt.hasNext()){
-			System.err.println("->"+itt.next());
-		}*/
-		
 	// default properties
 		Properties defProp = loadDefaultProperties(jf);
 		
@@ -116,8 +110,8 @@ public class BundleLoader {
 			id=e.getKey()+"|"+e.getValue();
 			f = availableBundles.get(id);
 			if(f==null) {
-				getBundleFromRemote(e.getKey(),e.getValue(),jarDirectory);
-				//throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
+				//f=getBundleFromRemote(e.getKey(),e.getValue(),jarDirectory);
+				throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
 			}
 			bundles.add(BundleUtil.addBundle(bc,id, f, false));
 		}
@@ -139,9 +133,8 @@ public class BundleLoader {
 		return bundle;
 	}
 	
-	private static void getBundleFromRemote(String key, String value, File jarDirectory) {
-		// TODO Auto-generated method stub
-		
+	private static File getBundleFromRemote(String key, String value, File jarDirectory) {
+		return null;
 	}
 
 	private static Map<String, File> loadAvailableBundles(File jarDirectory) throws IOException {

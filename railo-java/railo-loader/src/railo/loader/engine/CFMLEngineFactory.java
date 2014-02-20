@@ -225,7 +225,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
            throw new ServletException(e);
         }
         
-        File[] patches=PATCH_ENABLED?patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()})):null;
+        File[] patches=PATCH_ENABLED?patcheDir.listFiles(new ExtensionFilter(new String[]{".rc"})):null;
         File railo=null;
         if(patches!=null) {
             for(int i=0;i<patches.length;i++) {
@@ -235,12 +235,12 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
                 else if(patches[i].lastModified()<coreCreated) {
                     patches[i].delete();
                 }
-                else if(railo==null || isNewerThan(toInVersion(patches[i].getName()),toInVersion(railo.getName()))) {
+                else if(railo==null || isNewerThan(toInVersion(patches[i].getName(),-1),toInVersion(railo.getName(),-1))) {
                     railo=patches[i];
                 }
             }
         }
-        if(railo!=null && isNewerThan(coreVersion,toInVersion(railo.getName())))railo=null;
+        if(railo!=null && isNewerThan(coreVersion,toInVersion(railo.getName(),-1)))railo=null;
         
         // Load Railo
         //URL url=null;
@@ -249,8 +249,8 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
             if(railo==null) {
             	tlog("Load Build in Core");
                 // 
-                String coreExt=getCoreExtension();
-                engine=getCore(coreExt);
+                String coreExt="rc";
+                engine=getCore();
             	
                 
                railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
@@ -276,7 +276,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
             		engine=getCore(getCoreExtension());
             	}*/
             }
-            version=toInVersion(engine.getVersion());
+            version=toInVersion(engine.getVersion(),-1);
             
             tlog("Loaded Railo Version "+engine.getVersion());
         }
@@ -373,7 +373,7 @@ framework.start();
 		System.err.println(msg);
 	}
 
-	private String getCoreExtension() throws ServletException {
+	/*private String getCoreExtension() throws ServletException {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
         if(res!=null) return "rcs";
         
@@ -381,15 +381,15 @@ framework.start();
         if(res!=null) return "rc";
         
         throw new ServletException("missing core file");
-	}
+	}*/
 
-	private CFMLEngine getCore(String ext) throws IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+	private CFMLEngine getCore() throws IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		File rc = new File(getTempDirectory(),"tmp_"+System.currentTimeMillis()+".rc");
 		try {
 			InputStream is = null;
 			OutputStream os = null;
 	    	try {
-	    		is = new TP().getClass().getResourceAsStream("/core/core."+ext);
+	    		is = new TP().getClass().getResourceAsStream("/core/core.rc");
 	    		os=new FileOutputStream(rc);
 	    		copy(is, os);
 	    		
@@ -477,25 +477,29 @@ framework.start();
      */
     private boolean update() throws IOException, ServletException {
     	
-        URL hostUrl=getEngine().getUpdateLocation();
-        if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
-        URL infoUrl=new URL(hostUrl,"/railo/remote/version/info.cfm?ext="+getCoreExtension()+"&version="+version);// FUTURE replace with Info.cfc or better move the functionality to core if possible. something like engine.getUpdater a class provided by the core and defined (interface) by the loader.
+        URL updateProvider=getEngine().getUpdateLocation();
+        if(updateProvider==null)updateProvider=new URL("http://www.getrailo.org");
         
-        tlog("Check for update at "+hostUrl);
+        URL infoUrl=new URL(updateProvider,"/railo/update/UpdateProvider.cfc?method=getInfoSimple&version="+version);
         
-        String availableVersion = toString((InputStream)infoUrl.getContent()).trim();
+        tlog("Check for update at "+updateProvider);
         
-        if(availableVersion.length()!=9) throw new IOException("can't get update info from ["+infoUrl+"]");
-        if(!isNewerThan(toInVersion(availableVersion),version)) {
+        String strAvailableVersion = toString((InputStream)infoUrl.getContent()).trim();
+        strAvailableVersion=CFMLEngineFactory.removeQuotes(strAvailableVersion,true);
+        
+        //if(availableVersion.length()!=9 && availableVersion.length()!=0) 
+        //	throw new IOException("can't get update info from ["+infoUrl+"]");
+        
+        if(strAvailableVersion.length()==0 || !isNewerThan(toInVersion(strAvailableVersion,-1),version)) {
             tlog("There is no newer Version available");
             return false;
         }
-        
-        tlog("Found a newer Version \n - current Version "+toStringVersion(version)+"\n - available Version "+availableVersion);
-        
-        URL updateUrl=new URL(hostUrl,"/railo/remote/version/update.cfm?ext="+getCoreExtension()+"&version="+availableVersion);
+
+        tlog("Found a newer Version \n - current Version "+toStringVersion(version)+"\n - available Version "+strAvailableVersion);
+
+        URL updateUrl=new URL(updateProvider,"/railo/update/UpdateProvider.cfc?method=&version="+strAvailableVersion);
         File patchDir=getPatchDirectory();
-        File newRailo=new File(patchDir,availableVersion+("."+getCoreExtension()));//isSecure?".rcs":".rc"
+        File newRailo=new File(patchDir,strAvailableVersion+(".rc"));
         
         if(newRailo.createNewFile()) {
             copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
@@ -523,7 +527,7 @@ framework.start();
             if(e==null)throw new IOException("can't load engine");
             v=e.getVersion();
             engine=e;
-            version=toInVersion(v);
+            version=toInVersion(v,-1);
             //e.reset();
             callListeners(e);
         }
@@ -594,10 +598,10 @@ framework.start();
 
     private boolean removeLatestUpdate() throws IOException, ServletException {
         File patchDir=getPatchDirectory();
-        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{".rc"}));
         File patch=null;
         for(int i=0;i<patches.length;i++) {
-        	 if(patch==null || isNewerThan(toInVersion(patches[i].getName()),toInVersion(patch.getName()))) {
+        	 if(patch==null || isNewerThan(toInVersion(patches[i].getName(),-1),toInVersion(patch.getName(),-1))) {
                  patch=patches[i];
              }
         }
@@ -610,11 +614,11 @@ framework.start();
 
 	public String[] getInstalledPatches() throws ServletException, IOException {
 		File patchDir=getPatchDirectory();
-        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{".rc"}));
         
         List<String> list=new ArrayList<String>();
         String name;
-        int extLen=getCoreExtension().length()+1;
+        int extLen="rc".length()+1;
         for(int i=0;i<patches.length;i++) {
         	name=patches[i].getName();
         	name=name.substring(0, name.length()-extLen);

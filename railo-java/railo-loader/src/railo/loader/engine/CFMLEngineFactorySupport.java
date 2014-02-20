@@ -76,7 +76,7 @@ public abstract class CFMLEngineFactorySupport {
      * @param version
      * @return int version
      */
-    public static int toInVersion(String version) {
+    public static int toInVersion(String version, int defaultValue) {
         
         int	rIndex = version.lastIndexOf(".rcs");
         if(rIndex==-1)	rIndex = version.lastIndexOf(".rc");
@@ -87,25 +87,48 @@ public abstract class CFMLEngineFactorySupport {
         
         //1.0.0.090
         int beginIndex=0;
-        
+
         //Major
         int endIndex=version.indexOf('.',beginIndex);
+        if(endIndex==-1) return defaultValue;
         int intVersion=0;
-        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000000; // FUTURE 10000000
+        try{
+        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000000;
+        }
+        catch(Throwable t){
+        	return defaultValue;
+        }
 
         // Minor
         beginIndex=endIndex+1;
         endIndex=version.indexOf('.',beginIndex);
-        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000; // FUTURE 100000
+        if(endIndex==-1) return defaultValue;
+        try{
+        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000;
+        }
+        catch(Throwable t){
+        	return defaultValue;
+        }
 
         // releases
         beginIndex=endIndex+1;
         endIndex=version.indexOf('.',beginIndex);
-        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100; // FUTURE 1000
-        
+        if(endIndex==-1) return defaultValue;
+        try{
+        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100;
+        }
+        catch(Throwable t){
+        	return defaultValue;
+        }
+
         // patches
         beginIndex=endIndex+1;
-        intVersion+=Integer.parseInt(version.substring(beginIndex));
+        try{
+        	intVersion+=Integer.parseInt(version.substring(beginIndex));
+        }
+        catch(Throwable t){
+        	return defaultValue;
+        }
         
         return intVersion;
     }
