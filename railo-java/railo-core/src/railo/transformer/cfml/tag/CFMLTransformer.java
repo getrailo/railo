@@ -276,7 +276,7 @@ public final class CFMLTransformer {
 						page.addPrintOut("</", null,null);
 					}
 					else {
-						String name = identifier(data.cfml,true);
+						String name = identifier(data.cfml,true,true);
 						if(tagLib.getIgnoreUnknowTags()) {
 							TagLibTag tlt = tagLib.getTag(name);
 							if(tlt==null) {
@@ -487,7 +487,7 @@ public final class CFMLTransformer {
 		}
 				
 		// Get matching tag from tag lib
-		String strNameNormal=identifier(data.cfml,false);
+		String strNameNormal=identifier(data.cfml,false,true);
 		if(strNameNormal==null) {
 			data.cfml.setPos((data.cfml.getPos()-tagLib.getNameSpaceAndSeparator().length())-1);
 			return false;
@@ -597,7 +597,7 @@ public final class CFMLTransformer {
 				if(!(tagLibEnd!=null && tagLibEnd.getNameSpaceAndSeparator().equals(tagLib.getNameSpaceAndSeparator())))
 					throw new TemplateException(data.cfml,"invalid construct");
 				// get end Tag
-				String strNameEnd=identifier(data.cfml,true).toLowerCase();
+				String strNameEnd=identifier(data.cfml,true,true).toLowerCase();
 
 				// not the same name Tag
 				if(!strName.equals(strNameEnd)) {
@@ -661,7 +661,7 @@ public final class CFMLTransformer {
 					    if(tagLibEnd.getNameSpaceAndSeparator().equals(tagLib.getNameSpaceAndSeparator())) {
 					        
 						    // get end Tag
-							strNameEnd=identifier(data.cfml,true).toLowerCase();
+							strNameEnd=identifier(data.cfml,true,true).toLowerCase();
 							// not the same name Tag
 							
 							// new part
@@ -993,7 +993,7 @@ public final class CFMLTransformer {
 	private static String attributeName(CFMLString cfml,RefBoolean dynamic, ArrayList<String> args, TagLibTag tag, 
 			StringBuffer sbType, boolean[] parseExpression,boolean allowDefaultValue) throws TemplateException {
 		
-		String _id = identifier(cfml,!allowDefaultValue);
+		String _id = identifier(cfml,!allowDefaultValue,false);
 		if(StringUtil.isEmpty(_id)){
 			return null;
 		}
@@ -1101,7 +1101,7 @@ public final class CFMLTransformer {
 	 * @return Identifier String.
 	 * @throws TemplateException
 	 */
-	public static String identifier(CFMLString cfml,boolean throwError) throws TemplateException  {
+	public static String identifier(CFMLString cfml,boolean throwError, boolean allowColon) throws TemplateException  {
 		int start = cfml.getPos();
 		if(!cfml.isCurrentBetween('a','z') && !cfml.isCurrent('_')) {
 			if(throwError)throw new TemplateException(cfml,"Invalid Identifier.");
@@ -1112,7 +1112,7 @@ public final class CFMLTransformer {
 			if(!(cfml.isCurrentBetween('a','z')
 				|| cfml.isCurrentBetween('0','9')
 				|| cfml.isCurrent('_')
-				|| cfml.isCurrent(':')
+				|| (allowColon && cfml.isCurrent(':'))
 				|| cfml.isCurrent('-'))) {
 					break;
 				}

@@ -818,7 +818,7 @@ int pos=data.cfml.getPos();
 				}
 				
 				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false,',');
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false,',',true);
 				Attribute _attr;
 				if(!ArrayUtil.isEmpty(_attrs)){
 					if(meta==null) meta=new HashMap<String, Attribute>();
@@ -868,7 +868,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false,',');
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false,',',true);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -965,7 +965,7 @@ int pos=data.cfml.getPos();
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false,',');
+		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false,',',false);
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1002,7 +1002,7 @@ int pos=data.cfml.getPos();
 		//print.e("namespace:"+tagLib.getNameSpaceAndSeparator());
 		
 		// get the name of the tag
-		String id = CFMLTransformer.identifier(data.cfml, false);
+		String id = CFMLTransformer.identifier(data.cfml, false,true);
 		
 		//print.e("name:"+id);
 		
@@ -1024,11 +1024,11 @@ int pos=data.cfml.getPos();
 			//print.e("appendix:"+tlt);
 			
 			 if(tlt==null) {
-				 if(tagLib.getIgnoreUnknowTags()){
+				 //if(tagLib.getIgnoreUnknowTags()){ if we do this a expression like the following no longer work cfwhatever=1;
 					 data.cfml.setPos(start);
 					 return null;
-				 } 
-				 throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+id+"]");
+				 //} 
+				 //throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+id+"]");
 			 }
 			appendix=StringUtil.removeStartingIgnoreCase(id,tlt.getName());
 		 }
@@ -1085,7 +1085,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 		
 		// attributes
-		Attribute[] attrs = noAttrs?new Attribute[0] : attributes(tag,tlt,data,BRACKED,LitString.EMPTY,allowExpression,null,false,',');
+		Attribute[] attrs = noAttrs?new Attribute[0] : attributes(tag,tlt,data,BRACKED,LitString.EMPTY,allowExpression,null,false,',',true);
 		data.cfml.forwardIfCurrent(')');
 		
 		for(int i=0;i<attrs.length;i++){
@@ -1182,7 +1182,7 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true,',');
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true,',',false);
 		
 		checkSemiColonLineFeed(data,true,true,false);
 
@@ -1303,7 +1303,7 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true,',');
+		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true,',',false);
 		checkSemiColonLineFeed(data,true,true,true);
 
 		param.setTagLibTag(tlt);
@@ -1817,7 +1817,7 @@ int pos=data.cfml.getPos();
 	
 	
 	private final Attribute[] attributes(Tag tag,TagLibTag tlt, ExprData data, EndCondition endCond,Expression defaultValue,Object oAllowExpression, 
-			String ignoreAttrReqFor, boolean allowTwiceAttr, char separator) throws TemplateException {
+			String ignoreAttrReqFor, boolean allowTwiceAttr, char attributeSeparator,boolean allowColonAsNameValueSeparator) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
 		
@@ -1828,13 +1828,13 @@ int pos=data.cfml.getPos();
 			// if no more attributes break
 			if(endCond.isEnd(data)) break;
 			//if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
-			Attribute attr = attribute(tlt,data,ids,defaultValue,oAllowExpression, allowTwiceAttr);
+			Attribute attr = attribute(tlt,data,ids,defaultValue,oAllowExpression, allowTwiceAttr,allowColonAsNameValueSeparator);
 			attrs.add(attr);
 			
 			// seperator
-			if(separator>0) {
+			if(attributeSeparator>0) {
 				data.cfml.removeSpace();
-				data.cfml.forwardIfCurrent(separator);
+				data.cfml.forwardIfCurrent(attributeSeparator);
 			}
 			
 		}
@@ -1881,7 +1881,7 @@ int pos=data.cfml.getPos();
 		return false;
 	}
 
-	private final Attribute attribute(TagLibTag tlt, ExprData data, ArrayList<String> args, Expression defaultValue,Object oAllowExpression, boolean allowTwiceAttr) throws TemplateException {
+	private final Attribute attribute(TagLibTag tlt, ExprData data, ArrayList<String> args, Expression defaultValue,Object oAllowExpression, boolean allowTwiceAttr, boolean allowColonSeparator) throws TemplateException {
 		StringBuffer sbType=new StringBuffer();
     	RefBoolean dynamic=new RefBooleanImpl(false);
     	
@@ -1896,9 +1896,11 @@ int pos=data.cfml.getPos();
     	CFMLTransformer.comment(data.cfml,true);
     	
     	// value
-    	if(data.cfml.forwardIfCurrent('='))	{
+    	boolean b=data.cfml.forwardIfCurrent('=') || (allowColonSeparator && data.cfml.forwardIfCurrent(':'));
+    	if(b)	{
     		CFMLTransformer.comment(data.cfml,true);
     		value=attributeValue(data,allowExpression);	
+    		
     	}
     	else {
     		value=defaultValue;
@@ -1952,7 +1954,7 @@ int pos=data.cfml.getPos();
 	}*/
 	
 	private final String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
-		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true));
+		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true,false));
 		return validateAttributeName(id, cfml, args, tag, dynamic, sbType,allowTwiceAttr);
 	}
 	
