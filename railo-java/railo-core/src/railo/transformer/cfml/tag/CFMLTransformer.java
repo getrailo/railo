@@ -37,6 +37,7 @@ import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.Data;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -421,7 +422,7 @@ public final class CFMLTransformer {
 						}
                         Position line = data.cfml.getPosition();
 						PrintOut po;
-						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings),line,null));
+						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings),line,null));
 						po.setEnd(data.cfml.getPosition());
 						
 						if(!data.cfml.isCurrent('#'))
@@ -579,7 +580,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(data.page,this,data.ep,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,data.settings);
+				tdbt.transform(data.page,this,data.ep,data.tlibs,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,data.settings);
 				
 				//	get TagLib of end Tag
 				if(!data.cfml.forwardIfCurrent("</")) {
@@ -756,7 +757,7 @@ public final class CFMLTransformer {
 	 * <code>< tagLib[].getNameSpaceAndSeperator() >(* Vergleicht Zeichen mit den Namespacedefinitionen der Tag Libraries. *) </code>
 	 * @return TagLib Passende Tag Lirary oder null.
 	 */
-	private TagLib nameSpace(TagData data) {
+	public static TagLib nameSpace(Data data) {
 		boolean hasTag=false;
 		int start = data.cfml.getPos();
 		TagLib tagLib=null;
@@ -1074,14 +1075,14 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings);
+			    expr=transfomer.transform(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings);
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings,true);
+			else expr=transfomer.transformAsString(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings,true);
 			if(type.length()>0) {
 				expr=CastOther.toExpression(expr, type);
 			}

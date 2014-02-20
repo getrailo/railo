@@ -52,6 +52,7 @@ import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.AbstrCFMLExprTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
@@ -990,44 +991,87 @@ int pos=data.cfml.getPos();
 	}
 	
 	private Statement cftagStatement(ExprData data, Body parent) throws TemplateException {
-		if(data.ep==null) return null;
+		if(data.ep==null) return null; // that is because cfloop-contition evaluator does not pass this
 		
-		Statement child;
-		
-		for(int i=0;i<data.scriptTags.length;i++){
-			if((child=prefixTag(parent,data,data.scriptTags[i]))!=null)return child;
-			
-		}
-		return null;
-	}
-	
-	private final Tag prefixTag(Body parent, ExprData data,TagLibTag tlt) throws TemplateException  {
 		int start = data.cfml.getPos();
 		
 		// namespace and separator
-		if(!data.cfml.forwardIfCurrent(tlt.getTagLib().getNameSpaceAndSeparator())) return null;
+		TagLib tagLib=CFMLTransformer.nameSpace(data);
+		if(tagLib==null) return null;
 		
-		// name ans starting (
-		String type=tlt.getName();
-		if(data.cfml.forwardIfCurrent(type)) {
-			comments(data); // remove comments
-			if(!data.cfml.forwardIfCurrent('(')){
-				data.cfml.setPos(start);
-				return null;
-			}
-		}
-		else {
+		//print.e("namespace:"+tagLib.getNameSpaceAndSeparator());
+		
+		// get the name of the tag
+		String id = CFMLTransformer.identifier(data.cfml, false);
+		
+		//print.e("name:"+id);
+		
+		if(id==null) {
 			data.cfml.setPos(start);
 			return null;
 		}
 		
+		id=id.toLowerCase();
+		String appendix=null;
+		TagLibTag tlt=tagLib.getTag(id);
+		
+		//print.e("tlt:"+tlt);
+		
+		
+		// get taglib
+		if(tlt==null)	{
+			tlt=tagLib.getAppendixTag(id);
+			//print.e("appendix:"+tlt);
+			
+			 if(tlt==null) {
+				 if(tagLib.getIgnoreUnknowTags()){
+					 data.cfml.setPos(start);
+					 return null;
+				 } 
+				 throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+id+"]");
+			 }
+			appendix=StringUtil.removeStartingIgnoreCase(id,tlt.getName());
+		 }
+		
+		// check for opening bracked or closing semicolon
+		comments(data);
+		boolean noAttrs=false;
+		if(!data.cfml.forwardIfCurrent('(')){
+			if(checkSemiColonLineFeed(data, false, false, false)){
+				noAttrs=true;
+			}
+			else {
+				data.cfml.setPos(start);
+				return null;
+			}
+		}
+		
 		Position line = data.cfml.getPosition();
 		
-		TagLibTagScript script = tlt.getScript();
-		if(script.getContext()==CTX_CFC)data.isCFC=true;
-		else if(script.getContext()==CTX_INTERFACE)data.isInterface=true;
+		// script specific behavior
+		short context=CTX_OTHER;
+		Boolean allowExpression=Boolean.TRUE;
+		{
+			
+			TagLibTagScript script = tlt.getScript();
+			if(script!=null) {
+				context=script.getContext();
+				// always true for this tags allowExpression=script.getRtexpr()?Boolean.TRUE:Boolean.FALSE;
+				if(context==CTX_CFC)data.isCFC=true;
+				else if(context==CTX_INTERFACE)data.isInterface=true;
+			}
+		}
 		
 		Tag tag=getTag(data,parent,tlt, line,null);
+		if(appendix!=null)	{
+			tag.setAppendix(appendix);
+			tag.setFullname(tlt.getFullName().concat(appendix));
+		 }
+		 else {
+			 tag.setFullname(tlt.getFullName());
+		 }
+		
+		
 		tag.setTagLibTag(tlt);
 		tag.setScriptBase(true);
 		
@@ -1041,7 +1085,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 		
 		// attributes
-		Attribute[] attrs = attributes(tag,tlt,data,BRACKED,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false,',');
+		Attribute[] attrs = noAttrs?new Attribute[0] : attributes(tag,tlt,data,BRACKED,LitString.EMPTY,allowExpression,null,false,',');
 		data.cfml.forwardIfCurrent(')');
 		
 		for(int i=0;i<attrs.length;i++){
@@ -1053,7 +1097,7 @@ int pos=data.cfml.getPos();
 		// body
 		if(tlt.getHasBody()){
 			Body body=new BodyBase();
-			boolean wasSemiColon=statement(data,body,script.getContext());
+			boolean wasSemiColon=statement(data,body,context);
 			if(!wasSemiColon || !tlt.isBodyFree() || body.hasStatements())
 				tag.setBody(body);
 			
