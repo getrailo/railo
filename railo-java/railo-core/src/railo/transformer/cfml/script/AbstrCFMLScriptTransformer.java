@@ -98,6 +98,12 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 	};
 	
+	private static EndCondition BRACKED=new EndCondition() {
+		public boolean isEnd(ExprData data) {
+			return data.cfml.isCurrent(')');
+		}
+	};
+	
 	
 	
 	
@@ -126,8 +132,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 
 	private static final Expression NULL = LitString.toExprString("NULL"); 
-	private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
-
+	private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string");
 	
 	/** 
 	 * Liest saemtliche Statements des CFScriptString ein. 
@@ -149,7 +154,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * <br />
 	 * EBNF:<br />
 	 * <code>{statement spaces};</code>
-	 * @param parent Übergeornetes Element dem das Statement zugewiesen wird.
+	 * @param parent â€¹bergeornetes Element dem das Statement zugewiesen wird.
 	 * @param isRoot befindet sich der Parser im root des data.cfml Docs
 	 * @throws TemplateException
 	 */
@@ -169,7 +174,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * <code>";" | "if" spaces "(" ifStatement | "function " funcStatement |  "while" spaces "(" whileStatement  |  
 			  "do" spaces "{" doStatement  | "for" spaces "(" forStatement | "return" returnStatement | 
 			  "break" breakStatement | "continue" continueStatement | "/*" comment | expressionStatement;</code>
-	 * @param parent Übergeornetes Element dem das Statement zugewiesen wird.
+	 * @param parent â€¹bergeornetes Element dem das Statement zugewiesen wird.
 	 * @throws TemplateException
 	 */
 	private final void statement(ExprData data,Body parent) throws TemplateException {
@@ -192,6 +197,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		else if((child=switchStatement(data))!=null) 			parent.addStatement(child);
 		else if((child=tryStatement(data))!=null) 				parent.addStatement(child);
 		else if((child=tagStatement(data,parent))!=null)	parent.addStatement(child);
+		else if((child=cftagStatement(data,parent))!=null)	parent.addStatement(child);
 		else if(block(data,parent)){}
 		else parent.addStatement(expressionStatement(data,parent));
 		data.docComment=null;
@@ -811,7 +817,7 @@ int pos=data.cfml.getPos();
 				}
 				
 				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false);
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false,',');
 				Attribute _attr;
 				if(!ArrayUtil.isEmpty(_attrs)){
 					if(meta==null) meta=new HashMap<String, Attribute>();
@@ -861,7 +867,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false);
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false,',');
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -888,7 +894,6 @@ int pos=data.cfml.getPos();
 	private Statement tagStatement(ExprData data, Body parent) throws TemplateException {
 		Statement child;
 		
-		//TagLibTag[] tags = getScriptTags(data);
 		for(int i=0;i<data.scriptTags.length;i++){
 			// single
 			if(data.scriptTags[i].getScript().getType()==TagLibTagScript.TYPE_SINGLE) { 
@@ -899,66 +904,6 @@ int pos=data.cfml.getPos();
 				if((child=_multiAttrStatement(parent,data,data.scriptTags[i]))!=null)return child;
 			}
 		}
-		
-		//if((child=_singleAttrStatement(parent,data,"abort","showerror",ATTR_TYPE_OPTIONAL,true))!=null)		return child;
-		//if((child=_multiAttrStatement(parent,data,"admin",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"application",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"associate",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_singleAttrStatement(parent,data,"break",null,ATTR_TYPE_NONE,false))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"cache",CTX_OTHER,true,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"content",CTX_OTHER,true,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"collection",CTX_OTHER,true,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"cookie",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"component",CTX_CFC,true,false))!=null)				return child;
-		//else if((child=_singleAttrStatement(parent,data,"continue",null,ATTR_TYPE_NONE,false))!=null)		return child;
-		//else if((child=_multiAttrStatement(parent,data,"dbinfo",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"execute",CTX_OTHER,true,true))!=null)				return child;
-		//else if((child=_singleAttrStatement(parent,data,"exit","method",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
-		//else if((child=_multiAttrStatement(parent,data,"feed",CTX_OTHER,false,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"file",CTX_OTHER,false,true))!=null)					return child;
-		//else if((child=_singleAttrStatement(parent,data,"flush","interval",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
-		//else if((child=_multiAttrStatement(parent,data,"ftp",CTX_OTHER,false,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"http",CTX_OTHER,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"httpparam",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"imap",CTX_OTHER,false,true))!=null)					return child;
-		//else if((child=_singleAttrStatement(parent,data,"import","path",ATTR_TYPE_REQUIRED,false))!=null)	return child;
-		//else if((child=_multiAttrStatement(parent,data,"index",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_singleAttrStatement(parent,data,"include","template",ATTR_TYPE_REQUIRED,true))!=null)return child;
-		//else if((child=_multiAttrStatement(parent,data,"interface",CTX_INTERFACE,true,false))!=null)		return child;
-		//else if((child=_multiAttrStatement(parent,data,"ldap",CTX_OTHER,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"lock",CTX_LOCK,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"loop",CTX_LOOP,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"login",CTX_OTHER,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"loginuser",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_singleAttrStatement(parent,data,"logout",null,ATTR_TYPE_NONE,false))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"mail",CTX_OTHER,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"mailpart",CTX_OTHER,true,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"mailparam",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"module",CTX_OTHER,true,true))!=null)				return child;
-		//else if((child=_singleAttrStatement(parent,data,"pageencoding","charset",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
-		//else if((child=_multiAttrStatement(parent,data,"param",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"pdf",CTX_OTHER,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"pdfparam",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"procparam",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"procresult",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"query",CTX_QUERY,true,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"queryparam",CTX_OTHER,false,true))!=null)			return child;
-		//else if((child=_singleAttrStatement(parent,data,"rethrow",null,ATTR_TYPE_NONE,false))!=null)		return child;
-		//else if((child=_multiAttrStatement(parent,data,"savecontent",CTX_SAVECONTENT,true,true))!=null)		return child;
-		//else if((child=_multiAttrStatement(parent,data,"schedule",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"search",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"setting",CTX_OTHER,false,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"stopwatch",CTX_OTHER,true,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"storedproc",CTX_OTHER,true,true))!=null)			return child;
-		//else if((child=_multiAttrStatement(parent,data,"thread",CTX_THREAD,true,true))!=null)				return child;
-		//else if((child=_multiAttrStatement(parent,data,"trace",CTX_OTHER,true,true))!=null)					return child;
-		//else if((child=_singleAttrStatement(parent,data,"throw","message",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
-		//else if((child=_multiAttrStatement(parent,data,"transaction",CTX_TRANSACTION,true,true))!=null)		return child;
-		//else if((child=_multiAttrStatement(parent,data,"wddx",CTX_OTHER,false,true))!=null)					return child;
-		//else if((child=_multiAttrStatement(parent,data,"zip",CTX_ZIP,true,true))!=null)						return child;
-		//else if((child=_multiAttrStatement(parent,data,"zipparam",CTX_ZIP,false,true))!=null)				return child;
-		
-		
 		return null;
 	}
 	
@@ -1019,7 +964,7 @@ int pos=data.cfml.getPos();
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false);
+		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false,',');
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1037,7 +982,86 @@ int pos=data.cfml.getPos();
 			
 			
 		}
-		else checkSemiColonLineFeed(data,true,true);
+		else checkSemiColonLineFeed(data,true,true,true);
+		
+		tag.setEnd(data.cfml.getPosition());
+		eval(tlt,data,tag);
+		return tag;
+	}
+	
+	private Statement cftagStatement(ExprData data, Body parent) throws TemplateException {
+		if(data.ep==null) return null;
+		
+		Statement child;
+		
+		for(int i=0;i<data.scriptTags.length;i++){
+			if((child=prefixTag(parent,data,data.scriptTags[i]))!=null)return child;
+			
+		}
+		return null;
+	}
+	
+	private final Tag prefixTag(Body parent, ExprData data,TagLibTag tlt) throws TemplateException  {
+		int start = data.cfml.getPos();
+		
+		// namespace and separator
+		if(!data.cfml.forwardIfCurrent(tlt.getTagLib().getNameSpaceAndSeparator())) return null;
+		
+		// name ans starting (
+		String type=tlt.getName();
+		if(data.cfml.forwardIfCurrent(type)) {
+			comments(data); // remove comments
+			if(!data.cfml.forwardIfCurrent('(')){
+				data.cfml.setPos(start);
+				return null;
+			}
+		}
+		else {
+			data.cfml.setPos(start);
+			return null;
+		}
+		
+		Position line = data.cfml.getPosition();
+		
+		TagLibTagScript script = tlt.getScript();
+		if(script.getContext()==CTX_CFC)data.isCFC=true;
+		else if(script.getContext()==CTX_INTERFACE)data.isInterface=true;
+		
+		Tag tag=getTag(data,parent,tlt, line,null);
+		tag.setTagLibTag(tlt);
+		tag.setScriptBase(true);
+		
+		// add component meta data
+		if(data.isCFC) {
+			addMetaData(data,tag,IGNORE_LIST_COMPONENT);
+		}
+		if(data.isInterface) {
+			addMetaData(data,tag,IGNORE_LIST_INTERFACE);
+		}
+		comments(data);
+		
+		// attributes
+		Attribute[] attrs = attributes(tag,tlt,data,BRACKED,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false,',');
+		data.cfml.forwardIfCurrent(')');
+		
+		for(int i=0;i<attrs.length;i++){
+			tag.addAttribute(attrs[i]);
+		}
+		
+		comments(data);
+	
+		// body
+		if(tlt.getHasBody()){
+			Body body=new BodyBase();
+			boolean wasSemiColon=statement(data,body,script.getContext());
+			if(!wasSemiColon || !tlt.isBodyFree() || body.hasStatements())
+				tag.setBody(body);
+			
+			
+			
+		}
+		else checkSemiColonLineFeed(data,true,true,true);
+		
 		
 		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
@@ -1114,9 +1138,9 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true);
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true,',');
 		
-		checkSemiColonLineFeed(data,true,true);
+		checkSemiColonLineFeed(data,true,true,false);
 
 		property.setTagLibTag(tlt);
 		property.setScriptBase(true);
@@ -1235,8 +1259,8 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true);
-		checkSemiColonLineFeed(data,true,true);
+		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true,',');
+		checkSemiColonLineFeed(data,true,true,true);
 
 		param.setTagLibTag(tlt);
 		param.setScriptBase(true);
@@ -1370,10 +1394,10 @@ int pos=data.cfml.getPos();
 	    Return rtn;
 	    
 	    comments(data);
-	    if(checkSemiColonLineFeed(data, false,false)) rtn=new Return(line,data.cfml.getPosition());
+	    if(checkSemiColonLineFeed(data, false,false,false)) rtn=new Return(line,data.cfml.getPosition());
 	    else {
 	    	Expression expr = expression(data);
-	    	checkSemiColonLineFeed(data, true,true);
+	    	checkSemiColonLineFeed(data, true,true,false);
 	    	rtn=new Return(expr,line,data.cfml.getPosition());
 	    }
 		comments(data);
@@ -1448,7 +1472,7 @@ int pos=data.cfml.getPos();
 			return null;
 		}
 		
-		checkSemiColonLineFeed(data,true,true);
+		checkSemiColonLineFeed(data,true,true,true);
 		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.flibs, data.cfml);
 		
 		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
@@ -1556,16 +1580,28 @@ int pos=data.cfml.getPos();
 	 */
 	private Statement expressionStatement(ExprData data, Body parent) throws TemplateException {
 		Expression expr=expression(data);
-		checkSemiColonLineFeed(data,true,true);
+		checkSemiColonLineFeed(data,true,true,false);
 		if(expr instanceof ClosureAsExpression)
 			return ((ClosureAsExpression)expr).getClosure();
 			
 		return new ExpressionAsStatement(expr);
 	}
 	
-	private final boolean checkSemiColonLineFeed(ExprData data,boolean throwError, boolean checkNLBefore) throws TemplateException {
+	private final boolean checkSemiColonLineFeed(ExprData data,boolean throwError, boolean checkNLBefore,boolean allowEmptyCurlyBracked) throws TemplateException {
 		comments(data);
 		if(!data.cfml.forwardIfCurrent(';')){
+			
+			// curly brackets?
+			if(allowEmptyCurlyBracked) {
+				int pos = data.cfml.getPos();
+				if(data.cfml.forwardIfCurrent('{')) {
+					comments(data);
+					if(data.cfml.forwardIfCurrent('}')) return true;
+					data.cfml.setPos(pos);
+				}
+			}
+			
+			
 			if((!checkNLBefore || !data.cfml.hasNLBefore()) && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
 				if(!throwError) return false;
 				throw new TemplateException(data.cfml,"Missing [;] or [line feed] after expression");
@@ -1737,17 +1773,26 @@ int pos=data.cfml.getPos();
 	
 	
 	private final Attribute[] attributes(Tag tag,TagLibTag tlt, ExprData data, EndCondition endCond,Expression defaultValue,Object oAllowExpression, 
-			String ignoreAttrReqFor, boolean allowTwiceAttr) throws TemplateException {
+			String ignoreAttrReqFor, boolean allowTwiceAttr, char separator) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
 		
 		while(data.cfml.isValidIndex())	{
 			data.cfml.removeSpace();
+			//if(data.cfml.forwardIfCurrent(','))
+			//	data.cfml.removeSpace();
 			// if no more attributes break
 			if(endCond.isEnd(data)) break;
 			//if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
 			Attribute attr = attribute(tlt,data,ids,defaultValue,oAllowExpression, allowTwiceAttr);
 			attrs.add(attr);
+			
+			// seperator
+			if(separator>0) {
+				data.cfml.removeSpace();
+				data.cfml.forwardIfCurrent(separator);
+			}
+			
 		}
 		
 		// not defined attributes
