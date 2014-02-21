@@ -249,8 +249,8 @@ public abstract class AbstrCFMLExprTransformer {
 	 */
 	protected ExprData init(Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
 		ExprData data = new ExprData(page,ep,cfml,tld,fld,settings,allowLowerThan,scriptTags);
-		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
-		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
+		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_literalArray");
+		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_literalStruct");
 		return data;
 		//this.allowLowerThan=allowLowerThan;
 		//this.fld = fld;

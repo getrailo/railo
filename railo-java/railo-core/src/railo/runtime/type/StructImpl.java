@@ -20,6 +20,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
+import railo.runtime.type.util.StructUtil;
 
 /**
  * CFML data type struct
@@ -241,5 +242,11 @@ public class StructImpl extends StructSupport {
 	@Override
 	public boolean equals(Object obj) {
 		return map.equals(obj);
+	}
+
+
+	@Override
+	public Set keySet() {
+		return StructUtil.keySet(this,getType()==TYPE_LINKED);
 	}
 }

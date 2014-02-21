@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -95,9 +96,9 @@ public final class StructUtil {
 		return set;
 	}
 	
-	public static Set<String> keySet(Struct sct) {
+	public static Set<String> keySet(Struct sct, boolean linked) {
 		Iterator<Key> it = sct.keyIterator();
-		Set<String> set=new HashSet<String>();
+		Set<String> set=linked?new LinkedHashSet<String>():new HashSet<String>();
 		while(it.hasNext()){
 			set.add(it.next().getString());
 		}

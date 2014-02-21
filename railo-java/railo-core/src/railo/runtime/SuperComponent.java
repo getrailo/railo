@@ -362,7 +362,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 
 	@Override
 	public Set keySet() {
-		return StructUtil.keySet(this);
+		return StructUtil.keySet(this,false);
 	}
 
 

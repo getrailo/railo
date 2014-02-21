@@ -100,6 +100,17 @@
 			<type>array</type>
 		</return>
 	</function>
+	<!-- _literalArray -->
+	<function>
+		<name>_literalArray</name>
+		<class>railo.runtime.functions.arrays.LiteralArray</class>
+		<status>hidden</status>
+		<description>internal function used for literal array defintion</description>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- _jsonArray -->
 	<function>
 		<name>_jsonArray</name>
@@ -14773,11 +14784,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>void</type>
 		</return>
 	</function>
-	
 	<!-- _jsonStruct -->
 	<function>
 		<name>_jsonStruct</name>
 		<class>railo.runtime.functions.struct.JsonStruct</class>
+		<status>hidden</status>
+		<description>internal function used as for literal json struct defintion.</description>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	<!-- _literalStruct -->
+	<function>
+		<name>_literalStruct</name>
+		<class>railo.runtime.functions.struct.LiteralStruct</class>
 		<status>hidden</status>
 		<description>internal function used as for literal struct defintion.</description>
 		<argument-type>dynamic</argument-type>
@@ -14785,7 +14807,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>struct</type>
 		</return>
 	</function>
-	<!-- _struct -->
+	<!-- struct -->
 	<function>
 		<name>struct</name>
 		<class>railo.runtime.functions.struct.Struct_</class>
