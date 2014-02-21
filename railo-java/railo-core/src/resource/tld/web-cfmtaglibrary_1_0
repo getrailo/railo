@@ -10160,9 +10160,8 @@ To use cached data, the current query must use the same SQL statement, data sour
 			<type>object</type>
 			<name>params</name>
 			<required>false</required>
-			<status>hidden</status>
 			<rtexprvalue>true</rtexprvalue>
-			<description>experimentell</description>
+			<description></description>
 		</attribute>
 		
 	</tag>
