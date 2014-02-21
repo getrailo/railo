@@ -71,7 +71,7 @@ public final class CastableArray extends ArrayImpl {
     @Override
     public double castToDoubleValue(double defaultValue) {
         try {
-			return Caster.toDoubleValue(getValue(),defaultValue);
+			return Caster.toDoubleValue(getValue(),true,defaultValue);
 		} catch (PageException e) {
 			return defaultValue;
 		}

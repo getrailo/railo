@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.i18n.FormatUtil;
@@ -189,10 +190,14 @@ public final class Decision {
 
 	public static boolean isInteger(Object value,boolean alsoBooleans) {
 		if(!alsoBooleans && value instanceof Boolean) return false;
-		double dbl = Caster.toDoubleValue(value,Double.NaN);
+		double dbl = Caster.toDoubleValue(value,false,Double.NaN);
 		if(!Decision.isValid(dbl)) return false;
 		int i=(int)dbl;
 		return i==dbl;		
+	}
+	
+	public static void main(String[] args) {
+		print.e(isInteger("1 5",false));
 	}
 
 	 /** tests if String value is Hex Value

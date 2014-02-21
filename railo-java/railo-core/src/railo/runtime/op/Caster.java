@@ -370,7 +370,7 @@ public final class Caster {
      */
     public static Double toDouble(Object o, Double defaultValue) {
         if(o instanceof Double) return (Double)o;
-        double dbl = toDoubleValue(o,Double.NaN);
+        double dbl = toDoubleValue(o,true,Double.NaN);
         if(Double.isNaN(dbl)) return defaultValue;
         return new Double(dbl);
         
@@ -539,6 +539,16 @@ public final class Caster {
 		if(date==null)return defaultValue;
     	return date.castToDoubleValue(0);
 	}
+    
+    /**
+     * cast a Object to a double value (primitive value Type)
+     * @param o Object to cast
+     * @param defaultValue if can't cast return this value
+     * @return casted double value
+     * /
+    public static double toDoubleValue(Object o,double defaultValue) {
+    	return toDoubleValue(o, true, defaultValue);
+    }*/
 
 	/**
      * cast a Object to a double value (primitive value Type)
@@ -546,16 +556,16 @@ public final class Caster {
      * @param defaultValue if can't cast return this value
      * @return casted double value
      */
-    public static double toDoubleValue(Object o,double defaultValue) {
+    public static double toDoubleValue(Object o,boolean alsoFromDate,double defaultValue) {
         if(o instanceof Number) return ((Number)o).doubleValue();
         else if(o instanceof Boolean) return ((Boolean)o).booleanValue()?1:0;
-        else if(o instanceof String) return toDoubleValue(o.toString(),defaultValue);
+        else if(o instanceof String) return toDoubleValue(o.toString(),alsoFromDate,defaultValue);
         else if(o instanceof Castable) {
             return ((Castable)o).castToDoubleValue(defaultValue);
             
         }
         //else if(o == null) return defaultValue;
-        else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),defaultValue);
+        else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),true,defaultValue);
 			
         return defaultValue;
     }
@@ -836,7 +846,7 @@ public final class Caster {
      * @return casted decimal value
      */
     public static String toDecimal(Object value, String defaultValue) {
-        double res=toDoubleValue(value,Double.NaN);
+        double res=toDoubleValue(value,true,Double.NaN);
         if(Double.isNaN(res)) return defaultValue;
         return toDecimal(res);
     }
@@ -2978,7 +2988,7 @@ public final class Caster {
             return toTimespan(((ObjectWrap)o).getEmbededObject());
         }
         
-        double dbl = toDoubleValue(o,Double.NaN);
+        double dbl = toDoubleValue(o,true,Double.NaN);
         if(!Double.isNaN(dbl))return TimeSpanImpl.fromDays(dbl);
         
         throw new CasterException(o,"timespan");
