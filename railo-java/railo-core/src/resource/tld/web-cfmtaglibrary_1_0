@@ -4213,6 +4213,14 @@ If omitted, the file's attributes are maintained.</description>
 			<description>String; a type name; data type of the function return value</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>bufferoutput</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is only used when output of the function is set to false. if this attribute is set to true (default) the output written to the body of the function is buffered and in case of a exception also outputted.
+			if set to false the content to body is ignored and not disabled when a failure in the body of the tag occur.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>roles</name>
 			<required>false</required>
