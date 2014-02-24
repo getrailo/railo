@@ -9,6 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.commons.collection.LinkedHashMapPro;
+import railo.commons.collection.MapPro;
+import railo.commons.collection.MapProWrapper;
+import railo.commons.collection.SyncMap;
+import railo.commons.collection.WeakHashMapPro;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -258,4 +263,15 @@ public final class StructUtil {
 		}
 		return sct;
 	}
+    
+    public static int getType(MapPro m){
+    	if(m instanceof SyncMap)
+    		return ((SyncMap)m).getType();
+    	
+    	if(m instanceof LinkedHashMapPro) return Struct.TYPE_LINKED;
+    	if(m instanceof WeakHashMapPro) return Struct.TYPE_WEAKED;
+    	//if(map instanceof SyncMap) return TYPE_SYNC;
+    	if(m instanceof MapProWrapper) return Struct.TYPE_SOFT;
+    	return Struct.TYPE_REGULAR;
+    }
 }
