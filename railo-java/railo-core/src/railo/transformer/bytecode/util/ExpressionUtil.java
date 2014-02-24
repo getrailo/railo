@@ -8,6 +8,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
@@ -33,6 +34,11 @@ public final class ExpressionUtil {
 			"exeLogEnd",
 			Types.VOID,
 			new Type[]{Types.INT_VALUE,Types.STRING});
+
+	public static final Method CURRENT_LINE = new Method(
+			"currentLine",
+			Types.VOID,
+			new Type[]{Types.INT_VALUE});
 	
 
 	private static Map<String,String> last=new HashMap<String,String>();
@@ -62,9 +68,21 @@ public final class ExpressionUtil {
    }
     private static synchronized void visitLine(BytecodeContext bc, int line) {
     	if(line>0){
+    		
+    		/*Type[] methodTypes = bc.getMethod().getArgumentTypes();
+			if(methodTypes!=null && methodTypes.length>0 && methodTypes[0].equals(Types.PAGE_CONTEXT)) {
+    			GeneratorAdapter adapter = bc.getAdapter();
+    	    	adapter.loadArg(0);
+    	    	adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+    	        adapter.push(line);
+    		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,CURRENT_LINE );
+			}*/
+    		
     		if(!(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
-	    		//writeLog(bc,line);
-	    		bc.visitLineNumber(line);
+	    		
+    			
+    			
+    			bc.visitLineNumber(line);
 	    		last.put(bc.getClassName()+":"+bc.getId(),""+line);
 	    		last.put(bc.getClassName(),""+line);
 	    	}
