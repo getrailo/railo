@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 
 public final class VariablesImpl extends ScopeSupport implements Variables {
@@ -8,7 +9,7 @@ public final class VariablesImpl extends ScopeSupport implements Variables {
 	private boolean bind;
 
 	public VariablesImpl() {
-		super("variables",SCOPE_VARIABLES,Struct.TYPE_REGULAR);
+		super("variables",SCOPE_VARIABLES,StructImpl.TYPE_UNDEFINED);
 	}
 
 	public void registerUDF(Key key, UDF udf) {
