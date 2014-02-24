@@ -262,9 +262,9 @@ public final class DumpStruct implements Function {
 		return columns;
 	}
 
-	public static String getContext() {
+	/*public static String getContext() {
 		//Throwable cause = t.getCause();
-		StackTraceElement[] traces = new Exception("Stack trace").getStackTrace();
+		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 		
 		int line=0;
 		String template;
@@ -276,7 +276,7 @@ public final class DumpStruct implements Function {
 			return template+":"+line;
 		}
 		return null;
-	}
+	}*/
 		
 	private static String toShortColor(String color) {
 		if(color!=null && color.length()==7 && color.startsWith("#")) {
