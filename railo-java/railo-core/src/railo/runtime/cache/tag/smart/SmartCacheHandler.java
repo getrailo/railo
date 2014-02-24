@@ -91,15 +91,21 @@ public class SmartCacheHandler implements CacheHandler {
 		getLog(config).debug("smartcache", "get("+id+")");
 		CacheItem ci = (CacheItem) getCache(pc).getValue(id,null);
 		if(ci!=null) {
-			// TODO async ?
-			rules.get(id).used++;
+			Rule r = rules.get(id);
+			if(r!=null)r.used++;
 		}
 		return ci;
 	}
 
 	@Override
-	public boolean remove(PageContext pc, String id) {
+	public boolean remove(PageContext pc, String id) throws PageException {
 		getLog(config).debug("smartcache", "remove("+id+")");
+		try {
+			getCache(pc).remove(id);
+		}
+		catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
 		return rules.remove(id)!=null;
 	}
 
@@ -196,44 +202,52 @@ public class SmartCacheHandler implements CacheHandler {
 		setRuleElement(id, timeSpan);
 	}
 
-	public static void clearAllRules() {
-		clearRules(ConfigImpl.CACHE_DEFAULT_NONE);
+	public static void clearAllRules(PageContext pc) throws PageException {
+		clearRules(pc,ConfigImpl.CACHE_DEFAULT_NONE);
 	}
 	
-	public static void clearRules(int type) {
+	public static void clearRules(PageContext pc,int type) throws PageException {
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().clearRules();
+			CacheHandlerFactory.include.getSmartCacheHandler().clearRules(pc);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().clearRules();
+			CacheHandlerFactory.query.getSmartCacheHandler().clearRules(pc);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().clearRules();
+			CacheHandlerFactory.function.getSmartCacheHandler().clearRules(pc);
 	}
 	
-	public void clearRules(){
+	public void clearRules(PageContext pc) throws PageException{
 		rules.clear();
 		clearRuleElements();
+		try {
+			getCache(pc).remove(CacheKeyFilterAll.getInstance());
+		}
+		catch (IOException e) {}
 	}
 
-	public static void removeRule(int type, String id) {
+	public static void removeRule(PageContext pc,int type, String id) throws PageException {
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().removeRule(id);
+			CacheHandlerFactory.include.getSmartCacheHandler().removeRule(pc,id);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().removeRule(id);
+			CacheHandlerFactory.query.getSmartCacheHandler().removeRule(pc,id);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().removeRule(id);
+			CacheHandlerFactory.function.getSmartCacheHandler().removeRule(pc,id);
 	}
 	
-	public void removeRule(String id){
+	public void removeRule(PageContext pc,String id) throws PageException{
 		rules.remove(id);
 		removeRuleElement(id);
+		try {
+			getCache(pc).remove(id);
+		}
+		catch (IOException e) {}
 	}
 	
 	public static Query getAllRules() {
 		return getRules(ConfigImpl.CACHE_DEFAULT_NONE);
 	}
-	
+
 	public static Query getRules(int type) {
-		Query qry=new QueryImpl(new String[]{"type","entryHash","timespan"},0,"rules");
+		Query qry=new QueryImpl(new String[]{"type","entryHash","timespan","created","used"},0,"rules");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
 			CacheHandlerFactory.include.getSmartCacheHandler()._getRules(qry, "include");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
@@ -254,13 +268,13 @@ public class SmartCacheHandler implements CacheHandler {
 			qry.setAtEL("type", row, type);
 			qry.setAtEL("entryHash", row, e.getKey());
 			qry.setAtEL("timespan", row,r.timespan );
-			qry.setAtEL("crated", row, new DateTimeImpl(r.created,false));
+			qry.setAtEL("created", row, new DateTimeImpl(r.created,false));
 			qry.setAtEL("used", row, r.used);
 		}
 	}
 	
-	public static void clearAllEntries() {
-		clearRules(ConfigImpl.CACHE_DEFAULT_NONE);
+	public static void clearAllEntries(PageContext pc) throws PageException {
+		clearRules(pc,ConfigImpl.CACHE_DEFAULT_NONE);
 	}
 	
 	public static void clearEntries(int type) {

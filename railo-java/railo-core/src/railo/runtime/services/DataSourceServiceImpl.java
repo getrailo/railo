@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebAdmin;
@@ -91,7 +92,13 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 	@Override
 	public void purgeQueryCache() throws IOException {
 		PageContext pc = pc();
-		if(pc!=null)CacheHandlerFactory.query.clean(pc);
+		if(pc!=null)
+			try {
+				CacheHandlerFactory.query.clean(pc);
+			}
+			catch (PageException e) {
+				throw ExceptionUtil.toIOException(e);
+			}
 		//if(pc!=null)pc.getQueryCache().clearUnused(pc);
 
 	}
