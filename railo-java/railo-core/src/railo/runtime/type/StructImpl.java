@@ -28,13 +28,15 @@ import railo.runtime.type.util.StructUtil;
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
+	public static final int TYPE_UNDEFINED = -1;// FUTURE add to interface Struct 
+
 	private MapPro<Collection.Key,Object> map;
 	
 	/**
 	 * default constructor
 	 */
 	public StructImpl() {
-		this(TYPE_REGULAR);//asx
+		this(StructImpl.TYPE_UNDEFINED);//asx
 	}
 	
 	/**
@@ -57,34 +59,21 @@ public class StructImpl extends StructSupport {
      * @param initialCapacity initial capacity - MUST be a power of two.
      */
     public StructImpl(int type, int initialCapacity) {
-    	/*if(type==TYPE_LINKED)		map=new LinkedHashMapPro<Collection.Key,Object>();
-    	else if(type==TYPE_WEAKED)	map=new WeakHashMapPro<Collection.Key,Object>();
-    	else if(type==TYPE_SOFT)	map=new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new Object());
-        else if(type==TYPE_SYNC)	map=new SyncMap<Collection.Key, Object>(new HashMapPro<Collection.Key,Object>());
-        else 						map=new SyncMap<Collection.Key,Object>();
-    	*/
-    	if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>(initialCapacity));
-    	else if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>(initialCapacity));
+    	if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>(initialCapacity));
     	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(ReferenceMap.HARD,ReferenceMap.SOFT,initialCapacity,0.75f),new SerializableObject()));
-        //else if(type==TYPE_SYNC)	map=new ConcurrentHashMapPro<Collection.Key,Object>);
-        else 						map=MapFactory.getConcurrentMap(initialCapacity);//new ConcurrentHashMapPro<Collection.Key,Object>();
+    	else if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>(initialCapacity));
+    	else 						map=MapFactory.getConcurrentMap(initialCapacity);
     }
-    
     
     
     
     
     public int getType(){
-    	MapPro m = map;
-    	if(map instanceof SyncMap)
-    		m=((SyncMap)map).getMap();
-    	
-    	if(m instanceof LinkedHashMapPro) return TYPE_LINKED;
-    	if(m instanceof WeakHashMapPro) return TYPE_WEAKED;
-    	//if(map instanceof SyncMap) return TYPE_SYNC;
-    	if(m instanceof MapProWrapper) return TYPE_SOFT;
-    	return TYPE_REGULAR;
+    	return StructUtil.getType(map);
     }
+    
+    
+    
     
 	
 	@Override
