@@ -207,7 +207,7 @@ final class Axis1Client extends WSClient {
 		
 		
 		
-		Port port = getWSDLPort(service);
+		Port port = WSUtil.getSoapPort(service,false);
 		
 		Binding binding = port.getBinding();
         
@@ -584,24 +584,7 @@ final class Axis1Client extends WSClient {
 	 * @return WSDL Port
 	 * @throws RPCException
 	 */
-	public Port getWSDLPort(javax.wsdl.Service service) throws RPCException {
-		String name = null;
-		Port port = null;
-		List list = null;
-		Map ports = service.getPorts();
-		for(Iterator itr = ports.keySet().iterator(); itr.hasNext();) {
-			name = (String)itr.next();
-			port = (Port)ports.get(name);
-			list = port.getExtensibilityElements();
-			if(list != null) {
-				for(int i = 0; i < list.size(); i++)
-					if(list.get(i) instanceof SOAPAddress)
-						return port;
-
-			}
-		}
-		throw new RPCException("Can't locate port entry for service " + service.getQName().toString() + " WSDL");
-	}
+	
 
 	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
@@ -646,21 +629,21 @@ final class Axis1Client extends WSClient {
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
         } catch (Exception e) {
-            DumpTable table = new DumpTable("webservice","#ccccff","#cccc00","#000000");
+            DumpTable table = new DumpTable("webservice","#99cc99","#ccffcc","#000000");
             table.appendRow(1,new SimpleDumpData("webservice"),new SimpleDumpData(wsdlUrl));
             return table;
         }
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable functions = new DumpTable("webservice","#ccccff","#cccc00","#000000");
+    	DumpTable functions = new DumpTable("webservice","#99cc99","#ccffcc","#000000");
     	functions.setTitle("Web Service (Axis 1)");
         if(dp.getMetainfo())functions.setComment(wsdlUrl);
         //DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
         
         
         javax.wsdl.Service service = getWSDLService();
-        Port port = getWSDLPort(service);
+        Port port = WSUtil.getSoapPort(service,false);
         Binding binding = port.getBinding();
         
      
@@ -695,8 +678,8 @@ final class Axis1Client extends WSClient {
     }
 
     private DumpData _toHTMLOperation(String doc, Parameters parameters) {
-    	DumpTable table = new DumpTable("#ccccff","#ccff66","#000000");
-    	DumpTable attributes = new DumpTable("#ccccff","#ccff66","#000000");
+    	DumpTable table = new DumpTable("#99cc99","#ccffcc","#000000");
+    	DumpTable attributes = new DumpTable("#99cc99","#ccffcc","#000000");
         String returns = "void";
         attributes.appendRow(3,new SimpleDumpData("name"),new SimpleDumpData("type"));
         
@@ -812,7 +795,7 @@ final class Axis1Client extends WSClient {
         Port port = null;
     	try {
     		service = getWSDLService();
-            port = getWSDLPort(service);
+            port = WSUtil.getSoapPort(service,false);
     	}
     	catch(Exception e) {
     		return new KeyIterator(new Collection.Key[0]);
