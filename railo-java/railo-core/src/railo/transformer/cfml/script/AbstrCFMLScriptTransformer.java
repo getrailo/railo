@@ -1886,7 +1886,7 @@ int pos=data.cfml.getPos();
     	RefBoolean dynamic=new RefBooleanImpl(false);
     	
 		// Name
-    	String name=attributeName(data.cfml,args,tlt,dynamic,sbType, allowTwiceAttr);
+    	String name=attributeName(data.cfml,args,tlt,dynamic,sbType, allowTwiceAttr,!allowColonSeparator);
     	boolean allowExpression=false;
     	if(oAllowExpression instanceof Boolean)allowExpression=((Boolean)oAllowExpression).booleanValue();
     	else if(oAllowExpression instanceof String)allowExpression=((String)oAllowExpression).equalsIgnoreCase(name);
@@ -1953,8 +1953,8 @@ int pos=data.cfml.getPos();
 		return id;
 	}*/
 	
-	private final String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
-		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true,false));
+	private final String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr, boolean allowColon) throws TemplateException {
+		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true,allowColon));
 		return validateAttributeName(id, cfml, args, tag, dynamic, sbType,allowTwiceAttr);
 	}
 	
