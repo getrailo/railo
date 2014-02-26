@@ -36,7 +36,7 @@ public class StructImpl extends StructSupport {
 	 * default constructor
 	 */
 	public StructImpl() {
-		this(StructImpl.TYPE_UNDEFINED);//asx
+		this(StructImpl.TYPE_UNDEFINED,HashMapPro.DEFAULT_INITIAL_CAPACITY);//asx
 	}
 	
 	/**
