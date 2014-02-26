@@ -993,7 +993,7 @@ public final class CFMLTransformer {
 	private static String attributeName(CFMLString cfml,RefBoolean dynamic, ArrayList<String> args, TagLibTag tag, 
 			StringBuffer sbType, boolean[] parseExpression,boolean allowDefaultValue) throws TemplateException {
 		
-		String _id = identifier(cfml,!allowDefaultValue,false);
+		String _id = identifier(cfml,!allowDefaultValue,true);
 		if(StringUtil.isEmpty(_id)){
 			return null;
 		}
@@ -1103,8 +1103,9 @@ public final class CFMLTransformer {
 	 */
 	public static String identifier(CFMLString cfml,boolean throwError, boolean allowColon) throws TemplateException  {
 		int start = cfml.getPos();
+		
 		if(!cfml.isCurrentBetween('a','z') && !cfml.isCurrent('_')) {
-			if(throwError)throw new TemplateException(cfml,"Invalid Identifier.");
+			if(throwError)throw new TemplateException(cfml,"Invalid Identifier, the following character cannot be part of a identifier ["+cfml.getCurrent()+"]");
 			return null;
 		}
 		do {
