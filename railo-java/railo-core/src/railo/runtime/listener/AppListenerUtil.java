@@ -558,6 +558,29 @@ public final class AppListenerUtil {
 		}
 		return Caster.toString(o);
 	}
+
+	public static String toWSType(short wstype, String defaultValue) {
+		if(ApplicationContextPro.WS_TYPE_AXIS1== wstype) return "Axis1";
+		if(ApplicationContextPro.WS_TYPE_CXF== wstype) return "CXF";
+		return defaultValue;
+	}
+	
+	public static short toWSType(String wstype, short defaultValue) {
+		if(wstype==null) return defaultValue;
+		wstype=wstype.trim();
+		
+		if("axis".equalsIgnoreCase(wstype) || "axis1".equalsIgnoreCase(wstype))
+			return ApplicationContextPro.WS_TYPE_AXIS1;
+		if("cxf".equalsIgnoreCase(wstype))
+			return ApplicationContextPro.WS_TYPE_CXF;
+		return defaultValue;
+	}
+	
+	public static short toWSType(String wstype) throws ApplicationException {
+		short wst = toWSType(wstype,(short)-1);
+		if(wst!=-1) return wst;
+		throw new ApplicationException("invalid webservice type ["+wstype+"], valid values are [axis,axis1,cxf]");
+	}
 }
 
 

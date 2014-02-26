@@ -77,6 +77,7 @@ public final class Application extends TagImpl {
 	private Charset webCharset;
 	private Charset resourceCharset;
 	private short sessionType=-1;
+	private short wsType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
 	private Boolean compression;
@@ -133,6 +134,7 @@ public final class Application extends TagImpl {
         webCharset=null;
         resourceCharset=null;
         sessionType=-1;
+        wsType=-1;
         sessionCluster=false;
         clientCluster=false;
         compression=null;
@@ -270,6 +272,9 @@ public final class Application extends TagImpl {
 	}
 	public void setSessiontype(String sessionType) throws ApplicationException	{
 		this.sessionType=AppListenerUtil.toSessionType(sessionType);
+	}
+	public void setWstype(String wstype) throws ApplicationException	{
+		this.wsType=AppListenerUtil.toWSType(wstype);
 	}
 	public void setClientcluster(boolean clientCluster) {
 		this.clientCluster=clientCluster;
@@ -493,8 +498,7 @@ public final class Application extends TagImpl {
 		if(onmissingtemplate!=null && ac instanceof ClassicApplicationContext){
 			((ClassicApplicationContext)ac).setOnMissingTemplate(onmissingtemplate);
 		}
-		
-		
+
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
 		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
@@ -511,8 +515,9 @@ public final class Application extends TagImpl {
 		if(webCharset!=null) 					ac.setWebCharset(webCharset);
 		if(resourceCharset!=null) 				ac.setResourceCharset(resourceCharset);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
+		if(wsType!=-1) 							ac.setWSType(wsType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
-		if(compression!=null) 						ac.setAllowCompression(compression.booleanValue());
+		if(compression!=null) 					ac.setAllowCompression(compression.booleanValue());
 		if(cacheFunction!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION, cacheFunction);
 		if(cacheObject!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_OBJECT, cacheObject);
 		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);

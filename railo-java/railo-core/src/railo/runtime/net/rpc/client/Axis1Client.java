@@ -84,7 +84,7 @@ import railo.transformer.bytecode.util.ASMPropertyImpl;
 /**
  * Wrapper for a Webservice
  */
-public final class RPCClient implements Objects, Iteratorable{
+final class Axis1Client extends WSClient {
 
     
     
@@ -112,19 +112,19 @@ public final class RPCClient implements Objects, Iteratorable{
      * @param password 
      * @throws PageException
      */
-    public RPCClient( String wsdlUrl, String username, String password) throws PageException {
+    public Axis1Client( String wsdlUrl, String username, String password) throws PageException {
 		this(wsdlUrl,username,password,null);
     }
 
-    public RPCClient( String wsdlUrl) throws PageException {
+    public Axis1Client( String wsdlUrl) throws PageException {
        this(wsdlUrl,null,null,null);
     }
     
-	public RPCClient(String wsdlUrl, ProxyData proxyData) throws PageException {
+	public Axis1Client(String wsdlUrl, ProxyData proxyData) throws PageException {
 		this(wsdlUrl,null,null,proxyData);
 	}
 
-	public RPCClient(String wsdlUrl, String username, String password, ProxyData proxyData) throws PageException {
+	public Axis1Client(String wsdlUrl, String username, String password, ProxyData proxyData) throws PageException {
 		if(!StringUtil.isEmpty(username)) {
 			if(password==null)password="";
 			parser.setUsername(username);
@@ -157,9 +157,9 @@ public final class RPCClient implements Objects, Iteratorable{
         }
     }
 	
-	public Object callWithNamedValues(Config config, String methodName, Struct arguments) throws PageException {
+	public Object callWithNamedValues(Config config, Collection.Key methodName, Struct arguments) throws PageException {
         try {
-            return (_callMethod(null,config,methodName,arguments,null));
+            return (_callMethod(null,config,methodName.getString(),arguments,null));
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
@@ -558,8 +558,11 @@ public final class RPCClient implements Objects, Iteratorable{
 		SymTabEntry symTabEntry = null;
 		Map.Entry entry = null;
 		Vector v = null;
-		for(Iterator iterator = parser.getSymbolTable().getHashMap().entrySet().iterator(); iterator.hasNext();) {
-			entry = (Map.Entry)iterator.next();
+		Iterator it = parser.getSymbolTable().getHashMap().entrySet().iterator();
+		
+		
+		while(it.hasNext()) {
+			entry = (Map.Entry)it.next();
 			v = (Vector)entry.getValue();
 			for(int i = 0; i < v.size(); i++) {
 				if(!(org.apache.axis.wsdl.symbolTable.ServiceEntry.class).isInstance(v.elementAt(i)))
@@ -651,7 +654,7 @@ public final class RPCClient implements Objects, Iteratorable{
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
     	DumpTable functions = new DumpTable("webservice","#ccccff","#cccc00","#000000");
-    	functions.setTitle("Web Service (WSDL/Soap)");
+    	functions.setTitle("Web Service (Axis 1)");
         if(dp.getMetainfo())functions.setComment(wsdlUrl);
         //DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
         

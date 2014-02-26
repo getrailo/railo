@@ -440,6 +440,15 @@ Specifies how Railo stores session variables:
 			in response to a remote call.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>wstype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>webservice type used, this can be one of the following values
+- Axis1 (default): The Apache Axis 1 implementation is used
+- CXF: The CXF implementation is used</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>typeChecking</name>
 			<required>false</required>
