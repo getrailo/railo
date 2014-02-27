@@ -74,6 +74,8 @@ import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
 import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.net.rpc.Pojo;
+import railo.runtime.net.rpc.PojoIterator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -3802,6 +3804,20 @@ public final class Caster {
             return toComponent(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
         }
         return defaultValue;
+    }
+    
+    public static Component toComponent(PageContext pc, Pojo pojo, String compPath , Component defaultValue) {
+        try {
+			pc.loadComponent(compPath);
+			Iterator<Object> it=new PojoIterator(pojo);
+			//print.e("-----> "+pojo.getClass().getName());
+			while(it.hasNext()){
+				it.next();
+				//print.e("->"+it.next());
+			}
+		}
+		catch (PageException e) {}
+    	return defaultValue;
     }
     
     /**

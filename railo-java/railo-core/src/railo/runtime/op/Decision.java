@@ -37,6 +37,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.mail.MailUtil;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.text.xml.XMLCaster;
@@ -1324,9 +1325,17 @@ public final class Decision {
         case CFTypes.TYPE_XML:          return isXML(o);
 		}
 		
-        if(o instanceof Component) {
+		if(o instanceof Component) {
         	Component comp=((Component)o);
             return comp.instanceOf(strType);
+        }
+		print.e("name:"+o.getClass().getName());
+		if(o instanceof Pojo) {
+			// try to convert POJO to A CFC
+			Pojo pojo=((Pojo)o);
+			Component cfc = Caster.toComponent(pc,pojo,strType,null);
+			
+            //return comp.instanceOf(strType);
         }
         if(isArrayType(strType) && isArray(o)){
         	String _strType=strType.substring(0,strType.length()-2);
