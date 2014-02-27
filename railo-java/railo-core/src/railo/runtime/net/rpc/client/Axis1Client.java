@@ -15,7 +15,6 @@ import java.util.Vector;
 import javax.wsdl.Binding;
 import javax.wsdl.Operation;
 import javax.wsdl.Port;
-import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.encoding.TypeMapping;
@@ -64,9 +63,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -203,11 +200,7 @@ final class Axis1Client extends WSClient {
 		TypeMappingUtil.registerDefaults(axisService.getTypeMappingRegistry());
 		
 		
-		
-		
-		
-		
-		Port port = WSUtil.getSoapPort(service,false);
+		Port port = WSUtil.getSoapPort(service);
 		
 		Binding binding = port.getBinding();
         
@@ -629,21 +622,21 @@ final class Axis1Client extends WSClient {
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
         } catch (Exception e) {
-            DumpTable table = new DumpTable("webservice","#99cc99","#ccffcc","#000000");
+            DumpTable table = new DumpTable("webservice","#99cccc","#ccffff","#000000");
             table.appendRow(1,new SimpleDumpData("webservice"),new SimpleDumpData(wsdlUrl));
             return table;
         }
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable functions = new DumpTable("webservice","#99cc99","#ccffcc","#000000");
+    	DumpTable functions = new DumpTable("webservice","#99cccc","#ccffff","#000000");
     	functions.setTitle("Web Service (Axis 1)");
         if(dp.getMetainfo())functions.setComment(wsdlUrl);
         //DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
         
         
         javax.wsdl.Service service = getWSDLService();
-        Port port = WSUtil.getSoapPort(service,false);
+        Port port = WSUtil.getSoapPort(service);
         Binding binding = port.getBinding();
         
      
@@ -670,16 +663,19 @@ final class Axis1Client extends WSClient {
             //parameters = (Parameters)bEntry.getParameters().get(tmpOp);
             functions.appendRow(1,
             		new SimpleDumpData(tmpOp.getName()),
-            		_toHTMLOperation(doc.toString(),(Parameters)bEntry.getParameters().get(tmpOp)));
+            		_toHTMLOperation(tmpOp.getName(),doc.toString(),(Parameters)bEntry.getParameters().get(tmpOp)));
         }
         
         //box.appendRow(1,new SimpleDumpData(""),functions);
         return functions;
     }
 
-    private DumpData _toHTMLOperation(String doc, Parameters parameters) {
-    	DumpTable table = new DumpTable("#99cc99","#ccffcc","#000000");
-    	DumpTable attributes = new DumpTable("#99cc99","#ccffcc","#000000");
+    private DumpData _toHTMLOperation(String title,String doc, Parameters parameters) {
+    	DumpTable table = new DumpTable("#99cccc","#ccffff","#000000");
+    	table.setTitle(title);
+    	if(doc.length()>0)table.setComment(doc);
+        
+    	DumpTable attributes = new DumpTable("#99cccc","#ccffff","#000000");
         String returns = "void";
         attributes.appendRow(3,new SimpleDumpData("name"),new SimpleDumpData("type"));
         
@@ -711,7 +707,6 @@ final class Axis1Client extends WSClient {
         }
         table.appendRow(1,new SimpleDumpData("arguments"),attributes);
         table.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(returns));
-        if(doc.length()>0)table.appendRow(1,new SimpleDumpData("hint"),new SimpleDumpData(doc));
         
         
         return table;
@@ -795,7 +790,7 @@ final class Axis1Client extends WSClient {
         Port port = null;
     	try {
     		service = getWSDLService();
-            port = WSUtil.getSoapPort(service,false);
+            port = WSUtil.getSoapPort(service);
     	}
     	catch(Exception e) {
     		return new KeyIterator(new Collection.Key[0]);
