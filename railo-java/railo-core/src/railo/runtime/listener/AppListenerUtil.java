@@ -561,6 +561,7 @@ public final class AppListenerUtil {
 
 	public static String toWSType(short wstype, String defaultValue) {
 		if(ApplicationContextPro.WS_TYPE_AXIS1== wstype) return "Axis1";
+		if(ApplicationContextPro.WS_TYPE_JAX_WS== wstype) return "JAX-WS";
 		if(ApplicationContextPro.WS_TYPE_CXF== wstype) return "CXF";
 		return defaultValue;
 	}
@@ -571,6 +572,8 @@ public final class AppListenerUtil {
 		
 		if("axis".equalsIgnoreCase(wstype) || "axis1".equalsIgnoreCase(wstype))
 			return ApplicationContextPro.WS_TYPE_AXIS1;
+		if("jax".equalsIgnoreCase(wstype) || "jaxws".equalsIgnoreCase(wstype) || "jax-ws".equalsIgnoreCase(wstype))
+			return ApplicationContextPro.WS_TYPE_JAX_WS;
 		if("cxf".equalsIgnoreCase(wstype))
 			return ApplicationContextPro.WS_TYPE_CXF;
 		return defaultValue;
@@ -579,7 +582,7 @@ public final class AppListenerUtil {
 	public static short toWSType(String wstype) throws ApplicationException {
 		short wst = toWSType(wstype,(short)-1);
 		if(wst!=-1) return wst;
-		throw new ApplicationException("invalid webservice type ["+wstype+"], valid values are [axis,axis1,cxf]");
+		throw new ApplicationException("invalid webservice type ["+wstype+"], valid values are [axis1,jax-ws,cxf]");
 	}
 }
 

@@ -1,22 +1,31 @@
 package railo.runtime.net.rpc.client;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.xml.namespace.QName;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.dynamic.DynamicClientFactory;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import org.apache.cxf.service.model.BindingInfo;
 import org.apache.cxf.service.model.BindingOperationInfo;
 import org.apache.cxf.service.model.MessageInfo;
 import org.apache.cxf.service.model.MessagePartInfo;
 import org.apache.cxf.service.model.OperationInfo;
+
+import coldfusion.xml.rpc.QueryBean;
 
 import railo.print;
 import railo.commons.lang.StringUtil;
@@ -31,19 +40,30 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.reflection.Reflector;
+import railo.runtime.reflection.pairs.MethodInstance;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Array;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.ObjectsEntryIterator;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 
 final class CXFClient extends WSClient {
@@ -56,7 +76,9 @@ final class CXFClient extends WSClient {
 
 	public CXFClient(String strWsdlUrl, String username, String password, ProxyData proxyData) throws PageException {
 		DynamicClientFactory dcf=DynamicClientFactory.newInstance();
-		print.e(dcf.isSimpleBindingEnabled());
+		
+		
+		
 		//JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 		try {
 			this.wsdlUrl=HTTPUtil.toURL(strWsdlUrl, true);
@@ -78,49 +100,58 @@ final class CXFClient extends WSClient {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable box = new DumpTable("webservice","#99cc99","#ccffcc","#000000");
+		DumpTable box = new DumpTable("webservice","#99cccc","#ccffff","#000000");
         box.setTitle("Web Service (CXF)");
-        box.setComment(wsdlUrl.toExternalForm());
         DumpTable functions = box;
         
         
 		
-		// TODO Auto-generated method stub
-		Collection<BindingOperationInfo> ops = client.getEndpoint().getBinding().getBindingInfo().getOperations();
+		BindingInfo bi = client.getEndpoint().getBinding().getBindingInfo();
+		
+		String doc=bi.getDocumentation();
+		box.setComment(StringUtil.isEmpty(doc)?wsdlUrl.toExternalForm():wsdlUrl.toExternalForm()+"\n"+doc);
+        
+		Collection<BindingOperationInfo> ops = bi.getOperations();
 		Iterator<BindingOperationInfo> it = ops.iterator();
 		OperationInfo oi;
-		String funcName,doc;
+		BindingOperationInfo boi;
+		String funcName;
 		MessageInfo in,out;
 		while(it.hasNext()){
-			oi=it.next().getOperationInfo(); 
+			boi=it.next();
+			oi=boi.getOperationInfo(); 
 			funcName=oi.getName().getLocalPart();
 			doc=oi.getDocumentation();
 			if(oi.isUnwrapped() || (oi.isUnwrappedCapable() && (oi=oi.getUnwrappedOperation())!=null)) {
 				in = oi.getInput();
 				out = oi.getOutput();
+				
+				DumpTable table = new DumpTable("#99cccc","#ccffff","#000000");
+				table.setTitle(funcName);
+				if(!StringUtil.isEmpty(doc))table.setComment(doc);
+				DumpTable attributes = new DumpTable("#99cccc","#ccffff","#000000");
+		    	attributes.appendRow(3, new SimpleDumpData("Name"), new SimpleDumpData("Type"));
 
 				// attributes/input
-				DumpTable table = new DumpTable("#ccccff","#ccff66","#000000");
-		    	DumpTable attributes = new DumpTable("#ccccff","#ccff66","#000000");
-				DumpTable rtn = new DumpTable("#ccccff","#ccff66","#000000");
-		        List<MessagePartInfo> parts = in.getMessageParts();
+				List<MessagePartInfo> parts = in.getMessageParts();
 				Iterator<MessagePartInfo> itt = parts.iterator();
 				while(itt.hasNext()){
 					MessagePartInfo mpi = itt.next();
-					attributes.appendRow(0,new SimpleDumpData(mpi.getName().getLocalPart()),new SimpleDumpData(mpi.getTypeQName().getLocalPart()));
+					attributes.appendRow(0,new SimpleDumpData(mpi.getName().getLocalPart()),new SimpleDumpData(toRailoType(mpi.getTypeQName(),mpi.getTypeClass())));
 				}
 				
 				// return value/output
+				String rtn="";
 				parts = out.getMessageParts();
 				itt = parts.iterator();
 				while(itt.hasNext()){
 					MessagePartInfo mpi = itt.next();
-					rtn.appendRow(0,new SimpleDumpData(mpi.getName().getLocalPart()),new SimpleDumpData(mpi.getTypeQName().getLocalPart()));
+					rtn=toRailoType(mpi.getTypeQName(),mpi.getTypeClass());
 				}
 				
-				table.appendRow(1,new SimpleDumpData("arguments"),attributes);
-		        table.appendRow(1,new SimpleDumpData("return type"),rtn);
-		        if(!StringUtil.isEmpty(doc))table.appendRow(1,new SimpleDumpData("hint"),new SimpleDumpData(doc));
+				//if(!StringUtil.isEmpty(doc))table.appendRow(1,new SimpleDumpData("hint"),new SimpleDumpData(doc));
+		        table.appendRow(1,new SimpleDumpData("arguments"),attributes);
+		        table.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(rtn));
 		        
 				
 				
@@ -133,6 +164,23 @@ final class CXFClient extends WSClient {
 		//box.appendRow(1,new SimpleDumpData(""),functions);
 	    return box;
 	}
+
+	private String toRailoType(QName type, Class<?> typeClass) {
+		
+    	String strType = type.getLocalPart();
+    	String lcStrType=strType.toLowerCase();
+    	
+    	if(lcStrType.startsWith("array")) return "array";
+    	else if(lcStrType.equals("map")) return "struct";
+    	else if(lcStrType.startsWith("query")) return "query";
+    	else if(lcStrType.equals("double")) return "numeric";
+    	else if(lcStrType.startsWith("any")) return "any";
+    	else if(lcStrType.equals("date")) return "date";
+        
+    	
+    	return strType+" ("+typeClass.getName()+")";
+	}
+
 
 	@Override
 	public Iterator<String> keysAsStringIterator() {
@@ -206,13 +254,16 @@ final class CXFClient extends WSClient {
 		}
 		if(name == null)
 			throw new RPCException("Cannot locate operation " + methodName + " in webservice " + wsdlUrl);
-		
-		try {
-			return client.invoke(name,new Object[]{});// TOD set arguments
-		} catch (Exception e) {
+		try{
+			Object[] rtn = client.invoke(name,new Object[]{});
+			if(rtn.length==1)return toCFML(pc,rtn[0]);
+			return toCFML(pc,rtn);
+		}
+		catch(Exception e){
 			throw Caster.toPageException(e);
 		}
 	}
+
 
 	@Override
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws ApplicationException {
@@ -297,5 +348,117 @@ final class CXFClient extends WSClient {
 	@Override
 	public Call getLastCall() throws ApplicationException {
 		throw new ApplicationException("not supported with CXF Client, use instead the Axis Client");
+	}
+	
+
+
+	private Object toCFML(PageContext pc,Object value) throws PageException {
+		
+		if(value instanceof Date || value instanceof Calendar) {// do not change to caster.isDate
+        	return Caster.toDate(value,null);
+        }
+        if(value instanceof Object[]) {
+        	Object[] arr=(Object[]) value;
+        	if(!ArrayUtil.isEmpty(arr)){
+        		boolean allTheSame=true;
+        		// byte
+        		if(arr[0] instanceof Byte){
+        			for(int i=1;i<arr.length;i++){
+        				if(!(arr[i] instanceof Byte)){
+        					allTheSame=false;
+        					break;
+        				}
+        			}
+        			if(allTheSame){
+        				byte[] bytes=new byte[arr.length];
+        				for(int i=0;i<arr.length;i++){
+            				bytes[i]=Caster.toByteValue(arr[i]);
+            			}
+        				return bytes;
+        			}
+        		}
+        	}
+        }
+        if(value instanceof Byte[]) {
+        	Byte[] arr=(Byte[]) value;
+        	if(!ArrayUtil.isEmpty(arr)){
+				byte[] bytes=new byte[arr.length];
+				for(int i=0;i<arr.length;i++){
+    				bytes[i]=arr[i].byteValue();
+    			}
+				return bytes;
+        	}
+        }
+        if(value instanceof byte[]) {
+        	return value;
+        }
+        if(Decision.isArray(value)) {
+        	Array a = Caster.toArray(value);
+            int len=a.size();
+            Object o;
+            for(int i=1;i<=len;i++) {
+                o=a.get(i,null);
+                if(o!=null)a.setEL(i,toCFML(pc,o));
+            }
+            return a;
+        }
+        if(value instanceof Map) {
+        	Struct sct = new StructImpl();
+            Iterator it=((Map)value).entrySet().iterator();
+            Map.Entry entry;
+            while(it.hasNext()) {
+                entry=(Entry) it.next();
+                sct.setEL(Caster.toString(entry.getKey()),toCFML(pc,entry.getValue()));
+            }
+            return sct;
+        }
+        /*if(isQueryBean(value)) {
+        	QueryBean qb = (QueryBean) value;
+            String[] strColumns = qb.getColumnList();
+            Object[][] data = qb.getData();
+            int recorcount=data.length;
+            Query qry=new QueryImpl(strColumns,recorcount,"QueryBean");
+            QueryColumn[] columns=new QueryColumn[strColumns.length];
+            for(int i=0;i<columns.length;i++) {
+            	columns[i]=qry.getColumn(strColumns[i]);
+            }
+            
+            int row;
+            for(row=1;row<=recorcount;row++) {
+            	for(int i=0;i<columns.length;i++) {
+            		columns[i].set(row,toRailoType(pc,data[row-1][i]));
+                }
+            }
+            return qry;
+        }*/
+        /*if(Decision.isQuery(value)) {
+            Query q = Caster.toQuery(value);
+            int recorcount=q.getRecordcount();
+            String[] strColumns = q.getColumns();
+            
+            QueryColumn col;
+            int row;
+            for(int i=0;i<strColumns.length;i++) {
+                col=q.getColumn(strColumns[i]);
+                for(row=1;row<=recorcount;row++) {
+                    col.set(row,toRailoType(pc,col.get(row,null)));
+                }
+            }
+            return q;
+        }*/
+        Class<? extends Object> clazz = value.getClass();
+        String name=ListUtil.last(clazz.getName(), '.');
+        
+        if(name.startsWith("ArrayOf")) {
+        	MethodInstance mi = Reflector.getGetterEL(clazz, name.substring(7));
+        	try {
+				return toCFML(pc, mi.invoke(value));
+			}
+			catch (Exception e) {
+				throw Caster.toPageException(e);
+			}
+        }
+        
+		return value;
 	}
 }
