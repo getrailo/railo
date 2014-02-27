@@ -20,6 +20,10 @@ import railo.transformer.library.tag.TagLibTagAttr;
 
 public interface ApplicationContextPro extends ApplicationContext {
 
+	public static final short WS_TYPE_AXIS1=1;
+	public static final short WS_TYPE_JAX_WS=2;
+	public static final short WS_TYPE_CXF=4;
+	
     public DataSource[] getDataSources();
     public DataSource getDataSource(String dataSourceName) throws PageException;
     public DataSource getDataSource(String dataSourceName, DataSource defaultValue);
@@ -78,5 +82,10 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public boolean getSuppressContent();
 	public void setSuppressContent(boolean suppressContent);
+	
+
+
+	public short getWSType();
+	public void setWSType(short wstype);
 	
 }

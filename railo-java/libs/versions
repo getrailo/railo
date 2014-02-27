@@ -89,7 +89,7 @@
 	<jar version="1.3.3_01" path="sun-mail.jar" comment=""/>
 	<jar version="1.2.4" path="sun-security-jaas.jar" comment=""/>
 	<jar version="1.2.1" path="sun-xml-jaxrpc.jar" comment=""/>
-	<jar version="1.5.1" path="sun-xml-wsdl4j.jar" comment=""/>
+	<jar version="1.6.3" path="sun-xml-wsdl4j.jar" comment=""/>
 	<jar version="1.2.1" path="sun-xml.saaj.jar" comment=""/>
 	<jar version="1.2.1" path="tagsoup.jar" comment=""/>
 	<jar version="1.1" path="w3c-dom.jar" comment=""/>
@@ -111,4 +111,13 @@
 	<jar version="1.0" path="railo-inst.jar" comment=""/>
 	<jar version="1.0.1" path="stax-api.jar" comment=""/>
 	<jar version="0.4" path="apache-poi-tm-extractors.jar" comment=""/>
+
+	<jar version="2.7.10" path="org-apache-cxf.jar" comment=""/>
+	<jar version="3.0.3" path="org-apache-neethi.jar" comment="used by CXF"/>
+	<jar version="3.1.1" path="org-codehaus-stax2-api.jar" comment="used by CXF"/>
+	<jar version="4.2.0" path="org-codehaus-woodstox-core-asl.jar" comment="used by CXF"/>
+	<jar version="2.1.0" path="org-apache-ws-xmlschema-core.jar" comment="used by CXF"/>
+
+
+
 </jars>

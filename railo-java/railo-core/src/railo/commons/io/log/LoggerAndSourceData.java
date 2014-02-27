@@ -138,6 +138,7 @@ public final class LoggerAndSourceData {
 	}
 
 	private static void toString(StringBuilder sb, Map<String, String> map) {
+		if(map==null) return;
 		Iterator<Entry<String, String>> it = map.entrySet().iterator();
 		Entry<String, String> e;
 		while(it.hasNext()){

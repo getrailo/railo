@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.commons.collection.LinkedHashMapPro;
+import railo.commons.collection.MapPro;
+import railo.commons.collection.MapProWrapper;
+import railo.commons.collection.SyncMap;
+import railo.commons.collection.WeakHashMapPro;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -95,9 +101,9 @@ public final class StructUtil {
 		return set;
 	}
 	
-	public static Set<String> keySet(Struct sct) {
+	public static Set<String> keySet(Struct sct, boolean linked) {
 		Iterator<Key> it = sct.keyIterator();
-		Set<String> set=new HashSet<String>();
+		Set<String> set=linked?new LinkedHashSet<String>():new HashSet<String>();
 		while(it.hasNext()){
 			set.add(it.next().getString());
 		}
@@ -257,4 +263,15 @@ public final class StructUtil {
 		}
 		return sct;
 	}
+    
+    public static int getType(MapPro m){
+    	if(m instanceof SyncMap)
+    		return ((SyncMap)m).getType();
+    	
+    	if(m instanceof LinkedHashMapPro) return Struct.TYPE_LINKED;
+    	if(m instanceof WeakHashMapPro) return Struct.TYPE_WEAKED;
+    	//if(map instanceof SyncMap) return TYPE_SYNC;
+    	if(m instanceof MapProWrapper) return Struct.TYPE_SOFT;
+    	return Struct.TYPE_REGULAR;
+    }
 }

@@ -2753,6 +2753,11 @@ public final class ConfigWebFactory extends ConfigFactory {
 			if (!f.exists() || doNew)
 				createFileFromResourceEL("/resource/library/function/trace.cfm", f);
 
+			f = dir.getRealResource("queryExecute.cfm");
+			if (!f.exists() || doNew)
+				createFileFromResourceEL("/resource/library/function/queryExecute.cfm", f);
+
+			
 			f = dir.getRealResource("transactionCommit.cfm");
 			if (!f.exists() || doNew)
 				createFileFromResourceEL("/resource/library/function/transactionCommit.cfm", f);

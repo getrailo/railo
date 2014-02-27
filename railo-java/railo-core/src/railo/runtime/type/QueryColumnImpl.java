@@ -464,7 +464,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     public double castToDoubleValue(double defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
 		if(value==NullSupportHelper.NULL()) return defaultValue;
-		return Caster.toDoubleValue(value,defaultValue);
+		return Caster.toDoubleValue(value,true,defaultValue);
     }
 
     @Override

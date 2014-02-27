@@ -5,7 +5,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.net.rpc.AxisUtil;
-import railo.runtime.net.rpc.client.RPCClient;
+import railo.runtime.net.rpc.client.WSClient;
 import railo.runtime.op.Caster;
 
 /**
@@ -19,11 +19,11 @@ public final class GetSOAPRequest implements Function {
 		return call(pc, null);
 	}
 	public static Object call(PageContext pc, Object webservice) throws PageException {
-		if(webservice!=null && !(webservice instanceof RPCClient))
+		if(webservice!=null && !(webservice instanceof WSClient))
 			throw new FunctionException(pc, "getSOAPRequest", 1, "webservice", "value must be a webservice Object generated with createObject/<cfobject>");
 		
 		try {
-			return AxisUtil.getSOAPRequest((RPCClient) webservice);
+			return AxisUtil.getSOAPRequest((WSClient) webservice);
 		} 
 		catch (Exception e) {
 			throw Caster.toPageException(e);

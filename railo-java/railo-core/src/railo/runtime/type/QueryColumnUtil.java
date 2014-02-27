@@ -111,7 +111,7 @@ public final class QueryColumnUtil implements Serializable {
 
     private static Object reDefineShort(QueryColumnImpl column, Object value) {
     	
-    	double dbl = Caster.toDoubleValue(value,Double.NaN);
+    	double dbl = Caster.toDoubleValue(value,true,Double.NaN);
         if(Decision.isValid(dbl)) {  
             short sht=(short)dbl;
             if(sht==dbl)return value;

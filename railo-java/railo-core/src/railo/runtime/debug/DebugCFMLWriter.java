@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import railo.commons.io.SystemUtil;
+import railo.commons.io.SystemUtil.TemplateLine;
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.op.Caster;
@@ -260,18 +262,7 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	}
 
 	private void log(String str) {
-		StackTraceElement[] traces = new Throwable().getStackTrace();
-		StackTraceElement trace;
-		String template;
-		int line;
-		for(int i=0;i<traces.length;i++){
-			trace=traces[i];
-			template = trace.getFileName();
-			line=trace.getLineNumber();
-			if(line<=0 || template==null || template.endsWith(".java")) continue;
-			fragments.add(new DebugTextFragment(str, template, line));
-			break;
-		}
+		fragments.add(new DebugTextFragment(str, SystemUtil.getCurrentContext()));
 	}
 
 	@Override

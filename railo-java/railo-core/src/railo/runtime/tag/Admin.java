@@ -4827,7 +4827,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private double getDouble(String attributeName, double defaultValue) {
         Object value=attributes.get(attributeName,null);
         if(value==null) return defaultValue;
-        return Caster.toDoubleValue(value,defaultValue);
+        return Caster.toDoubleValue(value,true,defaultValue);
     }
     
     private TimeSpan getTimespan(String tagName, String actionName, String attributeName) throws PageException {

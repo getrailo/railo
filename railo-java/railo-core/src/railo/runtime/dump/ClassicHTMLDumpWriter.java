@@ -6,6 +6,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import railo.commons.color.ColorCaster;
+import railo.commons.io.SystemUtil;
+import railo.commons.io.SystemUtil.TemplateLine;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -62,10 +64,10 @@ public class ClassicHTMLDumpWriter implements DumpWriter {
 			writer.write("</script>");
 		}
 		
-		String context="";
-		if(!inside) context=Dump.getContext();
-		if(context==null) context="";
-		//boolean isSetContext=false;
+
+		TemplateLine tl=null;
+		if(!inside) tl=SystemUtil.getCurrentContext();
+		String context=tl==null?"":tl.toString();
 		
 		writer.write("<table"+(table.getWidth()!=null?" width=\""+table.getWidth()+"\"":"")+""+(table.getHeight()!=null?" height=\""+table.getHeight()+"\"":"")+" cellpadding=\"3\" cellspacing=\"0\" style=\"font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 10;color :"+table.getFontColor()+" ;empty-cells:show; border : 1px solid "+borderColor+";\" >");
 		

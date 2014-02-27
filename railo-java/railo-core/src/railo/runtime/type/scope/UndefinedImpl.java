@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.print;
 import railo.commons.lang.ExceptionUtil;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
@@ -154,7 +155,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	public Object get(Collection.Key key) throws PageException {
-		
+		//print.e();
 		Object rtn;
 		if(checkArguments) {
 		    rtn=local.get(key,NullSupportHelper.NULL());

@@ -176,7 +176,7 @@ public abstract class ComponentPage extends PagePlus  {
             // GET
             else {
             	// WSDL
-                if(qs!=null && qs.trim().equalsIgnoreCase("wsdl")) {
+                if(qs!=null && (qs.trim().equalsIgnoreCase("wsdl") || qs.trim().startsWith("wsdl&"))) {
                     callWSDL(pc,component);
             		//close(pc);
                     return;

@@ -140,9 +140,9 @@ public final class Dump implements Function {
 		
 		return "";
 	}
-	public static String getContext() {
+	/*public static String getContext() {
 		//Throwable cause = t.getCause();
-		StackTraceElement[] traces = new Exception("Stack trace").getStackTrace();
+		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 		
 		int line=0;
 		String template;
@@ -154,5 +154,5 @@ public final class Dump implements Function {
 			return template+":"+line;
 		}
 		return null;
-	}
+	}*/
 }

@@ -118,7 +118,7 @@ public class CacheHandlerFactory {
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}
 	
-	public void clean(PageContext pc) {
+	public void clean(PageContext pc) throws PageException {
 		rch.clean(pc);
 		getTimespanCacheHandler(pc.getConfig()).clean(pc);
 	}
