@@ -16,6 +16,7 @@ public interface ApplicationListener {
 	public static final int MODE_CURRENT2ROOT=0;
 	public static final int MODE_CURRENT=1;
 	public static final int MODE_ROOT=2;
+	// FUTURE public static final int MODE_CURRENT_OR_ROOT=4;
 	public static final String CFC_EXTENSION="cfc";
 
 	public void setMode(int mode);

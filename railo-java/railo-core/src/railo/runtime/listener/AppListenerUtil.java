@@ -45,6 +45,9 @@ import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
 public final class AppListenerUtil {
+
+	public static final int MODE_CURRENT_OR_ROOT=4;// FUTURE add to ApplicationListener interface
+	
 	public static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
 	public static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
 	public static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
@@ -105,7 +108,9 @@ public final class AppListenerUtil {
 
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, int mode, RefBoolean isCFC) {
 		if(mode==ApplicationListener.MODE_CURRENT2ROOT)
-			return getApplicationPageSourceCurr2Root(pc, requestedPage, isCFC);
+			return getApplicationPageSourceCurrToRoot(pc, requestedPage, isCFC);
+		if(mode==MODE_CURRENT_OR_ROOT)
+			return getApplicationPageSourceCurrOrRoot(pc, requestedPage, isCFC);
 		if(mode==ApplicationListener.MODE_CURRENT)
 			return getApplicationPageSourceCurrent(requestedPage, isCFC);
 		return getApplicationPageSourceRoot(pc, isCFC);
@@ -134,14 +139,14 @@ public final class AppListenerUtil {
 	}
 	
 
-	public static PageSource getApplicationPageSourceCurr2Root(PageContext pc,PageSource requestedPage, RefBoolean isCFC) {
+	public static PageSource getApplicationPageSourceCurrToRoot(PageContext pc,PageSource requestedPage, RefBoolean isCFC) {
 	    PageSource res=requestedPage.getRealPage(Constants.APP_CFC);
 	    if(res.exists()) {
 	    	isCFC.setValue(true);
 	    	return res;
 	    }
-	    res=requestedPage.getRealPage(Constants.APP_CFM);
-	    if(res.exists()) return res;
+	    //res=requestedPage.getRealPage(Constants.APP_CFM);
+	    //if(res.exists()) return res;
 	    
 	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 		//Config config = pc.getConfig();
@@ -164,9 +169,23 @@ public final class AppListenerUtil {
 		return null;
 	}
 	
+	public static PageSource getApplicationPageSourceCurrOrRoot(PageContext pc,PageSource requestedPage, RefBoolean isCFC) {
+	    // current 
+		PageSource res=requestedPage.getRealPage(Constants.APP_CFC);
+	    if(res.exists()) {
+	    	isCFC.setValue(true);
+	    	return res;
+	    }
+	    
+	    // root
+	    return getApplicationPageSourceRoot(pc, isCFC);
+	}
+	
 	public static String toStringMode(int mode) {
 		if(mode==ApplicationListener.MODE_CURRENT)	return "curr";
 		if(mode==ApplicationListener.MODE_ROOT)		return "root";
+		if(mode==ApplicationListener.MODE_CURRENT2ROOT)		return "curr2root";
+		if(mode==AppListenerUtil.MODE_CURRENT_OR_ROOT)		return "currorroot";
 		return "curr2root";
 	}
 
