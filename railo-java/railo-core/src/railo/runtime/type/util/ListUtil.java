@@ -27,9 +27,7 @@ public final class ListUtil {
 	 * casts a list to Array object, the list can be have quoted (",') arguments and delimter in this arguments are ignored. quotes are not removed
 	 * example:
 	 *  listWithQuotesToArray("aab,a'a,b',a\"a,b\"",",","\"'") will be translated to ["aab","a'a,b'","a\"a,b\""]
-	 * 
-	 * 
-	 * 
+	 *
 	 * @param list list to cast
 	 * @param delimiter delimter of the list
 	 * @param quotes quotes of the list
@@ -256,35 +254,6 @@ public final class ListUtil {
         return array;
     }
 
-	/**
-	 * casts a list to Array object remove Empty Elements
-	 * @param list list to cast
-	 * @param delimiter delimter of the list
-	 * @return Array Object
-	 */
-	public static String rest(String list, String delimiter, boolean ignoreEmpty) {
-	    //if(delimiter.length()==1)return rest(list, delimiter.charAt(0));
-		int len=list.length();
-		if(len==0) return "";
-		//int last=-1;
-		
-		char[] del = delimiter.toCharArray();
-		char c;
-		
-		if(ignoreEmpty)list=ltrim(list,del);
-		len=list.length();
-		
-		
-		for(int i=0;i<len;i++) {
-		    c=list.charAt(i);
-		    for(int y=0;y<del.length;y++) {
-				if(c==del[y]) {
-					return ignoreEmpty?ltrim(list.substring(i+1),del):list.substring(i+1);
-				}
-		    }
-		}
-		return "";
-	}
 	
 	private static String ltrim(String list,char[] del) {
 		int len=list.length();
@@ -411,8 +380,8 @@ public final class ListUtil {
     /**
      * casts a list to Array object, remove all empty items at start and end of the list and store count to info
      * @param list list to cast
+     * @param pos
      * @param delimiter delimter of the list
-     * @param info
      * @return Array Object
      * @throws ExpressionException 
      */
@@ -495,8 +464,6 @@ public final class ListUtil {
         }
         
         return result+end;
-        
-        
     }
 	
 	/**
@@ -876,7 +843,6 @@ public final class ListUtil {
 				if(arr.get(i,"").toString().indexOf(value)!=-1) return i-1;
 			}
 		return -1;
-		
 	}
 	
 	/**
@@ -1211,55 +1177,7 @@ public final class ListUtil {
 	 * @deprecated use instead  first(String list, String delimiter, boolean ignoreEmpty)
 	 */
 	public static String first(String list, String delimiter) {
-		return first(list, delimiter,true);
-	}
-	
-	/**
-	 * return first element of the list
-	 * @param list
-	 * @param delimiter
-	 * @param ignoreEmpty
-	 * @return returns the first element of the list
-	 */
-	public static String first(String list, String delimiter, boolean ignoreEmpty) {
-		
-		if(StringUtil.isEmpty(list)) return "";
-		
-		char[] del;
-		if(StringUtil.isEmpty(delimiter)) {
-		    del=new char[]{','};
-		}
-		else {
-			del=delimiter.toCharArray();
-		}
-		
-		int offset=0;
-		int index;
-		int x;
-		while(true) {
-		    index=-1;
-		    
-		    for(int i=0;i<del.length;i++) {
-		        x=list.indexOf(del[i],offset);
-		        if(x!=-1 && (x<index || index==-1))index=x;
-		    }
-			//index=list.indexOf(index,offset);
-		    if(index==-1) {
-				if(offset>0) return list.substring(offset);
-				return list;
-			}
-		    if(!ignoreEmpty && index==0) {
-				return "";
-			}
-			else if(index==offset) {
-				offset++;
-			}
-			else {
-				if(offset>0)return list.substring(offset,index);
-				return list.substring(0,index);
-			}
-		   
-		}
+		return first(list, delimiter,true, 1);
 	}
 
 	/**
@@ -1570,4 +1488,95 @@ public final class ListUtil {
 		}
 		return set;
 	}
+
+
+	public static String first(String list, String delimiters, boolean ignoreEmpty, int count) {
+
+		char[] delims = StringUtil.isEmpty(delimiters) ? new char[]{','} : delimiters.toCharArray();
+
+		int ix = getDelimIndex(list, count, delims, ignoreEmpty);
+
+		if (ix == -1)
+			return list;
+
+		return list.substring(0, ix);
+	}
+
+	public static String first(String list, String delimiters, boolean ignoreEmpty) {
+
+		return first(list, delimiters, ignoreEmpty, 1);
+	}
+
+
+	public static String rest(String list, String delimiters, boolean ignoreEmpty, int offset) {
+
+		char[] delims = StringUtil.isEmpty(delimiters) ? new char[]{','} : delimiters.toCharArray();
+
+		int ix = getDelimIndex(list, offset, delims, ignoreEmpty);
+
+		if (ix == -1 || ix >= list.length() - 1)
+			return "";
+
+		String result = list.substring(ix + 1);
+
+		if (ignoreEmpty)
+			result = ltrim(result, delims);
+
+		return result;
+	}
+
+	public static String rest(String list, String delimiters, boolean ignoreEmpty) {
+
+		return rest(list, delimiters, ignoreEmpty, 1);
+	}
+
+	/**
+	 * returns the 0-based delimiter position for the specified item
+	 *
+	 * @param list
+	 * @param itemPos
+	 * @param ignoreEmpty
+	 * @return
+	 */
+	public static int getDelimIndex(String list, int itemPos, char[] delims, boolean ignoreEmpty) {
+
+		if (StringUtil.isEmpty(list))			return -1;
+
+		int last = -1, curr = -1, listIndex = 0;
+		int len  = list.length();
+
+		for (int i=0; i<len; i++) {
+
+			if (contains(delims, list.charAt(i))) {
+
+				curr = i;
+
+				if (ignoreEmpty) {
+
+					if (curr == last + 1) {
+						last = curr;
+						continue;
+					}
+
+					last = curr;
+				}
+
+				if (++listIndex == itemPos)
+					break;
+			}
+		}
+
+		return curr;
+	}
+
+	private static boolean contains(char[] carr, char c) {
+
+		for (char ca : carr) {
+			if (ca == c)
+				return true;
+		}
+
+		return false;
+	}
+
 }
