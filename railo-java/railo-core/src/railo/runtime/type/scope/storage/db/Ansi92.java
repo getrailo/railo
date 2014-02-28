@@ -56,20 +56,27 @@ public class Ansi92 extends SQLExecutorSupport {
 		catch (DatabaseException de) {
 			if(dc==null || !createTableIfNotExist) throw de;
 			try {
-				SQL sql = createSQL(dc,DataSourceUtil.isMySQL(dc)?"longtext":"text",strType);
+				SQL sql = createSQL(dc,DataSourceUtil.isMySQL(dc)?"longtext":"ntext",strType);
 				ScopeContext.info(log,sql.toString());
 				new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
 			}
 			catch (DatabaseException _de) {
 				try {
-					SQL sql = createSQL(dc,"memo",strType);
+					SQL sql = createSQL(dc,"text",strType);
 					ScopeContext.info(log,sql.toString());
 					new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
 				}
 				catch (DatabaseException __de) {
-					SQL sql = createSQL(dc,"clob",strType);
-					ScopeContext.info(log,sql.toString());
-					new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
+					try {
+						SQL sql = createSQL(dc,"memo",strType);
+						ScopeContext.info(log,sql.toString());
+						new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
+					}
+					catch (DatabaseException ___de) {
+						SQL sql = createSQL(dc,"clob",strType);
+						ScopeContext.info(log,sql.toString());
+						new QueryImpl(pc,dc,sql,-1,-1,-1,"query");
+					}
 				}
 			}
 			query = new QueryImpl(pc,dc,sqlSelect,-1,-1,-1,"query");
