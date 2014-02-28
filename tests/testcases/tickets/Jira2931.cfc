@@ -1,6 +1,21 @@
 component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 
+	public function testEmptyListFirst() {
+
+		var list = "";
+
+		assertEquals("", listFirst(list, ",;"));
+	}
+
+	public function testEmptyListRest() {
+
+		var list = "";
+
+		assertEquals("", listRest(list, ",;"));
+	}
+	
+
 	public function testOriginal1() {
 
 		var list = "A,B,C,D,E,F,G";
