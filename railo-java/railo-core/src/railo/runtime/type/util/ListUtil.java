@@ -1499,7 +1499,12 @@ public final class ListUtil {
 		if (ix == -1)
 			return list;
 
-		return list.substring(0, ix);
+		String result = list.substring(0, ix);
+
+		if (ignoreEmpty)
+			result = ltrim(result, delims);
+
+		return result;
 	}
 
 	public static String first(String list, String delimiters, boolean ignoreEmpty) {
