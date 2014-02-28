@@ -358,7 +358,7 @@ public final class Page extends BodyBase {
     		);
 	public static final byte CF = (byte)207;
 	public static final byte _33 = (byte)51;
-	private static final boolean ADD_C33 = false;
+	//private static final boolean ADD_C33 = false;
 	//private static final String SUB_CALL_UDF = "udfCall";
 	private static final String SUB_CALL_UDF = "_";
 	private static final int DEFAULT_VALUE = 3;
@@ -382,6 +382,7 @@ public final class Page extends BodyBase {
 	private int methodCount=0;
 	//private final Config config;
 	private PageSource pageSource;
+	private boolean splitIfNecessary;
     
 	
 	
@@ -420,7 +421,7 @@ public final class Page extends BodyBase {
     	if(isComponent()) parent="railo/runtime/ComponentPage";
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
-    	cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
+    	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
     	//cw.visitSource(this.source.getAbsolutePath(), null);
     	cw.visitSource(this.pageSource.getFullRealpath(), null);
 
@@ -673,32 +674,10 @@ public final class Page extends BodyBase {
         constrAdapter.visitVarInsn(Opcodes.ALOAD, 1);
         constrAdapter.invokeVirtual(t, SET_PAGE_SOURCE);
         
-        
-
-        //statConstr.getAdapter().returnValue();
-        //statConstr.getAdapter().endMethod();
-        
-        
+     
         constrAdapter.returnValue();
         constrAdapter.endMethod();
     	
-        if(ADD_C33) {
-        	byte[] tmp = cw.toByteArray();
-	        byte[] bLastMod=NumberUtil.longToByteArray(lastModifed);
-	        byte[] barr = new byte[tmp.length+10];
-	        // Magic Number
-	        barr[0]=CF; // CF
-	        barr[1]=_33; // 33
-	        
-	        // Last Modified
-	        for(int i=0;i<8;i++){
-	        	barr[i+2]=bLastMod[i];
-	        }
-	        for(int i=0;i<tmp.length;i++){
-	        	barr[i+10]=tmp[i];
-	        }
-	        return barr;
-        }
         return cw.toByteArray();
  	
     }
@@ -1333,7 +1312,8 @@ public final class Page extends BodyBase {
 
 		}
 		if(pageType!=IFunction.PAGE_TYPE_INTERFACE){
-			BodyBase.writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),body.getStatements(), bc);
+			//BodyBase.writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),body.getStatements(), bc);
+			BodyBase.writeOut(bc,body);
 		}
 	}
 
@@ -1491,6 +1471,14 @@ public final class Page extends BodyBase {
 
 	public PageSource getPageSource() {
 		return pageSource;
+	}
+
+	public void setSplitIfNecessary(boolean splitIfNecessary) {
+		this.splitIfNecessary=splitIfNecessary;
+	}
+	
+	public boolean getSplitIfNecessary() {
+		return splitIfNecessary;
 	}
 	
 

@@ -9,6 +9,7 @@ import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
+import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
@@ -17,35 +18,19 @@ import railo.transformer.util.CFMLString;
  */
 public final class SimpleExprTransformer implements ExprTransformer {
 	
-	//char specialChar=0;
-	//protected CFMLString cfml;
-
-	/* *
-	 * Setzt welcher Character speziell behandelt werden soll.
-	 * @param c char der speziell behandelt werden soll.
-	 * /
-	public void setSpecialChar(char c) {
-		specialChar=c;
-	}*/
-	
-
 	private char specialChar;
 
 	public SimpleExprTransformer(char specialChar) {
 		this.specialChar=specialChar;
 	}
 
-	/**
-	 * @see railo.transformer.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
-	 */
-	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
-		return transform(page,ep,fld,scriptTags, cfml,settings);
+	@Override
+	public Expression transformAsString(Page page,EvaluatorPool ep,TagLib[][] tld,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
+		return transform(page,ep,tld,fld,scriptTags, cfml,settings);
 	}
 	
-	/**
-	 * @see railo.transformer.cfml.ExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
-	 */
-	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
+	@Override
+	public Expression transform(Page page,EvaluatorPool ep,TagLib[][] tld,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
 			Expression expr=null;
 			// String
 				if((expr=string(cfml))!=null) {

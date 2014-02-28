@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import railo.commons.io.SystemUtil;
+import railo.commons.io.SystemUtil.TemplateLine;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -32,12 +34,9 @@ public class SimpleHTMLDumpWriter implements DumpWriter {
 		for(int i=0;i<rows.length;i++)if(rows[i].getItems().length>cols)cols=rows[i].getItems().length;
 		
 		
-		
-		
-		String context="";
-		if(!inside) context=Dump.getContext();
-		if(context==null) context="";
-		//boolean isSetContext=false;
+		TemplateLine tl=null;
+		if(!inside) tl=SystemUtil.getCurrentContext();
+		String context=tl==null?"":tl.toString();
 		
 		if(rows.length==1 && rows[0].getItems().length==2){
 			DumpData d = rows[0].getItems()[1];

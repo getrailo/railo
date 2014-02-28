@@ -21,7 +21,6 @@ public class StructKeyExists implements FunctionEvaluator{
 			// update first arg
 			arg.setValue(new CollectionKey(str),Collection.Key.class.getName());
 		}
-		//print.out("bif:"+arg.getValue().getClass().getName());
 	}
 
 }

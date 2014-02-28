@@ -130,9 +130,10 @@ public final class Loop extends EvaluatorSupport {
 
 			try {
 				ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
+				
 				transformer = tagLib.getExprTransfomer();
 				Page page = ASMUtil.getAncestorPage(tag);
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
+				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

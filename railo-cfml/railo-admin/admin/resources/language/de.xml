@@ -353,6 +353,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="application.listenertypedescription">Wählen Sie welche Art von Listener verwendet werden soll</data>
 	<data key="application.allowurlrequesttimeoutdesc">Angabe des Parameters [RequestTimeout] in der URL berücksichtigen</data>
 	<data key="application.listenermodedescription_curr2root">Sucht nach der Datei &apos;Application.cfc/Application.cfm&apos; vom aktuellen Verzeichnis aus zurück bis zum Webroot Verzeichnis.</data>
+	<data key="application.listenermodedescription_currorroot">Sucht nach der Datei &apos;Application.cfc/Application.cfm&apos; im aktuellen Verzeichnis und im Webroot Verzeichnis.</data>
 	<data key="application.requesttimeout">Request Timeout</data>
 	<data key="application.listenertypedescription_none">Bei einem Request wird ausschliesslich die entsprechende Datei aufgerufen</data>
 	<data key="application.scriptprotectnone">Script-Protect ist nicht aktiv</data>
@@ -369,6 +370,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="application.scriptprotect">Script-Protect</data>
 	<data key="application.listenermode_curr">Aktuell</data>
 	<data key="application.listenermode_curr2root">Aktuell bis Root (CFML Default)</data>
+	<data key="application.listenermode_curr2root">Aktuell oder Root</data>
 	<data key="application.listenermodedescription">Definiert wo nach den Dateien &apos;Application.cfc/application.cfm&apos; gesucht werden soll. Beim Typ &apos;none&apos; ist diese Einstellung ohne Bedeutung.</data>
 	<data key="application.listenermodedescription_root">Sucht nur im Webroot Verzeichnis nach der Datei &apos;Application.cfc/Application.cfm&apos;.</data>
 	<data key="application.missingscriptprotect">Bitte geben Sie einen Wert für das Script-Protect ein</data>

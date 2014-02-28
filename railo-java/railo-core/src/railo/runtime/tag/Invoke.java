@@ -8,7 +8,7 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
-import railo.runtime.net.rpc.client.RPCClient;
+import railo.runtime.net.rpc.client.WSClient;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -230,8 +230,8 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
             if(password==null)password = "";
         }
         ProxyData pd=StringUtil.isEmpty(proxy.getServer())?null:proxy;
-        RPCClient ws = username!=null?new RPCClient(webservice,username,password,pd):new RPCClient(webservice,pd);
-        Object rtn = ws.callWithNamedValues(pageContext,method,data);
+        WSClient ws = username!=null?WSClient.getInstance(pageContext,webservice,username,password,pd):WSClient.getInstance(pageContext,webservice,null,null,pd);
+        Object rtn = ws.callWithNamedValues(pageContext,KeyImpl.init(method),data);
         
         // return
         if(!StringUtil.isEmpty(returnvariable)) pageContext.setVariable(returnvariable,rtn);

@@ -88,7 +88,7 @@ public final class IsValid implements Function {
 		// numeric
 		if("range".equals(type) || "integer".equals(type) || "float".equals(type) || "numeric".equals(type)  || "number".equals(type) ) {
 		
-			double number=Caster.toDoubleValue(value,Double.NaN);
+			double number=Caster.toDoubleValue(value,true,Double.NaN);
 			if(!Decision.isValid(number)) return false;
 			
 			double min=toRangeNumber(pc,objMin,3,"min");
@@ -113,7 +113,7 @@ public final class IsValid implements Function {
 	}
 
 	private static double toRangeNumber(PageContext pc,Object objMin, int index,String name) throws FunctionException {
-		double d=Caster.toDoubleValue(objMin,Double.NaN);
+		double d=Caster.toDoubleValue(objMin,false,Double.NaN);
 		if(!Decision.isValid(d))
 			throw new FunctionException(pc,"isValid",index,name,"value must be numeric");
 		return d;

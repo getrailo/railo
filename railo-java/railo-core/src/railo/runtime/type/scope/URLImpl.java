@@ -62,7 +62,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
             		long timeout = Caster.toLongValue(o,-1);
             		if(timeout!=-1)pc.setRequestTimeout(timeout*1000);
             	}
-            	Caster.toDoubleValue(o,-1);
+            	Caster.toDoubleValue(o,false,-1);
             }
 		}
         catch (Exception e) {}

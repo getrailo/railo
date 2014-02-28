@@ -17,6 +17,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
@@ -382,11 +383,13 @@ public final class ConfigWebUtil {
 		
 		if("current".equalsIgnoreCase(strListenerMode) || "curr".equalsIgnoreCase(strListenerMode))		
         	return ApplicationListener.MODE_CURRENT;
-        else if("current2root".equalsIgnoreCase(strListenerMode) || "curr2root".equalsIgnoreCase(strListenerMode))		
+		else if("currenttoroot".equalsIgnoreCase(strListenerMode) || "current2root".equalsIgnoreCase(strListenerMode) || "curr2root".equalsIgnoreCase(strListenerMode))		
         	return ApplicationListener.MODE_CURRENT2ROOT;
+		else if("currentorroot".equalsIgnoreCase(strListenerMode) || "currorroot".equalsIgnoreCase(strListenerMode))		
+        	return AppListenerUtil.MODE_CURRENT_OR_ROOT;
         else if("root".equalsIgnoreCase(strListenerMode))		
         	return ApplicationListener.MODE_ROOT;
-        
+		
 		return defaultValue;
 	}
 

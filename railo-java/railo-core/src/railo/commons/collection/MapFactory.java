@@ -2,6 +2,8 @@ package railo.commons.collection;
 
 import java.util.Map;
 
+import railo.commons.collection.concurrent.ConcurrentHashMapPro;
+
 public class MapFactory {
 	public static <K,V> MapPro<K,V> getConcurrentMap(){
 		//return new HashMapPro();

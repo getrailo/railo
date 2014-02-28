@@ -100,6 +100,17 @@
 			<type>array</type>
 		</return>
 	</function>
+	<!-- _literalArray -->
+	<function>
+		<name>_literalArray</name>
+		<class>railo.runtime.functions.arrays.LiteralArray</class>
+		<status>hidden</status>
+		<description>internal function used for literal array defintion</description>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- _jsonArray -->
 	<function>
 		<name>_jsonArray</name>
@@ -5675,14 +5686,26 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
-	
+
 	<!-- GetLocalHostIP -->
 	<function>
 		<name>GetLocalHostIP</name>
 		<class>railo.runtime.functions.system.GetLocalHostIP</class>
 		<description>Returns the localhost IP address, which is 127.0.0.1 for IPv4 and ::1 for IPv6 addresses.</description>
+		<argument>
+		    <name>all</name>
+		    <type>boolean</type>
+		    <required>false</required>
+		    <description>pass true to get an Array with all of the local IP addresses. default [false] will return a String with one value.</description>
+		</argument>
+		<argument>
+            <name>refresh</name>
+            <type>boolean</type>
+            <required>false</required>
+            <description>on some systems getting all of the IP addresses can take some time so the result is cached after the first call, if the system's IP addresses were modified, pass true to refresh that cache.</description>
+        </argument>
 		<return>
-			<type>string</type>
+			<type>any</type>
 		</return>
 	</function>
 	
@@ -14797,11 +14820,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>void</type>
 		</return>
 	</function>
-	
 	<!-- _jsonStruct -->
 	<function>
 		<name>_jsonStruct</name>
 		<class>railo.runtime.functions.struct.JsonStruct</class>
+		<status>hidden</status>
+		<description>internal function used as for literal json struct defintion.</description>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	<!-- _literalStruct -->
+	<function>
+		<name>_literalStruct</name>
+		<class>railo.runtime.functions.struct.LiteralStruct</class>
 		<status>hidden</status>
 		<description>internal function used as for literal struct defintion.</description>
 		<argument-type>dynamic</argument-type>
@@ -14809,7 +14843,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>struct</type>
 		</return>
 	</function>
-	<!-- _struct -->
+	<!-- struct -->
 	<function>
 		<name>struct</name>
 		<class>railo.runtime.functions.struct.Struct_</class>

@@ -113,6 +113,13 @@ public class GetApplicationSettings {
 			sct.setEL(KeyConstants._s3, props.toStruct());
 		}
 		
+		// ws settings
+		{
+		Struct wssettings=new StructImpl();
+		wssettings.put(KeyConstants._type, AppListenerUtil.toWSType(ac.getWSType(),"Axis1"));
+		sct.setEL("wssettings", wssettings);
+		}
+		
 		// datasources
 		DataSource[] sources = ac.getDataSources();
 		if(!ArrayUtil.isEmpty(sources)){

@@ -99,8 +99,7 @@ public final class AxisCaster {
         if(done.contains(value)){
 			return null;// TODO not sure what in this case is the best solution.
 		}
-    	
-		done.add(value);
+    	done.add(value);
     	try{
     	
 	    	if(type!=null) {
@@ -118,7 +117,7 @@ public final class AxisCaster {
 		        if(type.getLocalPart().equals("ArrayOf_xsd_anyType"))
 		            return toArrayList(tm,value,targetClass,done);
 	        }
-	        return _toAxisTypeSub(tm,value,targetClass,done);
+	    	return _toAxisTypeSub(tm,value,targetClass,done);
         
     	}
     	finally{
@@ -224,8 +223,7 @@ public final class AxisCaster {
     	if(targetClass!=null) {
         	componentType = targetClass.getComponentType();
         }
-        
-    	if(componentType!=null) 
+        if(componentType!=null) 
         	rtns = (Object[]) java.lang.reflect.Array.newInstance(componentType, objs.length);
         else 
         	rtns = new Object[objs.length];
@@ -350,6 +348,7 @@ public final class AxisCaster {
     
     private static Map<String,Object> toMap(TypeMapping tm,Object value, Class targetClass, Set<Object> done) throws PageException {
         Struct src = Caster.toStruct(value);
+        
         Map<String,Object> trg=new HashMap<String,Object>();
         Iterator<Entry<Key, Object>> it = src.entryIterator();
         Entry<Key, Object> e;
@@ -695,6 +694,14 @@ public final class AxisCaster {
 
 	private static boolean isQueryBean(Object value) {
 		return (value instanceof QueryBean);
+	}
+
+	public static QName toComponentType(QName qName, QName defaultValue) {
+		String lp = qName.getLocalPart();
+		String uri = qName.getNamespaceURI();
+		if(lp.startsWith("ArrayOf"))
+			return new QName(uri, lp.substring(7));
+		return defaultValue;
 	}
 
 

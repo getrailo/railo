@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
@@ -84,6 +85,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private short scopeCascading;
 	private boolean allowCompression;
 	private boolean suppressRemoteComponentContent;
+
+	private short wstype;
     
     /**
      * constructor of the class
@@ -125,7 +128,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSettings=config.getRestSetting();
         this.javaSettings=new JavaSettingsImpl();
-        this.suppressRemoteComponentContent=((ConfigImpl)config).isSuppressContent();
+        this.wstype=WS_TYPE_AXIS1;
     }
     
     /**
@@ -161,6 +164,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.bufferOutput=bufferOutput;
 		dbl.allowCompression=allowCompression;
 		dbl.suppressRemoteComponentContent=suppressRemoteComponentContent;
+		dbl.wstype=wstype;
 		dbl.secureJson=secureJson;
 		dbl.secureJsonPrefix=secureJsonPrefix;
 		dbl.isDefault=isDefault;
@@ -695,5 +699,16 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setSuppressContent(boolean suppressContent) {
 		this.suppressRemoteComponentContent=suppressContent;
+	}
+
+	@Override
+	public short getWSType() {
+		return wstype;
+	}
+
+	@Override
+	public void setWSType(short wstype) {
+		print.e("wstype::"+wstype);
+		this.wstype=wstype;
 	}
 }

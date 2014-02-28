@@ -253,7 +253,7 @@ public class SimpleQueryColumn implements QueryColumn {
 
 	
 	public double castToDoubleValue(double defaultValue) {
-		return Caster.toDoubleValue(get(key,defaultValue),defaultValue);
+		return Caster.toDoubleValue(get(key,defaultValue),true,defaultValue);
 	}
 
 	

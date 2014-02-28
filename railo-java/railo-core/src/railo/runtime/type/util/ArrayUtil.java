@@ -183,7 +183,7 @@ public final class ArrayUtil {
 	private static double _toDoubleValue(Array array, int i) throws ExpressionException {
 		Object obj = array.get(i,null);
 		if(obj==null)throw new ExpressionException("there is no element at position ["+i+"] or the element is null");
-		double tmp = Caster.toDoubleValue(obj,Double.NaN);
+		double tmp = Caster.toDoubleValue(obj,true,Double.NaN);
 		if(Double.isNaN(tmp))
 			throw new CasterException(obj,Double.class);
 		return tmp;
@@ -443,7 +443,7 @@ public final class ArrayUtil {
 	    else if(o instanceof byte[])	{
 	        byte[] arr=((byte[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Byte(arr[index]=(byte)v);
 	            }
@@ -453,7 +453,7 @@ public final class ArrayUtil {
 	    else if(o instanceof short[])	{
 	        short[] arr=((short[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Short.valueOf(arr[index]=(short)v);
 	            }
@@ -463,7 +463,7 @@ public final class ArrayUtil {
 	    else if(o instanceof int[])	{
 	        int[] arr=((int[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Integer.valueOf(arr[index]=(int)v);
 	            }
@@ -473,7 +473,7 @@ public final class ArrayUtil {
 	    else if(o instanceof long[])	{
 	        long[] arr=((long[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Long.valueOf(arr[index]=(long)v);
 	            }
@@ -483,7 +483,7 @@ public final class ArrayUtil {
 	    else if(o instanceof float[])	{
 	        float[] arr=((float[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Float(arr[index]=(float)v);
 	            }
@@ -493,7 +493,7 @@ public final class ArrayUtil {
 	    else if(o instanceof double[])	{
 	        double[] arr=((double[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Double(arr[index]=v);
 	            }

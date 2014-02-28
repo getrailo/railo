@@ -112,7 +112,7 @@ public final class ComponentUtil {
     // CREATE CLASS	
 		ClassWriter cw = ASMUtil.getClassWriter();
         //ClassWriter cw = new ClassWriter(true);
-    	cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, real, null, "java/lang/Object", null);
+    	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, real, null, "java/lang/Object", null);
 
     	//GeneratorAdapter ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,Page.STATIC_CONSTRUCTOR,null,null,cw);
 		BytecodeContext statConstr = null;//new BytecodeContext(null,null,null,cw,real,ga,Page.STATIC_CONSTRUCTOR);
