@@ -128,5 +128,19 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("railo-tests/index.cfm", listRest(list, "/", true, 3));
 	}
 
+	public function testCount9() {
+
+		var list = "A,B,C,D,E,F,G";
+
+		assertEquals(list, listFirst(list, "/", true, 100));
+	}
+
+	public function testCount10() {
+
+		var list = "A,B,C,D,E,F,G";
+
+		assertEquals("", listRest(list, "/", true, 100));
+	}
+
 
 }
