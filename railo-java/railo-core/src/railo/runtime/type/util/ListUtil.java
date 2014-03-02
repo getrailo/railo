@@ -1492,6 +1492,9 @@ public final class ListUtil {
 
 	public static String first(String list, String delimiters, boolean ignoreEmpty, int count) {
 
+		if (count < 1)
+			return "";
+
 		char[] delims = StringUtil.isEmpty(delimiters) ? new char[]{','} : delimiters.toCharArray();
 
 		int ix = getDelimIndex(list, count, delims, ignoreEmpty);
@@ -1514,6 +1517,9 @@ public final class ListUtil {
 
 
 	public static String rest(String list, String delimiters, boolean ignoreEmpty, int offset) {
+
+		if (offset < 1)
+			return list;
 
 		char[] delims = StringUtil.isEmpty(delimiters) ? new char[]{','} : delimiters.toCharArray();
 
