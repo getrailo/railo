@@ -1571,6 +1571,9 @@ public final class ListUtil {
 			}
 		}
 
+		if (listIndex < itemPos)
+			return len;
+
 		return curr;
 	}
 
