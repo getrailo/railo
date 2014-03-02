@@ -189,8 +189,12 @@ testSuite.addTestCase('...',1000); // timeout setting for the testcase, it shoul
 <cfoutput query="#qry#" group="component">
 
 			<cfset sectionId = "ALL">
-			<cfset isOpen = qry.testStatus != "Passed">
-			<cfset total=qry.time>
+			<cfset isOpen = false>
+			<cfset total=0>
+			<cfoutput>
+				<cfif qry.testStatus NEQ "Passed"><cfset isOpen=true></cfif>
+				<cfset total+=qry.time>
+			</cfoutput>
 					
 			<!-- Railo Debug Output !-->
 			<fieldset id="-railo-debug" class="medium #isOpen ? '' : 'collapsed'#">
