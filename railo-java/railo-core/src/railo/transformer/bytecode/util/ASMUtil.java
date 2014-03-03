@@ -567,7 +567,7 @@ public final class ASMUtil {
     		t.printStackTrace();
     	}
         
-        FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "_md5_", "Ljava/lang/String;", null, md5);
+    	FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "_md5_", "Ljava/lang/String;", null, md5);
         fv.visitEnd();
         
         
@@ -1010,7 +1010,6 @@ public final class ASMUtil {
 		return defaultValue;
 	}
 
-
 	public static ASMProperty[] toASMProperties(Property[] properties) {
 		ASMProperty[] asmp=new ASMProperty[properties.length];
 		for(int i=0;i<asmp.length;i++){
@@ -1192,7 +1191,7 @@ public final class ASMUtil {
 	public static void dump(Statement s, int level) {
 		
 		for(int i=0;i<level;i++)System.err.print("-");
-		print.e(s.getClass().getName());
+		aprint.e(s.getClass().getName());
 		
 		if(s instanceof HasBody) {
 			Body b = ((HasBody) s).getBody();
@@ -1221,47 +1220,10 @@ public final class ASMUtil {
 					break;
 				}
 			}
-			
-			if(mw!=null)print.e(getName(mw));
-			
-			
-			//Field f = cw.getClass().getDeclaredField("firstMethod");
-            //
-            //Object value = f.get(cw);
-			//print.e(value);
 		}
 		catch (Throwable t) {
 			// TODO Auto-generated catch block
 			t.printStackTrace();
 		}
 	}
-
-
-	private static Object getName(MethodVisitor mw) throws IllegalArgumentException {
-		java.lang.reflect.Method[] methods = mw.getClass().getDeclaredMethods();
-		java.lang.reflect.Method m;
-		for(int i=0;i<methods.length;i++){
-			m=methods[i];
-			if(m.getReturnType()==int.class);
-				print.e(Modifier.toString(m.getModifiers()));
-			
-			
-		}
-		
-		
-		
-		/*Field[] fields = mw.getClass().getDeclaredFields();
-		Field f;
-		for(int i=0;i<fields.length;i++){
-			f=fields[i];
-			//print.e(f);
-			if(f.getType().getName().equals("java.lang.String")) {
-				f.setAccessible(true);
-				print.e(f.get(mw));
-				
-			}
-		}*/
-		return null;
-	}
-	
 }

@@ -73,9 +73,6 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
-import railo.runtime.listener.ApplicationContextPro;
-import railo.runtime.net.rpc.Pojo;
-import railo.runtime.net.rpc.PojoIterator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -89,12 +86,10 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.CollectionStruct;
-import railo.runtime.type.CustomType;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -3806,19 +3801,7 @@ public final class Caster {
         return defaultValue;
     }
     
-    public static Component toComponent(PageContext pc, Pojo pojo, String compPath , Component defaultValue) {
-        try {
-			pc.loadComponent(compPath);
-			Iterator<Object> it=new PojoIterator(pojo);
-			//print.e("-----> "+pojo.getClass().getName());
-			while(it.hasNext()){
-				it.next();
-				//print.e("->"+it.next());
-			}
-		}
-		catch (PageException e) {}
-    	return defaultValue;
-    }
+    
     
     /**
      * cast a Object to a Collection, if not returns null

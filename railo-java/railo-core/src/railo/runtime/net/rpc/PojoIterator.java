@@ -5,12 +5,15 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import railo.print;
+import railo.commons.lang.Pair;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.MethodInstance;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 
-public class PojoIterator implements Iterator<Object> {
+public class PojoIterator implements Iterator<Pair<Collection.Key,Object>> {
 	
 	private static final Object[] EMPTY_ARG = new Object[]{}; 
 	
@@ -23,7 +26,10 @@ public class PojoIterator implements Iterator<Object> {
 		this.pojo=pojo;
 		this.clazz=pojo.getClass();
 		getters = Reflector.getGetters(pojo.getClass());
-		print.e(getters);
+	}
+	
+	public int size() {
+		return getters.length;
 	}
 
 	@Override
@@ -32,10 +38,11 @@ public class PojoIterator implements Iterator<Object> {
 	}
 
 	@Override
-	public Object next() {
+	public Pair<Collection.Key, Object> next() {
 		Method g = getters[++index];
 		try {
-			return g.invoke(pojo, EMPTY_ARG);
+			
+			return new Pair<Collection.Key, Object>(KeyImpl.init(g.getName().substring(3)), g.invoke(pojo, EMPTY_ARG));
 		}
 		catch (Throwable t) {
 			throw new PageRuntimeException(Caster.toPageException(t));

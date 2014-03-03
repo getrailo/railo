@@ -37,6 +37,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.mail.MailUtil;
+import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
@@ -195,10 +196,6 @@ public final class Decision {
 		if(!Decision.isValid(dbl)) return false;
 		int i=(int)dbl;
 		return i==dbl;		
-	}
-	
-	public static void main(String[] args) {
-		print.e(isInteger("1 5",false));
 	}
 
 	 /** tests if String value is Hex Value
@@ -1329,14 +1326,10 @@ public final class Decision {
         	Component comp=((Component)o);
             return comp.instanceOf(strType);
         }
-		print.e("name:"+o.getClass().getName());
 		if(o instanceof Pojo) {
-			// try to convert POJO to A CFC
-			Pojo pojo=((Pojo)o);
-			Component cfc = Caster.toComponent(pc,pojo,strType,null);
-			
-            //return comp.instanceOf(strType);
+			return AxisCaster.toComponent(pc,((Pojo)o),strType,null)!=null;
         }
+		//print.e(strType+":"+isArrayType(strType)+":"+isArray(o)+"+"+o.getClass().getName());
         if(isArrayType(strType) && isArray(o)){
         	String _strType=strType.substring(0,strType.length()-2);
         	short _type=CFTypes.toShort(_strType, false, (short)-1);
@@ -1345,8 +1338,9 @@ public final class Decision {
         		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
         			Object obj = it.next();
+        			//print.e(obj.getClass().getName()+":"+isCastableTo(pc,_type,_strType, obj));
         			if(!isCastableTo(pc,_type,_strType, obj))
-        				return false;
+        				return false; 
         		}
         		return true;
         	}

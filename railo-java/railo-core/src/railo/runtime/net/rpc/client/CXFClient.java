@@ -16,14 +16,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPHeaderElement;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.endpoint.dynamic.DynamicClientFactory;
-import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
-import org.apache.cxf.service.model.BindingInfo;
-import org.apache.cxf.service.model.BindingOperationInfo;
-import org.apache.cxf.service.model.MessageInfo;
-import org.apache.cxf.service.model.MessagePartInfo;
-import org.apache.cxf.service.model.OperationInfo;
 
 import coldfusion.xml.rpc.QueryBean;
 
@@ -65,7 +57,172 @@ import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
 
+final class CXFClient extends WSClient {
+	
 
+	public CXFClient(String strWsdlUrl, String username, String password, ProxyData proxyData) {
+		
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String castToString() throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String castToString(String defaultValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean castToBooleanValue() throws PageException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Boolean castToBoolean(Boolean defaultValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double castToDoubleValue() throws PageException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double castToDoubleValue(double defaultValue) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public DateTime castToDateTime() throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DateTime castToDateTime(DateTime defaultValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int compareTo(String str) throws PageException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int compareTo(boolean b) throws PageException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int compareTo(double d) throws PageException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int compareTo(DateTime dt) throws PageException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Iterator<Key> keyIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Object> valueIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addHeader(SOAPHeaderElement header) throws PageException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Call getLastCall() throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object callWithNamedValues(Config config, Key methodName, Struct arguments) throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct arguments) throws PageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}
+
+/*
 final class CXFClient extends WSClient {
 	
 	private static final long serialVersionUID = 7329491172855348435L;
@@ -412,40 +569,7 @@ final class CXFClient extends WSClient {
             }
             return sct;
         }
-        /*if(isQueryBean(value)) {
-        	QueryBean qb = (QueryBean) value;
-            String[] strColumns = qb.getColumnList();
-            Object[][] data = qb.getData();
-            int recorcount=data.length;
-            Query qry=new QueryImpl(strColumns,recorcount,"QueryBean");
-            QueryColumn[] columns=new QueryColumn[strColumns.length];
-            for(int i=0;i<columns.length;i++) {
-            	columns[i]=qry.getColumn(strColumns[i]);
-            }
-            
-            int row;
-            for(row=1;row<=recorcount;row++) {
-            	for(int i=0;i<columns.length;i++) {
-            		columns[i].set(row,toRailoType(pc,data[row-1][i]));
-                }
-            }
-            return qry;
-        }*/
-        /*if(Decision.isQuery(value)) {
-            Query q = Caster.toQuery(value);
-            int recorcount=q.getRecordcount();
-            String[] strColumns = q.getColumns();
-            
-            QueryColumn col;
-            int row;
-            for(int i=0;i<strColumns.length;i++) {
-                col=q.getColumn(strColumns[i]);
-                for(row=1;row<=recorcount;row++) {
-                    col.set(row,toRailoType(pc,col.get(row,null)));
-                }
-            }
-            return q;
-        }*/
+
         Class<? extends Object> clazz = value.getClass();
         String name=ListUtil.last(clazz.getName(), '.');
         
@@ -461,4 +585,4 @@ final class CXFClient extends WSClient {
         
 		return value;
 	}
-}
+}*/
