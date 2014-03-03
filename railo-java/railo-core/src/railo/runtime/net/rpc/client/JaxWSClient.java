@@ -309,11 +309,6 @@ public class JaxWSClient extends WSClient {
         	if(en!=null) {
         		type=en;
         		Types types = wsdl.getTypes();
-
-        		print.e(types.getExtensibilityElements());
-        		print.e(types.getDocumentationElement());
-        		//print.e(types.getExtensionAttributes());
-        		//print.e(types.getNativeAttributeNames());
         	}
         	else 
         		type= p.getTypeName();
