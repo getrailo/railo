@@ -178,9 +178,7 @@ public final class ComponentUtil {
 	 * @return return true if children has changed
 	 */
 	private static boolean hasChangesOfChildren(long last, Class clazz) {
-
-		boolean b= hasChangesOfChildren(last,ThreadLocalPageContext.get(),clazz);
-		return b;
+		return hasChangesOfChildren(last,ThreadLocalPageContext.get(),clazz);
 	}
 
 	/**
@@ -418,10 +416,18 @@ public final class ComponentUtil {
 			}
 			catch(Throwable t){}
 		}
+		
+		// extends
+		String strExt = component.getExtends();
+		Class<?> ext=Object.class;
+		if(!StringUtil.isEmpty(strExt,true)) {
+			ext = Caster.cfTypeToClass(strExt);
+		}
+		//
 
 		// create file
 		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(
-				ComponentProUtil.getProperties(component, false, true, false, false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+				ComponentProUtil.getProperties(component, false, true, false, false)),ext,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
 		ResourceUtil.touch(classFile);
 		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(true);
