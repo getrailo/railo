@@ -708,7 +708,6 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public void setWSType(short wstype) {
-		print.e("wstype::"+wstype);
 		this.wstype=wstype;
 	}
 }
