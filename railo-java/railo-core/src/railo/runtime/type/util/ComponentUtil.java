@@ -21,6 +21,7 @@ import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
@@ -465,7 +466,7 @@ public final class ComponentUtil {
 		while(it.hasNext()){
 			e = it.next();
 			props.add(new ASMPropertyImpl(
-					ASMUtil.toType(e.getValue()==null?Object.class:e.getValue().getClass(), true)
+					ASMUtil.toType(e.getValue()==null?Object.class:Object.class/*e.getValue().getClass()*/, true)
 					,e.getKey().getString()
 					));
 		}
