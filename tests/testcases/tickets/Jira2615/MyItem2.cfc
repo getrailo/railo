@@ -1,5 +1,5 @@
 <cfcomponent output="false">
-	<cfproperty name="itemkey" type="string" />
+	<cfproperty name="ItemKey" type="string" />
 
 	<cffunction name="init">
 		<cfargument name="itemkey">
