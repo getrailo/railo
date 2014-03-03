@@ -104,8 +104,7 @@ public class ScheduledTaskThread extends Thread {
 		//long sleep=execution-today;
 		
 		log(Log.LEVEL_INFO,"first execution runs at "+new DateTimeImpl(execution,false).castToString(timeZone));
-		
-		
+
 		while(true){
 			sleepEL(execution,today);
 			
@@ -125,7 +124,9 @@ public class ScheduledTaskThread extends Thread {
 			if(isOnce)break;
 			today=System.currentTimeMillis();
 			execution=calculateNextExecution(today,true);
-			log(Log.LEVEL_INFO,"next execution runs at "+new DateTimeImpl(execution,false).castToString(timeZone)+":"+today+":"+execution);
+
+			if (!task.isPaused())
+				log(Log.LEVEL_INFO,"next execution runs at "+new DateTimeImpl(execution,false).castToString(timeZone)+":"+today+":"+execution);
 			//sleep=execution-today;
 		}
 	}
