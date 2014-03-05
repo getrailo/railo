@@ -60,7 +60,8 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        	catch(RuntimeException re) {
 	        		String msg=StringUtil.emptyIfNull(re.getMessage());
 	        		if(StringUtil.indexOfIgnoreCase(msg, "Method code too large!")!=-1) {
-	        			page.setSplitIfNecessary(true);
+	        			page = cfmlTransformer.transform(config,source,tld,fld); // MUST a new transform is necessary because the page object cannot be reused, rewrite the page that reusing it is possible
+	    	        	page.setSplitIfNecessary(true);
 	        			barr = page.execute(source,classFile);
 	        		}
 	        		else throw re;
@@ -68,7 +69,8 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 		        catch(ClassFormatError cfe) {
 		        	String msg=StringUtil.emptyIfNull(cfe.getMessage());
 		        	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
-		        		page.setSplitIfNecessary(true);
+		        		page = cfmlTransformer.transform(config,source,tld,fld); // MUST see above
+			        	page.setSplitIfNecessary(true);
 		        		barr = page.execute(source,classFile);
 		        	}
 		        	else throw cfe;
