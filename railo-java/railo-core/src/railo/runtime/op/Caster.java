@@ -73,6 +73,8 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -3412,15 +3414,8 @@ public final class Caster {
         	}        	
         	return trg;	
         }
-        
-        
-        if(o instanceof Component) {
-            Component comp=((Component)o);
-            if(comp.instanceOf(type)) return o;
-            // neo batch
-            throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
-        }
-        throw new CasterException(o,type);
+
+    	return _castTo(pc, type, o);
     }
 
 	public static String toZip(Object o) throws PageException {
@@ -3528,10 +3523,20 @@ public final class Caster {
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
 
+    	return _castTo(pc, strType, o);
+    }   
+    
+    private static Object _castTo(PageContext pc, String strType, Object o) throws PageException {
+
         if(o instanceof Component) {
             Component comp=((Component)o);
             if(comp.instanceOf(strType)) return o;
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
+        }
+        if(o instanceof Pojo) {
+        	Component cfc = AxisCaster.toComponent(pc,((Pojo)o),strType,null);
+        	if(cfc!=null) return cfc;
+        	throw new ExpressionException("can't cast Pojo of Type ["+o.getClass().getName()+"] to ["+strType+"]");
         }
         
         if(strType.endsWith("[]") && Decision.isArray(o)){
@@ -3558,19 +3563,8 @@ public final class Caster {
 	    	}
 	    	
 	    }
-
-	    /* custom type (disabled for the moment)
-        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
-        if(ct!=null) {
-        	Object obj= ct.convert(pc,o,Null.NULL);
-        	if(obj!=Null.NULL) return obj;
-        }
-        */
-
-
-	    
         throw new CasterException(o,strType);
-    }   
+    }
     
     /**
      * cast a value to a value defined by type argument
