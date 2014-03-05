@@ -562,7 +562,10 @@ public class HibernateORMSession implements ORMSession{
 					entry = it.next();
 					colName=HibernateUtil.validateColumnName(metaData, CommonUtil.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData,colName,null);
-					value=HibernateCaster.toSQL(type,entry.getValue(),null);
+					value=entry.getValue();
+					if(!(value instanceof Component)) 
+						value=HibernateCaster.toSQL(type,value,null);
+					
 					if(value!=null)	criteria.add(Restrictions.eq(colName, value));
 					else 			criteria.add(Restrictions.isNull(colName));
 				}

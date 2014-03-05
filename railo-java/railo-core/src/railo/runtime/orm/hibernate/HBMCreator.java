@@ -601,10 +601,18 @@ public class HBMCreator {
 		
 		
 		Property prop;
+		String fieldType;
 		// ids
 		for(int y=0;y<props.length;y++){
 			prop=props[y];
+			
+			
+			// do not add "key-property" for many-to-one
 			meta = prop.getDynamicAttributes();
+			fieldType = toString(cfc,prop,meta,"fieldType",data);
+			if(CommonUtil.listFindNoCaseIgnoreEmpty(fieldType,"many-to-one",',')!=-1)continue;
+			
+			
 			Element key = doc.createElement("key-property");
 			cid.appendChild(key);
 			
@@ -625,15 +633,6 @@ public class HBMCreator {
 	    	str = toString(cfc,prop,meta,"length",data);
 	    	if(!Util.isEmpty(str,true)) column.setAttribute("length",str);
             
-	    	/*if(info!=null){
-	    		column.setAttribute("sql-type",info.getTypeName());
-	    		column.setAttribute("length",Caster.toString(info.getSize()));
-	    	}*/
-			
-	    	 // type
-			//str=getType(info,prop,meta,"long"); //MUSTMUST
-			//key.setAttribute("type", str);
-			
 			String generator=toString(cfc,prop,meta,"generator",data);
 			String type = getType(info,cfc,prop,meta,getDefaultTypeForGenerator(generator,"string"),data);
 			if(!Util.isEmpty(type))key.setAttribute("type", type);
@@ -644,7 +643,6 @@ public class HBMCreator {
 		}
 		
 		// many-to-one
-		String fieldType;
 		for(int y=0;y<props.length;y++){
 			prop=props[y];
 			meta = prop.getDynamicAttributes();
