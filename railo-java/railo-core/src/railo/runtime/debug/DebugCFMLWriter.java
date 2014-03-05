@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.SystemUtil.TemplateLine;
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.op.Caster;

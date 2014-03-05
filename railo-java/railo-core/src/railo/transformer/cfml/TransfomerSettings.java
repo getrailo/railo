@@ -2,8 +2,6 @@ package railo.transformer.cfml;
 
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
-import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 
 
 public class TransfomerSettings {

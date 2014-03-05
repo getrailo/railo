@@ -11,9 +11,7 @@ import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 /*
  * this implementation "simulates" all ComponentPro methods from core 

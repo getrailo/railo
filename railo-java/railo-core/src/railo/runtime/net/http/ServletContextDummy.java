@@ -16,11 +16,9 @@ import javax.servlet.ServletException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import railo.commons.io.log.Log;
 import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;

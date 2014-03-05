@@ -13,8 +13,6 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Info;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
-import railo.runtime.SourceFile;
-
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;

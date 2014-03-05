@@ -10,7 +10,6 @@ import railo.runtime.PageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
-import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.SimpleValue;
 import railo.runtime.type.Struct;

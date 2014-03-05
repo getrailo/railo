@@ -9,7 +9,6 @@ import railo.commons.io.SystemUtil.TemplateLine;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.functions.other.Dump;
 
 public class HTMLDumpWriter implements DumpWriter {
 

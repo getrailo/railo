@@ -3,7 +3,6 @@ package railo.runtime.functions.system;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;

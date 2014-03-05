@@ -20,7 +20,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
-
 import flashgateway.io.ASObject;
 
 /**

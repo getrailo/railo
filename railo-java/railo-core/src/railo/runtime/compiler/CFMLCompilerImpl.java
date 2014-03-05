@@ -10,7 +10,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;

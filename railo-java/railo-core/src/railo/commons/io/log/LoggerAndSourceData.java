@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.FastHashMap;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -14,7 +13,6 @@ import railo.commons.digest.HashUtil;
 import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.log.log4j.LogAdapter;
 import railo.runtime.config.Config;
-import railo.runtime.functions.string.Hash;
 
 /**
  * 

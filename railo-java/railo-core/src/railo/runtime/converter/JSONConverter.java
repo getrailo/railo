@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.w3c.dom.Node;
 
-import railo.commons.io.CharsetUtil;
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
@@ -42,7 +41,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;

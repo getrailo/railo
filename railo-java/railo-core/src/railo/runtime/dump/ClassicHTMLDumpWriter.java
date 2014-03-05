@@ -12,7 +12,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.functions.other.Dump;
 
 public class ClassicHTMLDumpWriter implements DumpWriter {
 

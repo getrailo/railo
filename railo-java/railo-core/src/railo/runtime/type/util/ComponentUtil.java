@@ -21,7 +21,6 @@ import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
@@ -55,7 +54,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPropertiesImpl;
-
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMProperty;

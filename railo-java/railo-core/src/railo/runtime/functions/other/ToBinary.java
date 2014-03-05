@@ -5,8 +5,6 @@ package railo.runtime.functions.other;
 
 import java.nio.charset.Charset;
 
-import org.apache.xmlbeans.impl.xb.xmlconfig.impl.ConfigDocumentImpl.ConfigImpl;
-
 import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;

@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +9,6 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.op.Caster;
 
 /**
 * Generates custom HTTP response headers to return to the client.

@@ -3,7 +3,6 @@
  */
 package railo.runtime.functions.string;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import railo.commons.io.CharsetUtil;

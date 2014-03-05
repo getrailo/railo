@@ -2,7 +2,6 @@ package railo.runtime.cache.tag.query;
 
 import railo.commons.io.res.util.UDFFilterSupport;
 import railo.runtime.cache.tag.CacheHandlerFilter;
-import railo.runtime.db.SQLImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
