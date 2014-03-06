@@ -1,5 +1,5 @@
 <cfscript>
-component extends="mxunit.framework.TestSuite" {
+component extends="testbox.system.testing.compat.framework.TestSuite" {
 	
 	/**
 	* adding n testcases by defining a package that hold testcases 
@@ -46,11 +46,11 @@ component extends="mxunit.framework.TestSuite" {
 		return results;
     }
     
-    /**
+    /* *
     * Primary method for running TestSuites and individual tests.
     * @results The TestResult collecting parameter.
     * @testMethod A single test method to run.
-    */
+    * /
     remote function run(TestResult results,string testMethod="") {
     	systemOutput("run",true,true);
     	if(isNull(results))results=createObject("component","mxunit.framework.TestResult").TestResult();
@@ -60,10 +60,10 @@ component extends="mxunit.framework.TestSuite" {
 		if(variables.requestScopeDebuggingEnabled OR structKeyExists(url,"requestdebugenable"))
 			testRunner.enableRequestScopeDebugging();
 		return testRunner.run(this.suites(), results, testMethod);
-	}
+	}*/
     
     private boolean function isTestCase(required component cfc) {
-    	return isInstanceof(cfc,'mxunit.framework.TestCase');
+    	return isInstanceof(cfc,'mxunit.framework.TestCase') || isInstanceof(cfc,'testbox.system.testing.compat.framework.TestCase');
     }
 
 }
