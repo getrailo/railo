@@ -171,6 +171,23 @@ All elements in the array must contain values that can be automatically converte
 			<type>number</type>
 		</return>
 	</function>
+	<!-- arrayMedian -->
+	<function>
+		<name>arrayMedian</name>
+		<class>railo.runtime.functions.arrays.ArrayMedian</class>
+		<member-name>median</member-name>
+		<description>Calculates the Median value of items in an array.
+All elements in the array must contain values that can be converted to numeric.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>The array of which to calculate the Median value</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
 	<!-- arrayClear -->
 	<function>
 		<name>arrayClear</name>
