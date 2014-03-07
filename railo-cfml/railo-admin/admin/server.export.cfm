@@ -63,6 +63,13 @@ Defaults --->
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="outputSetting">
+
+
+<cfadmin 
+	action="getMappings"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="mappings">
 	
 
 <!--- cache --->
@@ -164,6 +171,10 @@ component {
 </cfif><cfif hasFun>	this.cache.function = "#!hasFun?"&lt;cache-name>":defaults.function#";
 </cfif><cfif hasInc>	this.cache.include = "#!hasInc?"&lt;cache-name>":defaults.include#";</cfif>
 </cfif>	
+
+//////////////////////////////////////////////
+//               DATASOURCES                //
+//////////////////////////////////////////////
 	<cfloop query="#datasources#"><cfscript>
 optional=[];
 // not supported yet optional.append('default:false // default: false');
@@ -176,8 +187,7 @@ if(len(datasources.timezone))optional.append("timezone:'#replace(datasources.tim
 if(datasources.storage) optional.append('storage:#datasources.storage# // default: false');
 if(datasources.readOnly) optional.append('readOnly:#datasources.readOnly# // default: false');
 </cfscript>
-// datasource #datasources.name#
-	this.datasources<cfif isValid('variableName',datasources.name) and !find('.',datasources.name)>.#datasources.name#<cfelse>['#datasources.name#']</cfif> = {
+	this.datasources<cfif isValid('variableName',datasources.name) and !find('.',datasources.name)>["#datasources.name#"]<cfelse>['#datasources.name#']</cfif> = {
 	  class: '#datasources.classname#'
 	, connectionString: '#replace(datasources.dsnTranslated,"'","''","all")#'<cfif len(datasources.password)>
 	, username: '#replace(datasources.username,"'","''","all")#'
@@ -189,6 +199,15 @@ if(datasources.readOnly) optional.append('readOnly:#datasources.readOnly# // def
 	};
 	</cfloop>
 
+//////////////////////////////////////////////
+//               MAPPINGS                   //
+//////////////////////////////////////////////
+<cfloop query="mappings"><cfif mappings.hidden || mappings.virtual=="/railo-context" || mappings.virtual=="/railo-server-context"><cfcontinue></cfif><cfset del=""><cfset count=0>
+this.mappings=["#mappings.virtual#"]=<cfif len(mappings.strPhysical) && !len(mappings.strArchive)>"#mappings.strPhysical#"<cfelse>{<cfif len(mappings.strPhysical)><cfset count++>
+		physical:"#mappings.strPhysical#"<cfset del=","></cfif><cfif len(mappings.strArchive)><cfset count++>
+		#del#archive:"#mappings.strArchive#"<cfset del=","></cfif><cfif count==2 && !mappings.PhysicalFirst>
+		#del#primary:"<cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif>"<cfset del=","></cfif>}</cfif>;
+</cfloop>
 }
 </cfsavecontent>
 

@@ -526,7 +526,7 @@ if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // defau
 
 
 <cfsavecontent variable="codeSample">
-	this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif> = {
+	this.datasources["#datasource.name#"] = {
 	  class: '#datasource.classname#'
 	, connectionString: '#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
 	, username: '#replace(datasource.username,"'","''","all")#'
