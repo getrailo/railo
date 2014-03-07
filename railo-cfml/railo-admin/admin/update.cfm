@@ -3,7 +3,7 @@
 <cfparam name="session.alwaysNew" default="true" type="boolean">
 
 
-<cffunction name="getAviableVersion" output="false">
+<cffunction name="getAvailableVersion" output="false">
 	<cfargument name="update">
 	<cfset var http="">
 	<cftry>
@@ -11,8 +11,8 @@
 			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 			method="get" resolveurl="no" result="http">
 		<cfwddx action="wddx2cfml" input="#http.fileContent#" output="local.wddx">
-		<cfset session.avaiableVersion=wddx>
-		<cfreturn session.avaiableVersion>
+		<cfset session.availableVersion=wddx>
+		<cfreturn session.availableVersion>
 		<cfcatch>
 			<cfreturn "">
 		</cfcatch>
@@ -47,7 +47,7 @@
 				password="#password#"
 				returnvariable="update">
 			<cfset curr=server.railo.version>
-			<cfset avi=getAviableVersion(update)>
+			<cfset avi=getAvailableVersion(update)>
 			<cfset hasUpdate=curr LT avi>
 		</cfif>
 

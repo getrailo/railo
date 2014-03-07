@@ -9,9 +9,9 @@
 	</cfcase>
 </cfswitch>
 
-<cffunction name="getAviableVersion" output="false">
-	<cfif structKeyExists(session,"avaiableVersion")>
-		<cfreturn session.avaiableVersion>
+<cffunction name="getAvailableVersion" output="false">
+	<cfif structKeyExists(session,"availableVersion")>
+		<cfreturn session.availableVersion>
 	</cfif>
 	<cfset var http="">
 	<cftry>
@@ -19,15 +19,15 @@
 		url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&version=#server.railo.version#" 
 		method="get" resolveurl="no" result="http">
 	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="wddx">
-	<cfset session.avaiableVersion=wddx>
-	<cfreturn session.avaiableVersion>
+	<cfset session.availableVersion=wddx>
+	<cfreturn session.availableVersion>
 		<cfcatch>
 			<cfreturn "">
 		</cfcatch>
 	</cftry>
 </cffunction>
 
-<cffunction name="getAviableVersionDoc" output="false">
+<cffunction name="getAvailableVersionDoc" output="false">
 	
 	<cfset var http="">
 	<cftry>
@@ -50,16 +50,16 @@
 		returnvariable="update">
 
 <h2>Update</h2>
-<a href="#go(url.action,"update")#">Update to #getAviableVersion()#</a><br>
+<a href="#go(url.action,"update")#">Update to #getAvailableVersion()#</a><br>
 Das Update wird in einem eigenen Prozess ablaufen. 
-Wenn das System gepatcht wird, werden Sie Ihre Session verliehren und müssen Sie sich frisch einloggen.
+Wenn das System gepatcht wird, werden Sie Ihre Session verliehren und mï¿½ssen Sie sich frisch einloggen.
 
 <br><br>
 <h2>Update Info</h2>
  - Installed Version #server.railo.version#<br>
- - Available Version #getAviableVersion()#<br>
+ - Available Version #getAvailableVersion()#<br>
 <form>
-<textarea name="doc" rows="30" cols="90">#getAviableVersionDoc()#</textarea>
+<textarea name="doc" rows="30" cols="90">#getAvailableVersionDoc()#</textarea>
 </form>
 <pre></pre>
 </cfoutput>

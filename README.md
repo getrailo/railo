@@ -53,12 +53,15 @@ The root of that server should point to the **/railo-cfml** folder in the source
 1. Edit {railo-express}/contexts/railo.xml and modify the resourceBase element so that it points to the /railo-cfml folder, e.g.
 
         <Set name="resourceBase"><SystemProperty name="jetty.home" default="."/>C:/workspace/railo-source/railo-cfml/</Set>
+        
+        TIP: Later versions of Railo Express may have a www.xml file instead of a railo.xml file.  Rename the file from www.xml to railo.xml and modify the resourceBase element as indicated above.
 
 2. Start the Railo Express instance by running {railo-express}/start or {railo-express}/start.bat
 
 3. Browse to the Admin of that Railo instance, e.g. http://localhost:8888/railo-context/admin/server.cfm and set the Admin's password.
 
         TIP: If you are using the Railo Express version, the default port number is 8888.
+        TIP: Set the Server Administrator password as well as the Web Administrator password.
 
 Note the URL of that Railo instance.  You will need it in the next step.
 
