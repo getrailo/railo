@@ -28,7 +28,7 @@ public class DirectoryList {
 	}
 	
 	public static Object call(PageContext pc , String path,boolean recurse,String strListInfo,Object oFilter, String sort) throws PageException {
-		Resource dir=ResourceUtil.toResourceNotExisting(pc, path,pc.getConfig().allowRealPath());
+		Resource dir=ResourceUtil.toResourceNotExisting(pc, path);
 		ResourceAndResourceNameFilter filter = UDFFilter.createResourceAndResourceNameFilter(oFilter);
 		
 		int listInfo=Directory.LIST_INFO_ARRAY_PATH;

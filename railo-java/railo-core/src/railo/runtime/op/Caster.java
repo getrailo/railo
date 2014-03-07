@@ -4164,7 +4164,7 @@ public final class Caster {
 		if(src instanceof String) {
 			if(existing)
 				return ResourceUtil.toResourceExisting(pc, (String)src,allowRealpath);
-			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath);
+			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath,false);
 		}
 		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
         throw new CasterException(src,"Resource");

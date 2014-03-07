@@ -207,7 +207,8 @@ public abstract class PageExceptionImpl extends PageException {
 				Resource res = config.getResource(template);
 				
 				if(!res.exists()) {
-					res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template);
+					
+					res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template,true,true);
 				}
 				 
 				if(res.exists())	
@@ -215,6 +216,7 @@ public abstract class PageExceptionImpl extends PageException {
 				else {
 					if(sources.size()>index)ps = sources.get(index);
 					else ps=null;
+
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
 							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), CharsetUtil.toCharset(config.getTemplateCharset())));

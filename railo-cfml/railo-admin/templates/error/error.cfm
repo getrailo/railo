@@ -12,6 +12,8 @@
 
 	.-railo-icon-minus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)
 						no-repeat left center; padding: 4px 0 4px 16px; }
+
+	.-no-icon 	{padding: 0px 0px 0px 16px; }
 </style>
 <script>
 
@@ -82,7 +84,7 @@
 		<cfif len>
 			<tr>
 				<td class="label">Stacktrace</td>
-				<td>The Error Occurred in<br>
+				<td>The Error Occurred inx<br>
 					<cfloop index="idx" from="1" to="#len#">
 						<cfset tc = catch.tagcontext[ idx ]>
 						<cfparam name="tc.codeprinthtml" default="">
@@ -98,6 +100,9 @@
 							<blockquote class="#isFirst ? 'expanded' : 'collapsed'#" id="__cst$#idx#">
 								#tc.codeprinthtml#<br>
 							</blockquote>
+						<cfelse>
+							<span class="-no-icon">#idx == 1 ? "<b>#tc.template#: line #tc.line#</b>" : "<b>called from</b> #tc.template#: line #tc.line#"#</span>
+							<br>
 						</cfif>
 					</cfloop>
 				</td>

@@ -896,9 +896,11 @@ public abstract class ConfigImpl implements Config {
         return null;
     }
     
-
-    
     public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+    	return getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping, false);
+    }
+    
+    public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean useComponentMappings) {
         realPath=realPath.replace('\\','/');
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
@@ -940,7 +942,7 @@ public abstract class ConfigImpl implements Config {
         }
         
         // component mappings (only used for gateway)
-        if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
+        if(useComponentMappings || (pc!=null && ((PageContextImpl)pc).isGatewayContext())) {
         	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
@@ -1069,7 +1071,7 @@ public abstract class ConfigImpl implements Config {
         if(this instanceof ConfigWebImpl) {
         	Resource parent = res.getParentResource();
         	if(parent!=null && !parent.equals(res)) {
-        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath());
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath(),null,true);
         		return m.getPageSource(res.getName());
         	}
         }
@@ -3112,14 +3114,14 @@ public abstract class ConfigImpl implements Config {
 		return ormConfig;
 	}
 
-	public Mapping createCustomTagAppMappings(String virtual, String physical) {
+	public Mapping createCustomTagAppMappings(String virtual, String physical,String archive,boolean physicalFirst) {
 		Mapping m=customTagAppMappings.get(physical.toLowerCase());
 		
 		if(m==null){
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
+				archive,ConfigImpl.INSPECT_UNDEFINED,physicalFirst,false,false,false,true,true,null
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}
