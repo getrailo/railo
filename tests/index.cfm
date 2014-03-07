@@ -1,9 +1,12 @@
 <cfscript>
 
 // SETUP THE ROOTS OF THE BROWSER RIGHT HERE
+reporter="org.railo.cfml.test.reporter.HTMLReporter";
+
 currentDirectory= getDirectoryFromPath(getCurrentTemplatePath());
 rootPath= currentDirectory&"testcases/";
 rootMapping 	= contractPath(rootPath);
+
 
 /**
 * converts a path to a package name
@@ -52,9 +55,10 @@ testbox = new testbox.system.testing.TestBox();
 	<cfif directoryExists( expandPath( rootMapping & url.path ) )>
 		
 		<cfoutput>
-#rootMapping & url.path#
-#testbox.init( directory=rootMapping & url.path ).run(directory:{mapping:rootMapping & url.path,recurse:false})#</cfoutput>
-<!--- reporter:"testbox.system.testing.reports.RailoReporter" --->
+
+#testbox.init( directory=rootMapping & url.path ,reporter:reporter).run(
+	directory:{mapping:rootMapping & url.path,recurse:false}
+	)#</cfoutput>
 	<cfelse>
 		<cfoutput><h1>Invalid incoming directory: #rootMapping & url.path#</h1></cfoutput>
 	</cfif>
@@ -81,7 +85,7 @@ testbox = new testbox.system.testing.TestBox();
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script><cfinclude template="/testbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script src="/railo-context/admin/resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script><!--- TODO use version indepent file --->
 	<script>
 	$(document).ready(function() {
 		
@@ -208,7 +212,7 @@ testbox = new testbox.system.testing.TestBox();
 			<!--- <cfelseif listLast( qresults.name, ".") eq "cfm">
 				<a href="#executePath & qResults.name#" target="_blank">#qResults.name#</a><br/> --->
 			<cfelseif listLast( qresults.name, ".") eq "cfc" && isTestcase(toPackage(executePath & qResults.name),false)>
-				<a class="test" href="#executePath & qResults.name#?method=runRemote" target="_blank"><button type="button">#qResults.name#</button></a><br/>
+				<a class="test" href="#executePath & qResults.name#?method=runRemote&reporter=#URLEncodedFormat(reporter)#" target="_blank"><button type="button">#qResults.name#</button></a><br/>
 			<!--- <cfelse>
 				#qResults.name#<br/> --->
 			</cfif>
