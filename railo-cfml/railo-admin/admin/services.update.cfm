@@ -246,7 +246,7 @@ Version ","all");
 		</cfscript>
 		<h2>#stText.services.update.infoTitle#</h2>
 		<div class="text">
-			#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#
+			#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{available}','<b>(#avi#)</b>')#
 		</div>
 		<div style="overflow:auto;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
 		#jira#
