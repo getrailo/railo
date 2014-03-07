@@ -3,7 +3,7 @@ Railo-Tests
 
 Unit Tests for Railo Server.
 
-This Test Suite needs [Testbox](http://wiki.coldbox.org/wiki/TestBox.cfm) to be installed (copy of the folder "testbox" in webroot or a "/testbox" mapping) and they need at least Railo 4.1.1.000.
+This Test Suite needs no addional installation.
 To write your own testcases, check out the folder "/testcase-templates", there you can find various testcase templates with readme to all of them.
 
 
