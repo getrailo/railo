@@ -27,6 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import railo.commons.digest.Hash;
+import railo.commons.digest.HashUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -263,9 +264,6 @@ public abstract class ConfigImpl implements Config {
     private Mapping[] mappings=new Mapping[0];
     private Mapping[] customTagMappings=new Mapping[0];
     private Mapping[] componentMappings=new Mapping[0];
-    
-    
-	private Map<String,Mapping> customTagAppMappings=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 
     private SchedulerImpl scheduler;
     
@@ -1071,7 +1069,7 @@ public abstract class ConfigImpl implements Config {
         if(this instanceof ConfigWebImpl) {
         	Resource parent = res.getParentResource();
         	if(parent!=null && !parent.equals(res)) {
-        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath(),null,true);
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("application","/", parent.getAbsolutePath(),null,true,false);
         		return m.getPageSource(res.getName());
         	}
         }
@@ -3112,21 +3110,6 @@ public abstract class ConfigImpl implements Config {
 
 	public ORMConfiguration getORMConfig() {
 		return ormConfig;
-	}
-
-	public Mapping createCustomTagAppMappings(String virtual, String physical,String archive,boolean physicalFirst) {
-		Mapping m=customTagAppMappings.get(physical.toLowerCase());
-		
-		if(m==null){
-			m=new MappingImpl(
-				this,virtual,
-				physical,
-				archive,ConfigImpl.INSPECT_UNDEFINED,physicalFirst,false,false,false,true,true,null
-				);
-			customTagAppMappings.put(physical.toLowerCase(),m);
-		}
-		
-		return m;
 	}
 
 

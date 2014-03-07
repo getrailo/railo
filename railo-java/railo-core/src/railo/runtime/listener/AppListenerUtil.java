@@ -272,19 +272,58 @@ public final class AppListenerUtil {
 		Entry<Key, Object> e;
 		java.util.List<Mapping> mappings=new ArrayList<Mapping>();
 		ConfigWebImpl config=(ConfigWebImpl) cw;
-		String virtual,physical;
+		String virtual;
 		while(it.hasNext()) {
 			e = it.next();
 			virtual=translateMappingVirtual(e.getKey().getString());
-			physical=translateMappingPhysical(Caster.toString(e.getValue()),source);
-			mappings.add(config.getApplicationMapping(virtual,physical));
-			
+			MappingData md=toMappingData(e.getValue(),source);
+			mappings.add(config.getApplicationMapping("application",virtual,md.physical,md.archive,md.physicalFirst,false));
 		}
 		return mappings.toArray(new Mapping[mappings.size()]);
 	}
 	
 
+	private static MappingData toMappingData(Object value, Resource source) throws PageException {
+		MappingData md=new MappingData();
+		
+		if(Decision.isStruct(value)) {
+			Struct map=Caster.toStruct(value);
+			
+			
+			// physical
+			String physical=Caster.toString(map.get("physical",null),null);
+			if(!StringUtil.isEmpty(physical,true)) 
+				md.physical=translateMappingPhysical(physical.trim(),source);
+
+			// archive
+			String archive = Caster.toString(map.get("archive",null),null);
+			if(!StringUtil.isEmpty(archive,true)) 
+				md.archive=translateMappingPhysical(archive.trim(),source);
+			
+			if(archive==null && physical==null) 
+				throw new ApplicationException("you must define archive or/and physical!");
+			
+			// primary
+			md.physicalFirst=true;
+			// primary is only of interest when both values exists
+			if(archive!=null && physical!=null) {
+				String primary = Caster.toString(map.get("primary",null),null);
+				if(primary!=null && primary.trim().equalsIgnoreCase("archive")) md.physicalFirst=false;
+			}
+			// only a archive
+			else if(archive!=null) md.physicalFirst=false;
+		}
+		// simple value == only a physical path
+		else {
+			md.physical=translateMappingPhysical(Caster.toString(value).trim(),source);
+			md.physicalFirst=true;
+		}
+		
+		return md;
+	}
+
 	private static String translateMappingPhysical(String path, Resource source) {
+		if(source==null) return path;
 		source=source.getParentResource().getRealResource(path);
 		if(source.exists()) return source.getAbsolutePath();
 		return path;
@@ -296,31 +335,32 @@ public final class AppListenerUtil {
 		return virtual;
 	}
 	
-	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o) throws PageException {
-		return toMappings(cw, o,false);
+	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o, Resource source) throws PageException {
+		return toMappings(cw,"custom", o,false,source);
 	}
 
-	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o, Mapping[] defaultValue) {
+	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o, Resource source, Mapping[] defaultValue) {
 		try {
-			return toMappings(cw, o,false);
+			return toMappings(cw,"custom", o,false,source);
 		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
 
-	public static Mapping[] toComponentMappings(ConfigWeb cw, Object o) throws PageException {
-		return toMappings(cw, o,true);
+	public static Mapping[] toComponentMappings(ConfigWeb cw, Object o, Resource source) throws PageException {
+		return toMappings(cw,"component", o,true,source);
 	}
 
-	public static Mapping[] toComponentMappings(ConfigWeb cw, Object o,Mapping[] defaultValue) {
+	public static Mapping[] toComponentMappings(ConfigWeb cw, Object o, Resource source,Mapping[] defaultValue) {
+		
 		try {
-			return toMappings(cw, o,true);
-		} catch (Throwable t) {
+			return toMappings(cw,"component", o,true,source);
+		} catch (Throwable t) {print.e(t);
 			return defaultValue;
 		}
 	}
 
-	private static Mapping[] toMappings(ConfigWeb cw, Object o, boolean useStructNames) throws PageException {
+	private static Mapping[] toMappings(ConfigWeb cw,String type, Object o, boolean useStructNames, Resource source) throws PageException {
 		ConfigWebImpl config=(ConfigWebImpl) cw;
 		Array array;
 		if(o instanceof String){
@@ -339,7 +379,8 @@ public final class AppListenerUtil {
 					if(virtual.length()==0) virtual="/";
 					if(!virtual.startsWith("/")) virtual="/"+virtual;
 			        if(!virtual.equals("/") && virtual.endsWith("/"))virtual=virtual.substring(0,virtual.length()-1);
-			        list.add(config.createCustomTagAppMappings(virtual,Caster.toString(e.getValue()).trim()));
+			        MappingData md=toMappingData(e.getValue(),source);
+					list.add(config.getApplicationMapping(type,virtual,md.physical,md.archive,md.physicalFirst,true));
 				}
 				return list.toArray(new Mapping[list.size()]);
 			}
@@ -355,7 +396,9 @@ public final class AppListenerUtil {
 		}
 		MappingImpl[] mappings=new MappingImpl[array.size()];
 		for(int i=0;i<mappings.length;i++) {
-			mappings[i]=(MappingImpl) config.createCustomTagAppMappings("/"+i,Caster.toString(array.getE(i+1)).trim());
+			
+			MappingData md=toMappingData(array.getE(i+1),source);
+			mappings[i]=(MappingImpl) config.getApplicationMapping(type,"/"+i,md.physical,md.archive,md.physicalFirst,true);
 		}
 		return mappings;
 	}
@@ -595,6 +638,11 @@ public final class AppListenerUtil {
 		if(wst!=-1) return wst;
 		throw new ApplicationException("invalid webservice type ["+wstype+"], valid values are [axis1]");
 		//throw new ApplicationException("invalid webservice type ["+wstype+"], valid values are [axis1,jax-ws,cxf]");
+	}
+	static private class MappingData {
+		private String physical;
+		private String archive;
+		private boolean physicalFirst;
 	}
 }
 

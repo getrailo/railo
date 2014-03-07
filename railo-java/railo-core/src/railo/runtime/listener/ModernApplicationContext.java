@@ -671,7 +671,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
-			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,ctmappings);
+			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,getSource(),ctmappings);
 			initCTMappings=true; 
 		}
 		return ctmappings;
@@ -681,7 +681,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,getSource(),cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;
