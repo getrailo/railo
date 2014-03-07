@@ -170,7 +170,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeList(List list, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<array length="+_+list.size()+_+">");
+		StringBuilder sb=new StringBuilder(goIn()+"<array length="+_+list.size()+_+">");
 				
 		ListIterator it=list.listIterator();
 		while(it.hasNext()) {
@@ -189,7 +189,7 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException 
 	 */
 	private String _serializeComponent(Component component, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		ComponentAccess ca;
 		try {
 			component=new ComponentWrap(Component.ACCESS_PRIVATE, ca=ComponentUtil.toComponentAccess(component));
@@ -207,7 +207,7 @@ public final class WDDXConverter extends ConverterSupport {
         	key=Caster.toKey(it.next(),null);
         	member = component.get(key,null);
         	if(member instanceof UDF) continue;
-        	sb.append(goIn()+"<var scope=\"this\" name="+_+key.toString()+_+">");
+        	sb.append(goIn()+"<var scope=\"this\" name="+_+XMLUtil.escapeXMLString(key.toString())+_+">");
             sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
         }
@@ -232,7 +232,7 @@ public final class WDDXConverter extends ConverterSupport {
         	
         	member = scope.get(key,null);
         	if(member instanceof UDF || key.equals(KeyConstants._this)) continue;
-            sb.append(goIn()+"<var scope=\"variables\" name="+_+key.toString()+_+">");
+            sb.append(goIn()+"<var scope=\"variables\" name="+_+XMLUtil.escapeXMLString(key.toString())+_+">");
             sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
         }
@@ -241,7 +241,7 @@ public final class WDDXConverter extends ConverterSupport {
         deep--;
         try {
 			//return goIn()+"<struct>"+sb+"</struct>";
-			return goIn()+"<component md5=\""+ComponentUtil.md5(component)+"\" name=\""+component.getAbsName()+"\">"+sb+"</component>";
+			return goIn()+"<component md5=\""+ComponentUtil.md5(component)+"\" name=\""+XMLUtil.escapeXMLString(component.getAbsName())+"\">"+sb+"</component>";
 		} 
 		catch (Exception e) {
 			throw toConverterException(e);
@@ -256,14 +256,14 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeStruct(Struct struct, Set<Object> done) throws ConverterException {
-        StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+        StringBuilder sb=new StringBuilder(goIn()+"<struct>");
         
         Iterator<Key> it = struct.keyIterator();
 
         deep++;
         while(it.hasNext()) {
             Key key = it.next();
-            sb.append(goIn()+"<var name="+_+key.toString()+_+">");
+            sb.append(goIn()+"<var name="+_+XMLUtil.escapeXMLString(key.toString())+_+">");
             sb.append(_serialize(struct.get(key,null),done));
             sb.append(goIn()+"</var>");
         }
@@ -281,14 +281,14 @@ public final class WDDXConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	private String _serializeMap(Map map, Set<Object> done) throws ConverterException {
-		StringBuffer sb=new StringBuffer(goIn()+"<struct>");
+		StringBuilder sb=new StringBuilder(goIn()+"<struct>");
 		
 		Iterator it=map.keySet().iterator();
 
 		deep++;
 		while(it.hasNext()) {
 			Object key=it.next();
-			sb.append(goIn()+"<var name="+_+key.toString()+_+">");
+			sb.append(goIn()+"<var name="+_+XMLUtil.escapeXMLString(key.toString())+_+">");
 			sb.append(_serialize(map.get(key),done));
 			sb.append(goIn()+"</var>");
 		}
@@ -307,14 +307,22 @@ public final class WDDXConverter extends ConverterSupport {
 	 */
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
+		// fieldnames
+		StringBuilder fn=new StringBuilder();
 		Collection.Key[] keys = CollectionUtil.keys(query);
-		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.util.ListUtil.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
+		for(int i=0;i<keys.length;i++){
+			if(i>0) fn.append(',');
+			fn.append(XMLUtil.escapeXMLString(keys[i].getString()));
+		}
+		
+		
+		StringBuilder sb=new StringBuilder(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+fn+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	
 		deep++;
 		int len=query.getRecordcount();
 		for(int i=0;i<keys.length;i++) {
-			sb.append(goIn()+"<field name="+_+keys[i].getString()+_+">");
+			sb.append(goIn()+"<field name="+_+XMLUtil.escapeXMLString(keys[i].getString())+_+">");
 				for(int y=1;y<=len;y++) {
 					try {
 						sb.append(_serialize(query.getAt(keys[i],y),done));
@@ -454,7 +462,7 @@ public final class WDDXConverter extends ConverterSupport {
 	public String serialize(Object object) throws ConverterException {
 		deep=0;
 		
-		StringBuffer sb=new StringBuffer();	
+		StringBuilder sb=new StringBuilder();	
 		if(xmlConform)sb.append("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>");	
 		sb.append("<wddxPacket version="+_+"1.0"+_+">");	
 		deep++;
@@ -605,7 +613,7 @@ public final class WDDXConverter extends ConverterSupport {
 	private Object _deserializeString(Element element) {
 		NodeList childList = element.getChildNodes();
 		int len = childList.getLength();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Node data;
 		String str;
 		for(int i=0;i<len;i++) {
