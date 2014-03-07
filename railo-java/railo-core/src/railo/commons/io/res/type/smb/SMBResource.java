@@ -58,11 +58,14 @@ public class SMBResource extends ResourceSupport implements Resource{
 	
 	private void _init (String path, NtlmPasswordAuthentication auth ) {
 		//String[] pathName=ResourceUtil.translatePathName(path);
-		this.path = path;
+		this.path = _stripScheme(path);
 		this.auth = auth;
 		
 	}
 	
+	private String _stripScheme(String path) {
+		return path.replace(_scheme(), "/");
+	}
 	
 	private String _userInfo (String path) {
 		
@@ -109,7 +112,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 	}
 	
 	private SmbFile _file( boolean expectDirectory ) {
-		String _path = _calculatePath(path);
+		String _path = _calculatePath(getInnerPath());
 		SmbFile result;
 		if(expectDirectory) {
 			if(!_path.endsWith("/")) _path += "/";
@@ -220,7 +223,7 @@ public class SMBResource extends ResourceSupport implements Resource{
 		provider.lock(this);
 		try {
 			SmbFile file = _file();
-			if (file == null) throw new IOException("Can't delete [" + path + "], SMB path is invalid or inaccessable");
+			if (file == null) throw new IOException("Can't delete [" + getPath() + "], SMB path is invalid or inaccessable");
 			if (file.isDirectory()) {
 				file = _file(true);
 			}
@@ -253,28 +256,34 @@ public class SMBResource extends ResourceSupport implements Resource{
 
 	@Override
 	public String getParent() {
-		SmbFile file = _file();
-		if(file == null)
-			return "";
-		return file.getParent();
+		// SmbFile's getParent function seems to return just smb:// no matter what, implement custom getParent Function()
+		String path = getPath().replaceFirst("[\\\\/]+$", "");
 		
+		int location = Math.max(path.lastIndexOf('/'),path.lastIndexOf('\\'));
+		if (location == -1 || location == 0) return "";
+		return path.substring(0,location);
 	}
 
 	@Override
 	public Resource getParentResource() {
 		String p = getParent();
 		if(p==null) return null;
-		return new SMBResource(provider,p,auth);
+		return new SMBResource(provider,_stripAuth(p),auth);
 	}
 
 	@Override
 	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(path +"/", realpath);
+		realpath=ResourceUtil.merge(getInnerPath() +"/", realpath);
 		
 		if(realpath.startsWith("../"))return null;
-		return new SMBResource(provider,realpath,auth);
+		return new SMBResource( provider, _calculatePath(realpath,auth), auth );
 	}
 
+	private String getInnerPath() {
+		if(path==null) return "/";
+		return path;
+	}
+	
 	@Override
 	public String getPath() {
 		return _calculatePath(path,auth);
