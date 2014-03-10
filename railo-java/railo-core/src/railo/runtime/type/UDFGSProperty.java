@@ -214,8 +214,8 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 		if(validateParams==null) return;
 
 		if(validate.equals("integer") || validate.equals("numeric") || validate.equals("number")){
-			double min=Caster.toDoubleValue(validateParams.get(KeyConstants._min,null),Double.NaN);
-			double max=Caster.toDoubleValue(validateParams.get(KeyConstants._max,null),Double.NaN);
+			double min=Caster.toDoubleValue(validateParams.get(KeyConstants._min,null),false,Double.NaN);
+			double max=Caster.toDoubleValue(validateParams.get(KeyConstants._max,null),false,Double.NaN);
 			double d=Caster.toDoubleValue(obj);
 			if(!Double.isNaN(min) && d<min)
 				throw new ExpressionException(validate+" ["+Caster.toString(d)+"] is out of range, value must be more than or equal to ["+min+"]");
@@ -223,8 +223,8 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 				throw new ExpressionException(validate+" ["+Caster.toString(d)+"] is out of range, value must be less than or equal to ["+max+"]");
 		}
 		else if(validate.equals("string")){
-			double min=Caster.toDoubleValue(validateParams.get(MIN_LENGTH,null),Double.NaN);
-			double max=Caster.toDoubleValue(validateParams.get(MAX_LENGTH,null),Double.NaN);
+			double min=Caster.toDoubleValue(validateParams.get(MIN_LENGTH,null),false,Double.NaN);
+			double max=Caster.toDoubleValue(validateParams.get(MAX_LENGTH,null),false,Double.NaN);
 			String str=Caster.toString(obj);
 			int l=str.length();
 			if(!Double.isNaN(min) && l<((int)min))

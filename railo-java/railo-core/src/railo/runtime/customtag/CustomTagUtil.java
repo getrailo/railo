@@ -1,5 +1,9 @@
 package railo.runtime.customtag;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.Mapping;
@@ -13,10 +17,6 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.util.ListUtil;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class CustomTagUtil {
 

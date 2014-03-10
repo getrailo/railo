@@ -1180,4 +1180,43 @@ public final class ASMUtil {
 		}
 		return count;
 	}
+
+	public static void dump(Statement s, int level) {
+		
+		for(int i=0;i<level;i++)System.err.print("-");
+		aprint.e(s.getClass().getName());
+		
+		if(s instanceof HasBody) {
+			Body b = ((HasBody) s).getBody();
+			if(b!=null) {
+				Iterator<Statement> it = b.getStatements().iterator();
+				while(it.hasNext()){
+					dump(it.next(),level+1);
+				}
+			}
+		}
+	}
+	
+
+
+	public static void size(ClassWriter cw) {
+		try {
+			MethodVisitor mw=null;
+			
+			Field[] fields = cw.getClass().getDeclaredFields();
+			Field f;
+			for(int i=0;i<fields.length;i++){
+				f=fields[i];
+				if(f.getType().getName().equals("org.objectweb.asm.MethodWriter")) {
+					f.setAccessible(true);
+					mw = (MethodVisitor) f.get(cw);
+					break;
+				}
+			}
+		}
+		catch (Throwable t) {
+			// TODO Auto-generated catch block
+			t.printStackTrace();
+		}
+	}
 }

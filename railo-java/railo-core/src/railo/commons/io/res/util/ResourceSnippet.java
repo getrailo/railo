@@ -75,7 +75,7 @@ public class ResourceSnippet implements java.io.Serializable {
     public static ResourceSnippet createResourceSnippet( String src, int startChar, int endChar ) {
 
         String text = "";
-        if ( endChar > startChar && endChar < src.length() )
+        if ( endChar > startChar && endChar <= src.length() )
             text = src.substring( startChar, endChar );
 
         return new ResourceSnippet( text, getLineNumber( src, startChar ), getLineNumber( src, endChar ) );

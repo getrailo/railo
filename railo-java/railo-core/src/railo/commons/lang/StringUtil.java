@@ -266,11 +266,16 @@ public final class StringUtil {
 	 * @param str string to translate
 	 * @return translated String
 	 */
-
 	public static String toVariableName(String str) {
-		return toVariableName(str, true);
+		return toVariableName(str, true,false);
 	}
-	public static String toVariableName(String str, boolean addIdentityNumber) {
+	
+
+	public static String toJavaClassName(String str) {
+		return toVariableName(str, true, true);
+	}
+	
+	public static String toVariableName(String str, boolean addIdentityNumber, boolean allowDot) {
 		
 		StringBuilder rtn=new StringBuilder();
 		char[] chars=str.toCharArray();
@@ -279,7 +284,7 @@ public final class StringUtil {
 		for(int i=0;i<chars.length;i++) {
 			char c=chars[i];
 			if(i==0 && (c>='0' && c<='9'))rtn.append("_"+c);
-			else if((c>='a' && c<='z') ||(c>='A' && c<='Z') ||(c>='0' && c<='9') || c=='_' || c=='$')
+			else if((c>='a' && c<='z') ||(c>='A' && c<='Z') ||(c>='0' && c<='9') || c=='_' || c=='$' || (allowDot && c=='.'))
 				rtn.append(c);
 			else {	
 			    doCorrect=false;

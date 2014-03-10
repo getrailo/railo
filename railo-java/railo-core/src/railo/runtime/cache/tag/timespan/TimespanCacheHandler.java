@@ -51,6 +51,10 @@ public class TimespanCacheHandler implements CacheHandler {
 			timeSpan=Caster.toDate(cachedWithin, null).getTime()-System.currentTimeMillis();
 		else
 			timeSpan = Caster.toTimespan(cachedWithin).getMillis();
+		
+		// ignore timespan smaller or equal to 0
+		if(timeSpan<=0) return;
+		
 		getCache(pc).put(id, value, Long.valueOf(timeSpan), Long.valueOf(timeSpan));
 	}
 	

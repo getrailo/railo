@@ -2,8 +2,8 @@ package railo.runtime.type.util;
 
 import java.lang.reflect.Field;
 
-import railo.commons.collection.ConcurrentHashMapPro;
 import railo.commons.collection.MapPro;
+import railo.commons.collection.concurrent.ConcurrentHashMapPro;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 
@@ -872,6 +872,7 @@ public class KeyConstants {
 	public static final Key _scale = KeyImpl._const("scale");
 	public static final Key _include = KeyImpl._const("include");
 	public static final Key _compression = KeyImpl._const("compression");
+	public static final Key _invoke = KeyImpl._const("invoke");
 	
 	private static MapPro<String,Key> _____keys;
 	

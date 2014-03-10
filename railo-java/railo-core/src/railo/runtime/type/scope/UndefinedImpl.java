@@ -154,7 +154,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	public Object get(Collection.Key key) throws PageException {
-		
+		//print.e();
 		Object rtn;
 		if(checkArguments) {
 		    rtn=local.get(key,NullSupportHelper.NULL());

@@ -406,7 +406,7 @@ public final class CastImpl implements Cast {
 
     @Override
     public double toDoubleValue(Object o, double defaultValue) {
-        return Caster.toDoubleValue(o,defaultValue);
+        return Caster.toDoubleValue(o,true,defaultValue);
     }
 
     @Override
@@ -416,7 +416,7 @@ public final class CastImpl implements Cast {
 
     @Override
     public double toDoubleValue(String str, double defaultValue) {
-        return Caster.toDoubleValue(str,defaultValue);
+        return Caster.toDoubleValue(str,true,defaultValue);
     }
 
     @Override

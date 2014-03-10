@@ -781,7 +781,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
         	if(path!=null){
         		if(path.startsWith("ra://"))
         			path="zip://"+path.substring(5);
-        		res=ResourceUtil.toResourceNotExisting(pc, path,false);
+        		res=ResourceUtil.toResourceNotExisting(pc, path,false,false);
         	}
         }
 		return res;

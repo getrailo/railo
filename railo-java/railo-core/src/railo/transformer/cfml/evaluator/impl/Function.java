@@ -11,6 +11,13 @@ import railo.runtime.listener.AppListenerUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Statement;
+
+import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastString;
+import railo.transformer.bytecode.expression.ExprString;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -32,7 +39,7 @@ import railo.transformer.library.tag.TagLibTag;
  */
 public final class Function extends EvaluatorSupport {
 
-	//ç
+	//ÔøΩ
 	/**
 	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag)
 	 */
@@ -92,7 +99,7 @@ public final class Function extends EvaluatorSupport {
 		
 		
 		// Attribute Output
-		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehändelt
+		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehÔøΩndelt
 		Attribute attrOutput = tag.getAttribute("output");
 		if(attrOutput!=null) {
 			Expression expr = tag.getFactory().toExprBoolean(attrOutput.getValue());

@@ -59,6 +59,7 @@ import railo.transformer.expression.var.Member;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
+import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.library.tag.TagLibTagScript;
@@ -206,8 +207,9 @@ public abstract class AbstrCFMLExprTransformer {
 		public short context=CTX_NONE; 
 		public DocComment docComment;
 		
-		public ExprData(Factory factory,Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
-			super(factory,page,cfml,ep,settings,flibs,scriptTags);
+		public ExprData(Factory factory,Page page, EvaluatorPool ep, CFMLString cfml, TagLib[][] tlibs,FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
+			super(factory,page,cfml,ep,settings,tlibs,flibs,scriptTags);
+
 			this.allowLowerThan=allowLowerThan;
 		}
 	}
@@ -239,10 +241,12 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param fld Function Libraries zum validieren der Funktionen
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected ExprData init(Factory factory,Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
-		ExprData data = new ExprData(factory,page,ep,cfml,fld,settings,allowLowerThan,scriptTags);
-		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
-		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
+
+	protected ExprData init(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
+		ExprData data = new ExprData(factory,page,ep,cfml,tld,fld,settings,allowLowerThan,scriptTags);
+		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_literalArray");
+		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_literalStruct");
+
 		return data;
 		//this.allowLowerThan=allowLowerThan;
 		//this.fld = fld;

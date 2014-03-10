@@ -1,5 +1,7 @@
 package railo.runtime.functions.system;
 
+import java.util.Iterator;
+
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -16,8 +18,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.KeyConstants;
-
-import java.util.Iterator;
 
 /**
  * returns the root of this actuell Page Context

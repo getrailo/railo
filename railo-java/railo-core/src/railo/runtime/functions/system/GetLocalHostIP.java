@@ -1,5 +1,5 @@
 /**
- * Implements the CFML Function isarray
+ * Implements the CFML Function GetLocalHostIP
  */
 package railo.runtime.functions.system;
 

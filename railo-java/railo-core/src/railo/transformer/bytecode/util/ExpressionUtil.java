@@ -16,6 +16,11 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
+
+import railo.transformer.bytecode.expression.ExprString;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitString;
+
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.expression.ExprString;
@@ -32,6 +37,11 @@ public final class ExpressionUtil {
 			"exeLogEnd",
 			Types.VOID,
 			new Type[]{Types.INT_VALUE,Types.STRING});
+
+	public static final Method CURRENT_LINE = new Method(
+			"currentLine",
+			Types.VOID,
+			new Type[]{Types.INT_VALUE});
 	
 
 	private static Map<String,String> last=new HashMap<String,String>();
@@ -61,9 +71,21 @@ public final class ExpressionUtil {
    }
     private static synchronized void visitLine(BytecodeContext bc, int line) {
     	if(line>0){
+    		
+    		/*Type[] methodTypes = bc.getMethod().getArgumentTypes();
+			if(methodTypes!=null && methodTypes.length>0 && methodTypes[0].equals(Types.PAGE_CONTEXT)) {
+    			GeneratorAdapter adapter = bc.getAdapter();
+    	    	adapter.loadArg(0);
+    	    	adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+    	        adapter.push(line);
+    		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,CURRENT_LINE );
+			}*/
+    		
     		if(!(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
-	    		//writeLog(bc,line);
-	    		bc.visitLineNumber(line);
+	    		
+    			
+    			
+    			bc.visitLineNumber(line);
 	    		last.put(bc.getClassName()+":"+bc.getId(),""+line);
 	    		last.put(bc.getClassName(),""+line);
 	    	}

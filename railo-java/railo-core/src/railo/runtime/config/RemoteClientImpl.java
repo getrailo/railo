@@ -5,7 +5,7 @@ import railo.runtime.crypt.CFMXCompat;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.other.Encrypt;
 import railo.runtime.net.proxy.ProxyData;
-import railo.runtime.net.rpc.client.RPCClient;
+import railo.runtime.net.rpc.client.WSClient;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.remote.RemoteClientTask;
 import railo.runtime.type.Struct;
@@ -124,8 +124,10 @@ public class RemoteClientImpl implements RemoteClient {
 		
 		
 		try {
-			RPCClient rpc = RemoteClientTask.getRPCClient(this);
-			Object result = rpc.callWithNamedValues(config, "invoke", args);
+			WSClient rpc = 
+				WSClient.getInstance(null,getUrl(),getServerUsername(),getServerPassword(),getProxyData());
+			
+			Object result = rpc.callWithNamedValues(config, KeyConstants._invoke, args);
 			return id=ConfigImpl.getId(securityKey, Caster.toString(result,null),false, null);
 			
 		} 

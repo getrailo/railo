@@ -279,10 +279,10 @@ public final class ResourceUtil {
      */
 
     public static Resource toResourceNotExisting(PageContext pc ,String destination) {
-    	return toResourceNotExisting(pc ,destination,pc.getConfig().allowRealPath());
+    	return toResourceNotExisting(pc ,destination,pc.getConfig().allowRealPath(),false);
     }
     
-    public static Resource toResourceNotExisting(PageContext pc ,String destination,boolean allowRealpath) {
+    public static Resource toResourceNotExisting(PageContext pc ,String destination,boolean allowRealpath, boolean checkComponentMappings) {
     	Resource res;
         destination=destination.replace('\\','/');  
     	
@@ -296,8 +296,7 @@ public final class ResourceUtil {
         	PageContextImpl pci=(PageContextImpl) pc;
         	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
         	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), destination, false, 
-        			pci.useSpecialMappings(), SystemUtil.isWindows());
-        	//Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
+        			pci.useSpecialMappings(), SystemUtil.isWindows(),checkComponentMappings);
         	if(!ArrayUtil.isEmpty(sources)) {
         		for(int i=0;i<sources.length;i++){
         			res=sources[i].getResource();

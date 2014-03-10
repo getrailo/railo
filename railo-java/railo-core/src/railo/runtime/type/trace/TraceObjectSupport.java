@@ -61,13 +61,7 @@ public class TraceObjectSupport implements TraceObject {
 
 	public synchronized static void log(Debugger debugger,int type,String category,String text,String varName,String varValue) {
 		
-		Throwable t=new Exception("Stack trace");
-		Throwable cause = t.getCause(); 
-		while(cause!=null){
-			t=cause;
-			cause = t.getCause(); 
-		}
-		StackTraceElement[] traces = t.getStackTrace();
+		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 		
         int line=0;
 		String template=null;
@@ -83,14 +77,6 @@ public class TraceObjectSupport implements TraceObject {
 		}
 		//print.e(t);
 		if(line==0) return;
-		
-		/*String type=traces[2].getMethodName();
-		
-		int row=qry.addRow();
-		qry.setAtEL(LABEL, row, label);
-		qry.setAtEL(ACTION, row, type(type));
-		qry.setAtEL(PARAMS, row, addional);
-		*/
 		String action=type(traces[2].getMethodName());
 		if(debugger!=null)debugger.addTrace(type, category, text, template,line,action, varName, varValue);
 			

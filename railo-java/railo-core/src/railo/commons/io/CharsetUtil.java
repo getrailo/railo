@@ -2,7 +2,6 @@ package railo.commons.io;
 
 import java.nio.charset.Charset;
 
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;

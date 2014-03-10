@@ -25,8 +25,8 @@ public final class ExpandPath implements Function {
 
 	public static String call(PageContext pc , String realPath) throws PageException {
 		ConfigWeb config=pc.getConfig();
-		realPath=realPath.replace('\\','/');
-
+		realPath=prettifyPath(realPath);
+		
         String contextPath = pc.getHttpServletRequest().getContextPath();
         if ( !StringUtil.isEmpty( contextPath ) && realPath.startsWith( contextPath ) ) {
             boolean sws=StringUtil.startsWith(realPath, '/');
@@ -110,4 +110,19 @@ public final class ExpandPath implements Function {
         
         return path;
     }
+    
+    private static String prettifyPath(String path) {
+		if(path==null) return null;
+		
+		// UNC Path
+		if(path.startsWith("\\\\") && SystemUtil.isWindows()) {
+			path=path.substring(2);
+			path=path.replace('\\','/');
+			return "//"+StringUtil.replace(path, "//", "/", false);
+		}
+		
+		path=path.replace('\\','/');
+		return StringUtil.replace(path, "//", "/", false);
+		// TODO /aaa/../bbb/
+	}
 }

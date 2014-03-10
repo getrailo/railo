@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-
 import railo.loader.util.Util;
 import railo.runtime.cache.tag.smart.Analyzer;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
@@ -122,12 +121,12 @@ public final class SmartCache extends TagSupport {
 		SmartCacheHandler.stop();
 	}
 
-	private void doClearRules() {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules();
-		else SmartCacheHandler.clearRules(type);
+	private void doClearRules() throws PageException {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules(pageContext);
+		else SmartCacheHandler.clearRules(pageContext,type);
 	}
-	private void doClearEntries() {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries();
+	private void doClearEntries() throws PageException {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries(pageContext);
 		else SmartCacheHandler.clearEntries(type);
 	}
 
@@ -136,7 +135,7 @@ public final class SmartCache extends TagSupport {
 		String[] hashes=getEntryHashes();
 		
 		for(int i=0;i<hashes.length;i++){
-			SmartCacheHandler.removeRule(type,hashes[i]);
+			SmartCacheHandler.removeRule(pageContext,type,hashes[i]);
 		}
 	}
 

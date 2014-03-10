@@ -19,7 +19,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
-
 import railo.runtime.type.dt.DateTime;
 
 public abstract class ComponentProxy implements Component {

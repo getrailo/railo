@@ -23,7 +23,7 @@ import railo.runtime.type.dt.TimeSpan;
  * DTO Interface for Application Context data (defined by tag application)
  */
 public interface ApplicationContext extends Serializable {
-
+	
     public static final int SCRIPT_PROTECT_NONE = 0;
     public static final int SCRIPT_PROTECT_FORM = 1;
     public static final int SCRIPT_PROTECT_URL = 2;

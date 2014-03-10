@@ -677,7 +677,7 @@ public final class DebuggerImpl implements Debugger {
 		
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
 		lastTrace = System.currentTimeMillis();
-        StackTraceElement[] _traces = new Exception("Stack trace").getStackTrace();
+        /*StackTraceElement[] _traces = Thread.currentThread().getStackTrace();
 		String clazz=page.getFullClassName();
 		int line=0;
 		
@@ -686,32 +686,36 @@ public final class DebuggerImpl implements Debugger {
 			StackTraceElement trace=_traces[i];
     		if(trace.getClassName().startsWith(clazz)) {
     			line=trace.getLineNumber();
+    			print.e(SystemUtil.getCurrentContext());
+    			print.e(page.getDisplayPath());
+    			print.e(line);
     			break;
 			}
-		}
+		}*/
 		
-		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace);
+		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),SystemUtil.getCurrentContext().line,"",varName,varValue,lastTrace-_lastTrace);
 		traces.add(t);
 		return t;
 	}
 	
 	
 	public DebugDump addDump(PageSource ps,String dump) {
-		
-		StackTraceElement[] _traces = new Exception("Stack trace").getStackTrace();
+		/*
+		StackTraceElement[] _traces = Thread.currentThread().getStackTrace();
 		String clazz=ps.getFullClassName();
-		int line=0;
 		
 		// line
+		int line=0;
 		for(int i=0;i<_traces.length;i++) {
 			StackTraceElement trace=_traces[i];
     		if(trace.getClassName().startsWith(clazz)) {
     			line=trace.getLineNumber();
     			break;
 			}
-		}
+		}*/
 		
-		DebugDump dt=new DebugDumpImpl(ps.getDisplayPath(),line,dump);
+		
+		DebugDump dt=new DebugDumpImpl(ps.getDisplayPath(),SystemUtil.getCurrentContext().line,dump);
 		dumps.add(dt);
 		return dt;
 	}

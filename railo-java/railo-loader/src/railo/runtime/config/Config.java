@@ -675,7 +675,7 @@ public interface Config {
 	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
 	 * @param useDefaultMapping also invoke the always existing default mapping "/"
 	 */
-	public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
+	public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping); // FUTURE add boolean useComponentMappings
 	
 	/**
 	 * get Resource of the first Mapping that match the given criteria

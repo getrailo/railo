@@ -20,7 +20,7 @@ public class PieSectionLabelGeneratorImpl implements PieSectionLabelGenerator {
 	}
 
 	public String generateSectionLabel(PieDataset pd, Comparable c) {
-		double value = Caster.toDoubleValue(pd.getValue(c),0.0);
+		double value = Caster.toDoubleValue(pd.getValue(c),true,0.0);
 		return LabelFormatUtil.format(labelFormat, value);
 		}
 		

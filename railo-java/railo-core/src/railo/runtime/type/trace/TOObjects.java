@@ -61,7 +61,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	@Override
 	public double castToDoubleValue(double defaultValue) {
 		log();
-		return Caster.toDoubleValue(o,defaultValue);
+		return Caster.toDoubleValue(o,true,defaultValue);
 	}
 	
 	@Override

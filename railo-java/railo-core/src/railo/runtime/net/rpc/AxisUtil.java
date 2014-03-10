@@ -12,7 +12,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import railo.runtime.PageContext;
-import railo.runtime.net.rpc.client.RPCClient;
+import railo.runtime.exp.PageException;
+import railo.runtime.net.rpc.client.WSClient;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 
@@ -32,7 +33,7 @@ public class AxisUtil {
         return toValue(header,asXML);
 	}
 
-	public static Object getSOAPResponseHeader(PageContext pc, RPCClient client, String namespace, String name, boolean asXML) throws Exception {
+	public static Object getSOAPResponseHeader(PageContext pc, WSClient client, String namespace, String name, boolean asXML) throws Exception {
 		MessageContext context = getMessageContext(client);
 	    
 		SOAPEnvelope env = context.getResponseMessage().getSOAPEnvelope();
@@ -40,13 +41,13 @@ public class AxisUtil {
 	    return toValue(header,asXML);
 	}
 	
-	public static Node getSOAPRequest(RPCClient client) throws Exception {
+	public static Node getSOAPRequest(WSClient client) throws Exception {
 		MessageContext context=getMessageContext(client);
         SOAPEnvelope env = context.getRequestMessage().getSOAPEnvelope();
         return XMLCaster.toXMLStruct(env.getAsDocument(),true);
     }
 	
-	public static Node getSOAPResponse(RPCClient client) throws Exception {
+	public static Node getSOAPResponse(WSClient client) throws Exception {
 		Call call = client.getLastCall();
 		if(call==null) throw new AxisFault("web service was not invoked yet");
     	SOAPEnvelope env = call.getResponseMessage().getSOAPEnvelope();
@@ -63,7 +64,7 @@ public class AxisUtil {
         env.addHeader(header);
     }
 
-	public static void addSOAPRequestHeader(RPCClient client, String namespace, String name, Object value, boolean mustUnderstand)  {
+	public static void addSOAPRequestHeader(WSClient client, String namespace, String name, Object value, boolean mustUnderstand) throws PageException  {
     	SOAPHeaderElement header=toSOAPHeaderElement(namespace,name,value);
         header.setMustUnderstand(mustUnderstand);
         client.addHeader(header);
@@ -95,7 +96,7 @@ public class AxisUtil {
 	
 
 	
-	private static MessageContext getMessageContext(RPCClient client) throws AxisFault {
+	private static MessageContext getMessageContext(WSClient client) throws AxisFault, PageException {
 		if(client!=null) {
 			Call call = client.getLastCall();
         	if(call==null) throw new AxisFault("web service was not invoked yet");

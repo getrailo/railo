@@ -57,7 +57,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
-
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
@@ -174,7 +173,7 @@ public abstract class ComponentPage extends PagePlus  {
             // GET
             else {
             	// WSDL
-                if(qs!=null && qs.trim().equalsIgnoreCase("wsdl")) {
+                if(qs!=null && (qs.trim().equalsIgnoreCase("wsdl") || qs.trim().startsWith("wsdl&"))) {
                     callWSDL(pc,component);
             		//close(pc);
                     return;

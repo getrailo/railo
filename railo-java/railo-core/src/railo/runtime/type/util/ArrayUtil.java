@@ -3,6 +3,7 @@ package railo.runtime.type.util;
 import java.sql.Types;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -179,11 +180,44 @@ public final class ArrayUtil {
 		}*/
 		return rtn;
 	}
-	
+
+	/**
+	 * median value of all items in the arrays, only works when all values are numeric
+	 *
+	 * @param array
+	 * @return
+	 * @throws ExpressionException
+	 */
+	public static double median(Array array) throws ExpressionException {
+
+		int len = array.size();
+
+		if (len == 0)			return 0;
+
+		if (array.getDimension() > 1)
+			throw new ExpressionException("Median() can only be calculated for one dimensional arrays");
+
+		double[] arr = new double[len];
+
+		for (int i=0; i < len; i++)
+			arr[i] = _toDoubleValue(array, i+1);
+
+		Arrays.sort(arr);
+
+		double result = arr[ len / 2 ];
+
+		if (len % 2 == 0) {
+
+			return ( result + arr[ (len-2) / 2 ] ) / 2;
+		}
+
+		return result;
+	}
+
 	private static double _toDoubleValue(Array array, int i) throws ExpressionException {
 		Object obj = array.get(i,null);
 		if(obj==null)throw new ExpressionException("there is no element at position ["+i+"] or the element is null");
-		double tmp = Caster.toDoubleValue(obj,Double.NaN);
+		double tmp = Caster.toDoubleValue(obj,true,Double.NaN);
 		if(Double.isNaN(tmp))
 			throw new CasterException(obj,Double.class);
 		return tmp;
@@ -443,7 +477,7 @@ public final class ArrayUtil {
 	    else if(o instanceof byte[])	{
 	        byte[] arr=((byte[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Byte(arr[index]=(byte)v);
 	            }
@@ -453,7 +487,7 @@ public final class ArrayUtil {
 	    else if(o instanceof short[])	{
 	        short[] arr=((short[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Short.valueOf(arr[index]=(short)v);
 	            }
@@ -463,7 +497,7 @@ public final class ArrayUtil {
 	    else if(o instanceof int[])	{
 	        int[] arr=((int[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Integer.valueOf(arr[index]=(int)v);
 	            }
@@ -473,7 +507,7 @@ public final class ArrayUtil {
 	    else if(o instanceof long[])	{
 	        long[] arr=((long[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Long.valueOf(arr[index]=(long)v);
 	            }
@@ -483,7 +517,7 @@ public final class ArrayUtil {
 	    else if(o instanceof float[])	{
 	        float[] arr=((float[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Float(arr[index]=(float)v);
 	            }
@@ -493,7 +527,7 @@ public final class ArrayUtil {
 	    else if(o instanceof double[])	{
 	        double[] arr=((double[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Double(arr[index]=v);
 	            }

@@ -71,7 +71,6 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
-
 import railo.runtime.type.cfc.ComponentEntryIterator;
 import railo.runtime.type.cfc.ComponentValueIterator;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
@@ -1277,7 +1276,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				UDFPlus udf = (UDFPlus)member;
 				if(udf.getReturnType()==CFTypes.TYPE_NUMERIC && udf.getFunctionArguments().length==0) {
 					try {
-						return Caster.toDoubleValue(_call(pc, KeyConstants.__toNumeric,udf, null, new Object[0]),defaultValue);
+						return Caster.toDoubleValue(_call(pc, KeyConstants.__toNumeric,udf, null, new Object[0]),true,defaultValue);
 					} catch (PageException e) {
 						return defaultValue;
 					}

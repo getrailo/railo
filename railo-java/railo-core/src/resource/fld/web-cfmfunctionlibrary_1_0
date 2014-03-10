@@ -100,6 +100,17 @@
 			<type>array</type>
 		</return>
 	</function>
+	<!-- _literalArray -->
+	<function>
+		<name>_literalArray</name>
+		<class>railo.runtime.functions.arrays.LiteralArray</class>
+		<status>hidden</status>
+		<description>internal function used for literal array defintion</description>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- _jsonArray -->
 	<function>
 		<name>_jsonArray</name>
@@ -155,6 +166,23 @@ All elements in the array must contain values that can be automatically converte
 			<type>array</type>
 			<required>Yes</required>
 			<description>The array to calculate the average values from</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	<!-- arrayMedian -->
+	<function>
+		<name>arrayMedian</name>
+		<class>railo.runtime.functions.arrays.ArrayMedian</class>
+		<member-name>median</member-name>
+		<description>Calculates the Median value of items in an array.
+All elements in the array must contain values that can be converted to numeric.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>The array of which to calculate the Median value</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -2817,16 +2845,14 @@ the following characters are pattern letters (case sensitive) representing the c
 - zzzz: General time zone as its full name (Example:Pacific Standard Time)
 - Z,..,ZZZZ: RFC 822 time zone (Example:-0800)
   
-The following masks tell how to format the full date and time and cannot be combined with other masks:
-- short: equivalent to m/d/y h:mm tt
-- medium: equivalent to mmm d, yyyy h:mm:ss tt
-- long: medium followed by three-letter time zone; as in, mmmm d, yyyy h:mm:ss tt zz
-- full: equivalent to dddd, mmmm d, yyyy h:mm:ss tt zz
-The function also follows Java date time mask. For details, see the section Date and Time Patterns on this page.
+The following masks can be used to format the full date and time and may not be combined with other masks:
+- short: equivalent to "m/d/y h:mm tt"
+- medium: equivalent to "mmm d, yyyy h:mm:ss tt"
+- long: medium followed by three-letter time zone; i.e. "mmmm d, yyyy h:mm:ss tt zzz"
+- full: equivalent to "dddd, mmmm d, yyyy h:mm:ss tt zz"
+- ISO8601: equivalent to "yyyy-mm-dd'T'HH:nn:ss'Z'Z"
 
-
-The function follows Java date time mask. 
-For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+The function follows Java date time mask.  For details, see the section Date and Time Patterns at http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 </description>
     </argument>
 		<argument>
@@ -5772,7 +5798,7 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
-	
+
 	<!-- GetLocalHostIP -->
 	<function>
 		<name>GetLocalHostIP</name>
@@ -11438,6 +11464,12 @@ The following things are considered to be empty:
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
 		</argument>
+		<argument>
+			<name>count</name>
+			<type>number</type>
+			<required>No</required>
+			<description>specifies how many items to return from the beginning of the list. default is 1.</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -11739,6 +11771,12 @@ The following things are considered to be empty:
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
 		</argument>
+		<argument>
+            <name>offset</name>
+            <type>number</type>
+            <required>No</required>
+            <description>specifies how many items to skip from the beginning of the list. default is 1.</description>
+        </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -14894,11 +14932,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>void</type>
 		</return>
 	</function>
-	
 	<!-- _jsonStruct -->
 	<function>
 		<name>_jsonStruct</name>
 		<class>railo.runtime.functions.struct.JsonStruct</class>
+		<status>hidden</status>
+		<description>internal function used as for literal json struct defintion.</description>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	<!-- _literalStruct -->
+	<function>
+		<name>_literalStruct</name>
+		<class>railo.runtime.functions.struct.LiteralStruct</class>
 		<status>hidden</status>
 		<description>internal function used as for literal struct defintion.</description>
 		<argument-type>dynamic</argument-type>
@@ -14906,7 +14955,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>struct</type>
 		</return>
 	</function>
-	<!-- _struct -->
+	<!-- struct -->
 	<function>
 		<name>struct</name>
 		<class>railo.runtime.functions.struct.Struct_</class>

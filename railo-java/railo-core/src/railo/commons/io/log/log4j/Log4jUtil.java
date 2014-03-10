@@ -20,6 +20,7 @@ import org.apache.log4j.xml.XMLLayout;
 
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.log.log4j.appender.ConsoleAppender;
 import railo.commons.io.log.log4j.appender.RollingResourceAppender;
 import railo.commons.io.log.log4j.appender.TaskAppender;

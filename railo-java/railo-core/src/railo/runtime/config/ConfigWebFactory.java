@@ -1,5 +1,7 @@
 package railo.runtime.config;
 
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,7 +68,6 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
 import railo.runtime.cache.eh.EHCache;
-
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
@@ -145,7 +146,6 @@ import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
-
 
 /**
  * 
@@ -1440,6 +1440,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				String virtual = el.getAttribute("virtual");
 				String listType = el.getAttribute("listener-type");
 				String listMode = el.getAttribute("listener-mode");
+				
 				boolean readonly = toBoolean(el.getAttribute("readonly"), false);
 				boolean hidden = toBoolean(el.getAttribute("hidden"), false);
 				boolean toplevel = toBoolean(el.getAttribute("toplevel"), true);
@@ -1448,7 +1449,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 				if(config instanceof ConfigServer && virtual.equalsIgnoreCase("/railo-server-context/")) {
 					hasRailoServerContext=true;
 				}
-
+				
 				// railo-context
 				if (virtual.equalsIgnoreCase("/railo-context/")) {
 					if (StringUtil.isEmpty(listType, true))
@@ -2747,6 +2748,11 @@ public final class ConfigWebFactory extends ConfigFactory {
 			if (!f.exists() || doNew)
 				createFileFromResourceEL("/resource/library/function/trace.cfm", f);
 
+			f = dir.getRealResource("queryExecute.cfm");
+			if (!f.exists() || doNew)
+				createFileFromResourceEL("/resource/library/function/queryExecute.cfm", f);
+
+			
 			f = dir.getRealResource("transactionCommit.cfm");
 			if (!f.exists() || doNew)
 				createFileFromResourceEL("/resource/library/function/transactionCommit.cfm", f);
@@ -4416,7 +4422,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 		int listenerMode = ConfigWebUtil.toListenerMode(application.getAttribute("listener-mode"), -1);
 		if (listenerMode == -1) {
 			if (hasCS)
-				listenerMode = configServer.getApplicationListener() == null ? ApplicationListener.MODE_CURRENT2ROOT : configServer.getApplicationListener().getMode();
+				listenerMode = 
+					configServer.getApplicationListener() == null ? 
+							ApplicationListener.MODE_CURRENT2ROOT : 
+							configServer.getApplicationListener().getMode();
 			else
 				listenerMode = ApplicationListener.MODE_CURRENT2ROOT;
 		}
