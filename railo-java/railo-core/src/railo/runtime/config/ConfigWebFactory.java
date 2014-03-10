@@ -145,7 +145,6 @@ import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
-import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 /**
  * 

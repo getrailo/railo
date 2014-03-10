@@ -18,8 +18,6 @@ import railo.runtime.cache.tag.udf.UDFArgConverter;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.SQL;
-import railo.runtime.exp.PageException;
-import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;

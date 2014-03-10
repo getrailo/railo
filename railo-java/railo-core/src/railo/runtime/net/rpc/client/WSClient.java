@@ -9,7 +9,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
@@ -22,13 +22,13 @@ public abstract class WSClient implements Objects, Iteratorable {
 		pc=ThreadLocalPageContext.get(pc);
 		if(pc!=null) {
 			Logger l = ((ConfigImpl)pc.getConfig()).getLogger("application", true);
-			ApplicationContextPro ac = (ApplicationContextPro) pc.getApplicationContext();
+			ApplicationContext ac = pc.getApplicationContext();
 			if(ac!=null) {
-				if(ApplicationContextPro.WS_TYPE_JAX_WS==ac.getWSType()) {
+				if(ApplicationContext.WS_TYPE_JAX_WS==ac.getWSType()) {
 					l.info("using JAX WS Client");
 					return new JaxWSClient(wsdlUrl, username, password, proxyData);
 				}
-				if(ApplicationContextPro.WS_TYPE_CXF==ac.getWSType()) {
+				if(ApplicationContext.WS_TYPE_CXF==ac.getWSType()) {
 					l.info("using CXF Client");
 					return new CXFClient(wsdlUrl, username, password, proxyData);
 				}

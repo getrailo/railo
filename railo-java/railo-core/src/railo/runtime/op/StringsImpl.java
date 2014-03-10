@@ -20,8 +20,8 @@ public class StringsImpl implements Strings {
 	}
 
 	@Override
-	public String toVariableName(String str, boolean addIdentityNumber) {
-		return StringUtil.toVariableName(str, addIdentityNumber);
+	public String toVariableName(String str, boolean addIdentityNumber,boolean allowDot) {
+		return StringUtil.toVariableName(str, addIdentityNumber,allowDot);
 	}
 
 	@Override

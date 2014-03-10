@@ -1075,7 +1075,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 		
 		// attributes
-		Attribute[] attrs = noAttrs?new Attribute[0] : attributes(tag,tlt,data,BRACKED,LitString.EMPTY,allowExpression,null,false,',',true);
+		Attribute[] attrs = noAttrs?new Attribute[0] : attributes(tag,tlt,data,BRACKED,data.factory.EMPTY(),allowExpression,null,false,',',true);
 		data.cfml.forwardIfCurrent(')');
 		
 		for(int i=0;i<attrs.length;i++){
@@ -1086,7 +1086,7 @@ int pos=data.cfml.getPos();
 	
 		// body
 		if(tlt.getHasBody()){
-			Body body=new BodyBase();
+			Body body=new BodyBase(data.factory);
 			boolean wasSemiColon=statement(data,body,context);
 			if(!wasSemiColon || !tlt.isBodyFree() || body.hasStatements())
 				tag.setBody(body);
@@ -1172,7 +1172,7 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(property,tlt,data,SEMI,	data.factory.NULL(),Boolean.FALSE,"name",true,NO_ATTR_SEP,false));
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	data.factory.NULL(),Boolean.FALSE,"name",true,NO_ATTR_SEP,false);
 
 		
 		checkSemiColonLineFeed(data,true,true,false);

@@ -14,7 +14,7 @@ public interface Strings {
      */
 	public String replace(String input, String find, String repl, boolean firstOnly, boolean ignoreCase);
 
-	public String toVariableName(String str, boolean addIdentityNumber);
+	public String toVariableName(String str, boolean addIdentityNumber, boolean allowDot);
 	
 	/**
 	 * return first element of the list

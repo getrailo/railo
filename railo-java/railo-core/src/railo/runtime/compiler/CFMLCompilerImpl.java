@@ -10,6 +10,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.BytecodeFactory;
 import railo.transformer.bytecode.Page;
@@ -52,8 +53,9 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 			
 			if(!classFileDirectory.exists()) classFileDirectory.mkdirs(); 
 			
+			Factory factory = BytecodeFactory.getInstance();
 	        try {
-	        	page = cfmlTransformer.transform(BytecodeFactory.getInstance(),config,source,tld,fld);
+	        	page = cfmlTransformer.transform(factory,config,source,tld,fld);
 	        	page.setSplitIfNecessary(false);
 	        	try {
 	        		barr = page.execute(source,classFile);
@@ -61,7 +63,7 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        	catch(RuntimeException re) {
 	        		String msg=StringUtil.emptyIfNull(re.getMessage());
 	        		if(StringUtil.indexOfIgnoreCase(msg, "Method code too large!")!=-1) {
-	        			page = cfmlTransformer.transform(config,source,tld,fld); // MUST a new transform is necessary because the page object cannot be reused, rewrite the page that reusing it is possible
+	        			page = cfmlTransformer.transform(factory,config,source,tld,fld); // MUST a new transform is necessary because the page object cannot be reused, rewrite the page that reusing it is possible
 	    	        	page.setSplitIfNecessary(true);
 	        			barr = page.execute(source,classFile);
 	        		}
@@ -70,22 +72,13 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 		        catch(ClassFormatError cfe) {
 		        	String msg=StringUtil.emptyIfNull(cfe.getMessage());
 		        	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
-		        		page = cfmlTransformer.transform(config,source,tld,fld); // MUST see above
+		        		page = cfmlTransformer.transform(factory,config,source,tld,fld); // MUST see above
 			        	page.setSplitIfNecessary(true);
 		        		barr = page.execute(source,classFile);
 		        	}
 		        	else throw cfe;
 		        }
-	        	
-	        	
-	        	
-	        	
-	        	
-	        	
-	        	
-	        	
-	        	
-	        	
+
 				IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		        return barr;
 			} 

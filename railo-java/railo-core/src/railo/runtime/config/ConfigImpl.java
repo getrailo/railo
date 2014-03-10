@@ -27,7 +27,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import railo.commons.digest.Hash;
-import railo.commons.digest.HashUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;

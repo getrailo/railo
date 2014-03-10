@@ -1,7 +1,6 @@
 package railo.runtime.db;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;

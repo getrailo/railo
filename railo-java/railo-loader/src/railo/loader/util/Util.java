@@ -291,7 +291,7 @@ public class Util {
 	 * @return
 	 */
 	public static String toVariableName(String str, boolean addIdentityNumber) {
-		return CFMLEngineFactory.getInstance().getStringUtil().toVariableName(str, addIdentityNumber);
+		return CFMLEngineFactory.getInstance().getStringUtil().toVariableName(str, addIdentityNumber,false);
 	}
 
 	/**

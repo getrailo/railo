@@ -1076,7 +1076,7 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    	expr=transfomer.transform(data.factory,data.page,data.epdata.tlibs,,data.flibs,data.scriptTags,data.cfml,data.settings);
+			    	expr=transfomer.transform(data.factory,data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings);
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;

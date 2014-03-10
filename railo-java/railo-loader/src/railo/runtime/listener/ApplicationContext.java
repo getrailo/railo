@@ -24,6 +24,12 @@ import railo.runtime.type.dt.TimeSpan;
  */
 public interface ApplicationContext extends Serializable {
 	
+
+	public static final short WS_TYPE_AXIS1=1;
+	public static final short WS_TYPE_AXIS2=2;
+	public static final short WS_TYPE_JAX_WS=4;
+	public static final short WS_TYPE_CXF=8;
+	
     public static final int SCRIPT_PROTECT_NONE = 0;
     public static final int SCRIPT_PROTECT_FORM = 1;
     public static final int SCRIPT_PROTECT_URL = 2;
@@ -256,5 +262,8 @@ public interface ApplicationContext extends Serializable {
 
 	public boolean getSuppressContent();
 	public void setSuppressContent(boolean suppressContent);
+	
+	public short getWSType();
+	public void setWSType(short wstype);
 	
 }
