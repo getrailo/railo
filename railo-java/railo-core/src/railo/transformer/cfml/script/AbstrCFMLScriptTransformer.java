@@ -134,6 +134,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 
 	private static final Expression NULL = LitString.toExprString("NULL"); 
 	private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string");
+	private static final char NO_ATTR_SEP = 0;
 	
 	/** 
 	 * Liest saemtliche Statements des CFScriptString ein. 
@@ -818,7 +819,7 @@ int pos=data.cfml.getPos();
 				}
 				
 				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false,',',true);
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false,NO_ATTR_SEP,true);
 				Attribute _attr;
 				if(!ArrayUtil.isEmpty(_attrs)){
 					if(meta==null) meta=new HashMap<String, Attribute>();
@@ -868,7 +869,7 @@ int pos=data.cfml.getPos();
 		comments(data);
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false,',',true);
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false,NO_ATTR_SEP,true);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -1182,7 +1183,7 @@ int pos=data.cfml.getPos();
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
-		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true,',',false);
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true,NO_ATTR_SEP,false);
 		
 		checkSemiColonLineFeed(data,true,true,false);
 
@@ -1820,14 +1821,10 @@ int pos=data.cfml.getPos();
 			String ignoreAttrReqFor, boolean allowTwiceAttr, char attributeSeparator,boolean allowColonAsNameValueSeparator) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
-		
 		while(data.cfml.isValidIndex())	{
 			data.cfml.removeSpace();
-			//if(data.cfml.forwardIfCurrent(','))
-			//	data.cfml.removeSpace();
 			// if no more attributes break
 			if(endCond.isEnd(data)) break;
-			//if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
 			Attribute attr = attribute(tlt,data,ids,defaultValue,oAllowExpression, allowTwiceAttr,allowColonAsNameValueSeparator);
 			attrs.add(attr);
 			

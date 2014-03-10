@@ -1,5 +1,7 @@
 package railo.runtime.db;
 
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -30,7 +32,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.util.CollectionUtil;
-import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 /**
  * class to reexecute queries on the resultset object inside the cfml enviroment

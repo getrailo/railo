@@ -21,7 +21,6 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ClassicApplicationContext;
-import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Struct;
@@ -385,11 +384,11 @@ public final class Application extends TagImpl {
 	}
 	
 	public void setCustomtagpaths(Object mappings) throws PageException	{
-	    this.customTagMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings);
+	    this.customTagMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings,getSource());
 	}
 	
 	public void setComponentpaths(Object mappings) throws PageException	{
-	    this.componentMappings=AppListenerUtil.toComponentMappings(pageContext.getConfig(), mappings);
+	    this.componentMappings=AppListenerUtil.toComponentMappings(pageContext.getConfig(), mappings,getSource());
 	}
 	
 

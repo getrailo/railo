@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
@@ -47,7 +46,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFCustomType;
-
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.KeyConstants;
@@ -673,7 +671,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
-			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,ctmappings);
+			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,getSource(),ctmappings);
 			initCTMappings=true; 
 		}
 		return ctmappings;
@@ -683,7 +681,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,getSource(),cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;

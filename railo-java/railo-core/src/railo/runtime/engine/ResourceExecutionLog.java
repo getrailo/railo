@@ -64,7 +64,7 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 			}
 			else {
 				try {
-					dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false);
+					dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false,false);
 					if(!dir.exists()){
 						dir.createDirectory(true);
 					}

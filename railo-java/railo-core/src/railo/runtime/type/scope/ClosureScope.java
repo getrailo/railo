@@ -11,7 +11,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class ClosureScope extends ScopeSupport implements Variables {

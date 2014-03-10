@@ -71,7 +71,6 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
-
 import railo.runtime.type.cfc.ComponentEntryIterator;
 import railo.runtime.type.cfc.ComponentValueIterator;
 import railo.runtime.type.comparator.ArrayOfStructComparator;

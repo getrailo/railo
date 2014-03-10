@@ -2,7 +2,6 @@ package railo.runtime;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
@@ -11,7 +10,6 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 public interface ComponentPro extends Component {
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly);

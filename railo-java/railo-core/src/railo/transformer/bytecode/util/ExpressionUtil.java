@@ -8,7 +8,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
@@ -20,7 +19,6 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.ExpressionAsStatement;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 

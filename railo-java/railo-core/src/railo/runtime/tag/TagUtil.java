@@ -24,7 +24,6 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;

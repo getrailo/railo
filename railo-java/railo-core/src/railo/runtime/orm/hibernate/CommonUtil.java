@@ -30,7 +30,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -54,7 +53,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
-
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.util.ListUtil;

@@ -13,7 +13,7 @@ public class DirectoryRename {
 		return call(pc, oldPath, newPath, true);
 	}
 	public static String call(PageContext pc , String oldPath,String newPath, boolean createPath) throws PageException {
-		Resource dir=ResourceUtil.toResourceNotExisting(pc, oldPath,pc.getConfig().allowRealPath());
+		Resource dir=ResourceUtil.toResourceNotExisting(pc, oldPath);
 		Directory.actionRename(pc, dir, newPath, null,createPath, S3Constants.ACL_PUBLIC_READ, S3Constants.STORAGE_UNKNOW);
 		return null;
 	}

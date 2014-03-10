@@ -2,7 +2,6 @@ package railo.runtime;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.component.Member;
@@ -17,11 +16,8 @@ import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
-import railo.runtime.type.Collection.Key;
-
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentProUtil;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
 public final class ComponentSpecificAccess extends StructSupport implements ComponentPro, Objects {

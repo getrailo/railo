@@ -20,7 +20,6 @@ import railo.commons.sql.SQLUtil;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheItem;
-import railo.runtime.cache.tag.query.QueryCacheItem;
 import railo.runtime.cache.tag.query.StoredProcCacheItem;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
@@ -49,7 +48,6 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.KeyConstants;
 

@@ -41,6 +41,13 @@ public class ComponentFactory {
 		deploy(testDir,testPath,doNew,"RailoTestSuiteRunner");
 		deploy(testDir,testPath,doNew,"RailoTestCase");
 		}
+		// reporter
+		{
+		Resource repDir = dir.getRealResource("test/reporter");
+		String repPath = path+"test/reporter/";
+		if(!repDir.exists())repDir.mkdirs();
+		deploy(repDir,repPath,doNew,"HTMLReporter");
+		}
 		
 	}
 

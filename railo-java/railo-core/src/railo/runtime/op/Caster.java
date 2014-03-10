@@ -73,9 +73,8 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.Pojo;
-import railo.runtime.net.rpc.PojoIterator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -89,12 +88,10 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.CollectionStruct;
-import railo.runtime.type.CustomType;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -3417,15 +3414,8 @@ public final class Caster {
         	}        	
         	return trg;	
         }
-        
-        
-        if(o instanceof Component) {
-            Component comp=((Component)o);
-            if(comp.instanceOf(type)) return o;
-            // neo batch
-            throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
-        }
-        throw new CasterException(o,type);
+
+    	return _castTo(pc, type, o);
     }
 
 	public static String toZip(Object o) throws PageException {
@@ -3533,10 +3523,20 @@ public final class Caster {
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
 
+    	return _castTo(pc, strType, o);
+    }   
+    
+    private static Object _castTo(PageContext pc, String strType, Object o) throws PageException {
+
         if(o instanceof Component) {
             Component comp=((Component)o);
             if(comp.instanceOf(strType)) return o;
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
+        }
+        if(o instanceof Pojo) {
+        	Component cfc = AxisCaster.toComponent(pc,((Pojo)o),strType,null);
+        	if(cfc!=null) return cfc;
+        	throw new ExpressionException("can't cast Pojo of Type ["+o.getClass().getName()+"] to ["+strType+"]");
         }
         
         if(strType.endsWith("[]") && Decision.isArray(o)){
@@ -3563,19 +3563,8 @@ public final class Caster {
 	    	}
 	    	
 	    }
-
-	    /* custom type (disabled for the moment)
-        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
-        if(ct!=null) {
-        	Object obj= ct.convert(pc,o,Null.NULL);
-        	if(obj!=Null.NULL) return obj;
-        }
-        */
-
-
-	    
         throw new CasterException(o,strType);
-    }   
+    }
     
     /**
      * cast a value to a value defined by type argument
@@ -3806,19 +3795,7 @@ public final class Caster {
         return defaultValue;
     }
     
-    public static Component toComponent(PageContext pc, Pojo pojo, String compPath , Component defaultValue) {
-        try {
-			pc.loadComponent(compPath);
-			Iterator<Object> it=new PojoIterator(pojo);
-			//print.e("-----> "+pojo.getClass().getName());
-			while(it.hasNext()){
-				it.next();
-				//print.e("->"+it.next());
-			}
-		}
-		catch (PageException e) {}
-    	return defaultValue;
-    }
+    
     
     /**
      * cast a Object to a Collection, if not returns null
@@ -4187,7 +4164,7 @@ public final class Caster {
 		if(src instanceof String) {
 			if(existing)
 				return ResourceUtil.toResourceExisting(pc, (String)src,allowRealpath);
-			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath);
+			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath,false);
 		}
 		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
         throw new CasterException(src,"Resource");

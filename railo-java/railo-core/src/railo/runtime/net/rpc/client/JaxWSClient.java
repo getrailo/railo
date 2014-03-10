@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.wsdl.Binding;
-import javax.wsdl.BindingInput;
 import javax.wsdl.BindingOperation;
 import javax.wsdl.Definition;
 import javax.wsdl.Input;
@@ -15,17 +14,16 @@ import javax.wsdl.Message;
 import javax.wsdl.Operation;
 import javax.wsdl.Part;
 import javax.wsdl.Port;
+import javax.wsdl.Service;
 import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
-import javax.wsdl.Service;
 import javax.xml.namespace.QName;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPHeaderElement;
 
-import railo.print;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -39,9 +37,8 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.op.Caster;
-import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
 public class JaxWSClient extends WSClient {
@@ -309,11 +306,6 @@ public class JaxWSClient extends WSClient {
         	if(en!=null) {
         		type=en;
         		Types types = wsdl.getTypes();
-
-        		print.e(types.getExtensibilityElements());
-        		print.e(types.getDocumentationElement());
-        		//print.e(types.getExtensionAttributes());
-        		//print.e(types.getNativeAttributeNames());
         	}
         	else 
         		type= p.getTypeName();

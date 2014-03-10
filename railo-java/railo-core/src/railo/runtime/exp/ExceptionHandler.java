@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.ExceptionUtil;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;

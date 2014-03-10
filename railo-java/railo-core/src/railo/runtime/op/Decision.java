@@ -21,7 +21,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.i18n.FormatUtil;
@@ -37,6 +36,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.mail.MailUtil;
+import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
@@ -195,10 +195,6 @@ public final class Decision {
 		if(!Decision.isValid(dbl)) return false;
 		int i=(int)dbl;
 		return i==dbl;		
-	}
-	
-	public static void main(String[] args) {
-		print.e(isInteger("1 5",false));
 	}
 
 	 /** tests if String value is Hex Value
@@ -1277,23 +1273,33 @@ public final class Decision {
                 break;
            }
         }
+        return _isCastableTo(null,type, o);
+    }
+    
+
+    private static boolean _isCastableTo(PageContext pcMaybeNull,String type, Object o) {
         if(o instanceof Component) {
             Component comp=((Component)o);
             return comp.instanceOf(type);
         }
+        if(o instanceof Pojo) {
+        	pcMaybeNull = ThreadLocalPageContext.get(pcMaybeNull);
+			return pcMaybeNull!=null && AxisCaster.toComponent(pcMaybeNull,((Pojo)o),type,null)!=null;
+        }
+        
         if(isArrayType(type) && isArray(o)){
-        	String t=type.substring(0,type.length()-2);
+        	String _strType=type.substring(0,type.length()-2);
+        	short _type=CFTypes.toShort(_strType, false, (short)-1);
         	Array arr = Caster.toArray(o,null);
         	if(arr!=null){
         		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(t, it.next(), alsoAlias,alsoPattern,-1))
-        				return false;
-        			
+        			Object obj = it.next();
+        			if(!isCastableTo(pcMaybeNull,_type,_strType, obj))
+        				return false; 
         		}
         		return true;
         	}
-        	
         }
 		return false;
     }
@@ -1325,38 +1331,7 @@ public final class Decision {
         case CFTypes.TYPE_XML:          return isXML(o);
 		}
 		
-		if(o instanceof Component) {
-        	Component comp=((Component)o);
-            return comp.instanceOf(strType);
-        }
-		print.e("name:"+o.getClass().getName());
-		if(o instanceof Pojo) {
-			// try to convert POJO to A CFC
-			Pojo pojo=((Pojo)o);
-			Component cfc = Caster.toComponent(pc,pojo,strType,null);
-			
-            //return comp.instanceOf(strType);
-        }
-        if(isArrayType(strType) && isArray(o)){
-        	String _strType=strType.substring(0,strType.length()-2);
-        	short _type=CFTypes.toShort(_strType, false, (short)-1);
-        	Array arr = Caster.toArray(o,null);
-        	if(arr!=null){
-        		Iterator<Object> it = arr.valueIterator();
-        		while(it.hasNext()){
-        			Object obj = it.next();
-        			if(!isCastableTo(pc,_type,_strType, obj))
-        				return false;
-        		}
-        		return true;
-        	}
-        	
-        }
-        
-        /* custom type (disabled for the moment)
-        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
-        return ct!=null && ct.convert(pc,o,Null.NULL)!=Null.NULL;*/
-        return false;
+		return _isCastableTo(pc,strType, o);
 	}
 
     public synchronized static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {

@@ -1,5 +1,8 @@
 package railo.commons.lang;
 
+import static railo.commons.io.SystemUtil.ERR;
+import static railo.commons.io.SystemUtil.OUT;
+
 import java.io.PrintWriter;
 import java.util.Date;
 
@@ -7,9 +10,6 @@ import railo.commons.io.SystemUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
-
-import static railo.commons.io.SystemUtil.ERR;
-import static railo.commons.io.SystemUtil.OUT;
 
 public final class SystemOut {
 

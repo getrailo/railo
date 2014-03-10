@@ -1,8 +1,8 @@
 <cfcomponent output="false">
-	<cfproperty name="name" type="string" />
+	<cfproperty name="itemkey" type="string" />
 
 	<cffunction name="init">
-		<cfargument name="name">
-		<cfset variables.name=arguments.name>
+		<cfargument name="itemkey">
+		<cfset variables.itemkey=arguments.itemkey>
 	</cffunction>
 </cfcomponent>

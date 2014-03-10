@@ -6,28 +6,20 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 
 import railo.commons.io.IOUtil;
-import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
@@ -46,7 +38,6 @@ import railo.runtime.type.scope.URLImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.util.ScopeUtil;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.util.EnumerationWrapper;
 
 /**

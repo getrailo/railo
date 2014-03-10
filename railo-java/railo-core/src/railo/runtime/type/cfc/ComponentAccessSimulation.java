@@ -1,32 +1,5 @@
 package railo.runtime.type.cfc;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import railo.commons.lang.types.RefBoolean;
-import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
-import railo.runtime.ComponentPage;
-import railo.runtime.ComponentScope;
-import railo.runtime.PageContext;
-import railo.runtime.PageSource;
-import railo.runtime.component.InterfaceCollection;
-import railo.runtime.component.Member;
-import railo.runtime.component.Property;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
-import railo.runtime.type.UDFPlus;
-import railo.runtime.type.UDFProperties;
-import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.Variables;
 
 public class ComponentAccessSimulation {//implements ComponentAccess {
 	/*

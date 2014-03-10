@@ -1,26 +1,18 @@
 package railo.runtime.cache.tag.udf;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
-import railo.runtime.PageContext;
-import railo.runtime.converter.ConverterException;
-import railo.runtime.converter.ConverterSupport;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
-import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.SimpleValue;
-import railo.runtime.type.Struct;
 
 public class UDFArgConverter {
 

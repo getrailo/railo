@@ -10,7 +10,6 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;

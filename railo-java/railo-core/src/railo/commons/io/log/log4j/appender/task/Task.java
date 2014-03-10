@@ -3,7 +3,6 @@ package railo.commons.io.log.log4j.appender.task;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.LoggingEvent;
 
-import railo.print;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.config.Config;

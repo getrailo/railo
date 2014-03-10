@@ -5,9 +5,7 @@ package railo.runtime.functions.other;
 
 import java.util.Set;
 
-import railo.print;
 import railo.commons.digest.HashUtil;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;

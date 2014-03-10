@@ -1,5 +1,7 @@
 package railo.runtime.config;
 
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -25,6 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import railo.commons.digest.Hash;
+import railo.commons.digest.HashUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -125,7 +128,6 @@ import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import flex.messaging.config.ConfigMap;
-import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 
 /**
@@ -262,9 +264,6 @@ public abstract class ConfigImpl implements Config {
     private Mapping[] mappings=new Mapping[0];
     private Mapping[] customTagMappings=new Mapping[0];
     private Mapping[] componentMappings=new Mapping[0];
-    
-    
-	private Map<String,Mapping> customTagAppMappings=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 
     private SchedulerImpl scheduler;
     
@@ -895,9 +894,11 @@ public abstract class ConfigImpl implements Config {
         return null;
     }
     
-
-    
     public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+    	return getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping, false);
+    }
+    
+    public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean useComponentMappings) {
         realPath=realPath.replace('\\','/');
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
@@ -939,7 +940,7 @@ public abstract class ConfigImpl implements Config {
         }
         
         // component mappings (only used for gateway)
-        if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
+        if(useComponentMappings || (pc!=null && ((PageContextImpl)pc).isGatewayContext())) {
         	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
@@ -1068,7 +1069,7 @@ public abstract class ConfigImpl implements Config {
         if(this instanceof ConfigWebImpl) {
         	Resource parent = res.getParentResource();
         	if(parent!=null && !parent.equals(res)) {
-        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath());
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("application","/", parent.getAbsolutePath(),null,true,false);
         		return m.getPageSource(res.getName());
         	}
         }
@@ -3109,21 +3110,6 @@ public abstract class ConfigImpl implements Config {
 
 	public ORMConfiguration getORMConfig() {
 		return ormConfig;
-	}
-
-	public Mapping createCustomTagAppMappings(String virtual, String physical) {
-		Mapping m=customTagAppMappings.get(physical.toLowerCase());
-		
-		if(m==null){
-			m=new MappingImpl(
-				this,virtual,
-				physical,
-				null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
-				);
-			customTagAppMappings.put(physical.toLowerCase(),m);
-		}
-		
-		return m;
 	}
 
 

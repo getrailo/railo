@@ -18,17 +18,14 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.ImportDefintionImpl;
-import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -363,36 +360,31 @@ public final class Page extends BodyBase {
 	private static final String SUB_CALL_UDF = "_";
 	private static final int DEFAULT_VALUE = 3;
 		
-    private int version;
-    private long lastModifed;
-    private String name;
-    
-    //private Body body=new Body();
-	private Resource source;
+    private final int version;
+    private final long lastModifed;
+    private final boolean _writeLog;
+	private final String name;
+    private final boolean suppressWSbeforeArg;
+	private final PageSource pageSource;
+	
 	private boolean isComponent;
 	private boolean isInterface;
 
-	private List<IFunction> functions=new ArrayList<IFunction>();
-	private List<TagThread> threads=new ArrayList<TagThread>();
-	private boolean _writeLog;
-	private boolean suppressWSbeforeArg;
+	private ArrayList<IFunction> functions=new ArrayList<IFunction>();
+	private ArrayList<TagThread> threads=new ArrayList<TagThread>();
 	private Resource staticTextLocation;
-	private int len;
-	private int off;
+	private  int off;
 	private int methodCount=0;
 	//private final Config config;
-	private PageSource pageSource;
 	private boolean splitIfNecessary;
     
 	
 	
     public Page(PageSource pageSource,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean suppressWSbeforeArg) {
     	name=name.replace('.', '/');
-    	//body.setParent(this);
-        this.name=name;
+    	this.name=name;
         this.version=version;
         this.lastModifed=lastModifed;
-        this.source=source;
         
         this._writeLog=writeLog;
         this.suppressWSbeforeArg=suppressWSbeforeArg;
@@ -407,6 +399,25 @@ public final class Page extends BodyBase {
      * @throws TemplateException 
      */
     public byte[] execute(PageSource source,Resource classFile) throws BytecodeException {
+    	/*
+    	// this is done that the Page can be executed more than once
+    	if(initFunctions==null)
+    		initFunctions=(ArrayList<IFunction>) functions.clone();
+    	else
+    		functions=initFunctions;
+    	if(initThreads==null)
+    		initThreads=(ArrayList<TagThread>) threads.clone();
+    	else
+    		threads=initThreads;
+    	methodCount=0;
+    	off=0;
+    	staticTextLocation=null;
+    	
+    	
+    	print.e(this.functions);
+    	print.e(this.threads);*/
+    	
+    	
     	Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
         
     	List<LitString> keys=new ArrayList<LitString>();
@@ -1424,7 +1435,6 @@ public final class Page extends BodyBase {
 			if(it.next() instanceof FunctionImpl)indexes[IFunction.ARRAY_INDEX]++;
 		}
 		indexes[IFunction.VALUE_INDEX]=functions.size();
-		
 		functions.add(function);
 		return indexes;
 	}

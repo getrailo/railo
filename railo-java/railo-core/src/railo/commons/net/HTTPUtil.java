@@ -27,7 +27,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
-import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageServletException;

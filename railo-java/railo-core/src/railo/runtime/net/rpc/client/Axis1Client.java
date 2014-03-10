@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -41,7 +42,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import railo.commons.digest.HashUtil;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -194,56 +197,63 @@ final class Axis1Client extends WSClient {
     private Object _callMethod(PageContext pc,Config secondChanceConfig,String methodName, Struct namedArguments,Object[] arguments) throws PageException, ServiceException, RemoteException {
         
 		javax.wsdl.Service service = getWSDLService();
-		
-		Service axisService = null;
-		axisService = new Service(parser, service.getQName());
+		Service axisService = new Service(parser, service.getQName());
 		TypeMappingUtil.registerDefaults(axisService.getTypeMappingRegistry());
-		
-		
 		Port port = WSUtil.getSoapPort(service);
 		
 		Binding binding = port.getBinding();
         
-        Parameters parameters = null;
-		Parameter p = null;
-		SymbolTable symbolTable = parser.getSymbolTable();
+        SymbolTable symbolTable = parser.getSymbolTable();
 		BindingEntry bEntry = symbolTable.getBindingEntry(binding.getQName());
 		
-		Iterator itr = bEntry.getParameters().keySet().iterator();
-		Operation tmpOp = null;
+		
+
+		// get matching operation/method
+		Iterator<Entry<Operation,Parameters>> itr = bEntry.getParameters().entrySet().iterator();
 		Operation operation = null;
+		Entry<Operation,Parameters> e;
+		Parameters parameters = null;
 		while(itr.hasNext())  {
-			tmpOp = (Operation)itr.next();	
-            if(tmpOp.getName().equalsIgnoreCase(methodName)) {
-				operation = tmpOp;
-				parameters = (Parameters)bEntry.getParameters().get(tmpOp);
+			e=itr.next();
+			if(e.getKey().getName().equalsIgnoreCase(methodName)) {
+				operation = e.getKey();
+				parameters = e.getValue();
                 break;
 			}
 		}
-		if(operation == null || parameters == null)
-			throw new RPCException("Cannot locate method " + methodName + " in webservice " + wsdlUrl);
 		
-        org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(tmpOp.getName()));
+		// no operation found!
+		if(operation == null || parameters == null) {
+			// get array of existing methods
+			Set<Operation> set = bEntry.getParameters().keySet();
+			Iterator<Operation> it = set.iterator();
+			Collection.Key[] keys=new Collection.Key[set.size()];
+			int index=0;
+			while(it.hasNext())  {
+				keys[index++]=KeyImpl.init(it.next().getName());
+			}
+			throw new RPCException(ExceptionUtil.similarKeyMessage(keys, methodName, "method/operation", "methods/operations", true) +" Webservice: " + wsdlUrl);
+		}
+		
+        org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(operation.getName()));
         
         if(!StringUtil.isEmpty(username,true)){
         	call.setUsername(username);
 	        call.setPassword(password);
         }
         
-        org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
-        	axisService.getTypeMappingRegistry().getDefaultTypeMapping();
-        //TypeMappingRegistry reg=(TypeMappingRegistry) axisService.getTypeMappingRegistry();
         
-        //tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-        tm=call.getMessageContext().getTypeMapping();
-        
+        org.apache.axis.encoding.TypeMapping tm=call.getMessageContext().getTypeMapping();
+
         Vector<String> inNames = new Vector<String>();
 		Vector<Parameter> inTypes = new Vector<Parameter>();
 		Vector<String> outNames = new Vector<String>();
 		Vector<Parameter> outTypes = new Vector<Parameter>();
+		Parameter p = null;
 		for(int j = 0; j < parameters.list.size(); j++) {
 			p = (Parameter)parameters.list.get(j);
-			map(pc,secondChanceConfig,call,tm,p.getType());
+			
+			map(pc,secondChanceConfig,call,tm,p);
 			switch(p.getMode()) {
             case Parameter.IN:
                 inNames.add(p.getQName().getLocalPart());
@@ -265,22 +275,25 @@ final class Axis1Client extends WSClient {
 		// set output type
 		if (parameters.returnParam != null) {
         	QName rtnQName = parameters.returnParam.getQName();
-        	TypeEntry rtnType = parameters.returnParam.getType();
-        	map(pc,secondChanceConfig,call,tm,rtnType);
+        	//TypeEntry rtnType = parameters.returnParam.getType();
+        	
+        	map(pc,secondChanceConfig,call,tm,parameters.returnParam);
             outNames.add(rtnQName.getLocalPart());
             outTypes.add(parameters.returnParam);
             
         }
-        
-        
-        
-        //Iterator it = outTypes.iterator();
-       
-        // check arguments
-        Object[] inputs = new Object[inNames.size()];
+		
+		// get timezone
         TimeZone tz;
 		if(pc==null)tz=ThreadLocalPageContext.getTimeZone(secondChanceConfig);
 		else tz=ThreadLocalPageContext.getTimeZone(pc);
+		
+
+        // check arguments
+        Object[] inputs = new Object[inNames.size()];
+        
+        
+		
         if(arguments!=null) {
     		if(inNames.size() != arguments.length)
     			throw new RPCException("Invalid arguments count for operation " + methodName+" ("+arguments.length+" instead of "+inNames.size()+")");
@@ -308,7 +321,6 @@ final class Axis1Client extends WSClient {
                 inputs[pos]=getArgumentData(tm,tz, p, arg);
             }
         }
-        
         Object ret=null;
         
      // add header
@@ -323,7 +335,6 @@ final class Axis1Client extends WSClient {
         	try {
 	        	Proxy.start(proxyData);
 	    		ret = call.invoke(inputs);
-	    		//ret = invoke(call,inputs);
 	        	
 	        }
 	        finally {
@@ -333,8 +344,7 @@ final class Axis1Client extends WSClient {
         else {
         	ret = call.invoke(inputs);
         }
-		last=call;
-		
+        last=call;
 		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
 		Map outputs = call.getOutputParams();
@@ -354,29 +364,30 @@ final class Axis1Client extends WSClient {
 		return sct;
 	}
     
-	private void map(PageContext pc, Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+	private void map(PageContext pc, Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, Parameter param) throws PageException {
+		TypeEntry type=param.getType();
 		Vector els = type.getContainedElements();
+
 		
 		if(els==null) mapSimple(tm, type);
         else {
         	// class is already registed
         	Class rtnClass=tm.getClassForQName(type.getQName());
         	if(rtnClass!=null && rtnClass.getName().equals(getClientClassName(type))) return;
-        	
-        	
-        	ClassLoader cl=null;
+
+			ClassLoader cl=null;
 			try {
 				if(pc==null)cl = secondChanceConfig.getRPCClassLoader(false);
 				else cl = ((PageContextImpl)pc).getRPCClassLoader(false);
-			} catch (IOException e) {}
+			} 
+			catch (IOException e) {}
 			
-        	Class cls = mapComplex(pc,secondChanceConfig,call,tm, type);   
-        	// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
-    		if(cls!=null && cl!=cls.getClassLoader()){
-    			mapComplex(pc,secondChanceConfig,call,tm, type); 
-        	}
-    		
-        }
+			Class cls = mapComplex(pc,secondChanceConfig,call,tm, type);
+			// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
+			if(cls!=null && cl!=cls.getClassLoader()){
+				mapComplex(pc,secondChanceConfig,call,tm, type); 
+			}
+		}
 	}
 	
 	private Class mapComplex(PageContext pc,Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
@@ -435,19 +446,13 @@ final class Axis1Client extends WSClient {
 	}
 	
 	private String getClientClassName(TypeEntry type) {
-		String className=StringUtil.toVariableName(type.getQName().getLocalPart());
-		
+		String className=StringUtil.toJavaClassName(type.getQName().getLocalPart());
 		String url=urlToClass(wsdlUrl);
 		String ns = type.getQName().getNamespaceURI();
-		//if(props!=null){String p = ASMUtil.createMD5(props);
-		//print.e("p:"+p);}
-		// has namespace 
-		if(ns!=null && !"http://DefaultNamespace".equalsIgnoreCase(ns)){
-			ns=StringUtil.replace(ns, "http://", "", true);
-			ns=toClassName(ns,true);
-			if(!StringUtil.isEmpty(ns)) return ns+"."+className;
-		}
-		return url+"."+className;
+		String prefix = Long.toString(HashUtil.create64BitHash(url+":"+ns),Character.MAX_RADIX);
+		char c=prefix.charAt(0);
+		if(c>='0' && c<='9') prefix="a"+prefix;
+		return prefix+"."+className;
 	} 
 
 	private static String urlToClass(String wsdlUrl) {
@@ -581,8 +586,7 @@ final class Axis1Client extends WSClient {
 
 	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
-		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg,null);
-        return o;
+		return AxisCaster.toAxisType(tm,tz,paramType,arg,null);
 	}
 
 	@Override

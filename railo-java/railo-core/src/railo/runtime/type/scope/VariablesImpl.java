@@ -1,6 +1,5 @@
 package railo.runtime.type.scope;
 
-import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 

@@ -14,7 +14,7 @@ import railo.commons.collection.MapPro;
 import railo.commons.collection.MapProWrapper;
 import railo.commons.collection.SyncMap;
 import railo.commons.collection.WeakHashMapPro;
-import railo.commons.lang.CFTypes;
+import railo.commons.digest.HashUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -31,8 +31,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.comparator.TextComparator;
-import railo.transformer.library.function.FunctionLibFunction;
-import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
  * 
@@ -82,10 +80,10 @@ public final class StructUtil {
 	}
 
 	public static void putAll(Struct struct, Map map) {
-		Iterator it = map.entrySet().iterator();
+		Iterator<Entry> it = map.entrySet().iterator();
 		Map.Entry entry;
 		while(it.hasNext()) {
-			entry=(Entry) it.next();
+			entry= it.next();
 			struct.setEL(KeyImpl.toKey(entry.getKey(),null), entry.getValue());
 		}
 	}
@@ -274,4 +272,20 @@ public final class StructUtil {
     	if(m instanceof MapProWrapper) return Struct.TYPE_SOFT;
     	return Struct.TYPE_REGULAR;
     }
+
+    /**
+     * creates a hash based on the keys of the Map/Struct
+     * @param map
+     * @return 
+     */
+	public static String keyHash(Struct sct) {
+		Key[] keys;
+		Arrays.sort(keys=CollectionUtil.keys(sct));
+		
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<keys.length;i++){
+			sb.append(keys[i].getString()).append(';');
+		}
+		return Long.toString(HashUtil.create64BitHash(sb),Character.MAX_RADIX);
+	}
 }
