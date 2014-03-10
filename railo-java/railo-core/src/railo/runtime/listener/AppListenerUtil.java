@@ -355,7 +355,7 @@ public final class AppListenerUtil {
 		
 		try {
 			return toMappings(cw,"component", o,true,source);
-		} catch (Throwable t) {print.e(t);
+		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
