@@ -642,7 +642,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
 
-        // lazy connection
+        // lazy statements
         if(lazyStats!=null && !lazyStats.isEmpty()){
         	java.util.Iterator<Statement> it = lazyStats.iterator();
         	while(it.hasNext())	{
