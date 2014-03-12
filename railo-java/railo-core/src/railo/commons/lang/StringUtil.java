@@ -129,26 +129,65 @@ public final class StringUtil {
 	public static String escapeHTML(String html) {
 		return HTMLEntities.escapeHTML(html);
 	}
-	
+
 	/**
 	 * escapes JS sensitive characters
 	 * @param str String to escape
 	 * @return escapes String
 	 */
 	public static String escapeJS(String str) {
+		return escapeJS(str, true);
+	}
+
+	/**
+	 * escapes JS sensitive characters
+	 * @param str String to escape
+	 * @param escapeNoneUSAscci escape all us ascci characters
+	 * @return escapes String
+	 */
+	public static String escapeJS(String str, boolean escapeNoneUSAscci) {
 		char[] arr=str.toCharArray();
 		StringBuilder rtn=new StringBuilder(arr.length);
 		for(int i=0;i<arr.length;i++) {
-			switch(arr[i]) {
-				case '\\': rtn.append("\\\\"); break;
-				case '\n': rtn.append("\\n"); break;
-				case '\r': rtn.append("\\r"); break;
-				case '\f': rtn.append("\\f"); break;
-				case '\b': rtn.append("\\b"); break;
-				case '\t': rtn.append("\\t"); break;
-				case '"' : rtn.append("\\\""); break;
-				case '\'': rtn.append("\\\'"); break;
-				default : rtn.append(arr[i]); break;
+			if(arr[i] < 128){
+				switch(arr[i]) {
+					case '\\': rtn.append("\\\\"); break;
+					case '\n': rtn.append("\\n"); break;
+					case '\r': rtn.append("\\r"); break;
+					case '\f': rtn.append("\\f"); break;
+					case '\b': rtn.append("\\b"); break;
+					case '\t': rtn.append("\\t"); break;
+					case '"' : rtn.append("\\\""); break;
+					case '\'': rtn.append("\\\'"); break;
+					case '/': 
+						// escape </script>
+						if(
+							i>0 && arr[i-1]=='<'
+							&& i+1<arr.length && arr[i+1]=='s'
+							&& i+2<arr.length && arr[i+2]=='c'
+							&& i+3<arr.length && arr[i+3]=='r'
+							&& i+4<arr.length && arr[i+4]=='i'
+							&& i+5<arr.length && arr[i+5]=='p'
+							&& i+6<arr.length && arr[i+6]=='t'
+							&& i+7<arr.length && (isWhiteSpace(arr[i+7]) || arr[i+7]=='>')
+							
+						) {
+							rtn.append("\\/");
+							break;
+						} 
+					
+					default : rtn.append(arr[i]); break;
+				}
+			}
+			else if(escapeNoneUSAscci) {
+				if (arr[i] < 0x10)			rtn.append("\\u000");
+			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
+			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
+			    else 						rtn.append( "\\u");
+				rtn.append(Integer.toHexString(arr[i]));
+			}
+			else {
+				rtn.append(arr[i]);
 			}
 		}
 		return rtn.toString();

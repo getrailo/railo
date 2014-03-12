@@ -64,7 +64,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 
 	@Override
 	public int getLength() {
-		return XMLUtil.childNodesLength(parent,Node.ELEMENT_NODE,caseSensitive,filter);
+		return XMLUtil.childNodesLength(parent,XMLUtil.UNDEFINED_NODE,caseSensitive,filter);
 	}
 
 	@Override
@@ -394,17 +394,13 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 		return sb.toString();
 	}
-
-    private NodeList getChildNodes() {
-		return XMLUtil.getChildNodes(parent,Node.ELEMENT_NODE,caseSensitive,filter);
-	}
     
     private Node getChildNode(int index) {
-		return XMLUtil.getChildNode(parent,Node.ELEMENT_NODE,caseSensitive,filter,index);
+		return XMLUtil.getChildNode(parent,XMLUtil.UNDEFINED_NODE,caseSensitive,filter,index);
 	}
 	
 	private Node[] getChildNodesAsArray() {
-		return XMLUtil.getChildNodesAsArray(parent,Node.ELEMENT_NODE,caseSensitive,filter);
+		return XMLUtil.getChildNodesAsArray(parent,XMLUtil.UNDEFINED_NODE,caseSensitive,filter);
 	}
 
     @Override

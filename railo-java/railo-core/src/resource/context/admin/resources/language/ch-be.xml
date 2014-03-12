@@ -9,7 +9,7 @@
 	<data key="services.update.type_auto">Outomatisch</data>
 	<data key="services.update.removerun">Patches wegnä</data>
 	<data key="services.update.exedesc">Hi cha ma die aktuellstä Patche für oichi Version ispile, nach äm ä update muäs ma sich nöi ilogge.</data>
-	<data key="services.update.update">Für oichi Version gits ä Patch, Dir heit im momänt d'Version {current} installiert, die aktuelli Version wo verfügbar isch, isch {avaiable}</data>
+	<data key="services.update.update">Für oichi Version gits ä Patch, Dir heit im momänt d'Version {current} installiert, die aktuelli Version wo verfügbar isch, isch {available}</data>
 	<data key="services.update.infotitle">Info</data>
 	<data key="services.update.restartdesc">Hi chöit dr Raio nöi starte. nach äm start muäs ma sich nöi ilogge.</data>
 	<data key="services.update.exe">Update usfürä</data>
