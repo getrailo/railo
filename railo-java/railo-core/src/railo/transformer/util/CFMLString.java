@@ -2,6 +2,7 @@ package railo.transformer.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import railo.commons.io.IOUtil;
@@ -46,7 +47,7 @@ public final class CFMLString {
 	 */
 	protected PageSource ps;
 
-	private String charset;
+	private Charset charset;
 
 	private boolean writeLog;
 
@@ -56,7 +57,7 @@ public final class CFMLString {
 
 	
 	
-	public CFMLString(PageSource ps,String charset,boolean writeLog) throws IOException {
+	public CFMLString(PageSource ps,Charset charset,boolean writeLog) throws IOException {
 		this.writeLog=writeLog;
 		this.charset=charset;
 		this.ps=ps;
@@ -83,7 +84,7 @@ public final class CFMLString {
 	 * @param writeLog
 	 * @param ps
 	 */
-	public CFMLString(String text,String charset,boolean writeLog,PageSource ps) {
+	public CFMLString(String text,Charset charset,boolean writeLog,PageSource ps) {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=writeLog;
@@ -95,7 +96,7 @@ public final class CFMLString {
 	 * @param text
 	 * @param charset
 	 */
-	public CFMLString(String text,String charset) {
+	public CFMLString(String text,Charset charset) {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=false;
@@ -918,7 +919,7 @@ public final class CFMLString {
 	}
 
 	public String getCharset() {
-		return charset;
+		return charset.name(); // FUTURE return Charset
 	}
 
 

@@ -1,11 +1,13 @@
 package railo.transformer.cfml.tag;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -128,7 +130,7 @@ public final class CFMLTransformer {
 		CFMLString cfml;
 		
 		boolean writeLog=config.getExecutionLogEnabled();
-		String charset=config.getTemplateCharset();
+		Charset charset = config._getTemplateCharset();
 		boolean dotUpper = ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
 		
 		
@@ -141,7 +143,7 @@ public final class CFMLTransformer {
 			catch(ProcessingDirectiveException pde) {
 				if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 				if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-				if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+				if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 			}
 		}
 		
@@ -170,7 +172,7 @@ public final class CFMLTransformer {
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 						cfml=null;
 					}
 				}
@@ -204,7 +206,7 @@ public final class CFMLTransformer {
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 						cfml=null;
 					}
 				}
