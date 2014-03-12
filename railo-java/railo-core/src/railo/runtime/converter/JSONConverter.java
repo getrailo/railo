@@ -18,6 +18,7 @@ import java.util.Set;
 import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
@@ -144,7 +145,7 @@ public final class JSONConverter extends ConverterSupport {
 		sb.append('"');
 		
 		//sb.append(escape(dateTime.toString()));
-		sb.append(escape(JSONDateFormat.format(dateTime,null)));
+		sb.append(StringUtil.escapeJS(JSONDateFormat.format(dateTime,null)));
 		sb.append('"');
 		
 		/*try {
@@ -242,7 +243,7 @@ public final class JSONConverter extends ConverterSupport {
         	if(doIt)sb.append(',');
             doIt=true;
             sb.append('"');
-            sb.append(escape(e.getKey().getString()));
+            sb.append(StringUtil.escapeJS(e.getKey().getString()));
             sb.append('"');
             sb.append(':');
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
@@ -274,7 +275,7 @@ public final class JSONConverter extends ConverterSupport {
             	if(doIt)sb.append(',');
                 doIt=true;
                 sb.append('"');
-                sb.append(escape(key.getString()));
+                sb.append(StringUtil.escapeJS(key.getString()));
                 sb.append('"');
                 sb.append(':');
                 _serialize(pc,test,value,sb,serializeQueryByColumns,done);
@@ -321,7 +322,7 @@ public final class JSONConverter extends ConverterSupport {
             if(doIt)sb.append(',');
             doIt=true;
             sb.append('"');
-            sb.append(escape(key.toString()));
+            sb.append(StringUtil.escapeJS(key.toString()));
             sb.append('"');
             sb.append(':');
             _serialize(pc,test,map.get(key),sb,serializeQueryByColumns,done);
@@ -407,7 +408,7 @@ public final class JSONConverter extends ConverterSupport {
 		for(int i=0;i<cols.length;i++) {
 			if(i>0)sb.append(",\"");
 			else sb.append('"');
-            sb.append(escape(cols[i].toUpperCase()));
+            sb.append(StringUtil.escapeJS(cols[i].toUpperCase()));
             sb.append('"');
 		}
 		sb.append("],");
@@ -423,7 +424,7 @@ public final class JSONConverter extends ConverterSupport {
 			    oDoIt=true;
 			    sb.append(goIn());
 	            sb.append('"');
-	            sb.append(escape(_keys[i].getString()));
+	            sb.append(StringUtil.escapeJS(_keys[i].getString()));
 	            sb.append('"');
 				sb.append(":[");
 				boolean doIt=false;
@@ -488,7 +489,7 @@ public final class JSONConverter extends ConverterSupport {
 		if(object instanceof String || object instanceof StringBuffer) {
 		    sb.append(goIn());
 		    sb.append('"');
-		    sb.append(escape(object.toString()));
+		    sb.append(StringUtil.escapeJS(object.toString()));
 		    sb.append('"');
 		    return;
 		}
@@ -496,7 +497,7 @@ public final class JSONConverter extends ConverterSupport {
 		if(object instanceof Character) {
 		    sb.append(goIn());
 		    sb.append('"');
-		    sb.append(escape(String.valueOf(((Character)object).charValue())));
+		    sb.append(StringUtil.escapeJS(String.valueOf(((Character)object).charValue())));
 		    sb.append('"');
 		    return;
 		}
@@ -621,7 +622,7 @@ public final class JSONConverter extends ConverterSupport {
     	node=XMLCaster.toRawNode(node);
     	sb.append(goIn());
 	    sb.append('"');
-	    sb.append(escape(XMLCaster.toString(node,"")));
+	    sb.append(StringUtil.escapeJS(XMLCaster.toString(node,"")));
 	    sb.append('"');
     	
 	}
@@ -640,35 +641,6 @@ public final class JSONConverter extends ConverterSupport {
 		    sb.append(span.getSecond());
 		    sb.append(')');
 		
-	}
-
-	
-	public static String escape(String str) {
-		char[] arr=str.toCharArray();
-		StringBuffer rtn=new StringBuffer(arr.length);
-		for(int i=0;i<arr.length;i++) {
-			if(arr[i] < 128){
-				switch(arr[i]) {
-					case '\\': rtn.append("\\\\"); break;
-					//case '/': rtn.append("\\/"); break;
-					case '\n': rtn.append("\\n"); break;
-					case '\r': rtn.append("\\r"); break;
-					case '\f': rtn.append("\\f"); break;
-					case '\b': rtn.append("\\b"); break;
-					case '\t': rtn.append("\\t"); break;
-					case '"' : rtn.append("\\\""); break;
-					default : rtn.append(arr[i]); break;
-				}
-			}
-			else {
-				if (arr[i] < 0x10)			rtn.append("\\u000");
-			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
-			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
-			    else 						rtn.append( "\\u");
-				rtn.append(Integer.toHexString(arr[i]));
-			}
-		}
-		return rtn.toString();
 	}
 
     /**
