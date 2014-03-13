@@ -617,7 +617,8 @@ public final class StringUtil {
             
             scan = scan.toLowerCase();
             find = find.toLowerCase();
-        } else if ( findLen == repl.length() ) {
+        }
+        else if ( findLen == repl.length() ) {
 
         	if ( find.equals( repl ) )
         		return input;
@@ -625,21 +626,26 @@ public final class StringUtil {
         	if ( !firstOnly && findLen == 1 )
         		return input.replace( find.charAt(0), repl.charAt(0) );
         }
-        
-        StringBuilder sb = new StringBuilder( repl.length() > find.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
-        
-        int start = 0;
-        int pos;        
-        
-        while ( (pos = scan.indexOf( find, start ) ) != -1 ) {
+
+		int pos = scan.indexOf( find );
+
+		if (pos == -1)
+			return input;
+
+		int start = 0;
+		StringBuilder sb = new StringBuilder( repl.length() > find.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
+
+		while ( pos != -1 ) {
             
             sb.append( input.substring( start, pos ) );
             sb.append( repl );
             
             start = pos + findLen;
-            
+
             if ( firstOnly )
             	break;
+
+			pos = scan.indexOf( find, start );
         }
                 
         if ( input.length() > start )
