@@ -87,7 +87,7 @@ public class QueryParamConverter {
 		if(oType==null)oType=sct.get(KeyConstants._sqltype,null);
 		if(oType==null)oType=sct.get(KeyConstants._type,null);
 		if(oType!=null) {
-			item.setType(SQLCaster.toIntType(Caster.toString(oType)));
+			item.setType(SQLCaster.toSQLType(Caster.toString(oType)));
 		}
 		
 		// nulls (optional)

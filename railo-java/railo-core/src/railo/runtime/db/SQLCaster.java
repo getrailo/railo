@@ -29,6 +29,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeImpl;
 import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
+import railo.transformer.bytecode.statement.Switch.Case;
 
 /**
  * SQL Caster 
@@ -637,7 +638,7 @@ public final class SQLCaster {
 	 * @return SQL Type as int
 	 * @throws DatabaseException
 	 */
-	public static int toIntType(String strType) throws DatabaseException	{
+	public static int toSQLType(String strType) throws DatabaseException	{
 	    strType=strType.toUpperCase().trim();
 	    if(strType.startsWith("CF_SQL_")) strType=strType.substring(7);
 	    if(strType.startsWith("SQL_")) strType=strType.substring(4);
@@ -725,5 +726,41 @@ public final class SQLCaster {
         }
 	    
 		throw new DatabaseException("invalid CF SQL Type ["+strType+"]",null,null,null);
+	}
+	
+	public static short toCFType(int sqlType, short defaultValue) {
+		switch(sqlType) {
+    	case Types.ARRAY:		return railo.commons.lang.CFTypes.TYPE_ARRAY;
+    	case Types.BIGINT:		return railo.commons.lang.CFTypes.TYPE_NUMERIC;
+    	case Types.LONGVARBINARY:
+    	case Types.VARBINARY:
+    	case Types.BLOB:
+    	case Types.BINARY:		return railo.commons.lang.CFTypes.TYPE_BINARY;	
+    	case Types.BOOLEAN:
+    	case Types.BIT:		    return railo.commons.lang.CFTypes.TYPE_BOOLEAN;	
+    	case Types.LONGVARCHAR:
+    	case Types.NVARCHAR:
+    	case CFTypes.VARCHAR2:
+    	case Types.VARCHAR:
+    	case Types.CLOB:
+    	case Types.CHAR:		return railo.commons.lang.CFTypes.TYPE_STRING;
+    	
+    	case Types.TIME:
+    	case Types.TIMESTAMP:
+    	case Types.DATE:		return railo.commons.lang.CFTypes.TYPE_DATETIME;
+    	case Types.INTEGER:
+    	case Types.SMALLINT:
+    	case Types.TINYINT:
+    	case Types.FLOAT:
+    	case Types.REAL:
+    	case Types.DOUBLE:
+    	case Types.DECIMAL:
+    	case Types.NUMERIC:	    return railo.commons.lang.CFTypes.TYPE_NUMERIC;
+    		
+    	
+    	default:
+    		return defaultValue;
+        }
+	    
 	}
 }

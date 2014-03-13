@@ -4,6 +4,7 @@
 package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
+import railo.runtime.db.SQLCaster;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
@@ -18,8 +19,16 @@ public class ValueArray extends BIF {
 	public static Array call(PageContext pc , QueryColumn column) throws PageException {
 		Array arr=new ArrayImpl();
 	    int size=column.size();
+	    Object obj;
+	    short type = SQLCaster.toCFType(column.getType(), railo.commons.lang.CFTypes.TYPE_UNDEFINED);
+	    
 		for(int i=1;i<=size;i++) {
-			arr.append(Caster.toString(column.get(i,null)));
+			obj=column.get(i,null);
+			try{
+				obj=Caster.castTo(pc, type, column.getTypeAsString(), obj);
+			}
+			catch(Throwable t){}
+			arr.append(obj);
 		}
 		return arr;	
 	}

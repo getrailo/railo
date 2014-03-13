@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
+import railo.runtime.db.SQLCaster;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
@@ -26,11 +27,22 @@ public class QueryColumnData extends BIF {
 		QueryColumn column = query.getColumn(KeyImpl.init(columnName));
 	    Iterator<Object> it = column.valueIterator();
 	    Object value;
+	    short type = SQLCaster.toCFType(column.getType(), railo.commons.lang.CFTypes.TYPE_UNDEFINED);
+	    
 		while(it.hasNext()) {
 			value=it.next();
 			if(!NullSupportHelper.full() && value==null) value="";
-			if(udf!=null)arr.append(udf.call(pc, new Object[]{value}, true));
-			else arr.append(value);
+			
+			// callback call
+			if(udf!=null)value=udf.call(pc, new Object[]{value}, true);
+			
+			// convert (if necessary)
+			try{
+				value=Caster.castTo(pc, type, column.getTypeAsString(), value);
+			}
+			catch(Throwable t){t.printStackTrace();}
+			
+			arr.append(value);
 		}
 		return arr;		
 	} 
