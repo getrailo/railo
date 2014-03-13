@@ -276,7 +276,14 @@ div.skipped{ display: none;}
 							- <strong>#htmlEditFormat( local.thisSpec.error.message )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							<div class="box debugdata" data-specid="#local.thisSpec.id#">
-								<cfdump var="#local.thisSpec.error#" label="Exception Structure">
+								<cftry>
+									<cfset local.catch=local.thisSpec.error>
+									<cfset addClosingHTMLTags=false>
+									<cfinclude template="#getPageContext().getConfig().getErrorTemplate(500)#">
+									<cfcatch>
+										<cfdump var="#local.thisSpec.error#" label="Exception Structure">
+									</cfcatch>
+								</cftry>
 							</div>
 						</cfif>
 					</li>
