@@ -1474,11 +1474,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(!"any".equals(type)) {
 			// range
 			if("range".equals(type)) {
+				boolean hasMin=Decision.isValid(min);
+				boolean hasMax=Decision.isValid(max);
 				double number = Caster.toDoubleValue(value);
-				if(!Decision.isValid(min)) throw new ExpressionException("Missing attribute [min]");
-				if(!Decision.isValid(max)) throw new ExpressionException("Missing attribute [max]");
-				if(number<min || number>max)
-					throw new ExpressionException("The number ["+Caster.toString(number)+"] is out of range [min:"+Caster.toString(min)+";max:"+Caster.toString(max)+"]");
+				
+				if(!hasMin && !hasMax)
+					throw new ExpressionException("you need to define one of the following attributes [min,max], when type is set to [range]");
+				
+				if(hasMin && number<min)
+					throw new ExpressionException("The number ["+Caster.toString(number)+"] is to small, the number must be at least ["+Caster.toString(min)+"]");
+				
+				if(hasMax && number>max)
+					throw new ExpressionException("The number ["+Caster.toString(number)+"] is to big, the number cannot be bigger than ["+Caster.toString(max)+"]");
+				
 				setVariable(name,Caster.toDouble(number));
 			}
 			// regex
