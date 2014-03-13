@@ -388,7 +388,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -437,7 +437,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -469,7 +469,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -861,7 +861,7 @@ public final class CFMLString {
 	/**
 	 * Gibt zurueck, ausgehend von der aktuellen Position, 
 	 * wann das naechste Zeichen folgt das gleich ist wie die Eingabe, 
-	 * falls keines folgt wird –1 zurueck gegeben. 
+	 * falls keines folgt wird ï¿½1 zurueck gegeben. 
 	 * Gross- und Kleinschreibung der Zeichen werden igoriert.
 	 * @param c gesuchtes Zeichen
 	 * @return Zeichen das gesucht werden soll.
@@ -918,8 +918,8 @@ public final class CFMLString {
 		return o.toString().equals(this.toString());
 	}
 
-	public Charset getCharset() {
-		return charset;
+	public String getCharset() {
+		return charset.name(); // FUTURE return Charset
 	}
 
 

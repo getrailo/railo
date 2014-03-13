@@ -987,7 +987,7 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		// Init Parameter
 		char quoter = data.cfml.getCurrentLower();
-		StringBuffer str=new StringBuffer();
+		StringBuilder str=new StringBuilder();
 		Expression expr=null;
 		
 		while(data.cfml.hasNext()) {
@@ -1016,7 +1016,7 @@ public abstract class AbstrCFMLExprTransformer {
 							expr = OpString.toExprString(expr, exprStr);
 						}
 						else expr=exprStr;
-						str=new StringBuffer();
+						str=new StringBuilder();
 					}
 					if(expr==null) {
 						expr=inner;

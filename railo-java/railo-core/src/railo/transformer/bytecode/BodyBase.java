@@ -116,12 +116,69 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		writeOut(bc,this);
     }
+	
+	
+	
 
 	public static void writeOut(final BytecodeContext bc, Body body) throws BytecodeException {
 		writeOut(bc,body.getStatements());
 	}
 	
+
+	
 	public static void writeOut(final BytecodeContext bc, List<Statement> statements) throws BytecodeException {
+		GeneratorAdapter adapter = bc.getAdapter();
+        boolean isOutsideMethod;
+        GeneratorAdapter a=null;
+		Method m;
+		BytecodeContext _bc=bc;
+		Iterator<Statement> it = statements.iterator();
+		boolean split = bc.getPage().getSplitIfNecessary();
+        
+		
+		//int lastLine=-1;
+		while(it.hasNext()) {
+			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
+	    	Statement s = it.next();
+	    	if(split && _bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
+					(isOutsideMethod || !s.hasFlowController()) && s.getStart()!=null) {
+        		if(a!=null){
+        			a.returnValue();
+    				a.endMethod();
+	        	}
+        		//ExpressionUtil.visitLine(bc, s.getLine());
+        		String method= ASMUtil.createOverfowMethod(bc.getMethod().getName(),bc.getPage().getMethodCount());
+        		ExpressionUtil.visitLine(bc, s.getStart());
+        		//ExpressionUtil.lastLine(bc);
+        		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
+    			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
+    			
+    			_bc=new BytecodeContext(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),bc,a,m);
+    			if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
+    			else _bc.setRoot(bc);
+    			
+    			adapter.visitVarInsn(Opcodes.ALOAD, 0);
+	        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
+	        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), method, "(Lrailo/runtime/PageContext;)V");
+        	}
+        	if(_bc!=bc && s.hasFlowController()) {
+				if(a!=null){
+        			a.returnValue();
+    				a.endMethod();
+	        	}
+				_bc=bc;
+				a=null;
+			}
+        	ExpressionUtil.writeOut(s, _bc);
+        }	
+        if(a!=null){
+        	a.returnValue();
+			a.endMethod();
+        } 
+    }
+	
+	
+	public static void writeOutNew(final BytecodeContext bc, List<Statement> statements) throws BytecodeException {
 		
 		if(statements==null || statements.size()==0) return;
 		
@@ -172,50 +229,6 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 				ExpressionUtil.writeOut(it.next(), bc);
 			}
 		}
-		
-		
-        /*Method m;
-        
-        GeneratorAdapter a=null;
-		BytecodeContext _bc=bc;
-		Iterator<Statement> it = statements.iterator();
-		while(it.hasNext()) {
-			Statement s = it.next();
-	    	if(_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
-					(isVoidMethod || !s.hasFlowController()) && s.getStart()!=null) {
-        		if(a!=null){
-        			a.returnValue();
-    				a.endMethod();
-	        	}
-        		//ExpressionUtil.visitLine(bc, s.getLine());
-        		String method= ASMUtil.createOverfowMethod(bc.getMethod().getName(),bc.getPage().getMethodCount());
-        		ExpressionUtil.visitLine(bc, s.getStart());
-        		//ExpressionUtil.lastLine(bc);
-        		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
-    			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
-    			
-    			_bc=new BytecodeContext(statConstr,constr,keys,bc,a,m);
-    			if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
-    			else _bc.setRoot(bc);
-    			
-    			adapter.visitVarInsn(Opcodes.ALOAD, 0);
-	        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
-	        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), method, "(Lrailo/runtime/PageContext;)V");
-        	}
-        	if(_bc!=bc && s.hasFlowController()) {
-				if(a!=null){
-        			a.returnValue();
-    				a.endMethod();
-	        	}
-				_bc=bc;
-				a=null;
-			}
-        	ExpressionUtil.writeOut(s, _bc);
-        }	
-        if(a!=null){
-        	a.returnValue();
-			a.endMethod();
-        } */
     }
     
 	private static void addToSubMethod(BytecodeContext bc, Statement... statements) throws BytecodeException {

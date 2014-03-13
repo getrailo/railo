@@ -79,7 +79,7 @@ because this is only about optional updates, we do this only in background from 
 <cfset needNewJars=false>
 
 
-<cffunction name="getAviableVersion" output="false">
+<cffunction name="getAvailableVersion" output="false">
 	
 	<cfset var http="">
 	<cftry>
@@ -87,15 +87,15 @@ because this is only about optional updates, we do this only in background from 
 			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 		method="get" resolveurl="no" result="http">
 	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="local.wddx">
-	<cfset session.avaiableVersion=wddx>
-	<cfreturn session.avaiableVersion>
+	<cfset session.availableVersion=wddx>
+	<cfreturn session.availableVersion>
 		<cfcatch>
 			<cfreturn "">
 		</cfcatch>
 	</cftry>
 </cffunction>
 
-<cffunction name="getAviableVersionDoc" output="false">
+<cffunction name="getAvailableVersionDoc" output="false">
 	
 	<cfset var http="">
 	<cftry>
@@ -117,7 +117,7 @@ because this is only about optional updates, we do this only in background from 
 	returnvariable="update">
 
 <cfset curr=server.railo.version>
-<cfset avi=getAviableVersion()>
+<cfset avi=getAvailableVersion()>
 <cfset hasAccess=1>
 <cfset hasUpdate=curr LT avi>
 
@@ -227,7 +227,7 @@ because this is only about optional updates, we do this only in background from 
 			jira=replace(jira,'{/a}','</a>');
 			try	{
 				// Changelog
-				content=getAviableVersionDoc();
+				content=getAvailableVersionDoc();
 				start=1;
 				arr=array();
 				matches=REMatchNoCase("\[\ *(RAILO-([0-9]*)) *\]",content);
@@ -246,7 +246,7 @@ Version ","all");
 		</cfscript>
 		<h2>#stText.services.update.infoTitle#</h2>
 		<div class="text">
-			#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#
+			#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{available}','<b>(#avi#)</b>')#
 		</div>
 		<div style="overflow:auto;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
 		#jira#

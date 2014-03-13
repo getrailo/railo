@@ -191,13 +191,13 @@ public final class TagHelper {
 			adapter.push(hasBody);
 			adapter.invokeVirtual(currType, HAS_BODY);
 		}
-		
-	// attributes
-		Attribute attr;
+
+		// default attributes (get overwritten by attributeCollection because of that set before)
+		setAttributes(bc,tag,currLocal,currType, true);
 		
 		// attributeCollection
-		attr=tag.getAttribute("attributecollection");
-		if(attr!=null){
+		Attribute attrColl=tag.getAttribute("attributecollection");
+		if(attrColl!=null){
 			int attrType = tag.getTagLibTag().getAttributeType();
 			if(TagLibTag.ATTRIBUTE_TYPE_NONAME!=attrType) {
 				tag.removeAttribute("attributecollection");
@@ -232,7 +232,7 @@ public final class TagHelper {
 					ASMConstants.NULL(adapter);
 				}
 				///
-				attr.getValue().writeOut(bc, Expression.MODE_REF);
+				attrColl.getValue().writeOut(bc, Expression.MODE_REF);
 				
 				adapter.push(attrType);
 				adapter.invokeStatic(TAG_UTIL, SET_ATTRIBUTE_COLLECTION);
@@ -241,6 +241,7 @@ public final class TagHelper {
 
 
 		// metadata
+		Attribute attr;
 		Map<String, Attribute> metadata = tag.getMetaData();
 		if(metadata!=null){
 			Iterator<Attribute> it = metadata.values().iterator();
@@ -252,40 +253,10 @@ public final class TagHelper {
 					adapter.invokeVirtual(currType, SET_META_DATA);
 			}
 		}
-		
-		
-		
-		String methodName;
-		Map attributes = tag.getAttributes();
 
-		// static attributes
-		Iterator it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=(Attribute) it.next();
-			if(!attr.isDynamicType()){
-				Type type = CastOther.getType(attr.getType());
-				methodName=tag.getTagLibTag().getSetter(attr,type);
-				adapter.loadLocal(currLocal);
-				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
-				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
-			}
-		}
-		
-		// dynamic attributes
-		it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=(Attribute) it.next();
-			if(attr.isDynamicType()){
-				adapter.loadLocal(currLocal);
-				adapter.visitInsn(Opcodes.ACONST_NULL);
-				//adapter.push(attr.getName());
-				Variable.registerKey(bc, bc.getFactory().createLitString(attr.getName()));
-				attr.getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
-			}
-		}
-		
-		
+
+		// set attributes
+		setAttributes(bc,tag,currLocal,currType,false);
 	// Body
 		if(hasBody){
 			final int state=adapter.newLocal(Types.INT_VALUE);
@@ -388,6 +359,65 @@ public final class TagHelper {
 
 		adapter.visitLabel(tagEnd);
 		ExpressionUtil.visitLine(bc, tag.getEnd());
+	}
+	
+	private static void setAttributes(BytecodeContext bc, Tag tag, int currLocal, Type currType, boolean doDefault) throws BytecodeException {
+		GeneratorAdapter adapter = bc.getAdapter();
+		Map<String,Attribute> attributes = tag.getAttributes();
+
+		String methodName;
+		Attribute attr;
+		Iterator<Attribute> it = attributes.values().iterator();
+		while(it.hasNext()) {
+			attr=it.next();
+			if(doDefault!=attr.isDefaultAttribute()) continue;
+			
+			if(attr.isDynamicType()){
+				adapter.loadLocal(currLocal);
+				adapter.visitInsn(Opcodes.ACONST_NULL);
+				//adapter.push(attr.getName());
+				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
+				attr.getValue().writeOut(bc, Expression.MODE_REF);
+				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
+			}
+			else {
+				Type type = CastOther.getType(attr.getType());
+				methodName=tag.getTagLibTag().getSetter(attr,type);
+				adapter.loadLocal(currLocal);
+				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
+				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
+			}
+		}
+
+
+ww
+
+		// static attributes
+		Iterator it = attributes.values().iterator();
+		while(it.hasNext()) {
+			attr=(Attribute) it.next();
+			if(!attr.isDynamicType()){
+				Type type = CastOther.getType(attr.getType());
+				methodName=tag.getTagLibTag().getSetter(attr,type);
+				adapter.loadLocal(currLocal);
+				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
+				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
+			}
+		}
+		
+		// dynamic attributes
+		it = attributes.values().iterator();
+		while(it.hasNext()) {
+			attr=(Attribute) it.next();
+			if(attr.isDynamicType()){
+				adapter.loadLocal(currLocal);
+				adapter.visitInsn(Opcodes.ACONST_NULL);
+				//adapter.push(attr.getName());
+				Variable.registerKey(bc, bc.getFactory().createLitString(attr.getName()));
+				attr.getValue().writeOut(bc, Expression.MODE_REF);
+				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
+			}
+		}
 	}
 
 	private static void doTry(BytecodeContext bc, GeneratorAdapter adapter, Tag tag, int currLocal, Type currType) throws BytecodeException {

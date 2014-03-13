@@ -689,7 +689,7 @@ cachename: Name of the cache in secondary cache.
 		
 		try {
 			if(lazy && !createUpdateData && cachedWithin==null && cachedAfter==null && result==null)
-				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),tz);
+				return new SimpleQuery(pageContext,dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),tz);
 			
 			
 			return new QueryImpl(pageContext,dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData,true);

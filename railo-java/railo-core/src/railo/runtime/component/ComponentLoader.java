@@ -293,7 +293,7 @@ public class ComponentLoader {
         		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);
         	}
     	}
-    	throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
+    	throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+(interfaceUDFs==null?"component":"interface")+" ["+rawPath+"]");
     	
 		
     	

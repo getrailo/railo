@@ -69,6 +69,9 @@ import railo.runtime.type.Struct;
  * 
  */
 public final class XMLUtil {
+	
+	public static final short UNDEFINED_NODE=-1;
+	
     public static final Collection.Key XMLCOMMENT = KeyImpl.intern("xmlcomment");
     public static final Collection.Key XMLTEXT = KeyImpl.intern("xmltext");
     public static final Collection.Key XMLCDATA = KeyImpl.intern("xmlcdata");
@@ -534,7 +537,11 @@ public final class XMLUtil {
 		// Text	
 			else if(k.equals(XMLTEXT)) {
 				undefinedInRoot(k,node);
-				StringBuffer sb=new StringBuffer();
+				
+				if(node instanceof Text || node instanceof CDATASection) 
+					return ((CharacterData)node).getData();
+				
+				StringBuilder sb=new StringBuilder();
 				NodeList list = node.getChildNodes();
 				int len=list.getLength();
 				for(int i=0;i<len;i++) {
@@ -686,7 +693,10 @@ public final class XMLUtil {
             }
         // Text 
             else if(k.equals(XMLTEXT)) {
-                StringBuffer sb=new StringBuffer();
+            	if(node instanceof Text || node instanceof CDATASection) 
+            		return ((CharacterData)node).getData();
+            	
+                StringBuilder sb=new StringBuilder();
                 NodeList list = node.getChildNodes();
                 int len=list.getLength();
                 for(int i=0;i<len;i++) {
@@ -810,7 +820,7 @@ public final class XMLUtil {
 			Node n=list.item(i);
 			if(n ==null )continue;
 			
-			if(n.getNodeType()==type)node.removeChild(XMLCaster.toRawNode(n));
+			if(n.getNodeType()==type || type==UNDEFINED_NODE)node.removeChild(XMLCaster.toRawNode(n));
 			else if(deep)removeChildren(n,type,deep);
 		}
 	}
@@ -854,7 +864,7 @@ public final class XMLUtil {
 		for(int i=0;i<len;i++) {
 			try {
 				n=nodes.item(i);
-				if(n!=null && n.getNodeType()==type){
+				if(n!=null && (type==UNDEFINED_NODE || n.getNodeType()==type)){
 					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
 					count++;
 				}
@@ -872,7 +882,7 @@ public final class XMLUtil {
 		for(int i=0;i<len;i++) {
 			try {
 				n=nodes.item(i);
-				if(n!=null && n.getNodeType()==type){
+				if(n!=null && (type==UNDEFINED_NODE || n.getNodeType()==type)){
 					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
 					rtn.add(n);
 				}
@@ -890,7 +900,7 @@ public final class XMLUtil {
 		for(int i=0;i<len;i++) {
 			try {
 				n=nodes.item(i);
-				if(n!=null && n.getNodeType()==type){
+				if(n!=null && (n.getNodeType()==type|| type==UNDEFINED_NODE)){
 					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
 					rtn.add(n);
 				}
@@ -909,7 +919,7 @@ public final class XMLUtil {
 		for(int i=0;i<len;i++) {
 			try {
 				n=nodes.item(i);
-				if(n!=null && n.getNodeType()==type){
+				if(n!=null && (type==UNDEFINED_NODE || n.getNodeType()==type)){
 					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName()))) {
 						if(count==index) return n;
 						count++;

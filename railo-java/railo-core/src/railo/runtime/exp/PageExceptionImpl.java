@@ -16,6 +16,7 @@ import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -165,7 +166,7 @@ public abstract class PageExceptionImpl extends PageException {
 	
 	public Array getTagContext(Config config) {
 		if(isInitTagContext) return tagContext;
-		_getTagContext( config,tagContext,this,sources);
+		_getTagContext( config,tagContext,getStackTraceElements(this),sources);
 		isInitTagContext=true;
 		return tagContext;
 	}
@@ -176,12 +177,7 @@ public abstract class PageExceptionImpl extends PageException {
 		_getTagContext( config,tagContext,traces,new LinkedList<PageSource>());
 		return tagContext;
 	}
-	
 
-	private static void _getTagContext(Config config, Array tagContext, Throwable t, LinkedList<PageSource> sources) {
-		_getTagContext(config, tagContext, getStackTraceElements(t), sources);
-	}
-	
 	private static void _getTagContext(Config config, Array tagContext, StackTraceElement[] traces, 
 			LinkedList<PageSource> sources) {
 		//StackTraceElement[] traces = getStackTraceElements(t);
@@ -196,6 +192,7 @@ public abstract class PageExceptionImpl extends PageException {
 			trace=traces[i];
 			tlast=template;
 			template=trace.getFileName();
+			
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			// content
 			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
@@ -203,13 +200,17 @@ public abstract class PageExceptionImpl extends PageException {
 			String[] content=null;
 			try {
 				
+				// FUTURE only do the 3th try below 
 				Resource res = config.getResource(template);
+				if(!res.exists()) res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template,true,true);
 				
 				if(!res.exists()) {
-					
-					res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template,true,true);
+					PageSource _ps = PageSourceImpl.best(config.getPageSources(ThreadLocalPageContext.get(), null, template, false, false, true));
+					if(_ps!=null && _ps.exists()) {
+						res=_ps.getResource();
+					}
 				}
-				 
+				
 				if(res.exists())	
 					content=IOUtil.toStringArray(IOUtil.getReader(res,config.getTemplateCharset()));
 				else {

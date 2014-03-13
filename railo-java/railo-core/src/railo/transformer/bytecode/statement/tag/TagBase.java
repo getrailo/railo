@@ -48,7 +48,7 @@ public abstract class TagBase extends StatementBase implements Tag {
 	}
 
 	@Override
-	public Map getAttributes() {
+	public Map<String,Attribute> getAttributes() {
 		return attributes;
 	}
 

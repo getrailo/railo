@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -55,24 +56,8 @@ import railo.transformer.util.CFMLString;
 
 
 /**
- * Die Klasse CFMLTransformer ist das Herzst￼ck des ￜbersetzungsprozess, 
- * es liest die ￼bergebene CFML Datei ein und ￼bersetzt diese in ein valid (CFXD) XML Dokument 
- * in der Form eines org.w3c.dom.Document Object, 
- * die dann als weitere Vorlage zum ￼bersetzten in PHP dient.
- * Der CFMLTransformer ￼bersetzt nur die Tags die innerhalb einer CFML Seite vorkommen, 
- * nicht die Ausdr￼cke die innerhalb von Attributen und dem Body eines Tag vorkommen k￶nnen, 
- * f￼r dies ist der ExprTransformer zust￤ndig, 
- * der in der jeweiligen Tag Library definiert ist.
- * Der CFMLTransformer kann zwar durch seine Grammatik, 
- * Tags erkennen aber nicht validieren. 
- * Erst mithilfe der im zugeteilten Tag Libraries kann er vergleichen ob ein Tag nur 
- * ein normaler HTML Tag ist, das er einfach als literale Zeichenkette aufnimmt, 
- * oder ob es sich um einen Tag handelt der eine konkrete Anweisung implementiert. 
- * Die Tag Library definiert alle in CFML vorhanden Tags, 
- * deren individuelle Grammatik und deren Aufbau und Verhalten. 
-
  * <pre>
-		Parser Grammatik nach EBNF (Extended Backus-Naur Form) 
+		EBNF (Extended Backus-Naur Form) 
 		
 		transform	= {body}
 		body		= [comment] ("</" | "<" tag body | literal body);
@@ -129,6 +114,7 @@ public final class CFMLTransformer {
 		CFMLString cfml;
 		
 		boolean writeLog=config.getExecutionLogEnabled();
+
 		Charset charset=config.getTemplateCharset();
 		boolean dotUpper = ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
 		
@@ -142,7 +128,7 @@ public final class CFMLTransformer {
 			catch(ProcessingDirectiveException pde) {
 				if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 				if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-				if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+				if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 			}
 		}
 		
@@ -171,7 +157,7 @@ public final class CFMLTransformer {
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 						cfml=null;
 					}
 				}
@@ -205,7 +191,7 @@ public final class CFMLTransformer {
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 						cfml=null;
 					}
 				}
@@ -836,10 +822,11 @@ public final class CFMLTransformer {
 					if(!parent.containsAttribute(att.getName()) && att.hasDefaultValue())	{
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
-				    			att.getName(),
-				    			CastOther.toExpression(data.factory.createLitString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
+						att.getName(),
+						CastOther.toExpression(data.factory.createLitString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
 				    	);
-				    	parent.addAttribute(attr);
+						attr.setDefaultAttribute(true);
+						parent.addAttribute(attr);
 					}
 				}
 			}

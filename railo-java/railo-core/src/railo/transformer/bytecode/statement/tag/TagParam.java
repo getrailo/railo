@@ -9,6 +9,9 @@ import railo.transformer.Factory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
+import railo.transformer.bytecode.cast.CastInt;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.impl.Argument;
 import railo.transformer.expression.Expression;
@@ -71,9 +74,17 @@ public final class TagParam extends TagBaseNoFinal {
 		Attribute attrPattern = getAttribute("pattern");
 		Attribute maxLength = getAttribute("maxLength");
 
-		if(attrMin!=null && attrMax!=null) {
-			attrMin.getValue().writeOut(bc, Expression.MODE_VALUE);
-			attrMax.getValue().writeOut(bc, Expression.MODE_VALUE);
+		if(attrMin!=null || attrMax!=null) {
+			// min
+			if(attrMin!=null)attrMin.getValue().writeOut(bc, Expression.MODE_VALUE);
+			else {
+				adapter.visitLdcInsn(new Double("NaN"));
+			}
+			// max
+			if(attrMax!=null)attrMax.getValue().writeOut(bc, Expression.MODE_VALUE);
+			else {
+				adapter.visitLdcInsn(new Double("NaN"));
+			}
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE_MIN_MAX);
 		}
 		else if(attrPattern!=null) {

@@ -20,7 +20,7 @@ public interface Tag extends Statement,HasBody {
 	 * return all Attributes as a map 
 	 * @return attributes
 	 */
-	public abstract Map getAttributes();
+	public abstract Map<String,Attribute> getAttributes();
 
 	/**
 	 * returns the fullname of the tag

@@ -1035,9 +1035,9 @@ public final class Page extends BodyBase {
     	Label methodEnd=new Label();
     	
 		adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
+		ExpressionUtil.visitLine(bc, component.getStart());
     	adapter.visitLabel(methodBegin);
 
-    	//ExpressionUtil.visitLine(adapter, component.getStartLine());
     	
 		int comp=adapter.newLocal(Types.COMPONENT_IMPL);
 		adapter.newInstance(Types.COMPONENT_IMPL);
@@ -1154,6 +1154,7 @@ public final class Page extends BodyBase {
 
     	
 		adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
+		ExpressionUtil.visitLine(bc, interf.getStart());
     	adapter.visitLabel(methodBegin);
 
     	//ExpressionUtil.visitLine(adapter, interf.getStartLine());
