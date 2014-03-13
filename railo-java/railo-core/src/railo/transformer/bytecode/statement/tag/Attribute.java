@@ -8,6 +8,7 @@ public final class Attribute {
 	final Expression value;
 	private final String type;
 	private final boolean dynamicType;
+	private boolean defaultAttribute;
 	private String setterName;
 	
 	public Attribute(boolean dynamicType,String name, Expression value, String type) {
@@ -15,6 +16,14 @@ public final class Attribute {
 		this.name = name;
 		this.value = value;
 		this.type = type;
+	}
+	
+	public boolean isDefaultAttribute() {
+		return defaultAttribute;
+	}
+
+	public void setDefaultAttribute(boolean defaultAttribute) {
+		this.defaultAttribute = defaultAttribute;
 	}
 
 	/**
