@@ -28,7 +28,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeImpl;
 import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
-import railo.transformer.bytecode.statement.Switch.Case;
 
 /**
  * SQL Caster 

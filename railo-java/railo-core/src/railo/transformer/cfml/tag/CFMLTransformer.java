@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -128,7 +127,7 @@ public final class CFMLTransformer {
 			catch(ProcessingDirectiveException pde) {
 				if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 				if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-				if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
+				if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
 			}
 		}
 		
@@ -157,7 +156,7 @@ public final class CFMLTransformer {
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
 						cfml=null;
 					}
 				}
@@ -191,7 +190,7 @@ public final class CFMLTransformer {
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
 						cfml=null;
 					}
 				}

@@ -918,8 +918,8 @@ public final class CFMLString {
 		return o.toString().equals(this.toString());
 	}
 
-	public String getCharset() {
-		return charset.name(); // FUTURE return Charset
+	public Charset getCharset() {
+		return charset;
 	}
 
 

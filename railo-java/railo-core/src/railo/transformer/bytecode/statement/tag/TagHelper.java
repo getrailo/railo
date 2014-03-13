@@ -376,7 +376,7 @@ public final class TagHelper {
 				adapter.loadLocal(currLocal);
 				adapter.visitInsn(Opcodes.ACONST_NULL);
 				//adapter.push(attr.getName());
-				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
+				Variable.registerKey(bc, bc.getFactory().createLitString(attr.getName()));
 				attr.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}
@@ -386,36 +386,6 @@ public final class TagHelper {
 				adapter.loadLocal(currLocal);
 				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
 				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
-			}
-		}
-
-
-ww
-
-		// static attributes
-		Iterator it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=(Attribute) it.next();
-			if(!attr.isDynamicType()){
-				Type type = CastOther.getType(attr.getType());
-				methodName=tag.getTagLibTag().getSetter(attr,type);
-				adapter.loadLocal(currLocal);
-				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
-				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
-			}
-		}
-		
-		// dynamic attributes
-		it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=(Attribute) it.next();
-			if(attr.isDynamicType()){
-				adapter.loadLocal(currLocal);
-				adapter.visitInsn(Opcodes.ACONST_NULL);
-				//adapter.push(attr.getName());
-				Variable.registerKey(bc, bc.getFactory().createLitString(attr.getName()));
-				attr.getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}
 		}
 	}
