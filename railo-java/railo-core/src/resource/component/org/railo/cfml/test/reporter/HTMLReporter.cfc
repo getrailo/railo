@@ -43,7 +43,7 @@
 
 		// prepare the report
 		savecontent variable="local.report"{
-			html(results,testbox,options);
+			html(results,testbox,options,baseURL);
 		}
 		return local.report;
 	}
@@ -54,6 +54,7 @@
 		<cfargument name="results" type="testbox.system.testing.TestResult">
 		<cfargument name="testbox" type="testbox.system.testing.TestBox">
 		<cfargument name="options" type="struct">
+		<cfargument name="baseURL" type="string">
 
 <cfoutput>
 <!DOCTYPE html>
