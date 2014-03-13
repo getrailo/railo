@@ -831,7 +831,8 @@ public final class CFMLTransformer {
 				    			att.getName(),
 				    			CastOther.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
 				    	);
-				    	parent.addAttribute(attr);
+						attr.setDefaultAttribute(true);
+						parent.addAttribute(attr);
 					}
 				}
 			}
