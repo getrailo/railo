@@ -582,7 +582,6 @@ public abstract class ComponentPage extends PagePlus  {
 		List<MimeType> accept = ReqRspUtil.getAccept(pc);
 		int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
 		
-		
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
         
@@ -597,6 +596,11 @@ public abstract class ComponentPage extends PagePlus  {
       //content-type
         Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
+
+        // onMissingMethod
+        if(o==null) o=component.get(pc,KeyConstants._onmissingmethod,null);
+
+        
         Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
         
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
