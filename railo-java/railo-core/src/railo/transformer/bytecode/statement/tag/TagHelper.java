@@ -391,35 +391,6 @@ public final class TagHelper {
 		}
 	}
 
-	private static void setAttributes(BytecodeContext bc, Tag tag, int currLocal, Type currType, boolean doDefault) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-		Map<String,Attribute> attributes = tag.getAttributes();
-
-		String methodName;
-		Attribute attr;
-		Iterator<Attribute> it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=it.next();
-			if(doDefault!=attr.isDefaultAttribute()) continue;
-			
-			if(attr.isDynamicType()){
-				adapter.loadLocal(currLocal);
-				adapter.visitInsn(Opcodes.ACONST_NULL);
-				//adapter.push(attr.getName());
-				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
-				attr.getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
-			}
-			else {
-				Type type = CastOther.getType(attr.getType());
-				methodName=tag.getTagLibTag().getSetter(attr,type);
-				adapter.loadLocal(currLocal);
-				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
-				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
-			}
-		}
-	}
-
 	private static void doTry(BytecodeContext bc, GeneratorAdapter adapter, Tag tag, int currLocal, Type currType) throws BytecodeException {
 		Label beginDoWhile=new Label();
 		adapter.visitLabel(beginDoWhile);
