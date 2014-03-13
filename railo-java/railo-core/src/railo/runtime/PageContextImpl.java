@@ -4,6 +4,9 @@ package railo.runtime;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +43,8 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
+import railo.commons.db.DBUtil;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
@@ -72,6 +77,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
+import railo.runtime.db.driver.ConnectionProxy;
 import railo.runtime.debug.ActiveLock;
 import railo.runtime.debug.ActiveQuery;
 import railo.runtime.debug.DebugCFMLWriter;
@@ -291,7 +297,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private boolean hasFamily=false;
 	//private CFMLFactoryImpl factory;
 	private PageContextImpl parent;
-	private Map<String,DatasourceConnection> conns=new HashMap<String,DatasourceConnection>();
+	private Map<String,DatasourceConnection> transConns=new HashMap<String,DatasourceConnection>();
+	private List<Statement> lazyStats;
 	private boolean fdEnabled;
 	private ExecutionLog execLog;
 	private boolean useSpecialMappings;
@@ -346,7 +353,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		SizeOf.size(currentTag)+
 		SizeOf.size(startTime)+
 		SizeOf.size(isCFCRequest)+
-		SizeOf.size(conns)+
+		SizeOf.size(transConns)+
+		SizeOf.size(lazyStats)+
 		SizeOf.size(serverPassword)+
 		SizeOf.size(ormSession);
 	}
@@ -624,13 +632,24 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         errorPagePool.clear();
 
         // transaction connection
-        if(!conns.isEmpty()){
-        	java.util.Iterator<Entry<String, DatasourceConnection>> it = conns.entrySet().iterator();
+        if(!transConns.isEmpty()){
+        	java.util.Iterator<DatasourceConnection> it = transConns.values().iterator();
         	DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
         	while(it.hasNext())	{
-        		pool.releaseDatasourceConnection(config,(it.next().getValue()),true);
+        		pool.releaseDatasourceConnection(config,(it.next()),true);
         	}
-        	conns.clear();
+        	transConns.clear();
+        }
+        
+
+        // lazy statements
+        if(lazyStats!=null && !lazyStats.isEmpty()){
+        	java.util.Iterator<Statement> it = lazyStats.iterator();
+        	while(it.hasNext())	{
+        		DBUtil.closeEL(it.next());
+        	}
+        	lazyStats.clear();
+        	lazyStats=null;
         }
         
         
@@ -1455,11 +1474,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(!"any".equals(type)) {
 			// range
 			if("range".equals(type)) {
+				boolean hasMin=Decision.isValid(min);
+				boolean hasMax=Decision.isValid(max);
 				double number = Caster.toDoubleValue(value);
-				if(!Decision.isValid(min)) throw new ExpressionException("Missing attribute [min]");
-				if(!Decision.isValid(max)) throw new ExpressionException("Missing attribute [max]");
-				if(number<min || number>max)
-					throw new ExpressionException("The number ["+Caster.toString(number)+"] is out of range [min:"+Caster.toString(min)+";max:"+Caster.toString(max)+"]");
+				
+				if(!hasMin && !hasMax)
+					throw new ExpressionException("you need to define one of the following attributes [min,max], when type is set to [range]");
+				
+				if(hasMin && number<min)
+					throw new ExpressionException("The number ["+Caster.toString(number)+"] is to small, the number must be at least ["+Caster.toString(min)+"]");
+				
+				if(hasMax && number>max)
+					throw new ExpressionException("The number ["+Caster.toString(number)+"] is to big, the number cannot be bigger than ["+Caster.toString(max)+"]");
+				
 				setVariable(name,Caster.toDouble(number));
 			}
 			// regex
@@ -2955,12 +2982,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public DatasourceConnection _getConnection(DataSource ds, String user,String pass) throws PageException {
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
-		DatasourceConnection dc=conns.get(id);
+		DatasourceConnection dc=transConns.get(id);
 		if(dc!=null && DatasourceConnectionPool.isValid(dc,null)){
 			return dc;
 		}
 		dc=config.getDatasourceConnectionPool().getDatasourceConnection(this,ds, user, pass);
-		conns.put(id, dc);
+		transConns.put(id, dc);
 		return dc;
 	}
 
@@ -3184,5 +3211,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		ApplicationContextPro ac = ((ApplicationContextPro)getApplicationContext());
 		if(ac==null) return config.isSuppressContent();
 		return ac.getSuppressContent();
+	}
+	
+
+	public void registerLazyStatement(Statement s) {
+		if(lazyStats==null)lazyStats=new ArrayList<Statement>();
+		lazyStats.add(s);
 	}
 }

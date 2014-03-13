@@ -509,7 +509,7 @@ public class QueryImpl implements Query,Objects {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toSQLType(strTypes[i]),recordcount);
 		}
 	}
 	
@@ -529,7 +529,7 @@ public class QueryImpl implements Query,Objects {
 		recordcount=rowNumber;
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columnNames.length;i++) {
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toSQLType(strTypes[i]),recordcount);
 		}
 		validateColumnNames(columnNames);
 	}
@@ -571,7 +571,7 @@ public class QueryImpl implements Query,Objects {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toSQLType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
 		}
 		validateColumnNames(columnNames);
 	}

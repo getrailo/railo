@@ -43,7 +43,7 @@
 
 		// prepare the report
 		savecontent variable="local.report"{
-			html(results,testbox,options);
+			html(results,testbox,options,baseURL);
 		}
 		return local.report;
 	}
@@ -54,6 +54,7 @@
 		<cfargument name="results" type="testbox.system.testing.TestResult">
 		<cfargument name="testbox" type="testbox.system.testing.TestBox">
 		<cfargument name="options" type="struct">
+		<cfargument name="baseURL" type="string">
 
 <cfoutput>
 <!DOCTYPE html>
@@ -276,7 +277,14 @@ div.skipped{ display: none;}
 							- <strong>#htmlEditFormat( local.thisSpec.error.message )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							<div class="box debugdata" data-specid="#local.thisSpec.id#">
-								<cfdump var="#local.thisSpec.error#" label="Exception Structure">
+								<cftry>
+									<cfset local.catch=local.thisSpec.error>
+									<cfset addClosingHTMLTags=false>
+									<cfinclude template="#getPageContext().getConfig().getErrorTemplate(500)#">
+									<cfcatch>
+										<cfdump var="#local.thisSpec.error#" label="Exception Structure">
+									</cfcatch>
+								</cftry>
 							</div>
 						</cfif>
 					</li>

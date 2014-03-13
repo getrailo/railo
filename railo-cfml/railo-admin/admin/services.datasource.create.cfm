@@ -397,6 +397,12 @@
 				<tr>
 					<th scope="row">#stText.Settings.dbAllowed#</th>
 					<td>
+
+						<div class="warning">
+							This functionality is deprecated and will be removed in future versions, 
+							restrict operations by using roles and permissions in your DBMS!
+						</div>
+
 						<ul class="radiolist float">
 							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" checked="#datasource.select#"> <b>Select</b></label></li>
 							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" checked="#datasource.insert#"> <b>Insert</b></label></li>

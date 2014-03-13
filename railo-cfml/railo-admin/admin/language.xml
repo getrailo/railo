@@ -659,7 +659,7 @@
 		<custom key="services.update.type_auto">Automatisch</custom>
 		<custom key="services.update.type_manually">Manuell</custom>
 		<custom key="services.update.typedesc">Definieren Sie hier wie Railo gepatcht werden soll, 'Automatisch' steht dafür, dass Railo automatisch, täglich nach updates sucht. 'Manuell' bedeutet, dass ein Update nur manuell ausgeführt werden kann.</custom>
-		<custom key="services.update.update">Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {avaiable}</custom>
+		<custom key="services.update.update">Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {available}</custom>
 		<custom key="setting.server">Kontrolle der Ausgabe von Railo</custom>
 	
 		<custom key="setting.showversion">Railo Version ausgeben</custom>
