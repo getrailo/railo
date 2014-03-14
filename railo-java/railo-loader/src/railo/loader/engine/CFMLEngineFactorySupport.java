@@ -21,11 +21,14 @@ public abstract class CFMLEngineFactorySupport {
 	public final static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[0xffff];
         int len;
-        while((len = in.read(buffer)) !=-1)
-          out.write(buffer, 0, len);
-        
-        closeEL(in);
-        closeEL(out);
+        try{
+	        while((len = in.read(buffer)) !=-1)
+	          out.write(buffer, 0, len);
+        }
+        finally{
+        	closeEL(in);
+        	closeEL(out);
+        }
     }
     
     /**
