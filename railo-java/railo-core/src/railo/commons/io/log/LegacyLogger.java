@@ -4,7 +4,7 @@ import railo.runtime.exp.DeprecatedException;
 
 public class LegacyLogger implements LogAndSource {
 
-	private Log logger;
+	private final Log logger;
 
 	public LegacyLogger(Log logger) {
 		this.logger=logger;
