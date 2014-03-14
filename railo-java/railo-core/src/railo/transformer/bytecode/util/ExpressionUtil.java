@@ -11,10 +11,10 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 
 
@@ -43,7 +43,7 @@ public final class ExpressionUtil {
 
 	private static Map<String,String> last=new HashMap<String,String>();
 
-	public static void writeOutExpressionArray(BytecodeContext bc, Type arrayType, Expression[] array) throws BytecodeException {
+	public static void writeOutExpressionArray(BytecodeContext bc, Type arrayType, Expression[] array) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.push(array.length);
         adapter.newArray(arrayType);
@@ -99,9 +99,9 @@ public final class ExpressionUtil {
 	 * @param value
 	 * @param bc
 	 * @param mode
-	 * @throws BytecodeException
+	 * @throws TransformerException
 	 */
-	public static void writeOutSilent(Expression value, BytecodeContext bc, int mode) throws BytecodeException {
+	public static void writeOutSilent(Expression value, BytecodeContext bc, int mode) throws TransformerException {
 		Position start = value.getStart();
 		Position end = value.getEnd();
 		value.setStart(null);
@@ -110,11 +110,11 @@ public final class ExpressionUtil {
 		value.setStart(start);
 		value.setEnd(end);
 	}
-	public static void writeOut(Expression value, BytecodeContext bc, int mode) throws BytecodeException {
+	public static void writeOut(Expression value, BytecodeContext bc, int mode) throws TransformerException {
 		value.writeOut(bc, mode);
 	}
 
-	public static void writeOut(final Statement s, BytecodeContext bc) throws BytecodeException {
+	public static void writeOut(final Statement s, BytecodeContext bc) throws TransformerException {
 		if(ExpressionUtil.doLog(bc)) {
     		final String id=BodyBase.id();
     		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {

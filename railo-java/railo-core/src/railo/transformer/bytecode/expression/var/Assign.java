@@ -7,9 +7,9 @@ import org.objectweb.asm.commons.Method;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
@@ -17,6 +17,7 @@ import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.var.DataMember;
 import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 
 public class Assign extends ExpressionBase {
 
@@ -100,37 +101,37 @@ public class Assign extends ExpressionBase {
 	}
 	
 
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
-		int count=variable.countFM+variable.countDM;
+		int count=variable.getCount();
         // count 0
         if(count==0){
-        	if(variable.ignoredFirstMember() && variable.scope==ScopeSupport.SCOPE_VAR){
+        	if(variable.ignoredFirstMember() && variable.getScope()==ScopeSupport.SCOPE_VAR){
     			//print.dumpStack();
         		return Types.VOID;
     		}
         	return _writeOutEmpty(bc);
         }
         
-        boolean doOnlyScope=variable.scope==Scope.SCOPE_LOCAL;
+        boolean doOnlyScope=variable.getScope()==Scope.SCOPE_LOCAL;
     	
     	Type rtn=Types.OBJECT;
     	//boolean last;
     	for(int i=doOnlyScope?0:1;i<count;i++) {
 			adapter.loadArg(0);
     	}
-		rtn=_writeOutFirst(bc, (variable.members.get(0)),mode,count==1,doOnlyScope);
+		rtn=_writeOutFirst(bc, (variable.getMembers().get(0)),mode,count==1,doOnlyScope);
     	
 		// pc.get(
 		for(int i=doOnlyScope?0:1;i<count;i++) {
-			Member member=(variable.members.get(i));
+			Member member=(variable.getMembers().get(i));
 			boolean last=(i+1)==count;
 			
 			
 			// Data Member
 			if(member instanceof DataMember)	{
 				//((DataMember)member).getName().writeOut(bc, MODE_REF);
-    			boolean isKey=Variable.registerKey(bc, ((DataMember)member).getName());
+    			boolean isKey=getFactory().registerKey(bc, ((DataMember)member).getName(),false);
 				
     			if(last)value.writeOut(bc, MODE_REF);
     			if(isKey)adapter.invokeVirtual(Types.PAGE_CONTEXT,last?SET_KEY:TOUCH_KEY);
@@ -140,9 +141,9 @@ public class Assign extends ExpressionBase {
 			
 			// UDF
 			else if(member instanceof UDF) {
-				if(last)throw new BytecodeException("can't asign value to a user defined function",getStart());
+				if(last)throw new TransformerException("can't asign value to a user defined function",getStart());
 				UDF udf=(UDF) member;
-				boolean isKey=Variable.registerKey(bc, udf.getName());
+				boolean isKey=getFactory().registerKey(bc, udf.getName(),false);
 				//udf.getName().writeOut(bc, MODE_REF);
 				ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, udf.getArguments());
 				
@@ -154,52 +155,52 @@ public class Assign extends ExpressionBase {
     	return rtn;
 	}
 
-	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope) throws BytecodeException {
+	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope) throws TransformerException {
 		
 		if(member instanceof DataMember) {
 			return _writeOutOneDataMember(bc,(DataMember)member,last,doOnlyScope);
 			//return Variable._writeOutFirstDataMember(adapter,(DataMember)member,variable.scope, last);
 		}
     	else if(member instanceof UDF) {
-    		if(last)throw new BytecodeException("can't assign value to a user defined function",getStart());
-    		return Variable._writeOutFirstUDF(bc,(UDF)member,variable.scope,doOnlyScope);
+    		if(last)throw new TransformerException("can't assign value to a user defined function",getStart());
+    		return VariableImpl._writeOutFirstUDF(bc,(UDF)member,variable.getScope(),doOnlyScope);
     	}
     	else {
-    		if(last)throw new BytecodeException("can't assign value to a built in function",getStart());
-    		return Variable._writeOutFirstBIF(bc,(BIF)member,mode,last,getStart());
+    		if(last)throw new TransformerException("can't assign value to a built in function",getStart());
+    		return VariableImpl._writeOutFirstBIF(bc,(BIF)member,mode,last,getStart());
     	}
 	}
 
 
 
-	private Type _writeOutOneDataMember(BytecodeContext bc, DataMember member,boolean last, boolean doOnlyScope) throws BytecodeException {
+	private Type _writeOutOneDataMember(BytecodeContext bc, DataMember member,boolean last, boolean doOnlyScope) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
 		
     	if(doOnlyScope){
     		adapter.loadArg(0);
-    		if(variable.scope==Scope.SCOPE_LOCAL){
+    		if(variable.getScope()==Scope.SCOPE_LOCAL){
     			return TypeScope.invokeScope(adapter, TypeScope.METHOD_LOCAL_TOUCH,Types.PAGE_CONTEXT);
     		}
-    		return TypeScope.invokeScope(adapter, variable.scope);
+    		return TypeScope.invokeScope(adapter, variable.getScope());
     	}
     	
     	// pc.get
 		adapter.loadArg(0);
 		if(last) {
-			TypeScope.invokeScope(adapter, variable.scope);
+			TypeScope.invokeScope(adapter, variable.getScope());
 			//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[variable.scope]);
 			
-			boolean isKey=Variable.registerKey(bc, member.getName());
+			boolean isKey=getFactory().registerKey(bc, member.getName(),false);
 			value.writeOut(bc, MODE_REF);
 			
-			if(isKey)adapter.invokeInterface(TypeScope.SCOPES[variable.scope],METHOD_SCOPE_SET_KEY);
-			else adapter.invokeInterface(TypeScope.SCOPES[variable.scope],METHOD_SCOPE_SET);
+			if(isKey)adapter.invokeInterface(TypeScope.SCOPES[variable.getScope()],METHOD_SCOPE_SET_KEY);
+			else adapter.invokeInterface(TypeScope.SCOPES[variable.getScope()],METHOD_SCOPE_SET);
 			
 		}
 		else {
 			adapter.loadArg(0);
-			TypeScope.invokeScope(adapter, variable.scope);
-			if(Variable.registerKey(bc, member.getName()))
+			TypeScope.invokeScope(adapter, variable.getScope());
+			if(getFactory().registerKey(bc, member.getName(),false))
     			adapter.invokeVirtual(Types.PAGE_CONTEXT,TOUCH_KEY);
     		else
     			adapter.invokeVirtual(Types.PAGE_CONTEXT,TOUCH);
@@ -209,10 +210,10 @@ public class Assign extends ExpressionBase {
 		
 	}
 
-	private Type _writeOutEmpty(BytecodeContext bc) throws BytecodeException {
+	private Type _writeOutEmpty(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
-		if(variable.scope==Scope.SCOPE_ARGUMENTS) {
+		if(variable.getScope()==Scope.SCOPE_ARGUMENTS) {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_ARGUMENTS);
 			value.writeOut(bc, MODE_REF);
@@ -221,7 +222,7 @@ public class Assign extends ExpressionBase {
 		else {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_UNDEFINED);
-			Variable.registerKey(bc,bc.getFactory().createLitString(ScopeFactory.toStringScope(variable.scope,"undefined")));
+			getFactory().registerKey(bc,bc.getFactory().createLitString(ScopeFactory.toStringScope(variable.getScope(),"undefined")),false);
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeInterface(TypeScope.SCOPES[Scope.SCOPE_UNDEFINED],METHOD_SCOPE_SET_KEY);
 		}

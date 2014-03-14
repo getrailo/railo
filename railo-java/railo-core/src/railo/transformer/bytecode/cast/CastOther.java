@@ -7,14 +7,14 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.util.Methods_Caster;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.Variable;
 
 /**
  * cast a Expression to a Double
@@ -124,7 +124,7 @@ public final class CastOther extends ExpressionBase implements Cast {
 			new Type[]{Types.OBJECT}); 
 
     @Override
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 //Caster.toDecimal(null);
     	GeneratorAdapter adapter = bc.getAdapter();
         char first=lcType.charAt(0);
@@ -437,7 +437,7 @@ public final class CastOther extends ExpressionBase implements Cast {
         return t;
     }
 
-	public static Type getType(String type) throws BytecodeException {
+	public static Type getType(String type) throws TransformerException {
 		if(StringUtil.isEmpty(type)) return Types.OBJECT;
     	
     	
@@ -535,7 +535,7 @@ public final class CastOther extends ExpressionBase implements Cast {
 			return Type.getType(ClassUtil.loadClass(type));
 		} 
         catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),null);
+			throw new TransformerException(e.getMessage(),null);
 		}
 		
 	}

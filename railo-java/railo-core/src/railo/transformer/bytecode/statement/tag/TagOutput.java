@@ -2,9 +2,9 @@ package railo.transformer.bytecode.statement.tag;
 
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
@@ -26,9 +26,9 @@ public final class TagOutput extends TagGroup {
 	}
 
 
-	public static TagOutput getParentTagOutputQuery(Statement stat) throws BytecodeException {
+	public static TagOutput getParentTagOutputQuery(Statement stat) throws TransformerException {
 		Statement parent=stat.getParent();
-		if(parent==null) throw new BytecodeException("there is no parent output with query",null);
+		if(parent==null) throw new TransformerException("there is no parent output with query",null);
 		else if(parent instanceof TagOutput) {
 			if(((TagOutput)parent).hasQuery())
 				return ((TagOutput)parent);
@@ -45,7 +45,7 @@ public final class TagOutput extends TagGroup {
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		boolean old;
 		switch(type) {
 		case TYPE_GROUP:
@@ -73,7 +73,7 @@ public final class TagOutput extends TagGroup {
 		break;
 		
 		default:
-			throw new BytecodeException("invalid type",getStart());
+			throw new TransformerException("invalid type",getStart());
 		}
 	}
 
@@ -90,7 +90,7 @@ public final class TagOutput extends TagGroup {
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeNormal(BytecodeContext bc) throws BytecodeException {
+	private void writeOutTypeNormal(BytecodeContext bc) throws TransformerException {
 		ParseBodyVisitor pbv=new ParseBodyVisitor();
 		pbv.visitBegin(bc);
 			getBody().writeOut(bc);

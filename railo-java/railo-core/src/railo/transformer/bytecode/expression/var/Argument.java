@@ -2,8 +2,8 @@ package railo.transformer.bytecode.expression.var;
 
 import org.objectweb.asm.Type;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -46,11 +46,11 @@ public class Argument extends ExpressionBase {
 		 *
 		 * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
 		 */
-		public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+		public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 			return getValue().writeOut(bc, mode);
 		}
 		
-		public Type writeOutValue(BytecodeContext bc, int mode) throws BytecodeException {
+		public Type writeOutValue(BytecodeContext bc, int mode) throws TransformerException {
 			ExpressionUtil.visitLine(bc, getStart());
 			Type t = getValue().writeOut(bc, mode);
 			ExpressionUtil.visitLine(bc, getEnd());

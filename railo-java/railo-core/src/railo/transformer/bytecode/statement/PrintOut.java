@@ -4,9 +4,9 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.ExprString;
 import railo.transformer.expression.Expression;
@@ -42,7 +42,7 @@ public final class PrintOut extends StatementBaseNoFinal {
     /**
      * @see railo.transformer.bytecode.Statement#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
      */
-    public void _writeOut(BytecodeContext bc) throws BytecodeException {
+    public void _writeOut(BytecodeContext bc) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.loadArg(0);
         ExprString es=bc.getFactory().toExprString(expr);

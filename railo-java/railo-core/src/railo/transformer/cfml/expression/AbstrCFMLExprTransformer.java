@@ -14,12 +14,11 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.UDFUtil;
 import railo.transformer.Factory;
-import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.ExpressionInvoker;
-import railo.transformer.bytecode.expression.Invoker;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.Assign;
 import railo.transformer.bytecode.expression.var.BIF;
@@ -27,17 +26,14 @@ import railo.transformer.bytecode.expression.var.DynAssign;
 import railo.transformer.bytecode.expression.var.FunctionMember;
 import railo.transformer.bytecode.expression.var.NamedArgument;
 import railo.transformer.bytecode.expression.var.UDF;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.op.OPDecision;
-import railo.transformer.bytecode.op.OpBool;
 import railo.transformer.bytecode.op.OpContional;
 import railo.transformer.bytecode.op.OpDouble;
 import railo.transformer.bytecode.op.OpElvis;
 import railo.transformer.bytecode.op.OpNegate;
 import railo.transformer.bytecode.op.OpNegateNumber;
-import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
@@ -51,11 +47,13 @@ import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.expression.ExprDouble;
 import railo.transformer.expression.ExprString;
 import railo.transformer.expression.Expression;
+import railo.transformer.expression.Invoker;
 import railo.transformer.expression.literal.LitDouble;
 import railo.transformer.expression.literal.LitString;
 import railo.transformer.expression.literal.Literal;
 import railo.transformer.expression.var.DataMember;
 import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -291,7 +289,7 @@ public abstract class AbstrCFMLExprTransformer {
 				return new NamedArgument(a.getVariable(),a.getValue(),type,varKeyUpperCase);
 			}
 		}
-		catch(BytecodeException be) {
+		catch(TransformerException be) {
 			throw new TemplateException(data.cfml,be.getMessage());
 		}
 		return new Argument(expr,type);
@@ -371,7 +369,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = eqvOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
 			comments(data);
-            expr=OpBool.toExprBoolean(expr, eqvOp(data), OpBool.IMP);
+            expr=data.factory.opBool(expr, eqvOp(data), Factory.OP_BOOL_IMP);
 		}
 		return expr;
 	}
@@ -388,7 +386,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = xorOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
 			comments(data);
-            expr=OpBool.toExprBoolean(expr, xorOp(data), OpBool.EQV);
+            expr=data.factory.opBool(expr, xorOp(data), Factory.OP_BOOL_EQV);
 		}
 		return expr;
 	}
@@ -405,7 +403,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = orOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
 			comments(data);
-            expr=OpBool.toExprBoolean(expr, orOp(data), OpBool.XOR);
+            expr=data.factory.opBool(expr, orOp(data), Factory.OP_BOOL_XOR);
 		}
 		return expr;
 	}
@@ -424,7 +422,7 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
 			comments(data);
-            expr=OpBool.toExprBoolean(expr, andOp(data), OpBool.OR);
+            expr=data.factory.opBool(expr, andOp(data), Factory.OP_BOOL_OR);
 		}
 		return expr;
 	}
@@ -443,7 +441,7 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
 			comments(data);
-	        expr=OpBool.toExprBoolean(expr, notOp(data), OpBool.AND);
+	        expr=data.factory.opBool(expr, notOp(data), Factory.OP_BOOL_AND);
 		}
 		return expr;
 	}
@@ -661,12 +659,12 @@ public abstract class AbstrCFMLExprTransformer {
 				data.cfml.next();
 				comments(data);
 				Expression right = assignOp(data);
-				ExprString res = OpString.toExprString(expr, right);
+				ExprString res = data.factory.opString(expr, right);
 				expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			else {
 	            comments(data);
-	            expr=OpString.toExprString(expr, plusMinusOp(data));
+	            expr=data.factory.opString(expr, plusMinusOp(data));
 			}
 			
 		}
@@ -1013,7 +1011,7 @@ public abstract class AbstrCFMLExprTransformer {
 					if(str.length()!=0) {
 						exprStr=data.factory.createLitString(str.toString(),line,data.cfml.getPosition());
 						if(expr!=null){
-							expr = OpString.toExprString(expr, exprStr);
+							expr = data.factory.opString(expr, exprStr);
 						}
 						else expr=exprStr;
 						str=new StringBuilder();
@@ -1022,7 +1020,7 @@ public abstract class AbstrCFMLExprTransformer {
 						expr=inner;
 					}
 					else  {
-						expr = OpString.toExprString(expr, inner);
+						expr = data.factory.opString(expr, inner);
 					}	
 				}
 			}
@@ -1049,13 +1047,13 @@ public abstract class AbstrCFMLExprTransformer {
 		if(expr==null)
 			expr=data.factory.createLitString(str.toString(),line,data.cfml.getPosition());
 		else if(str.length()!=0) {
-			expr = OpString.toExprString(expr, data.factory.createLitString(str.toString(),line,data.cfml.getPosition()));
+			expr = data.factory.opString(expr, data.factory.createLitString(str.toString(),line,data.cfml.getPosition()));
 		}
         comments(data);
         
         if(expr instanceof Variable) {
         	Variable var=(Variable) expr;
-        	var.setFromHash(true);
+        	var.fromHash(true);
         }
         
 		return expr;
@@ -1186,7 +1184,7 @@ public abstract class AbstrCFMLExprTransformer {
 		}
 		else if(NullSupportHelper.full() && id.getString().equalsIgnoreCase("NULL"))	{
 			comments(data);
-			return new Null(id.getFactory(),line,data.cfml.getPosition());
+			return id.getFactory().createNull(line,data.cfml.getPosition());
 		}
 		
 		// Extract Scope from the Variable
@@ -1223,7 +1221,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if (!data.cfml.forwardIfCurrent(end))
 			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+end+"] not found");
 		comments(data);
-		Variable var=new Variable(data.factory,line,data.cfml.getPosition());
+		Variable var=data.factory.createVariable(line,data.cfml.getPosition());
 		var.addMember(bif);
 		return var;
 	}
@@ -1382,7 +1380,7 @@ public abstract class AbstrCFMLExprTransformer {
         if (data.cfml.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier(data.factory,"_createComponent",Identifier.CASE_ORIGNAL,null,null), true);
 			func.addArgument(new Argument(exprName,"string"));
-			Variable v=new Variable(expr.getFactory(),expr.getStart(),expr.getEnd());
+			Variable v=expr.getFactory().createVariable(expr.getStart(),expr.getEnd());
 			v.addMember(func);
             comments(data);
 			return v;
@@ -1415,7 +1413,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if (data.cfml.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,name, true);
 			
-			Variable var=new Variable(name.getFactory(),line,data.cfml.getPosition());
+			Variable var=name.getFactory().createVariable(line,data.cfml.getPosition());
 			var.addMember(func);
             comments(data);
 			return var;
@@ -1426,7 +1424,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if(var!=null) return var;
 		
 		// undefined variable
-		var=new Variable(name.getFactory(),line,data.cfml.getPosition());
+		var=name.getFactory().createVariable(line,data.cfml.getPosition());
 		var.addMember(data.factory.createDataMember(name));
 
         comments(data);
@@ -1449,24 +1447,24 @@ public abstract class AbstrCFMLExprTransformer {
 	private Variable scope(ExprData data,Identifier id, Position line) throws TemplateException {
 		String idStr=id.getUpper();
 		if(data.ignoreScopes)return null;
-		if (idStr.equals("CGI")) 				return new Variable(data.factory,Scope.SCOPE_CGI,line,data.cfml.getPosition());
-		else if (idStr.equals("ARGUMENTS"))  	return new Variable(data.factory,Scope.SCOPE_ARGUMENTS,line,data.cfml.getPosition());
-		else if (idStr.equals("REQUEST"))		return new Variable(data.factory,Scope.SCOPE_REQUEST,line,data.cfml.getPosition());
-		else if (idStr.equals("SESSION"))		return new Variable(data.factory,Scope.SCOPE_SESSION,line,data.cfml.getPosition());
-		else if (idStr.equals("APPLICATION"))	return new Variable(data.factory,Scope.SCOPE_APPLICATION,line,data.cfml.getPosition());
-		else if (idStr.equals("VARIABLES"))		return new Variable(data.factory,Scope.SCOPE_VARIABLES,line,data.cfml.getPosition());
-		else if (idStr.equals("FORM")) 			return new Variable(data.factory,Scope.SCOPE_FORM,line,data.cfml.getPosition());
-		else if (idStr.equals("URL"))			return new Variable(data.factory,Scope.SCOPE_URL,line,data.cfml.getPosition());
-		else if (idStr.equals("SERVER")) 		return new Variable(data.factory,Scope.SCOPE_SERVER,line,data.cfml.getPosition());
-		else if (idStr.equals("CLIENT"))		return new Variable(data.factory,Scope.SCOPE_CLIENT,line,data.cfml.getPosition());
-		else if (idStr.equals("COOKIE"))		return new Variable(data.factory,Scope.SCOPE_COOKIE,line,data.cfml.getPosition());
-		else if (idStr.equals("CLUSTER"))		return new Variable(data.factory,Scope.SCOPE_CLUSTER,line,data.cfml.getPosition());
-		else if (idStr.equals("LOCAL"))			return new Variable(data.factory,Scope.SCOPE_LOCAL,line,data.cfml.getPosition());
+		if (idStr.equals("CGI")) 				return data.factory.createVariable(Scope.SCOPE_CGI,line,data.cfml.getPosition());
+		else if (idStr.equals("ARGUMENTS"))  	return data.factory.createVariable(Scope.SCOPE_ARGUMENTS,line,data.cfml.getPosition());
+		else if (idStr.equals("REQUEST"))		return data.factory.createVariable(Scope.SCOPE_REQUEST,line,data.cfml.getPosition());
+		else if (idStr.equals("SESSION"))		return data.factory.createVariable(Scope.SCOPE_SESSION,line,data.cfml.getPosition());
+		else if (idStr.equals("APPLICATION"))	return data.factory.createVariable(Scope.SCOPE_APPLICATION,line,data.cfml.getPosition());
+		else if (idStr.equals("VARIABLES"))		return data.factory.createVariable(Scope.SCOPE_VARIABLES,line,data.cfml.getPosition());
+		else if (idStr.equals("FORM")) 			return data.factory.createVariable(Scope.SCOPE_FORM,line,data.cfml.getPosition());
+		else if (idStr.equals("URL"))			return data.factory.createVariable(Scope.SCOPE_URL,line,data.cfml.getPosition());
+		else if (idStr.equals("SERVER")) 		return data.factory.createVariable(Scope.SCOPE_SERVER,line,data.cfml.getPosition());
+		else if (idStr.equals("CLIENT"))		return data.factory.createVariable(Scope.SCOPE_CLIENT,line,data.cfml.getPosition());
+		else if (idStr.equals("COOKIE"))		return data.factory.createVariable(Scope.SCOPE_COOKIE,line,data.cfml.getPosition());
+		else if (idStr.equals("CLUSTER"))		return data.factory.createVariable(Scope.SCOPE_CLUSTER,line,data.cfml.getPosition());
+		else if (idStr.equals("LOCAL"))			return data.factory.createVariable(Scope.SCOPE_LOCAL,line,data.cfml.getPosition());
 		else if (idStr.equals("VAR")) {
 			Identifier _id = identifier(data,false,true);
 			if(_id!=null){
 				comments(data);
-				Variable local = new Variable(data.factory,ScopeSupport.SCOPE_VAR,line,data.cfml.getPosition());
+				Variable local = data.factory.createVariable(ScopeSupport.SCOPE_VAR,line,data.cfml.getPosition());
 				if(!"LOCAL".equalsIgnoreCase(_id.getString()))local.addMember(data.factory.createDataMember(_id));
 				else {
 					local.ignoredFirstMember(true);

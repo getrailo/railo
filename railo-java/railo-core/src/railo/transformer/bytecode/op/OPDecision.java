@@ -6,8 +6,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Methods_Operator;
@@ -55,7 +55,7 @@ public final class OPDecision extends ExpressionBase implements ExprBoolean {
     }
     
     
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
         if(mode==MODE_REF) {
             _writeOut(bc,MODE_VALUE);

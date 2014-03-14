@@ -7,12 +7,12 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.RandomUtil;
 import railo.runtime.tag.ThreadTag;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -32,7 +32,7 @@ public final class TagThread extends TagBaseNoFinal {
 	}
 
 	@Override
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		String action=ASMUtil.getAttributeString(this, "action","run");
 		// no body
 		if(!"run".equalsIgnoreCase(action)) {

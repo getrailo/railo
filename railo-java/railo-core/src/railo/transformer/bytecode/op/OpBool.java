@@ -6,8 +6,9 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.Factory;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Methods_Operator;
@@ -17,12 +18,6 @@ import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.Literal;
 
 public final class OpBool extends ExpressionBase implements ExprBoolean {
-
-    public static final int AND=0;
-    public static final int OR=1;
-    public static final int XOR=2;
-	public static final int EQV = 3;
-	public static final int IMP = 4;
     
     private ExprBoolean left;
     private ExprBoolean right;
@@ -32,7 +27,7 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
      *
      * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
     	
     	if(mode==MODE_REF) {
@@ -45,7 +40,7 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
     	Label doFalse = new Label();
     	Label end = new Label();
 
-    	if(operation==AND) {
+    	if(operation==Factory.OP_BOOL_AND) {
     		left.writeOut(bc, MODE_VALUE);
         	adapter.ifZCmp(Opcodes.IFEQ, doFalse);
         	
@@ -59,7 +54,7 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
         	adapter.push(false);
         	adapter.visitLabel(end);
     	}
-    	if(operation==OR) {
+    	if(operation==Factory.OP_BOOL_OR) {
     		left.writeOut(bc, MODE_VALUE);
         	adapter.ifZCmp(Opcodes.IFNE, doFalse);
 
@@ -73,18 +68,18 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
         	adapter.push(true);
         	adapter.visitLabel(end);
     	}
-    	else if(operation==XOR) {
+    	else if(operation==Factory.OP_BOOL_XOR) {
     		left.writeOut(bc, MODE_VALUE);
     		right.writeOut(bc, MODE_VALUE);
     		adapter.visitInsn(Opcodes.IXOR);
     	}
-    	else if(operation==EQV) {
+    	else if(operation==Factory.OP_BOOL_EQV) {
 
             left.writeOut(bc,MODE_VALUE);
             right.writeOut(bc,MODE_VALUE);
             adapter.invokeStatic(Types.OPERATOR,Methods_Operator.OPERATOR_EQV_BV_BV);
     	}
-    	else if(operation==IMP) {
+    	else if(operation==Factory.OP_BOOL_IMP) {
 
             left.writeOut(bc,MODE_VALUE);
             right.writeOut(bc,MODE_VALUE);
@@ -123,9 +118,9 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
         	
         	if(l!=null && r!=null) {
         		switch(operation) {
-        		case AND:	return left.getFactory().createLitBoolean(l.booleanValue()&&r.booleanValue(),left.getStart(),right.getEnd());
-        		case OR:	return left.getFactory().createLitBoolean(l.booleanValue()||r.booleanValue(),left.getStart(),right.getEnd());
-        		case XOR:	return left.getFactory().createLitBoolean(l.booleanValue()^r.booleanValue(),left.getStart(),right.getEnd());
+        		case Factory.OP_BOOL_AND:	return left.getFactory().createLitBoolean(l.booleanValue()&&r.booleanValue(),left.getStart(),right.getEnd());
+        		case Factory.OP_BOOL_OR:	return left.getFactory().createLitBoolean(l.booleanValue()||r.booleanValue(),left.getStart(),right.getEnd());
+        		case Factory.OP_BOOL_XOR:	return left.getFactory().createLitBoolean(l.booleanValue()^r.booleanValue(),left.getStart(),right.getEnd());
         		}
         	}
         }
@@ -137,11 +132,11 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
     }
 
 	private String toStringOperation() {
-		if(AND==operation)	return "and";
-		if(OR==operation) 	return "or";
-		if(XOR==operation) 	return "xor";
-		if(EQV==operation) 	return "eqv";
-		if(IMP==operation) 	return "imp";
+		if(Factory.OP_BOOL_AND==operation)	return "and";
+		if(Factory.OP_BOOL_OR==operation) 	return "or";
+		if(Factory.OP_BOOL_XOR==operation) 	return "xor";
+		if(Factory.OP_BOOL_EQV==operation) 	return "eqv";
+		if(Factory.OP_BOOL_IMP==operation) 	return "imp";
 		return operation+"";
 	}
 }

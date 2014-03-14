@@ -14,17 +14,16 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.FunctionBody;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.statement.Condition;
 import railo.transformer.bytecode.statement.Condition.Pair;
 import railo.transformer.bytecode.statement.DoWhile;
@@ -49,6 +48,7 @@ import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.expression.ExprBoolean;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.LitBoolean;
+import railo.transformer.expression.var.Variable;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
@@ -1733,7 +1733,7 @@ int pos=data.cfml.getPos();
 			try {
 				tryCatchFinally.addCatch(type,name,b,line);
 			} 
-			catch (BytecodeException e) {
+			catch (TransformerException e) {
 				throw new TemplateException(data.cfml,e.getMessage());
 			}
 			comments(data);

@@ -5,12 +5,13 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.FunctionValueImpl;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
 import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.Variable;
 
 public final class NamedArgument extends Argument {
 	
@@ -44,7 +45,7 @@ public final class NamedArgument extends Argument {
 	}
 
 	@Override
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		
 		int form=VALUE;
 		int type=STRING;
@@ -66,11 +67,11 @@ public final class NamedArgument extends Argument {
 				//VariableString.toExprString(name).writeOut(bc, MODE_REF);
 				String str = VariableString.variableToString((Variable) name,true);
 				name=bc.getFactory().createLitString(varKeyUpperCase?str.toUpperCase():str);
-				type=Variable.registerKey(bc, VariableString.toExprString(name))?KEY:STRING;
+				type=getFactory().registerKey(bc, VariableString.toExprString(name),false)?KEY:STRING;
 			}
 		}
 		else {
-			type=Variable.registerKey(bc, name.getFactory().toExprString(name))?KEY:STRING;
+			type=getFactory().registerKey(bc, name.getFactory().toExprString(name),false)?KEY:STRING;
 		}
 		//name.writeOut(bc, MODE_REF);
 		super._writeOut(bc, MODE_REF);
@@ -81,7 +82,7 @@ public final class NamedArgument extends Argument {
 
 	
 	@Override
-	public Type writeOutValue(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type writeOutValue(BytecodeContext bc, int mode) throws TransformerException {
 		return super.writeOutValue(bc, mode);
 	}
 

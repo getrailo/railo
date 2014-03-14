@@ -2,8 +2,8 @@ package railo.transformer.cfml.expression;
 
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Factory;
+import railo.transformer.Position;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;

@@ -15,7 +15,6 @@ import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.expression.var.UDF;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -23,6 +22,7 @@ import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.Literal;
 import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 
 
 /**

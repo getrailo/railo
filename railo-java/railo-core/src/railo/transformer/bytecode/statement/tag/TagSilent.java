@@ -7,9 +7,9 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.util.Types;
@@ -43,7 +43,7 @@ public final class TagSilent extends TagBase {
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		final GeneratorAdapter adapter = bc.getAdapter();
 		
 		final int silentMode=adapter.newLocal(Types.BOOLEAN_VALUE);

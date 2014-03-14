@@ -5,9 +5,9 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.ExprString;
@@ -39,7 +39,7 @@ public final class DynAssign extends ExpressionBase {
 	}
 	
 	@Override
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		name.writeOut(bc, Expression.MODE_REF);

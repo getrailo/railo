@@ -2,7 +2,6 @@ package railo.transformer.cfml.evaluator.impl;
 
 import railo.commons.lang.StringUtil;
 import railo.transformer.bytecode.cast.Cast;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
@@ -12,6 +11,7 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.var.Variable;
 import railo.transformer.library.tag.TagLibTag;
 
 

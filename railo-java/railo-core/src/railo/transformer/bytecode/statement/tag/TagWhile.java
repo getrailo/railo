@@ -3,9 +3,9 @@ package railo.transformer.bytecode.statement.tag;
 import org.objectweb.asm.Label;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.visitor.WhileVisitor;
@@ -24,7 +24,7 @@ public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,F
 	/**
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		wv = new WhileVisitor();
 		wv.visitBeforeExpression(bc);
 			getAttribute("condition").getValue().writeOut(bc, Expression.MODE_VALUE);

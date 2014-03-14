@@ -2,12 +2,11 @@ package railo.transformer.bytecode.statement.udf;
 
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.Literal;
@@ -26,7 +25,7 @@ public final class FunctionImpl extends Function {
 		super(page,name, access, returnType, body, start, end);
 	}
 
-	public final void _writeOut(BytecodeContext bc, int pageType) throws BytecodeException{
+	public final void _writeOut(BytecodeContext bc, int pageType) throws TransformerException{
 		GeneratorAdapter adapter = bc.getAdapter();
 		////Page page = ASMUtil.getAncestorPage(this);
 		////int index=page.addFunction(this);
@@ -45,7 +44,7 @@ public final class FunctionImpl extends Function {
 		}
 		
 		
-		boolean hasKey = Variable.registerKey(bc,name,true);
+		boolean hasKey = bc.getFactory().registerKey(bc,name,true);
 		if(pageType==PAGE_TYPE_COMPONENT) {
 			loadUDFProperties(bc,valueIndex,arrayIndex,false);
 			adapter.invokeVirtual(Types.COMPONENT_IMPL, hasKey?REG_UDF_KEY:REG_UDF_STR);

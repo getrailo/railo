@@ -2,12 +2,11 @@ package railo.transformer.bytecode.expression;
 
 import org.objectweb.asm.Type;
 
-import railo.runtime.exp.TemplateException;
 import railo.transformer.Context;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.expression.Expression;
 
@@ -27,7 +26,7 @@ public abstract class ExpressionBase implements Expression {
     }
 
     @Override
-    public final Type writeOut(Context c, int mode) throws BytecodeException {
+    public final Type writeOut(Context c, int mode) throws TransformerException {
     	BytecodeContext bc=(BytecodeContext) c;
     	ExpressionUtil.visitLine(bc, start);
     	Type type = _writeOut(bc,mode);
@@ -42,7 +41,7 @@ public abstract class ExpressionBase implements Expression {
      * @return return Type of expression
      * @throws TemplateException
      */
-    public abstract Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException;
+    public abstract Type _writeOut(BytecodeContext bc, int mode) throws TransformerException;
 
     @Override
     public Factory getFactory() {

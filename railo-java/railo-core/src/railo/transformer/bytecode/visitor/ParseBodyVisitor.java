@@ -4,8 +4,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.util.Types;
 
 public final class ParseBodyVisitor {
@@ -35,7 +35,7 @@ public final class ParseBodyVisitor {
 
 
 	}
-	public void visitEnd(BytecodeContext bc) throws BytecodeException {
+	public void visitEnd(BytecodeContext bc) throws TransformerException {
 		
 		tfv.visitTryEnd(bc);
 

@@ -5,8 +5,8 @@ import org.objectweb.asm.Type;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Context;
 import railo.transformer.Factory;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 
 
 /**
@@ -30,7 +30,7 @@ public interface Expression {
      * @return return Type of expression
      * @throws TemplateException
      */
-    public Type writeOut(Context bc, int mode) throws BytecodeException;
+    public Type writeOut(Context bc, int mode) throws TransformerException;
 
     public Position getStart();
 

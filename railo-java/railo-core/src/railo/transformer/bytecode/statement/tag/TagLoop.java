@@ -10,9 +10,9 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
@@ -219,7 +219,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		boolean old;
 
 		switch(type) {
@@ -285,7 +285,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		
 		
 		default:
-			throw new BytecodeException("invalid type",getStart());
+			throw new TransformerException("invalid type",getStart());
 		}
 	}
 
@@ -294,7 +294,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeCollection(BytecodeContext bc) throws BytecodeException {
+	private void writeOutTypeCollection(BytecodeContext bc) throws TransformerException {
 		
 		GeneratorAdapter adapter = bc.getAdapter();
 
@@ -405,7 +405,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeCondition(BytecodeContext bc) throws BytecodeException {
+	private void writeOutTypeCondition(BytecodeContext bc) throws TransformerException {
 		WhileVisitor whileVisitor = new WhileVisitor();
 		loopVisitor=whileVisitor;
 		whileVisitor.visitBeforeExpression(bc);
@@ -421,7 +421,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeFile(BytecodeContext bc) throws BytecodeException {
+	private void writeOutTypeFile(BytecodeContext bc) throws TransformerException {
 		WhileVisitor whileVisitor = new WhileVisitor();
 		loopVisitor=whileVisitor;
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -646,7 +646,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeFromTo(BytecodeContext bc) throws BytecodeException {
+	private void writeOutTypeFromTo(BytecodeContext bc) throws TransformerException {
 		ForDoubleVisitor forDoubleVisitor = new ForDoubleVisitor();
 		loopVisitor=forDoubleVisitor;
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -790,7 +790,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private void writeOutTypeListArray(BytecodeContext bc, boolean isArray) throws BytecodeException {
+	private void writeOutTypeListArray(BytecodeContext bc, boolean isArray) throws TransformerException {
 		ForVisitor forVisitor = new ForVisitor();
 		loopVisitor=forVisitor;
 		GeneratorAdapter adapter = bc.getAdapter();

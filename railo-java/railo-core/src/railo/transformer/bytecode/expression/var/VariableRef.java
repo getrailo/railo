@@ -4,17 +4,18 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Variable;
 
 public final class VariableRef extends ExpressionBase {
 
 	
-	private Variable variable;
+	private VariableImpl variable;
 	// Object touch (Object,String)
     private final static Method TOUCH =  new Method("touch",
 			Types.OBJECT,
@@ -35,26 +36,26 @@ public final class VariableRef extends ExpressionBase {
 
 	public VariableRef(Variable variable) {
 		super(variable.getFactory(),variable.getStart(),variable.getEnd());
-		this.variable=variable;
+		this.variable=(VariableImpl)variable;
 	}
 
 	/**
 	 *
 	 * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
 	 */
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		int count=variable.countFM+variable.countDM;
 		
 		for(int i=0;i<=count;i++) {
     		adapter.loadArg(0);
 		}
-		TypeScope.invokeScope(adapter, variable.scope);
+		TypeScope.invokeScope(adapter, variable.getScope());
 		
 		boolean isLast;
 		for(int i=0;i<count;i++) {
 			isLast=(i+1)==count;
-			if(Variable.registerKey(bc,((DataMember)variable.members.get(i)).getName()))
+			if(getFactory().registerKey(bc,((DataMember)variable.members.get(i)).getName(),false))
 				adapter.invokeVirtual(Types.PAGE_CONTEXT,isLast?GET_REFERENCE_KEY:TOUCH_KEY);
 			else
 				adapter.invokeVirtual(Types.PAGE_CONTEXT,isLast?GET_REFERENCE:TOUCH);

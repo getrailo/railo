@@ -8,12 +8,12 @@ import java.util.Map;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.IFunction;
@@ -33,18 +33,18 @@ public final class TagFunction extends TagBase implements IFunction {
 	}
 	
 	@Override
-	public void writeOut(BytecodeContext bc, int type) throws BytecodeException {
+	public void writeOut(BytecodeContext bc, int type) throws TransformerException {
     	//ExpressionUtil.visitLine(bc, getStartLine());
     	_writeOut(bc,type);
     	//ExpressionUtil.visitLine(bc, getEndLine());
 	}
 	
 	@Override
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		_writeOut(bc,Function.PAGE_TYPE_REGULAR);
 	}
 
-	public void _writeOut(BytecodeContext bc, int type) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc, int type) throws TransformerException {
 
 		//private static final Expression EMPTY = LitString.toExprString("");
 		
@@ -170,7 +170,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	}
 
-	private Function createFunction(Page page, Body body) throws BytecodeException {
+	private Function createFunction(Page page, Body body) throws TransformerException {
 		Attribute attr;
 		LitString ANY = body.getFactory().createLitString("any");
 		LitString PUBLIC = body.getFactory().createLitString("public");
@@ -252,7 +252,7 @@ public final class TagFunction extends TagBase implements IFunction {
 		String strAccess = ((LitString)access).getString();
 		int acc = ComponentUtil.toIntAccess(strAccess,-1);
 		if(acc==-1)
-			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
+			throw new TransformerException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
         
 		Function func = new FunctionImpl(page,name, returnType,returnFormat, output, bufferOutput, acc, displayname,description,
 				hint,secureJson,verifyClient,localMode,cachedWithin,_abstract,_final, body, getStart(),getEnd());

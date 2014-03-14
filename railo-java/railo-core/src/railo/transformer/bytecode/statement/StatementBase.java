@@ -3,9 +3,9 @@ package railo.transformer.bytecode.statement;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Context;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
@@ -56,7 +56,7 @@ public abstract class StatementBase implements Statement {
      * @param adapter
      * @throws TemplateException
      */
-    public final void writeOut(Context c) throws BytecodeException {
+    public final void writeOut(Context c) throws TransformerException {
     	BytecodeContext bc=(BytecodeContext) c;
     	ExpressionUtil.visitLine(bc, start);
         _writeOut(bc);
@@ -68,9 +68,9 @@ public abstract class StatementBase implements Statement {
     /**
      * write out the stament to the adater
      * @param adapter
-     * @throws BytecodeException 
+     * @throws TransformerException 
      */
-    public abstract void _writeOut(BytecodeContext bc) throws BytecodeException;
+    public abstract void _writeOut(BytecodeContext bc) throws TransformerException;
 
 
 

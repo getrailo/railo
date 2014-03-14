@@ -1,4 +1,4 @@
-package railo.transformer.bytecode;
+package railo.transformer;
 
 
 public class Position {

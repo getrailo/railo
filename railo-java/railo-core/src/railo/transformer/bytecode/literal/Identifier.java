@@ -1,7 +1,7 @@
 package railo.transformer.bytecode.literal;
 
 import railo.transformer.Factory;
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
 
 
 public class Identifier extends LitStringImpl {

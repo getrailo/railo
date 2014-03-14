@@ -5,8 +5,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
@@ -56,7 +56,7 @@ public class TryCatchFinallyVisitor implements Opcodes {
 		return lThrow;
 	}
 	
-	public void visitCatchEnd(BytecodeContext bc) throws BytecodeException {
+	public void visitCatchEnd(BytecodeContext bc) throws TransformerException {
 		Label end = new Label();
 		GeneratorAdapter ga = bc.getAdapter();
 		bc.popOnFinally();

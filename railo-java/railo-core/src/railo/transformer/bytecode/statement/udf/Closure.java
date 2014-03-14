@@ -1,10 +1,10 @@
 package railo.transformer.bytecode.statement.udf;
 
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.Literal;
 
@@ -25,7 +25,7 @@ public final class Closure extends Function {
 		super(page,name, access, returnType, body, start, end);
 	}
 
-	public final void _writeOut(BytecodeContext bc, int pageType) throws BytecodeException{
+	public final void _writeOut(BytecodeContext bc, int pageType) throws TransformerException{
 		//GeneratorAdapter adapter = bc.getAdapter();
 		
 		////Page page = bc.getPage();

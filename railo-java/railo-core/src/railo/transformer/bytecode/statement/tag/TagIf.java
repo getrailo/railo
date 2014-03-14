@@ -9,10 +9,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.expression.ExprBoolean;
@@ -25,7 +25,7 @@ public final class TagIf extends TagBaseNoFinal {
 		super(f,start,end);
 	}
 
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
 		Label end = new Label();
@@ -63,14 +63,14 @@ public final class TagIf extends TagBaseNoFinal {
 		adapter.visitLabel(end);
 	}
 
-	private void __writeOut(BytecodeContext bc, List<Statement> statements) throws BytecodeException {
+	private void __writeOut(BytecodeContext bc, List<Statement> statements) throws TransformerException {
 		if(statements.size()>0) {
 			BodyBase.writeOut(bc, statements);
 			statements.clear();
 		}
 	}
 
-	private static Label writeOutElseIfStart(BytecodeContext bc, Tag tag) throws BytecodeException {
+	private static Label writeOutElseIfStart(BytecodeContext bc, Tag tag) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		ExprBoolean cont = bc.getFactory().toExprBoolean(tag.getAttribute("condition").getValue());

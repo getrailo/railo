@@ -4,8 +4,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.Position;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 

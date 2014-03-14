@@ -7,12 +7,13 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.Expression;
+import railo.transformer.expression.Invoker;
 import railo.transformer.expression.var.DataMember;
 import railo.transformer.expression.var.Member;
 
@@ -51,7 +52,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 		this.expr=expr;
 	}
 
-	public Type _writeOut(BytecodeContext bc, int mode)	throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode)	throws TransformerException {
 
     	GeneratorAdapter adapter = bc.getAdapter();
     	
@@ -92,7 +93,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 
 	/**
 	 *
-	 * @see railo.transformer.bytecode.expression.Invoker#addMember(railo.transformer.expression.var.Member)
+	 * @see railo.transformer.expression.Invoker#addMember(railo.transformer.expression.var.Member)
 	 */
 	public void addMember(Member member) {
 		members.add(member);
@@ -100,7 +101,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 
 	/**
 	 *
-	 * @see railo.transformer.bytecode.expression.Invoker#getMembers()
+	 * @see railo.transformer.expression.Invoker#getMembers()
 	 */
 	public List getMembers() {
 		return members;

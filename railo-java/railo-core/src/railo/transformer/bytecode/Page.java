@@ -33,6 +33,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
 import railo.transformer.Factory;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.statement.Argument;
 import railo.transformer.bytecode.statement.HasBodies;
 import railo.transformer.bytecode.statement.HasBody;
@@ -400,7 +401,7 @@ public final class Page extends BodyBase {
      * @throws IOException 
      * @throws TemplateException 
      */
-    public byte[] execute(PageSource source,Resource classFile) throws BytecodeException {
+    public byte[] execute(PageSource source,Resource classFile) throws TransformerException {
     	/*
     	// this is done that the Page can be executed more than once
     	if(initFunctions==null)
@@ -706,7 +707,7 @@ public final class Page extends BodyBase {
 		return _writeLog && !isInterface();
 	}
 
-	public static void registerFields(BytecodeContext bc, List<LitString> keys) throws BytecodeException {
+	public static void registerFields(BytecodeContext bc, List<LitString> keys) throws TransformerException {
 		//if(keys.size()==0) return;
 		GeneratorAdapter ga = bc.getAdapter();
 		
@@ -732,7 +733,7 @@ public final class Page extends BodyBase {
 		ga.visitFieldInsn(Opcodes.PUTFIELD, bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
 	}
 
-	private void writeUdfDefaultValueInner(BytecodeContext bc, Function[] functions, int offset, int length) throws BytecodeException {
+	private void writeUdfDefaultValueInner(BytecodeContext bc, Function[] functions, int offset, int length) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		ConditionVisitor cv = new ConditionVisitor();
 		DecisionIntVisitor div;
@@ -753,7 +754,7 @@ public final class Page extends BodyBase {
 	}
 
 
-	private void writeOutUdfCallInnerIf(BytecodeContext bc,Function[] functions, int offset, int length) throws BytecodeException {
+	private void writeOutUdfCallInnerIf(BytecodeContext bc,Function[] functions, int offset, int length) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		ConditionVisitor cv=new ConditionVisitor();
         DecisionIntVisitor div;
@@ -775,7 +776,7 @@ public final class Page extends BodyBase {
         cv.visitAfter(bc);
 	}
 
-	private void writeOutUdfCallInner(BytecodeContext bc,Function[] functions, int offset, int length) throws BytecodeException {
+	private void writeOutUdfCallInner(BytecodeContext bc,Function[] functions, int offset, int length) throws TransformerException {
 		NativeSwitch ns=new NativeSwitch(bc.getFactory(),2,NativeSwitch.ARG_REF,null,null);
 		
 		for(int i=offset;i<length;i++) {
@@ -786,7 +787,7 @@ public final class Page extends BodyBase {
 	
 	
 
-	private void writeOutThreadCallInner(BytecodeContext bc,TagThread[] threads, int offset, int length) throws BytecodeException {
+	private void writeOutThreadCallInner(BytecodeContext bc,TagThread[] threads, int offset, int length) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		ConditionVisitor cv=new ConditionVisitor();
         DecisionIntVisitor div;
@@ -808,7 +809,7 @@ public final class Page extends BodyBase {
         cv.visitAfter(bc);
 	}
 
-	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag component) throws BytecodeException {
+	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag component) throws TransformerException {
 		final GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_COMPONENT, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,INIT_COMPONENT,writeLog(),suppressWSbeforeArg);
 		Label methodBegin=new Label();
@@ -907,7 +908,7 @@ public final class Page extends BodyBase {
     	
 	}
 
-	private void writeOutInitInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag interf) throws BytecodeException {
+	private void writeOutInitInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag interf) throws TransformerException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_INTERFACE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,INIT_INTERFACE,writeLog(),suppressWSbeforeArg);
 		Label methodBegin=new Label();
@@ -927,7 +928,7 @@ public final class Page extends BodyBase {
     	
 	}
 
-	private Tag getComponent() throws BytecodeException {
+	private Tag getComponent() throws TransformerException {
 		Iterator it = getStatements().iterator();
 		Statement s;
 		Tag t;
@@ -938,9 +939,9 @@ public final class Page extends BodyBase {
         		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Component"))return t;
         	}
         }
-		throw new BytecodeException("missing component",getStart());
+		throw new TransformerException("missing component",getStart());
 	}
-	private Tag getInterface() throws BytecodeException {
+	private Tag getInterface() throws TransformerException {
 		Iterator it = getStatements().iterator();
 		Statement s;
 		Tag t;
@@ -951,10 +952,10 @@ public final class Page extends BodyBase {
         		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Interface"))return t;
         	}
         }
-		throw new BytecodeException("missing interface",getStart());
+		throw new TransformerException("missing interface",getStart());
 	}
 
-	private void writeOutFunctionDefaultValueInnerInner(BytecodeContext bc, Function function) throws BytecodeException {
+	private void writeOutFunctionDefaultValueInnerInner(BytecodeContext bc, Function function) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
 		List<Argument> args = function.getArguments();
@@ -1023,11 +1024,11 @@ public final class Page extends BodyBase {
 	}
 	
 	
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		
 	}
 
-	private void writeOutNewComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag component) throws BytecodeException {
+	private void writeOutNewComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag component) throws TransformerException {
 		
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_COMPONENT_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,NEW_COMPONENT_IMPL_INSTANCE,writeLog(),suppressWSbeforeArg);
@@ -1146,7 +1147,7 @@ public final class Page extends BodyBase {
         
 	}
 	
-	private void writeOutNewInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag interf) throws BytecodeException {
+	private void writeOutNewInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag interf) throws TransformerException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_INTERFACE_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,NEW_INTERFACE_IMPL_INSTANCE,writeLog(),suppressWSbeforeArg);
     	Label methodBegin=new Label();
@@ -1231,7 +1232,7 @@ public final class Page extends BodyBase {
 		return true;
 	}
 	
-	public static void createMetaDataStruct(BytecodeContext bc, Map attrs, Map meta) throws BytecodeException {
+	public static void createMetaDataStruct(BytecodeContext bc, Map attrs, Map meta) throws TransformerException {
 		
 		
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -1257,7 +1258,7 @@ public final class Page extends BodyBase {
 		adapter.loadLocal(sct);
 	}
 
-	private static void _createMetaDataStruct(BytecodeContext bc, GeneratorAdapter adapter, int sct, Map attrs) throws BytecodeException {
+	private static void _createMetaDataStruct(BytecodeContext bc, GeneratorAdapter adapter, int sct, Map attrs) throws TransformerException {
 		Attribute attr;
 		Iterator it = attrs.entrySet().iterator();
 		Entry entry;
@@ -1276,7 +1277,7 @@ public final class Page extends BodyBase {
 		}
 	}
 
-	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw) throws BytecodeException {
+	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw) throws TransformerException {
 		//GeneratorAdapter adapter = bc.getAdapter();
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , CALL, null, new Type[]{Types.THROWABLE}, cw);
 	    	Label methodBegin=new Label();
@@ -1293,7 +1294,7 @@ public final class Page extends BodyBase {
     }
 
 
-	private void writeOutCallBody(BytecodeContext bc,Body body, int pageType) throws BytecodeException {
+	private void writeOutCallBody(BytecodeContext bc,Body body, int pageType) throws TransformerException {
 		// Other
 		List<IFunction> functions=new ArrayList<IFunction>();
 		getFunctions(functions,bc,body,pageType);
@@ -1331,7 +1332,7 @@ public final class Page extends BodyBase {
 		}
 	}
 
-	private static void getImports(List<String> list,Body body) throws BytecodeException {
+	private static void getImports(List<String> list,Body body) throws TransformerException {
 		if(ASMUtil.isEmpty(body)) return;
 		Statement stat;
 		List stats = body.getStatements();
@@ -1361,7 +1362,7 @@ public final class Page extends BodyBase {
 	}
 	
 	
-	private static void getFunctions(List<IFunction> functions,BytecodeContext bc, Body body, int pageType) throws BytecodeException {
+	private static void getFunctions(List<IFunction> functions,BytecodeContext bc, Body body, int pageType) throws TransformerException {
 		//writeOutImports(bc, body, pageType);
 		if(ASMUtil.isEmpty(body)) return;
 		Statement stat;

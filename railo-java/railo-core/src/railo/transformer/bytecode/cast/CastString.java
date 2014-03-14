@@ -3,8 +3,8 @@ package railo.transformer.bytecode.cast;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
@@ -45,7 +45,7 @@ public final class CastString extends ExpressionBase implements ExprString,Cast 
     /**
      * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 
     	GeneratorAdapter adapter = bc.getAdapter();
     	if(expr instanceof ExprBoolean) {

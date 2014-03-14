@@ -7,17 +7,17 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.runtime.util.ForEachUtil;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.Variable;
 
 public final class ForEach extends StatementBase implements FlowControlBreak,FlowControlContinue,HasBody {
 
@@ -58,7 +58,7 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 	}
 	
 	@Override
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		final int it=adapter.newLocal(Types.ITERATOR);
 		final int item=adapter.newLocal(Types.REFERENCE);
@@ -73,7 +73,7 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 			TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
 				
 				@Override
-				public void writeOut(BytecodeContext bc) throws BytecodeException {
+				public void writeOut(BytecodeContext bc) throws TransformerException {
 					GeneratorAdapter a = bc.getAdapter();
 					//if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(a,fcf.getFinalEntryLabel());
 					a.loadLocal(it);

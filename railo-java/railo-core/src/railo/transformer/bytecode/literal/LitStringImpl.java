@@ -8,10 +8,10 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.op.Caster;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Range;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.op.OpString;
@@ -62,7 +62,7 @@ public class LitStringImpl extends ExpressionBase implements LitString,ExprStrin
     /**
      * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    private static  Type _writeOut(BytecodeContext bc, int mode,String str) throws BytecodeException {
+    private static  Type _writeOut(BytecodeContext bc, int mode,String str) throws TransformerException {
         // write to a file instead to the bytecode
     	// str(0,10);
     	//print.ds(str);
@@ -93,11 +93,11 @@ public class LitStringImpl extends ExpressionBase implements LitString,ExprStrin
         }
         return Types.STRING;
     }
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
         return _writeOut(bc, mode, str);
     }
     
-    public Type writeOut(BytecodeContext bc, int mode, int caseType) throws BytecodeException {
+    public Type writeOut(BytecodeContext bc, int mode, int caseType) throws TransformerException {
     	if(TYPE_UPPER==caseType)	return _writeOut(bc, mode, str.toUpperCase());
     	if(TYPE_LOWER==caseType)	return _writeOut(bc, mode, str.toLowerCase());
         return _writeOut(bc, mode, str);

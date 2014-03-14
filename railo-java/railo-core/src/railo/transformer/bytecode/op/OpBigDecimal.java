@@ -6,8 +6,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.Expression;
@@ -38,11 +38,11 @@ public final class OpBigDecimal extends ExpressionBase {
      *
      * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	return writeOutDouble(bc, mode) ;
     }
     
-    public Type writeOutDouble(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type writeOutDouble(BytecodeContext bc, int mode) throws TransformerException {
 
         if(operation==OpDouble.EXP) {
         	return new OpDouble(left, right, operation).writeOutDouble(bc, mode);
@@ -84,7 +84,7 @@ public final class OpBigDecimal extends ExpressionBase {
     
 
 
-	private static void toBigDecimal(BytecodeContext bc, Expression expr) throws BytecodeException {
+	private static void toBigDecimal(BytecodeContext bc, Expression expr) throws TransformerException {
 		expr.writeOut(bc,MODE_REF);
     	if(expr instanceof OpBigDecimal) return;
     	bc.getAdapter().invokeStatic(Types.CASTER,TO_BIG_DECIMAL);

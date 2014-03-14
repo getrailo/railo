@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
@@ -12,23 +11,20 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
-import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Constants;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.CallerUtil;
 import railo.runtime.util.VariableUtilImpl;
+import railo.transformer.Context;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.Invoker;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -38,16 +34,15 @@ import railo.transformer.bytecode.visitor.ArrayVisitor;
 import railo.transformer.expression.ExprString;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.LitString;
-import railo.transformer.expression.literal.Literal;
 import railo.transformer.expression.var.DataMember;
 import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
-public class Variable extends ExpressionBase implements Invoker {
+public class VariableImpl extends ExpressionBase implements Variable {
 	 
 
-	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
 	private static final Type CALLER_UTIL = Type.getType(CallerUtil.class);
 
 	// java.lang.Object get(java.lang.String)
@@ -150,7 +145,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	private static final Type CONSTANTS = Type.getType(Constants.class);
     
     
-	int scope=Scope.SCOPE_UNDEFINED;
+	private int scope=Scope.SCOPE_UNDEFINED;
 	List<Member> members=new ArrayList<Member>();
 	int countDM=0;
 	int countFM=0;
@@ -160,11 +155,11 @@ public class Variable extends ExpressionBase implements Invoker {
 	private Expression defaultValue;
 	private Boolean asCollection;
 
-	public Variable(Factory factory,Position start,Position end) {
+	public VariableImpl(Factory factory,Position start,Position end) {
 		super(factory,start,end);
 	}
 	
-	public Variable(Factory factory,int scope,Position start,Position end) {
+	public VariableImpl(Factory factory,int scope,Position start,Position end) {
 		super(factory,start,end);
 		this.scope=scope;
 	}
@@ -187,9 +182,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		this.asCollection = asCollection;
 	}
 
-	/**
-	 * @return the scope
-	 */
+	@Override
 	public int getScope() {
 		return scope;
 	}
@@ -201,25 +194,29 @@ public class Variable extends ExpressionBase implements Invoker {
 		this.scope = scope;
 	}
 	
+	@Override
 	public void addMember(Member member) {
 		if(member instanceof DataMember)countDM++;
 		else countFM++;
 		members.add(member);
 	}
 	
-	public final Type writeOutCollection(BytecodeContext bc, int mode) throws BytecodeException {
+	@Override
+	public final Type writeOutCollection(Context c, int mode) throws TransformerException {
+		BytecodeContext bc=(BytecodeContext) c;
         ExpressionUtil.visitLine(bc, getStart());
     	Type type = _writeOut(bc,mode, Boolean.TRUE);
         ExpressionUtil.visitLine(bc, getEnd());
         return type;
     }
 
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	@Override
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		if(defaultValue!=null && countFM==0 && countDM!=0)
 			return _writeOutCallerUtil(bc, mode);
 		return _writeOut(bc, mode, asCollection);
 	}
-	private Type _writeOut(BytecodeContext bc, int mode,Boolean asCollection) throws BytecodeException {
+	private Type _writeOut(BytecodeContext bc, int mode,Boolean asCollection) throws TransformerException {
 		
 		
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -259,12 +256,12 @@ public class Variable extends ExpressionBase implements Invoker {
 					}
 					else {
 						
-						if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION_KEY:GET_KEY);
+						if(getFactory().registerKey(bc,name,false))adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION_KEY:GET_KEY);
 						else adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION:GET);
 					}
 				}
 				else{
-					if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION_KEY:GET_KEY);
+					if(getFactory().registerKey(bc,name,false))adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION_KEY:GET_KEY);
 					else adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION:GET);
 				}
 				rtn=Types.OBJECT;
@@ -278,7 +275,7 @@ public class Variable extends ExpressionBase implements Invoker {
     	return rtn;
 	}
 	
-	private Type _writeOutCallerUtil(BytecodeContext bc, int mode) throws BytecodeException {
+	private Type _writeOutCallerUtil(BytecodeContext bc, int mode) throws TransformerException {
 		
 		
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -310,7 +307,7 @@ public class Variable extends ExpressionBase implements Invoker {
         	DataMember member=(DataMember) it.next();
         	if(i++<startIndex.toInt()) continue;
 			av.visitBeginItem(adapter, index++);
-				registerKey(bc,member.getName());
+				getFactory().registerKey(bc,member.getName(),false);
 			av.visitEndItem(bc.getAdapter());
 
     	}
@@ -329,47 +326,6 @@ public class Variable extends ExpressionBase implements Invoker {
 		return asCollection!=null && asCollection.booleanValue();
 	}
 
-	public static boolean registerKey(BytecodeContext bc,Expression name) throws BytecodeException {
-		return registerKey(bc, name, false);
-	}
-	
-	public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
-		
-		if(name instanceof Literal) {
-			Literal l=(Literal) name;
-			
-			LitString ls = name instanceof LitString?(LitString)l:bc.getFactory().createLitString(l.getString());
-			if(doUpperCase){
-				ls=ls.duplicate();
-				ls.upperCase();
-			}
-			String key=KeyConstants.getFieldName(ls.getString());
-			if(key!=null){
-				bc.getAdapter().getStatic(KEY_CONSTANTS, key, Types.COLLECTION_KEY);
-				return true;
-			}
-			int index=bc.registerKey(ls);
-			bc.getAdapter().visitVarInsn(Opcodes.ALOAD, 0);
-			bc.getAdapter().visitFieldInsn(Opcodes.GETFIELD,  bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
-			bc.getAdapter().push(index);
-			bc.getAdapter().visitInsn(Opcodes.AALOAD);
-			
-			
-			//ExpressionUtil.writeOutSilent(lit,bc, Expression.MODE_REF);
-			//bc.getAdapter().invokeStatic(Page.KEY_IMPL, Page.KEY_INTERN);
-			
-			return true;
-		}
-		name.writeOut(bc, MODE_REF);
-		bc.getAdapter().invokeStatic(Page.KEY_IMPL, INIT);
-		//bc.getAdapter().invokeStatic(Types.CASTER, TO_KEY);
-		return true;
-	}
-
-	public static boolean canRegisterKey(Expression name) {
-		return name instanceof LitString;
-	}
-
 	
 	/**
 	 * outputs a empty Variable, only scope 
@@ -377,7 +333,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	 * @param adapter
 	 * @throws TemplateException
 	 */
-	private Type _writeOutEmpty(BytecodeContext bc) throws BytecodeException {
+	private Type _writeOutEmpty(BytecodeContext bc) throws TransformerException {
 		if(ignoredFirstMember && (scope==Scope.SCOPE_LOCAL || scope==ScopeSupport.SCOPE_VAR)) 
 			return Types.VOID;
 		
@@ -410,7 +366,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	
 	
 
-	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope, Expression defaultValue, RefInteger startIndex) throws BytecodeException {
+	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope, Expression defaultValue, RefInteger startIndex) throws TransformerException {
 		
 		if(member instanceof DataMember)
     		return _writeOutFirstDataMember(bc,(DataMember)member, scope,last , doOnlyScope,defaultValue,startIndex);
@@ -420,11 +376,11 @@ public class Variable extends ExpressionBase implements Invoker {
     		return _writeOutFirstBIF(bc,(BIF)member,mode,last,getStart());
 	}
 	
-	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,Position line) throws BytecodeException {
+	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,Position line) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		// class
-		Class bifClass = bif.getClazz();
+		Class<?> bifClass = bif.getClazz();
 		Type bifType = Type.getType(bifClass);//Types.toType(bif.getClassName());
 		Type rtnType=Types.toType(bif.getReturnType());
 		if(rtnType==Types.VOID)rtnType=Types.STRING;
@@ -466,7 +422,7 @@ public class Variable extends ExpressionBase implements Invoker {
 				
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
-						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getStart());
+						TransformerException bce = new TransformerException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getStart());
 						UDFUtil.addFunctionDoc(bce, bif.getFlf());
 						throw bce;
 					}
@@ -543,11 +499,11 @@ public class Variable extends ExpressionBase implements Invoker {
 	private static Boolean methodExists(Class clazz, String methodName, Type[] args, Type returnType)  {
 		try {
 			//Class _clazz=Types.toClass(clazz);
-			Class[] _args=new Class[args.length];
+			Class<?>[] _args=new Class[args.length];
 			for(int i=0;i<_args.length;i++){
 				_args[i]=Types.toClass(args[i]);
 			}
-			Class rtn = Types.toClass(returnType);
+			Class<?> rtn = Types.toClass(returnType);
 		
 			try {
 				java.lang.reflect.Method m = clazz.getMethod(methodName, _args);
@@ -563,7 +519,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		}
 	}
 
-	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope, boolean doOnlyScope) throws BytecodeException {
+	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope, boolean doOnlyScope) throws TransformerException {
 
     	GeneratorAdapter adapter = bc.getAdapter();
 		// pc.getFunction (Object,String,Object[])
@@ -578,8 +534,8 @@ public class Variable extends ExpressionBase implements Invoker {
 		return _writeOutUDF(bc,udf);
 	}
 
-	private static Type _writeOutUDF(BytecodeContext bc, UDF udf) throws BytecodeException {
-		registerKey(bc,udf.getName());
+	private static Type _writeOutUDF(BytecodeContext bc, UDF udf) throws TransformerException {
+		bc.getFactory().registerKey(bc,udf.getName(),false);
 		Argument[] args = udf.getArguments();
 		
 		// no arguments
@@ -591,7 +547,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		return Types.OBJECT;
 	}
 
-	Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last, boolean doOnlyScope, Expression defaultValue, RefInteger startIndex) throws BytecodeException {
+	Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last, boolean doOnlyScope, Expression defaultValue, RefInteger startIndex) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
     	if(startIndex!=null)startIndex.setValue(doOnlyScope?0:1);
 		
@@ -629,41 +585,36 @@ public class Variable extends ExpressionBase implements Invoker {
     	}
 		if(doOnlyScope) return rtn;
 		
-		if(registerKey(bc,member.getName()))
+		if(getFactory().registerKey(bc,member.getName(),false))
     		adapter.invokeInterface(TypeScope.SCOPES[scope],!last && scope==Scope.SCOPE_UNDEFINED?METHOD_SCOPE_GET_COLLECTION_KEY:METHOD_SCOPE_GET_KEY);
 		else
 			adapter.invokeInterface(TypeScope.SCOPES[scope],!last && scope==Scope.SCOPE_UNDEFINED?METHOD_SCOPE_GET_COLLECTION:METHOD_SCOPE_GET);
     	return Types.OBJECT;
 	}
-	
-	
 
-	/**
-	 * @return the members
-	 */
+	@Override
 	public List<Member> getMembers() {
 		return members;
 	}
 
-	/**
-	 * @return the first member or null if there no member
-	 */
+	@Override
 	public Member getFirstMember() {
 		if(members.isEmpty()) return null;
 		return members.get(0);
 	}
 
-	/**
-	 * @return the first member or null if there no member
-	 */
+	@Override
 	public Member getLastMember() {
 		if(members.isEmpty()) return null;
 		return members.get(members.size()-1);
 	}
 
+	@Override
 	public void ignoredFirstMember(boolean b) {
 		this.ignoredFirstMember=b;
 	}
+	
+	@Override
 	public boolean ignoredFirstMember() {
 		return ignoredFirstMember;
 	}
@@ -671,7 +622,7 @@ public class Variable extends ExpressionBase implements Invoker {
 	
 	
 
-	private static VT getMatchingValueAndType(Factory factory,FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, Position line) throws BytecodeException {
+	private static VT getMatchingValueAndType(Factory factory,FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, Position line) throws TransformerException {
 		String flfan=flfa.getName();
 		
 		// first search if a argument match
@@ -698,7 +649,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		if(!flfa.getRequired()) {
 			return getDefaultValue(factory,flfa);
 		}
-		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
+		TransformerException be = new TransformerException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
@@ -716,9 +667,9 @@ public class Variable extends ExpressionBase implements Invoker {
 		return new VT(CastOther.toExpression(factory.createLitString(defaultValue), type),type,-1);
 	}
 
-	private static String getName(Expression expr) throws BytecodeException {
+	private static String getName(Expression expr) throws TransformerException {
 		String name = ASMUtil.toString(expr);
-		if(name==null) throw new BytecodeException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",null);
+		if(name==null) throw new TransformerException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",null);
 		return name;
 	}
 
@@ -744,27 +695,34 @@ public class Variable extends ExpressionBase implements Invoker {
 	 * @param args
 	 * @param line
 	 * @return
-	 * @throws BytecodeException
+	 * @throws TransformerException
 	 */
-	private static  boolean isNamed(Object funcName,Argument[] args) throws BytecodeException {
+	private static  boolean isNamed(Object funcName,Argument[] args) throws TransformerException {
 		if(ArrayUtil.isEmpty(args)) return false;
 		boolean named=false;
 		for(int i=0;i<args.length;i++){
 			if(args[i] instanceof NamedArgument)named=true;
 			else if(named)
-				throw new BytecodeException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getStart());
+				throw new TransformerException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getStart());
 		}
 		
 		
 		return named;
 	}
 
-	public void setFromHash(boolean fromHash) {
+	@Override
+	public void fromHash(boolean fromHash) {
 		this.fromHash=fromHash;
 	}
 
+	@Override
 	public boolean fromHash() {
 		return fromHash;
+	}
+	
+	@Override
+	public int getCount() {
+		return countDM+countFM;
 	}
 	
 }

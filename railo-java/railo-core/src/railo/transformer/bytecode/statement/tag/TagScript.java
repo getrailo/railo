@@ -1,9 +1,9 @@
 package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.visitor.IfVisitor;
 
 public final class TagScript extends TagBaseNoFinal {
@@ -15,7 +15,7 @@ public final class TagScript extends TagBaseNoFinal {
 	/**
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		IfVisitor ifv=new IfVisitor();
 		ifv.visitBeforeExpression();
 			bc.getAdapter().push(true);

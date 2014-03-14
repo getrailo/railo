@@ -9,7 +9,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.PageSource;
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
 
 /**
  * this class is a Parser String optimized for the transfomer (CFML Parser)

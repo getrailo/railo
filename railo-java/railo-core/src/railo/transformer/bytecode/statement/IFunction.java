@@ -1,7 +1,7 @@
 package railo.transformer.bytecode.statement;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 
 public interface IFunction {
 
@@ -14,6 +14,6 @@ public interface IFunction {
 	public static final int VALUE_INDEX=1;
 	
 	public void writeOut(BytecodeContext bc, int type)
-			throws BytecodeException;
+			throws TransformerException;
 
 }

@@ -10,7 +10,6 @@ import railo.commons.lang.Md5;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -55,8 +54,8 @@ public final class Sprite extends EvaluatorSupport {
 			previous.ids.add(id);
 			if(previous.src==null)previous.src=src;
 			else {
-				previous.src=OpString.toExprString(previous.src,tag.getFactory().createLitString(","));
-				previous.src=OpString.toExprString(previous.src,src);
+				previous.src=tag.getFactory().opString(previous.src,tag.getFactory().createLitString(","));
+				previous.src=tag.getFactory().opString(previous.src,src);
 			}
 			
 			

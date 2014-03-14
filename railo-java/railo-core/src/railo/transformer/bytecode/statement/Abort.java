@@ -5,9 +5,9 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 
 public final class Abort extends StatementBaseNoFinal {
@@ -26,7 +26,7 @@ public final class Abort extends StatementBaseNoFinal {
 	}
 
 	@Override
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.push(railo.runtime.exp.Abort.SCOPE_PAGE);
 		adapter.invokeStatic(ABORT, NEW_INSTANCE);

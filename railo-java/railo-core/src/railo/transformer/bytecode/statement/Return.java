@@ -6,9 +6,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.Types;
@@ -44,7 +44,7 @@ public final class Return extends StatementBaseNoFinal {
 		//if(expr==null)expr=LitString.toExprString("", line);
 	}
 
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
 		Stack<OnFinally> finallies = bc.getOnFinallyStack();

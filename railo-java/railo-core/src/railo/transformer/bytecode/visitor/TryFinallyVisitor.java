@@ -4,8 +4,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
@@ -38,7 +38,7 @@ public class TryFinallyVisitor implements Opcodes {
 		ga.visitLabel(beforeTry);
 	}
 
-	public void visitTryEnd(BytecodeContext bc) throws BytecodeException {
+	public void visitTryEnd(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter ga = bc.getAdapter();
 		bc.popOnFinally();
 		ga.visitJumpInsn(GOTO, beforeFinally);

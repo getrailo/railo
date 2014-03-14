@@ -3,6 +3,7 @@ package railo.transformer.bytecode;
 import java.util.List;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
 
 
 /**

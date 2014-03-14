@@ -5,8 +5,8 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.runtime.op.Caster;
 import railo.transformer.Factory;
+import railo.transformer.Position;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;

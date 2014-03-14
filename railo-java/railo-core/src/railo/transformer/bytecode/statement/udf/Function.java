@@ -20,12 +20,11 @@ import railo.runtime.type.FunctionArgumentImpl;
 import railo.runtime.type.FunctionArgumentLight;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.statement.Argument;
 import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.bytecode.statement.IFunction;
@@ -355,7 +354,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	/**
 	 * @see railo.transformer.bytecode.statement.IFunction#writeOut(railo.transformer.bytecode.BytecodeContext, int)
 	 */
-	public final void writeOut(BytecodeContext bc, int type) throws BytecodeException {
+	public final void writeOut(BytecodeContext bc, int type) throws TransformerException {
     	ExpressionUtil.visitLine(bc, getStart());
         _writeOut(bc,type);
     	ExpressionUtil.visitLine(bc, getEnd());
@@ -364,14 +363,14 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	/**
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
-	public final void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public final void _writeOut(BytecodeContext bc) throws TransformerException {
 		_writeOut(bc,PAGE_TYPE_REGULAR);
 	}
 	
-	public abstract void _writeOut(BytecodeContext bc, int pageType) throws BytecodeException;
+	public abstract void _writeOut(BytecodeContext bc, int pageType) throws TransformerException;
 	
 
-	public final void loadUDFProperties(BytecodeContext bc, int valueIndex,int arrayIndex, boolean closure) throws BytecodeException {
+	public final void loadUDFProperties(BytecodeContext bc, int valueIndex,int arrayIndex, boolean closure) throws TransformerException {
 		BytecodeContext constr = bc.getConstructor();
 		GeneratorAdapter cga = constr.getAdapter();
 		GeneratorAdapter ga = bc.getAdapter();
@@ -393,7 +392,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 	
 	
-	public final void createUDFProperties(BytecodeContext bc, int index, boolean closure) throws BytecodeException {
+	public final void createUDFProperties(BytecodeContext bc, int index, boolean closure) throws TransformerException {
 		GeneratorAdapter adapter=bc.getAdapter();
 		adapter.newInstance(Types.UDF_PROPERTIES_IMPL);
 		adapter.dup();
@@ -495,7 +494,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		adapter.invokeConstructor(Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
 	}*/
 	
-	public final void createUDF(BytecodeContext bc, int index, boolean closure) throws BytecodeException {
+	public final void createUDF(BytecodeContext bc, int index, boolean closure) throws TransformerException {
 		// new UDF(...)
 		GeneratorAdapter adapter=bc.getAdapter();
 		adapter.newInstance(closure?Types.CLOSURE:Types.UDF_IMPL);
@@ -509,7 +508,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 
 	
-	private final void createArguments(BytecodeContext bc) throws BytecodeException {
+	private final void createArguments(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter ga = bc.getAdapter();
 		ga.push(arguments.size());
 		ga.newArray(FUNCTION_ARGUMENT);
@@ -517,7 +516,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
         for (int i = 0; i < arguments.size(); i++) {
         	arg= arguments.get(i);
             
-        	boolean canHaveKey = Variable.canRegisterKey(arg.getName());
+        	boolean canHaveKey = Factory.canRegisterKey(arg.getName());
     		
     	// CHECK if default values
     		// type
@@ -581,7 +580,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
             // new FunctionArgument(...)
             ga.newInstance(canHaveKey && functionIndex<INIT_FAI_KEY_LIGHT.length?FUNCTION_ARGUMENT_LIGHT:FUNCTION_ARGUMENT_IMPL);
     		ga.dup();
-    		Variable.registerKey(bc,arg.getName(),false);
+    		bc.getFactory().registerKey(bc,arg.getName(),false);
     		
     		// type
     		if(functionIndex>=INIT_FAI_KEY.length-7) {
@@ -686,7 +685,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		String name=attr.getName().toLowerCase();
 		// name
 		if("name".equals(name))	{
-			throw new BytecodeException("name cannot be defined twice",getStart());
+			throw new TransformerException("name cannot be defined twice",getStart());
 		}
 		else if("returntype".equals(name))	{
 			this.returnType=toLitString(name,attr.getValue());
@@ -697,7 +696,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 			String strAccess = ls.getString();
 			int acc = ComponentUtil.toIntAccess(strAccess,-1);
 			if(acc==-1)
-				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
+				throw new TransformerException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
 			access=acc;
 			
 		}
@@ -717,7 +716,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 				if(!StringUtil.isEmpty(str)){
 					int mode = AppListenerUtil.toLocalMode(str, -1);
 					if(mode!=-1) this.localMode=v.getFactory().createLitInteger(mode);
-					else throw new BytecodeException("Attribute localMode of the Tag Function, must be a literal value (modern, classic, true or false)",getStart());
+					else throw new TransformerException("Attribute localMode of the Tag Function, must be a literal value (modern, classic, true or false)",getStart());
 				}
 			}
 		}
@@ -747,24 +746,24 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		}
 	}
 
-	private final LitString toLitString(String name, Expression value) throws BytecodeException {
+	private final LitString toLitString(String name, Expression value) throws TransformerException {
 		ExprString es = value.getFactory().toExprString(value);
 		if(!(es instanceof LitString))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
+			throw new TransformerException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitString) es;
 	}
 	
-	private final LitBoolean toLitBoolean(String name, Expression value) throws BytecodeException {
+	private final LitBoolean toLitBoolean(String name, Expression value) throws TransformerException {
 		 ExprBoolean eb = value.getFactory().toExprBoolean(value);
 		if(!(eb instanceof LitBoolean))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
+			throw new TransformerException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitBoolean) eb;
 	}
 	
-	private final ExprInt toLitInt(String name, Expression value) throws BytecodeException {
+	private final ExprInt toLitInt(String name, Expression value) throws TransformerException {
 		ExprInt eb = value.getFactory().toExprInt(value);
 		if(!(eb instanceof Literal))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
+			throw new TransformerException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return eb;
 	}
 

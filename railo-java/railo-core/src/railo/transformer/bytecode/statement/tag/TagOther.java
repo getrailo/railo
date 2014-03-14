@@ -1,9 +1,9 @@
 package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 
@@ -22,7 +22,7 @@ public class TagOther extends TagBase {
 		return fcf;
 	}
 	
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		_writeOut(bc,true,getFlowControlFinal());
 	}
 

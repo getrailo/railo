@@ -3,6 +3,8 @@ package railo.transformer.bytecode;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Context;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 
 
@@ -34,7 +36,7 @@ public interface Statement {
      * @param c
      * @throws TemplateException
      */
-    public void writeOut(Context c) throws BytecodeException;    
+    public void writeOut(Context c) throws TransformerException;    
 
     
     /**

@@ -8,10 +8,10 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
@@ -39,7 +39,7 @@ public final class TagSwitch extends TagBaseNoFinal {
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		// expression
@@ -68,7 +68,7 @@ public final class TagSwitch extends TagBaseNoFinal {
 				}
 				else if(tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Defaultcase"))	{
 					if(def!=null)
-						throw new BytecodeException("multiple defaultcases are not allowed",getStart());
+						throw new TransformerException("multiple defaultcases are not allowed",getStart());
 					def=tag;
 					//setDefaultCase(bc,cv,tag);
 					//break;
@@ -82,14 +82,14 @@ public final class TagSwitch extends TagBaseNoFinal {
 		cv.visitAfter(bc);
 	}
 
-	private void setDefaultCase(BytecodeContext bc, ConditionVisitor cv, Tag tag) throws BytecodeException {
+	private void setDefaultCase(BytecodeContext bc, ConditionVisitor cv, Tag tag) throws TransformerException {
 		cv.visitOtherviseBeforeBody();
 			BodyBase.writeOut(bc, tag.getBody());
 			//tag.getBody().writeOut(bc);
 		cv.visitOtherviseAfterBody();
 	}
 
-	private void addCase(BytecodeContext bc, ConditionVisitor cv, Tag tag, int expression) throws BytecodeException {
+	private void addCase(BytecodeContext bc, ConditionVisitor cv, Tag tag, int expression) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
 		cv.visitWhenBeforeExpr();

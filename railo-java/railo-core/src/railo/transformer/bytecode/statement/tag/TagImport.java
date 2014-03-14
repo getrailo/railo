@@ -1,7 +1,7 @@
 package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.Factory;
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
 
 public class TagImport extends TagBaseNoFinal {
 

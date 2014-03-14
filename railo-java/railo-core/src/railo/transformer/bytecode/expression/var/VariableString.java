@@ -8,14 +8,15 @@ import org.objectweb.asm.Type;
 
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeFactory;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.expression.ExprString;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.Literal;
 import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Variable;
 
 public final class VariableString extends ExpressionBase implements ExprString {
 
@@ -27,7 +28,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 	}
  
 	@Override
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		return translateVariableToExprString(expr,false).writeOut(bc, mode);
 	}
 
@@ -36,21 +37,21 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		return new VariableString(expr);
 	}
 	
-	public static ExprString translateVariableToExprString(Expression expr, boolean rawIfPossible) throws BytecodeException {
+	public static ExprString translateVariableToExprString(Expression expr, boolean rawIfPossible) throws TransformerException {
 		if(expr instanceof ExprString) return (ExprString) expr;
 		return expr.getFactory().createLitString(translateVariableToString(expr,rawIfPossible), expr.getStart(),expr.getEnd());
 	}
 	
-	private static String translateVariableToString(Expression expr, boolean rawIfPossible) throws BytecodeException {
-		if(!(expr instanceof Variable)) throw new BytecodeException("can't translate value to a string",expr.getStart());
+	private static String translateVariableToString(Expression expr, boolean rawIfPossible) throws TransformerException {
+		if(!(expr instanceof Variable)) throw new TransformerException("can't translate value to a string",expr.getStart());
 		return variableToString((Variable) expr,rawIfPossible);
 	}
 		
 
-	public static String variableToString(Variable var, boolean rawIfPossible) throws BytecodeException {
+	public static String variableToString(Variable var, boolean rawIfPossible) throws TransformerException {
 		return railo.runtime.type.util.ListUtil.arrayToList(variableToStringArray(var,rawIfPossible),".");
 	}
-	public static String[] variableToStringArray(Variable var, boolean rawIfPossible) throws BytecodeException {
+	public static String[] variableToStringArray(Variable var, boolean rawIfPossible) throws TransformerException {
 		List members = var.getMembers();
 			
 		List<String> arr=new ArrayList<String>();
@@ -60,7 +61,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		Expression n;
 		while(it.hasNext()) {
 			Object o = it.next();
-			if(!(o instanceof DataMember)) throw new BytecodeException("can't translate Variable to a String",var.getStart());
+			if(!(o instanceof DataMember)) throw new TransformerException("can't translate Variable to a String",var.getStart());
 			dm=(DataMember) o;
 			n=dm.getName();
 			if(n instanceof Literal) {
@@ -71,12 +72,12 @@ public final class VariableString extends ExpressionBase implements ExprString {
 					arr.add(((Literal) n).getString());
 				}
 			}
-			else throw new BytecodeException("argument name must be a constant value",var.getStart());
+			else throw new TransformerException("argument name must be a constant value",var.getStart());
 		}
 		return arr.toArray(new String[arr.size()]);
 	}
 	
-	public String castToString() throws BytecodeException{
+	public String castToString() throws TransformerException{
 		return translateVariableToString(expr,false);
 	}
 }

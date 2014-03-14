@@ -1,9 +1,9 @@
 package railo.transformer.bytecode.op;
 
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
 import railo.transformer.bytecode.expression.var.Assign;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.Variable;
 
 public final class OpVariable extends Assign {
 

@@ -18,7 +18,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.Factory;
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;

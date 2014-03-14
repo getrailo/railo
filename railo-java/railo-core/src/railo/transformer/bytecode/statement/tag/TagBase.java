@@ -7,10 +7,10 @@ import java.util.Map;
 
 import railo.runtime.op.Caster;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
@@ -99,15 +99,15 @@ public abstract class TagBase extends StatementBase implements Tag {
 	}
 
 	@Override
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		_writeOut(bc,true,null);
 	}
 	
-	public void _writeOut(BytecodeContext bc, boolean doReuse) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc, boolean doReuse) throws TransformerException {
 		_writeOut(bc,doReuse,null);
 	}
 	
-	protected void _writeOut(BytecodeContext bc, boolean doReuse, final FlowControlFinal fcf) throws BytecodeException {
+	protected void _writeOut(BytecodeContext bc, boolean doReuse, final FlowControlFinal fcf) throws TransformerException {
 		//_writeOut(bc, true);
 		boolean output=tagLibTag.getParseBody() || Caster.toBooleanValue(getAttribute("output"), false);
 		

@@ -11,10 +11,9 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.runtime.op.Elvis;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
@@ -23,6 +22,7 @@ import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.Literal;
 import railo.transformer.expression.var.DataMember;
 import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 
 public final class OpElvis extends ExpressionBase {
 
@@ -46,7 +46,7 @@ public final class OpElvis extends ExpressionBase {
      *
      * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	if(ASMUtil.hasOnlyDataMembers(left))return _writeOutPureDataMember(bc, mode);
     	
     	
@@ -82,7 +82,7 @@ public final class OpElvis extends ExpressionBase {
     }
     
     
-    public Type _writeOutPureDataMember(BytecodeContext bc, int mode) throws BytecodeException {
+    public Type _writeOutPureDataMember(BytecodeContext bc, int mode) throws TransformerException {
     	// TODO use function isNull for this
     	GeneratorAdapter adapter = bc.getAdapter();
     	
@@ -131,7 +131,7 @@ public final class OpElvis extends ExpressionBase {
 	        av.visitBegin(adapter,Types.COLLECTION_KEY,arr.length);
 	        for(int i=0;i<arr.length;i++){
 				av.visitBeginItem(adapter, i);
-					Variable.registerKey(bc, arr[i].getName());
+				getFactory().registerKey(bc, arr[i].getName(),false);
 				av.visitEndItem(adapter);
 	        }
 		}

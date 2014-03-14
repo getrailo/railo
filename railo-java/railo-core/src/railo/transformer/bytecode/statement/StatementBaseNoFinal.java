@@ -1,7 +1,7 @@
 package railo.transformer.bytecode.statement;
 
 import railo.transformer.Factory;
-import railo.transformer.bytecode.Position;
+import railo.transformer.Position;
 
 public abstract class StatementBaseNoFinal extends StatementBase {
 

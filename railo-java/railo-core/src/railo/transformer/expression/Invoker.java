@@ -1,8 +1,7 @@
-package railo.transformer.bytecode.expression;
+package railo.transformer.expression;
 
 import java.util.List;
 
-import railo.transformer.expression.Expression;
 import railo.transformer.expression.var.Member;
 
 public interface Invoker extends Expression {
@@ -16,5 +15,5 @@ public interface Invoker extends Expression {
 	 * returns all members as a List
 	 * @return
 	 */
-	public List getMembers();
+	public List<Member> getMembers();
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
@@ -84,7 +84,7 @@ public final class Condition extends StatementBaseNoFinal implements HasBodies {
     
     
 
-    public void _writeOut(BytecodeContext bc) throws BytecodeException {
+    public void _writeOut(BytecodeContext bc) throws TransformerException {
     	Iterator<Pair> it = ifs.iterator();
         Pair pair;
         ConditionVisitor cv=new ConditionVisitor();

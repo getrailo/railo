@@ -3,8 +3,8 @@ package railo.transformer.bytecode.visitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
+import railo.transformer.Position;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
 public final class WhileVisitor implements LoopVisitor {

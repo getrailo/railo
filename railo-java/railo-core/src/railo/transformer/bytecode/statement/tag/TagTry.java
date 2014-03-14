@@ -11,11 +11,11 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
@@ -75,7 +75,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 	}
 
 	@Override
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.visitLabel(begin);
 		Body tryBody=new BodyBase(getFactory());
@@ -118,7 +118,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 		}
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
-			public void writeOut(BytecodeContext bc) throws BytecodeException {
+			public void writeOut(BytecodeContext bc) throws TransformerException {
 				if(_finally!=null) {
 					
 					ExpressionUtil.visitLine(bc, _finally.getStart());
@@ -222,7 +222,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 	}
 	
 
-	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth, boolean store) throws BytecodeException {
+	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth, boolean store) throws TransformerException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
         adapter.loadLocal(pe);

@@ -11,6 +11,8 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.StatementBaseNoFinal;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -113,20 +115,20 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 		return false;
 	}
 
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		writeOut(bc,this);
     }
 	
 	
 	
 
-	public static void writeOut(final BytecodeContext bc, Body body) throws BytecodeException {
+	public static void writeOut(final BytecodeContext bc, Body body) throws TransformerException {
 		writeOut(bc,body.getStatements());
 	}
 	
 
 	
-	public static void writeOut(final BytecodeContext bc, List<Statement> statements) throws BytecodeException {
+	public static void writeOut(final BytecodeContext bc, List<Statement> statements) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
         boolean isOutsideMethod;
         GeneratorAdapter a=null;
@@ -178,7 +180,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
     }
 	
 	
-	public static void writeOutNew(final BytecodeContext bc, List<Statement> statements) throws BytecodeException {
+	public static void writeOutNew(final BytecodeContext bc, List<Statement> statements) throws TransformerException {
 		
 		if(statements==null || statements.size()==0) return;
 		
@@ -231,7 +233,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 		}
     }
     
-	private static void addToSubMethod(BytecodeContext bc, Statement... statements) throws BytecodeException {
+	private static void addToSubMethod(BytecodeContext bc, Statement... statements) throws TransformerException {
 		if(statements==null || statements.length==0) return; 
 		
 		GeneratorAdapter adapter = bc.getAdapter();

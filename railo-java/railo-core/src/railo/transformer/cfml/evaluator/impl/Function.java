@@ -8,8 +8,8 @@ import java.util.Map;
 import railo.commons.lang.StringUtil;
 import railo.runtime.functions.system.CFFunction;
 import railo.runtime.listener.AppListenerUtil;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Statement;
 
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -44,7 +44,7 @@ public final class Function extends EvaluatorSupport {
 		boolean isCFC=true;
         try {
 			isCFC = ASMUtil.getAncestorPage(tag).isComponent();
-		} catch (BytecodeException e) {}
+		} catch (TransformerException e) {}
 
 		Attribute attrName = tag.getAttribute("name");
 		if(attrName!=null) {

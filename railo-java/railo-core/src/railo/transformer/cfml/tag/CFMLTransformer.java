@@ -25,10 +25,10 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.transformer.Factory;
+import railo.transformer.Position;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.StatementBase;
@@ -901,7 +901,7 @@ public final class CFMLTransformer {
 			pe=attr.getRtexpr();
 		}
 		//LitString.toExprString("",-1);
-		Attribute att=new Attribute(false,strName,attributeValue(data,tag,strType,pe,true,data.factory.createNullExpression()),strType);
+		Attribute att=new Attribute(false,strName,attributeValue(data,tag,strType,pe,true,data.factory.createNull()),strType);
 		parent.addAttribute(att);
 	}
 

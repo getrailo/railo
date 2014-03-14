@@ -4,13 +4,13 @@ import org.objectweb.asm.Type;
 
 import railo.runtime.type.scope.Scope;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.expression.var.Variable;
 
 public class Null extends ExpressionBase  {
 
@@ -20,13 +20,13 @@ public class Null extends ExpressionBase  {
 	}
 
 	@Override
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		ASMConstants.NULL(bc.getAdapter());
 		return Types.OBJECT;
 	}
 
 	public Variable toVariable() {
-		Variable v = new Variable(getFactory(),Scope.SCOPE_UNDEFINED,getStart(),getEnd());
+		Variable v = getFactory().createVariable(Scope.SCOPE_UNDEFINED,getStart(),getEnd());
 		v.addMember(getFactory().createDataMember(getFactory().createLitString("null")));
 		return v;
 	}

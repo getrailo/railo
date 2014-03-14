@@ -5,8 +5,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.Expression;
 
@@ -26,7 +26,7 @@ public class FailSafeExpression  extends ExpressionBase implements Opcodes {
 
 	
 	@Override
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		GeneratorAdapter mv = bc.getAdapter();
 		
 		int local = mv.newLocal(Types.OBJECT);

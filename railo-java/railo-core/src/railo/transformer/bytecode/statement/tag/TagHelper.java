@@ -16,11 +16,10 @@ import railo.commons.lang.ClassException;
 import railo.runtime.exp.Abort;
 import railo.runtime.tag.MissingAttribute;
 import railo.runtime.type.util.ArrayUtil;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.type.LiteralStringArray;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -142,9 +141,9 @@ public final class TagHelper {
 	 * @param tag
 	 * @param bc
 	 * @param doReuse
-	 * @throws BytecodeException
+	 * @throws TransformerException
 	 */
-	public static void writeOut(Tag tag, BytecodeContext bc, boolean doReuse, final FlowControlFinal fcf) throws BytecodeException {
+	public static void writeOut(Tag tag, BytecodeContext bc, boolean doReuse, final FlowControlFinal fcf) throws TransformerException {
 		final GeneratorAdapter adapter = bc.getAdapter();
 		final TagLibTag tlt = tag.getTagLibTag();
 		final Type currType=getTagType(tag);
@@ -216,7 +215,7 @@ public final class TagHelper {
 		            for(int i=0;i<missings.length;i++){
 		            	miss = missings[i];
 		            	av.visitBeginItem(adapter, count++);
-		    				Variable.registerKey(bc, bc.getFactory().createLitString(miss.getName()));
+		            		bc.getFactory().registerKey(bc, bc.getFactory().createLitString(miss.getName()),false);
 			    			adapter.push(miss.getType());
 			    			if(ArrayUtil.isEmpty(miss.getAlias()))
 		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX2);
@@ -361,7 +360,7 @@ public final class TagHelper {
 		ExpressionUtil.visitLine(bc, tag.getEnd());
 	}
 	
-	private static void setAttributes(BytecodeContext bc, Tag tag, int currLocal, Type currType, boolean doDefault) throws BytecodeException {
+	private static void setAttributes(BytecodeContext bc, Tag tag, int currLocal, Type currType, boolean doDefault) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		Map<String,Attribute> attributes = tag.getAttributes();
 
@@ -376,7 +375,7 @@ public final class TagHelper {
 				adapter.loadLocal(currLocal);
 				adapter.visitInsn(Opcodes.ACONST_NULL);
 				//adapter.push(attr.getName());
-				Variable.registerKey(bc, bc.getFactory().createLitString(attr.getName()));
+				bc.getFactory().registerKey(bc, bc.getFactory().createLitString(attr.getName()),false);
 				attr.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}
@@ -390,7 +389,7 @@ public final class TagHelper {
 		}
 	}
 
-	private static void doTry(BytecodeContext bc, GeneratorAdapter adapter, Tag tag, int currLocal, Type currType) throws BytecodeException {
+	private static void doTry(BytecodeContext bc, GeneratorAdapter adapter, Tag tag, int currLocal, Type currType) throws TransformerException {
 		Label beginDoWhile=new Label();
 		adapter.visitLabel(beginDoWhile);
 			bc.setCurrentTag(currLocal);
@@ -403,12 +402,12 @@ public final class TagHelper {
 		adapter.visitJumpInsn(Opcodes.IF_ICMPEQ, beginDoWhile);
 	}
 
-	private static Type getTagType(Tag tag) throws BytecodeException {
+	private static Type getTagType(Tag tag) throws TransformerException {
 		TagLibTag tlt = tag.getTagLibTag();
 		try {
 			return tlt.getTagType();
 		} catch (ClassException e) {
-			throw new BytecodeException(e,tag.getStart());
+			throw new TransformerException(e,tag.getStart());
 		}
 	}
 }

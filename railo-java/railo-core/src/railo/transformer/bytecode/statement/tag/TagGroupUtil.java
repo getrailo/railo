@@ -8,8 +8,8 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.util.NumberIterator;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
@@ -132,7 +132,7 @@ public class TagGroupUtil {
 
 	
 	
-	public static void writeOutTypeQuery(final TagGroup tag, BytecodeContext bc) throws BytecodeException {
+	public static void writeOutTypeQuery(final TagGroup tag, BytecodeContext bc) throws TransformerException {
 		final GeneratorAdapter adapter = bc.getAdapter();
 
 		tag.setNumberIterator(adapter.newLocal(NUMBER_ITERATOR));
@@ -369,7 +369,7 @@ public class TagGroupUtil {
 	
 	
 
-	public static void writeOutTypeGroup(TagGroup tag,BytecodeContext bc) throws BytecodeException {
+	public static void writeOutTypeGroup(TagGroup tag,BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		boolean isOutput=tag.getType()==TagGroup.TAG_OUTPUT;
 		ParseBodyVisitor pbv=isOutput?new ParseBodyVisitor():null;
@@ -492,7 +492,7 @@ public class TagGroupUtil {
 		if(isOutput)pbv.visitEnd(bc);
 	}
 	
-	public static void writeOutTypeInnerGroup(TagGroup tag,BytecodeContext bc) throws BytecodeException {
+	public static void writeOutTypeInnerGroup(TagGroup tag,BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		TagGroup parent = getParentTagGroupQuery(tag,tag.getType());
@@ -573,7 +573,7 @@ public class TagGroupUtil {
 		adapter.pop();
 	}
 	
-	public static void writeOutTypeInnerQuery(TagGroup tag,BytecodeContext bc) throws BytecodeException {
+	public static void writeOutTypeInnerQuery(TagGroup tag,BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		//if(tr ue)return ;
 		TagGroup parent = getParentTagGroupQuery(tag,tag.getType());
@@ -657,9 +657,9 @@ public class TagGroupUtil {
 		//adapter.pop();
 	}
 	
-	public static TagGroup getParentTagGroupQuery(Statement st, short type) throws BytecodeException {
+	public static TagGroup getParentTagGroupQuery(Statement st, short type) throws TransformerException {
 		Statement parent=st.getParent();
-		if(parent==null) throw new BytecodeException("there is no parent output with query",null);
+		if(parent==null) throw new TransformerException("there is no parent output with query",null);
 		else if(parent instanceof TagGroup && type==((TagGroup)parent).getType()) {
 			if(((TagGroup)parent).hasQuery())
 				return ((TagGroup)parent);

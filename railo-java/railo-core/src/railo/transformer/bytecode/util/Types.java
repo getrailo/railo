@@ -56,7 +56,7 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.NumberRange;
 import railo.runtime.writer.BodyContentUtil;
-import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.TransformerException;
 
 public final class Types {
 
@@ -222,7 +222,7 @@ public final class Types {
 	 * @return
 	 * @throws railo.runtime.exp.TemplateExceptionption 
 	 */
-	public static Type toType(String type) throws BytecodeException {
+	public static Type toType(String type) throws TransformerException {
 		if(type==null) return OBJECT;
 		type=type.trim();
 		String lcType=StringUtil.toLowerCase(type);
@@ -328,7 +328,7 @@ public final class Types {
 		try {
 			return Type.getType(ClassUtil.loadClass(type));
 		} catch (ClassException e) {
-			throw new BytecodeException(e,null);
+			throw new TransformerException(e,null);
 		}
 	}
 

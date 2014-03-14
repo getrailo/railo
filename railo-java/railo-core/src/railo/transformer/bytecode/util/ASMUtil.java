@@ -31,18 +31,16 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
-import railo.transformer.bytecode.expression.var.NullExpression;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.statement.FlowControl;
@@ -67,6 +65,7 @@ import railo.transformer.expression.literal.LitString;
 import railo.transformer.expression.literal.Literal;
 import railo.transformer.expression.var.DataMember;
 import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 
 public final class ASMUtil {
 
@@ -203,7 +202,7 @@ public final class ASMUtil {
 	}
 
 
-	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType, String label) throws BytecodeException {
+	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType, String label) throws TransformerException {
 		List<FlowControlFinal> finallyLabels=new ArrayList<FlowControlFinal>();
 		
 		FlowControl fc;
@@ -222,7 +221,7 @@ public final class ASMUtil {
 		}
 		
 		if(fc==null)
-			throw new BytecodeException(name+" must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
+			throw new TransformerException(name+" must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
 		
 		GeneratorAdapter adapter = bc.getAdapter();
 		
@@ -463,12 +462,12 @@ public final class ASMUtil {
 		}
 	}
 	
-	public static Page getAncestorPage(Statement stat) throws BytecodeException {
+	public static Page getAncestorPage(Statement stat) throws TransformerException {
 		Statement parent=stat;
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
+				throw new TransformerException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof Page)	return (Page) parent;
@@ -498,14 +497,14 @@ public final class ASMUtil {
 	}
 	
 	
-	public static Tag getAncestorComponent(Statement stat) throws BytecodeException {
+	public static Tag getAncestorComponent(Statement stat) throws TransformerException {
 		//print.ln("getAncestorPage:"+stat);
 		Statement parent=stat;
 		while(true)	{
 			parent=parent.getParent();
 			//print.ln(" - "+parent);
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
+				throw new TransformerException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof TagComponent)
@@ -853,11 +852,11 @@ public final class ASMUtil {
 	public static String toString(Expression exp,String defaultValue) {
 		try {
 			return toString(exp);
-		} catch (BytecodeException e) {
+		} catch (TransformerException e) {
 			return defaultValue;
 		}
 	}
-	public static String toString(Expression exp) throws BytecodeException {
+	public static String toString(Expression exp) throws TransformerException {
 		if(exp instanceof Variable) {
 			return toString(VariableString.toExprString(exp));
 		}
@@ -871,15 +870,15 @@ public final class ASMUtil {
 	}
 
 
-	public static Boolean toBoolean(Attribute attr, Position start) throws BytecodeException {
+	public static Boolean toBoolean(Attribute attr, Position start) throws TransformerException {
 		if(attr==null)
-			throw new BytecodeException("attribute does not exist",start);
+			throw new TransformerException("attribute does not exist",start);
 		
 		if(attr.getValue() instanceof Literal){
 			Boolean b=((Literal)attr.getValue()).getBoolean(null);
 			if(b!=null) return b; 
 		}
-		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",start);
+		throw new TransformerException("attribute ["+attr.getName()+"] must be a constant boolean value",start);
 		
 		
 	}
@@ -943,11 +942,10 @@ public final class ASMUtil {
 
 
 	public static boolean isNull(Expression expr) {
-		if(expr instanceof NullExpression) return true;
 		if(expr instanceof Cast) {
 			return isNull(((Cast)expr).getExpr());
 		}
-		return false;
+		return expr.getFactory().isNull(expr);
 	}
 
 

@@ -5,9 +5,9 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.ExprBoolean;
 import railo.transformer.expression.Expression;
@@ -31,7 +31,7 @@ public final class TagInclude extends TagBaseNoFinal {
 	/**
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		Type type = Types.PAGE_CONTEXT;
 		Method func = DO_INCLUDE_RUN_ONCE2;
 		

@@ -3,8 +3,8 @@ package railo.transformer.bytecode.op;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.expression.ExprString;
@@ -27,18 +27,7 @@ public final class OpString extends ExpressionBase implements ExprString {
         this.left=left.getFactory().toExprString(left);
         this.right=left.getFactory().toExprString(right);
     }
-    
-    /**
-     * Create a String expression from a Expression
-     * @param left 
-     * @param right 
-     * 
-     * @return String expression
-     */
-    public static ExprString toExprString(Expression left, Expression right) {
-        return toExprString(left, right, true);
-    }
-    
+
     public static ExprString toExprString(Expression left, Expression right, boolean concatStatic) {
         if(concatStatic && left instanceof Literal && right instanceof Literal) {
             String l = ((Literal)left).getString();
@@ -47,24 +36,12 @@ public final class OpString extends ExpressionBase implements ExprString {
         }
         return new OpString(left,right);
     }
-    
-    
-    /**
-     *
-     * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
-     */
-    public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+
+    @Override
+    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
         left.writeOut(bc,MODE_REF);
         right.writeOut(bc,MODE_REF);
         bc.getAdapter().invokeVirtual(Types.STRING,METHOD_CONCAT);
         return Types.STRING;
     }
-
-    /* *
-     * @see railo.transformer.bytecode.expression.Expression#getType()
-     * /
-    public int getType() {
-        return Types._STRING;
-    }*/
-
 }

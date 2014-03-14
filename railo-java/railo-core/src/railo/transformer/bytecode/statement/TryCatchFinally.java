@@ -13,11 +13,10 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.scope.Scope;
 import railo.transformer.Factory;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.statement.tag.TagTry;
@@ -28,6 +27,7 @@ import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 import railo.transformer.expression.ExprString;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.var.Variable;
 
 /**
  * produce  try-catch-finally
@@ -129,7 +129,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 *
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
-	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
 		adapter.visitLabel(begin);
@@ -148,7 +148,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
-			public void writeOut(BytecodeContext bc) throws BytecodeException {
+			public void writeOut(BytecodeContext bc) throws TransformerException {
 				_writeOutFinally(bc,lRef);
 			}
 		},getFlowControlFinal());
@@ -169,7 +169,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	
 	
 	
-	private void _writeOutFinally(BytecodeContext bc, int lRef) throws BytecodeException {
+	private void _writeOutFinally(BytecodeContext bc, int lRef) throws TransformerException {
 		// ref.remove(pc);
 		//Reference r=null;
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -197,7 +197,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		}*/
 	}
 	
-	private void _writeOutCatch(BytecodeContext bc, int lRef,int lThrow) throws BytecodeException {
+	private void _writeOutCatch(BytecodeContext bc, int lRef,int lThrow) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		int pe=adapter.newLocal(Types.PAGE_EXCEPTION);
 		
@@ -290,7 +290,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			
 	}
 
-	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth,boolean store) throws BytecodeException {
+	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth,boolean store) throws TransformerException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
         adapter.loadLocal(pe);
@@ -330,25 +330,25 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 * @param name
 	 * @param b
 	 * @param line
-	 * @throws BytecodeException
+	 * @throws TransformerException
 	 */
-	public void addCatch(Expression type, Expression name, Body b, Position line) throws BytecodeException {
+	public void addCatch(Expression type, Expression name, Body b, Position line) throws TransformerException {
 		
 		// type
 		if(type==null || type instanceof ExprString) ;
 		else if(type instanceof Variable) {
 			type=VariableString.toExprString(type);
 		}
-		else throw new BytecodeException("type from catch statement is invalid",type.getStart());
+		else throw new TransformerException("type from catch statement is invalid",type.getStart());
 		
 		// name
 		if(name instanceof LitString){
-			Variable v = new Variable(name.getFactory(),Scope.SCOPE_UNDEFINED,name.getStart(),name.getEnd());
-			v.addMember(name.getFactory().createDataMember(name.getFactory().toExprString(name)));
+			Variable v = getFactory().createVariable(Scope.SCOPE_UNDEFINED,name.getStart(),name.getEnd());
+			v.addMember(getFactory().createDataMember(getFactory().toExprString(name)));
 			name=new VariableRef(v);
 		}
 		else if(name instanceof Variable) name=new VariableRef((Variable) name);
-		else throw new BytecodeException("name from catch statement is invalid",name.getStart());
+		else throw new TransformerException("name from catch statement is invalid",name.getStart());
 		
 		addCatch((ExprString)type, (VariableRef)name, b, line);
 	}	
