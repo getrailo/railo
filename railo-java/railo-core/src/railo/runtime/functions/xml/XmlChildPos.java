@@ -13,7 +13,7 @@ import railo.runtime.text.xml.XMLUtil;
  */
 public final class XmlChildPos implements Function {
 	public static double call(PageContext pc , Node node, String name, double index) {
-		XMLNodeList xmlNodeList = new XMLNodeList(node,false);
+		XMLNodeList xmlNodeList = new XMLNodeList(node,false,Node.ELEMENT_NODE);
 		int len=xmlNodeList.getLength();
 		// if(index<1)throw new FunctionException(pc,"XmlChildPos","second","index","attribute must be 1 or greater");
 		int count=1;
