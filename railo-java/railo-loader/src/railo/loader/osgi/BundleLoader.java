@@ -37,7 +37,7 @@ public class BundleLoader {
 	 * @throws IOException 
 	 * @throws BundleBuilderFactoryException 
 	 */
-	public static Bundle loadBundles(CFMLEngineFactory engFac, File cacheRootDir, File jarDirectory, File rc) throws IOException, BundleException {
+	public static Bundle loadBundles(CFMLEngineFactory engFac, File cacheRootDir, File jarDirectory, File rc, Bundle old) throws IOException, BundleException {
 		
 		JarFile jf = new JarFile(rc);// TODO this should work in any case, but we should still improve this code
 		
@@ -86,8 +86,13 @@ public class BundleLoader {
 		}
 		CFMLEngineFactory.log(Log.LEVEL_INFO, "felix.log.level (1 = error, 2 = warning, 3 = information, and 4 = debug):"+logLevel);
 		
-		
-		BundleContext bc = engFac.getFelix(cacheRootDir,storageClean,bootDelegation,parentClassLoader,logLevel).getBundleContext();
+		// resuse existing BundleContext if possible
+		BundleContext bc;
+		if(old!=null) {
+			bc=old.getBundleContext();
+			removeBundles(bc);
+		}
+		else bc = engFac.getFelix(cacheRootDir,storageClean,bootDelegation,parentClassLoader,logLevel).getBundleContext();
 		
 		// get jars needed for that core
 		String rb = attrs.getValue("Require-Bundle");
@@ -109,10 +114,15 @@ public class BundleLoader {
 			e = it.next();
 			id=e.getKey()+"|"+e.getValue();
 			f = availableBundles.get(id);
+			
 			if(f==null) {
-				//f=getBundleFromRemote(e.getKey(),e.getValue(),jarDirectory);
-				throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
+				f=engFac.downloadBundle(e.getKey(), e.getValue());
+				// availableBundles.put(id, f); 
 			}
+			/*if(f==null) {
+				throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
+			}*/
+			
 			bundles.add(BundleUtil.addBundle(bc,id, f, false));
 		}
 		
@@ -202,5 +212,52 @@ public class BundleLoader {
 			CFMLEngineFactory.closeEL(is);
 		}
 		return prop;
+	}
+	
+
+	public static void removeBundles(BundleContext bc) throws BundleException {
+		Bundle[] bundles = bc.getBundles();
+		for(int i=0;i<bundles.length;i++){
+			removeBundle(bundles[i]);
+		}
+	}
+	
+	public static void removeBundle(Bundle bundle) throws BundleException {
+		if(bundle==null) return;
+		
+		log(Log.LEVEL_INFO,"remove bundle:"+bundle.getSymbolicName());
+		
+		// wait for starting
+		int sleept=0;
+		while(bundle.getState()==Bundle.STARTING) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				break;
+			}
+			sleept+=10;
+			if(sleept>3000) break; // only wait for 3 seconds
+		}
+		
+		// force stopping (even when still starting)
+		if(bundle.getState()==Bundle.ACTIVE || bundle.getState()==Bundle.STARTING) bundle.stop();
+		
+		// wait for stopping
+		sleept=0;
+		while(bundle.getState()==Bundle.STOPPING) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				break;
+			}
+			sleept+=10;
+			if(sleept>3000) break; // only wait for 3 seconds
+		}
+
+		if(bundle.getState()!=Bundle.UNINSTALLED) bundle.uninstall();
+	}
+
+	private static void log(int level, String msg) { 
+		System.out.println(msg);
 	}
 }

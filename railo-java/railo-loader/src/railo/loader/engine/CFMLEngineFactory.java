@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -264,7 +265,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
             }
             else {
 
-            	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),railo);
+            	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),railo,bundle);
             	//bundle=loadBundle(railo);
             	log("loaded bundle2:"+bundle.getSymbolicName());
             	engine=getEngine(bundle);
@@ -302,12 +303,11 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
     
 
 	public Felix getFelix(File cacheRootDir, String storageClean,String bootDelegation, String parentClassLoader, int logLevel) throws BundleException {
-		// felix already exist
-		if(felix!=null){
+		/* this is done before this call if(felix!=null){
 			log(Log.LEVEL_INFO,"remove existing bundle");
-    		remove(bundle);
+			removeBundle(bundle);
 			return felix;
-		}
+		}*/
 		
 		log(Log.LEVEL_INFO,"load felix");
     	
@@ -362,26 +362,13 @@ framework.start();
 		return felix;
 	}
 
-	private static void remove(Bundle bundle) throws BundleException {
-		log(Log.LEVEL_INFO,"remove existing bundle");
-    	bundle.stop();
-    	bundle.uninstall();
-	}
+	
 
 	public static void log(int level, String msg) {
 		//System.out.println(msg);
 		System.err.println(msg);
 	}
 
-	/*private String getCoreExtension() throws ServletException {
-    	URL res = new TP().getClass().getResource("/core/core.rcs");
-        if(res!=null) return "rcs";
-        
-        res = new TP().getClass().getResource("/core/core.rc");
-        if(res!=null) return "rc";
-        
-        throw new ServletException("missing core file");
-	}*/
 
 	private CFMLEngine getCore() throws IOException, BundleException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		File rc = new File(getTempDirectory(),"tmp_"+System.currentTimeMillis()+".rc");
@@ -398,7 +385,7 @@ framework.start();
 	    		closeEL(is);
 	    		closeEL(os);
 	    	}
-	    	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),rc);
+	    	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),rc,bundle);
         	log("loaded bundle3:"+bundle.getSymbolicName());
 	    	engine = getEngine(bundle);
         	log("loaded engine3:"+engine);
@@ -476,40 +463,11 @@ framework.start();
      * @throws ServletException
      */
     private boolean update() throws IOException, ServletException {
-    	
-        URL updateProvider=getEngine().getUpdateLocation();
-        if(updateProvider==null)updateProvider=new URL("http://www.getrailo.org");
+    	File newRailo = downloadCore();
+    	if(newRailo==null) return false;
         
-        URL infoUrl=new URL(updateProvider,"/railo/update/UpdateProvider.cfc?method=getInfoSimple&version="+version);
-        
-        tlog("Check for update at "+updateProvider);
-        
-        String strAvailableVersion = toString((InputStream)infoUrl.getContent()).trim();
-        strAvailableVersion=CFMLEngineFactory.removeQuotes(strAvailableVersion,true);
-        
-        //if(availableVersion.length()!=9 && availableVersion.length()!=0) 
-        //	throw new IOException("can't get update info from ["+infoUrl+"]");
-        
-        if(strAvailableVersion.length()==0 || !isNewerThan(toInVersion(strAvailableVersion,-1),version)) {
-            tlog("There is no newer Version available");
-            return false;
-        }
-
-        tlog("Found a newer Version \n - current Version "+toStringVersion(version)+"\n - available Version "+strAvailableVersion);
-
-        URL updateUrl=new URL(updateProvider,"/railo/update/UpdateProvider.cfc?method=&version="+strAvailableVersion);
-        File patchDir=getPatchDirectory();
-        File newRailo=new File(patchDir,strAvailableVersion+(".rc"));
-        
-        if(newRailo.createNewFile()) {
-            copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
-        }
-        else {
-            tlog("File for new Version already exists, won't copy new one");
-            return false;
-        }
         try {
-        engine.reset();
+        	engine.reset();
         }
         catch(Throwable t) {
         	t.printStackTrace();
@@ -520,7 +478,7 @@ framework.start();
         String v="";
         try {
         	
-        	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),newRailo);
+        	bundle = BundleLoader.loadBundles(this,getFelixCacheDirectory(),getJarDirectory(),newRailo,bundle);
         	log("loaded bundle1:"+bundle.getSymbolicName());
             CFMLEngine e = getEngine(bundle);
         	log("loaded engine1:"+e);
@@ -546,8 +504,69 @@ framework.start();
         return true;
     }
     
+
+    public File downloadBundle(String symbolicName,String symbolicVersion) throws IOException {
+    	File jarDir=getJarDirectory();
+	    File jar=new File(jarDir,symbolicName+"-"+symbolicVersion.replace('.', '-')+(".jar"));
+        
+    	
+    	URL updateProvider = getUpdateLocation();
+    	URL updateUrl=new URL(updateProvider,"/rest/update/provider/download/"+symbolicName+"/"+symbolicVersion+"/?ioid={ioid}");
+        
+        if(jar.createNewFile()) {
+            copy((InputStream)updateUrl.getContent(),new FileOutputStream(jar));
+            return jar;
+        }
+        else {
+        	throw new IOException("File ["+jar.getName()+"] already exists, won't copy new one");
+        }
+    }
     
-    /**
+    private File downloadCore() throws IOException, ServletException {
+    	URL updateProvider = getUpdateLocation();
+    	
+    	// MUST get IOID
+        URL infoUrl=new URL(updateProvider,"/rest/update/provider/update-for/"+version+"?ioid={ioid}");
+        
+        tlog("Check for update at "+updateProvider);
+        
+        String strAvailableVersion = toString((InputStream)infoUrl.getContent()).trim();
+        strAvailableVersion=CFMLEngineFactory.removeQuotes(strAvailableVersion,true);
+        CFMLEngineFactory.removeQuotes(strAvailableVersion,true); // not necessary but does not hurt
+        
+        if(strAvailableVersion.length()==0 || !isNewerThan(toInVersion(strAvailableVersion,-1),version)) {
+            tlog("There is no newer Version available");
+            return null;
+        }
+
+        tlog("Found a newer Version \n - current Version "+toStringVersion(version)+"\n - available Version "+strAvailableVersion);
+
+        URL updateUrl=new URL(updateProvider,"/rest/update/provider/download/"+version+"?ioid={ioid}");
+        File patchDir=getPatchDirectory();
+        File newRailo=new File(patchDir,strAvailableVersion+(".rc"));
+        
+        if(newRailo.createNewFile()) {
+            copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
+        }
+        else {
+            tlog("File for new Version already exists, won't copy new one");
+            return null;
+        }
+        return newRailo;
+	}
+
+	private URL getUpdateLocation() throws MalformedURLException {
+		URL updateProvider=null;
+		try {
+			updateProvider = getEngine().getUpdateLocation();
+		} 
+		catch (ServletException e) {}
+		
+        if(updateProvider==null)updateProvider=new URL("http://www.getrailo.org");
+        return updateProvider;
+	}
+
+	/**
      * method to initalize a update of the CFML Engine.
      * checks if there is a new Version and update it whwn a new version is available
      * @param password
@@ -756,8 +775,8 @@ framework.start();
         log(bundle.loadClass(TP.class.getName()).getClassLoader().toString());
     	Class<?> clazz = bundle.loadClass("railo.runtime.engine.CFMLEngineImpl");
         log("class:"+clazz.getName());
-        Method m = clazz.getMethod("getInstance",new Class[]{CFMLEngineFactory.class});
-        return (CFMLEngine) m.invoke(null,new Object[]{this});
+        Method m = clazz.getMethod("getInstance",new Class[]{CFMLEngineFactory.class,Bundle.class});
+        return (CFMLEngine) m.invoke(null,new Object[]{this,bundle});
         
     }
 

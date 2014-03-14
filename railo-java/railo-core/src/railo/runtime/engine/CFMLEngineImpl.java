@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.osgi.framework.Bundle;
+
 import railo.cli.servlet.HTTPServletImpl;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
@@ -101,13 +103,15 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	private boolean allowRequestTimeout=true;
 	private Monitor monitor;
 	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>();
-	private long uptime; 
+	private long uptime;
+	private Bundle bundle; 
 	
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
-    private CFMLEngineImpl(CFMLEngineFactory factory) {
+    private CFMLEngineImpl(CFMLEngineFactory factory, Bundle bundle) {
     	this.factory=factory; 
+    	this.bundle=bundle;
     	Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader()); // MUST better location for this
 		
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
@@ -124,7 +128,6 @@ public final class CFMLEngineImpl implements CFMLEngine {
         //this.config=config; 
     }
 
-
 	public void touchMonitor(ConfigServerImpl cs) {
 		if(monitor!=null && monitor.isAlive()) return; 
 		monitor = new Monitor(cs,controlerState); 
@@ -138,9 +141,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @param factory
      * @return CFMLEngine
      */
-    public static synchronized CFMLEngine getInstance(CFMLEngineFactory factory) {
+    public static synchronized CFMLEngine getInstance(CFMLEngineFactory factory,Bundle bundle) {
     	if(engine==null) {
-    		engine=new CFMLEngineImpl(factory);
+    		engine=new CFMLEngineImpl(factory,bundle);
         }
         return engine;
     }
