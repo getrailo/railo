@@ -135,8 +135,8 @@ public final class StringUtil {
 	 * @param str String to escape
 	 * @return escapes String
 	 */
-	public static String escapeJS(String str) {
-		return escapeJS(str, true);
+	public static String escapeJS(String str, char quotesUsed) {
+		return escapeJS(str,quotesUsed, true);
 	}
 
 	/**
@@ -145,9 +145,11 @@ public final class StringUtil {
 	 * @param escapeNoneUSAscci escape all us ascci characters
 	 * @return escapes String
 	 */
-	public static String escapeJS(String str, boolean escapeNoneUSAscci) {
+	public static String escapeJS(String str, char quotesUsed, boolean escapeNoneUSAscci) {
 		char[] arr=str.toCharArray();
 		StringBuilder rtn=new StringBuilder(arr.length);
+		rtn.append(quotesUsed);
+		
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i] < 128){
 				switch(arr[i]) {
@@ -157,8 +159,14 @@ public final class StringUtil {
 					case '\f': rtn.append("\\f"); break;
 					case '\b': rtn.append("\\b"); break;
 					case '\t': rtn.append("\\t"); break;
-					case '"' : rtn.append("\\\""); break;
-					case '\'': rtn.append("\\\'"); break;
+					case '"' : 
+						if(quotesUsed=='"') rtn.append("\\\"");
+						else rtn.append('"'); 
+					break;
+					case '\'': 
+						if(quotesUsed=='\'') rtn.append("\\\'");
+						else rtn.append('\''); 
+					break;
 					case '/': 
 						// escape </script>
 						if(
@@ -190,7 +198,7 @@ public final class StringUtil {
 				rtn.append(arr[i]);
 			}
 		}
-		return rtn.toString();
+		return rtn.append(quotesUsed).toString();
 	}
 
 	/**
