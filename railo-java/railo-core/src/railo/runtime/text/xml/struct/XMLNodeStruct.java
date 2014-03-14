@@ -321,7 +321,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 
     @Override
     public XMLNodeList getXMLNodeList() {
-        return new XMLNodeList(node,getCaseSensitive());
+        return new XMLNodeList(node,getCaseSensitive(),true);
     }   
 
     @Override
