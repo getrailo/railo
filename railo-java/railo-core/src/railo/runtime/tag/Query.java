@@ -638,7 +638,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private Object executeORM(SQL sql, int returnType, Struct ormoptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pageContext);
 		
-		String dsn = Caster.toString(ormoptions.get(KeyConstants._datasource,null),null);
+		String dsn = null;
+		if (ormoptions!=null) dsn =	Caster.toString(ormoptions.get(KeyConstants._datasource,null),null);
 		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pageContext).getName();
 		
 		// params
