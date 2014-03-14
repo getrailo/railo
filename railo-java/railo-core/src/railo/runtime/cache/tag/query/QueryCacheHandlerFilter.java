@@ -1,36 +1,39 @@
 package railo.runtime.cache.tag.query;
 
+import org.apache.oro.text.regex.MalformedPatternException;
+
+import railo.commons.io.res.util.WildCardFilter;
 import railo.runtime.cache.tag.CacheHandlerFilter;
-import railo.runtime.db.SQLImpl;
 import railo.runtime.type.Query;
 
 public class QueryCacheHandlerFilter implements CacheHandlerFilter {
 	
-	private String sql;
+	private WildCardFilter filter;
 
-	public QueryCacheHandlerFilter(SQLImpl sql){
-		this.sql=toString(sql.toString());
-	}
-	public QueryCacheHandlerFilter(String sql){
-		this.sql=toString(sql);
+	public QueryCacheHandlerFilter(String wildcard, boolean ignoreCase)throws MalformedPatternException {
+		filter=new WildCardFilter(wildcard,ignoreCase);
 	}
 
 	@Override
 	public boolean accept(Object obj) {
-		if(!(obj instanceof Query)) return false;
-		return sql.equals(toString(((Query) obj).getSql().toString()));
-	}
-	
-	private String toString(String sql){
-		char[] carr = sql.toCharArray();
+		Query qry;
+		if(!(obj instanceof Query)) {
+			if(obj instanceof QueryCacheItem) {
+				qry=((QueryCacheItem)obj).getQuery();
+			}
+			else return false;
+		}
+		else qry=(Query) obj;
+		
+		String sql = qry.getSql().toString();
 		StringBuilder sb=new StringBuilder();
-		for(int i=0;i<carr.length;i++) {
-			if(carr[i]=='\n' || carr[i]=='\r') {
+		char[] text = sql.toCharArray();
+		for(int i=0;i<text.length;i++) {
+			if(text[i]=='\n' || text[i]=='\r') {
 				sb.append(' ');
 			}
-			else sb.append(carr[i]);
+			else sb.append(text[i]);
 		}
-		return sb.toString().trim();
+		return filter.accept(sb.toString());
 	}
-
 }

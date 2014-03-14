@@ -1,5 +1,7 @@
 package railo.runtime.tag;
 
+import org.apache.oro.text.regex.MalformedPatternException;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheHandlerFilter;
@@ -52,19 +54,24 @@ public final class ObjectCache extends TagImpl {
 	public static CacheHandlerFilter createFilter(Object filter,boolean ignoreCase) throws PageException	{
 	   if(filter instanceof UDF)
 		   return new QueryCacheHandlerFilterUDF((UDF)filter);
-	   String sql=Caster.toString(filter,null);
-	   if(!StringUtil.isEmpty(sql,true)) {
-           return new QueryCacheHandlerFilter(sql);
-       }
-	   return null;
+		String sql=Caster.toString(filter,null);
+		if(!StringUtil.isEmpty(sql,true)) {
+			try {
+				return new QueryCacheHandlerFilter(sql,ignoreCase);
+			}
+			catch (MalformedPatternException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return null;
 	}
 	
-	public static CacheHandlerFilter createFilter(String sql)	{
+	/*public static CacheHandlerFilter createFilterx(String sql)	{
 	    if(!StringUtil.isEmpty(sql,true)) {
             return new QueryCacheHandlerFilter(sql);
         }
 	    return null;
-	}
+	}*/
 
 	@Override
 	public int doStartTag() throws PageException	{

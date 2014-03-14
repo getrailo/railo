@@ -11,11 +11,13 @@ import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFilter;
 import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.query.QueryCacheItem;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.query.QueryCacheEntry;
 import railo.runtime.type.dt.TimeSpan;
 
 public class TimespanCacheHandler implements CacheHandler {
@@ -89,9 +91,18 @@ public class TimespanCacheHandler implements CacheHandler {
 			Cache cache = getCache(pc);
 			Iterator<CacheEntry> it = cache.entries().iterator();
 			CacheEntry ce;
+			Object obj;
 			while(it.hasNext()){
 				ce = it.next();
-				if(filter==null || filter.accept(ce.getValue()))
+				if(filter==null) {
+					cache.remove(ce.getKey());
+					continue;
+				}
+				
+				obj=ce.getValue();
+				if(obj instanceof QueryCacheItem)
+					obj=((QueryCacheItem)obj).getQuery();
+				if(filter.accept(obj)) 
 					cache.remove(ce.getKey());
 			}
 		}
