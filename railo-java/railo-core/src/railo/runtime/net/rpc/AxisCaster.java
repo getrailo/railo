@@ -312,8 +312,6 @@ public final class AxisCaster {
 		ComponentScope scope = comp.getComponentScope();
     	
     	Pojo pojo=null;
-    	//Map rtn=new HashTable();
-    	Object obj=null;
 		try {
 			pojo = (Pojo) ClassUtil.loadInstance(ComponentUtil.getServerComponentPropertiesClass(pc,comp));
 		} catch (ClassException e) {
