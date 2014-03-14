@@ -158,7 +158,7 @@ public final class StringUtil {
 					case '\b': rtn.append("\\b"); break;
 					case '\t': rtn.append("\\t"); break;
 					case '"' : rtn.append("\\\""); break;
-					case '\'': rtn.append("\\\'"); break;
+					//case '\'': rtn.append("\\\'"); break;
 					case '/': 
 						// escape </script>
 						if(
