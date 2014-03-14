@@ -71,7 +71,9 @@ public class SMBResource extends ResourceSupport implements Resource{
 		
 		try {
 			//use http scheme just so we can parse the url and get the user info out
-			String result = new URL("http://".concat(path)).getUserInfo();
+			String schemeless = _stripScheme(path);
+			schemeless = schemeless.replaceFirst("^/", "");
+			String result = new URL("http://".concat(schemeless)).getUserInfo();
 			return SMBResourceProvider.unencryptUserInfo(result);
 		}
 		catch (MalformedURLException e) {

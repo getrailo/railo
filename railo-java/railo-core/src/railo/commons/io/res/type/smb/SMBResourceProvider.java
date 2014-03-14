@@ -118,7 +118,7 @@ public class SMBResourceProvider implements ResourceProvider{
 	public static String unencryptUserInfo(String userInfo) {
 		if(!isEncryptedUserInfo(userInfo)) return userInfo; 
 		String encrypted = userInfo.replaceAll(Pattern.quote(ENCRYPTED_PREFIX),"");
-		byte[] unencryptedBytes = Base32DecEnc.decode(encrypted);
+		byte[] unencryptedBytes = Base32DecEnc.decode(encrypted.toUpperCase());
 		return new String(unencryptedBytes, UTF8);
 		
 	}
