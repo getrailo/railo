@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.runtime.exp.PageException;
+import railo.runtime.type.util.StructUtil;
 
 
 public class SyncMap<K,V>
@@ -32,9 +33,6 @@ public class SyncMap<K,V>
             this.mutex = mutex;
         }
         
-        public MapPro<K, V> getMap(){
-        	return m;
-        }
 
         public int size() {
             synchronized (mutex) {return m.size();}
@@ -131,4 +129,8 @@ public class SyncMap<K,V>
         private void writeObject(ObjectOutputStream s) throws IOException {
             synchronized (mutex) {s.defaultWriteObject();}
         }
+
+		public int getType() {
+			return StructUtil.getType(m);
+		}
     }

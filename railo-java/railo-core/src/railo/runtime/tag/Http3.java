@@ -50,7 +50,6 @@ import railo.commons.net.http.httpclient3.ResourcePart;
 import railo.commons.net.http.httpclient3.ResourcePartSource;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;

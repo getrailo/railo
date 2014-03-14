@@ -1,26 +1,14 @@
 package railo.runtime.tag;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
-import railo.runtime.PageContext;
 import railo.runtime.cache.tag.smart.Analyzer;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServer;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagSupport;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
-import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
 
 // MUST change behavior of multiple headers now is a array, it das so?
@@ -133,12 +121,12 @@ public final class SmartCache extends TagSupport {
 		SmartCacheHandler.stop();
 	}
 
-	private void doClearRules() {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules();
-		else SmartCacheHandler.clearRules(type);
+	private void doClearRules() throws PageException {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules(pageContext);
+		else SmartCacheHandler.clearRules(pageContext,type);
 	}
-	private void doClearEntries() {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries();
+	private void doClearEntries() throws PageException {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries(pageContext);
 		else SmartCacheHandler.clearEntries(type);
 	}
 
@@ -147,7 +135,7 @@ public final class SmartCache extends TagSupport {
 		String[] hashes=getEntryHashes();
 		
 		for(int i=0;i<hashes.length;i++){
-			SmartCacheHandler.removeRule(type,hashes[i]);
+			SmartCacheHandler.removeRule(pageContext,type,hashes[i]);
 		}
 	}
 

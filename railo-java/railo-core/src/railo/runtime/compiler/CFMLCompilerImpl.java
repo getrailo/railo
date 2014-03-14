@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.TemplateException;
@@ -52,7 +53,38 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 			
 	        try {
 	        	page = cfmlTransformer.transform(config,source,tld,fld);
-	        	barr = page.execute(source,classFile);
+	        	page.setSplitIfNecessary(false);
+	        	try {
+	        		barr = page.execute(source,classFile);
+	        	}
+	        	catch(RuntimeException re) {
+	        		String msg=StringUtil.emptyIfNull(re.getMessage());
+	        		if(StringUtil.indexOfIgnoreCase(msg, "Method code too large!")!=-1) {
+	        			page = cfmlTransformer.transform(config,source,tld,fld); // MUST a new transform is necessary because the page object cannot be reused, rewrite the page that reusing it is possible
+	    	        	page.setSplitIfNecessary(true);
+	        			barr = page.execute(source,classFile);
+	        		}
+	        		else throw re;
+	        	}
+		        catch(ClassFormatError cfe) {
+		        	String msg=StringUtil.emptyIfNull(cfe.getMessage());
+		        	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
+		        		page = cfmlTransformer.transform(config,source,tld,fld); // MUST see above
+			        	page.setSplitIfNecessary(true);
+		        		barr = page.execute(source,classFile);
+		        	}
+		        	else throw cfe;
+		        }
+	        	
+	        	
+	        	
+	        	
+	        	
+	        	
+	        	
+	        	
+	        	
+	        	
 				IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		        return barr;
 			} 

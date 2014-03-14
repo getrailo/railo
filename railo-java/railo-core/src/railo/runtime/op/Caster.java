@@ -73,7 +73,8 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -87,12 +88,10 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.CollectionStruct;
-import railo.runtime.type.CustomType;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -370,7 +369,7 @@ public final class Caster {
      */
     public static Double toDouble(Object o, Double defaultValue) {
         if(o instanceof Double) return (Double)o;
-        double dbl = toDoubleValue(o,Double.NaN);
+        double dbl = toDoubleValue(o,true,Double.NaN);
         if(Double.isNaN(dbl)) return defaultValue;
         return new Double(dbl);
         
@@ -539,6 +538,16 @@ public final class Caster {
 		if(date==null)return defaultValue;
     	return date.castToDoubleValue(0);
 	}
+    
+    /**
+     * cast a Object to a double value (primitive value Type)
+     * @param o Object to cast
+     * @param defaultValue if can't cast return this value
+     * @return casted double value
+     * /
+    public static double toDoubleValue(Object o,double defaultValue) {
+    	return toDoubleValue(o, true, defaultValue);
+    }*/
 
 	/**
      * cast a Object to a double value (primitive value Type)
@@ -546,16 +555,16 @@ public final class Caster {
      * @param defaultValue if can't cast return this value
      * @return casted double value
      */
-    public static double toDoubleValue(Object o,double defaultValue) {
+    public static double toDoubleValue(Object o,boolean alsoFromDate,double defaultValue) {
         if(o instanceof Number) return ((Number)o).doubleValue();
         else if(o instanceof Boolean) return ((Boolean)o).booleanValue()?1:0;
-        else if(o instanceof String) return toDoubleValue(o.toString(),defaultValue);
+        else if(o instanceof String) return toDoubleValue(o.toString(),alsoFromDate,defaultValue);
         else if(o instanceof Castable) {
             return ((Castable)o).castToDoubleValue(defaultValue);
             
         }
         //else if(o == null) return defaultValue;
-        else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),defaultValue);
+        else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),true,defaultValue);
 			
         return defaultValue;
     }
@@ -836,7 +845,7 @@ public final class Caster {
      * @return casted decimal value
      */
     public static String toDecimal(Object value, String defaultValue) {
-        double res=toDoubleValue(value,Double.NaN);
+        double res=toDoubleValue(value,true,Double.NaN);
         if(Double.isNaN(res)) return defaultValue;
         return toDecimal(res);
     }
@@ -2978,7 +2987,7 @@ public final class Caster {
             return toTimespan(((ObjectWrap)o).getEmbededObject());
         }
         
-        double dbl = toDoubleValue(o,Double.NaN);
+        double dbl = toDoubleValue(o,true,Double.NaN);
         if(!Double.isNaN(dbl))return TimeSpanImpl.fromDays(dbl);
         
         throw new CasterException(o,"timespan");
@@ -3405,15 +3414,8 @@ public final class Caster {
         	}        	
         	return trg;	
         }
-        
-        
-        if(o instanceof Component) {
-            Component comp=((Component)o);
-            if(comp.instanceOf(type)) return o;
-            // neo batch
-            throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
-        }
-        throw new CasterException(o,type);
+
+    	return _castTo(pc, type, o);
     }
 
 	public static String toZip(Object o) throws PageException {
@@ -3521,10 +3523,20 @@ public final class Caster {
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
 
+    	return _castTo(pc, strType, o);
+    }   
+    
+    private static Object _castTo(PageContext pc, String strType, Object o) throws PageException {
+
         if(o instanceof Component) {
             Component comp=((Component)o);
             if(comp.instanceOf(strType)) return o;
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
+        }
+        if(o instanceof Pojo) {
+        	Component cfc = AxisCaster.toComponent(pc,((Pojo)o),strType,null);
+        	if(cfc!=null) return cfc;
+        	throw new ExpressionException("can't cast Pojo of Type ["+o.getClass().getName()+"] to ["+strType+"]");
         }
         
         if(strType.endsWith("[]") && Decision.isArray(o)){
@@ -3551,19 +3563,8 @@ public final class Caster {
 	    	}
 	    	
 	    }
-
-	    /* custom type (disabled for the moment)
-        CustomType ct=((ApplicationContextPro)pc.getApplicationContext()).getCustomType(strType);
-        if(ct!=null) {
-        	Object obj= ct.convert(pc,o,Null.NULL);
-        	if(obj!=Null.NULL) return obj;
-        }
-        */
-
-
-	    
         throw new CasterException(o,strType);
-    }   
+    }
     
     /**
      * cast a value to a value defined by type argument
@@ -3793,6 +3794,8 @@ public final class Caster {
         }
         return defaultValue;
     }
+    
+    
     
     /**
      * cast a Object to a Collection, if not returns null
@@ -4161,7 +4164,7 @@ public final class Caster {
 		if(src instanceof String) {
 			if(existing)
 				return ResourceUtil.toResourceExisting(pc, (String)src,allowRealpath);
-			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath);
+			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath,false);
 		}
 		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
         throw new CasterException(src,"Resource");

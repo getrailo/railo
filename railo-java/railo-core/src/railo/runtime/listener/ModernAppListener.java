@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
 
-import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -47,7 +46,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-
 import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;

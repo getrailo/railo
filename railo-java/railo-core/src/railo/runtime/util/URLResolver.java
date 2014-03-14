@@ -8,6 +8,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -92,7 +93,7 @@ public final class URLResolver {
 	 */
 	public String transform(String html, URL url, boolean setBaseTag) throws PageException {
 		StringBuffer target=new StringBuffer();
-		CFMLString cfml=new CFMLString(html,"UTF-8");
+		CFMLString cfml=new CFMLString(html,CharsetUtil.UTF8);
 		while(!cfml.isAfterLast()) {
 			if(cfml.forwardIfCurrent('<')) {
 				target.append('<');

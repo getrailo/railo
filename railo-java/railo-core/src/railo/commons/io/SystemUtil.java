@@ -844,15 +844,7 @@ public final class SystemUtil {
 	}
 	
 	public static TemplateLine getCurrentContext() {
-		return _getCurrentContext(new Exception("Stack trace"));
-	}
-	private static TemplateLine _getCurrentContext(Throwable t) {
-		
-		//Throwable root = t.getRootCause();
-		Throwable cause = t.getCause(); 
-		if(cause!=null)_getCurrentContext(cause);
-		StackTraceElement[] traces = t.getStackTrace();
-		
+		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 		
         int line=0;
 		String template;

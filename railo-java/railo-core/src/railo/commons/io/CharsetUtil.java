@@ -2,8 +2,6 @@ package railo.commons.io;
 
 import java.nio.charset.Charset;
 
-import javax.servlet.http.HttpServletRequest;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;

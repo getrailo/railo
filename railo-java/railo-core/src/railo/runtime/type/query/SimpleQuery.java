@@ -35,6 +35,7 @@ import java.util.TimeZone;
 import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
@@ -85,7 +86,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	private ArrayInt arrCurrentRow=new ArrayInt();
 	
 
-	public SimpleQuery(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,TimeZone tz) throws PageException {
+	public SimpleQuery(PageContext pc,DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,TimeZone tz) throws PageException {
 		this.name=name;
 		this.template=template;
         this.sql=sql;
@@ -136,6 +137,8 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 			throw Caster.toPageException(e);
 		}
 		exeTime= System.nanoTime()-start;
+		
+		((PageContextImpl)pc).registerLazyStatement(stat);
 	}
 	
 	private void setAttributes(Statement stat,int maxrow, int fetchsize,int timeout) throws SQLException {

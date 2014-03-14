@@ -2,8 +2,6 @@ package railo.runtime.cache.tag.udf;
 
 import java.io.Serializable;
 
-import net.sf.ehcache.pool.sizeof.SizeOf;
-
 import railo.commons.digest.HashUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheItem;

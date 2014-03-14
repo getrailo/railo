@@ -1,10 +1,10 @@
 package railo.commons.io.res.util;
 
-import railo.commons.lang.StringUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import railo.commons.lang.StringUtil;
 
 
 /**

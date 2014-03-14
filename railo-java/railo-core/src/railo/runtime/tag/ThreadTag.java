@@ -49,7 +49,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	private static final int ACTION_SLEEP = 2;
 	private static final int ACTION_TERMINATE = 3;
 	
-	private static final int TYPE_DEAMON = 0;
+	private static final int TYPE_DAEMON = 0;
 	private static final int TYPE_TASK = 1;
 	private static final ExecutionPlan[] EXECUTION_PLAN = new ExecutionPlan[0];
 	
@@ -60,7 +60,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	private int priority=Thread.NORM_PRIORITY;
 	private long timeout=0;
 	private PageContext pc;
-	private int type=TYPE_DEAMON;
+	private int type=TYPE_DAEMON;
 	private ExecutionPlan[] plans=EXECUTION_PLAN;
 	private Struct attrs;
 	
@@ -73,7 +73,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		name=null;
 		lcName=null;
 		priority=Thread.NORM_PRIORITY;
-		type=TYPE_DEAMON;
+		type=TYPE_DAEMON;
 		plans=EXECUTION_PLAN;
 		timeout=0;
 		attrs=null;
@@ -144,8 +144,8 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 			//throw new ApplicationException("invalid value ["+strType+"] for attribute type","task is not supported at the moment");
 			type=TYPE_TASK;
 		}
-		else if("deamon".equals(strType))	type=TYPE_DEAMON;
-		else throw new ApplicationException("invalid value ["+strType+"] for attribute type","values for attribute type are:task,deamon (default)");
+		else if("daemon".equals(strType) || "deamon".equals(strType))	type=TYPE_DAEMON;
+		else throw new ApplicationException("invalid value ["+strType+"] for attribute type","values for attribute type are:task,daemon (default)");
 		
 	}
 	
@@ -263,7 +263,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		try {
 			Threads ts = pc.getThreadScope(lcName);
 			
-			if(type==TYPE_DEAMON){
+			if(type==TYPE_DAEMON){
 				if(ts!=null)
 					throw new ApplicationException("could not create a thread with the name ["+name+"]. name must be unique within a request");
 				ChildThreadImpl ct = new ChildThreadImpl((PageContextImpl) pc,currentPage,name,threadIndex,attrs,false);

@@ -123,7 +123,7 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
     
     @Override
     public double castToDoubleValue(double defaultValue) {
-        return Caster.toDoubleValue(value,defaultValue);
+        return Caster.toDoubleValue(value,true,defaultValue);
     }
     
 	@Override

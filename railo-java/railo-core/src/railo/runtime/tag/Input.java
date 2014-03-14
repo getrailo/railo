@@ -543,7 +543,7 @@ public class Input extends TagImpl {
         Array arr=ListUtil.listToArray(range,',');
         
         if(arr.size()==1) {
-            double from=Caster.toDoubleValue(arr.get(1,null),Double.NaN);
+            double from=Caster.toDoubleValue(arr.get(1,null),true,Double.NaN);
             if(!Decision.isValid(from))throw new ApplicationException(errMessage,errDetail);
             input.setRangeMin(from);
             input.setRangeMax(Double.NaN);

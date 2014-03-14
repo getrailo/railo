@@ -1,7 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
 import java.util.Map;
-import java.util.Set;
 
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.Statement;
@@ -21,7 +20,7 @@ public interface Tag extends Statement,HasBody {
 	 * return all Attributes as a map 
 	 * @return attributes
 	 */
-	public abstract Map getAttributes();
+	public abstract Map<String,Attribute> getAttributes();
 
 	/**
 	 * returns the fullname of the tag

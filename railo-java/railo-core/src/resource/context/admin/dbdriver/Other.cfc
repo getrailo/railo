@@ -4,7 +4,7 @@
 		field("Connection String","dsn","",true,"The Datasource Connection String")
 	)>
 	
-	<cfset this.className="net.sourceforge.jtds.jdbc.Driver">
+	<cfset this.className="">
 	<cfset this.type.port=this.TYPE_HIDDEN>
 	<cfset this.type.host=this.TYPE_HIDDEN>
 	<cfset this.type.database=this.TYPE_HIDDEN>
@@ -17,6 +17,7 @@
 		<cfset this.dsn=form.custom_dsn>
 		<cfset StructDelete(form,'custom_dsn')>
 	</cffunction>
+
 	<cffunction name="init" returntype="void" output="no">
 		<cfargument name="data" required="yes" type="struct">
 		<cfif not structKeyExists(data,"classname")>
@@ -39,7 +40,7 @@
 	
 	<cffunction name="getDescription" returntype="string" output="no"
 		hint="returns description for the driver">
-		<cfreturn "Connect a other JDBC Driver aviable on the system">
+		<cfreturn "Connect with a user supplied JDBC Driver available on the system.">
 	</cffunction>
 	
 	<cffunction name="getFields" returntype="array" output="no"

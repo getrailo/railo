@@ -8,6 +8,7 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.type.cache.CacheResourceProvider;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheHandlerFilter;
@@ -21,10 +22,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
-import railo.runtime.query.QueryCacheFilter;
-import railo.runtime.query.QueryCacheFilterImpl;
-import railo.runtime.query.QueryCacheFilterUDF;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.UDF;
 
 /**
@@ -119,7 +116,7 @@ public final class ObjectCache extends TagImpl {
 		CacheHandlerFactory factory=null;
 		Cache cache=null;
 		
-		if(type==TYPE_FUNCTION) factory=CacheHandlerFactory.udf;
+		if(type==TYPE_FUNCTION) factory=CacheHandlerFactory.function;
 		else if(type==TYPE_INCLUDE) factory=CacheHandlerFactory.include;
 		else if(type==TYPE_QUERY) factory=CacheHandlerFactory.query;
 		else if(type==TYPE_RESOURCE) {

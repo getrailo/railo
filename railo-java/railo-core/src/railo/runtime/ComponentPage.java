@@ -21,7 +21,6 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.mimetype.MimeType;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.BinaryConverter;
 import railo.runtime.converter.ConverterException;
@@ -58,11 +57,9 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
-
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
@@ -176,7 +173,7 @@ public abstract class ComponentPage extends PagePlus  {
             // GET
             else {
             	// WSDL
-                if(qs!=null && qs.trim().equalsIgnoreCase("wsdl")) {
+                if(qs!=null && (qs.trim().equalsIgnoreCase("wsdl") || qs.trim().startsWith("wsdl&"))) {
                     callWSDL(pc,component);
             		//close(pc);
                     return;
@@ -585,7 +582,6 @@ public abstract class ComponentPage extends PagePlus  {
 		List<MimeType> accept = ReqRspUtil.getAccept(pc);
 		int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
 		
-		
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
         
@@ -600,6 +596,11 @@ public abstract class ComponentPage extends PagePlus  {
       //content-type
         Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
+
+        // onMissingMethod
+        if(o==null) o=component.get(pc,KeyConstants._onmissingmethod,null);
+
+        
         Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
         
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);

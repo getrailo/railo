@@ -2,18 +2,15 @@ package railo.runtime.thread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
@@ -66,7 +63,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	ByteArrayOutputStream output;
 	
 	
-	// only used for type deamon
+	// only used for type daemon
 	private Page page;
 	
 	// only used for type task, demon attrs are not Serializable

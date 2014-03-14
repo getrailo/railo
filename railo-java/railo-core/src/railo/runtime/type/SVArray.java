@@ -151,7 +151,7 @@ public final class SVArray extends ArrayImpl implements Reference {
     public double castToDoubleValue(double defaultValue) {
     	Object value = get(position,null);
     	if(value==null)return defaultValue;
-        return Caster.toDoubleValue(value,defaultValue);
+        return Caster.toDoubleValue(value,true,defaultValue);
     }
 
     @Override

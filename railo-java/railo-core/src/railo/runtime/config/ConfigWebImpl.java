@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.digest.HashUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -256,23 +257,33 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    	}
 			return serverFunctionMapping;
 		}
-	    private Map<String,Mapping> applicationMappings=new ReferenceMap();
+	    private Map<String,Mapping> applicationMappings=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+
+	    
+	    
 		private TagHandlerPool tagHandlerPool=new TagHandlerPool(this);
-		public Mapping getApplicationMapping(String virtual, String physical) {
-			return getApplicationMapping(virtual, physical, null);
-		}
 		
-		public Mapping getApplicationMapping(String virtual, String physical, String archive) {
-			String key=virtual.toLowerCase()+physical.toLowerCase();
-			Mapping m= applicationMappings.get(key);
+
+		public Mapping getApplicationMapping(String type,String virtual, String physical,String archive,boolean physicalFirst, boolean ignoreVirtual) {
+			String key=type+":"+
+				virtual.toLowerCase()
+				+":"+(physical==null?"":physical.toLowerCase())
+				+":"+(archive==null?"":archive.toLowerCase())
+				+":"+physicalFirst;
+			key=Long.toString(HashUtil.create64BitHash(key),Character.MAX_RADIX);
+			
+			
+			Mapping m=applicationMappings.get(key);
+			
 			if(m==null){
-				m=new MappingImpl(this,
-					virtual,
+				m=new MappingImpl(
+					this,virtual,
 					physical,
-					archive,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,false,null
+					archive,ConfigImpl.INSPECT_UNDEFINED,physicalFirst,false,false,false,true,ignoreVirtual,null
 					);
-				applicationMappings.put(key, m);
+				applicationMappings.put(key,m);
 			}
+			
 			return m;
 		}
 

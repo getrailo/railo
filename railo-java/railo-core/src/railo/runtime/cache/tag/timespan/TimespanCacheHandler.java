@@ -1,12 +1,9 @@
 package railo.runtime.cache.tag.timespan;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.PageContext;
@@ -54,6 +51,10 @@ public class TimespanCacheHandler implements CacheHandler {
 			timeSpan=Caster.toDate(cachedWithin, null).getTime()-System.currentTimeMillis();
 		else
 			timeSpan = Caster.toTimespan(cachedWithin).getMillis();
+		
+		// ignore timespan smaller or equal to 0
+		if(timeSpan<=0) return;
+		
 		getCache(pc).put(id, value, Long.valueOf(timeSpan), Long.valueOf(timeSpan));
 	}
 	

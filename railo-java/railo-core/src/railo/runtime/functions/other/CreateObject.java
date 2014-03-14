@@ -25,7 +25,7 @@ import railo.runtime.java.JavaObject;
 import railo.runtime.net.http.HTTPClient;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
-import railo.runtime.net.rpc.client.RPCClient;
+import railo.runtime.net.rpc.client.WSClient;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.security.SecurityManager;
@@ -212,12 +212,12 @@ public final class CreateObject implements Function {
     
     public static Object doWebService(PageContext pc,String wsdlUrl) throws PageException {
     	// TODO CF8 impl. all new attributes for wsdl
-    	return new RPCClient(wsdlUrl);
+    	return WSClient.getInstance(pc, wsdlUrl, null, null, null);
     } 
 
     public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
     	// TODO CF8 impl. all new attributes for wsdl
-    	return new RPCClient(wsdlUrl,username,password,proxy);
+    	return WSClient.getInstance(pc,wsdlUrl,username,password,proxy);
     } 
     public static Object doHTTP(PageContext pc,String httpUrl) throws PageException {
     	return new HTTPClient(httpUrl,null,null,null);

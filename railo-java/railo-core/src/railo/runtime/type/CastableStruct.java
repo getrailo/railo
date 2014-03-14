@@ -77,7 +77,7 @@ public final class CastableStruct extends StructImpl  {
     @Override
     public double castToDoubleValue(double defaultValue) {
     	if(value==null) return super.castToDoubleValue(defaultValue);
-		return Caster.toDoubleValue(value,defaultValue);
+		return Caster.toDoubleValue(value,true,defaultValue);
     }
 
 	@Override

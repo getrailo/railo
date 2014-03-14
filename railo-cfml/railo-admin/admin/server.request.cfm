@@ -72,7 +72,6 @@ Defaults --->
 		<cfswitch expression="#form.mainAction2#">
 		<!--- UPDATE --->
 			<cfcase value="#stText.Buttons.Update#">
-			
 				<cfadmin 
 					action="updateApplicationListener"
 					type="#request.adminType#"
@@ -353,7 +352,7 @@ Error Output --->
 					<td>
 						<cfif hasAccess>
 							<ul class="radiolist">
-								<cfloop index="key" list="curr,root,curr2root">
+								<cfloop index="key" list="curr2root,currorroot,root,curr">
 									<li>
 										<label>
 											<input type="radio" class="radio" name="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>

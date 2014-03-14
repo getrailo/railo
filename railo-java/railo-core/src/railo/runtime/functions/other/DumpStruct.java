@@ -5,9 +5,7 @@ package railo.runtime.functions.other;
 
 import java.util.Set;
 
-import railo.print;
 import railo.commons.digest.HashUtil;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -262,9 +260,9 @@ public final class DumpStruct implements Function {
 		return columns;
 	}
 
-	public static String getContext() {
+	/*public static String getContext() {
 		//Throwable cause = t.getCause();
-		StackTraceElement[] traces = new Exception("Stack trace").getStackTrace();
+		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 		
 		int line=0;
 		String template;
@@ -276,7 +274,7 @@ public final class DumpStruct implements Function {
 			return template+":"+line;
 		}
 		return null;
-	}
+	}*/
 		
 	private static String toShortColor(String color) {
 		if(color!=null && color.length()==7 && color.startsWith("#")) {

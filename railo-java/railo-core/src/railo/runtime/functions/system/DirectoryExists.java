@@ -19,7 +19,7 @@ public final class DirectoryExists implements Function {
 		if(oAllowRealPath==null) return call(pc, path);
 		boolean allowRealPath = Caster.toBooleanValue(oAllowRealPath);
 		if(allowRealPath) {
-			file=ResourceUtil.toResourceNotExisting(pc, path,allowRealPath);
+			file=ResourceUtil.toResourceNotExisting(pc, path,allowRealPath,false);
 			// TODO das else braucht es eigentlich nicht mehr
 		}
 		else {

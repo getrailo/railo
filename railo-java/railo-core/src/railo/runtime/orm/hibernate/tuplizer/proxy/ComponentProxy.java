@@ -13,14 +13,11 @@ import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Duplicator;
-import railo.runtime.orm.hibernate.CommonUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
-
 import railo.runtime.type.dt.DateTime;
 
 public abstract class ComponentProxy implements Component {

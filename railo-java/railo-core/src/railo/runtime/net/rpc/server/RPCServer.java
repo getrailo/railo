@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 import javax.xml.namespace.QName;
+import javax.xml.rpc.encoding.TypeMapping;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
@@ -79,7 +80,7 @@ public final class RPCServer{
 	private String webInfPath;
 	private String homeDir;
 	private AxisServer axisServer;
-	private org.apache.axis.encoding.TypeMapping typeMapping;
+	//private org.apache.axis.encoding.TypeMapping typeMapping;
 	
 	private static boolean isDevelopment=false;
 	private static boolean isDebug = false;
@@ -772,7 +773,7 @@ public final class RPCServer{
             	Map environment = new HashMap();
                 environment.put(AxisEngine.ENV_SERVLET_CONTEXT, context);
                 axisServer = AxisServer.getServer(environment);
-                axisServer.setName("RailoCFC");
+                axisServer.setName("RailoServer");
             }
             
             // add Component Handler
@@ -802,20 +803,21 @@ public final class RPCServer{
 
 	public void registerTypeMapping(Class clazz) {
 		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://DefaultNamespace",fullname);
+		QName qname = new QName("http://rpc.xml.coldfusion",fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
 	private void registerTypeMapping(Class clazz,QName qname) {
+		//org.apache.axis.encoding.TypeMapping tm;
 		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
-		
-		org.apache.axis.encoding.TypeMapping tm;
-		tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		Class c = tm.getClassForQName(qname);
+		TypeMapping tm = reg.getDefaultTypeMapping();
+		if(tm==null)reg.registerDefault(tm=reg.createTypeMapping());
+		//tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
+		/*Class c = tm.getClassForQName(qname);
 		if(c!=null && c!=clazz) {
 			tm.removeDeserializer(c, qname);
 			tm.removeSerializer(c, qname);
-		}
+		}*/
 		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
 	}
 }

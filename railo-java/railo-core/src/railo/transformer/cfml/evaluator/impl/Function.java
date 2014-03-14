@@ -17,7 +17,6 @@ import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;

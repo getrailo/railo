@@ -45,7 +45,6 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
-import railo.runtime.type.scope.FormImpl;
 
 public final class ReqRspUtil {
 

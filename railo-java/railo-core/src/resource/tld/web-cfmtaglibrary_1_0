@@ -440,6 +440,15 @@ Specifies how Railo stores session variables:
 			in response to a remote call.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>wstype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>webservice type used, this can be one of the following values
+- Axis1 (default): The Apache Axis 1 implementation is used
+- CXF: The CXF implementation is used</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>typeChecking</name>
 			<required>false</required>
@@ -1292,6 +1301,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Format for Y-axis labels.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>categoryLabelPositions</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Label postion relative to axis: standard, up_45, up_90, down_45, down_90 or horizontal (standard) and vertical (down_90).  Default is horizontal.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -4204,6 +4220,14 @@ If omitted, the file's attributes are maintained.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>String; a type name; data type of the function return value</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>bufferoutput</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is only used when output of the function is set to false. if this attribute is set to true (default) the output written to the body of the function is buffered and in case of a exception also outputted.
+			if set to false the content to body is ignored and not disabled when a failure in the body of the tag occur.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -10179,9 +10203,8 @@ To use cached data, the current query must use the same SQL statement, data sour
 			<type>object</type>
 			<name>params</name>
 			<required>false</required>
-			<status>hidden</status>
 			<rtexprvalue>true</rtexprvalue>
-			<description>experimentell</description>
+			<description></description>
 		</attribute>
 		
 	</tag>

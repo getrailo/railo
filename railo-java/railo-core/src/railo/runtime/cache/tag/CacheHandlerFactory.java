@@ -1,40 +1,25 @@
 package railo.runtime.cache.tag;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.digest.HashUtil;
 import railo.commons.lang.KeyGenerator;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
-import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageException;
-import railo.runtime.functions.cache.Util;
 import railo.runtime.cache.tag.request.RequestCacheHandler;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.cache.tag.timespan.TimespanCacheHandler;
 import railo.runtime.cache.tag.udf.UDFArgConverter;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.converter.LazyConverter;
 import railo.runtime.db.SQL;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
-import railo.runtime.type.Array;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Collection;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
-import railo.runtime.type.comparator.SortRegisterComparator;
-import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
 public class CacheHandlerFactory { 
@@ -118,7 +103,7 @@ public class CacheHandlerFactory {
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}
 	
-	public void clean(PageContext pc) {
+	public void clean(PageContext pc) throws PageException {
 		rch.clean(pc);
 		getTimespanCacheHandler(pc.getConfig()).clean(pc);
 	}

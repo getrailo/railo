@@ -1,20 +1,13 @@
 package railo.commons.io.log.log4j.appender;
 
 import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 
-import railo.print;
 import railo.commons.io.log.log4j.appender.task.Task;
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.config.Config;
-import railo.runtime.exp.PageException;
-import railo.runtime.spooler.ExecutionPlan;
-import railo.runtime.spooler.ExecutionPlanImpl;
 import railo.runtime.spooler.SpoolerEngine;
 
 public class TaskAppender implements Appender,AppenderState {

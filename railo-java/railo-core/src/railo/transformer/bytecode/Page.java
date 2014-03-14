@@ -18,17 +18,14 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.ImportDefintionImpl;
-import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -358,40 +355,36 @@ public final class Page extends BodyBase {
     		);
 	public static final byte CF = (byte)207;
 	public static final byte _33 = (byte)51;
-	private static final boolean ADD_C33 = false;
+	//private static final boolean ADD_C33 = false;
 	//private static final String SUB_CALL_UDF = "udfCall";
 	private static final String SUB_CALL_UDF = "_";
 	private static final int DEFAULT_VALUE = 3;
 		
-    private int version;
-    private long lastModifed;
-    private String name;
-    
-    //private Body body=new Body();
-	private Resource source;
+    private final int version;
+    private final long lastModifed;
+    private final boolean _writeLog;
+	private final String name;
+    private final boolean suppressWSbeforeArg;
+	private final PageSource pageSource;
+	
 	private boolean isComponent;
 	private boolean isInterface;
 
-	private List<IFunction> functions=new ArrayList<IFunction>();
-	private List<TagThread> threads=new ArrayList<TagThread>();
-	private boolean _writeLog;
-	private boolean suppressWSbeforeArg;
+	private ArrayList<IFunction> functions=new ArrayList<IFunction>();
+	private ArrayList<TagThread> threads=new ArrayList<TagThread>();
 	private Resource staticTextLocation;
-	private int len;
-	private int off;
+	private  int off;
 	private int methodCount=0;
 	//private final Config config;
-	private PageSource pageSource;
+	private boolean splitIfNecessary;
     
 	
 	
     public Page(PageSource pageSource,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean suppressWSbeforeArg) {
     	name=name.replace('.', '/');
-    	//body.setParent(this);
-        this.name=name;
+    	this.name=name;
         this.version=version;
         this.lastModifed=lastModifed;
-        this.source=source;
         
         this._writeLog=writeLog;
         this.suppressWSbeforeArg=suppressWSbeforeArg;
@@ -406,6 +399,25 @@ public final class Page extends BodyBase {
      * @throws TemplateException 
      */
     public byte[] execute(PageSource source,Resource classFile) throws BytecodeException {
+    	/*
+    	// this is done that the Page can be executed more than once
+    	if(initFunctions==null)
+    		initFunctions=(ArrayList<IFunction>) functions.clone();
+    	else
+    		functions=initFunctions;
+    	if(initThreads==null)
+    		initThreads=(ArrayList<TagThread>) threads.clone();
+    	else
+    		threads=initThreads;
+    	methodCount=0;
+    	off=0;
+    	staticTextLocation=null;
+    	
+    	
+    	print.e(this.functions);
+    	print.e(this.threads);*/
+    	
+    	
     	Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
         
     	List<LitString> keys=new ArrayList<LitString>();
@@ -420,7 +432,7 @@ public final class Page extends BodyBase {
     	if(isComponent()) parent="railo/runtime/ComponentPage";
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
-    	cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
+    	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
     	//cw.visitSource(this.source.getAbsolutePath(), null);
     	cw.visitSource(this.pageSource.getFullRealpath(), null);
 
@@ -673,32 +685,10 @@ public final class Page extends BodyBase {
         constrAdapter.visitVarInsn(Opcodes.ALOAD, 1);
         constrAdapter.invokeVirtual(t, SET_PAGE_SOURCE);
         
-        
-
-        //statConstr.getAdapter().returnValue();
-        //statConstr.getAdapter().endMethod();
-        
-        
+     
         constrAdapter.returnValue();
         constrAdapter.endMethod();
     	
-        if(ADD_C33) {
-        	byte[] tmp = cw.toByteArray();
-	        byte[] bLastMod=NumberUtil.longToByteArray(lastModifed);
-	        byte[] barr = new byte[tmp.length+10];
-	        // Magic Number
-	        barr[0]=CF; // CF
-	        barr[1]=_33; // 33
-	        
-	        // Last Modified
-	        for(int i=0;i<8;i++){
-	        	barr[i+2]=bLastMod[i];
-	        }
-	        for(int i=0;i<tmp.length;i++){
-	        	barr[i+10]=tmp[i];
-	        }
-	        return barr;
-        }
         return cw.toByteArray();
  	
     }
@@ -1043,9 +1033,9 @@ public final class Page extends BodyBase {
     	Label methodEnd=new Label();
     	
 		adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
+		ExpressionUtil.visitLine(bc, component.getStart());
     	adapter.visitLabel(methodBegin);
 
-    	//ExpressionUtil.visitLine(adapter, component.getStartLine());
     	
 		int comp=adapter.newLocal(Types.COMPONENT_IMPL);
 		adapter.newInstance(Types.COMPONENT_IMPL);
@@ -1162,6 +1152,7 @@ public final class Page extends BodyBase {
 
     	
 		adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
+		ExpressionUtil.visitLine(bc, interf.getStart());
     	adapter.visitLabel(methodBegin);
 
     	//ExpressionUtil.visitLine(adapter, interf.getStartLine());
@@ -1333,7 +1324,8 @@ public final class Page extends BodyBase {
 
 		}
 		if(pageType!=IFunction.PAGE_TYPE_INTERFACE){
-			BodyBase.writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),body.getStatements(), bc);
+			//BodyBase.writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),body.getStatements(), bc);
+			BodyBase.writeOut(bc,body);
 		}
 	}
 
@@ -1444,7 +1436,6 @@ public final class Page extends BodyBase {
 			if(it.next() instanceof FunctionImpl)indexes[IFunction.ARRAY_INDEX]++;
 		}
 		indexes[IFunction.VALUE_INDEX]=functions.size();
-		
 		functions.add(function);
 		return indexes;
 	}
@@ -1491,6 +1482,14 @@ public final class Page extends BodyBase {
 
 	public PageSource getPageSource() {
 		return pageSource;
+	}
+
+	public void setSplitIfNecessary(boolean splitIfNecessary) {
+		this.splitIfNecessary=splitIfNecessary;
+	}
+	
+	public boolean getSplitIfNecessary() {
+		return splitIfNecessary;
 	}
 	
 

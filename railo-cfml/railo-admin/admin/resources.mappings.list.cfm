@@ -84,6 +84,19 @@
 						</tr>
 					</cfif>
 				</cfloop>
+				<!--- <tr><td colspan="7">
+				
+<cfsavecontent variable="codeSample">
+
+<cfloop query="mappings"><cfif mappings.hidden || mappings.virtual=="/railo-context" || mappings.virtual=="/railo-server-context"><cfcontinue></cfif><cfset del="">
+this.mappings=["#mappings.virtual#"]={<cfif len(mappings.strPhysical)>
+&nbsp;&nbsp;&nbsp;physical:"#mappings.strPhysical#"<cfset del=","></cfif><cfif len(mappings.strArchive)>
+&nbsp;&nbsp;&nbsp;#del#archive:"#mappings.strArchive#"<cfset del=","></cfif>};
+</cfloop>
+</cfsavecontent>
+						<cfset renderCodingTip( codeSample )>
+				</td>
+				</tr>--->
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="7" line=true>
 				</cfif>

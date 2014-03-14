@@ -11,7 +11,7 @@ public class DirectoryDelete {
 		return call(pc, path, false);
 	}
 	public static String call(PageContext pc , String path,boolean recurse) throws PageException {
-		Resource dir=ResourceUtil.toResourceNotExisting(pc, path,pc.getConfig().allowRealPath());
+		Resource dir=ResourceUtil.toResourceNotExisting(pc, path);
 		Directory.actionDelete(pc, dir, recurse, null);
 	    return null;
 	}

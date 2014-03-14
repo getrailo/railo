@@ -13,14 +13,10 @@ import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.annotations.Cache;
-
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceClassLoader;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;

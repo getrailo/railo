@@ -282,6 +282,13 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 		try {
 			return _compile(config, classRootDir, resetCL);
         }
+			catch(RuntimeException re) {re.printStackTrace();
+	    	String msg=StringUtil.emptyIfNull(re.getMessage());
+	    	if(StringUtil.indexOfIgnoreCase(msg, "Method code too large!")!=-1) {
+	    		throw new TemplateException("There is too much code inside the template ["+getDisplayPath()+"], Railo was not able to break it into pieces, move parts of your code to an include or a external component/function",msg);
+	    	}
+	    	throw re;
+	    }
         catch(ClassFormatError e) {
         	String msg=StringUtil.emptyIfNull(e.getMessage());
         	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
@@ -775,7 +782,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
         	if(path!=null){
         		if(path.startsWith("ra://"))
         			path="zip://"+path.substring(5);
-        		res=ResourceUtil.toResourceNotExisting(pc, path,false);
+        		res=ResourceUtil.toResourceNotExisting(pc, path,false,false);
         	}
         }
 		return res;
@@ -837,14 +844,6 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 		for(int i=0;i<arr.length;i++) {
 			if(pageExist(arr[i])) return arr[i];
 		}
-		/*// get the best none existing
-		for(int i=0;i<arr.length;i++) {
-			if(arr[i].getPhyscalFile()!=null) return arr[i];
-		}
-		for(int i=0;i<arr.length;i++) {
-			if(arr[i].getDisplayPath()!=null) return arr[i];
-		}
-		*/
 		return arr[0];
 	}
 

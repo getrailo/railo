@@ -33,7 +33,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
 	
 	private String name;
     private long timespan=-1;
-    private HttpSession httpSession;
+    private transient HttpSession httpSession;
     private long lastAccess;
 	private long created;
 

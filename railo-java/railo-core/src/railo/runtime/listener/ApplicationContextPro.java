@@ -5,21 +5,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-
-import railo.commons.lang.Pair;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.CustomType;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
-import railo.transformer.library.tag.TagLibTagAttr;
 
 // FUTURE move to ApplicationContext
 
 public interface ApplicationContextPro extends ApplicationContext {
 
+	public static final short WS_TYPE_AXIS1=1;
+	public static final short WS_TYPE_JAX_WS=2;
+	public static final short WS_TYPE_CXF=4;
+	
     public DataSource[] getDataSources();
     public DataSource getDataSource(String dataSourceName) throws PageException;
     public DataSource getDataSource(String dataSourceName, DataSource defaultValue);
@@ -78,5 +78,10 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public boolean getSuppressContent();
 	public void setSuppressContent(boolean suppressContent);
+	
+
+
+	public short getWSType();
+	public void setWSType(short wstype);
 	
 }

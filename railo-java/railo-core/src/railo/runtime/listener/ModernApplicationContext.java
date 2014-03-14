@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
@@ -47,7 +46,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFCustomType;
-
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.KeyConstants;
@@ -62,6 +60,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SESSION_STORAGE = KeyImpl.intern("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.intern("loginStorage");
 	private static final Collection.Key SESSION_TYPE = KeyImpl.intern("sessionType");
+	private static final Collection.Key WS_SETTINGS = KeyImpl.intern("wssettings");
 	private static final Collection.Key TRIGGER_DATA_MEMBER = KeyImpl.intern("triggerDataMember");
 	private static final Collection.Key INVOKE_IMPLICIT_ACCESSOR = KeyImpl.intern("InvokeImplicitAccessor");
 	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.intern("sessionManagement");
@@ -115,6 +114,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean bufferOutput;
 	private boolean suppressContent;
 	private short sessionType;
+	private short wstype;
 	private boolean sessionCluster;
 	private boolean clientCluster;
 	
@@ -155,6 +155,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initClientCluster;
 	private boolean initLoginStorage;
 	private boolean initSessionType;
+	private boolean initWSType;
 	private boolean initTriggerComponentDataMember;
 	private boolean initMappings;
 	private boolean initDataSources;
@@ -212,6 +213,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.bufferOutput=ci.getBufferOutput();
         suppressContent=ci.isSuppressContent();
         this.sessionType=config.getSessionType();
+        this.wstype=WS_TYPE_AXIS1;
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
         this.sessionStorage=ci.getSessionStorage();
@@ -520,6 +522,29 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 
 
+	@Override
+	public short getWSType() {
+		if(!initWSType) {
+			String str=null;
+			Object o = get(component,WS_SETTINGS,null);
+			if(o instanceof Struct){ 
+				Struct sct= (Struct) o;
+				o=sct.get(KeyConstants._type,null);
+				if(o instanceof String){ 
+					wstype=AppListenerUtil.toWSType(Caster.toString(o,null), WS_TYPE_AXIS1);
+				}
+			}
+			initWSType=true; 
+		}
+		return wstype;
+	}
+
+	@Override
+	public void setWSType(short wstype) {
+		initWSType=true;
+		this.wstype=wstype;
+	}
+
 
 
 	@Override
@@ -646,7 +671,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
-			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,ctmappings);
+			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,getSource(),ctmappings);
 			initCTMappings=true; 
 		}
 		return ctmappings;
@@ -656,7 +681,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toComponentMappings(config,o,getSource(),cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;
