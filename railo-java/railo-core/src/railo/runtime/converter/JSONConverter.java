@@ -142,11 +142,7 @@ public final class JSONConverter extends ConverterSupport {
 	 */
 	private void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
 		
-		sb.append('"');
-		
-		//sb.append(escape(dateTime.toString()));
-		sb.append(StringUtil.escapeJS(JSONDateFormat.format(dateTime,null)));
-		sb.append('"');
+		sb.append(StringUtil.escapeJS(JSONDateFormat.format(dateTime,null),'"'));
 		
 		/*try {
 	        sb.append(goIn());
@@ -242,9 +238,7 @@ public final class JSONConverter extends ConverterSupport {
         	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
-            sb.append('"');
-            sb.append(StringUtil.escapeJS(e.getKey().getString()));
-            sb.append('"');
+            sb.append(StringUtil.escapeJS(e.getKey().getString(),'"'));
             sb.append(':');
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
@@ -274,9 +268,7 @@ public final class JSONConverter extends ConverterSupport {
             	if(!addUDFs && (value instanceof UDF || value==null))continue;
             	if(doIt)sb.append(',');
                 doIt=true;
-                sb.append('"');
-                sb.append(StringUtil.escapeJS(key.getString()));
-                sb.append('"');
+                sb.append(StringUtil.escapeJS(key.getString(),'"'));
                 sb.append(':');
                 _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         	}
@@ -321,9 +313,7 @@ public final class JSONConverter extends ConverterSupport {
             Object key=it.next();
             if(doIt)sb.append(',');
             doIt=true;
-            sb.append('"');
-            sb.append(StringUtil.escapeJS(key.toString()));
-            sb.append('"');
+            sb.append(StringUtil.escapeJS(key.toString(),'"'));
             sb.append(':');
             _serialize(pc,test,map.get(key),sb,serializeQueryByColumns,done);
         }
@@ -406,10 +396,8 @@ public final class JSONConverter extends ConverterSupport {
 		sb.append("\"COLUMNS\":[");
 		String[] cols = query.getColumns();
 		for(int i=0;i<cols.length;i++) {
-			if(i>0)sb.append(",\"");
-			else sb.append('"');
-            sb.append(StringUtil.escapeJS(cols[i].toUpperCase()));
-            sb.append('"');
+			if(i>0)sb.append(",");
+			sb.append(StringUtil.escapeJS(cols[i].toUpperCase(),'"'));
 		}
 		sb.append("],");
 		
@@ -423,10 +411,8 @@ public final class JSONConverter extends ConverterSupport {
 			    if(oDoIt)sb.append(',');
 			    oDoIt=true;
 			    sb.append(goIn());
-	            sb.append('"');
-	            sb.append(StringUtil.escapeJS(_keys[i].getString()));
-	            sb.append('"');
-				sb.append(":[");
+	            sb.append(StringUtil.escapeJS(_keys[i].getString(),'"'));
+	            sb.append(":[");
 				boolean doIt=false;
 					for(int y=1;y<=len;y++) {
 					    if(doIt)sb.append(',');
@@ -488,17 +474,13 @@ public final class JSONConverter extends ConverterSupport {
 		// String
 		if(object instanceof String || object instanceof StringBuffer) {
 		    sb.append(goIn());
-		    sb.append('"');
-		    sb.append(StringUtil.escapeJS(object.toString()));
-		    sb.append('"');
+		    sb.append(StringUtil.escapeJS(object.toString(),'"'));
 		    return;
 		}
 		// Character
 		if(object instanceof Character) {
 		    sb.append(goIn());
-		    sb.append('"');
-		    sb.append(StringUtil.escapeJS(String.valueOf(((Character)object).charValue())));
-		    sb.append('"');
+		    sb.append(StringUtil.escapeJS(String.valueOf(((Character)object).charValue()),'"'));
 		    return;
 		}
 		// Number
@@ -621,10 +603,7 @@ public final class JSONConverter extends ConverterSupport {
 	private void _serializeXML(Node node, StringBuffer sb) {
     	node=XMLCaster.toRawNode(node);
     	sb.append(goIn());
-	    sb.append('"');
-	    sb.append(StringUtil.escapeJS(XMLCaster.toString(node,"")));
-	    sb.append('"');
-    	
+	    sb.append(StringUtil.escapeJS(XMLCaster.toString(node,""),'"'));
 	}
 
 
