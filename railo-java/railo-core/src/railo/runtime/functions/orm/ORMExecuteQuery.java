@@ -38,7 +38,8 @@ public class ORMExecuteQuery {
 	}
 	private static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
+		String dsn = null;
+		if(queryOptions!=null) dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
 		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pc).getName();
 		
 		if(params==null)

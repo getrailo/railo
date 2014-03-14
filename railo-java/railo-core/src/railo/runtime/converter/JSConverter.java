@@ -79,9 +79,8 @@ public final class JSConverter extends ConverterSupport {
 		// CharSequence (String, StringBuilder ...)
 		if(object instanceof CharSequence) {
 			sb.append(goIn());
-			sb.append("\"");
-			sb.append(StringUtil.escapeJS(object.toString()));
-			sb.append("\";");
+			sb.append(StringUtil.escapeJS(object.toString(),'"'));
+			sb.append(";");
 			return;
 		}
 		// Number
@@ -207,14 +206,9 @@ public final class JSConverter extends ConverterSupport {
 		while(it.hasNext()) {
 			e = it.next();
 			// lower case ist ok!
-			String key=StringUtil.escapeJS(Caster.toString(e.getKey().getLowerString(),""));
-            sb.append(name+"[\""+key+"\"]=");
-			//try {
-				_serialize(name+"[\""+key+"\"]",e.getValue(),sb,done);
-			/*} 
-			catch (PageException pe) {
-				_serialize(name+"[\""+key+"\"]",pe.getMessage(),sb,done);
-			}*/
+			String key=StringUtil.escapeJS(Caster.toString(e.getKey().getLowerString(),""),'"');
+            sb.append(name+"["+key+"]=");
+			_serialize(name+"["+key+"]",e.getValue(),sb,done);
 		}
         return sb.toString();
 	}
@@ -235,9 +229,9 @@ public final class JSConverter extends ConverterSupport {
 		Iterator it=map.keySet().iterator();
 		while(it.hasNext()) {
 			Object key=it.next();
-			String skey=StringUtil.toLowerCase(StringUtil.escapeJS(key.toString()));
-            sb.append(name+"[\""+skey+"\"]=");
-			_serialize(name+"[\""+skey+"\"]",map.get(key),sb,done);
+			String skey=StringUtil.toLowerCase(StringUtil.escapeJS(key.toString(),'"'));
+            sb.append(name+"["+skey+"]=");
+			_serialize(name+"["+skey+"]",map.get(key),sb,done);
 			//sb.append(";");
 		}
 		return sb.toString();
@@ -268,7 +262,7 @@ public final class JSConverter extends ConverterSupport {
 			if(useShortcuts)sb.append("col"+i+"=[];");
 			else sb.append("col"+i+"=new Array();");
 			// lower case ist ok!
-			String skey = StringUtil.escapeJS(k.getLowerString());
+			String skey = StringUtil.escapeJS(k.getLowerString(),'"');
 			for(int y=0;y<recordcount;y++) {
 				
 				sb.append("col"+i+"["+y+"]=");
@@ -276,7 +270,7 @@ public final class JSConverter extends ConverterSupport {
 				_serialize("col"+i+"["+y+"]",query.getAt(k,y+1,null),sb,done);
 				
 			}
-			sb.append(name+"[\""+skey+"\"]=col"+i+";col"+i+"=null;");
+			sb.append(name+"["+skey+"]=col"+i+";col"+i+"=null;");
 		}
 	}
 
@@ -285,7 +279,7 @@ public final class JSConverter extends ConverterSupport {
 		Collection.Key[] keys = CollectionUtil.keys(query);
 		String[] strKeys = new String[keys.length];
 		for(int i=0;i<strKeys.length;i++) {
-			strKeys[i] = StringUtil.escapeJS(keys[i].getString());
+			strKeys[i] = StringUtil.escapeJS(keys[i].getString(),'"');
 		}
 		if(useShortcuts)sb.append("[];");
 		else sb.append("new Array();");
@@ -296,8 +290,8 @@ public final class JSConverter extends ConverterSupport {
 			else sb.append(name+"["+i+"]=new Object();");
 			
 			for(int y=0;y<strKeys.length;y++) {
-				sb.append(name+"["+i+"]['"+strKeys[y]+"']=");
-				_serialize(name+"["+i+"]['"+strKeys[y]+"']",query.getAt(keys[y],i+1,null),sb,done);
+				sb.append(name+"["+i+"]["+strKeys[y]+"]=");
+				_serialize(name+"["+i+"]["+strKeys[y]+"]",query.getAt(keys[y],i+1,null),sb,done);
 			}
 		}
 	}
