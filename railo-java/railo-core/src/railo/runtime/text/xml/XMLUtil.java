@@ -578,8 +578,11 @@ public final class XMLUtil {
                 return sb.toString();
 			}
 			// children	
-			else if(k.equals(XMLCHILDREN) || k.equals(XMLNODES)) {
-				return new XMLNodeList(node,caseSensitive);
+			else if(k.equals(XMLNODES)) {
+				return new XMLNodeList(node,caseSensitive,false);
+			}
+			else if(k.equals(XMLCHILDREN)) {
+				return new XMLNodeList(node,caseSensitive,true);
 			}
 		}
 		

@@ -40,15 +40,17 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	private Document doc;
 	private Node parent;
 	private String filter;
+	private short nodeFilter;
 	
 	/**
 	 * @param parent Parent Node
 	 * @param caseSensitive
 	 */
-    public XMLNodeList(Node parent, boolean caseSensitive) {
-    	this(parent,caseSensitive,null);
+    public XMLNodeList(Node parent, boolean caseSensitive, boolean filterTextNodes) {
+    	this(parent,caseSensitive,null,filterTextNodes);
     }
-    public XMLNodeList(Node parent, boolean caseSensitive, String filter) {
+    public XMLNodeList(Node parent, boolean caseSensitive, String filter, boolean filterTextNodes) {
+    	this.nodeFilter = filterTextNodes ? Node.ELEMENT_NODE : XMLUtil.UNDEFINED_NODE;
         if(parent instanceof XMLStruct) {
             XMLStruct xmlNode = ((XMLStruct)parent);
             this.parent=xmlNode.toNode();
@@ -64,7 +66,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 
 	@Override
 	public int getLength() {
-		return XMLUtil.childNodesLength(parent,XMLUtil.UNDEFINED_NODE,caseSensitive,filter);
+		return XMLUtil.childNodesLength(parent,this.nodeFilter,caseSensitive,filter);
 	}
 
 	@Override
@@ -289,7 +291,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 
 	@Override
 	public Collection duplicate(boolean deepCopy) {
-		return new XMLNodeList(parent.cloneNode(deepCopy),caseSensitive);
+		return new XMLNodeList(parent.cloneNode(deepCopy),caseSensitive,this.nodeFilter == Node.ELEMENT_NODE);
 	}
 	
 
@@ -396,11 +398,11 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	}
     
     private Node getChildNode(int index) {
-		return XMLUtil.getChildNode(parent,XMLUtil.UNDEFINED_NODE,caseSensitive,filter,index);
+		return XMLUtil.getChildNode(parent,this.nodeFilter,caseSensitive,filter,index);
 	}
 	
 	private Node[] getChildNodesAsArray() {
-		return XMLUtil.getChildNodesAsArray(parent,XMLUtil.UNDEFINED_NODE,caseSensitive,filter);
+		return XMLUtil.getChildNodesAsArray(parent,this.nodeFilter,caseSensitive,filter);
 	}
 
     @Override
