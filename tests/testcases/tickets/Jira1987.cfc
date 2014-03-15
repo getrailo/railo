@@ -25,7 +25,8 @@
 
 		<cfset container = service.getItemsMixed() />	
 		<cfset assertEquals(4,arrayLen(container.items))>
-		<cfset assertEquals(true,isNull(container.items[1].getId()))>
+		<!--- the 'id' of the first element should be '1' --->
+		<cfset assertEquals(1,container.items[1].id)>
 		
 
 	</cffunction>

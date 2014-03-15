@@ -3039,6 +3039,7 @@ public final class Caster {
         else if(o instanceof Struct) return "struct";
         else if(o instanceof Query) return "query";
         else if(o instanceof DateTime) return "datetime";
+        else if(o instanceof Date) return "datetime";
         else if(o instanceof byte[]) return "binary";
         else if(o instanceof ObjectWrap) {
             return toTypeName(((ObjectWrap)o).getEmbededObject(null));
@@ -3059,6 +3060,7 @@ public final class Caster {
         if(Reflector.isInstaneOf(clazz,Struct.class)) 	return "struct";
         if(Reflector.isInstaneOf(clazz,Query.class)) 	return "query";
         if(Reflector.isInstaneOf(clazz,DateTime.class))	return "datetime";
+        if(Reflector.isInstaneOf(clazz,Date.class))	return "datetime";
         if(Reflector.isInstaneOf(clazz,byte[].class))	return "binary";
        
         String className=clazz.getName();

@@ -1,6 +1,7 @@
 package railo.runtime.net.rpc;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -219,7 +220,7 @@ public final class AxisCaster {
         }
         return al;
     }
-    private static Object[] toNativeArray(TypeMapping tm,Object value,Class targetClass, Set<Object> done) throws PageException {
+    private static Object[] toNativeArray(TypeMapping tm,QName type, Object value, Class targetClass, Set<Object> done) throws PageException {
     	Object[] objs = Caster.toNativeArray(value);
     	Object[] rtns;
     	Class componentType = null;
@@ -235,8 +236,12 @@ public final class AxisCaster {
         	rtns = new Object[objs.length];
     	try{
 	        for(int i=0;i<objs.length;i++) {
-	        	//print.e(">>>>"+(componentType!=null?:"")+">>>>"+rtns.getClass().getName()+":"+_toAxisType(tm,null,null,objs[i],componentType,done).getClass().getName());
-	        	rtns[i]=_toAxisType(tm,null,null,objs[i],componentType,done);
+	        	QName ctype=null;
+	        	if (componentType != null) {
+	        		ctype = toComponentTypeComplex(type,type);
+	        	}
+	        	Object o = _toAxisType(tm,null,ctype,objs[i],componentType,done);
+	        	rtns[i]=o;
 	        }
     	}
     	// just in case something goes wrong with typed array
@@ -350,16 +355,36 @@ public final class AxisCaster {
     	
     	// initialize
 		List<Property> props=new ArrayList<Property>();
-		Iterator<Entry<Key, Object>> it = sct.entryIterator();
-		Entry<Key, Object> e;
 		PropertyImpl p;
-		while(it.hasNext()){
-			e = it.next();
-			p=new PropertyImpl();
-			p.setAccess(Component.ACCESS_PUBLIC);
-			p.setName(e.getKey().getString());
-			p.setType(e.getValue()==null?"any":Caster.toTypeName(e.getValue())); 
-			props.add(p);
+		if(targetClass!=null) {
+			// if targetClass is specified
+			// we can be more explicit with our types instead of sensing them from the values
+	    	for (Method m : targetClass.getMethods()) {
+	    		if(m.getName().substring(0,3).toLowerCase().equals("set")) {
+	    			String keyString = m.getName().substring(3);
+	    			Key key = Caster.toKey(keyString);
+	    			Object value = sct.get(key,null);
+		    		if (value != null && m.getParameterTypes().length == 1) {
+		    			p=new PropertyImpl();
+						p.setAccess(Component.ACCESS_PUBLIC);
+						p.setName(keyString);
+						p.setType(Caster.toTypeName(m.getParameterTypes()[0])); 
+						props.add(p);
+	    			}
+	    		}
+	    	}
+		} else {
+			// no targetClass, inspect the values to see what types they are.
+			Iterator<Entry<Key, Object>> it = sct.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()){
+				e = it.next();
+				p=new PropertyImpl();
+				p.setAccess(Component.ACCESS_PUBLIC);
+				p.setName(e.getKey().getString());
+				p.setType(e.getValue()==null?"any":Caster.toTypeName(e.getValue())); 
+				props.add(p);
+			}
 		}
 		
 		initPojo(pc,pojo,props.toArray(new Property[props.size()]),sct,null,targetClass,tm,done);
@@ -460,7 +485,7 @@ public final class AxisCaster {
     	// Array
     	if(Decision.isArray(value) && !(value instanceof Argument)) {
     		if(value instanceof byte[]) return value;
-    		return toNativeArray(tm,value,targetClass,done);
+    		return toNativeArray(tm,type,value,targetClass,done);
     	}
     	// Struct
         if(Decision.isStruct(value)) {
@@ -479,12 +504,16 @@ public final class AxisCaster {
         		}
         		return pojo;
         	}
-        	if(type!=null && /* send a map when no type is defined */ !type.getLocalPart().equals("anyType")) {
+        	if(type!=null && /* send a map when no type is defined */ !type.getLocalPart().equals("anyType") ) {
         		Object pojo= toPojo(tm,Caster.toStruct(value),targetClass,done);
         		
         		//Map<String, Object> map = toMap(tm,value,targetClass,done);
 	    		//TypeMappingUtil.registerMapTypeMapping(tm, map.getClass(), type);
     			TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), type);
+	    		return pojo;
+        	}
+        	if(targetClass != null && !targetClass.equals(Map.class)) {
+        		Object pojo= toPojo(tm,Caster.toStruct(value),targetClass,done);
 	    		return pojo;
         	}
         	return toMap(tm,value,targetClass,done);
@@ -802,6 +831,20 @@ public final class AxisCaster {
 		return (value instanceof QueryBean);
 	}
 
+	public static QName toComponentTypeComplex(QName qName, QName defaultValue) {
+		if(qName == null) return defaultValue;
+		String lp = qName.getLocalPart();
+		String uri = qName.getNamespaceURI();
+
+		//ArrayOf_tns1_testcases.tickets.Jira2963.MyItem
+		if(lp.startsWith("ArrayOf_")) {
+			lp = lp.substring(8);
+			lp = lp.replaceFirst("[^\\_]*_", "");
+			return new QName(uri, lp);
+		}
+		return defaultValue;
+	}
+	
 	public static QName toComponentType(QName qName, QName defaultValue) {
 		String lp = qName.getLocalPart();
 		String uri = qName.getNamespaceURI();
