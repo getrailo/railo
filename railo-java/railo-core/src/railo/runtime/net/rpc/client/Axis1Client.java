@@ -1,6 +1,7 @@
 package railo.runtime.net.rpc.client;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -45,6 +46,7 @@ import org.w3c.dom.Text;
 import railo.commons.digest.HashUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.ExceptionUtil;
+import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -580,15 +582,51 @@ final class Axis1Client extends WSClient {
      * returns the WSDL Port
 	 * @param service
 	 * @return WSDL Port
+	 * @throws ClassNotFoundException 
 	 * @throws RPCException
 	 */
 	
 
 	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
-		return AxisCaster.toAxisType(tm,tz,paramType,arg,null);
+		// attempt to load the class, so we can get be explicit with argument 
+		// types by providing a targetClass to the caster
+		PageContext pc = ThreadLocalPageContext.get(); 
+		Class clazz = null;
+		try {
+			PhysicalClassLoader cl = (PhysicalClassLoader) ((PageContextImpl)pc).getRPCClassLoader(false);
+			clazz = _getClass(cl,p.getType());
+			
+		}
+		catch (IOException e) {
+			//let clazz be null
+		}
+
+		return AxisCaster.toAxisType(tm,tz,paramType,arg,clazz);
 	}
 
+	private Class _getClass(PhysicalClassLoader cl, TypeEntry te) {
+		Class clazz = null;
+		String className;
+		boolean isArray = false;
+		if (te.getComponentType() != null) {
+			isArray = true;
+			className = te.getComponentType().getLocalPart();
+		} else {
+			className = te.getQName().getLocalPart();
+		}
+		try {
+			clazz = cl.loadClass(className);
+		}
+		catch (ClassNotFoundException e) {
+			//leave clazz null 
+		}
+		if(clazz != null && isArray) {
+			clazz = Array.newInstance(clazz, 0).getClass();
+		}
+		return clazz;
+	}
+	
 	@Override
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
         return call(pc,"get"+key.getString(), ArrayUtil.OBJECT_EMPTY);
