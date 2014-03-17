@@ -30,6 +30,7 @@ import railo.commons.digest.Hash;
 import railo.commons.digest.HashUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.LegacyLogger;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LoggerAndSourceData;
@@ -707,17 +708,20 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getMailLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    	return new LegacyLogger( getLog("mail", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getRequestTimeoutLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    	return new LegacyLogger( getLog("requesttimeout", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getTraceLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    	return new LegacyLogger( getLog("trace", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
 
     @Override
@@ -1092,12 +1096,14 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getScheduleLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    	return new LegacyLogger( getLog("scheduler", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getApplicationLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    	return new LegacyLogger( getLog("application", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     
@@ -2235,7 +2241,8 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
-    	throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+		return new LegacyLogger( getLog("exception", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
 	
 	/**
