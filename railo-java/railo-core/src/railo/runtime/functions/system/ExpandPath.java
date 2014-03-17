@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -23,54 +24,56 @@ public final class ExpandPath implements Function {
 
 	private static final long serialVersionUID = 6192659914120397912L;
 
-	public static String call(PageContext pc , String realPath) throws PageException {
+	public static String call(PageContext pc , String relPath) throws PageException {
 		ConfigWeb config=pc.getConfig();
-		realPath=prettifyPath(realPath);
+		relPath=prettifyPath(pc,relPath);
 		
         String contextPath = pc.getHttpServletRequest().getContextPath();
-        if ( !StringUtil.isEmpty( contextPath ) && realPath.startsWith( contextPath ) ) {
-            boolean sws=StringUtil.startsWith(realPath, '/');
-        	realPath = realPath.substring( contextPath.length() );
-            if(sws && !StringUtil.startsWith(realPath, '/'))
-            	realPath="/"+realPath;
+        if ( !StringUtil.isEmpty( contextPath ) && relPath.startsWith( contextPath ) ) {
+            boolean sws=StringUtil.startsWith(relPath, '/');
+        	relPath = relPath.substring( contextPath.length() );
+            if(sws && !StringUtil.startsWith(relPath, '/'))
+            	relPath="/"+relPath;
         }
 
         Resource res;
         
-        if(StringUtil.startsWith(realPath,'/')) {
+        if(StringUtil.startsWith(relPath,'/')) {
+        	
+        	
         	PageContextImpl pci=(PageContextImpl) pc;
         	ConfigWebImpl cwi=(ConfigWebImpl) config;
-        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), realPath, 
+        	PageSource[] sources = cwi.getPageSources(pci, pc.getApplicationContext().getMappings(), relPath, 
         			false, pci.useSpecialMappings(), true);
         	
         	if(!ArrayUtil.isEmpty(sources)) {
         		// first check for existing
 	        	for(int i=0;i<sources.length;i++){
 	        		if(sources[i].exists()) {
-	        			return toReturnValue(realPath,sources[i].getResource());
+	        			return toReturnValue(relPath,sources[i].getResource());
 	        		}
 	        	}
 	        	
 	        	// no expand needed
 	        	if(!SystemUtil.isWindows() && !sources[0].exists()) {
-	        		res=pc.getConfig().getResource(realPath);
+	        		res=pc.getConfig().getResource(relPath);
 	                if(res.exists()) {
-	                	return toReturnValue(realPath,res);
+	                	return toReturnValue(relPath,res);
 	                }
 	        	}
 	        	for(int i=0;i<sources.length;i++){
 	        		res=sources[i].getResource();
 	        		if(res!=null) {
-	        			return toReturnValue(realPath,res);
+	        			return toReturnValue(relPath,res);
 	        		}
 	        	}
         	}
 
         	// no expand needed
         	else if(!SystemUtil.isWindows()) {
-        		res=pc.getConfig().getResource(realPath);
+        		res=pc.getConfig().getResource(relPath);
                 if(res.exists()) {
-                	return toReturnValue(realPath,res);
+                	return toReturnValue(relPath,res);
                 }
         	}
         	
@@ -78,14 +81,14 @@ public final class ExpandPath implements Function {
         	//Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),realPath,false,pci.useSpecialMappings(),true);
         	
         }
-        realPath=ConfigWebUtil.replacePlaceholder(realPath, config);
-        res=pc.getConfig().getResource(realPath);
-        if(res.isAbsolute()) return toReturnValue(realPath,res);
+        relPath=ConfigWebUtil.replacePlaceholder(relPath, config);
+        res=pc.getConfig().getResource(relPath);
+        if(res.isAbsolute()) return toReturnValue(relPath,res);
         
         res=ResourceUtil.getResource(pc,pc.getBasePageSource());
         if(!res.isDirectory())res=res.getParentResource();
-        res = res.getRealResource(realPath);
-        return toReturnValue(realPath,res);
+        res = res.getRealResource(relPath);
+        return toReturnValue(relPath,res);
         
 	}
 
@@ -111,7 +114,7 @@ public final class ExpandPath implements Function {
         return path;
     }
     
-    private static String prettifyPath(String path) {
+    private static String prettifyPath(PageContext pc, String path) {
 		if(path==null) return null;
 		
 		// UNC Path
@@ -122,6 +125,18 @@ public final class ExpandPath implements Function {
 		}
 		
 		path=path.replace('\\','/');
+		
+		// virtual file system path
+		int index=path.indexOf("://");
+		if(index!=-1) {
+			ResourceProvider[] providers = pc.getConfig().getResourceProviders();
+			String scheme=path.substring(0,index).toLowerCase().trim();
+			for(int i=0;i<providers.length;i++) {
+				if(scheme.equalsIgnoreCase(providers[i].getScheme()))
+					return scheme+"://"+StringUtil.replace(path.substring(index+3), "//", "/", false);
+			}
+		}
+
 		return StringUtil.replace(path, "//", "/", false);
 		// TODO /aaa/../bbb/
 	}
