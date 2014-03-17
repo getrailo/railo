@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.runtime.config.Config;
 import railo.runtime.type.Query;
@@ -34,7 +33,7 @@ public interface SearchEngine {
      * @throws SAXException
      * @throws SearchException
      */
-    public abstract void init(Config config, Resource searchDir, LogAndSource log) // FUTURE remove argument LogAndSource
+    public abstract void init(Config config, Resource searchDir) 
             throws SAXException, IOException, SearchException;
 
     /**
@@ -68,11 +67,6 @@ public interface SearchEngine {
      * @return returns the directory of the search storage
      */
     public abstract Resource getDirectory();
-
-    /**
-     * @return returns the logfile of the search storage
-     */
-    public abstract LogAndSource getLogger(); // FUTURE deprecated
 
     /**
      * return XML Element Matching index id

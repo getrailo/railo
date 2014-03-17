@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.runtime.CFMLFactory;
@@ -377,26 +376,7 @@ public interface Config {
      * @throws PageException 
      */
     public abstract CFXTagPool getCFXTagPool() throws PageException;
-    
-    /**
-     * @deprecated use instead getLogger()
-     * @return returns the application logger
-     */
-    public abstract LogAndSource getApplicationLogger();
 
-
-    /**
-     * @deprecated use instead getLogger()
-     * @return returns the exception logger
-     */
-    public abstract LogAndSource getExceptionLogger();
-
-    /**
-     * @deprecated use instead getLogger()
-     * @return returns the trace logger
-     */
-    public abstract LogAndSource getTraceLogger();
-    
     /**
      * @param password
      * @return ConfigServer
@@ -405,25 +385,7 @@ public interface Config {
     public ConfigServer getConfigServer(String password) throws PageException;
     
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException;
-    
-    /**
-     * @deprecated use instead getLogger()
-     * @return Returns the mailLogger.
-     */
-    public abstract LogAndSource getMailLogger();
-    
-    /**
-     * @deprecated use instead getLogger()
-     * @return Returns the request timeout Directory.
-     */
-    public LogAndSource getRequestTimeoutLogger();
-    
-    /**
-     * @deprecated use instead getLogger()
-     * @return returns schedule logger
-     */
-    public LogAndSource getScheduleLogger();
-    
+
     /**
      * reload the time offset to a time server 
      */
@@ -710,12 +672,6 @@ public interface Config {
 	    
     
     public Resource getRemoteClientDirectory();
-    
-    /**
-     * @deprecated use instead getLogger()
-     * @return
-     */
-    public LogAndSource getRemoteClientLog();
 	
 	public RemoteClient[] getRemoteClients();
 	

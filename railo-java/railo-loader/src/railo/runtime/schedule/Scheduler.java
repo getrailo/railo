@@ -2,8 +2,6 @@ package railo.runtime.schedule;
 
 import java.io.IOException;
 
-import railo.commons.io.log.LogAndSource;
-
 /**
  * Scheduler interface
  */
@@ -73,9 +71,4 @@ public interface Scheduler {
      */
     public abstract void runScheduleTask(String name, boolean throwWhenNotExist)
             throws IOException, ScheduleException;
-
-    /**
-     * @return Returns the logFile.
-     */
-    public abstract LogAndSource getLogger();// FUTURE deprecated	
 }

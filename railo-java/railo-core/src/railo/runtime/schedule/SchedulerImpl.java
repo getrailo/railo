@@ -11,7 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
@@ -358,10 +357,5 @@ public final class SchedulerImpl implements Scheduler {
     
     public void execute(ScheduleTask task) {
     	new ExecutionThread(config,task,charset).start();
-    } 
-
-    @Override
-    public LogAndSource getLogger() {
-    	throw new RuntimeException("this method is no longer supported, call instead Config.getLogger");
     }
 }

@@ -3751,7 +3751,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		try {
 			// Init
-			se.init(config, ConfigWebUtil.getFile(configDir, ConfigWebUtil.translateOldPath(search.getAttribute("directory")), "search", configDir, FileUtil.TYPE_DIR, config), null);
+			se.init(config, ConfigWebUtil.getFile(configDir, ConfigWebUtil.translateOldPath(search.getAttribute("directory")), "search", configDir, FileUtil.TYPE_DIR, config));
 		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);

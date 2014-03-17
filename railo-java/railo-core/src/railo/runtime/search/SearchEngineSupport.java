@@ -16,7 +16,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.IOUtil;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -50,8 +49,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
 	protected Config config;
 	
 	@Override
-	public void init(railo.runtime.config.Config config,Resource searchDir, 
-			LogAndSource log/* always null*/) throws SAXException, IOException, SearchException {
+	public void init(railo.runtime.config.Config config,Resource searchDir) throws SAXException, IOException, SearchException {
 		this.config=config;
 		this.searchDir=searchDir;
 		this.searchFile=searchDir.getRealResource("search.xml");
@@ -229,11 +227,6 @@ public abstract class SearchEngineSupport implements SearchEngine {
 	@Override
 	public Resource getDirectory() {
 		return searchDir;
-	}
-
-	@Override
-	public LogAndSource getLogger() {
-    	throw new RuntimeException("this method is no longer supported, call instead Config.getLogger");
 	}
 
     /**

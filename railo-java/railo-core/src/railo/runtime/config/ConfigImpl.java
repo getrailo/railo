@@ -29,9 +29,7 @@ import org.w3c.dom.Element;
 import railo.commons.digest.Hash;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.LegacyLogger;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LoggerAndSourceData;
 import railo.commons.io.log.log4j.LogAdapter;
 import railo.commons.io.log.log4j.layout.ClassicLayout;
@@ -678,24 +676,6 @@ public abstract class ConfigImpl implements Config {
     }
 
     @Override
-    public LogAndSource getMailLogger() {
-    	return new LegacyLogger( getLog("mail", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
-    }
-    
-    @Override
-    public LogAndSource getRequestTimeoutLogger() {
-    	return new LegacyLogger( getLog("requesttimeout", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
-    }
-    
-    @Override
-    public LogAndSource getTraceLogger() {
-    	return new LegacyLogger( getLog("trace", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
-    }
-
-    @Override
     public TimeZone getTimeZone() {
         return timeZone;
     }
@@ -1065,20 +1045,6 @@ public abstract class ConfigImpl implements Config {
         return configFile;
     }
 
-    @Override
-    public LogAndSource getScheduleLogger() {
-    	return new LegacyLogger( getLog("scheduler", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
-    }
-    
-    @Override
-    public LogAndSource getApplicationLogger() {
-    	return new LegacyLogger( getLog("application", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
-    }
-    
-    
-    
     /**
      * sets the password
      * @param password
@@ -2212,14 +2178,6 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	/**
-	 * @return the exceptionLogger
-	 */
-	public LogAndSource getExceptionLogger() {
-		return new LegacyLogger( getLog("exception", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
-	}
-	
-	/**
 	 * @return the scriptProtect
 	 */
 	public int getScriptProtect() {
@@ -2614,13 +2572,6 @@ public abstract class ConfigImpl implements Config {
 	 */
 	public Resource getRemoteClientDirectory() {
 		return remoteClientDirectory;
-	}
-
-	/**
-	 * @return the remoteClientLog
-	 */
-	public LogAndSource getRemoteClientLog() {
-		throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
 
 	protected void setSpoolerEngine(SpoolerEngine spoolerEngine) {
