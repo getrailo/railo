@@ -34,6 +34,10 @@ public class QueryCacheItem implements CacheItem, Dumpable, Serializable {
 		return query.getName();
 	}
 
+	public Query getQuery() {
+		return query;
+	}
+
 	@Override
 	public long getPayload() {
 		return query.getRecordcount();
