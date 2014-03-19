@@ -5574,7 +5574,7 @@ To use cached data, the function must be called with the exact same arguments.</
 	<tag>
 		<name>htmlhead</name>
 		<tag-class>railo.runtime.tag.HtmlHead</tag-class>
-		<body-content>empty</body-content>
+		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
 			<type>multiple</type>
