@@ -1189,7 +1189,28 @@ public final class StringUtil {
 		return str.substring(off,off+len);
 	}
 	
-	
+
+	public static String insertAt(String str, CharSequence substring, int pos) {
+
+		if (isEmpty(substring))
+			return str;
+
+		int len = str.length();
+
+		StringBuilder sb = new StringBuilder(len + substring.length());
+
+		if (pos > len)
+			pos = len;
+
+		if (pos > 0)
+			sb.append(str.substring(0, pos));
+
+		sb.append(substring);
+		sb.append(str.substring(pos));
+
+		return sb.toString();
+	}
+
 	
 	/**
 	 * this is the public entry point for the replaceMap() method

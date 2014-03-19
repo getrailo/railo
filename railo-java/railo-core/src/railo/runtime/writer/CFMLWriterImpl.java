@@ -27,7 +27,7 @@ public class CFMLWriterImpl extends CFMLWriter {
     private OutputStream out;
 	private HttpServletResponse response;
     private boolean flushed;
-    private String headData;
+    private StringBuilder headData;
     private StringBuilder buffer=new StringBuilder(BUFFER_SIZE);
     private boolean closed=false;
     private boolean closeConn;
@@ -104,30 +104,34 @@ public class CFMLWriterImpl extends CFMLWriter {
     
     /**
      * 
-     * @param headData
+     * @param text
      * @throws IOException
      */
-    public void appendHTMLHead(String headData) throws IOException {
-        if(!flushed) {
-            if(this.headData==null)this.headData=headData;
-            else this.headData+=headData;
-        }
-        else throw new IOException("Page is already flushed");
+    public void appendHTMLHead(String text) throws IOException {
+
+	    if (flushed)    throw new IOException("Page is already flushed");
+
+        if (headData == null)
+	        headData = new StringBuilder(256);
+
+        headData.append(text);
     }
     
-    public void writeHTMLHead(String headData) throws IOException {
-        if(!flushed) {
-            this.headData=headData;
-        }
-        else throw new IOException("Page is already flushed");
+    public void writeHTMLHead(String text) throws IOException {
+
+	    if (flushed)    throw new IOException("Page is already flushed");
+
+	    this.headData = new StringBuilder(text);
     }
     
     /** 
      * @see railo.runtime.writer.CFMLWriter#getHTMLHead()
      */
     public String getHTMLHead() throws IOException {
-    	if(flushed) throw new IOException("Page is already flushed");
-        return headData==null?"":headData;
+
+	    if (flushed)    throw new IOException("Page is already flushed");
+
+        return headData == null ? "" : headData.toString();
     }
     
     /** 
@@ -218,33 +222,34 @@ public class CFMLWriterImpl extends CFMLWriter {
     
 
     private String _toString(boolean releaseHeadData) {
-        if(headData==null) {
+
+	    if(headData==null)
             return buffer.toString();
-        }
+
         String str=buffer.toString();
-        
-    // /head
+
         int index=StringUtil.indexOfIgnoreCase(str,"</head>");
-        if(index!=-1){
-        	str= str.substring(0,index).concat(headData).concat(str.substring(index));
+        if (index > -1) {
+
+	        str = StringUtil.insertAt(str, headData, index);
+
+            if(releaseHeadData)headData=null;
+            return str;
+        }
+
+        index = StringUtil.indexOfIgnoreCase(str,"<head>") + 7;
+        if (index > 6) {
+
+	        str = StringUtil.insertAt(str, headData, index);
+
             if(releaseHeadData)headData=null;
             return str;
         }
         
-     // head
-        index=StringUtil.indexOfIgnoreCase(str,"<head>");
-        if(index!=-1){
-        	str= str.substring(0,index+7).concat(headData).concat(str.substring(index+7));
-            if(releaseHeadData)headData=null;
-            return str;
-        }
-        
-        
-        str= headData.concat(str);
-            if(releaseHeadData)headData=null;
-            return str;
-        
-        
+        str = headData.append(str).toString();
+
+        if(releaseHeadData)headData=null;
+        return str;
     }
     
 	/**
