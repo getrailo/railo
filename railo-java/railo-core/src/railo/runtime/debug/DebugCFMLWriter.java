@@ -102,6 +102,11 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	}
 
 	@Override
+	public void flushHTMLHead() throws IOException {
+		writer.flushHTMLHead();
+	}
+
+	@Override
 	public void resetHTMLHead() throws IOException {
 		writer.resetHTMLHead();
 	}

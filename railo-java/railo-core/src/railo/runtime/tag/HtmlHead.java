@@ -86,6 +86,11 @@ public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 		pageContext.setVariable(variable, str);
 	}
 
+	public void actionFlush() throws IOException {
+
+		((PageContextImpl) pageContext).getRootOut().flushHTMLHead();
+	}
+
 	@Override
 	public int doEndTag() throws PageException {
 
@@ -113,6 +118,7 @@ public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 			else if (action.equals("reset")) actionReset();
 			else if (action.equals("write")) actionWrite();
 			else if (action.equals("read")) actionRead();
+			else if (action.equals("flush")) actionFlush();
 			else
 				throw new ApplicationException("invalid value [" + action + "] for attribute action", "values for attribute action are:append,read,reset,write");
 		} catch (IOException e) {

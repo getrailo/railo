@@ -22,7 +22,9 @@ public abstract class CFMLWriter extends JspWriter {
 	public abstract void appendHTMLHead(String text) throws IOException;
 	
 	public abstract void writeHTMLHead(String text) throws IOException;
-	
+
+	public abstract void flushHTMLHead() throws IOException;
+
 	public abstract String getHTMLHead() throws IOException;
 	
 	public abstract void resetHTMLHead() throws IOException;

@@ -121,7 +121,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
-	    this.headData = new StringBuilder(text);
+	    headData = new StringBuilder(text);
     }
     
     /** 
@@ -133,7 +133,16 @@ public class CFMLWriterImpl extends CFMLWriter {
 
         return headData == null ? "" : headData.toString();
     }
-    
+
+	public void flushHTMLHead() throws IOException {
+
+		if (headData != null) {
+
+			buffer.append(headData);
+			resetHTMLHead();
+		}
+	}
+
     /** 
      * @see railo.runtime.writer.CFMLWriter#resetHTMLHead()
      */
