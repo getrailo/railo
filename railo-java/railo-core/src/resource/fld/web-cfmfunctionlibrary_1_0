@@ -418,6 +418,19 @@ All elements in the array must contain values that can be automatically converte
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any arg):boolean].</description>
 		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -15150,8 +15163,58 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
 		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
 		<return>
 			<type>struct</type>
+		</return>
+	</function>
+	
+		<!-- Filter -->
+	<function>
+		<name>filter</name>
+		<class>railo.runtime.functions.closure.Filter</class>
+		<member-name>filter</member-name>
+		<description>This function creates a new collection that returns all entries from an collection that match the given filter.</description>
+		<argument>
+			<name>collection</name>
+			<alias>object</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>object</type>
 		</return>
 	</function>
 	<!-- structFind -->
