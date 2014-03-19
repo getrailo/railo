@@ -588,6 +588,124 @@ Remember CFML arrays start at 1 not 0.</description>
 			<type>number</type>
 		</return>
 	</function>
+	
+	
+	<!-- Map -->
+	<function>
+		<name>map</name>
+		<class>railo.runtime.functions.closure.Map</class>
+		<member-name>max</member-name>
+		<description>Calls the given closure with every element in the given collection.
+		the function returns a array or struct (depending on the input) that contains all values returned by the closure.</description>
+		<argument>
+			<name>collection</name>
+			<alias>object</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to iterate</description>
+    	</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that is called with every value in the collection</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	
+	<!-- arrayMap -->
+	<function>
+		<name>arrayMap</name>
+		<class>railo.runtime.functions.arrays.ArrayMap</class>
+		<member-name>max</member-name>
+		<description>Calls the given closure with every element in the given array.
+		the function returns a array that contains all values returned by the closure.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to iterate</description>
+    	</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that is called with every value in the array</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
+	
+	<!-- structMap -->
+	<function>
+		<name>structMap</name>
+		<class>railo.runtime.functions.struct.StructMap</class>
+		<member-name>max</member-name>
+		<description>Calls the given closure with every element in the given struct.
+		the function returns a struct that contains all values returned by the closure.</description>
+		<argument>
+			<name>struct</name>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>struct to iterate</description>
+    	</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that is called with every value in the struct</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
 	<!-- arrayMax -->
 	<function>
 		<name>arrayMax</name>
@@ -3159,6 +3277,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
 		<argument>
 			<name>collection</name>
+			<alias>object</alias>
 			<type>object</type>
 			<required>Yes</required>
 			<description>collection to take values from</description>

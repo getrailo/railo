@@ -5,7 +5,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 
-public class UDFCaller extends Caller {
+public class UDFCaller extends CallerResponseStreamResult {
 
 	private UDF udf;
 	private boolean doIncludePath;
