@@ -41,12 +41,12 @@ public class Component extends EvaluatorSupport {
 			if(p.getTagLibTag().getName().equals("script") && (pPage = p.getParent()) instanceof Page){
 				
 				// move imports from script to component body
-				List children = p.getBody().getStatements();
-				Iterator it = children.iterator();
+				List<Statement> children = p.getBody().getStatements();
+				Iterator<Statement> it = children.iterator();
 				Statement stat;
 				Tag t;
 				while(it.hasNext()){
-					stat=(Statement) it.next();
+					stat=it.next();
 					if(!(stat instanceof Tag)) continue;
 					t=(Tag) stat;
 					if(t.getTagLibTag().getName().equals("import")){
@@ -63,31 +63,40 @@ public class Component extends EvaluatorSupport {
 
 		Page page=(Page) pPage;
 		
-		// is inside a file named cfc
+
+
+		// is a full grown component or a inline component
+		
 		String src=page.getPageSource().getDisplayPath();
 		int pos=src.lastIndexOf(".");
-		if(!(pos!=-1 && pos<src.length() && src.substring(pos+1).equals("cfc")))
+		boolean inline=!(pos!=-1 && pos<src.length() && src.substring(pos+1).equals("cfc"));
+		if(inline)
 			throw new EvaluatorException("Wrong Context, "+tlt.getFullName()+" tag must be inside a file with extension cfc");
 		
 		// check if more than one component in document and remove any other data
-		List stats = page.getStatements();
-		Iterator it = stats.iterator();
-		Statement stat;
-		int count=0;
-		while(it.hasNext()) {
-			stat=(Statement) it.next();
-			if(stat instanceof Tag) {
-				tag=(Tag) stat;
-				if(tag.getTagLibTag().getTagClassName().equals(className)) count++;
+		if(!inline) {
+			List stats = page.getStatements();
+			Iterator it = stats.iterator();
+			Statement stat;
+			int count=0;
+			while(it.hasNext()) {
+				stat=(Statement) it.next();
+				if(stat instanceof Tag) {
+					tag=(Tag) stat;
+					if(tag.getTagLibTag().getTagClassName().equals(className)) count++;
+				}
 			}
+			if(count>1)
+				throw new EvaluatorException("inside one cfc file only one tag "+tlt.getFullName()+" is allowed, now we have "+count);
 		}
-		if(count>1)
-			throw new EvaluatorException("inside one cfc file only one tag "+tlt.getFullName()+" is allowed, now we have "+count);
-
+		
+		
+		
 		boolean isComponent="railo.runtime.tag.Component".equals(tlt.getTagClassName());
 		boolean isInterface="railo.runtime.tag.Interface".equals(tlt.getTagClassName());
-		if(isComponent)page.setIsComponent(true);
-		if(isInterface)page.setIsInterface(true);
+		
+		if(isComponent)page.setIsComponent(!inline);
+		if(isInterface)page.setIsInterface(!inline);
 		
 // Attributes
 		

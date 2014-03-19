@@ -18,6 +18,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -401,7 +402,7 @@ public final class Page extends BodyBase {
      * @throws IOException 
      * @throws TemplateException 
      */
-    public byte[] execute(PageSource source,Resource classFile) throws TransformerException {
+    public byte[] execute(PageSource source) throws TransformerException {
     	/*
     	// this is done that the Page can be executed more than once
     	if(initFunctions==null)
@@ -421,7 +422,7 @@ public final class Page extends BodyBase {
     	print.e(this.threads);*/
     	
     	
-    	Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
+    	//Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
         
     	List<LitString> keys=new ArrayList<LitString>();
     	ClassWriter cw = ASMUtil.getClassWriter(); 
@@ -429,7 +430,7 @@ public final class Page extends BodyBase {
     	
     	ArrayList<String> imports = new ArrayList<String>();
         getImports(imports, this); 
-    	
+
     	// parent
     	String parent="railo/runtime/Page";
     	if(isComponent()) parent="railo/runtime/ComponentPage";
@@ -703,7 +704,7 @@ public final class Page extends BodyBase {
 		return "udfCall"+Integer.toString(i, Character.MAX_RADIX);
 	}
 
-	private boolean writeLog() {
+	public boolean writeLog() {
 		return _writeLog && !isInterface();
 	}
 
@@ -934,6 +935,7 @@ public final class Page extends BodyBase {
 		Tag t;
         while(it.hasNext()) {
         	s=(Statement)it.next();
+        	print.e("="+s.getClass().getName());
         	if(s instanceof Tag) {
         		t=(Tag)s;
         		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Component"))return t;
