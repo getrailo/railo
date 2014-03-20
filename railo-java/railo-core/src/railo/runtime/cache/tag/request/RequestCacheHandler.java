@@ -9,6 +9,7 @@ import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandler;
 import railo.runtime.cache.tag.CacheHandlerFilter;
 import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.exp.PageException;
 
 public class RequestCacheHandler implements CacheHandler {
 	
@@ -64,6 +65,11 @@ public class RequestCacheHandler implements CacheHandler {
 	@Override
 	public void clean(PageContext pc) {
 		// not necessary
+	}
+
+	@Override
+	public String label() throws PageException {
+		return "request";
 	}
 
 }

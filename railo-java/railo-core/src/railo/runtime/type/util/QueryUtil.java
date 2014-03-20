@@ -144,6 +144,11 @@ public class QueryUtil {
 			comment.append( " (showing top " ).append( Caster.toString( top ) ).append( ")" );
 		comment.append("\n");
 		comment.append("Cached: ").append(query.isCached()?"Yes\n":"No\n");
+		if(query.isCached() && query instanceof QueryImpl) {
+			String ct=((QueryImpl)query).getCacheType();
+			comment.append("Cache Type: ").append(ct).append("\n");
+		}
+		
 		comment.append("Lazy: ").append(query instanceof SimpleQuery?"Yes\n":"No\n");
 		
 		SQL sql=query.getSql();

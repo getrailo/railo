@@ -32,6 +32,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.DebugQueryColumn;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
@@ -78,6 +79,8 @@ public final class DebuggerImpl implements DebuggerPro {
 
 	final static Comparator DEBUG_ENTRY_TEMPLATE_COMPARATOR = new DebugEntryTemplateComparator();
 	final static Comparator DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR = new DebugEntryTemplatePartComparator();
+
+	private static final Key CACHE_TYPE = KeyImpl.init("cacheType");
 
 	@Override
 	public void reset() {
@@ -295,8 +298,9 @@ public final class DebuggerImpl implements DebuggerPro {
         		KeyConstants._src,
         		KeyConstants._count,
         		KeyConstants._datasource,
-        		KeyConstants._usage};
-        String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY"};
+        		KeyConstants._usage,
+        		CACHE_TYPE};
+        String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY","VARCHAR"};
         
         //queries
         Query qryQueries=null;
@@ -316,6 +320,7 @@ public final class DebuggerImpl implements DebuggerPro {
 				qryQueries.setAt(KeyConstants._src,row,qe.getSrc());
                 qryQueries.setAt(KeyConstants._count,row,Integer.valueOf(qe.getRecordcount()));
                 qryQueries.setAt(KeyConstants._datasource,row,qe.getDatasource());
+                qryQueries.setAt(CACHE_TYPE,row,qe.getCacheType());
                 
                 Struct usage = getUsage(qe);
                 if(usage!=null) qryQueries.setAt(KeyConstants._usage,row,usage);

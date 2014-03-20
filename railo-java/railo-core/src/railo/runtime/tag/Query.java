@@ -476,7 +476,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		railo.runtime.type.Query query=null;
 		long exe=0;
 		boolean hasCached=cachedWithin!=null || cachedAfter!=null;
-		
+		String cacheType=null;
 		
 		if(clearCache) {
 			hasCached=false;
@@ -488,6 +488,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		else if(hasCached) {
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
+			cacheType=ch.label();
 			CacheItem ci = ch.get(pageContext, id);
 			if(ci instanceof QueryCacheItem) {
 				QueryCacheItem ce = (QueryCacheItem) ci;
@@ -547,7 +548,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			}
 			exe=query.getExecutionTime();
 		}
-        else query.setCached(hasCached);
+        else {
+        	if(query instanceof QueryImpl) ((QueryImpl)query).setCacheType(cacheType); // FUTURE add method to interface
+        	else query.setCached(hasCached);
+        }
 		
 		if(pageContext.getConfig().debug() && debug) {
 			boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
