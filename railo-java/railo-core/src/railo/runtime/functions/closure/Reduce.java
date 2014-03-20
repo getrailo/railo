@@ -168,9 +168,12 @@ public class Reduce extends BIF {
 
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
-		if(args.length!=2)
-			throw new ApplicationException("invalid argument count for function call StructMap");
-		return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]));
+		if(args.length==2)
+			return call(pc, (args[0]), Caster.toFunction(args[1]));
+		if(args.length==3)
+			return call(pc, (args[0]), Caster.toFunction(args[1]), args[2]);
+		
+		throw new FunctionException(pc, "Reduce", 2, 3, args.length);
 	}
 
 }

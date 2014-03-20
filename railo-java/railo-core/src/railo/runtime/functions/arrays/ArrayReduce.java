@@ -5,6 +5,7 @@ package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Reduce;
@@ -32,7 +33,6 @@ public final class ArrayReduce extends BIF {
 		if(args.length==3)
 			return call(pc, Caster.toArray(args[0]), Caster.toFunction(args[1]), args[2]);
 		
-		throw new ApplicationException("invalid argument count for function call ArrayReduce");
-		
+		throw new FunctionException(pc, "ArrayReduce", 2, 3, args.length);
 	}
 }

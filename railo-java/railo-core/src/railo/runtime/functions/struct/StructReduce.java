@@ -4,6 +4,7 @@
 package railo.runtime.functions.struct;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Reduce;
@@ -31,7 +32,6 @@ public final class StructReduce extends BIF {
 		if(args.length==3)
 			return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]), args[2]);
 		
-		throw new ApplicationException("invalid argument count for function call StructReduce");
-		
+		throw new FunctionException(pc, "StructReduce", 2, 3, args.length);
 	}
 }
