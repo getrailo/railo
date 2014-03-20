@@ -5570,6 +5570,58 @@ To use cached data, the function must be called with the exact same arguments.</
 	statusCode attribute.</description>
 		</attribute>
 	</tag>
+	<!-- HtmlBody -->
+	<tag>
+		<name>htmlbody</name>
+		<tag-class>railo.runtime.tag.HtmlBody</tag-class>
+		<body-content>free</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<description>Writes the text specified in the text attribute to the 'body' section of a generated HTML page.
+	 The cfhtmlbody tag can be useful for embedding JavaScript code, or placing other HTML tags that should go at the bottom
+	 of the page just before the closing body tag.</description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is
+		placed in the 'head' section</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>variable</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Name of variable to contain the text for htmlbody.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>id</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>ID of the snippet that is added, used to ensure that the same snippet will not be added more than once.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>action</name>
+			<values>append,read,reset,write</values>
+			<default-value>append</default-value>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>possible actions are:
+- append (default): append text to the html head
+- read: return the text already set to html head
+- reset: reset/remove text already set to hrml head
+- write: write text to html head, overwrite already existing text in html head
+- flush: writes the buffer in the html head to the response stream
+			</description>
+		</attribute>
+	</tag>
 	<!-- HtmlHead -->
 	<tag>
 		<name>htmlhead</name>
@@ -5618,9 +5670,11 @@ To use cached data, the function must be called with the exact same arguments.</
 - read: return the text already set to html head
 - reset: reset/remove text already set to hrml head
 - write: write text to html head, overwrite already existing text in html head
+- flush: writes the buffer in the html head to the response stream
 			</description>
 		</attribute>
 	</tag>
+
 	<!-- Http -->
 	<tag>
 		<name>http</name>

@@ -19,16 +19,27 @@ public abstract class CFMLWriter extends JspWriter {
 
 	public abstract void setBufferConfig(int interval, boolean b) throws IOException ;
 
-	public abstract void appendHTMLHead(String text) throws IOException;
+
+	public abstract void appendHTMLBody(String text) throws IOException;
 	
+	public abstract void writeHTMLBody(String text) throws IOException;
+
+	public abstract void flushHTMLBody() throws IOException;
+
+	public abstract String getHTMLBody() throws IOException;
+	
+	public abstract void resetHTMLBody() throws IOException;
+
+	public abstract void appendHTMLHead(String text) throws IOException;
+
 	public abstract void writeHTMLHead(String text) throws IOException;
 
 	public abstract void flushHTMLHead() throws IOException;
 
 	public abstract String getHTMLHead() throws IOException;
-	
+
 	public abstract void resetHTMLHead() throws IOException;
-	
+
 
 	/**
 	 * write the given string without removing whitespace.

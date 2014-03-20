@@ -27,7 +27,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     private OutputStream out;
 	private HttpServletResponse response;
     private boolean flushed;
-    private StringBuilder headData;
+    private StringBuilder htmlHead;
+    private StringBuilder htmlBody;
     private StringBuilder buffer=new StringBuilder(BUFFER_SIZE);
     private boolean closed=false;
     private boolean closeConn;
@@ -101,7 +102,46 @@ public class CFMLWriterImpl extends CFMLWriter {
         this.autoFlush=autoFlush;
         _check();
     }
-    
+
+	public void appendHTMLBody(String text) throws IOException {
+
+		if (htmlBody == null)
+			htmlBody = new StringBuilder(256);
+
+		htmlBody.append(text);
+	}
+
+	public void writeHTMLBody(String text) throws IOException {
+
+		if (flushed)    throw new IOException("Page is already flushed");
+
+		htmlBody = new StringBuilder(text);
+	}
+
+	public String getHTMLBody() throws IOException {
+
+		if (flushed)    throw new IOException("Page is already flushed");
+
+		return htmlBody == null ? "" : htmlBody.toString();
+	}
+
+	public void flushHTMLBody() throws IOException {
+
+		if (htmlBody != null) {
+
+			buffer.append(htmlBody);
+			resetHTMLBody();
+		}
+	}
+
+	/**
+	 * @see railo.runtime.writer.CFMLWriter#resetHTMLHead()
+	 */
+	public void resetHTMLBody() throws IOException {
+		if(flushed) throw new IOException("Page is already flushed");
+		htmlBody = null;
+	}
+
     /**
      * 
      * @param text
@@ -111,17 +151,17 @@ public class CFMLWriterImpl extends CFMLWriter {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
-        if (headData == null)
-	        headData = new StringBuilder(256);
+        if (htmlHead == null)
+	        htmlHead = new StringBuilder(256);
 
-        headData.append(text);
+        htmlHead.append(text);
     }
     
     public void writeHTMLHead(String text) throws IOException {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
-	    headData = new StringBuilder(text);
+	    htmlHead = new StringBuilder(text);
     }
     
     /** 
@@ -131,14 +171,14 @@ public class CFMLWriterImpl extends CFMLWriter {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
-        return headData == null ? "" : headData.toString();
+        return htmlHead == null ? "" : htmlHead.toString();
     }
 
 	public void flushHTMLHead() throws IOException {
 
-		if (headData != null) {
+		if (htmlHead != null) {
 
-			buffer.append(headData);
+			buffer.append(htmlHead);
 			resetHTMLHead();
 		}
 	}
@@ -148,7 +188,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      */
     public void resetHTMLHead() throws IOException {
     	if(flushed) throw new IOException("Page is already flushed");
-        headData=null;
+        htmlHead =null;
     }
     
     /**
@@ -232,32 +272,50 @@ public class CFMLWriterImpl extends CFMLWriter {
 
     private String _toString(boolean releaseHeadData) {
 
-	    if(headData==null)
+	    if (htmlBody == null && htmlHead == null)
             return buffer.toString();
 
-        String str=buffer.toString();
+        String str = buffer.toString();
 
-        int index=StringUtil.indexOfIgnoreCase(str,"</head>");
-        if (index > -1) {
+	    if (htmlHead != null) {
 
-	        str = StringUtil.insertAt(str, headData, index);
+		    int index = StringUtil.indexOfIgnoreCase(str, "</head>");
+		    if (index > -1) {
 
-            if(releaseHeadData)headData=null;
-            return str;
+			    str = StringUtil.insertAt(str, htmlHead, index);
+		    }
+		    else {
+
+			    index = StringUtil.indexOfIgnoreCase(str, "<head>") + 7;
+			    if (index > 6) {
+
+				    str = StringUtil.insertAt(str, htmlHead, index);
+			    }
+			    else {
+
+				    str = htmlHead.append(str).toString();
+			    }
+		    }
+	    }
+
+	    if (htmlBody != null) {
+
+		    int index=StringUtil.indexOfIgnoreCase(str,"</body>");
+		    if (index > -1) {
+
+			    str = StringUtil.insertAt(str, htmlBody, index);
+		    }
+		    else {
+
+			    str += htmlBody.toString();
+		    }
+	    }
+
+        if (releaseHeadData) {
+	        htmlBody = null;
+	        htmlHead = null;
         }
 
-        index = StringUtil.indexOfIgnoreCase(str,"<head>") + 7;
-        if (index > 6) {
-
-	        str = StringUtil.insertAt(str, headData, index);
-
-            if(releaseHeadData)headData=null;
-            return str;
-        }
-        
-        str = headData.append(str).toString();
-
-        if(releaseHeadData)headData=null;
         return str;
     }
     
