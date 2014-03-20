@@ -607,7 +607,6 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>map</name>
 		<class>railo.runtime.functions.closure.Map</class>
-		<member-name>max</member-name>
 		<description>Calls the given closure with every element in the given collection.
 		the function returns a array or struct (depending on the input) that contains all values returned by the closure.</description>
 		<argument>
@@ -646,7 +645,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMap</name>
 		<class>railo.runtime.functions.arrays.ArrayMap</class>
-		<member-name>max</member-name>
+		<member-name>map</member-name>
 		<description>Calls the given closure with every element in the given array.
 		the function returns a array that contains all values returned by the closure.</description>
 		<argument>
@@ -685,7 +684,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>structMap</name>
 		<class>railo.runtime.functions.struct.StructMap</class>
-		<member-name>max</member-name>
+		<member-name>map</member-name>
 		<description>Calls the given closure with every element in the given struct.
 		the function returns a struct that contains all values returned by the closure.</description>
 		<argument>
@@ -15181,6 +15180,103 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	
+	<!-- Reduce -->
+	<function>
+		<name>reduce</name>
+		<class>railo.runtime.functions.closure.Reduce</class>
+		<description>Iterates over every entry of the collection and calls the closure with every element. 
+		This function will reduce the array to a single value and will return the value.</description>
+		<argument>
+			<name>collection</name>
+			<alias>object</alias>
+			<type>object</type>
+			<required>Yes</required>
+            <description>collection to iterate</description>
+        </argument>
+		<argument>
+			<name>closure</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any result, item, [,index [, collection]]):any].</description>
+		</argument>
+		<argument>
+			<name>initalValue</name>
+			<alias>inital</alias>
+			<type>object</type>
+			<required>No</required>
+            <description>inital value passed as part of the first closure call</description>
+        </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- ArrayReduce -->
+	<function>
+		<name>arrayReduce</name>
+		<class>railo.runtime.functions.arrays.ArrayReduce</class>
+		<member-name>reduce</member-name>
+		<description>Iterates over every entry of the given array and calls the closure with every element. 
+		This function will reduce the array to a single value and will return the value.</description>
+		<argument>
+			<name>array</name>
+			<alias>object</alias>
+			<type>array</type>
+			<required>Yes</required>
+            <description>array to iterate</description>
+        </argument>
+		<argument>
+			<name>closure</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any result, object value, [,index [, array]]):any].</description>
+		</argument>
+		<argument>
+			<name>initalValue</name>
+			<alias>inital</alias>
+			<type>object</type>
+			<required>No</required>
+            <description>inital value passed as part of the first closure call</description>
+        </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- StructReduce -->
+	<function>
+		<name>structReduce</name>
+		<class>railo.runtime.functions.struct.StructReduce</class>
+		<member-name>reduce</member-name>
+		<description>Iterates over every entry of the given struct and calls the closure with every key/value. 
+		This function will reduce the struct to a single value and will return this value.</description>
+		<argument>
+			<name>struct</name>
+			<alias>object</alias>
+			<type>struct</type>
+			<required>Yes</required>
+            <description>struct to iterate</description>
+        </argument>
+		<argument>
+			<name>closure</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any result, string key, object value, [, struct]):any].</description>
+		</argument>
+		<argument>
+			<name>initalValue</name>
+			<alias>inital</alias>
+			<type>object</type>
+			<required>No</required>
+            <description>inital value passed as part of the first closure call</description>
+        </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	
 		<!-- Filter -->
 	<function>
 		<name>filter</name>
@@ -15217,6 +15313,45 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>object</type>
 		</return>
 	</function>
+	
+	<!-- Some -->
+	<function>
+		<name>some</name>
+		<class>railo.runtime.functions.closure.Some</class>
+		<member-name>some</member-name>
+		<description>This function creates a new collection that returns all entries from an collection that match the given filter.</description>
+		<argument>
+			<name>collection</name>
+			<alias>object</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	
+	
 	<!-- structFind -->
 	<function>
 		<name>structFind</name>
