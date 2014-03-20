@@ -5601,6 +5601,13 @@ To use cached data, the function must be called with the exact same arguments.</
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>id</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>ID of the snippet that is added, used to ensure that the same snippet will not be added more than once.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>action</name>
 			<values>append,read,reset,write</values>
 			<default-value>append</default-value>

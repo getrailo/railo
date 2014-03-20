@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
@@ -16,13 +18,15 @@ import railo.runtime.op.Caster;
 */
 public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 
+	private final static String REQUEST_ATTRIBUTE = "ATTRIBUTE_CFHTMLHEADBODY_ID_MAP";
+
 	/**
 	 * The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is placed in the 'head' section
 	 */
 	private String text = "";
 	private String variable = "cfhtmlhead";
 	private String action = null;
-
+	private String id = null;
 
 	@Override
 	public void release() {
@@ -30,6 +34,7 @@ public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 		text = "";
 		variable = "cfhtmlhead";
 		action = null;
+		id = null;
 	}
 
 	/**
@@ -60,6 +65,9 @@ public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 		this.text = text;
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	@Override
 	public int doStartTag() throws PageException {
@@ -68,16 +76,25 @@ public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 	}
 
 	public void actionAppend() throws IOException, ApplicationException {
+
 		required("htmlhead", "text", text);
-		((PageContextImpl) pageContext).getRootOut().appendHTMLHead(text);
+
+		if (isValid())
+			((PageContextImpl) pageContext).getRootOut().appendHTMLHead(text);
 	}
 
 	public void actionWrite() throws IOException, ApplicationException {
+
 		required("htmlhead", "text", text);
-		((PageContextImpl) pageContext).getRootOut().writeHTMLHead(text);
+
+		resetIdMap();
+		if (isValid())          // call isValid() to register the id if set
+			((PageContextImpl) pageContext).getRootOut().writeHTMLHead(text);
 	}
 
 	public void actionReset() throws IOException {
+
+		resetIdMap();
 		((PageContextImpl) pageContext).getRootOut().resetHTMLHead();
 	}
 
@@ -124,5 +141,42 @@ public final class HtmlHead extends BodyTagTryCatchFinallyImpl {
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
+	}
+
+	/**
+	 *
+	 * @return - true if the id was not set or was set and was not used yet in the request. if it was not set -- register it for future calls of the tag
+	 */
+	boolean isValid() {
+
+		if (StringUtil.isEmpty(id))
+			return true;
+
+		Map m = getIdMap();
+
+		boolean result = m.containsKey(id);
+
+		if (!result)
+			m.put(id, Boolean.TRUE);
+
+		return result;
+	}
+
+	Map getIdMap() {
+
+		Map result = (Map)pageContext.getRequest().getAttribute(REQUEST_ATTRIBUTE);
+
+		if (result == null) {
+
+			result = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+			pageContext.getRequest().setAttribute(REQUEST_ATTRIBUTE, result);
+		}
+
+		return result;
+	}
+
+	void resetIdMap() {
+
+		pageContext.getRequest().setAttribute(REQUEST_ATTRIBUTE, null);
 	}
 }
