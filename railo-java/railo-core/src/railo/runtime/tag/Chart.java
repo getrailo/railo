@@ -1164,6 +1164,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			CategoryAxis da = cp.getDomainAxis();
 			if(!showXLabel)da.setTickLabelsVisible(false);
 			da.setCategoryLabelPositions(labelPosition);
+			da.setMaximumCategoryLabelWidthRatio(100);
 			//da.setVisible(false);
 		}
 		if(plot instanceof XYPlot) {
