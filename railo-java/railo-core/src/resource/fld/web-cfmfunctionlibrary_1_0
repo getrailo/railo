@@ -15198,7 +15198,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>closure</name>
 			<type>function</type>
 			<required>Yes</required>
-			<description>function/closure that implements the following constructor [function(any result, item, [,index [, collection]]):any].</description>
+			<description>function/closure that implements the following constructor [function(... depending on the given collection ...):any].</description>
 		</argument>
 		<argument>
 			<name>initalValue</name>
@@ -15230,7 +15230,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>closure</name>
 			<type>function</type>
 			<required>Yes</required>
-			<description>function/closure that implements the following constructor [function(any result, object value, [,index [, array]]):any].</description>
+			<description>function/closure that implements the following constructor [function(any result, object value, [, numericindex [, array]]):any].</description>
 		</argument>
 		<argument>
 			<name>initalValue</name>
@@ -15277,7 +15277,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
-		<!-- Filter -->
+	<!-- Filter -->
 	<function>
 		<name>filter</name>
 		<class>railo.runtime.functions.closure.Filter</class>
@@ -15294,7 +15294,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>filter</name>
 			<type>function</type>
 			<required>Yes</required>
-			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
+			<description>filter can be a function/closure that implements the following constructor [function(... depending on given collection ...):boolean].</description>
 		</argument>
 		<argument>
 			<name>parallel</name>
@@ -15318,20 +15318,20 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>some</name>
 		<class>railo.runtime.functions.closure.Some</class>
-		<member-name>some</member-name>
-		<description>This function creates a new collection that returns all entries from an collection that match the given filter.</description>
+		<description>This function calls a given closure/function with every element in a given collection and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>collection</name>
 			<alias>object</alias>
 			<type>object</type>
 			<required>Yes</required>
-			<description>collection to filter entries from</description>
+			<description>collection to iterate</description>
 		</argument>
 		<argument>
-			<name>filter</name>
+			<name>closure</name>
+			<alias>function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
+			<description>function/closure that implements the following constructor [function(... depends on the given collection ...):boolean].</description>
 		</argument>
 		<argument>
 			<name>parallel</name>
@@ -15347,7 +15347,85 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
 		</argument>
 		<return>
-			<type>object</type>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	
+	<!-- ArraySome -->
+	<function>
+		<name>arraySome</name>
+		<class>railo.runtime.functions.arrays.ArraySome</class>
+		<member-name>some</member-name>
+		<description>This function calls a given closure/function with every element in a given array and returns true, if one of the closure calls returns true.</description>
+		<argument>
+			<name>array</name>
+			<alias>object</alias>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to iterate</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any value[, numeric index,array array]):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	
+	<!-- StructSome -->
+	<function>
+		<name>structSome</name>
+		<class>railo.runtime.functions.struct.StructSome</class>
+		<member-name>some</member-name>
+		<description>This function calls a given closure/function with every element in a given struct and returns true, if one of the closure calls returns true.</description>
+		<argument>
+			<name>struct</name>
+			<alias>object</alias>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>struct to iterate</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(string key, any value[array array]):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>boolean</type>
 		</return>
 	</function>
 	
