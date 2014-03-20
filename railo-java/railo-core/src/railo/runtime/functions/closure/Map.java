@@ -230,7 +230,7 @@ public class Map extends BIF {
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
 		if(args.length!=2)
-			throw new ApplicationException("invalid argument count for funciton call StructMap");
+			throw new ApplicationException("invalid argument count for function call StructMap");
 		return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]));
 	}
 
