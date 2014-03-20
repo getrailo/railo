@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import railo.runtime.PageContext;
+import railo.runtime.concurrency.Data;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Each;
@@ -35,10 +36,10 @@ public final class ArrayEach extends BIF {
 	}
 	private static String _call(PageContext pc , Array array, UDF udf, boolean parallel, int maxThreads) throws PageException {
 		ExecutorService execute=null;
-		List<Future<String>> futures=null;
+		List<Future<Data<Object>>> futures=null;
 		if(parallel) {
 			execute = Executors.newFixedThreadPool(maxThreads);
-			futures=new ArrayList<Future<String>>();
+			futures=new ArrayList<Future<Data<Object>>>();
 		}
 		Each.invoke(pc, array, udf,execute,futures);
 		

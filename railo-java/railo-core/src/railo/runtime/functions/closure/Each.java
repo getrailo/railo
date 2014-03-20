@@ -14,7 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import railo.runtime.PageContext;
+import railo.runtime.concurrency.Data;
 import railo.runtime.concurrency.UDFCaller;
+import railo.runtime.concurrency.UDFCaller2;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
@@ -41,10 +43,10 @@ public final class Each extends BIF {
 	
 	private static String _call(PageContext pc , Object obj, UDF udf, boolean parallel, int maxThreads) throws PageException {
 		ExecutorService execute=null;
-		List<Future<String>> futures=null;
+		List<Future<Data<Object>>> futures=null;
 		if(parallel) {
 			execute = Executors.newFixedThreadPool(maxThreads);
-			futures=new ArrayList<Future<String>>();
+			futures=new ArrayList<Future<Data<Object>>>();
 		}
 		// Array
 		if(obj instanceof Array) {
@@ -98,19 +100,19 @@ public final class Each extends BIF {
 	}
 	
 
-	public static void afterCall(PageContext pc, List<Future<String>> futures) throws PageException {
+	public static void afterCall(PageContext pc, List<Future<Data<Object>>> futures) throws PageException {
 		try{
-			Iterator<Future<String>> it = futures.iterator();
+			Iterator<Future<Data<Object>>> it = futures.iterator();
 			//Future<String> f;
 			while(it.hasNext()){
-				pc.write(it.next().get());
+				pc.write(it.next().get().output);
 			}
 		}
 		catch(Exception e){
 			throw Caster.toPageException(e);
 		}
 	}
-	public static void invoke(PageContext pc , Array array, UDF udf,ExecutorService execute,List<Future<String>> futures) throws PageException {
+	public static void invoke(PageContext pc , Array array, UDF udf,ExecutorService execute,List<Future<Data<Object>>> futures) throws PageException {
 		Iterator<Object> it = array.valueIterator();
 		while(it.hasNext()){
 			_call(pc,udf,new Object[]{it.next()},execute,futures);
@@ -118,7 +120,7 @@ public final class Each extends BIF {
 		}
 	}
 
-	public static void invoke(PageContext pc , Iteratorable coll, UDF udf,ExecutorService execute,List<Future<String>> futures) throws PageException {
+	public static void invoke(PageContext pc , Iteratorable coll, UDF udf,ExecutorService execute,List<Future<Data<Object>>> futures) throws PageException {
 		Iterator<Entry<Key, Object>> it = coll.entryIterator();
 		Entry<Key, Object> e;
 		while(it.hasNext()){
@@ -128,12 +130,12 @@ public final class Each extends BIF {
 		}
 	}
 	
-	private static void _call(PageContext pc, UDF udf, Object[] args,ExecutorService es,List<Future<String>> futures) throws PageException {
+	private static void _call(PageContext pc, UDF udf, Object[] args,ExecutorService es,List<Future<Data<Object>>> futures) throws PageException {
 		if(es==null) {
 			udf.call(pc, args, true);
 			return;
 		}
-		futures.add(es.submit(new UDFCaller(pc, udf, args, true)));
+		futures.add(es.submit(new UDFCaller2<Object>(pc, udf, args,null, true)));
 	}
 	
 	@Override
