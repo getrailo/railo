@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 
 import railo.runtime.PageContext;
 import railo.runtime.concurrency.Data;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Each;
@@ -46,10 +47,18 @@ public final class StructEach extends BIF {
 		
 		return null;
 	}
+
+
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
-		if(args.length==4) return call(pc,Caster.toStruct(args[0]),Caster.toFunction(args[1]),Caster.toBooleanValue(args[2]),Caster.toDoubleValue(args[3]));
-		if(args.length==3) return call(pc,Caster.toStruct(args[0]),Caster.toFunction(args[1]),Caster.toBooleanValue(args[2]));
-		return call(pc,Caster.toStruct(args[0]),Caster.toFunction(args[1]));
+		
+		if(args.length==2)
+			return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]));
+		if(args.length==3)
+			return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]), Caster.toBooleanValue(args[2]));
+		if(args.length==4)
+			return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]), Caster.toBooleanValue(args[2]), Caster.toDoubleValue(args[3]));
+		
+		throw new FunctionException(pc, "StructEach", 2, 4, args.length);
 	}
 }
