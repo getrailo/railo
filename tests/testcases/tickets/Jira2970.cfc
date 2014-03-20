@@ -19,12 +19,15 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	private void function _arrayMap(boolean parallel) localMode="true" {
 		arr=['a','b','c'];
 		arr[5]='e';
+		
+		// base test
 		res=ArrayMap(arr, function( value ){
  							return value EQ 'b';
  
                         },parallel);
-
 		assertEquals("false,true,false,,false",arrayToList(res));
+		
+		// output test
 		savecontent variable="c" {
 			res=ArrayMap([1], function( value ){
 							echo(serialize(arguments));
@@ -33,6 +36,14 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
                         },parallel);
 		}
 		assertEquals("{'value':1,'2':1,'3':[1]}",c);
+
+		// member function test
+		res=arr.map(function( value ){
+ 							return value EQ 'b';
+ 
+                        },parallel);
+
+		assertEquals("false,true,false,,false",arrayToList(res));
 	}
 
 
@@ -50,12 +61,15 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		sct.b=2;
 		sct.c=3;
 
+		// base test
 		res=StructMap(sct, function(key, value ){
  							return key&":"&value;
  
                         },parallel);
 
 		assertEquals("{'B':'B:2','A':'A:1','C':'C:3'}",serialize(res));
+		
+		// test content produced
 		savecontent variable="c" {
 			res=StructMap({a:1}, function(key, value ){
 							echo(serialize(arguments));
@@ -64,6 +78,15 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
                         },parallel);
 		}
 		assertEquals("{'key':'A','value':1,'3':{'A':1}}",c);
+
+		// test member name
+		res=sct.map(function(key, value ){
+ 							return key&":"&value;
+ 
+                        },parallel);
+
+		assertEquals("{'B':'B:2','A':'A:1','C':'C:3'}",serialize(res));
+
 	}
 
 
