@@ -6,72 +6,78 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	//public function afterTests(){}
 	
 	//public function setUp(){}
+	public void function testArraySome() localMode="true" {
+		_arraySome(false);
+	}
 
 
-	public void function testArrayReduce() localMode="true" {
+	public void function testArraySomeParallel() localMode="true" {
+		_arraySome(true);
+	}
+
+	private void function _arraySome(boolean parallel) localMode="true" {
 		
 		arr=['a','b','c'];
 		//arr[5]='e';
 		
 		// base test
-		res=ArrayReduce(arr, function( result,value,index){
- 							return result&";"&index&":"&value;
- 
-                        },"merge:");
-		assertEquals("merge:;1:a;2:b;3:c",res);
-
-		// closure output
-		savecontent variable="c" {
-			res=ArrayReduce(['a'], function( result,value,index ){
-							echo(serialize(arguments));
- 							return "";
- 
-                        },"merge:");
-		}
-		assertEquals("{'result':'merge:','value':'a','index':1,'4':['a']}",c);
-
-		// member function
-		res=arr.reduce(function( result,value,index){
- 							return result&";"&index&":"&value;
- 
-                        },"merge:");
-		assertEquals("merge:;1:a;2:b;3:c",res);
-	}
-
-	public void function testStructReduce() localMode="true" {
-		
-		sct={a:1,b:2,c:3};
-		//arr[5]='e';
-		
-		// base test
-		res=StructSome(sct, function(key,value ){return key =='b';});
+		res=ArraySome(arr, function(value ){return value =='b';},parallel);
 		assertEquals(true,res);
 		
-		res=StructSome(sct, function(key,value ){return key =='d';});
+		res=ArraySome(arr, function(value ){return value =='d';},parallel);
 		assertEquals(false,res);
 		
 
 		// closure output
 		savecontent variable="c" {
-			res=Some({a:1}, function(){
+			res=ArraySome(['a'], function(){
 							echo(serialize(arguments));
  							return false;
  
-                        });
+                        },parallel);
+		}
+		assertEquals("{'1':'a','2':1,'3':['a']}",c);
+
+		// member function
+		res=arr.some(function(value ){return value =='b';},parallel);
+		assertEquals(true,res);
+	}
+
+
+	public void function testStructSome() localMode="true" {
+		_structSome(false);
+	}
+
+
+	public void function testStructSomeParallel() localMode="true" {
+		_structSome(true);
+	}
+
+	private void function _structSome(boolean parallel) localMode="true" {
+		
+		sct={a:1,b:2,c:3};
+		//arr[5]='e';
+		
+		// base test
+		res=StructSome(sct, function(key,value ){return key =='b';},parallel);
+		assertEquals(true,res);
+		
+		res=StructSome(sct, function(key,value ){return key =='d';},parallel);
+		assertEquals(false,res);
+		
+
+		// closure output
+		savecontent variable="c" {
+			res=StructSome({a:1}, function(){
+							echo(serialize(arguments));
+ 							return false;
+ 
+                        },parallel);
 		}
 		assertEquals("{'1':'A','2':1,'3':{'A':1}}",c);
 
-		savecontent variable="c" {
-			res=StructReduce({a:1}, function( result,key,value ){
-							echo(serialize(arguments));
- 							return "";
- 
-                        },"merge:");
-		}
-		assertEquals("{'result':'merge:','key':'A','value':1,'4':{'A':1}}",c);
-
 		// member function
-		res=sct.some(function(key,value ){return key =='b';});
+		res=sct.some(function(key,value ){return key =='b';},parallel);
 		assertEquals(true,res);
 		
 	}
