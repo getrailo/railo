@@ -2,6 +2,7 @@ package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Map;
@@ -36,8 +37,7 @@ public class StructMap extends BIF {
 		if(args.length==4)
 			return call(pc, Caster.toStruct(args[0]), Caster.toFunction(args[1]), Caster.toBooleanValue(args[2]), Caster.toDoubleValue(args[3]));
 		
-		throw new ApplicationException("invalid argument count for function call StructMap");
-		
+		throw new FunctionException(pc, "StructMap", 2, 4, args.length);
 	}
 
 }
