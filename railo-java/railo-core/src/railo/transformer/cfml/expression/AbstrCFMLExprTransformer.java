@@ -936,9 +936,7 @@ public abstract class AbstrCFMLExprTransformer {
 		// Dynamic
 			if((expr=dynamic(data))!=null) {
 				expr = newOp(data, expr);
-				//if(res==expr)
-					expr = subDynamic(data,expr);
-				//else expr=res;
+				expr = subDynamic(data,expr);
 				data.mode=DYNAMIC;
 				return expr;
 			} 
@@ -949,10 +947,12 @@ public abstract class AbstrCFMLExprTransformer {
 			} 
 		// JSON
 			if((expr=json(data,JSON_ARRAY,'[',']'))!=null) {
+				expr = subDynamic(data,expr);
 				data.mode=DYNAMIC;
 				return expr;
 			} 
 			if((expr=json(data,JSON_STRUCT,'{','}'))!=null) {
+				expr = subDynamic(data,expr);
 				data.mode=DYNAMIC;
 				return expr;
 			} 
