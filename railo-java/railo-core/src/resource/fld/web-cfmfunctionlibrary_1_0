@@ -94,6 +94,7 @@
 	<function>
 		<name>array</name>
 		<class>railo.runtime.functions.arrays.Array_</class>
+		<keywords>array</keywords>
 		<description>Creates a new array</description>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -105,6 +106,7 @@
 		<name>_literalArray</name>
 		<class>railo.runtime.functions.arrays.LiteralArray</class>
 		<status>hidden</status>
+		<keywords>array</keywords>
 		<description>internal function used for literal array defintion</description>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -116,6 +118,7 @@
 		<name>_jsonArray</name>
 		<class>railo.runtime.functions.arrays.JsonArray</class>
 		<status>hidden</status>
+		<keywords>array</keywords>
 		<description>internal function used for literal array defintion</description>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -128,6 +131,7 @@
 		<class>railo.runtime.functions.arrays.ArrayAppend</class>
 		<member-name>append</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>Appends an array element to an array.</description>
 		<argument>
 			<name>array</name>
@@ -159,6 +163,7 @@
 		<name>arrayAvg</name>
 		<class>railo.runtime.functions.arrays.ArrayAvg</class>
 		<member-name>avg</member-name>
+		<keywords>array</keywords>
 		<description>Calculates the average of the values in an array.
 All elements in the array must contain values that can be automatically converted to numeric.</description>
 		<argument>
@@ -177,6 +182,7 @@ All elements in the array must contain values that can be automatically converte
 		<class>railo.runtime.functions.arrays.ArrayClear</class>
 		<member-name>clear</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>Removes all elements from an array.</description>
 		<argument>
 			<name>array</name>
@@ -193,6 +199,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContains</name>
 		<class>railo.runtime.functions.arrays.ArrayContains</class>
 		<member-name>contains</member-name>
+		<keywords>array</keywords>
 		<description>Returns the position of the first element in the array that matches the item that we are searching for, or 0 if the item is not found.</description>
 		<argument>
 			<name>haystack</name>
@@ -223,6 +230,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayContainsNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayContainsNoCase</class>
 		<member-name>containsNoCase</member-name>
+		<keywords>array</keywords>
 		<description>Returns the position of the first element in the array whose string value contains the substring passed (not case sensitive), or 0 if no such element is found.</description>
 		<argument>
 			<name>haystack</name>
@@ -247,6 +255,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayDelete</name>
 		<class>railo.runtime.functions.arrays.ArrayDelete</class>
 		<member-name>delete</member-name>
+		<keywords>array</keywords>
 		<description>Deletes specified object from given array</description>
 		<argument>
 			<name>array</name>
@@ -278,6 +287,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayDeleteAt</name>
 		<class>railo.runtime.functions.arrays.ArrayDeleteAt</class>
 		<member-name>deleteAt</member-name>
+		<keywords>array</keywords>
 		<description>Deletes an element from an array and resizes the array so that the deleted element doesn't leave a gap.</description>
 		<argument>
 			<name>array</name>
@@ -300,6 +310,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFind</name>
 		<class>railo.runtime.functions.arrays.ArrayFind</class>
 		<member-name>find</member-name>
+		<keywords>array,find</keywords>
 		<description>These functions searches the array for the specified object.</description>
 		<argument>
 			<name>array</name>
@@ -323,6 +334,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFindAll</name>
 		<class>railo.runtime.functions.arrays.ArrayFindAll</class>
 		<member-name>findAll</member-name>
+		<keywords>array,find</keywords>
 		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
 		<argument>
 			<name>array</name>
@@ -346,6 +358,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFindAllNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayFindAllNoCase</class>
 		<member-name>findAllNoCase</member-name>
+		<keywords>array,find</keywords>
 		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
 		<argument>
 			<name>array</name>
@@ -369,6 +382,7 @@ All elements in the array must contain values that can be automatically converte
 		<class>railo.runtime.functions.arrays.ArrayEach</class>
 		<member-name>each</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array,closure</keywords>
 		<description>call the given UDF/Closure with every value in the array.</description>
 		<argument>
 			<name>array</name>
@@ -458,6 +472,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFilter</name>
 		<class>railo.runtime.functions.arrays.ArrayFilter</class>
 		<member-name>filter</member-name>
+		<keywords>array,closure</keywords>
 		<description>This function creates a new Array that returns all the values from an array that match the given filter.</description>
 		<argument>
 			<name>array</name>
@@ -493,6 +508,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFindNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayFindNoCase</class>
 		<member-name>findNoCase</member-name>
+		<keywords>array,find</keywords>
 		<description>These functions performs a case-insensitive search in the array for the specified object.</description>
 		<argument>
 			<name>array</name>
@@ -515,6 +531,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFirst</name>
 		<class>railo.runtime.functions.arrays.ArrayFirst</class>
 		<member-name>first</member-name>
+		<keywords>array</keywords>
 		<description>Returns the first item from an array. Throws an error if the array is empty.</description>
 		<argument>
 			<name>array</name>
@@ -531,6 +548,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayIndexExists</name>
 		<class>railo.runtime.functions.arrays.ArrayIndexExists</class>
 		<member-name>indexExists</member-name>
+		<keywords>array</keywords>
 		<description>Returns whether there exists an item in the array at the selected index.</description>
 		<argument>
 			<name>array</name>
@@ -554,6 +572,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayIsDefined</name>
 		<class>railo.runtime.functions.arrays.ArrayIsDefined</class>
 		<member-name>isDefined</member-name>
+		<keywords>array</keywords>
 		<description>Returns whether there exists an item in the array at the selected index.</description>
 		<argument>
 			<name>array</name>
@@ -579,6 +598,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayLast</name>
 		<class>railo.runtime.functions.arrays.ArrayLast</class>
 		<member-name>last</member-name>
+		<keywords>array</keywords>
 		<description>Returns the last element of an array</description>
 		<argument>
 			<name>array</name>
@@ -596,6 +616,7 @@ All elements in the array must contain values that can be automatically converte
 		<class>railo.runtime.functions.arrays.ArrayInsertAt</class>
 		<member-name>insertAt</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>Inserts a value at the specified position in the array.
 If the element is inserted before the end of the array, Railo shifts the positions of all elements with a higher index to make room.</description>
 		<argument>
@@ -627,6 +648,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayIsEmpty</name>
 		<class>railo.runtime.functions.arrays.ArrayIsEmpty</class>
 		<member-name>isEmpty</member-name>
+		<keywords>array</keywords>
 		<description>Determines if the array is empty.</description>
 		<argument>
 			<name>array</name>
@@ -643,6 +665,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayLen</name>
 		<class>railo.runtime.functions.arrays.ArrayLen</class>
 		<member-name>len</member-name>
+		<keywords>array</keywords>
 		<description>Returns the length of the array</description>
 		<argument>
 			<name>array</name>
@@ -699,6 +722,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMap</name>
 		<class>railo.runtime.functions.arrays.ArrayMap</class>
 		<member-name>map</member-name>
+		<keywords>array,closure</keywords>
 		<description>Calls the given closure with every element in the given array.
 		the function returns a array that contains all values returned by the closure.</description>
 		<argument>
@@ -776,6 +800,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMax</name>
 		<class>railo.runtime.functions.arrays.ArrayMax</class>
 		<member-name>max</member-name>
+		<keywords>array</keywords>
 		<description>Returns the largest numeric value in an array. If the array
         parameter value is an empty array, returns zero.
         All elements must contain values that can be automatically
@@ -795,6 +820,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMid</name>
 		<class>railo.runtime.functions.arrays.ArrayMid</class>
 		<member-name>mid</member-name>
+		<keywords>array</keywords>
 		<description>Extracts a sub array from a array.</description>
 		<argument>
 			<name>array</name>
@@ -823,6 +849,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMin</name>
 		<class>railo.runtime.functions.arrays.ArrayMin</class>
 		<member-name>min</member-name>
+		<keywords>array</keywords>
 		<description>Returns the smallest numeric value in an array. If the array
         parameter value is an empty array, returns zero.
         All elements must contain values that can be automatically
@@ -842,6 +869,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
 		<member-name>merge</member-name>
+		<keywords>array</keywords>
 		<description>This function creates a new array with data from the two passed arrays. To add all the data from one array into another without creating a new array see the built in function ArrayAppend(arr1, arr2, true).</description>
 		<argument>
 			<name>array1</name>
@@ -869,6 +897,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayNew</name>
 		<class>railo.runtime.functions.arrays.ArrayNew</class>
+		<keywords>array</keywords>
 		<description>create a new array</description>
 		<argument>
 			<name>dimension</name>
@@ -887,6 +916,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<class>railo.runtime.functions.arrays.ArrayPrepend</class>
 		<member-name>prepend</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>Inserts an array element at the beginning of an array
         and shifts the positions of the existing elements to
         make room.</description>
@@ -911,6 +941,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayResize</name>
 		<class>railo.runtime.functions.arrays.ArrayResize</class>
 		<member-name>resize</member-name>
+		<keywords>array</keywords>
 		<description>Resets an array to a specified minimum number of elements.
         This can improve performance, if used to size an array to its
         expected maximum. For more than 500 elements, use ArrayResize
@@ -936,6 +967,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayReverse</name>
 		<class>railo.runtime.functions.arrays.ArrayReverse</class>
 		<member-name>reverse</member-name>
+		<keywords>array</keywords>
 		<description>Returns a new array, with all the elements reversed</description>
 		<argument>
 			<name>array</name>
@@ -953,6 +985,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<class>railo.runtime.functions.arrays.ArraySet</class>
 		<member-name>set</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>In a one-dimensional array, sets the elements in a specified
         index range to a value. Useful for initializing an array after
         a call to ArrayNew.</description>
@@ -989,6 +1022,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arraySlice</name>
 		<class>railo.runtime.functions.arrays.ArraySlice</class>
 		<member-name>slice</member-name>
+		<keywords>array</keywords>
 		<description>Returns a new array, from the start position up to the count of elements</description>
 		<argument>
 			<name>array</name>
@@ -1018,6 +1052,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<class>railo.runtime.functions.arrays.ArraySort</class>
 		<member-name>sort</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>Sorts array elements numerically or alphanumerically.</description>
 		<argument>
 			<name>array</name>
@@ -1073,6 +1108,7 @@ sort direction:
 		<name>arraySum</name>
 		<class>railo.runtime.functions.arrays.ArraySum</class>
 		<member-name>sum</member-name>
+		<keywords>array</keywords>
 		<description>The sum of values in an array. If the array parameter value is
         an empty array, returns zero.</description>
 		<argument>
@@ -1091,6 +1127,7 @@ sort direction:
 		<class>railo.runtime.functions.arrays.ArraySwap</class>
 		<member-name>swap</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>array</keywords>
 		<description>Swaps array values of an array at specified positions. This
         function is more efficient than multiple cfset tags</description>
 		<argument>
@@ -1121,6 +1158,7 @@ sort direction:
 		<class>railo.runtime.functions.list.ArrayToList</class>
 		<member-name>toList</member-name>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.ArrayToList</tte-class>
+		<keywords>list,string,array</keywords>
 		<description>Transform the array to a list of elements delimiter by the given string</description>
 		<argument>
 			<name>array</name>
@@ -1145,6 +1183,7 @@ sort direction:
 		<name>arrayToStruct</name>
 		<class>railo.runtime.functions.arrays.ArrayToStruct</class>
 		<member-name>toStruct</member-name>
+		<keywords>array,struct</keywords>
 		<description>Transform the array to a struct, the index of the array is the key of the struct</description>
 		<argument>
 			<name>array</name>
@@ -5284,6 +5323,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>find</name>
 		<class>railo.runtime.functions.string.Find</class>
+		<keywords>string,find</keywords>
 		<description>Finds the first occurrence of a substring in a string, from a
         specified start position. The search is case-sensitive.</description>
 		<argument>
@@ -5313,6 +5353,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>findNoCase</name>
 		<class>railo.runtime.functions.string.FindNoCase</class>
+		<keywords>string,find</keywords>
 		<description>Finds the first occurrence of a substring in a string, from a
         specified start position. If substring is not in string,
         returns zero. The search is case-insensitive.</description>
@@ -5343,6 +5384,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>findOneOf</name>
 		<class>railo.runtime.functions.string.FindOneOf</class>
+		<keywords>string,find</keywords>
 		<description>Finds the first occurrence of any one of a set of characters
         in a string, from a specified start position. The search is
         case-sensitive.</description>
@@ -11449,7 +11491,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listFind</name>
 		<class>railo.runtime.functions.list.ListFind</class>
-		<keywords>list,string</keywords>
+		<keywords>list,string,find</keywords>
 		<description>Determines the index of the first list element in which a
         specified value occurs. Case-sensitive</description>
 		<argument>
@@ -11486,7 +11528,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listFindNoCase</name>
 		<class>railo.runtime.functions.list.ListFindNoCase</class>
-		<keywords>list,string</keywords>
+		<keywords>list,string,find</keywords>
 		<description>Determines the index of the first list element in which a
         specified value occurs</description>
 		<argument>
@@ -11936,6 +11978,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listSort</name>
 		<class>railo.runtime.functions.list.ListSort</class>
+		<keywords>list,string</keywords>
 		<description>Sorts list elements according to a sort type and sort order.</description>
 		<argument>
 			<name>list</name>
@@ -11985,6 +12028,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listToArray</name>
 		<class>railo.runtime.functions.list.ListToArray</class>
+		<keywords>list,string,array</keywords>
 		<description>Copies the elements of a list to an array.</description>
 		<argument>
 			<name>list</name>
@@ -12022,6 +12066,7 @@ The following things are considered to be empty:
 		<name>listTrim</name>
 		<class>railo.runtime.functions.list.ListTrim</class>
 		<status>deprecated</status>
+		<keywords>list,string</keywords>
 		<description>this function is deprecated, use instead ListCompact</description>
 		<argument>
 			<name>list</name>
@@ -12045,6 +12090,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listValueCount</name>
 		<class>railo.runtime.functions.list.ListValueCount</class>
+		<keywords>list,string</keywords>
 		<description>Counts instances of a specified value in a list. The search is
         case-sensitive.</description>
 		<argument>
@@ -12081,6 +12127,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listValueCountNoCase</name>
 		<class>railo.runtime.functions.list.ListValueCountNoCase</class>
+		<keywords>list,string</keywords>
 		<description>Counts instances of a specified value in a list. The search is
         case-insensitive.</description>
 		<argument>
@@ -13855,6 +13902,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rEFind</name>
 		<class>railo.runtime.functions.string.REFind</class>
+		<keywords>string,regex,find</keywords>
 		<description>Uses a regular expression (RE) to search a string for a pattern. The search is case sensitive.</description>
 		<argument>
 			<name>reg_expression</name>
@@ -13890,6 +13938,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rEFindNoCase</name>
 		<class>railo.runtime.functions.string.REFindNoCase</class>
+		<keywords>string,regex,find</keywords>
 		<description>Uses a regular expression (RE) to search a string for a pattern,
          starting from a specified position. The search is
          case-insensitive.</description>
@@ -15292,6 +15341,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>arrayReduce</name>
 		<class>railo.runtime.functions.arrays.ArrayReduce</class>
 		<member-name>reduce</member-name>
+		<keywords>array,closure</keywords>
 		<description>Iterates over every entry of the given array and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
 		<argument>
@@ -15433,6 +15483,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>arraySome</name>
 		<class>railo.runtime.functions.arrays.ArraySome</class>
 		<member-name>some</member-name>
+		<keywords>array,closure</keywords>
 		<description>This function calls a given closure/function with every element in a given array and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>array</name>
@@ -15548,6 +15599,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>arrayEvery</name>
 		<class>railo.runtime.functions.arrays.ArrayEvery</class>
 		<member-name>every</member-name>
+		<keywords>array,closure</keywords>
 		<description>This function calls a given closure/function with every element in a given array and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>array</name>
@@ -15586,6 +15638,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>listEvery</name>
 		<class>railo.runtime.functions.list.ListEvery</class>
 		<member-name>every</member-name>
+		<keywords>list,string</keywords>
 		<description>This function calls a given closure/function with every element in a given string list and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>list</name>
@@ -15676,6 +15729,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structFind</name>
 		<class>railo.runtime.functions.struct.StructFind</class>
 		<member-name>find</member-name>
+		<keywords>struct,find</keywords>
 		<description>Determines the value associated with a key in a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -15704,6 +15758,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structFindKey</name>
 		<class>railo.runtime.functions.struct.StructFindKey</class>
 		<member-name>findKey</member-name>
+		<keywords>struct,find</keywords>
 		<description>Searches recursively through a substructure of nested arrays,
         structures, and other elements, for structures whose values
         match the search key in the value parameter.</description>
@@ -15737,6 +15792,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structFindValue</name>
 		<class>railo.runtime.functions.struct.StructFindValue</class>
 		<member-name>findValue</member-name>
+		<keywords>struct,find</keywords>
 		<description>Searches recursively through a substructure of nested arrays,
         structures, and other elements for structures with values that
         match the search key in the value parameter.</description>
