@@ -5,7 +5,64 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 	//public function afterTests(){}
 	
-	//public function setUp(){}
+	public void function testListEvery() localMode="true" {
+		_listEvery(false);
+	}
+
+
+	public void function testListEveryParallel() localMode="true" {
+		_listEvery(true);
+	}
+
+	private void function _listEvery(boolean parallel) localMode="true" {
+		
+		list=",,a,,b,c,,";
+		//arr[5]='e';
+		
+		// base test
+		res=ListEvery(list, function(value ){return true;},',',false,parallel);
+		assertEquals(true,res);
+		
+		res=ListEvery(list, function(value ){return value =='b';},',',false,parallel);
+		assertEquals(false,res);
+		
+
+		// closure output
+		savecontent variable="c" {
+			res=ListEvery(",a,,b,", function(){
+							echo(serialize(arguments));
+ 							return true;
+ 
+                        },',',false,parallel);
+		}
+		assertEquals("{'1':'a','2':1,'3':',a,,b,'}{'1':'b','2':2,'3':',a,,b,'}",c);
+
+		savecontent variable="c" {
+			res=ListEvery(",a,,b,", function(value){
+							echo(">"&value);
+ 							return true;
+ 
+                        },',',true,parallel);
+		}
+		assertEquals(">>a>>b>",c);
+
+		savecontent variable="c" {
+			res=ListEvery(",a,,b,", function(value){
+							echo(">"&value);
+ 							return true;
+ 
+                        },',',false,parallel);
+		}
+		assertEquals(">a>b",c);
+
+
+
+		// member function
+		//res=arr.every(function(value ){return true;},parallel);
+		//assertEquals(true,res);
+	}
+	
+
 	public void function testArrayEvery() localMode="true" {
 		_arrayEvery(false);
 	}
