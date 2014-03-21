@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -16,6 +18,7 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
@@ -30,6 +33,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.it.ObjectsEntryIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -51,6 +55,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	//private LinkedList<SpoolerTask> openTaskss=new LinkedList<SpoolerTask>();
 	//private LinkedList<SpoolerTask> closedTasks=new LinkedList<SpoolerTask>();
 	private SimpleThread simpleThread;
+	private SerializableObject token=new SerializableObject();
 	private SpoolerThread thread;
 	//private ExecutionPlan[] plans;
 	private Resource persisDirectory;
@@ -131,14 +136,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	private void start(Task task) {
 		if(task==null) return;
-		if(simpleThread==null || !simpleThread.isAlive()) {
-			simpleThread=new SimpleThread(config,task);
-			simpleThread.setPriority(Thread.MIN_PRIORITY);
-			simpleThread.start();
-		}
-		else {
-			simpleThread.tasks.add(task);
-			simpleThread.interrupt();
+		synchronized (task) {
+			if(simpleThread==null || !simpleThread.isAlive()) {
+				simpleThread=new SimpleThread(config,task);
+				
+				simpleThread.setPriority(Thread.MIN_PRIORITY);
+				simpleThread.start();
+			}
+			else {
+				simpleThread.tasks.add(task);
+				simpleThread.interrupt();
+			}
 		}
 	}
 

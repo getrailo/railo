@@ -110,7 +110,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	
 	@Override
 	public void releaseConnection(PageContext pc,DatasourceConnection dc) {
-		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(config,dc,true);
+		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(config,dc,false);
 	}
 	
 	/*private void releaseConnection(int pid,DatasourceConnection dc) {
