@@ -35,7 +35,9 @@ public final class StructEach extends BIF {
 		return _call(pc, sct, udf, parallel, (int)maxThreads);
 	}
 	private static String _call(PageContext pc , Struct sct, UDF udf, boolean parallel, int maxThreads) throws PageException {
-		ExecutorService execute=null;
+		return Each.call(pc, sct, udf, parallel, maxThreads);
+		
+		/*ExecutorService execute=null;
 		List<Future<Data<Object>>> futures=null;
 		if(parallel) {
 			execute = Executors.newFixedThreadPool(maxThreads);
@@ -45,7 +47,7 @@ public final class StructEach extends BIF {
 		
 		if(parallel) Each.afterCall(pc,futures);
 		
-		return null;
+		return null;*/
 	}
 
 

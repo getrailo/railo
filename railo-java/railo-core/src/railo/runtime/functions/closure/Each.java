@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import railo.print;
+import railo.commons.lang.StringList;
 import railo.runtime.PageContext;
 import railo.runtime.concurrency.Data;
 import railo.runtime.concurrency.UDFCaller;
@@ -23,6 +26,9 @@ import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.StringListData;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.UDF;
 
@@ -52,28 +58,32 @@ public final class Each extends BIF {
 		if(obj instanceof Array) {
 			invoke(pc, (Array)obj, udf,execute,futures);
 		}
+
 		// other Iteratorable
 		else if(obj instanceof Iteratorable) {
 			invoke(pc, (Iteratorable)obj, udf,execute,futures);
 		}
 		// Map
-		else if(obj instanceof Map) {
+		else if(obj instanceof Map) {print.ds();
 			Iterator it = ((Map)obj).entrySet().iterator();
 			Entry e;
 			while(it.hasNext()){
 				e = (Entry) it.next();
-				_call(pc,udf,new Object[]{e.getKey(),e.getValue()},execute,futures);
+				_call(pc,udf,new Object[]{e.getKey(),e.getValue(),obj},execute,futures);
 				//udf.call(pc, new Object[]{e.getKey(),e.getValue()}, true);
 			}
 		}
 		//List
 		else if(obj instanceof List) {
-			Iterator it = ((List)obj).iterator();
+			ListIterator it = ((List)obj).listIterator();
+			int index;
 			while(it.hasNext()){
-				_call(pc,udf,new Object[]{it.next()},execute,futures);
+				index=it.nextIndex();
+				_call(pc,udf,new Object[]{it.next(),new Double(index),obj},execute,futures);
 				//udf.call(pc, new Object[]{it.next()}, true);
 			}
 		}
+
 		// Iterator
 		else if(obj instanceof Iterator) {
 			Iterator it = (Iterator)obj;
@@ -90,6 +100,11 @@ public final class Each extends BIF {
 				//udf.call(pc, new Object[]{e.nextElement()}, true);
 			}
 		}
+		// StringListData
+		else if(obj instanceof StringListData) {
+			invoke(pc, (StringListData)obj, udf, execute, futures);
+		}
+
 		else
 			throw new FunctionException(pc, "Each", 1, "data", "cannot iterate througth this type "+Caster.toTypeName(obj.getClass()));
 		
@@ -113,9 +128,11 @@ public final class Each extends BIF {
 		}
 	}
 	public static void invoke(PageContext pc , Array array, UDF udf,ExecutorService execute,List<Future<Data<Object>>> futures) throws PageException {
-		Iterator<Object> it = array.valueIterator();
+		Iterator<Entry<Key, Object>> it = array.entryIterator();
+		Entry<Key, Object> e;
 		while(it.hasNext()){
-			_call(pc,udf,new Object[]{it.next()},execute,futures);
+			e=it.next();
+			_call(pc,udf,new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),array},execute,futures);
 			//udf.call(pc, new Object[]{it.next()}, true);
 		}
 	}
@@ -125,9 +142,22 @@ public final class Each extends BIF {
 		Entry<Key, Object> e;
 		while(it.hasNext()){
 			e = it.next();
-			_call(pc,udf,new Object[]{e.getKey().getString(),e.getValue()},execute,futures);
+			_call(pc,udf,new Object[]{e.getKey().getString(),e.getValue(),coll},execute,futures);
 			//udf.call(pc, new Object[]{e.getKey().getString(),e.getValue()}, true);
 		}
+	}
+	
+	private static void invoke(PageContext pc, StringListData sld, UDF udf, ExecutorService execute, List<Future<Data<Object>>> futures) throws PageException {
+		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
+			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
+		
+		Iterator<Entry<Key, Object>> it = arr.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()){
+			e=it.next();
+			_call(pc,udf,new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list},execute,futures);
+		}
+		
 	}
 	
 	private static void _call(PageContext pc, UDF udf, Object[] args,ExecutorService es,List<Future<Data<Object>>> futures) throws PageException {

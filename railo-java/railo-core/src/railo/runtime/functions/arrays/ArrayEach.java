@@ -3,14 +3,7 @@
  */
 package railo.runtime.functions.arrays;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import railo.runtime.PageContext;
-import railo.runtime.concurrency.Data;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
@@ -36,7 +29,10 @@ public final class ArrayEach extends BIF {
 		return _call(pc, array, udf, parallel, (int)maxThreads);
 	}
 	private static String _call(PageContext pc , Array array, UDF udf, boolean parallel, int maxThreads) throws PageException {
-		ExecutorService execute=null;
+		
+		return Each.call(pc, array, udf, parallel, maxThreads);
+		
+		/*ExecutorService execute=null;
 		List<Future<Data<Object>>> futures=null;
 		if(parallel) {
 			execute = Executors.newFixedThreadPool(maxThreads);
@@ -46,7 +42,7 @@ public final class ArrayEach extends BIF {
 		
 		if(parallel) Each.afterCall(pc,futures);
 		
-		return null;
+		return null;*/
 	}
 
 	@Override
