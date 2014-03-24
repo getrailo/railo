@@ -33,6 +33,8 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
+import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.StringListData;
 
 public class Some extends BIF {
 
@@ -91,6 +93,10 @@ public class Some extends BIF {
 		else if(obj instanceof Enumeration) {
 			res=invoke(pc, (Enumeration)obj, udf,execute,futures);
 		}
+		// String List
+		else if(obj instanceof StringListData) {
+			res=invoke(pc, (StringListData)obj, udf,execute,futures);
+		}
 		else
 			throw new FunctionException(pc, "Some", 1, "data", "cannot iterate througth this type "+Caster.toTypeName(obj.getClass()));
 		
@@ -129,6 +135,24 @@ public class Some extends BIF {
 		while(it.hasNext()){
 			e = it.next();
 			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),arr},e.getKey(),e.getValue(), es, futures);
+			if(!async && Caster.toBooleanValue(res)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static boolean invoke(PageContext pc, StringListData sld, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
+		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
+			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
+		
+		Iterator<Entry<Key, Object>> it = arr.entryIterator();
+		Entry<Key, Object> e;
+		boolean async=es!=null;
+		Object res;
+		while(it.hasNext()){
+			e = it.next();
+			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list},e.getKey(),e.getValue(), es, futures);
 			if(!async && Caster.toBooleanValue(res)) {
 				return true;
 			}

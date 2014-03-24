@@ -15566,6 +15566,51 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- ListReduce -->
+	<function>
+		<name>ListReduce</name>
+		<class>railo.runtime.functions.list.ListReduce</class>
+		<keywords>array,closure</keywords>
+		<description>Iterates over every entry of the given array and calls the closure with every element. 
+		This function will reduce the array to a single value and will return the value.</description>
+		<argument>
+			<name>list</name>
+			<alias>string</alias>
+			<type>string</type>
+			<required>Yes</required>
+            <description>string list to iterate</description>
+        </argument>
+		<argument>
+			<name>closure</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any result, object value, [, numeric index [, string list]]):any].</description>
+		</argument>
+		<argument>
+			<name>initalValue</name>
+			<alias>inital</alias>
+			<type>object</type>
+			<required>No</required>
+            <description>inital value passed as part of the first closure call</description>
+        </argument>
+		<argument>
+			<name>delimiter</name>
+			<default>,</default>
+			<type>string</type>
+			<required>No</required>
+			<description>delimiter used to separate the string list</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>include empty fields or not</description>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
 	<!-- StructReduce -->
 	<function>
 		<name>structReduce</name>
@@ -15707,7 +15752,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
-	
 	<!-- ArraySome -->
 	<function>
 		<name>arraySome</name>
@@ -15728,6 +15772,59 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>function</type>
 			<required>Yes</required>
 			<description>function/closure that implements the following constructor [function(any value[, numeric index,array array]):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
+
+	<!-- ListSome -->
+	<function>
+		<name>ListSome</name>
+		<class>railo.runtime.functions.list.ListSome</class>
+		<member-name>some</member-name>
+		<keywords>array,closure</keywords>
+		<description>This function calls a given closure/function with every element in a given string list and returns true, if one of the closure calls returns true.</description>
+		<argument>
+			<name>list</name>
+			<alias>string</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>string list to iterate</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any value[, numeric index,string list]):boolean].</description>
+		</argument>
+		<argument>
+			<name>delimiter</name>
+			<default>,</default>
+			<type>string</type>
+			<required>No</required>
+			<description>delimiter used to separate the string list</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>include empty fields or not</description>
 		</argument>
 		<argument>
 			<name>parallel</name>
