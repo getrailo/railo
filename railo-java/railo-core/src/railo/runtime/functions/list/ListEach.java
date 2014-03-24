@@ -52,9 +52,9 @@ public final class ListEach extends BIF {
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]));
 		if(args.length==4)
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]));
-		if(args.length==3)
+		if(args.length==5)
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]));
-		if(args.length==4)
+		if(args.length==6)
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]), Caster.toDoubleValue(args[5]));
 		
 		throw new FunctionException(pc, "ListEach", 2, 6, args.length);
