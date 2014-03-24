@@ -140,6 +140,43 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 
+	public void function testQueryEvery() localMode="true" {
+		_queryEvery(false);
+	}
+
+
+	public void function testQueryEveryParallel() localMode="true" {
+		_queryEvery(true);
+	}
+
+	private void function _queryEvery(boolean parallel) localMode="true" {
+		qry=query(a:["a1","a2"],b:["b1","b2"]);
+		
+		// base test
+		res=QueryEvery(qry, function(){return true;},parallel);
+		assertEquals(true,res);
+		
+		res=QueryEvery(qry, function(struct row, number rowNumber,query qry){return rowNumber == 2;},parallel);
+		assertEquals(false,res);
+		
+
+		// closure output
+		savecontent variable="c" {
+			res=QueryEvery(qry, function(){
+							echo(serialize(arguments));
+ 							return true;
+ 
+                        },parallel);
+		}
+		assertEquals("{'1':{'b':'b1','a':'a1'},'2':1,'3':query('a':['a1','a2'],'b':['b1','b2'])}{'1':{'b':'b2','a':'a2'},'2':2,'3':query('a':['a1','a2'],'b':['b1','b2'])}",c);
+
+		// member function
+		res=qry.every(function(key,value ){return true;},parallel);
+		assertEquals(true,res);
+		
+	}
+
+
 	public void function testEvery() localMode="true" {
 		arr=["a","b"];
 		it=arr.iterator();
