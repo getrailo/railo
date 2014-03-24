@@ -20,13 +20,16 @@ import railo.runtime.PageContext;
 import railo.runtime.concurrency.Data;
 import railo.runtime.concurrency.UDFCaller;
 import railo.runtime.concurrency.UDFCaller2;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StringListData;
 import railo.runtime.type.Iteratorable;
@@ -54,10 +57,17 @@ public final class Each extends BIF {
 			execute = Executors.newFixedThreadPool(maxThreads);
 			futures=new ArrayList<Future<Data<Object>>>();
 		}
+		
 		// Array
 		if(obj instanceof Array) {
 			invoke(pc, (Array)obj, udf,execute,futures);
 		}
+
+		// Query
+		else if(obj instanceof Query) {
+			invoke(pc, (Query)obj, udf,execute,futures);
+		}
+		
 
 		// other Iteratorable
 		else if(obj instanceof Iteratorable) {
@@ -134,6 +144,22 @@ public final class Each extends BIF {
 			e=it.next();
 			_call(pc,udf,new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),array},execute,futures);
 			//udf.call(pc, new Object[]{it.next()}, true);
+		}
+	}
+
+	public static void invoke(PageContext pc ,Query qry, UDF udf,ExecutorService execute,List<Future<Data<Object>>> futures) throws PageException {
+		final int pid=pc.getId();
+		ForEachQueryIterator it=new ForEachQueryIterator(qry, pid);
+		try{
+			Object row;
+			//Entry<Key, Object> e;
+			while(it.hasNext()){
+				row=it.next();
+				_call(pc,udf,new Object[]{row,Caster.toDoubleValue(qry.getCurrentrow(pid)),qry},execute,futures);
+			}
+		}
+		finally {
+			it.reset();
 		}
 	}
 
