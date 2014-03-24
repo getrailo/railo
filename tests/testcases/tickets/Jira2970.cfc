@@ -89,6 +89,47 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 	}
 
+	public void function testQueryMap() localMode="true" {
+		_queryMap(false);
+	}
+
+	public void function testQueryMapParallel() localMode="true" {
+		_queryMap(true);
+	}
+
+	private void function _queryMap(boolean parallel) localMode="true" {
+		qry=query(a:["a1","a2"],b:["b1","b2"]);
+		
+		// base test
+		res=QueryMap(qry, function(row ){
+							return {a:row.a&":",b:row.b&":"};
+ 
+                        },parallel);
+
+		assertEquals("query('a':['a1:','a2:'],'b':['b1:','b2:'])",serialize(res));
+		
+		return;
+
+		// test content produced
+		savecontent variable="c" {
+			res=QueryMap({a:1}, function(key, value ){
+							echo(serialize(arguments));
+ 							return key&":"&value;
+ 
+                        },parallel);
+		}
+		assertEquals("{'key':'A','value':1,'3':{'A':1}}",c);
+
+		// test member name
+		res=qry.map(function(key, value ){
+ 							return key&":"&value;
+ 
+                        },parallel);
+
+		assertEquals("{'B':'B:2','A':'A:1','C':'C:3'}",serialize(res));
+
+	}
+
 
 
 
