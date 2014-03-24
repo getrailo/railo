@@ -1,13 +1,6 @@
 <cfscript>
 component extends="org.railo.cfml.test.RailoTestCase"	{
 	
-	//public function beforeTests(){}
-	
-	//public function afterTests(){}
-	
-	//public function setUp(){}
-
-
 	public void function testArrayFilter() localMode="true" {
 		_arrayFilter(false);
 	}
@@ -35,7 +28,35 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("{'value':1,'2':1,'3':[1]}",c);
 	}
 
-		public void function testQueryFilter() localMode="true" {
+	public void function testListFilter() localMode="true" {
+		_listFilter(false);
+	}
+
+	public void function testListFilterParallel() localMode="true" {
+		_listFilter(true);
+	}
+
+	private void function _listFilter(boolean parallel) localMode="true" {
+		list=",,a,,b,c,,";
+
+		res=ListFilter(list, function( value ){
+ 							return value EQ 'b';
+ 
+                        },',',false,parallel);
+
+		assertEquals("b",res);
+
+		savecontent variable="c" {
+			res=ListFilter("a,b", function(){
+							echo(serialize(arguments));
+ 							return true;
+ 
+                        },',',false,parallel);
+		}
+		assertEquals("{'1':'a','2':1,'3':'a,b'}{'1':'b','2':2,'3':'a,b'}",c);
+	}
+
+	public void function testQueryFilter() localMode="true" {
 		_queryFilter(false);
 	}
 
