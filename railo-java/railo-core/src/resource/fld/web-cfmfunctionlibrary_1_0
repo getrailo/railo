@@ -736,7 +736,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<alias>udf,function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>UDF/Closure that is called with every value in the array</description>
+			<description>filter can be a function/closure that implements the following constructor [function(any value[, number index, array array]):any].</description>
 		</argument>
 		<argument>
 			<name>parallel</name>
@@ -775,7 +775,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<alias>udf,function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>UDF/Closure that is called with every value in the struct</description>
+			<description>filter can be a function/closure that implements the following constructor [function(string key, any value[, struct struct]):any].</description>
+		
 		</argument>
 		<argument>
 			<name>parallel</name>
@@ -792,6 +793,46 @@ Remember CFML arrays start at 1 not 0.</description>
 		</argument>
 		<return>
 			<type>struct</type>
+		</return>
+	</function>
+	
+	<!-- QueryMap -->
+	<function>
+		<name>QueryMap</name>
+		<class>railo.runtime.functions.query.QueryMap</class>
+		<member-name>map</member-name>
+		<description>Calls the given closure with every row in the given query.
+		the function returns a query that contains all values returned by the closure.</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+			<description>query to iterate</description>
+    	</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(struct row[, number rowNumber, query query]):struct].
+			The returned struct is used to fill a single query row.</description>
+		
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>query</type>
 		</return>
 	</function>
 	

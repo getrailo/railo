@@ -25,9 +25,12 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
 
 public class Map extends BIF {
@@ -59,6 +62,10 @@ public class Map extends BIF {
 		// Array
 		if(obj instanceof Array) {
 			coll=invoke(pc, (Array)obj, udf,execute,futures);
+		}
+		// Query
+		else if(obj instanceof Query) {
+			coll=invoke(pc, (Query)obj, udf,execute,futures);
 		}
 		// Struct
 		else if(obj instanceof Struct) {
@@ -137,6 +144,37 @@ public class Map extends BIF {
 		}
 		return rtn;
 	}
+
+	private static Query invoke(PageContext pc, Query qry, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws PageException {
+		Key[] colNames = qry.getColumnNames();
+		Query rtn=new QueryImpl(colNames,0,qry.getName());
+		final int pid=pc.getId();
+		ForEachQueryIterator it=new ForEachQueryIterator(qry, pid);
+		int rowNbr;
+		Object row,res;
+		
+		boolean async=es!=null;
+		while(it.hasNext()){
+			row = it.next();
+			rowNbr = qry.getCurrentrow(pid);
+			
+			res=_inv(pc, udf, new Object[]{row,rowNbr,qry},rowNbr, es, futures);
+			if(!async) {
+				addRow(Caster.toStruct(res),rtn);
+			}
+		}
+		return rtn;
+	}
+	
+	private static void addRow(Struct data, Query qry) {
+		Iterator<Entry<Key, Object>> it = data.entryIterator();
+		Entry<Key, Object> e;
+		int rn = qry.addRow();
+		while(it.hasNext()){
+			e=it.next();
+			qry.setAtEL(e.getKey(), rn, e.getValue());
+		}
+	}
 	
 	private static Struct invoke(PageContext pc, java.util.Map map, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws PageException {
 		Struct rtn=new StructImpl();
@@ -212,12 +250,14 @@ public class Map extends BIF {
 	}
 	
 	public static void afterCall(PageContext pc, Collection coll, List<Future<Data<Object>>> futures) throws PageException {
+		boolean isQuery=coll instanceof Query;
 		try{
 			Iterator<Future<Data<Object>>> it = futures.iterator();
 			Data<Object> d;
 			while(it.hasNext()){
 				d = it.next().get();
-				coll.set(KeyImpl.toKey(d.passed), d.result);
+				if(isQuery) addRow(Caster.toStruct(d.result),(Query)coll);
+				else coll.set(KeyImpl.toKey(d.passed), d.result);
 				pc.write(d.output);
 			}
 		}
