@@ -24,8 +24,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StringListData;
@@ -58,6 +60,11 @@ public class Every extends BIF {
 		// Array
 		if(obj instanceof Array) {
 			res=invoke(pc, (Array)obj, udf,execute,futures);
+		}
+		 
+		// Query
+		else if(obj instanceof Query) {
+			res=invoke(pc, (Query)obj, udf,execute,futures);
 		}
 		// Struct
 		else if(obj instanceof Struct) {
@@ -106,6 +113,28 @@ public class Every extends BIF {
 			if(!async && !Caster.toBooleanValue(res)) {
 				return false;
 			}
+		}
+		return true;
+	}
+
+	private static boolean invoke(PageContext pc, Query qry, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
+		final int pid=pc.getId();
+		ForEachQueryIterator it=new ForEachQueryIterator(qry, pid);
+		boolean async=es!=null;
+		double r;
+		Object res,row;
+		try{
+			while(it.hasNext()){
+				row=it.next();
+				r = Caster.toDoubleValue(qry.getCurrentrow(pid));
+				res=_inv(pc, udf, new Object[]{row,r,qry},r,row, es, futures);
+				if(!async && !Caster.toBooleanValue(res)) {
+					return false;
+				}
+			}
+		}
+		finally {
+			it.reset();
 		}
 		return true;
 	}
