@@ -83,6 +83,44 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 
+
+	public void function testQuerySome() localMode="true" {
+		_querySome(false);
+	}
+
+
+	public void function testQuerySomeParallel() localMode="true" {
+		_querySome(true);
+	}
+
+	private void function _querySome(boolean parallel) localMode="true" {
+		qry=query(a:["a1","a2"],b:["b1","b2"]);
+		
+		// base test
+		res=QuerySome(qry, function(row,rowNumber){return rowNumber == 1;},parallel);
+		assertEquals(true,res);
+		
+		res=QuerySome(qry, function(row,rowNumber){return rowNumber == 4;},parallel);
+		assertEquals(false,res);
+		
+
+		// closure output
+		savecontent variable="c" {
+			res=QuerySome(qry, function(){
+							echo(serialize(arguments));
+ 							return false;
+ 
+                        },parallel);
+		}
+		assertEquals("{'1':{'b':'b1','a':'a1'},'2':1,'3':query('a':['a1','a2'],'b':['b1','b2'])}{'1':{'b':'b2','a':'a2'},'2':2,'3':query('a':['a1','a2'],'b':['b1','b2'])}",c);
+
+		// member function
+		res=qry.some(function(row,rowNumber){return rowNumber == 1;},parallel);
+		assertEquals(true,res);
+		
+	}
+
+
 	public void function testSome() localMode="true" {
 		arr=["a","b"];
 		it=arr.iterator();
