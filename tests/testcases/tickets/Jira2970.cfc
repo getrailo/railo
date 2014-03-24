@@ -108,25 +108,24 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 		assertEquals("query('a':['a1:','a2:'],'b':['b1:','b2:'])",serialize(res));
 		
-		return;
 
 		// test content produced
 		savecontent variable="c" {
-			res=QueryMap({a:1}, function(key, value ){
+			res=QueryMap(query(a:["a1"]), function(row){
 							echo(serialize(arguments));
- 							return key&":"&value;
+ 							return row;
  
                         },parallel);
 		}
-		assertEquals("{'key':'A','value':1,'3':{'A':1}}",c);
+		assertEquals("{'row':{'a':'a1'},'2':1,'3':query('a':['a1'])}",c);
 
 		// test member name
-		res=qry.map(function(key, value ){
- 							return key&":"&value;
+		res=qry.Map(function(row ){
+							return {a:row.a&":",b:row.b&":"};
  
                         },parallel);
 
-		assertEquals("{'B':'B:2','A':'A:1','C':'C:3'}",serialize(res));
+		assertEquals("query('a':['a1:','a2:'],'b':['b1:','b2:'])",serialize(res));
 
 	}
 
