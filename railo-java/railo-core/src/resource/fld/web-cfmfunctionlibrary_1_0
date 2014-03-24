@@ -15305,7 +15305,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
-		<!-- structFilter -->
+	<!-- structFilter -->
 	<function>
 		<name>structFilter</name>
 		<class>railo.runtime.functions.struct.StructFilter</class>
@@ -15338,6 +15338,43 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<return>
 			<type>struct</type>
+		</return>
+	</function>
+	
+	
+	<!-- QueryFilter -->
+	<function>
+		<name>queryFilter</name>
+		<class>railo.runtime.functions.query.QueryFilter</class>
+		<member-name>filter</member-name>
+		<description>This function creates a new Query that returns all rows from an query that match the given filter.</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+			<description>query to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(struct row[, number rowNumber, query query]):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>query</type>
 		</return>
 	</function>
 	

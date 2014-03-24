@@ -27,9 +27,12 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
 
 public class Filter extends BIF {
@@ -56,10 +59,14 @@ public class Filter extends BIF {
 		}
 		
 		Collection coll;
-		 
+
 		// Array
 		if(obj instanceof Array) {
 			coll=invoke(pc, (Array)obj, udf,execute,futures);
+		}
+		// Query
+		else if(obj instanceof Query) {
+			coll=invoke(pc, (Query)obj, udf,execute,futures);
 		}
 		// Struct
 		else if(obj instanceof Struct) {
@@ -110,6 +117,35 @@ public class Filter extends BIF {
 	}
 	
 
+	private static Collection invoke(PageContext pc, Query qry, UDF udf, ExecutorService es, List<Future<Data<Pair<Object, Object>>>> futures) throws CasterException, PageException {
+		Key[] colNames = qry.getColumnNames();
+		Query rtn=new QueryImpl(colNames,0,qry.getName());
+		final int pid=pc.getId();
+		ForEachQueryIterator it=new ForEachQueryIterator(qry, pid);
+		int rowNbr;
+		Object row;
+		boolean async=es!=null;
+		Object res;
+		while(it.hasNext()){
+			row = it.next();
+			rowNbr = qry.getCurrentrow(pid);
+			
+			res=_inv(pc, udf, new Object[]{row,Caster.toDoubleValue(rowNbr),qry},rowNbr,qry, es, futures);
+			if(!async && Caster.toBooleanValue(res)) {
+				addRow(qry,rtn,rowNbr);
+			}
+		}
+		return rtn;
+	}
+	
+
+	private static void addRow(Query src, Query trg, int srcRow) {
+		Key[] colNames=src.getColumnNames();
+		int trgRow = trg.addRow();
+		for(int c=0;c<colNames.length;c++){
+			trg.setAtEL(colNames[c], trgRow, src.getAt(colNames[c], srcRow,null));
+		}
+	}
 	private static Collection invoke(PageContext pc, List list, UDF udf, ExecutorService es, List<Future<Data<Pair<Object, Object>>>> futures) throws CasterException, PageException {
 		Array rtn=new ArrayImpl();
 		ListIterator it = list.listIterator();
@@ -214,14 +250,27 @@ public class Filter extends BIF {
 	
 	public static void afterCall(PageContext pc, Collection coll, List<Future<Data<Pair<Object, Object>>>> futures) throws PageException {
 		try{
-			boolean doAppend=coll instanceof Array;
+			boolean isArray=false;
+			boolean isQuery=false;
+			if(coll instanceof Array) isArray=true;
+			else if(coll instanceof Query) isQuery=true;
+			
+			
 			Iterator<Future<Data<Pair<Object, Object>>>> it = futures.iterator();
 			Data<Pair<Object, Object>> d;
 			while(it.hasNext()){
 				d = it.next().get();
+				
 				if(Caster.toBooleanValue(d.result)) { 
-					if(doAppend) ((Array)coll).append(d.passed.getValue());
-					else coll.set(KeyImpl.toKey(d.passed.getName()),d.passed.getValue());
+					if(isArray) 
+						((Array)coll).append(d.passed.getValue());
+					else if(isQuery) 
+						addRow(
+								(Query)d.passed.getValue()
+								,(Query)coll
+								,Caster.toIntValue(d.passed.getName()));
+					else 
+						coll.set(KeyImpl.toKey(d.passed.getName()),d.passed.getValue());
 				}
 				
 				pc.write(d.output);
