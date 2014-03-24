@@ -68,6 +68,36 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("merge:;B:2;A:1;C:3",res); 
 	}
 
+	public void function testQueryReduce() localMode="true" {
+		qry=query(a:["a1","a2"],b:["b1","b2"]);
+		
+		// base test
+		res=QueryReduce(qry, function( result,row,rowNbr){
+ 							return result&";"&row.a&"->"&rowNbr;
+ 
+                        },"merge:");
+		assertEquals("merge:;a1->1;a2->2",res);
+
+		return;
+
+		// closure output
+		savecontent variable="c" {
+			res=QueryReduce({a:1}, function( result,key,value ){
+							echo(serialize(arguments));
+ 							return "";
+ 
+                        },"merge:");
+		}
+		assertEquals("{'result':'merge:','key':'A','value':1,'4':{'A':1}}",c);
+
+		// member function
+		res=qry.reduce(function( result,key,value){
+ 							return result&";"&key&":"&value;
+ 
+                        },"merge:");
+		assertEquals("merge:;B:2;A:1;C:3",res); 
+	}
+
 
 	public void function testReduce() localMode="true" {
 		arr=["a","b"];
