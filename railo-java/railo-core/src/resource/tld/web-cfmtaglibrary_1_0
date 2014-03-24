@@ -8200,6 +8200,15 @@ Valid only for cfinput type="text".</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Collection to loop over</description>
 		</attribute>
+		
+		<attribute>
+			<type>struct</type>
+			<name>struct</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>struct to loop over</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>item</name>

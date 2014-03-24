@@ -80,6 +80,13 @@ public final class Loop extends EvaluatorSupport {
 			loop.setType(TagLoop.TYPE_ARRAY);
             return;
 		}
+        // struct loop      
+        if(tag.containsAttribute("struct")) {
+        	if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+				throw new EvaluatorException("Wrong Context, when you use attribute struct,you must define attribute index and/or item");
+			loop.setType(TagLoop.TYPE_STRUCT);
+            return;
+        }
         // collection loop      
         if(tag.containsAttribute("collection")) {
         	if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
