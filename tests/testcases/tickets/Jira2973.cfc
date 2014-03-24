@@ -66,8 +66,8 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("{'1':'a','2':1,'3':'a,c'}{'1':'c','2':2,'3':'a,c'}",c);
 
 		// member function
-		res=list.some(list, function(value ){return value =='b';},',',false,parallel);
-		assertEquals(true,res);
+		//res=list.some(list, function(value ){return value =='b';},',',false,parallel);
+		//assertEquals(true,res);
 	}
 
 
