@@ -133,7 +133,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 
 
-		res=Reduce(it, function(res,value ){
+		res=collectionReduce(it, function(res,value ){
  							return res&";"&value;
  
                         },"merge:");
@@ -143,7 +143,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		it=arr.iterator();
 
 		savecontent variable="c" {
-			res=Reduce(it, function(res,value ){
+			res=collectionReduce(it, function(res,value ){
 							echo(serialize(arguments));
  							return res&";"&value;
  

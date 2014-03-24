@@ -680,9 +680,9 @@ Remember CFML arrays start at 1 not 0.</description>
 	</function>
 	
 	
-	<!-- Map -->
+	<!-- collectionMap -->
 	<function>
-		<name>map</name>
+		<name>collectionMap</name>
 		<class>railo.runtime.functions.closure.Map</class>
 		<description>Calls the given closure with every element in the given collection.
 		the function returns a array or struct (depending on the input) that contains all values returned by the closure.</description>
@@ -3471,6 +3471,33 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<!-- each -->
 	<function>
 		<name>each</name>
+		<class>railo.runtime.functions.closure.Each</class>
+		<status>deprecated</status>
+		<description>
+		deprecated, use instead collectionEach.
+		call the given UDF/Closure with every entry (key/value) in the given collection.</description>
+		<argument>
+			<name>collection</name>
+			<alias>object</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from struct</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- collectionEach -->
+	<function>
+		<name>collectionEach</name>
 		<class>railo.runtime.functions.closure.Each</class>
 		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
 		<argument>
@@ -15502,9 +15529,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
-	<!-- Reduce -->
+	<!-- collectionReduce -->
 	<function>
-		<name>reduce</name>
+		<name>collectionReduce</name>
 		<class>railo.runtime.functions.closure.Reduce</class>
 		<description>Iterates over every entry of the collection and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
@@ -15677,9 +15704,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
-	<!-- Filter -->
+	<!-- collectionFilter -->
 	<function>
-		<name>filter</name>
+		<name>collectionFilter</name>
 		<class>railo.runtime.functions.closure.Filter</class>
 		<member-name>filter</member-name>
 		<description>This function creates a new collection that returns all entries from an collection that match the given filter.</description>
@@ -15715,9 +15742,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
-	<!-- Some -->
+	<!-- collectionSome -->
 	<function>
-		<name>some</name>
+		<name>collectionSome</name>
 		<class>railo.runtime.functions.closure.Some</class>
 		<description>This function calls a given closure/function with every element in a given collection and returns true, if one of the closure calls returns true.</description>
 		<argument>
@@ -15920,9 +15947,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
-	<!-- Every -->
+	<!-- collectionEvery -->
 	<function>
-		<name>Every</name>
+		<name>collectionEvery</name>
 		<class>railo.runtime.functions.closure.Every</class>
 		<description>This function calls a given closure/function with every element in a given collection and returns true, if all of the closure calls returns true.</description>
 		<argument>

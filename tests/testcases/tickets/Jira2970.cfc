@@ -183,7 +183,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 
 
-		res=Map(it, function(value ){
+		res=collectionMap(it, function(value ){
  							return value;
  
                         },parallel);
@@ -193,7 +193,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		it=arr.iterator();
 
 		savecontent variable="c" {
-			res=Map(it, function(value ){
+			res=collectionMap(it, function(value ){
 							echo(serialize(arguments));
  							return value;
  

@@ -152,16 +152,16 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		arr=["a","b"];
 		it=arr.iterator();
 
-		res=Some(it, function(value ){return value =='b';});
+		res=collectionSome(it, function(value ){return value =='b';});
 		assertEquals(true,res);
 		
 		it=arr.iterator();
-		res=Some(it, function(value ){return value =='c';});
+		res=collectionSome(it, function(value ){return value =='c';});
 		assertEquals(false,res);
 		
 		it=arr.iterator();
 		savecontent variable="c" {
-			res=Some(it, function(){
+			res=collectionSome(it, function(){
 							echo(serialize(arguments));
  							return false;
  

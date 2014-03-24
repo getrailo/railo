@@ -120,20 +120,20 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 
 	public void function testFilter() localMode="true" {
-		_map(false);
+		_filter(false);
 	}
 
 	public void function testFilterParallel() localMode="true" {
-		_map(true);
+		_filter(true);
 	}
 
-	private void function _map(boolean parallel) localMode="true" {
+	private void function _filter(boolean parallel) localMode="true" {
 		arr=["a"];
 		it=arr.iterator();
 
 
 
-		res=Filter(it, function(value ){
+		res=collectionFilter(it, function(value ){
  							return value == 'a';
  
                         },parallel);
@@ -143,7 +143,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		it=arr.iterator();
 
 		savecontent variable="c" {
-			res=Filter(it, function(value ){
+			res=collectionFilter(it, function(value ){
 							echo(serialize(arguments));
  							return value == 'a';
  

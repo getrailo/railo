@@ -181,16 +181,16 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		arr=["a","b"];
 		it=arr.iterator();
 
-		res=Every(it, function(value ){return value =='b' || value== 'a';});
+		res=collectionEvery(it, function(value ){return value =='b' || value== 'a';});
 		assertEquals(true,res);
 		
 		it=arr.iterator();
-		res=Every(it, function(value ){return value =='b';});
+		res=collectionEvery(it, function(value ){return value =='b';});
 		assertEquals(false,res);
 		
 		it=arr.iterator();
 		savecontent variable="c" {
-			res=Every(it, function(){
+			res=collectionEvery(it, function(){
 							echo(serialize(arguments));
  							return true;
  
