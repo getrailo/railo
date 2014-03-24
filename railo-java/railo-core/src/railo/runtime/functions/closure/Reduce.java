@@ -34,6 +34,8 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
+import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.StringListData;
 
 public class Reduce extends BIF {
 
@@ -84,6 +86,9 @@ public class Reduce extends BIF {
 		else if(obj instanceof Enumeration) {
 			value=invoke(pc, (Enumeration)obj, udf,initalValue);
 		}
+		else if(obj instanceof StringListData) {
+			value=invoke(pc, (StringListData)obj, udf,initalValue);
+		}
 		else
 			throw new FunctionException(pc, "Filter", 1, "data", "cannot iterate througth this type "+Caster.toTypeName(obj.getClass()));
 		
@@ -97,6 +102,19 @@ public class Reduce extends BIF {
 		while(it.hasNext()){
 			e = it.next();
 			initalValue=udf.call(pc, new Object[]{initalValue,e.getValue(),Caster.toDoubleValue(e.getKey().getString()),arr}, true);
+		}
+		return initalValue;
+	}
+
+	private static Object invoke(PageContext pc, StringListData sld, UDF udf, Object initalValue) throws CasterException, PageException {
+		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
+			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
+		
+		Iterator<Entry<Key, Object>> it = arr.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			initalValue=udf.call(pc, new Object[]{initalValue,e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list}, true);
 		}
 		return initalValue;
 	}

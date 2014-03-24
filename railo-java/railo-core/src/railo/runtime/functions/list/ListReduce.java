@@ -7,6 +7,7 @@ import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Reduce;
 import railo.runtime.op.Caster;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.StringListData;
 
 
 public final class ListReduce extends BIF {
@@ -26,7 +27,9 @@ public final class ListReduce extends BIF {
 	}
 	
 	public static Object call(PageContext pc , String list, UDF udf, Object initValue ,String delimiter, boolean includeEmptyFields) throws PageException {
-		return Reduce._call(pc, list, udf,initValue);
+		StringListData data=new StringListData(list,delimiter,includeEmptyFields);
+		
+		return Reduce._call(pc, data, udf,initValue);
 	}
 
 	@Override
