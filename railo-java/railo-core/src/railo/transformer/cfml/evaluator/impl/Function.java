@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
 import railo.runtime.listener.AppListenerUtil;
 import railo.transformer.bytecode.Body;
@@ -130,7 +131,7 @@ public final class Function extends EvaluatorSupport {
 		FunctionLibFunction flf;
 		for (int i = 0; i < flibs.length; i++) {
 			flf = flibs[i].getFunction(name);
-			if(flf!=null && flf.getClazz()!=CFFunction.class) {
+			if(flf!=null && flf.getClazz(null)!=CFFunction.class) {
 				throw new EvaluatorException("The name ["+name+"] is already used by a built in Function");
 			}
 		}

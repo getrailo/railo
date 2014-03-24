@@ -15,6 +15,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.BIFProxy;
 import railo.runtime.reflection.Reflector;
+import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
 
@@ -152,11 +153,26 @@ public final class FunctionLibFunction {
 	/**
 	 * Gibt die Klasse zurueck, welche diese Funktion implementiert.
 	 * @return Klasse der Function.
+	 * @throws ClassException 
 	 */
-	public Class getClazz() {
+	public Class getClazz() throws TemplateException {
 		if(clazz==null) {
-			clazz=ClassUtil.loadClass(cls,(Class)null);
+			try {
+				clazz=ClassUtil.loadClass(cls);
+			}
+			catch (ClassException e) {
+				throw new BytecodeException(e, null);
+			}
 		}
+		
+		return clazz;
+	}
+	
+	public Class getClazz(Class defaultValue) {
+		if(clazz==null) {
+			clazz=ClassUtil.loadClass(cls,defaultValue);
+		}
+		
 		return clazz;
 	}
 
@@ -336,8 +352,13 @@ public final class FunctionLibFunction {
 	public BIF getBIF() {
 		if(bif!=null) return bif;
 		
-		Class clazz=getClazz();
-        if(clazz==null)throw new PageRuntimeException(new ExpressionException("class "+clazz+" not found"));
+		Class clazz=null;
+		try {
+			clazz = getClazz();
+		}
+		catch (TemplateException e) {
+			throw new PageRuntimeException(e);
+		}
         
 		if(Reflector.isInstaneOf(clazz, BIF.class)) {
 			try {
