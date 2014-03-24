@@ -58,8 +58,12 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 
 		// member function
-		//res=arr.every(function(value ){return true;},parallel);
-		//assertEquals(true,res);
+		res=List.Every(function(value ){return true;},',',false,parallel);
+		assertEquals(true,res);
+
+
+		res=List.Every(closure:function(value ){return true;},delimiter:',',includeEmptyFields:false,parallel:parallel);
+		assertEquals(true,res);
 	}
 	
 

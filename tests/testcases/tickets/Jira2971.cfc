@@ -54,6 +54,15 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
                         },',',false,parallel);
 		}
 		assertEquals("{'1':'a','2':1,'3':'a,b'}{'1':'b','2':2,'3':'a,b'}",c);
+
+
+		// member functions
+		res=list.Filter(function( value ){
+ 							return value EQ 'b';
+ 
+                        },',',false,parallel);
+
+		assertEquals("b",res);
 	}
 
 	public void function testQueryFilter() localMode="true" {

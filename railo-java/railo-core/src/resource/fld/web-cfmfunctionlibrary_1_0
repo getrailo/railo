@@ -420,6 +420,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>listEach</name>
 		<class>railo.runtime.functions.list.ListEach</class>
+		<member-name>each</member-name>
 		<keywords>list,string,closure</keywords>
 		<description>call the given UDF/Closure with every value in the string list.</description>
 		<argument>
@@ -11307,6 +11308,8 @@ The following things are considered to be empty:
 	<function>
 		<name>lCase</name>
 		<class>railo.runtime.functions.string.LCase</class>
+		<member-name>lCase</member-name>
+		<keywords>string</keywords>
 		<description>Converts the alphabetic characters in a string to lowercase.</description>
 		<argument>
 			<name>string</name>
@@ -11590,6 +11593,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listFilter</name>
 		<class>railo.runtime.functions.list.ListFilter</class>
+		<member-name>filter</member-name>
 		<keywords>list,string</keywords>
 		<description>This function creates a new string list that returns all entries from an string list that match the given filter.</description>
 		<argument>
@@ -15597,6 +15601,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ListReduce</name>
 		<class>railo.runtime.functions.list.ListReduce</class>
+		<member-name>reduce</member-name>
 		<keywords>array,closure</keywords>
 		<description>Iterates over every entry of the given array and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
@@ -16774,6 +16779,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>trim</name>
 		<class>railo.runtime.functions.string.Trim</class>
+		<member-name>trim</member-name>
+		<keywords>string</keywords>
 		<description>Removes leading and trailing spaces from a string.</description>
 		<argument>
 			<name>string</name>
@@ -16789,6 +16796,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>uCase</name>
 		<class>railo.runtime.functions.string.UCase</class>
+		<member-name>uCase</member-name>
+		<keywords>string</keywords>
 		<description>Converts the alphabetic characters in a string to uppercase.</description>
 		<argument>
 			<name>string</name>

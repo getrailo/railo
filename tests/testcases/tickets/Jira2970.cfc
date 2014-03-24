@@ -76,11 +76,11 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("{'value':'a','2':1,'3':'a,b'}{'value':'b','2':2,'3':'a,b'}",c);
 
 		// member function test
-		/*res=list.map(list, function( value ){
+		res=list.map( function( value ){
  							return value EQ 'b';
  
                         },',',false,parallel);
-		assertEquals("false,true,false",res);*/
+		assertEquals("false,true,false",res);
 	}
 
 

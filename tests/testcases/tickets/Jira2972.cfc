@@ -62,8 +62,8 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("{'result':'merge:','value':'a','index':1,'4':'a,b'}{'result':'','value':'b','index':2,'4':'a,b'}",c);
 
 		// member function
-		//res=list.Reduce(list, function( result,value,index){return result&";"&index&":"&value;},"merge:");
-		//assertEquals("merge:;1:a;2:b;3:c",res);
+		res=list.Reduce(function( result,value,index){return result&";"&index&":"&value;},"merge:");
+		assertEquals("merge:;1:a;2:b;3:c",res);
 	}
 
 	public void function testStructReduce() localMode="true" {
