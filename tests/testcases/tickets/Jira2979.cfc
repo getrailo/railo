@@ -95,6 +95,43 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 	}
 
+	public void function testQueryEach() localMode="true" {
+		_queryEach(false);
+	}
+
+
+	public void function testQueryEachParallel() localMode="true" {
+		_queryEach(true);
+	}
+
+	private void function _queryEach(boolean parallel) localMode="true" {
+		qry=query(a:["a1","a2"],b:["b1","b2"]);
+		//arr[5]='e';
+		
+
+		// closure output
+		savecontent variable="c" {
+			QueryEach(qry, function(){
+							echo(serialize(arguments));
+ 							return true;
+ 
+                        },parallel);
+		}
+		assertEquals("{'1':{'b':'b1','a':'a1'},'2':1,'3':query('a':['a1','a2'],'b':['b1','b2'])}{'1':{'b':'b2','a':'a2'},'2':2,'3':query('a':['a1','a2'],'b':['b1','b2'])}",c);
+
+		// member function
+		savecontent variable="c" {
+			qry.each(function(){
+							echo(serialize(arguments));
+ 							return true;
+ 
+                        },parallel);
+		}
+		assertEquals("{'1':{'b':'b1','a':'a1'},'2':1,'3':query('a':['a1','a2'],'b':['b1','b2'])}{'1':{'b':'b2','a':'a2'},'2':2,'3':query('a':['a1','a2'],'b':['b1','b2'])}",c);
+
+
+	}
+
 
 	public void function testStructEach() localMode="true" {
 		_structEach(false);
