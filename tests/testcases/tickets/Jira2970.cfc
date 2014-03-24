@@ -47,6 +47,43 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 
+	public void function testListMap() localMode="true" {
+		_listMap(false);
+	}
+
+	public void function testListMapParallel() localMode="true" {
+		_listMap(true);
+	}
+
+	private void function _listMap(boolean parallel) localMode="true" {
+		list=",,a,,b,c,,";
+
+		// base test
+		res=ListMap(list, function( value ){
+ 							return value EQ 'b';
+ 
+                        },',',false,parallel);
+		assertEquals("false,true,false",res);
+		
+		// output test
+		savecontent variable="c" {
+			res=ListMap("a,b", function( value ){
+							echo(serialize(arguments));
+ 							return value EQ 'b';
+ 
+                        },',',false,parallel);
+		}
+		assertEquals("{'value':'a','2':1,'3':'a,b'}{'value':'b','2':2,'3':'a,b'}",c);
+
+		// member function test
+		/*res=list.map(list, function( value ){
+ 							return value EQ 'b';
+ 
+                        },',',false,parallel);
+		assertEquals("false,true,false",res);*/
+	}
+
+
 	public void function testStructMap() localMode="true" {
 		_structMap(false);
 	}
