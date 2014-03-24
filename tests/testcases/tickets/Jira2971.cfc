@@ -35,6 +35,35 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("{'value':1,'2':1,'3':[1]}",c);
 	}
 
+		public void function testQueryFilter() localMode="true" {
+		_queryFilter(false);
+	}
+
+	public void function testQueryFilterParallel() localMode="true" {
+		_queryFilter(true);
+	}
+
+	private void function _queryFilter(boolean parallel) localMode="true" {
+		qry=query(a:["a1","a2"],b:["b1","b2"]);
+		//arr[5]='e';
+		res=QueryFilter(qry, function( row ){
+ 							return row.a EQ 'a2';
+ 
+                        },parallel);
+
+		assertEquals("query('a':['a2'],'b':['b2'])",serialize(res));
+		
+		qry=query(a:["a1"]);
+		savecontent variable="c" {
+			res=QueryFilter(qry, function(){
+							echo(serialize(arguments));
+ 							return true;
+ 
+                        },parallel);
+		}
+		assertEquals("{'1':{'a':'a1'},'2':1,'3':query('a':['a1'])}",c);
+	}
+
 
 	public void function testStructFilter() localMode="true" {
 		_structFilter(false);
