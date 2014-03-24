@@ -757,7 +757,59 @@ Remember CFML arrays start at 1 not 0.</description>
 		</return>
 	</function>
 	
-	
+	<!-- ListMap -->
+	<function>
+		<name>listMap</name>
+		<class>railo.runtime.functions.list.ListMap</class>
+		<member-name>map</member-name>
+		<keywords>string,list,closure</keywords>
+		<description>Calls the given closure with every element in the given array.
+		the function returns a array that contains all values returned by the closure.</description>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>list to iterate</description>
+    	</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any value[, number index, string list]):any].</description>
+		</argument>
+		<argument>
+			<name>delimiter</name>
+			<default>,</default>
+			<type>string</type>
+			<required>No</required>
+			<description>delimiter used to separate the string list</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>include empty fields or not</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+
 	<!-- structMap -->
 	<function>
 		<name>structMap</name>
