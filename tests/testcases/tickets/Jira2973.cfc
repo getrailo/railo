@@ -1,15 +1,9 @@
 <cfscript>
 component extends="org.railo.cfml.test.RailoTestCase"	{
 	
-	//public function beforeTests(){}
-	
-	//public function afterTests(){}
-	
-	//public function setUp(){}
 	public void function testArraySome() localMode="true" {
 		_arraySome(false);
 	}
-
 
 	public void function testArraySomeParallel() localMode="true" {
 		_arraySome(true);
@@ -40,6 +34,39 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 		// member function
 		res=arr.some(function(value ){return value =='b';},parallel);
+		assertEquals(true,res);
+	}
+
+	public void function testListSome() localMode="true" {
+		_arrayList(false);
+	}
+
+	public void function testListSomeParallel() localMode="true" {
+		_arrayList(true);
+	}
+
+	private void function _arrayList(boolean parallel) localMode="true" {
+		list=",,a,,b,c,,";
+		
+		// base test
+		res=ListSome(list, function(value ){return value =='b';},',',false,parallel);
+		assertEquals(true,res);
+		
+		res=ListSome(list, function(value ){return value =='d';},',',false,parallel);
+		assertEquals(false,res);
+		
+		// closure output
+		savecontent variable="c" {
+			res=ListSome("a,c", function(){
+							echo(serialize(arguments));
+ 							return false;
+ 
+                        },',',false,parallel);
+		}
+		assertEquals("{'1':'a','2':1,'3':'a,c'}{'1':'c','2':2,'3':'a,c'}",c);
+
+		// member function
+		res=list.some(list, function(value ){return value =='b';},',',false,parallel);
 		assertEquals(true,res);
 	}
 
