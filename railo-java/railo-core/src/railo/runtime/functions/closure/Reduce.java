@@ -27,9 +27,12 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
 
 public class Reduce extends BIF {
@@ -52,6 +55,10 @@ public class Reduce extends BIF {
 		// Array
 		if(obj instanceof Array) {
 			value=invoke(pc, (Array)obj, udf,initalValue);
+		}
+		// Query
+		else if(obj instanceof Query) {
+			value=invoke(pc, (Query)obj, udf,initalValue);
 		}
 		// Struct
 		else if(obj instanceof Struct) {
@@ -90,6 +97,20 @@ public class Reduce extends BIF {
 		while(it.hasNext()){
 			e = it.next();
 			initalValue=udf.call(pc, new Object[]{initalValue,e.getValue(),Caster.toDoubleValue(e.getKey().getString()),arr}, true);
+		}
+		return initalValue;
+	}
+
+	private static Object invoke(PageContext pc, Query qry, UDF udf, Object initalValue) throws CasterException, PageException {
+		final int pid=pc.getId();
+		ForEachQueryIterator it=new ForEachQueryIterator(qry, pid);
+		int rowNbr;
+
+		Object row;
+		while(it.hasNext()){
+			row = it.next();
+			rowNbr = qry.getCurrentrow(pid);
+			initalValue=udf.call(pc, new Object[]{initalValue,row,Caster.toDoubleValue(rowNbr),qry}, true);
 		}
 		return initalValue;
 	}

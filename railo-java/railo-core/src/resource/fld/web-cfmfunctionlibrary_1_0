@@ -15502,7 +15502,40 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>closure</name>
 			<type>function</type>
 			<required>Yes</required>
-			<description>function/closure that implements the following constructor [function(any result, string key, object value, [, struct]):any].</description>
+			<description>function/closure that implements the following constructor [function(any result, string key, object value[, struct struct]):any].</description>
+		</argument>
+		<argument>
+			<name>initalValue</name>
+			<alias>inital</alias>
+			<type>object</type>
+			<required>No</required>
+            <description>inital value passed as part of the first closure call</description>
+        </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	
+	<!-- QueryReduce -->
+	<function>
+		<name>QueryReduce</name>
+		<class>railo.runtime.functions.query.QueryReduce</class>
+		<member-name>reduce</member-name>
+		<description>Iterates over every row of the given query and calls the closure with that row. 
+		This function will reduce the query to a single value and will return this value.</description>
+		<argument>
+			<name>query</name>
+			<alias>object</alias>
+			<type>query</type>
+			<required>Yes</required>
+            <description>query to iterate</description>
+        </argument>
+		<argument>
+			<name>closure</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(any result, struct row[, number rowNumber, query query]):any].</description>
 		</argument>
 		<argument>
 			<name>initalValue</name>
