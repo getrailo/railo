@@ -15231,6 +15231,43 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- queryEach -->
+	<function>
+		<name>queryEach</name>
+		<class>railo.runtime.functions.query.QueryEach</class>
+		<member-name>each</member-name>
+		<member-chaining>true</member-chaining>
+		<description>call the given UDF/Closure with every row (struct) in the query.</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+			<description>query to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from the query</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	
 	<!-- each -->
 	<function>
@@ -15516,8 +15553,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>boolean</type>
 		</return>
 	</function>
-	
-	
+
 	<!-- StructSome -->
 	<function>
 		<name>structSome</name>
@@ -15537,6 +15573,44 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>function</type>
 			<required>Yes</required>
 			<description>function/closure that implements the following constructor [function(string key, any value[array array]):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
+	<!-- QuerySome -->
+	<function>
+		<name>QuerySome</name>
+		<class>railo.runtime.functions.query.QuerySome</class>
+		<member-name>some</member-name>
+		<description>This function calls a given closure/function with every element in a given query and returns true, if one of the closure calls returns true.</description>
+		<argument>
+			<name>query</name>
+			<alias>object</alias>
+			<type>query</type>
+			<required>Yes</required>
+			<description>query to iterate</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(struct row [, number rowNumber, query query]):boolean].</description>
 		</argument>
 		<argument>
 			<name>parallel</name>
@@ -15704,6 +15778,44 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>function</type>
 			<required>Yes</required>
 			<description>function/closure that implements the following constructor [function(string key, any value[array array]):boolean].</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- QueryEvery -->
+	<function>
+		<name>queryEvery</name>
+		<class>railo.runtime.functions.query.QueryEvery</class>
+		<member-name>every</member-name>
+		<description>This function calls a given closure/function with every element in a given query and returns true, if all of the closure calls returns true.</description>
+		<argument>
+			<name>query</name>
+			<alias>object</alias>
+			<type>query</type>
+			<required>Yes</required>
+			<description>query to iterate</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>function/closure that implements the following constructor [function(struct row [number rownumber, query query]):boolean].</description>
 		</argument>
 		<argument>
 			<name>parallel</name>
