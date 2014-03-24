@@ -69,6 +69,8 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        		if(srcName.endsWith("_cfc$cf") && className.endsWith("_cfm$cf"))
 	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains a component not a regular cfm template");
 	        		
+					// className and srcName are equal even if className begins with a forward slash
+					className = className.replace("/","");
 	        		// rename class name when needed
 	        		if(!srcName.equals(className))barr=ClassRenamer.rename(barr, className);
 	        		
