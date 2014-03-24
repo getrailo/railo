@@ -482,6 +482,7 @@ All elements in the array must contain values that can be automatically converte
 		</argument>
 		<argument>
 			<name>filter</name>
+			<alias>closure,function</alias>
 			<type>function</type>
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any arg):boolean].</description>
@@ -11520,10 +11521,39 @@ The following things are considered to be empty:
 		</argument>
 		<argument>
 			<name>filter</name>
+			<alias>closure,function</alias>
 			<type>function</type>
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any value):boolean].</description>
 		</argument>
+		<argument>
+			<name>delimiter</name>
+			<default>,</default>
+			<type>string</type>
+			<required>No</required>
+			<description>delimiter used to separate the string list</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>include empty fields or not</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		
 		<return>
 			<type>string</type>
 		</return>

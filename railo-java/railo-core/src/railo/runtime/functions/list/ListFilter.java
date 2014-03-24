@@ -10,21 +10,42 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.functions.closure.Filter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.StringListData;
 
 
 public final class ListFilter implements Function {
-	
 
 	public static String call(PageContext pc , String list, UDF filter) throws PageException {
-		return call(pc, list, filter,",");
+		return call(pc, list, filter, ",", false, false, 20);
 	}
 
-	public static String call(PageContext pc , String list, UDF filter, String delimiter) throws PageException {
+	public static String call(PageContext pc , String list, UDF filter,String delimiter) throws PageException {
+		return call(pc, list, filter, delimiter, false, false, 20);
+	}
+
+	public static String call(PageContext pc , String list, UDF filter,String delimiter
+			, boolean includeEmptyFields) throws PageException {
+		return call(pc, list, filter, delimiter, includeEmptyFields, false, 20);
+	}
+	
+	public static String call(PageContext pc , String list, UDF filter,String delimiter
+			, boolean includeEmptyFields, boolean parallel) throws PageException {
+		return call(pc, list, filter, delimiter, includeEmptyFields, parallel, 20);
+	}
+
+	public static String call(PageContext pc , String list, UDF filter,String delimiter
+			, boolean includeEmptyFields, boolean parallel, double maxThreads) throws PageException {
+		
+		return ListUtil.arrayToList(
+				(Array)Filter.call(pc, new StringListData(list,delimiter,includeEmptyFields), filter, parallel, maxThreads), delimiter);
+		
+		/*
 		// check UDF return type
 		int type = filter.getReturnType();
 		if(type!=CFTypes.TYPE_BOOLEAN && type!=CFTypes.TYPE_ANY)
@@ -49,6 +70,6 @@ public final class ListFilter implements Function {
 				sb.append(value);
 			}
 		}
-		return sb.toString();
+		return sb.toString();*/
 	}
 }

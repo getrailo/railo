@@ -34,6 +34,8 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
+import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.StringListData;
 
 public class Filter extends BIF {
 
@@ -92,6 +94,10 @@ public class Filter extends BIF {
 		else if(obj instanceof Enumeration) {
 			coll=invoke(pc, (Enumeration)obj, udf,execute,futures);
 		}
+		// String List
+		else if(obj instanceof StringListData) {
+			coll=invoke(pc, (StringListData)obj, udf,execute,futures);
+		}
 		else
 			throw new FunctionException(pc, "Filter", 1, "data", "cannot iterate througth this type "+Caster.toTypeName(obj.getClass()));
 		
@@ -116,6 +122,24 @@ public class Filter extends BIF {
 		return rtn;
 	}
 	
+	private static Collection invoke(PageContext pc, StringListData sld, UDF udf, ExecutorService es, List<Future<Data<Pair<Object, Object>>>> futures) throws CasterException, PageException {
+		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
+			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
+		
+		Array rtn=new ArrayImpl();
+		Iterator<Entry<Key, Object>> it = arr.entryIterator();
+		Entry<Key, Object> e;
+		boolean async=es!=null;
+		Object res;
+		while(it.hasNext()){
+			e = it.next();
+			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list},e.getKey(),e.getValue(), es, futures);
+			if(!async && Caster.toBooleanValue(res)) {
+				rtn.append(e.getValue());
+			}
+		}
+		return rtn;
+	}
 
 	private static Collection invoke(PageContext pc, Query qry, UDF udf, ExecutorService es, List<Future<Data<Pair<Object, Object>>>> futures) throws CasterException, PageException {
 		Key[] colNames = qry.getColumnNames();
