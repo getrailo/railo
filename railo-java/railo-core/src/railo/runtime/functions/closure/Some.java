@@ -25,11 +25,13 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.Query;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.scope.ArgumentIntKey;
 
 public class Some extends BIF {
@@ -56,10 +58,14 @@ public class Some extends BIF {
 		}
 		
 		boolean res;
-		 
+
 		// Array
 		if(obj instanceof Array) {
 			res=invoke(pc, (Array)obj, udf,execute,futures);
+		}
+		// Query
+		else if(obj instanceof Query) {
+			res=invoke(pc, (Query)obj, udf,execute,futures);
 		}
 		// Struct
 		else if(obj instanceof Struct) {
@@ -92,6 +98,28 @@ public class Some extends BIF {
 		
 		return res;
 	}
+	
+	private static boolean invoke(PageContext pc, Query qry, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
+		final int pid=pc.getId();
+		ForEachQueryIterator it=new ForEachQueryIterator(qry, pid);
+		boolean async=es!=null;
+		double r;
+		Object res,row;
+		try{
+			while(it.hasNext()){
+				row=it.next();
+				r = Caster.toDoubleValue(qry.getCurrentrow(pid));
+				res=_inv(pc, udf, new Object[]{row,r,qry},r,row, es, futures);
+				if(!async && Caster.toBooleanValue(res)) {
+					return true;
+				}
+			}
+		}
+		finally {
+			it.reset();
+		}
+		return false;
+	}
 
 	private static boolean invoke(PageContext pc, Array arr, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
 		Iterator<Entry<Key, Object>> it = arr.entryIterator();
@@ -107,6 +135,8 @@ public class Some extends BIF {
 		}
 		return false;
 	}
+	
+	
 	
 
 	private static boolean invoke(PageContext pc, List list, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
