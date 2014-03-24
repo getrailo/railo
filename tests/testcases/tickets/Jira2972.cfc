@@ -38,6 +38,34 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("merge:;1:a;2:b;3:c",res);
 	}
 
+
+	public void function testListReduce() localMode="true" {
+		
+		list=",,a,,b,c,,";
+		
+		// base test
+		res=ListReduce(list, function( result,value,index){
+ 							return result&";"&index&":"&value;
+ 
+                        },"merge:");
+		assertEquals("merge:;1:a;2:b;3:c",res);
+
+
+		// closure output
+		savecontent variable="c" {
+			res=ListReduce("a,b", function( result,value,index ){
+							echo(serialize(arguments));
+ 							return "";
+ 
+                        },"merge:");
+		}
+		assertEquals("{'result':'merge:','value':'a','index':1,'4':'a,b'}{'result':'','value':'b','index':2,'4':'a,b'}",c);
+
+		// member function
+		//res=list.Reduce(list, function( result,value,index){return result&";"&index&":"&value;},"merge:");
+		//assertEquals("merge:;1:a;2:b;3:c",res);
+	}
+
 	public void function testStructReduce() localMode="true" {
 		
 		sct={a:1,b:2,c:3};
