@@ -1057,7 +1057,10 @@ public abstract class ConfigImpl implements Config {
 	        Mapping shortestMapping = null;
 	        while (it.hasNext()) {
 	            Entry<Mapping, String> entry = it.next();
-	            if( shortestMapping == null || entry.getKey().getVirtual().length() < shortestMapping.getVirtual().length() ) {
+	            if( shortestMapping == null || 
+	            		( entry.getKey().getVirtual().length() < shortestMapping.getVirtual().length() )
+	            			&& !entry.getKey().getVirtual().equals("/") )
+	            		{
 	            	shortestMapping = entry.getKey();
 	            }
 	        }
