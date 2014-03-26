@@ -9,7 +9,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 
 /**
- * Implements the CFML Function setlocale
+ * Implements the CFML Function SetEncoding
  */
 public final class SetEncoding implements Function {
       
