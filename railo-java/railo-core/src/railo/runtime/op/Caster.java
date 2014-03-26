@@ -4194,16 +4194,16 @@ public final class Caster {
 		return (Vector) Duplicator.duplicateList(toList(obj,false),new Vector(), false);
 	} 
 
-	public static Calendar toCalendar(Date date, TimeZone tz) {
+	public static Calendar toCalendar(Date date, TimeZone tz, Locale l) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance(tz,l):JREDateTimeUtil.newInstance(tz,l);
 		c.setTime(date);
 		return c;
 	}
 	
-	public static Calendar toCalendar(long time, TimeZone tz) {
+	public static Calendar toCalendar(long time, TimeZone tz, Locale l) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance(tz,l):JREDateTimeUtil.newInstance(tz,l);
 		c.setTimeInMillis(time);
 		return c;
 	}

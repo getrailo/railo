@@ -1340,7 +1340,7 @@ public final class Decision {
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
+        Calendar c=JREDateTimeUtil.getThreadCalendar(locale,tz);
         
         // datetime
         ParsePosition pp=new ParsePosition(0);
