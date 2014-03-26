@@ -8040,7 +8040,7 @@ Valid only for cfinput type="text".</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<default>false</default>
-			<description>only works in combination with the attribute "file", if set to true the file is written in a seperate thread.</description>
+			<description>only works in combination with the attribute "file", if set to true the file is written in a separate thread.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8483,10 +8483,10 @@ Railo uses the number of characters in the file.</description>
 			<required>false</required>
 			<default>true</default>
 			<rtexprvalue>true</rtexprvalue>
-			<description>if set to true, the mail is send asynchronous by the Railo Task manager (with multiple tries), 
-			if set to false the mail is send right away in the same thread. 
-			This setting overrides the same setting in the Railo Administrator. 
-			This attribute replaces the old "spoolenable" attribute that is still supported as a alias.</description>
+			<description>if set to true, the mail is sent asynchronously by the Railo Task manager (with multiple tries),
+			if set to false the mail is sent in the same thread that executes the request, which is useful for troubleshooting because you get an error message if there is one.
+			This setting overrides the setting with the same name in the Railo Administrator.
+			This attribute replaces the old "spoolenable" attribute which is still supported as an alias.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
