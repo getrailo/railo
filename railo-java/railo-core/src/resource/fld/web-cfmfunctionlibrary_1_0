@@ -3920,7 +3920,7 @@ dec: descending (z to a) sort order.
 		<name>dollarFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DollarFormat</class>
 		<description>Formats a string in U.S. format. (For other currencies, use
-        LSCurrencyFormat or LSEuroCurrencyFormat.)</description>
+        LSCurrencyFormat)</description>
 		<argument>
 			<name>number</name>
 			<type>string</type>
@@ -12489,7 +12489,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSEuroCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSEuroCurrencyFormat</class>
-		<description>Returns back the formatted EURO currency representation of the number</description>
+		<status>deprecated</status>
+		<description>this funciton is just a alias for lsCurrencyFormat</description>
 		<argument>
 			<name>currency_number</name>
 			<type>object</type>
