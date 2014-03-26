@@ -12698,7 +12698,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>lSParseEuroCurrency</name>
 		<class>railo.runtime.functions.international.LSParseEuroCurrency</class>
 		<status>deprecated</status>
-		<description>use function lsParseCurrency.</description>
+		<description>use function lsParseCurrency instead</description>
 		<argument>
 			<name>currency_string</name>
 			<type>string</type>
