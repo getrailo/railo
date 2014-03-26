@@ -45,6 +45,7 @@
 		<name>AjaxLink</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxLink</class>
 		<status>implemeted</status>
+		<keywords>ajax</keywords>
 		<description>Causes an HTML href attribute to display link results in the current Ajax container.</description>
 		<argument>
 			<name>url</name>
@@ -61,6 +62,7 @@
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
 		<status>implemeted</status>
+		<keywords>ajax</keywords>
 		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
 			<name>functionName</name>
@@ -1251,6 +1253,7 @@ sort direction:
 	<function>
 		<name>arrayToList</name>
 		<class>railo.runtime.functions.list.ArrayToList</class>
+		<keywords>array,list,string</keywords>
 		<member-name>toList</member-name>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.ArrayToList</tte-class>
 		<keywords>list,string,array</keywords>
@@ -1294,13 +1297,22 @@ sort direction:
 	<function>
 		<name>asc</name>
 		<class>railo.runtime.functions.string.Asc</class>
+		<member-name>asc</member-name>
+		<keywords>string</keywords>
 		<description>Determines the value of a character.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>A string</description>
-    </argument>
+			<description>A string</description>
+    	</argument>
+		<argument>
+			<name>position</name>
+			<default>1</default>
+			<type>number</type>
+			<required>No</required>
+			<description>Position of the character</description>
+    	</argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -2068,6 +2080,8 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 	<function>
 		<name>cJustify</name>
 		<class>railo.runtime.functions.string.CJustify</class>
+		<member-name>cJustify</member-name>
+		<keywords>string,formatting</keywords>
 		<description>Returns the given string justified to the center, padding out the words with spaces accordingly</description>
 		<argument>
 			<name>string</name>
@@ -2089,6 +2103,8 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 	<function>
 		<name>compare</name>
 		<class>railo.runtime.functions.string.Compare</class>
+		<member-name>compare</member-name>
+		<keywords>string</keywords>
 		<description>Performs a case-sensitive comparison of two strings.
             -1, if string1 is less than string2
             0, if string1 is equal to string2
@@ -2113,6 +2129,8 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 	<function>
 		<name>compareNoCase</name>
 		<class>railo.runtime.functions.string.CompareNoCase</class>
+		<member-name>compareNoCase</member-name>
+		<keywords>string</keywords>
 		<description>Performs a case-insensitive comparison of two strings.
         An indicator of the difference:
             A negative number, if string1 is less than string2
@@ -2936,6 +2954,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dateFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateFormat</class>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a date string to a given output</description>
 		<argument>
 			<name>date</name>
@@ -2991,6 +3010,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>dateTimeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
 		<member-name>format</member-name>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a date/time string to a given output</description>
 		<argument>
 			<name>datetime</name>
@@ -3423,6 +3443,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>decimalFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DecimalFormat</class>
+		<keywords>number,string,formatting</keywords>
 		<description>Converts a number to a decimal-formatted string.</description>
 		<argument>
 			<name>number</name>
@@ -3456,6 +3477,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>decodeFromURL</name>
 		<class>railo.runtime.functions.owasp.DecodeFromURL</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,URL</keywords>
 		<description>Decodes a string that has been encoded in the URL using the encodeForURL.
 		this function is deprecated, use function ESAPIDecode('url',...) instead.</description>
 		<argument>
@@ -3546,10 +3568,11 @@ The following things are considered to be empty:
 		</return>
 	</function>
 	
-	<!-- ESAPIDecode -->	
+	<!-- ESAPIDecode,URL -->	
 	<function>
 		<name>ESAPIDecode</name>
 		<class>railo.runtime.functions.owasp.ESAPIDecode</class>
+		<keywords>ESAPI</keywords>
 		<description>Decodes a string that has been encoded with ESAPIEncode.</description>
 		<argument>
 			<name>decodeFrom</name>
@@ -3897,6 +3920,7 @@ dec: descending (z to a) sort order.
 	<function>
 		<name>DeserializeJSON</name>
 		<class>railo.runtime.functions.conversion.DeserializeJSON</class>
+		<keywords>string,parsing,json,javascript</keywords>
 		<description>Converts a JSON (JavaScript Object Notation) string data representation into CFML data, such as a struct or array.</description>
 		<argument>
 			<name>JSONVar</name>
@@ -3919,6 +3943,7 @@ dec: descending (z to a) sort order.
 	<function>
 		<name>dollarFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DollarFormat</class>
+		<keywords>currency,string,formatting</keywords>
 		<description>Formats a string in U.S. format. (For other currencies, use
         LSCurrencyFormat)</description>
 		<argument>
@@ -4147,12 +4172,12 @@ dec: descending (z to a) sort order.
 		</return>
 	</function>
 	
-	<!-- ESAPI Functions -->
 	<!-- encodeForHTML -->
 	<function>
 		<name>encodeForHTML</name>
 		<class>railo.runtime.functions.owasp.EncodeForHTML</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,HTML</keywords>
 		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks.
 		this function is deprecated, use function ESAPIEncode('html',...) instead.</description>
 		<argument>
@@ -4171,6 +4196,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForHTMLAttribute</name>
 		<class>railo.runtime.functions.owasp.EncodeForHTMLAttribute</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,HTML</keywords>
 		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks.
 		this function is deprecated, use function ESAPIEncode('html_attr',...) instead.</description>
 		<argument>
@@ -4189,6 +4215,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForCSS</name>
 		<class>railo.runtime.functions.owasp.EncodeForCSS</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,CSS</keywords>
 		<description>Encodes the given string for safe output in CSS to stop Cross Site Scripting attacks.
 		this function is deprecated, use function ESAPIEncode('css',...) instead.</description>
 		<argument>
@@ -4207,6 +4234,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForJavaScript</name>
 		<class>railo.runtime.functions.owasp.EncodeForJavaScript</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,javascript</keywords>
 		<description>Encodes the given string for safe output in JavaScript to stop Cross Site Scripting attacks.
 		this function is deprecated, use function ESAPIEncode('javascript',...) instead.</description>
 		<argument>
@@ -4225,6 +4253,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForXML</name>
 		<class>railo.runtime.functions.owasp.EncodeForXML</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,XML</keywords>
 		<description>Encodes the given string for safe output in XML to stop Cross Site Scripting attacks.
 		this function is deprecated, use function ESAPIEncode('xml',...) instead.</description>
 		<argument>
@@ -4242,6 +4271,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForXMLAttribute</name>
 		<class>railo.runtime.functions.owasp.EncodeForXMLAttribute</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,XML</keywords>
 		<description>Encodes the given string for safe output in XMLAttribute to stop Cross Site Scripting attacks.
 		this function is deprecated, use function ESAPIEncode('xml_attr',...) instead.</description>
 		<argument>
@@ -4259,6 +4289,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForURL</name>
 		<class>railo.runtime.functions.owasp.EncodeForURL</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,URL</keywords>
 		<description>Encodes the given string for safe output in a URL.
 		this function is deprecated, use function ESAPIEncode('url',...) instead.</description>
 		<argument>
@@ -4278,6 +4309,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForLDAP</name>
 		<class>railo.runtime.functions.owasp.EncodeForLDAP</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,ldap</keywords>
 		<description>Encodes the given string for safe output in LDAP queries.
 		this function is deprecated, use function ESAPIEncode('ldap',...) instead.</description>
 		<argument>
@@ -4296,6 +4328,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForDN</name>
 		<class>railo.runtime.functions.owasp.EncodeForDN</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,DN</keywords>
 		<description>Encodes the given string for safe output in LDAP Distinguished Names.
 		this function is deprecated, use function ESAPIEncode('dn',...) instead.</description>
 		<argument>
@@ -4314,6 +4347,7 @@ dec: descending (z to a) sort order.
 		<name>encodeForXPath</name>
 		<class>railo.runtime.functions.owasp.EncodeForXPath</class>
 		<status>deprecated</status>
+		<keywords>ESAPI,XML</keywords>
 		<description>Encodes the given string for safe use in an XPath Query.
 		this function is deprecated, use function ESAPIEncode('xpath',...) instead.</description>
 		<argument>
@@ -4331,6 +4365,7 @@ dec: descending (z to a) sort order.
 	<function>
 		<name>ESAPIEncode</name>
 		<class>railo.runtime.functions.owasp.ESAPIEncode</class>
+		<keywords>ESAPI,CSS,DN,HTML,JavaScript,ldap,URL,VBScript,XML</keywords>
 		<description>Encodes the given string for safe output to stop Cross Site Scripting attacks.</description>
 		<argument>
 			<name>encodeFor</name>
@@ -4763,6 +4798,7 @@ EntitySave(entity, [forceinsert])</description>
 	<function>
 		<name>evaluateComponent</name>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateComponent</class>
+		<status>hidden</status>
 		<description>literal representation of a component, used by the serialize method.</description>
 		<argument>
 			<name>name</name>
@@ -4798,6 +4834,7 @@ EntitySave(entity, [forceinsert])</description>
 	<function>
 		<name>evaluateJava</name>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateJava</class>
+		<status>hidden</status>
 		<description>literal representation of a serializable Java Object, used by the serialize method.</description>
 		<argument>
 			<name>stringOrBinary</name>
@@ -5445,6 +5482,8 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>find</name>
 		<class>railo.runtime.functions.string.Find</class>
+		<member-name>find</member-name>
+		<member-position>2</member-position>
 		<keywords>string,find</keywords>
 		<description>Finds the first occurrence of a substring in a string, from a
         specified start position. The search is case-sensitive.</description>
@@ -5475,6 +5514,8 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>findNoCase</name>
 		<class>railo.runtime.functions.string.FindNoCase</class>
+		<member-name>findNoCase</member-name>
+		<member-position>2</member-position>
 		<keywords>string,find</keywords>
 		<description>Finds the first occurrence of a substring in a string, from a
         specified start position. If substring is not in string,
@@ -5506,6 +5547,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>findOneOf</name>
 		<class>railo.runtime.functions.string.FindOneOf</class>
+		<member-name>findOneOf</member-name>
 		<keywords>string,find</keywords>
 		<description>Finds the first occurrence of any one of a set of characters
         in a string, from a specified start position. The search is
@@ -6739,6 +6781,8 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getToken</name>
 		<class>railo.runtime.functions.string.GetToken</class>
+		<member-name>getToken</member-name>
+		<keywords>string</keywords>
 		<description>Determines whether a token of the list in the delimiters
         parameter is present in a string.
         Returns the token found at position index of the string, as a
@@ -6951,6 +6995,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>hTMLCodeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.HTMLCodeFormat</class>
+		<keywords>html,string,formatting</keywords>
 		<description>Replaces special characters in a string with their HTML-escaped
         equivalents and inserts &lt;pre&gt; and &lt;/pre&gt; tags at the beginning
         and end of the string.
@@ -6982,6 +7027,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>hTMLEditFormat</name>
 		<class>railo.runtime.functions.displayFormatting.HTMLEditFormat</class>
+		<keywords>html,string,formatting</keywords>
 		<description>Replaces special characters in a string with their
         HTML-escaped equivalents.
         [version]
@@ -10508,6 +10554,8 @@ The following things are considered to be empty:
 	<function>
 		<name>IsJson</name>
 		<class>railo.runtime.functions.conversion.IsJSON</class>
+		<keywords>json</keywords>
+		<keywords>decision,json,javascript</keywords>
 		<description>Evaluates whether a string is in valid JSON (JavaScript Object Notation) data interchange format.</description>
 		<argument>
 			<name>var</name>
@@ -10629,6 +10677,9 @@ The following things are considered to be empty:
 	<function>
 		<name>insert</name>
 		<class>railo.runtime.functions.string.Insert</class>
+		<member-name>insert</member-name>
+		<member-position>2</member-position>
+		<keywords>string</keywords>
 		<description>Inserts a substring in a string after a specified character
         position. If position = 0, prefixes the substring to the
         string.</description>
@@ -11292,6 +11343,7 @@ The following things are considered to be empty:
 	<function>
 		<name>jSStringFormat</name>
 		<class>railo.runtime.functions.string.JSStringFormat</class>
+		<keywords>javascript,string,formatting</keywords>
 		<description>Escapes special JavaScript characters, such as single quotation
         mark, double quotation mark, and newline</description>
 		<argument>
@@ -11325,6 +11377,8 @@ The following things are considered to be empty:
 	<function>
 		<name>left</name>
 		<class>railo.runtime.functions.string.Left</class>
+		<member-name>left</member-name>
+		<keywords>string</keywords>
 		<description>Returns the leftmost count characters in a string.</description>
 		<argument>
 			<name>string</name>
@@ -11346,11 +11400,11 @@ The following things are considered to be empty:
 	<function>
 		<name>len</name>
 		<class>railo.runtime.functions.string.Len</class>
-		<description>Determines the length of a string or binary object</description>
+		<description>Determines the length of a string, array,struct,query ...</description>
 		<argument>
 			<name>value</name>
 			<alias>string</alias>
-			<type>string</type>
+			<type>object</type>
 			<required>Yes</required>
 		<description>the length of a string</description>
     </argument>
@@ -11363,6 +11417,7 @@ The following things are considered to be empty:
 		<name>listAppend</name>
 		<class>railo.runtime.functions.list.ListAppend</class>
 		<keywords>list,string</keywords>
+		<member-name>append</member-name>
 		<description>Concatenates a list or element to a list.</description>
 		<argument>
 			<name>list</name>
@@ -11394,6 +11449,7 @@ The following things are considered to be empty:
 		<name>listAvg</name>
 		<class>railo.runtime.functions.list.ListAvg</class>
 		<keywords>list,string</keywords>
+		<member-name>avg</member-name>
 		<description></description>
 		<argument>
 			<name>list</name>
@@ -11418,6 +11474,7 @@ The following things are considered to be empty:
 		<name>listChangeDelims</name>
 		<class>railo.runtime.functions.list.ListChangeDelims</class>
 		<keywords>list,string</keywords>
+		<member-name>changeDelims</member-name>
 		<description>Changes a list delimiter.
         Returns a copy of the list, with each delimiter character
         replaced by new_delimiter.</description>
@@ -11457,6 +11514,7 @@ The following things are considered to be empty:
 		<name>ListCompact</name>
 		<class>railo.runtime.functions.list.ListCompact</class>
 		<keywords>list,string</keywords>
+		<member-name>compact</member-name>
 		<description>remove empty items at the and and at the start of the list</description>
 		<argument>
 			<name>list</name>
@@ -11481,6 +11539,7 @@ The following things are considered to be empty:
 		<name>listContains</name>
 		<class>railo.runtime.functions.list.ListContains</class>
 		<keywords>list,string</keywords>
+		<member-name>contains</member-name>
 		<description>Determines the index of the first list element that contains a
         specified substring.
         Returns the index of the first list element that contains
@@ -11520,6 +11579,7 @@ The following things are considered to be empty:
 		<name>listContainsNoCase</name>
 		<class>railo.runtime.functions.list.ListContainsNoCase</class>
 		<keywords>list,string</keywords>
+		<member-name>ContainsNoCase</member-name>
 		<description>Determines the index of the first list element that contains a
         specified substring.</description>
 		<argument>
@@ -11557,6 +11617,7 @@ The following things are considered to be empty:
 		<name>listDeleteAt</name>
 		<class>railo.runtime.functions.list.ListDeleteAt</class>
 		<keywords>list,string</keywords>
+		<member-name>DeleteAt</member-name>
 		<description>Deletes an element from a list.
         Returns a copy of the list, without the specified element.</description>
 		<argument>
@@ -11646,6 +11707,7 @@ The following things are considered to be empty:
 		<name>listFind</name>
 		<class>railo.runtime.functions.list.ListFind</class>
 		<keywords>list,string,find</keywords>
+		<member-name>listFind</member-name>
 		<description>Determines the index of the first list element in which a
         specified value occurs. Case-sensitive</description>
 		<argument>
@@ -11683,6 +11745,7 @@ The following things are considered to be empty:
 		<name>listFindNoCase</name>
 		<class>railo.runtime.functions.list.ListFindNoCase</class>
 		<keywords>list,string,find</keywords>
+		<member-name>listFindNoCase</member-name>
 		<description>Determines the index of the first list element in which a
         specified value occurs</description>
 		<argument>
@@ -11720,6 +11783,7 @@ The following things are considered to be empty:
 		<name>listFirst</name>
 		<class>railo.runtime.functions.list.ListFirst</class>
 		<keywords>list,string</keywords>
+		<member-name>first</member-name>
 		<description>Gets the first element of a list.</description>
 		<argument>
 			<name>list</name>
@@ -11750,6 +11814,7 @@ The following things are considered to be empty:
 		<name>listGetAt</name>
 		<class>railo.runtime.functions.list.ListGetAt</class>
 		<keywords>list,string</keywords>
+		<member-name>getAt</member-name>
 		<description>Gets a list element at a specified position.</description>
 		<argument>
 			<name>list</name>
@@ -11786,6 +11851,7 @@ The following things are considered to be empty:
 		<name>listInsertAt</name>
 		<class>railo.runtime.functions.list.ListInsertAt</class>
 		<keywords>list,string</keywords>
+		<member-name>insertAt</member-name>
 		<description>Inserts an element in a list.</description>
 		<argument>
 			<name>list</name>
@@ -11828,6 +11894,7 @@ The following things are considered to be empty:
 		<name>ListIndexExists</name>
 		<class>railo.runtime.functions.list.ListIndexExists</class>
 		<keywords>list,string</keywords>
+		<member-name>IndexExists</member-name>
 		<description>Determines if an element at the given position exists or not</description>
 		<argument>
 			<name>list</name>
@@ -11863,6 +11930,7 @@ The following things are considered to be empty:
 		<name>ListItemTrim</name>
 		<class>railo.runtime.functions.list.ListItemTrim</class>
 		<keywords>list,string</keywords>
+		<member-name>ItemTrim</member-name>
 		<description>Removes all the white space surrounding each element, returning back the new list</description>
 		<argument>
 			<name>list</name>
@@ -11893,6 +11961,7 @@ The following things are considered to be empty:
 		<name>listLast</name>
 		<class>railo.runtime.functions.list.ListLast</class>
 		<keywords>list,string</keywords>
+		<member-name>last</member-name>
 		<description>Gets the last element of a list.</description>
 		<argument>
 			<name>list</name>
@@ -11923,6 +11992,7 @@ The following things are considered to be empty:
 		<name>listLen</name>
 		<class>railo.runtime.functions.list.ListLen</class>
 		<keywords>list,string</keywords>
+		<member-name>ListLen</member-name>
 		<description>Determines the number of elements in a list.</description>
 		<argument>
 			<name>list</name>
@@ -11953,6 +12023,7 @@ The following things are considered to be empty:
 		<name>listPrepend</name>
 		<class>railo.runtime.functions.list.ListPrepend</class>
 		<keywords>list,string</keywords>
+		<member-name>prepend</member-name>
 		<description>Inserts an element at the beginning of a list.</description>
 		<argument>
 			<name>list</name>
@@ -11983,6 +12054,7 @@ The following things are considered to be empty:
 		<name>listQualify</name>
 		<class>railo.runtime.functions.list.ListQualify</class>
 		<keywords>list,string</keywords>
+		<member-name>qualify</member-name>
 		<description>Inserts a string at the beginning and end of list elements.</description>
 		<argument>
 			<name>list</name>
@@ -12030,6 +12102,7 @@ The following things are considered to be empty:
 		<name>listRest</name>
 		<class>railo.runtime.functions.list.ListRest</class>
 		<keywords>list,string</keywords>
+		<member-name>Rest</member-name>
 		<description>Gets a list, without its first element.</description>
 		<argument>
 			<name>list</name>
@@ -12060,6 +12133,7 @@ The following things are considered to be empty:
 		<name>ListRemoveDuplicates</name>
 		<class>railo.runtime.functions.list.ListRemoveDuplicates</class>
 		<keywords>list,string</keywords>
+		<member-name>RemoveDuplicates</member-name>
 		<description>Removes duplicate values from list.</description>
 		<argument>
 			<name>list</name>
@@ -12091,6 +12165,7 @@ The following things are considered to be empty:
 		<name>listSetAt</name>
 		<class>railo.runtime.functions.list.ListSetAt</class>
 		<keywords>list,string</keywords>
+		<member-name>setAt</member-name>
 		<description>Replaces the contents of a list element.</description>
 		<argument>
 			<name>list</name>
@@ -12133,6 +12208,7 @@ The following things are considered to be empty:
 		<name>listSort</name>
 		<class>railo.runtime.functions.list.ListSort</class>
 		<keywords>list,string</keywords>
+		<member-name>sort</member-name>
 		<description>Sorts list elements according to a sort type and sort order.</description>
 		<argument>
 			<name>list</name>
@@ -12183,6 +12259,7 @@ The following things are considered to be empty:
 		<name>listToArray</name>
 		<class>railo.runtime.functions.list.ListToArray</class>
 		<keywords>list,string,array</keywords>
+		<member-name>toArray</member-name>
 		<description>Copies the elements of a list to an array.</description>
 		<argument>
 			<name>list</name>
@@ -12245,6 +12322,7 @@ The following things are considered to be empty:
 		<name>listValueCount</name>
 		<class>railo.runtime.functions.list.ListValueCount</class>
 		<keywords>list,string</keywords>
+		<member-name>valueCount</member-name>
 		<description>Counts instances of a specified value in a list. The search is
         case-sensitive.</description>
 		<argument>
@@ -12282,6 +12360,7 @@ The following things are considered to be empty:
 		<name>listValueCountNoCase</name>
 		<class>railo.runtime.functions.list.ListValueCountNoCase</class>
 		<keywords>list,string</keywords>
+		<member-name>ValueCountNoCase</member-name>
 		<description>Counts instances of a specified value in a list. The search is
         case-insensitive.</description>
 		<argument>
@@ -12318,6 +12397,8 @@ The following things are considered to be empty:
 	<function>
 		<name>lJustify</name>
 		<class>railo.runtime.functions.string.LJustify</class>
+		<member-name>lJustify</member-name>
+		<keywords>string,formatting</keywords>
 		<description>Left justifies characters in a string of a specified length.</description>
 		<argument>
 			<name>string</name>
@@ -12371,6 +12452,7 @@ The following things are considered to be empty:
 	<function>
 		<name>lSCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSCurrencyFormat</class>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a number in a locale-specific currency format.</description>
 		<argument>
 			<name>number</name>
@@ -12399,6 +12481,7 @@ The following things are considered to be empty:
 	<function>
 		<name>lSDateFormat</name>
 		<class>railo.runtime.functions.international.LSDateFormat</class>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a date string to a given output using the current sessions locale</description>
 		<argument>
 			<name>date</name>
@@ -12443,6 +12526,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSDateTimeFormat</name>
 		<class>railo.runtime.functions.international.LSDateTimeFormat</class>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a date string to a given output using the current locale</description>
 		<argument>
 			<name>date</name>
@@ -12490,6 +12574,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>lSEuroCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSEuroCurrencyFormat</class>
 		<status>deprecated</status>
+		<keywords>currency,string,formatting</keywords>
 		<description>this funciton is just a alias for lsCurrencyFormat</description>
 		<argument>
 			<name>currency_number</name>
@@ -12521,6 +12606,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSIsCurrency</name>
 		<class>railo.runtime.functions.international.LSIsCurrency</class>
+		<keywords>currency,string,formatting</keywords>
 		<description>Determines whether a string is a valid representation of a
         currency amount in the current locale.</description>
 		<argument>
@@ -12601,6 +12687,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSNumberFormat</name>
 		<class>railo.runtime.functions.international.LSNumberFormat</class>
+		<keywords>number,string,formatting</keywords>
 		<description>Formats a number to the given format mask in the current locale</description>
 		<argument>
 			<name>number</name>
@@ -12628,6 +12715,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSParseCurrency</name>
 		<class>railo.runtime.functions.international.LSParseCurrency</class>
+		<keywords>currency,string,parsing</keywords>
 		<description>Converts a locale-specific currency string into a formatted
         number. Attempts conversion by comparing the string with each
         the three supported currency formats (none, local,
@@ -12698,6 +12786,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>lSParseEuroCurrency</name>
 		<class>railo.runtime.functions.international.LSParseEuroCurrency</class>
 		<status>deprecated</status>
+		<keywords>currency,string,parsing</keywords>
 		<description>use function lsParseCurrency instead</description>
 		<argument>
 			<name>currency_string</name>
@@ -12719,6 +12808,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSParseNumber</name>
 		<class>railo.runtime.functions.international.LSParseNumber</class>
+		<keywords>number,string,parsing</keywords>
 		<description>Converts a string that is a valid numeric representation in
         the current locale into a formatted number.</description>
 		<argument>
@@ -12741,6 +12831,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lSTimeFormat</name>
 		<class>railo.runtime.functions.international.LSTimeFormat</class>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a time string to a given output using the current locale.</description>
 		<argument>
 			<name>time</name>
@@ -12783,6 +12874,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lTrim</name>
 		<class>railo.runtime.functions.string.LTrim</class>
+		<member-name>ltrim</member-name>
+		<keywords>string</keywords>
 		<description>Removes leading spaces from a string.</description>
 		<argument>
 			<name>string</name>
@@ -12834,6 +12927,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>mid</name>
 		<class>railo.runtime.functions.string.Mid</class>
+		<member-name>mid</member-name>
+		<keywords>string</keywords>
 		<description>Extracts a substring from a string.</description>
 		<argument>
 			<name>string</name>
@@ -13037,6 +13132,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>numberFormat</name>
 		<class>railo.runtime.functions.displayFormatting.NumberFormat</class>
+		<keywords>number,string,formatting</keywords>
 		<description>Creates a custom-formatted number value. For international
         number formatting use LSNumberFormat.
         [mask - quicky]
@@ -13319,6 +13415,7 @@ ormEvictQueries([cacheName])</description>
 	<function>
 		<name>paragraphFormat</name>
 		<class>railo.runtime.functions.displayFormatting.ParagraphFormat</class>
+		<keywords>string,formatting</keywords>
 		<description>Formats the carriage returns in a string to a HTML alternatives</description>
 		<argument>
 			<name>string</name>
@@ -13349,6 +13446,7 @@ ormEvictQueries([cacheName])</description>
 	<function>
 		<name>parseDateTime</name>
 		<class>railo.runtime.functions.string.ParseDateTime</class>
+		<keywords>date,string,parsing</keywords>
 		<description>Parses a date/time string according to the English (U.S.)
         locale conventions. (To format a date/time string for other
         locales, use the LSParseDateTime function.)</description>
@@ -14055,6 +14153,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rEFind</name>
 		<class>railo.runtime.functions.string.REFind</class>
+		<member-name>reFind</member-name>
+		<member-position>2</member-position>
 		<keywords>string,regex,find</keywords>
 		<description>Uses a regular expression (RE) to search a string for a pattern. The search is case sensitive.</description>
 		<argument>
@@ -14091,6 +14191,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rEFindNoCase</name>
 		<class>railo.runtime.functions.string.REFindNoCase</class>
+		<member-name>reFindNoCase</member-name>
+		<member-position>2</member-position>
 		<keywords>string,regex,find</keywords>
 		<description>Uses a regular expression (RE) to search a string for a pattern,
          starting from a specified position. The search is
@@ -14139,9 +14241,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>REMatch</name>
 		<class>railo.runtime.functions.string.REMatch</class>
+		<member-name>REMatch</member-name>
+		<member-position>2</member-position>
+		<keywords>string,regex</keywords>
 		<description>Uses a regular expression (RE) to search a string for a pattern, starting from a specified position.</description>
 		<argument>
-			<name>reg_expression</name>
+			<name>regex</name>
+			<alias>reg_expression</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>Regular expression for which to search. Case sensitive.</description>
@@ -14160,6 +14266,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>REMatchNoCase</name>
 		<class>railo.runtime.functions.string.REMatchNoCase</class>
+		<member-name>REMatchNoCase</member-name>
+		<member-position>2</member-position>
+		<keywords>string,regex</keywords>
 		<description>Uses a regular expression (RE) to search a string for a pattern, starting from a specified position.</description>
 		<argument>
 			<name>reg_expression</name>
@@ -14181,6 +14290,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>removeChars</name>
 		<class>railo.runtime.functions.string.RemoveChars</class>
+		<member-name>removeChars</member-name>
+		<keywords>string</keywords>
 		<description>Removes characters from a string.</description>
 		<argument>
 			<name>string</name>
@@ -14208,20 +14319,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>repeatString</name>
 		<class>railo.runtime.functions.string.RepeatString</class>
+		<member-name>repeatString</member-name>
+		<keywords>string</keywords>
 		<description>Creates a string that contains a specified number of
         repetitions of the specified string.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>A string or a variable that contains one. </description>
-    </argument>
+			<description>A string or a variable that contains one. </description>
+		</argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+			<description></description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -14230,6 +14343,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>replace</name>
 		<class>railo.runtime.functions.string.Replace</class>
+		<member-name>replace</member-name>
+		<keywords>string</keywords>
 		<description>Replaces occurrences of substring1 in a string with substring2,
         in a specified scope. The search is case-sensitive.</description>
 		<argument>
@@ -14313,6 +14428,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>replaceNoCase</name>
 		<class>railo.runtime.functions.string.ReplaceNoCase</class>
+		<member-name>replaceNoCase</member-name>
+		<keywords>string</keywords>
 		<description>Replaces occurrences of substring1 with substring2, in the
         specified scope. The search is case-insensitive.</description>
 		<argument>
@@ -14350,6 +14467,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rEReplace</name>
 		<class>railo.runtime.functions.string.REReplace</class>
+		<member-name>rEReplace</member-name>
+		<keywords>string,regex</keywords>
 		<description>Uses a regular expression (RE) to search a string for a string
         pattern and replace it with another. The search is
         case-sensitive.</description>
@@ -14388,6 +14507,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rEReplaceNoCase</name>
 		<class>railo.runtime.functions.string.REReplaceNoCase</class>
+		<member-name>rEReplaceNoCase</member-name>
+		<keywords>string,regex</keywords>
 		<description>Uses a regular expression to search a string for a string
         pattern and replace it with another. The search is
         case-insensitive.</description>
@@ -14508,6 +14629,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>reverse</name>
 		<class>railo.runtime.functions.string.Reverse</class>
+		<member-name>reverse</member-name>
+		<keywords>string</keywords>
 		<description>Reverses the order of items, such as the characters in a
         string, the digits in a number, or the elements in an array.</description>
 		<argument>
@@ -14524,6 +14647,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>right</name>
 		<class>railo.runtime.functions.string.Right</class>
+		<member-name>right</member-name>
+		<keywords>string</keywords>
 		<description>Gets a specified number of characters from a string,
         beginning at the right.</description>
 		<argument>
@@ -14546,6 +14671,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rJustify</name>
 		<class>railo.runtime.functions.string.RJustify</class>
+		<member-name>rJustify</member-name>
+		<keywords>string,formatting</keywords>
 		<description>Right justifies characters of a string.</description>
 		<argument>
 			<name>string</name>
@@ -14591,6 +14718,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rTrim</name>
 		<class>railo.runtime.functions.string.RTrim</class>
+		<member-name>rtrim</member-name>
+		<keywords>string</keywords>
 		<description>Removes spaces from the end of a string.</description>
 		<argument>
 			<name>string</name>
@@ -14674,6 +14803,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>SerializeJSON</name>
 		<class>railo.runtime.functions.conversion.SerializeJSON</class>
+		<keywords>string,formatting,json,javascript</keywords>
 		<description>Converts CFML data into a JSON (JavaScript Object Notation) representation of the data.</description>
 		<argument>
 			<name>var</name>
@@ -14901,6 +15031,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>spanExcluding</name>
 		<class>railo.runtime.functions.string.SpanExcluding</class>
+		<member-name>spanExcluding</member-name>
+		<keywords>string</keywords>
 		<description>Gets characters from a string, from the beginning to a
         character that is in a specified set of characters. The
         search is case-sensitive.</description>
@@ -14925,6 +15057,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>spanIncluding</name>
 		<class>railo.runtime.functions.string.SpanIncluding</class>
+		<member-name>spanIncluding</member-name>
+		<keywords>string</keywords>
 		<description>Gets characters from a string, from the beginning to a
         character that is not in a specified set of characters. The
         search is case-sensitive.</description>
@@ -15117,6 +15251,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>stripCr</name>
 		<class>railo.runtime.functions.other.StripCr</class>
+		<member-name>stripCr</member-name>
+		<keywords>string</keywords>
 		<description>Deletes return characters from a string.</description>
 		<argument>
 			<name>string</name>
@@ -15133,6 +15269,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>stringlen</name>
 		<class>railo.runtime.functions.string.StringLen</class>
+		<member-name>len</member-name>
+		<keywords>string</keywords>
 		<description>returns the len of a string</description>
 		<argument>
 			<name>string</name>
@@ -16590,6 +16728,7 @@ _- asc (default): ascending (a to z) sort order
 	<function>
 		<name>timeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.TimeFormat</class>
+		<keywords>date,string,formatting</keywords>
 		<description>Formats a time string to a given output</description>
 		<argument>
 			<name>time</name>
@@ -16715,6 +16854,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ToScript</name>
 		<class>railo.runtime.functions.conversion.ToScript</class>
+		<keywords>string,javascript</keywords>
 		<description>Creates a JavaScript expression that assigns the value of a variable to a JavaScript variable. 
 		This function can convert strings, numbers, arrays, structures, and queries to JavaScript syntax that defines equivalent variables and values.</description>
 		<argument>
@@ -16812,6 +16952,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ucFirst</name>
 		<class>railo.runtime.functions.string.UCFirst</class>
+		<member-name>ucFirst</member-name>
+		<keywords>string</keywords>
 		<description>Capitalizes the first character of the given string.</description>
 		<argument>
 			<name>string</name>
@@ -16911,6 +17053,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>uRLEncodedFormat</name>
 		<class>railo.runtime.functions.other.URLEncodedFormat</class>
+		<keywords>string,formatting</keywords>
 		<description>Generates a URL-encoded string. For example, it replaces spaces
         with %20, and non-alphanumeric characters with equivalent
         hexadecimal escape sequences. Passes arbitrary strings within a
@@ -16943,6 +17086,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>uRLSessionFormat</name>
 		<class>railo.runtime.functions.other.URLSessionFormat</class>
+		<keywords>string,formatting</keywords>
 		<description>Encodes the URL with the CFTOKEN/CFID/JSESSIONID</description>
 		<argument>
 			<name>url</name>
@@ -17094,6 +17238,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>wrap</name>
 		<class>railo.runtime.functions.string.Wrap</class>
+		<member-name>wrap</member-name>
+		<keywords>string</keywords>
 		<description>Wraps text so that each line has a specified maximum number of characters.</description>
 		<argument>
 			<name>string</name>
@@ -17214,6 +17360,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xMLFormat</name>
 		<class>railo.runtime.functions.other.XMLFormat</class>
+		<keywords>xml,string,formatting</keywords>
 		<description>Escapes special XML characters in a string, so that the
         string is safe to use with XML.</description>
 		<argument>
@@ -17339,6 +17486,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlTransform</name>
 		<class>railo.runtime.functions.xml.XmlTransform</class>
+		<keywords>xml,string</keywords>
 		<description>Applies an Extensible Stylesheet Language Transformation (XSLT)
         to an XML document object that is represented as a string
         variable. An XSLT converts an XML document to another format
@@ -17431,6 +17579,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>yesNoFormat</name>
 		<class>railo.runtime.functions.displayFormatting.YesNoFormat</class>
+		<keywords>boolean,formatting</keywords>
 		<description>Yes, for a non-zero value; No, otherwise.</description>
 		<argument>
 			<name>value</name>
@@ -17446,6 +17595,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>trueFalseFormat</name>
 		<class>railo.runtime.functions.displayFormatting.TrueFalseFormat</class>
+		<keywords>boolean,formatting</keywords>
 		<description>True, for a non-zero value; False, otherwise.</description>
 		<argument>
 			<name>value</name>
