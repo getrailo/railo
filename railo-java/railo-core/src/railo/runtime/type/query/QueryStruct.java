@@ -87,12 +87,12 @@ public class QueryStruct extends StructSupport {
 
 	@Override
 	public Iterator<Object> valueIterator() {
-		return new QueryValueIterator(qry, row);
+		return null;//new QueryValueIterator(qry, row);
 	}
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
-		return new QueryEntryItrator(qry, row);
+		return null;//new QueryEntryItrator(qry, row);
 	}
 
 }
