@@ -159,13 +159,96 @@ c","abc".wrap(2));
 		assertEqualsCase("Sorglos","SORGLOS".ucFirst(true,true));
 	}
 	public void function testASC(){
-		assertEqualsCase(97,"a".asc());
-		assertEqualsCase(97,"abc".asc(1));
-		assertEqualsCase(99,"abc".asc(3));
+		assertEquals(97,"a".asc());
+		assertEquals(97,"abc".asc(1));
+		assertEquals(99,"abc".asc(3));
 	}
 	public void function testAppend(){
-		assertEqualsCase("a,b","a".append('b'));
+		assertEquals("a,b","a".append('b'));
 	}
+	public void function testAvg(){
+		assertEquals(2,"1,2,3".avg());
+		assertEquals(2,"1,2,3".avg(','));
+	}
+	public void function testChangeDelims(){
+		assertEquals("1;2;3","1,2,3".ChangeDelims(';'));
+	}
+	public void function testCompact(){
+		assertEquals("1,2,3",",,,1,2,3,,,".compact());
+	}
+	public void function testContains(){
+		assertEquals(2,"a,bb,ccc".contains('bb'));
+		assertEquals(0,"a,bb,ccc".contains('BB'));
+	}
+	public void function testContainsNoCase(){
+		assertEquals(2,"a,bb,ccc".containsNoCase('bb'));
+		assertEquals(2,"a,bb,ccc".containsNoCase('BB'));
+		assertEquals(0,"a,bb,ccc".containsNoCase('dd'));
+	}
+	public void function testDeleteAt(){
+		assertEquals("a,ccc","a,bb,ccc".deleteAt(2));
+	}
+	public void function testListFind(){
+		assertEquals(2,"a,bb,ccc".listfind("bb"));
+		assertEquals(0,"a,bb,ccc".listfind("BB"));
+	}
+	public void function testListFindNoCase(){
+		assertEquals(2,"a,bb,ccc".listfindNoCase("bb"));
+		assertEquals(2,"a,bb,ccc".listfindNoCase("BB"));
+		assertEquals(0,"a,bb,ccc".listfindNoCase("ddd"));
+	}
+	public void function testFirst(){
+		assertEquals("a","a,bb,ccc".first());
+	}
+	public void function testLast(){
+		assertEquals("ccc","a,bb,ccc".last());
+	}
+	public void function testGetAt(){
+		assertEquals("bb","a,bb,ccc".getAt(2));
+	}
+	public void function testIndexExists(){
+		assertEquals(true,"a,bb,ccc".IndexExists(2));
+	}
+	public void function testInsertAt(){
+		assertEquals("a,dddd,bb,ccc","a,bb,ccc".InsertAt(2,"dddd"));
+	}
+	public void function testItemTrim(){
+		assertEquals("a,bb,ccc","a , bb , ccc   ".ItemTrim());
+	}
+	public void function testListlen(){
+		assertEquals(3,"a,bb,ccc".listLen());
+	}
+	public void function testPrepend(){
+		assertEquals("zzz,a,bb,ccc","a,bb,ccc".prepend('zzz'));
+	}
+	public void function testqualify(){
+		assertEquals("*a*,*bb*,*ccc*","a,bb,ccc".qualify('*'));
+	}
+	public void function testRemoveDuplicates(){
+		assertEquals("a,bb,ccc","a,bb,bb,ccc".RemoveDuplicates());
+	}
+	public void function testRest(){
+		assertEquals("bb,ccc","a,bb,ccc".rest());
+	}
+	public void function testSetAt(){
+		assertEquals("a,bbb,ccc","a,bb,ccc".setAt(2,'bbb'));
+	}
+	public void function testSort(){
+		assertEquals("ccc,bb,a","a,bb,ccc".sort('text','desc'));
+	}
+	public void function testToArray(){
+		assertEquals(['a','bb','ccc'],"a,bb,ccc".toArray());
+	}
+	public void function testValueCount(){
+		assertEquals(1,"a,bb,ccc".valueCount('bb'));
+		assertEquals(0,"a,bb,ccc".valueCount('BB'));
+	}
+	public void function testValueCountNoCase(){
+		assertEquals(1,"a,bb,ccc".valueCountNoCase('bb'));
+		assertEquals(1,"a,bb,ccc".valueCountNoCase('BB'));
+	}
+
+
 
 
 	
