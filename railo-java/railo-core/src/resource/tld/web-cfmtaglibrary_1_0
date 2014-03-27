@@ -58,6 +58,7 @@
 			<type>multiple</type>
 			<rtexprvalue>true</rtexprvalue>
 		</script>
+		<status>hidden</status>
 		<description>Tag for the railo web/server administrator</description>
 		<attribute-type>dynamic</attribute-type>
 

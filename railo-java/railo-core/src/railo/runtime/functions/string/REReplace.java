@@ -8,10 +8,15 @@ import org.apache.oro.text.regex.MalformedPatternException;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 import railo.runtime.regex.Perl5Util;
 
-public final class REReplace implements Function {
+public final class REReplace extends BIF {
+
+	private static final long serialVersionUID = -1140669656936340678L;
 
 	public static String call(String string, String regExp, String replace) throws ExpressionException { // MUST is this really needed?
 	    try {
@@ -34,6 +39,16 @@ public final class REReplace implements Function {
 		} catch (MalformedPatternException e) {
 		    throw new FunctionException(pc,"reReplace",2,"regularExpression",e.getMessage());
 		}
+	}
+
+    @Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+    	if(args.length==3)
+			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toString(args[2]));
+    	if(args.length==4)
+			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toString(args[2]), Caster.toString(args[3]));
+    	
+		throw new FunctionException(pc, "REReplace", 3, 4, args.length);
 	}
 
 }

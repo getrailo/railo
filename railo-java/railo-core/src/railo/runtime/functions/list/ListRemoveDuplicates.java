@@ -9,13 +9,15 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import railo.runtime.PageContext;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.util.ListUtil;
 
-public final class ListRemoveDuplicates implements Function {
+public final class ListRemoveDuplicates extends BIF {
 	
 	private static final long serialVersionUID = -6596215135126751629L;
 	
@@ -59,5 +61,17 @@ public final class ListRemoveDuplicates implements Function {
 		}
 
 		return sb.toString();
+	}
+	
+    @Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+    	if(args.length==1)
+			return call(pc, Caster.toString(args[0]));
+    	if(args.length==2)
+			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]));
+    	if(args.length==3)
+			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toBooleanValue(args[2]));
+    	
+		throw new FunctionException(pc, "ListRemoveDuplicates", 2, 5, args.length);
 	}
 }

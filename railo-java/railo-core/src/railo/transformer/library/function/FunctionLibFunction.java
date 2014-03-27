@@ -55,6 +55,7 @@ public final class FunctionLibFunction {
 	private String tteClass;	
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private String memberName;
+	private int memberPosition=1;
 	private short memberType=CFTypes.TYPE_UNKNOW;
 	private boolean memberChaining;
 	private BIF bif;
@@ -330,6 +331,15 @@ public final class FunctionLibFunction {
 	public String getMemberName() {
 		return memberName;
 	}
+	
+
+	public void setMemberPosition(int pos) {
+		this.memberPosition=pos;	
+	}
+	public int getMemberPosition() {
+		return memberPosition;
+	}
+	
 	public void setMemberChaining(boolean memberChaining) {
 		this.memberChaining=memberChaining;	
 	}

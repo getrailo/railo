@@ -670,12 +670,12 @@ Remember CFML arrays start at 1 not 0.</description>
 		<class>railo.runtime.functions.arrays.ArrayLen</class>
 		<member-name>len</member-name>
 		<keywords>array</keywords>
-		<description>Returns the length of the array</description>
+		<description>Returns the length of a given array</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description>Name of an array</description>
+			<description>array to check</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -5743,6 +5743,23 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Gets the absolute path of an application's base page.</description>
 		<return>
 			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- GetBuildInFunction -->
+	<function>
+		<name>GetBuildInFunction</name>
+		<class>railo.runtime.functions.system.GetBuildInFunction</class>
+		<status>hidden</status>
+		<description>return a build in function as a object, matching the given name, throws a exception when the function does not exist.</description>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>name of the build in function, for example "StructKeyExists"</description>
+		</argument>
+		<return>
+			<type>any</type>
 		</return>
 	</function>
 	

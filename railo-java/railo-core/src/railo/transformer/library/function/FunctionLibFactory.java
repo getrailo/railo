@@ -257,6 +257,8 @@ public final class FunctionLibFactory extends DefaultHandler {
 
 				else if(inside.equals("member-name"))
 					function.setMemberName(value);
+				else if(inside.equals("member-position"))
+					function.setMemberPosition(Caster.toIntValue(value,1));
 				else if(inside.equals("member-chaining"))
 					function.setMemberChaining(Caster.toBooleanValue(value,false));
 				

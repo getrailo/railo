@@ -8,10 +8,11 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 
-public final class Replace implements Function {
+public final class Replace extends BIF {
 	
 	private static final long serialVersionUID = -313884944032266348L;
 
@@ -47,6 +48,18 @@ public final class Replace implements Function {
 		if(!Decision.isSimpleValue(find ) )
 			throw new FunctionException(pc,"replace",2,"sub1","When passing three parameters or more, the second parameter must be a simple value.");
 		return _call(pc, input, Caster.toString(find), repl, onlyFirst);
+	}
+
+    @Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+    	if(args.length==2)
+			return call(pc, Caster.toString(args[0]), args[1]);
+    	if(args.length==3)
+			return call(pc, Caster.toString(args[0]), args[1],Caster.toString(args[2]));
+    	if(args.length==4)
+			return call(pc, Caster.toString(args[0]), args[1],Caster.toString(args[2]),Caster.toString(args[3]));
+    	
+		throw new FunctionException(pc, "Replace", 2, 4, args.length);
 	}
 
 }

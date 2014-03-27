@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import railo.runtime.exp.CasterException;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -108,6 +110,16 @@ public class CollectionUtil {
 		Collection.Key[] keyArr=new Collection.Key[strArr.length];
 		for(int i=0	;i<keyArr.length;i++) {
 			keyArr[i]=KeyImpl.init(trim?strArr[i].trim():strArr[i]);
+		}
+		return keyArr;
+	}
+
+	public static Collection.Key[] toKeys(Set<String> set) {
+		Collection.Key[] keyArr=new Collection.Key[set.size()];
+		Iterator<String> it = set.iterator();
+		int index=0;
+		while(it.hasNext()){
+			keyArr[index++]=KeyImpl.init(it.next());
 		}
 		return keyArr;
 	}
