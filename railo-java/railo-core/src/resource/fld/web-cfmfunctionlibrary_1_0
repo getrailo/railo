@@ -10516,7 +10516,7 @@ The following things are considered to be empty:
 	<!-- StringIsEmpty - added to support member method on String -->
 	<function>
 		<name>StringIsEmpty</name>
-		<class>railo.runtime.functions.decision.IsEmpty</class>
+		<class>railo.runtime.functions.string.StringIsEmpty</class>
 		<status>hidden</status>
 		<member-name>isEmpty</member-name>
 		<description>return true if a string is "empty".</description>

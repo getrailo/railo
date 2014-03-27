@@ -8,7 +8,7 @@ import railo.runtime.functions.BIF;
 import railo.runtime.functions.string.Len;
 import railo.runtime.op.Caster;
 
-public class IsEmpty extends BIF {
+public class IsEmpty implements Function {
 
 	private static final long serialVersionUID = -2839407878650099024L;
 
@@ -21,14 +21,5 @@ public class IsEmpty extends BIF {
 		double len=Len.invoke(value, -1);
 		if(len==-1)throw new FunctionException(pc,"isEmpty",1,"variable","this type  ["+Caster.toTypeName(value)+"] is not supported");
 		return len==0;
-	}
-
-	@Override
-	public Object invoke(PageContext pc, Object[] args) throws PageException {
-
-		if (args.length==1)
-			return call(pc, args[0]);
-
-		throw new FunctionException(pc, "IsEmpty", 1, 1, args.length);
 	}
 }
