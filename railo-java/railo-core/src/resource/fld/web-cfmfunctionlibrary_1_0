@@ -17624,4 +17624,67 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+
+    <!-- StringStartsWith - added to support member method on String -->
+    <function>
+    	<name>StringStartsWith</name>
+    	<class>railo.runtime.functions.string.StringStartsWith</class>
+    	<status>hidden</status>
+    	<member-name>startsWith</member-name>
+    	<description>return true if the string starts with the passed prefix.</description>
+    	<argument>
+    		<name>value</name>
+    		<type>string</type>
+    		<required>true</required>
+    		<description></description>
+        </argument>
+        <argument>
+    		<name>prefix</name>
+    		<type>string</type>
+    		<alias>substring</alias>
+    		<required>true</required>
+    		<description>the prefix to check for</description>
+        </argument>
+        <argument>
+    		<name>ignoreCase</name>
+    		<type>boolean</type>
+    		<required>false</required>
+    		<default>false</default>
+    		<description>pass true for a case-insensitive match</description>
+        </argument>
+    	<return>
+    		<type>boolean</type>
+    	</return>
+    </function>
+    <!-- StringEndsWith - added to support member method on String -->
+    <function>
+    	<name>StringEndsWith</name>
+    	<class>railo.runtime.functions.string.StringEndsWith</class>
+    	<status>hidden</status>
+    	<member-name>endsWith</member-name>
+    	<description>return true if the string ends with the passed suffix.</description>
+    	<argument>
+    		<name>value</name>
+    		<type>string</type>
+    		<required>true</required>
+    		<description></description>
+        </argument>
+        <argument>
+    		<name>suffix</name>
+    		<type>string</type>
+    		<alias>substring</alias>
+    		<required>true</required>
+    		<description>the suffix to check for</description>
+        </argument>
+        <argument>
+    		<name>ignoreCase</name>
+    		<type>boolean</type>
+    		<required>false</required>
+    		<default>false</default>
+    		<description>pass true for a case-insensitive match</description>
+        </argument>
+    	<return>
+    		<type>boolean</type>
+    	</return>
+    </function>
 </func-lib>
