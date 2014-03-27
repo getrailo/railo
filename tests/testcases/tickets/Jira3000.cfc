@@ -10,8 +10,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	public void function test(){
 		savecontent variable="local.c" {
 			iterations = 0;
-			numbers = [1,2,3,4];
-			numbers.each(function(v,i){
+			[1,2,3,4].each(function(v,i){
 				iterations++;
 				writeOutput("#iterations#-");
 			});
