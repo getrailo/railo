@@ -8,7 +8,9 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.BIF;
 import railo.runtime.interpreter.InterpreterException;
 import railo.runtime.interpreter.ref.Ref;
@@ -22,6 +24,7 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.UDFUtil;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -118,6 +121,11 @@ public final class BIFCall extends RefSupport implements Ref {
         	bif.invoke(pc, arguments);
         	return obj;
         }
+        
+        if(!isDynamic() && flf.getArgMin()>arguments.length) {
+        	throw new FunctionException(pc, flf.getName(), flf.getArgMin(), flf.getArgMax(), arguments.length);
+        }
+        
         return Caster.castTo(pc,flf.getReturnTypeAsString(),bif.invoke(pc, arguments),false);
 	}
 	

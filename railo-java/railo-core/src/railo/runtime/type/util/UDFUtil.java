@@ -34,6 +34,10 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 
 public class UDFUtil {
 
+	public static final short TYPE_UDF=1;
+	public static final short TYPE_BIF=2;
+	public static final short TYPE_CLOSURE=4;
+
 	private static final char CACHE_DEL = ';';
 	private static final char CACHE_DEL2 = ':';
 
@@ -249,15 +253,21 @@ public class UDFUtil {
 	}
 	
 
-	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp,UDF udf, boolean closure) {
+	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp,UDF udf, short type) {
 	
-		if(!dp.getShowUDFs())
-			return new SimpleDumpData(closure?"<Closure>":"<UDF>");
-		
+		if(!dp.getShowUDFs()) {
+			if(TYPE_UDF==type) return new SimpleDumpData("<UDF>");
+			if(TYPE_BIF==type) return new SimpleDumpData("<BIF>");
+			if(TYPE_CLOSURE==type) return new SimpleDumpData("<Closure>");
+		}
 		// arguments
 		FunctionArgument[] args = udf.getFunctionArguments();
         
-        DumpTable atts = closure?new DumpTable("udf","#ff00ff","#ffccff","#000000"):new DumpTable("udf","#cc66ff","#ffccff","#000000");
+        DumpTable atts;
+        if(TYPE_UDF==type) 			atts= new DumpTable("udf","#cc66ff","#ffccff","#000000");
+        else if(TYPE_CLOSURE==type) atts= new DumpTable("udf","#ff00ff","#ffccff","#000000");
+        else						atts= new DumpTable("udf","#ffff66","#ffffcc","#000000");
+        
         
 		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
 		for(int i=0;i<args.length;i++) {
@@ -267,7 +277,7 @@ public class UDFUtil {
 				Object oa=null;
                 try {
                     oa = UDFUtil.getDefaultValue(pageContext, (UDFPlus)udf, i, null);//udf.getDefaultValue(pageContext,i,null);
-                } catch (PageException e1) {
+                } catch (Throwable t) {
                 }
                 if(oa==null)oa="null";
 				def=new SimpleDumpData(Caster.toString(oa));
@@ -284,10 +294,13 @@ public class UDFUtil {
 			//atts.setRow(0,arg.getHint());
 			
 		}
-		
-		DumpTable func = closure?new DumpTable("#ff00ff","#ffccff","#000000"):new DumpTable("#cc66ff","#ffccff","#000000");
-		if(closure) func.setTitle("Closure");
-		else {
+		DumpTable func;
+		if(TYPE_CLOSURE==type) {
+			func=new DumpTable("#ff00ff","#ffccff","#000000");
+			func.setTitle("Closure");
+		}
+		else if(TYPE_UDF==type) {
+			func=new DumpTable("#cc66ff","#ffccff","#000000");
 			String f="Function ";
 			try {
 				f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
@@ -297,8 +310,19 @@ public class UDFUtil {
 			if(udf instanceof UDFGSProperty) f+=" (generated)";
 			func.setTitle(f);
 		}
+		else {
+			String f="Build in Function "+udf.getFunctionName();
+			
+			
+			func=new DumpTable("#ffff66","#ffffcc","#000000");
+			func.setTitle(f);
+		}
 
-		if(udf instanceof UDFPlus)func.setComment("source:"+((UDFPlus)udf).getPageSource().getDisplayPath());
+		if(udf instanceof UDFPlus) {
+			PageSource ps = ((UDFPlus)udf).getPageSource();
+			if(ps!=null)
+				func.setComment("source:"+ps.getDisplayPath());
+		}
 
 		if(!StringUtil.isEmpty(udf.getDescription()))func.setComment(udf.getDescription());
 		

@@ -344,7 +344,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 
     @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return UDFUtil.toDumpData(pageContext, maxlevel, dp,this,false);
+		return UDFUtil.toDumpData(pageContext, maxlevel, dp,this,UDFUtil.TYPE_UDF);
 	}
 	
 	@Override
