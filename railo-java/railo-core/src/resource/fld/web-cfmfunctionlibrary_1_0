@@ -12,6 +12,7 @@
 	<function>
 		<name>abs</name>
 		<class>railo.runtime.functions.math.Abs</class>
+		<keywords>number</keywords>
 		<description>Absolute-value function. The absolute value of a number is the number without its sign.</description>
 		<argument>
 			<name>number</name>
@@ -28,6 +29,7 @@
 	<function>
 		<name>aCos</name>
 		<class>railo.runtime.functions.math.ACos</class>
+		<keywords>number,math</keywords>
 		<description>Returns the angle whose cosine is the value passed as the argument.</description>
 		<argument>
 			<name>number</name>
@@ -61,7 +63,6 @@
 	<function>
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
-		<status>implemeted</status>
 		<keywords>ajax</keywords>
 		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
@@ -312,7 +313,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFind</name>
 		<class>railo.runtime.functions.arrays.ArrayFind</class>
 		<member-name>find</member-name>
-		<keywords>array,find</keywords>
+		<keywords>array,find,iterator</keywords>
 		<description>These functions searches the array for the specified object.</description>
 		<argument>
 			<name>array</name>
@@ -360,7 +361,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFindAllNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayFindAllNoCase</class>
 		<member-name>findAllNoCase</member-name>
-		<keywords>array,find</keywords>
+		<keywords>array,find,iterator</keywords>
 		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
 		<argument>
 			<name>array</name>
@@ -384,7 +385,7 @@ All elements in the array must contain values that can be automatically converte
 		<class>railo.runtime.functions.arrays.ArrayEach</class>
 		<member-name>each</member-name>
 		<member-chaining>true</member-chaining>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>call the given UDF/Closure with every value in the array.</description>
 		<argument>
 			<name>array</name>
@@ -423,7 +424,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>listEach</name>
 		<class>railo.runtime.functions.list.ListEach</class>
 		<member-name>each</member-name>
-		<keywords>list,string,closure</keywords>
+		<keywords>list,string,iterator</keywords>
 		<description>call the given UDF/Closure with every value in the string list.</description>
 		<argument>
 			<name>list</name>
@@ -475,7 +476,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayFilter</name>
 		<class>railo.runtime.functions.arrays.ArrayFilter</class>
 		<member-name>filter</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>This function creates a new Array that returns all the values from an array that match the given filter.</description>
 		<argument>
 			<name>array</name>
@@ -576,7 +577,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>ArrayIsDefined</name>
 		<class>railo.runtime.functions.arrays.ArrayIsDefined</class>
 		<member-name>isDefined</member-name>
-		<keywords>array</keywords>
+		<keywords>array,decision</keywords>
 		<description>Returns whether there exists an item in the array at the selected index.</description>
 		<argument>
 			<name>array</name>
@@ -652,7 +653,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayIsEmpty</name>
 		<class>railo.runtime.functions.arrays.ArrayIsEmpty</class>
 		<member-name>isEmpty</member-name>
-		<keywords>array</keywords>
+		<keywords>array,decision</keywords>
 		<description>Determines if the array is empty.</description>
 		<argument>
 			<name>array</name>
@@ -687,6 +688,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>collectionMap</name>
 		<class>railo.runtime.functions.closure.Map</class>
+		<keywords>iterator</keywords>
 		<description>Calls the given closure with every element in the given collection.
 		the function returns a array or struct (depending on the input) that contains all values returned by the closure.</description>
 		<argument>
@@ -726,7 +728,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>arrayMap</name>
 		<class>railo.runtime.functions.arrays.ArrayMap</class>
 		<member-name>map</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>Calls the given closure with every element in the given array.
 		the function returns a array that contains all values returned by the closure.</description>
 		<argument>
@@ -765,7 +767,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>listMap</name>
 		<class>railo.runtime.functions.list.ListMap</class>
 		<member-name>map</member-name>
-		<keywords>string,list,closure</keywords>
+		<keywords>string,list,iterator</keywords>
 		<description>Calls the given closure with every element in the given array.
 		the function returns a array that contains all values returned by the closure.</description>
 		<argument>
@@ -818,6 +820,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>structMap</name>
 		<class>railo.runtime.functions.struct.StructMap</class>
 		<member-name>map</member-name>
+		<keywords>struct,iterator</keywords>
 		<description>Calls the given closure with every element in the given struct.
 		the function returns a struct that contains all values returned by the closure.</description>
 		<argument>
@@ -857,6 +860,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<name>QueryMap</name>
 		<class>railo.runtime.functions.query.QueryMap</class>
 		<member-name>map</member-name>
+		<keywords>query,iterator</keywords>
 		<description>Calls the given closure with every row in the given query.
 		the function returns a query that contains all values returned by the closure.</description>
 		<argument>
@@ -1149,7 +1153,7 @@ Remember CFML arrays start at 1 not 0.</description>
 		<class>railo.runtime.functions.arrays.ArraySort</class>
 		<member-name>sort</member-name>
 		<member-chaining>true</member-chaining>
-		<keywords>array</keywords>
+		<keywords>array,sort</keywords>
 		<description>Sorts array elements numerically or alphanumerically.</description>
 		<argument>
 			<name>array</name>
@@ -1321,6 +1325,7 @@ sort direction:
 	<function>
 		<name>aSin</name>
 		<class>railo.runtime.functions.math.ASin</class>
+		<keywords>number,math</keywords>
 		<description>Determines the arcsine of a number. The arcsine is the angle
         whose sine is number.</description>
 		<argument>
@@ -1337,6 +1342,7 @@ sort direction:
 	<function>
 		<name>atn</name>
 		<class>railo.runtime.functions.math.Atn</class>
+		<keywords>number,math</keywords>
 		<description>Arctangent function. The arctangent is the angle whose tangent
         is number.</description>
 		<argument>
@@ -1375,6 +1381,7 @@ sort direction:
 	<function>
 		<name>binaryDecode</name>
 		<class>railo.runtime.functions.conversion.BinaryDecode</class>
+		<keywords>binary</keywords>
 		<description>Converts a string to a binary object. Used to convert
         binary data that has been encoded into string format
         back into binary data.</description>
@@ -1402,6 +1409,7 @@ sort direction:
 	<function>
 		<name>binaryEncode</name>
 		<class>railo.runtime.functions.conversion.BinaryEncode</class>
+		<keywords>binary</keywords>
 		<description>Converts binary data to a string.</description>
 		<argument>
 			<name>binary</name>
@@ -1470,6 +1478,7 @@ sort direction:
 	<function>
 		<name>bitAnd</name>
 		<class>railo.runtime.functions.math.BitAnd</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise logical AND operation.</description>
 		<argument>
 			<name>number1</name>
@@ -1491,6 +1500,7 @@ sort direction:
 	<function>
 		<name>bitMaskClear</name>
 		<class>railo.runtime.functions.math.BitMaskClear</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise mask clear operation.</description>
 		<argument>
 			<name>number</name>
@@ -1518,6 +1528,7 @@ sort direction:
 	<function>
 		<name>bitMaskRead</name>
 		<class>railo.runtime.functions.math.BitMaskRead</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise mask read operation.
         Returns an integer, created from length bits of number,
         beginning at start.</description>
@@ -1547,6 +1558,7 @@ sort direction:
 	<function>
 		<name>bitMaskSet</name>
 		<class>railo.runtime.functions.math.BitMaskSet</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise mask set operation.</description>
 		<argument>
 			<name>number</name>
@@ -1580,6 +1592,7 @@ sort direction:
 	<function>
 		<name>bitNot</name>
 		<class>railo.runtime.functions.math.BitNot</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise logical NOT operation.</description>
 		<argument>
 			<name>number</name>
@@ -1595,6 +1608,7 @@ sort direction:
 	<function>
 		<name>bitOr</name>
 		<class>railo.runtime.functions.math.BitOr</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise logical OR operation.</description>
 		<argument>
 			<name>number1</name>
@@ -1616,6 +1630,7 @@ sort direction:
 	<function>
 		<name>bitSHLN</name>
 		<class>railo.runtime.functions.math.BitSHLN</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise shift-left, no-rotation operation.</description>
 		<argument>
 			<name>number</name>
@@ -1637,6 +1652,7 @@ sort direction:
 	<function>
 		<name>bitSHRN</name>
 		<class>railo.runtime.functions.math.BitSHRN</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise shift-right, no-rotation operation.</description>
 		<argument>
 			<name>number</name>
@@ -1658,6 +1674,7 @@ sort direction:
 	<function>
 		<name>bitXor</name>
 		<class>railo.runtime.functions.math.BitXor</class>
+		<keywords>number,math</keywords>
 		<description>Performs a bitwise logical XOR operation.</description>
 		<argument>
 			<name>number1</name>
@@ -2049,6 +2066,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 	<function>
 		<name>ceiling</name>
 		<class>railo.runtime.functions.math.Ceiling</class>
+		<keywords>number,math</keywords>
 		<description>Determines the closest integer that is greater than a
         specified number.</description>
 		<argument>
@@ -2323,6 +2341,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 	<function>
 		<name>cos</name>
 		<class>railo.runtime.functions.math.Cos</class>
+		<keywords>number,math</keywords>
 		<description>Calculates the cosine of an angle that is entered
         in radians.
         A number; the cosine of the angle.</description>
@@ -3009,7 +3028,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dateTimeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
-		<member-name>format</member-name>
 		<keywords>date,string,formatting</keywords>
 		<description>Formats a date/time string to a given output</description>
 		<argument>
@@ -3496,6 +3514,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>each</name>
 		<class>railo.runtime.functions.closure.Each</class>
 		<status>deprecated</status>
+		<keywords>iterator</keywords>
 		<description>
 		deprecated, use instead collectionEach.
 		call the given UDF/Closure with every entry (key/value) in the given collection.</description>
@@ -3522,6 +3541,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>collectionEach</name>
 		<class>railo.runtime.functions.closure.Each</class>
+		<keywords>iterator</keywords>
 		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
 		<argument>
 			<name>collection</name>
@@ -3656,6 +3676,7 @@ You may also specify other algorithm names as well as the feedback mode and padd
 	<function>
 		<name>decryptBinary</name>
 		<class>railo.runtime.functions.other.DecryptBinary</class>
+		<keywords>binary</keywords>
 		<description>Decrypts the given binary with the optional parameters</description>
 		<argument>
 			<name>input</name>
@@ -4469,6 +4490,7 @@ You may also specify other algorithm names as well as the feedback mode and padd
 	<function>
 		<name>encryptBinary</name>
 		<class>railo.runtime.functions.other.EncryptBinary</class>
+		<keywords>binary</keywords>
 		<description>Encrypts binary data using a specific algorithm and encoding method.</description>
 		<argument>
 			<name>bytes</name>
@@ -4853,6 +4875,7 @@ EntitySave(entity, [forceinsert])</description>
 	<function>
 		<name>exp</name>
 		<class>railo.runtime.functions.math.Exp</class>
+		<keywords>number,math</keywords>
 		<description>Calculates the exponent whose base is e that represents number.
         The constant e equals 2.71828182845904, the base of the natural
         logarithm. This function is the inverse of Log, the natural
@@ -5333,6 +5356,7 @@ If omitted, the file's attributes are maintained.</description>
 	<function>
 		<name>FileReadBinary</name>
 		<class>railo.runtime.functions.file.FileReadBinary</class>
+		<keywords>binary</keywords>
 		<description>Reads an on-disk or in-memory binary file (such as an executable or image file) on the server, into a binary object</description>
 		<argument>
 			<name>source</name>
@@ -5433,6 +5457,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>FileWrite</name>
 		<class>railo.runtime.functions.file.FileWrite</class>
+		<keywords>binary</keywords>
 		<description>If you specify a file path, writes the entire content to the specified file. If you specify a file object, writes text or binary data to the file object.</description>
 		<argument>
 			<name>file</name>
@@ -5610,6 +5635,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>fix</name>
 		<class>railo.runtime.functions.math.Fix</class>
+		<keywords>number</keywords>
 		<description>Converts a real number to an integer.</description>
 		<argument>
 			<name>number</name>
@@ -6179,6 +6205,7 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 	<function>
 		<name>GetReadableImageFormats</name>
 		<class>railo.runtime.functions.image.GetReadableImageFormats</class>
+		<keywords>image</keywords>
 		<description>Returns a list of image formats that Railo can read on the operating system where Railo is deployed.</description>
 		<return>
 			<type>string</type>
@@ -6197,6 +6224,7 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 	<function>
 		<name>GetWriteableImageFormats</name>
 		<class>railo.runtime.functions.image.GetWriteableImageFormats</class>
+		<keywords>image</keywords>
 		<description>Returns a list of image formats that Railo can write on the operating system where Railo is deployed.</description>
 		<return>
 			<type>string</type>
@@ -6230,6 +6258,15 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 		<description>Returns all the currently registered functions</description>
 		<return>
 			<type>struct</type>
+		</return>
+	</function>
+	<!-- getFunctionKeywords -->
+	<function>
+		<name>getFunctionKeywords</name>
+		<class>railo.runtime.functions.other.GetFunctionKeywords</class>
+		<description>returns all keywords defined with all functions</description>
+		<return>
+			<type>array</type>
 		</return>
 	</function>
 	<!-- GetGatewayHelper -->
@@ -6505,6 +6542,7 @@ if this attribute is not provided all types are returned.</description>
 		<name>getSOAPRequest</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequest</class>
 		<status>implemeted</status>
+		<keywords>webservice</keywords>
 		<description>Returns an XML object that contains the entire SOAP
         request. Usually called from within a web service CFC.</description>
 		<argument>
@@ -6522,6 +6560,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequestHeader</class>
+		<keywords>webservice</keywords>
 		<description>Obtains a SOAP request header. Call only from within
         a CFC web service function that is processing a request
         as a SOAP web service.</description>
@@ -6555,6 +6594,7 @@ if this attribute is not provided all types are returned.</description>
 		<name>AddSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.AddSOAPRequestHeader</class>
 		<status>implemeted</status>
+		<keywords>webservice</keywords>
 		<description>Adds a SOAP header to a web service request before making the request.</description>
 		<argument>
 			<name>webservice</name>
@@ -6596,6 +6636,7 @@ if this attribute is not provided all types are returned.</description>
 		<name>addSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.AddSOAPResponseHeader</class>
 		<status>implemeted</status>
+		<keywords>webservice</keywords>
 		<description>Adds a SOAP response header to a web service response. Call only from within a CFC web service function that is processing a request as a SOAP web service.</description>
 		<argument>
 			<name>namespace</name>
@@ -6630,6 +6671,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPResponse</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponse</class>
+		<keywords>webservice</keywords>
 		<description>Returns an XML object that contains the entire
         SOAP response after invoking a web service.</description>
 		<argument>
@@ -6647,6 +6689,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponseHeader</class>
+		<keywords>webservice</keywords>
 		<description>Returns a SOAP response header. Call this function
         from within code that is invoking a web service after
         making a web service request.</description>
@@ -7106,6 +7149,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ImageAddBorder</name>
 		<class>railo.runtime.functions.image.ImageAddBorder</class>
+		<keywords>image</keywords>
 		<description>Adds a rectangular border around the outside edge of a image.</description>
 		<argument>
 			<name>name</name>
@@ -7148,6 +7192,7 @@ Only valid if the borderType is not specified or if borderType = "constant".</de
 	<function>
 		<name>ImageBlur</name>
 		<class>railo.runtime.functions.image.ImageBlur</class>
+		<keywords>image</keywords>
 		<description>Smooths image.</description>
 		<argument>
 			<name>name</name>
@@ -7171,6 +7216,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageClearRect</name>
 		<class>railo.runtime.functions.image.ImageClearRect</class>
+		<keywords>image</keywords>
 		<description>Clears the specified rectangle by filling it with the background color of the current drawing surface.</description>
 		<argument>
 			<name>name</name>
@@ -7209,7 +7255,9 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<!-- ImageFilterColorMap -->
 	<function>
 		<name>ImageFilterColorMap</name>
+		<keywords>image</keywords>
 		<class>railo.runtime.functions.image.ImageFilterColorMap</class>
+		<keywords>image</keywords>
 		<description>These are passed to the function ImageFilters (see ImageFilter documentation) which convert gray values to colors.</description>
 		<argument>
 			<name>type</name>
@@ -7242,6 +7290,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageFilterKernel</name>
 		<class>railo.runtime.functions.image.ImageFilterKernel</class>
+		<keywords>image</keywords>
 		<description>These are passed to the function ImageFilters (see ImageFilter documentation).
 		The ImageFilterKernel function defines a matrix that describes how a specified pixel and its surrounding pixels affect the value computed for the pixel's position in the output image of a filtering operation. 
 		The X origin and Y origin indicate the kernel matrix element that corresponds to the pixel position for which an output value is being computed.
@@ -7273,6 +7322,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageFilterWarpGrid</name>
 		<class>railo.runtime.functions.image.ImageFilterWarpGrid</class>
+		<keywords>image</keywords>
 		<description>A warp grid. These are passed to the function ImageFilters (see ImageFilter documentation).</description>
 		<argument>
 			<name>rows</name>
@@ -7306,6 +7356,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageFilterCurves</name>
 		<class>railo.runtime.functions.image.ImageFilterCurves</class>
+	<keywords>image</keywords>
 		<description>the curves for the wrap grid</description>
 		<return>
 			<type>any</type>
@@ -7315,6 +7366,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageCopy</name>
 		<class>railo.runtime.functions.image.ImageCopy</class>
+		<keywords>image</keywords>
 		<description>Copies a rectangular area of an image.</description>
 		<argument>
 			<name>name</name>
@@ -7367,6 +7419,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<!-- ImageCrop -->
 	<function>
 		<name>ImageCrop</name>
+		<keywords>image</keywords>
 		<class>railo.runtime.functions.image.ImageCrop</class>
 		<description>Crops a image to a specified rectangular area.</description>
 		<argument>
@@ -7406,6 +7459,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<!-- ImageDrawArc -->
 	<function>
 		<name>ImageDrawArc</name>
+		<keywords>image</keywords>
 		<class>railo.runtime.functions.image.ImageDrawArc</class>
 		<description>Draws a circular or elliptical arc.</description>
 		<argument>
@@ -7465,6 +7519,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<!-- ImageDrawBeveledRect -->
 	<function>
 		<name>ImageDrawBeveledRect</name>
+		<keywords>image</keywords>
 		<class>railo.runtime.functions.image.ImageDrawBeveledRect</class>
 		<description>Draws a rectangle with beveled edges.</description>
 		<argument>
@@ -7520,6 +7575,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<!-- ImageDrawCubicCurve -->
 	<function>
 		<name>ImageDrawCubicCurve</name>
+		<keywords>image</keywords>
 		<class>railo.runtime.functions.image.ImageDrawCubicCurve</class>
 		<description>Draws a cubic curve.</description>
 		<argument>
@@ -7586,6 +7642,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 		<name>ImageDrawImage</name>
 		<class>railo.runtime.functions.image.ImageDrawImage</class>
 		<status>deprecated</status>
+		<keywords>image</keywords>
 		<description>this function is deprecated, use ImagePaste instead. Draws a image on a image with the baseline of the first character positioned at (x,y) in the image.</description>
 		<argument>
 			<name>name</name>
@@ -7625,6 +7682,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawLine</name>
 		<class>railo.runtime.functions.image.ImageDrawLine</class>
+		<keywords>image</keywords>
 		<description>Draws a single line defined by two sets of x and y coordinates on a image.</description>
 		<argument>
 			<name>name</name>
@@ -7664,6 +7722,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawLines</name>
 		<class>railo.runtime.functions.image.ImageDrawLines</class>
+		<keywords>image</keywords>
 		<description>Draws a sequence of connected lines defined by arrays of x and y coordinates.</description>
 		<argument>
 			<name>name</name>
@@ -7707,6 +7766,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawOval</name>
 		<class>railo.runtime.functions.image.ImageDrawOval</class>
+		<keywords>image</keywords>
 		<description>Draws an oval.</description>
 		<argument>
 			<name>name</name>
@@ -7754,6 +7814,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawPoint</name>
 		<class>railo.runtime.functions.image.ImageDrawPoint</class>
+		<keywords>image</keywords>
 		<description>Draws a point at the specified (x,y) coordinate.</description>
 		<argument>
 			<name>name</name>
@@ -7781,6 +7842,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawQuadraticCurve</name>
 		<class>railo.runtime.functions.image.ImageDrawQuadraticCurve</class>
+		<keywords>image</keywords>
 		<description>Draws a curved line. The curve is controlled by a single point.</description>
 		<argument>
 			<name>name</name>
@@ -7832,6 +7894,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawRect</name>
 		<class>railo.runtime.functions.image.ImageDrawRect</class>
+		<keywords>image</keywords>
 		<description>Draws a rectangle.</description>
 		<argument>
 			<name>name</name>
@@ -7879,6 +7942,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawRoundRect</name>
 		<class>railo.runtime.functions.image.ImageDrawRoundRect</class>
+		<keywords>image</keywords>
 		<description>Draws a rectangle with rounded corners.</description>
 		<argument>
 			<name>name</name>
@@ -7940,6 +8004,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageDrawText</name>
 		<class>railo.runtime.functions.image.ImageDrawText</class>
+		<keywords>image</keywords>
 		<description>Draws a text string on a image with the baseline of the first character positioned at (x,y) in the image.</description>
 		<argument>
 			<name>name</name>
@@ -7986,7 +8051,8 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageFilter</name>
 		<class>railo.runtime.functions.image.ImageFilter</class>
-<description>
+		<keywords>image,filter</keywords>
+		<description>
 the function ImageFilter allows to execute a filter against a image. Below you find a list of filter names supported by the function.
 every filter need other parameters for the configuration, listed as well below.
 
@@ -9503,6 +9569,7 @@ wood
 	<function>
 		<name>ImageFlip</name>
 		<class>railo.runtime.functions.image.ImageFlip</class>
+		<keywords>image</keywords>
 		<description>Flips an image across an axis.</description>
 		<argument>
 			<name>name</name>
@@ -9530,6 +9597,7 @@ wood
 	<function>
 		<name>ImageGetBlob</name>
 		<class>railo.runtime.functions.image.ImageGetBlob</class>
+		<keywords>image</keywords>
 		<description>Retrieves the bytes of the underlying image. The bytes are in the same image format as the source image.</description>
 		<argument>
 			<name>source</name>
@@ -9545,6 +9613,7 @@ wood
 	<function>
 		<name>ImageGetBufferedImage</name>
 		<class>railo.runtime.functions.image.ImageGetBufferedImage</class>
+		<keywords>image</keywords>
 		<description>Returns the java.awt.BufferedImage object underlying the current image.</description>
 		<argument>
 			<name>name</name>
@@ -9560,6 +9629,7 @@ wood
 	<function>
 		<name>ImageGetEXIFMetadata</name>
 		<class>railo.runtime.functions.image.ImageGetEXIFMetadata</class>
+		<keywords>image</keywords>
 		<description>Retrieves the Exchangeable Image File Format (EXIF) headers in an image as a CFML structure.</description>
 		<argument>
 			<name>name</name>
@@ -9575,6 +9645,7 @@ wood
 	<function>
 		<name>ImageGetEXIFTag</name>
 		<class>railo.runtime.functions.image.ImageGetEXIFTag</class>
+		<keywords>image</keywords>
 		<description>Retrieves the specified EXIF tag in an image.</description>
 		<argument>
 			<name>name</name>
@@ -9596,6 +9667,7 @@ wood
 	<function>
 		<name>ImageGetHeight</name>
 		<class>railo.runtime.functions.image.ImageGetHeight</class>
+		<keywords>image</keywords>
 		<description>Retrieves the height of the image in pixels.</description>
 		<argument>
 			<name>name</name>
@@ -9611,6 +9683,7 @@ wood
 	<function>
 		<name>ImageGetWidth</name>
 		<class>railo.runtime.functions.image.ImageGetWidth</class>
+		<keywords>image</keywords>
 		<description>Retrieves the width of the specified image.</description>
 		<argument>
 			<name>name</name>
@@ -9626,6 +9699,7 @@ wood
 	<function>
 		<name>ImageGetIPTCTag</name>
 		<class>railo.runtime.functions.image.ImageGetIPTCTag</class>
+		<keywords>image</keywords>
 		<description>Retrieves the value of the IPTC tag for a image.</description>
 		<argument>
 			<name>name</name>
@@ -9647,6 +9721,7 @@ wood
 	<function>
 		<name>ImageGrayscale</name>
 		<class>railo.runtime.functions.image.ImageGrayscale</class>
+		<keywords>image</keywords>
 		<description>Converts a image to grayscale.</description>
 		<argument>
 			<name>name</name>
@@ -9662,6 +9737,7 @@ wood
 	<function>
 		<name>ImageFormats</name>
 		<class>railo.runtime.functions.image.ImageFormats</class>
+		<keywords>image</keywords>
 		<description>return all available readers and writers</description>
 		<return>
 			<type>struct</type>
@@ -9671,6 +9747,7 @@ wood
 	<function>
 		<name>ImageFonts</name>
 		<class>railo.runtime.functions.image.ImageFonts</class>
+		<keywords>image</keywords>
 		<description>return all available</description>
 		<return>
 			<type>array</type>
@@ -9680,6 +9757,7 @@ wood
 	<function>
 		<name>ImageInfo</name>
 		<class>railo.runtime.functions.image.ImageInfo</class>
+		<keywords>image</keywords>
 		<description>Returns a structure that contains information about the image, such as height, width, color model, size, and filename.</description>
 		<argument>
 			<name>name</name>
@@ -9695,6 +9773,7 @@ wood
 	<function>
 		<name>ImageNegative</name>
 		<class>railo.runtime.functions.image.ImageNegative</class>
+		<keywords>image</keywords>
 		<description>Inverts the pixel values of a image.</description>
 		<argument>
 			<name>name</name>
@@ -9710,6 +9789,7 @@ wood
 	<function>
 		<name>ImageNew</name>
 		<class>railo.runtime.functions.image.ImageNew</class>
+		<keywords>image</keywords>
 		<description>Creates a image.</description>
 		<argument>
 			<name>source</name>
@@ -9755,6 +9835,7 @@ wood
 	<function>
 		<name>ImageOverlay</name>
 		<class>railo.runtime.functions.image.ImageOverlay</class>
+		<keywords>image</keywords>
 		<description>Reads two source images and overlays the second source image on the first source image.</description>
 		<argument>
 			<name>source1</name>
@@ -9776,6 +9857,7 @@ wood
 	<function>
 		<name>ImagePaste</name>
 		<class>railo.runtime.functions.image.ImagePaste</class>
+		<keywords>image</keywords>
 		<description>Takes two images and an (x,y) coordinate and draws the second image over the first image with the upper-left corner at coordinate (x,y).</description>
 		<argument>
 			<name>image1</name>
@@ -9809,6 +9891,7 @@ wood
 	<function>
 		<name>ImageReadBase64</name>
 		<class>railo.runtime.functions.image.ImageReadBase64</class>
+		<keywords>image</keywords>
 		<description>Creates a image from a Base64 string.</description>
 		<argument>
 			<name>b64str</name>
@@ -9824,6 +9907,7 @@ wood
 	<function>
 		<name>ImageRead</name>
 		<class>railo.runtime.functions.image.ImageRead</class>
+		<keywords>image</keywords>
 		<description>Reads the source pathname or URL and creates a image.</description>
 		<argument>
 			<name>path</name>
@@ -9839,6 +9923,7 @@ wood
 	<function>
 		<name>ImageResize</name>
 		<class>railo.runtime.functions.image.ImageResize</class>
+		<keywords>image</keywords>
 		<description>Resizes a image.</description>
 		<argument>
 			<name>name</name>
@@ -9898,6 +9983,7 @@ wood
 	<function>
 		<name>ImageRotate</name>
 		<class>railo.runtime.functions.image.ImageRotate</class>
+		<keywords>image</keywords>
 		<description>Rotates a image at a specified point by a specified angle.</description>
 		<argument>
 			<name>name</name>
@@ -9944,6 +10030,7 @@ wood
 	<function>
 		<name>ImageRotateDrawingAxis</name>
 		<class>railo.runtime.functions.image.ImageRotateDrawingAxis</class>
+		<keywords>image</keywords>
 		<description>Rotates all subsequent drawing on a image at a specified point by a specified angle.</description>
 		<argument>
 			<name>name</name>
@@ -9977,6 +10064,7 @@ wood
 	<function>
 		<name>ImageScaleToFit</name>
 		<class>railo.runtime.functions.image.ImageScaleToFit</class>
+		<keywords>image</keywords>
 		<description>Creates a resized image with the aspect ratio maintained.</description>
 		<argument>
 			<name>name</name>
@@ -10035,6 +10123,7 @@ wood
 	<function>
 		<name>ImageWrite</name>
 		<class>railo.runtime.functions.image.ImageWrite</class>
+		<keywords>image</keywords>
 		<description>Writes a image to the specified filename or destination.</description>
 		<argument>
 			<name>name</name>
@@ -10073,6 +10162,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageWriteBase64</name>
 		<class>railo.runtime.functions.image.ImageWriteBase64</class>
+		<keywords>image</keywords>
 		<description>Writes Base64 images to the specified filename and destination.</description>
 		<argument>
 			<name>name</name>
@@ -10108,6 +10198,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSetAntialiasing</name>
 		<class>railo.runtime.functions.image.ImageSetAntialiasing</class>
+		<keywords>image</keywords>
 		<description>Switches antialiasing on or off in rendered graphics.</description>
 		<argument>
 			<name>name</name>
@@ -10132,6 +10223,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSetBackgroundColor</name>
 		<class>railo.runtime.functions.image.ImageSetBackgroundColor</class>
+		<keywords>image</keywords>
 		<description>Sets the background color for the image. The background color is used for clearing a region. Setting the background color only affects the subsequent ImageClearRect calls</description>
 		<argument>
 			<name>name</name>
@@ -10156,6 +10248,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSetDrawingAlpha</name>
 		<class>railo.runtime.functions.image.ImageSetDrawingAlpha</class>
+		<keywords>image</keywords>
 		<description>Sets the current drawing alpha for images. All subsequent graphics operations use the specified alpha.</description>
 		<argument>
 			<name>name</name>
@@ -10177,6 +10270,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSetDrawingColor</name>
 		<class>railo.runtime.functions.image.ImageSetDrawingColor</class>
+		<keywords>image</keywords>
 		<description>Sets the current drawing color for images. All subsequent graphics operations use the specified color.</description>
 		<argument>
 			<name>name</name>
@@ -10201,6 +10295,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSetDrawingStroke</name>
 		<class>railo.runtime.functions.image.ImageSetDrawingStroke</class>
+		<keywords>image</keywords>
 		<description>Sets the drawing stroke for points and lines in subsequent images.</description>
 		<argument>
 			<name>name</name>
@@ -10228,6 +10323,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSetDrawingTransparency</name>
 		<class>railo.runtime.functions.image.ImageSetDrawingTransparency</class>
+		<keywords>image</keywords>
 		<description>Specifies the degree of transparency of drawing functions.</description>
 		<argument>
 			<name>name</name>
@@ -10250,6 +10346,7 @@ The file format is derived from the extension of the filename. The default value
 	<function>
 		<name>ImageSharpen</name>
 		<class>railo.runtime.functions.image.ImageSharpen</class>
+		<keywords>image</keywords>
 		<description>Sharpens a image by using the unsharp mask filter.</description>
 		<argument>
 			<name>name</name>
@@ -10276,6 +10373,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>ImageShear</name>
 		<class>railo.runtime.functions.image.ImageShear</class>
+		<keywords>image</keywords>
 		<description>Shears an image either horizontally or vertically.</description>
 		<argument>
 			<name>name</name>
@@ -10316,6 +10414,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>ImageShearDrawingAxis</name>
 		<class>railo.runtime.functions.image.ImageShearDrawingAxis</class>
+		<keywords>image</keywords>
 		<description>Shears the drawing canvas.</description>
 		<argument>
 			<name>name</name>
@@ -10343,6 +10442,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>ImageTranslate</name>
 		<class>railo.runtime.functions.image.ImageTranslate</class>
+		<keywords>image</keywords>
 		<description>Copies an image to a new location on the plane.</description>
 		<argument>
 			<name>name</name>
@@ -10380,6 +10480,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>ImageTranslateDrawingAxis</name>
 		<class>railo.runtime.functions.image.ImageTranslateDrawingAxis</class>
+		<keywords>image</keywords>
 		<description>Translates the origin of the image context to the point (x,y) in the current coordinate system. 
 		Modifies the image context so that its new origin corresponds to the point (x,y) in the image's original coordinate system.</description>
 		<argument>
@@ -10408,6 +10509,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>ImageXORDrawingMode</name>
 		<class>railo.runtime.functions.image.ImageXORDrawingMode</class>
+		<keywords>image</keywords>
 		<description>Sets the paint mode of the image to alternate between the image's current color and the new specified color.</description>
 		<argument>
 			<name>name</name>
@@ -10434,6 +10536,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>IntergralContext</name>
 		<class>railo.runtime.functions.other.IntergralContext</class>
+		<status>hidden</status>
 		<description>return the integral context information, FusionDebug has do be installed for this.</description>
 		
 		<return>
@@ -10476,6 +10579,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>IsClosure</name>
 		<class>railo.runtime.functions.decision.IsClosure</class>
+		<keywords>decision</keywords>
 		<description>checks if given Object is a closure or not.</description>
 		<argument>
 			<name>object</name>
@@ -10494,6 +10598,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>IsEmpty</name>
 		<class>railo.runtime.functions.decision.IsEmpty</class>
+		<keywords>decision</keywords>
 		<description>return true if a value is "empty". 
 The following things are considered to be empty:
 - string:"" (an empty string)
@@ -10516,6 +10621,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsImage</name>
 		<class>railo.runtime.functions.image.IsImage</class>
+		<keywords>image,decision</keywords>
 		<description>Determines whether a variable returns a image.</description>
 		<argument>
 			<name>name</name>
@@ -10531,6 +10637,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsImageFile</name>
 		<class>railo.runtime.functions.image.IsImageFile</class>
+		<keywords>decision,image</keywords>
 		<description>Verifies whether an image file is valid.</description>
 		<argument>
 			<name>path</name>
@@ -10546,6 +10653,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsIPInRange</name>
 		<class>railo.runtime.functions.decision.IsIPInRange</class>
+		<keywords>decision</keywords>
 		<description>Checks if an ip is in the range of a list of given ips. IPv4 and IPv6 are supported.</description>
 		<argument>
 			<name>ips</name>
@@ -10571,7 +10679,6 @@ The following things are considered to be empty:
 	<function>
 		<name>IsJson</name>
 		<class>railo.runtime.functions.conversion.IsJSON</class>
-		<keywords>json</keywords>
 		<keywords>decision,json,javascript</keywords>
 		<description>Evaluates whether a string is in valid JSON (JavaScript Object Notation) data interchange format.</description>
 		<argument>
@@ -10588,6 +10695,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsIPv6</name>
 		<class>railo.runtime.functions.decision.IsIPv6</class>
+		<keywords>decision</keywords>
 		<description>checks if given IP is of IPV6 format</description>
 		<argument>
 			<name>hostname</name>
@@ -10607,6 +10715,7 @@ The following things are considered to be empty:
 		<name>IsPDFFile</name>
 		<class>railo.runtime.functions.decision.IsPDFFile</class>
 		<status>unimplemeted</status>
+		<keywords>decision,pdf</keywords>
 		<description>Verifies whether a PDF file is valid.</description>
 		<argument>
 			<name>path</name>
@@ -10622,6 +10731,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsPDFObject</name>
 		<class>railo.runtime.functions.decision.IsPDFObject</class>
+		<keywords>decision,pdf</keywords>
 		<description>Determines whether a value is a PDF object.</description>
 		<argument>
 			<name>value</name>
@@ -10637,6 +10747,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsZipFile</name>
 		<class>railo.runtime.functions.system.IsZipFile</class>
+		<keywords>decision,zip</keywords>
 		<description>Verifies whether an zip file is valid.</description>
 		<argument>
 			<name>path</name>
@@ -10672,6 +10783,7 @@ The following things are considered to be empty:
 	<function>
 		<name>inputBaseN</name>
 		<class>railo.runtime.functions.math.InputBaseN</class>
+		<keywords>number</keywords>
 		<description>Converts string, using the base specified by radix, to an
         integer. For example: #InputBaseN("3ff",16)#</description>
 		<argument>
@@ -10726,6 +10838,7 @@ The following things are considered to be empty:
 	<function>
 		<name>int</name>
 		<class>railo.runtime.functions.math.Int</class>
+		<keywords>number</keywords>
 		<description>Calculates the closest integer that is smaller than number.</description>
 		<argument>
 			<name>number</name>
@@ -10741,6 +10854,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isArray</name>
 		<class>railo.runtime.functions.decision.IsArray</class>
+		<keywords>decision,array</keywords>
 		<description>Determines whether a value is an array.
         True, if value is an array, a query column object, or xml.
         also number = Dimension; function tests whether the array has
@@ -10766,6 +10880,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isBinary</name>
 		<class>railo.runtime.functions.decision.IsBinary</class>
+		<keywords>decision,binary</keywords>
 		<description>Determines whether a value is stored as binary data.</description>
 		<argument>
 			<name>value</name>
@@ -10781,6 +10896,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isBoolean</name>
 		<class>railo.runtime.functions.decision.IsBoolean</class>
+		<keywords>decision,boolean</keywords>
 		<description>Determines if the object represents a boolean value</description>
 		<argument>
 			<name>value</name>
@@ -10796,6 +10912,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isCustomFunction</name>
 		<class>railo.runtime.functions.decision.IsCustomFunction</class>
+		<keywords>decision,function</keywords>
 		<description>Determines whether a name represents a custom function</description>
 		<argument>
 			<name>name</name>
@@ -10811,6 +10928,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isDate</name>
 		<class>railo.runtime.functions.decision.IsDate</class>
+		<keywords>decision,date</keywords>
 		<description>Determines whether a string or Java object can be converted
         to a date/time value.</description>
 		<argument>
@@ -10828,6 +10946,7 @@ The following things are considered to be empty:
 		<name>IsDDX</name>
 		<class>railo.runtime.functions.decision.IsDDX</class>
 		<status>unimplemeted</status>
+		<keywords>decision</keywords>
 		<description>Determines whether a DDX file exists and is valid, or if a string contains valid DDX instructions.</description>
 		<argument>
 			<name>pathOrString</name>
@@ -10843,6 +10962,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsInstanceOf</name>
 		<class>railo.runtime.functions.decision.IsInstanceOf</class>
+		<keywords>decision,component</keywords>
 		<description>Determines whether an object is an instance of a Railo interface or component, or of a Java class.</description>
 		<argument>
 			<name>obj</name>
@@ -10866,6 +10986,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isDebugMode</name>
 		<class>railo.runtime.functions.decision.IsDebugMode</class>
+		<keywords>decision</keywords>
 		<description>Determines whether debugging output is enabled.</description>
 		<return>
 			<type>boolean</type>
@@ -10876,6 +10997,7 @@ The following things are considered to be empty:
 		<name>isDefined</name>
 		<class>railo.runtime.functions.decision.IsDefined</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsDefined</tte-class>
+		<keywords>decision</keywords>
 		<description>Evaluates a string value to determine whether the variable
         named in it exists.</description>
 		<argument>
@@ -10892,7 +11014,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isK2ServerABroker</name>
 		<class>railo.runtime.functions.decision.IsK2ServerABroker</class>
-		<status>deprecated</status>
+		<status>hidden</status>
 		<description>This function is deprecated. </description>
 		<return>
 			<type>boolean</type>
@@ -10902,7 +11024,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isK2ServerDocCountExceeded</name>
 		<class>railo.runtime.functions.decision.IsK2ServerDocCountExceeded</class>
-			<status>deprecated</status>
+			<status>hidden</status>
 		<description>This function is deprecated. </description>
 		<return>
 			<type>boolean</type>
@@ -10912,7 +11034,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isK2ServerOnline</name>
 		<class>railo.runtime.functions.decision.IsK2ServerOnline</class>
-			<status>deprecated</status>
+			<status>hidden</status>
 		<description>This function is deprecated.</description>
 		<return>
 			<type>boolean</type>
@@ -10922,6 +11044,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isLeapYear</name>
 		<class>railo.runtime.functions.decision.IsLeapYear</class>
+		<keywords>decision,date</keywords>
 		<description>Determines whether a year is a leap year.</description>
 		<argument>
 			<name>year</name>
@@ -10937,6 +11060,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isLocalHost</name>
 		<class>railo.runtime.functions.decision.IsLocalHost</class>
+		<keywords>decision</keywords>
 		<description>Determines whether the specified IP address is the localhost.</description>
 		<argument>
 			<name>ip</name>
@@ -10953,6 +11077,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isNotMap</name>
 		<class>railo.runtime.functions.other.IsNotMap</class>
+		<keywords>decision</keywords>
 		<description>return true if the given Object is not of Type java.util.Map</description>
 		<argument>
 			<name>obj</name>
@@ -10969,6 +11094,7 @@ The following things are considered to be empty:
 		<name>isNull</name>
 		<class>railo.runtime.functions.other.IsNull</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsNull</tte-class>
+		<keywords>decision</keywords>
 		<description>Determines whether given object is null or not</description>
 		<argument>
 			<name>object</name>
@@ -10984,6 +11110,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isNumeric</name>
 		<class>railo.runtime.functions.decision.IsNumeric</class>
+		<keywords>decision,number</keywords>
 		<description>Determines if the object represents a numeric</description>
 		<argument>
 			<name>string</name>
@@ -10999,6 +11126,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isNumericDate</name>
 		<class>railo.runtime.functions.decision.IsNumericDate</class>
+		<keywords>decision,number,date</keywords>
 		<description>Evaluates whether a real number is a valid representation of a
         date (date/time object).</description>
 		<argument>
@@ -11015,6 +11143,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isObject</name>
 		<class>railo.runtime.functions.decision.IsObject</class>
+		<keywords>decision</keywords>
 		<description>Determines whether a value is an object.
         True, if the value represents a CFML object. False if
         the value is any other type of data, such as an integer, string,
@@ -11033,6 +11162,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isQuery</name>
 		<class>railo.runtime.functions.query.IsQuery</class>
+		<keywords>query,decision</keywords>
 		<description>Determines whether value is a query.</description>
 		<argument>
 			<name>value</name>
@@ -11048,6 +11178,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isSimpleValue</name>
 		<class>railo.runtime.functions.decision.IsSimpleValue</class>
+		<keywords>decision</keywords>
 		<description>Determines if the object represents a simple value like a string, number, boolean etc</description>
 		<argument>
 			<name>value</name>
@@ -11064,6 +11195,7 @@ The following things are considered to be empty:
 		<name>IsSOAPRequest</name>
 		<class>railo.runtime.functions.decision.IsSOAPRequest</class>
 		<status>implemeted</status>
+		<keywords>decision,webservice</keywords>
 		<description>Determines whether a CFC is being called as a web service.</description>
 		<return>
 			<type>boolean</type>
@@ -11073,6 +11205,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isStruct</name>
 		<class>railo.runtime.functions.struct.IsStruct</class>
+		<keywords>decision,strcuct</keywords>
 		<description>Determines if the object is a structure</description>
 		<argument>
 			<name>variable</name>
@@ -11088,6 +11221,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isUserInRole</name>
 		<class>railo.runtime.functions.decision.IsUserInRole</class>
+		<keywords>decision</keywords>
 		<description>Determines whether an authenticated user belongs to the
         specified Role.</description>
 		<argument>
@@ -11106,6 +11240,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isUserInAnyRole</name>
 		<class>railo.runtime.functions.decision.IsUserInAnyRole</class>
+		<keywords>decision</keywords>
 		<description>Determines whether an authenticated user belongs to any role in a list of roles.</description>
 		<argument>
 			<name>role_list</name>
@@ -11123,6 +11258,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsUserLoggedIn</name>
 		<class>railo.runtime.functions.decision.IsUserLoggedIn</class>
+		<keywords>decision</keywords>
 		<description>Determines whether a user is logged in.</description>
 		<return>
 			<type>boolean</type>
@@ -11134,6 +11270,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isValid</name>
 		<class>railo.runtime.functions.decision.IsValid</class>
+		<keywords>decision,binary,array,boolean,component,date,email,query,string,struct,regex</keywords>
 		<description>Tests whether a value meets a validation or data type rule.</description>
 		<argument>
 			<name>type</name>
@@ -11195,6 +11332,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isWddx</name>
 		<class>railo.runtime.functions.decision.IsWddx</class>
+		<keywords>decision,wddx</keywords>
 		<description>Determines whether a value is a well-formed WDDX packet.</description>
 		<argument>
 			<name>value</name>
@@ -11210,6 +11348,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsVideoFile</name>
 		<class>railo.runtime.functions.video.IsVideoFile</class>
+		<keywords>decision,video</keywords>
 		<description>
 		Check if a String is a Video file
 		</description>
@@ -11227,6 +11366,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isXML</name>
 		<class>railo.runtime.functions.decision.IsXML</class>
+		<keywords>decision,XML</keywords>
 		<description>Determines whether a string is well-formed XML text.</description>
 		<argument>
 			<name>value</name>
@@ -11242,6 +11382,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsXmlAttribute</name>
 		<class>railo.runtime.functions.decision.IsXmlAttribute</class>
+		<keywords>decision,XML</keywords>
 		<description>Determines whether the function parameter is an
         XML Document Object Model (DOM) attribute node.</description>
 		<argument>
@@ -11258,6 +11399,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isXmlDoc</name>
 		<class>railo.runtime.functions.decision.IsXmlDoc</class>
+		<keywords>decision,XML</keywords>
 		<description>Determines whether a function parameter is an Extended Markup
         language (XML) document object.</description>
 		<argument>
@@ -11274,6 +11416,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isXmlElem</name>
 		<class>railo.runtime.functions.decision.IsXmlElem</class>
+		<keywords>decision,xml</keywords>
 		<description>Determines whether a function parameter is an Extended Markup
         language (XML) document object element.</description>
 		<argument>
@@ -11290,6 +11433,7 @@ The following things are considered to be empty:
 	<function>
 		<name>IsXmlNode</name>
 		<class>railo.runtime.functions.decision.IsXmlNode</class>
+		<keywords>decision,xml</keywords>
 		<description>Determines whether the function parameter is
         an XML document object node.</description>
 		<argument>
@@ -11306,6 +11450,7 @@ The following things are considered to be empty:
 	<function>
 		<name>isXmlRoot</name>
 		<class>railo.runtime.functions.decision.IsXmlRoot</class>
+		<keywords>decision,xml</keywords>
 		<description>Determines whether a function parameter is the root element of
         an Extended Markup language (XML) document object.</description>
 		<argument>
@@ -11672,7 +11817,7 @@ The following things are considered to be empty:
 		<name>listFilter</name>
 		<class>railo.runtime.functions.list.ListFilter</class>
 		<member-name>filter</member-name>
-		<keywords>list,string</keywords>
+		<keywords>list,string,iterator</keywords>
 		<description>This function creates a new string list that returns all entries from an string list that match the given filter.</description>
 		<argument>
 			<name>list</name>
@@ -12224,7 +12369,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listSort</name>
 		<class>railo.runtime.functions.list.ListSort</class>
-		<keywords>list,string</keywords>
+		<keywords>list,string,sort</keywords>
 		<member-name>sort</member-name>
 		<description>Sorts list elements according to a sort type and sort order.</description>
 		<argument>
@@ -12438,6 +12583,7 @@ The following things are considered to be empty:
 	<function>
 		<name>log</name>
 		<class>railo.runtime.functions.math.Log</class>
+		<keywords>number,math</keywords>
 		<description>Calculates the natural logarithm of a number. Natural
         logarithms are based on the constant e (2.71828182845904).</description>
 		<argument>
@@ -12454,6 +12600,7 @@ The following things are considered to be empty:
 	<function>
 		<name>log10</name>
 		<class>railo.runtime.functions.math.Log10</class>
+		<keywords>number,math</keywords>
 		<description>Calculates the logarithm of number, to base 10.</description>
 		<argument>
 			<name>number</name>
@@ -12908,6 +13055,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>max</name>
 		<class>railo.runtime.functions.math.Max</class>
+	<keywords>number</keywords>
 		<description>Determines the greater of two numbers.</description>
 		<argument>
 			<name>number1</name>
@@ -12974,6 +13122,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>min</name>
 		<class>railo.runtime.functions.math.Min</class>
+		<keywords>number</keywords>
 		<description>Determines the lesser of two numbers.</description>
 		<argument>
 			<name>number1</name>
@@ -13432,7 +13581,7 @@ ormEvictQueries([cacheName])</description>
 	<function>
 		<name>paragraphFormat</name>
 		<class>railo.runtime.functions.displayFormatting.ParagraphFormat</class>
-		<keywords>string,formatting</keywords>
+		<keywords>string,formatting,HTML</keywords>
 		<description>Formats the carriage returns in a string to a HTML alternatives</description>
 		<argument>
 			<name>string</name>
@@ -13543,6 +13692,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>pi</name>
 		<class>railo.runtime.functions.math.Pi</class>
+		<keywords>number,math</keywords>
 		<description>Gets the mathematical constant p, accurate to 15 digits.
         The number 3.14159265358979.</description>
 		<return>
@@ -13598,6 +13748,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>query</name>
 		<class>railo.runtime.functions.query.Query_</class>
+		<keywords>query</keywords>
 		<description>create ans populates a query object in the form query(columnName1:[1,2,3],columnName2:[4,5,6])</description>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -13608,6 +13759,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryAddColumn</name>
 		<class>railo.runtime.functions.query.QueryAddColumn</class>
+		<keywords>query</keywords>
 		<member-name>addColumn</member-name>
 		<description>Adds a column to a query and populates its rows with the
         contents of a one-dimensional array. Pads query columns,
@@ -13648,6 +13800,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryAddRow</name>
 		<class>railo.runtime.functions.query.QueryAddRow</class>
 		<member-name>addRow</member-name>
+		<keywords>query</keywords>
 		<description>Adds a specified number of empty rows to a query.</description>
 		<argument>
 			<name>query</name>
@@ -13676,6 +13829,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryColumnCount</name>
 		<class>railo.runtime.functions.query.QueryColumnCount</class>
+		<keywords>query</keywords>
 		<member-name>columnCount</member-name>
 		<description>column count of given query</description>
 		<argument>
@@ -13694,6 +13848,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryColumnExists</name>
 		<class>railo.runtime.functions.query.QueryColumnExists</class>
 		<member-name>columnExists</member-name>
+		<keywords>query</keywords>
 		<description>Determines whether a specific column is present in a query.</description>
 		<argument>
 			<name>query</name>
@@ -13718,6 +13873,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
 		<status>deprecated</status>
+		<keywords>query</keywords>
 		<description>Use instead the function QuerySlice. Converts query data to a structure that contains a paged subset of the query.</description>
 		<argument>
 			<name>query</name>
@@ -13746,6 +13902,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryColumnArray</name>
 		<class>railo.runtime.functions.query.QueryColumnArray</class>
 		<member-name>columnArray</member-name>
+		<keywords>query,array</keywords>
 		<description>return the column names as array</description>
 		<argument>
 			<name>query</name>
@@ -13762,6 +13919,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryColumnData</name>
 		<class>railo.runtime.functions.query.QueryColumnData</class>
 		<member-name>columnData</member-name>
+		<keywords>query</keywords>
 		<description>Returns all the data in a query for a given column</description>
 		<argument>
 			<name>query</name>
@@ -13791,7 +13949,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
     		<name>queryRowData</name>
     		<class>railo.runtime.functions.query.QueryRowData</class>
     		<member-name>rowData</member-name>
-    		<description>Returns a struct with the data from a query for a given row number</description>
+    		<keywords>query</keywords>
+			<description>Returns a struct with the data from a query for a given row number</description>
     		<argument>
     			<name>query</name>
     			<type>query</type>
@@ -13815,7 +13974,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryColumnList</name>
 		<class>railo.runtime.functions.query.QueryColumnList</class>
 		<member-name>columnList</member-name>
-			<description>return the column names as list</description>
+		<keywords>query</keywords>
+		<description>return the column names as list</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -13838,6 +13998,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>QueryDeleteColumn</name>
 		<class>railo.runtime.functions.query.QueryDeleteColumn</class>
 		<member-name>deleteColumn</member-name>
+		<keywords>query</keywords>
 		<description>
 		removes a row from a query and return removed row as array
 		</description>
@@ -13862,6 +14023,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>QueryDeleteRow</name>
 		<class>railo.runtime.functions.query.QueryDeleteRow</class>
 		<member-name>deleteRow</member-name>
+		<keywords>query</keywords>
 		<description>Deletes the row within a query object. Modifies the original query object</description>
 		<argument>
 			<name>query</name>
@@ -13885,6 +14047,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryGetCell</name>
 		<class>railo.runtime.functions.query.QueryGetCell</class>
 		<member-name>getCell</member-name>
+		<keywords>query</keywords>
 		<description>return the value of a specific query cell</description>
 		<argument>
 			<name>query</name>
@@ -13913,6 +14076,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryNew</name>
 		<class>railo.runtime.functions.query.QueryNew</class>
+		<keywords>query</keywords>
 		<description>Creates an empty query (query object).</description>
 		<argument>
 			<name>columnNames</name>
@@ -13947,6 +14111,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryRecordCount</name>
 		<class>railo.runtime.functions.query.QueryRecordCount</class>
+		<keywords>query</keywords>
 		<description>row count of given query</description>
 		<argument>
 			<name>query</name>
@@ -13964,6 +14129,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.query.QuerySetCell</class>
 		<member-name>setCell</member-name>
 		<member-chaining>true</member-chaining>
+	<keywords>query</keywords>
 		<description>Sets a cell to a value. If no row number is specified,
         the cell on the last row is set.</description>
 		<argument>
@@ -14000,6 +14166,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>querySlice</name>
 		<class>railo.runtime.functions.query.QuerySlice</class>
 		<member-name>slice</member-name>
+		<keywords>query</keywords>
 		<description>creates a new query containing a part of the given query</description>
 		<argument>
 			<name>query</name>
@@ -14029,6 +14196,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.query.QuerySort</class>
 		<member-name>sort</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>query,sort</keywords>
 		<description>Sorts the query based on the column specified and the order criteria given. Modifies the original query object</description>
 		<argument>
 			<name>query</name>
@@ -14084,6 +14252,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>rand</name>
 		<class>railo.runtime.functions.math.Rand</class>
+		<keywords>number</keywords>
 		<description>Generates a pseudo-random number in the range 0 - 1.</description>
 		<argument>
 			<name>algorithm</name>
@@ -14099,6 +14268,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>randomize</name>
 		<class>railo.runtime.functions.math.Randomize</class>
+		<keywords>number</keywords>
 		<description>Seeds the pseudo-random number generator with an
         integer number, ensuring repeatable number patterns.</description>
 		<argument>
@@ -14121,6 +14291,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>randRange</name>
 		<class>railo.runtime.functions.math.RandRange</class>
+		<keywords>number</keywords>
 		<description>Generates a random integer between two specified numbers.
         Requests for random integers that are greater than 100,000,000
         result in non-random numbers, to prevent overflow during
@@ -14711,6 +14882,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>round</name>
 		<class>railo.runtime.functions.math.Round</class>
+		<keywords>number</keywords>
 		<description>Rounds a number to the closest integer.</description>
 		<argument>
 			<name>number</name>
@@ -14982,6 +15154,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>sgn</name>
 		<class>railo.runtime.functions.math.Sgn</class>
+		<keywords>number,math</keywords>
 		<description>Determines the sign of a number.</description>
 		<argument>
 			<name>number</name>
@@ -14997,6 +15170,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>sin</name>
 		<class>railo.runtime.functions.math.Sin</class>
+	<keywords>number,math</keywords>
 		<description>Calculates the sine of an angle that is entered in radians.</description>
 		<argument>
 			<name>number</name>
@@ -15194,6 +15368,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>sqr</name>
 		<class>railo.runtime.functions.math.Sqr</class>
+		<keywords>number,math</keywords>
 		<description>Calculates the square root of a number.</description>
 		<argument>
 			<name>number</name>
@@ -15384,6 +15559,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>struct</name>
 		<class>railo.runtime.functions.struct.Struct_</class>
+		<status>hidden</status>
 		<description>used to create and populate a struct at the same time, example struct(key1:1,key2:2)</description>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -15396,6 +15572,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.struct.StructAppend</class>
 		<member-name>append</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>struct</keywords>
 		<description>Appends all the data from struct2 into struct2, replacing duplicate keys unless specified by the overwrite flag</description>
 		<argument>
 			<name>Struct1</name>
@@ -15427,6 +15604,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.struct.StructClear</class>
 		<member-name>clear</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>struct</keywords>
 		<description>Removes all data from a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -15443,6 +15621,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structCopy</name>
 		<class>railo.runtime.functions.struct.StructCopy</class>
 		<member-name>copy</member-name>
+		<keywords>struct</keywords>
 		<description>Copies a structure. Copies top-level keys, values, and arrays
         in the structure by value; copies nested structures by
         reference.</description>
@@ -15461,6 +15640,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structCount</name>
 		<class>railo.runtime.functions.struct.StructCount</class>
 		<member-name>len</member-name>
+		<keywords>struct</keywords>
 		<description>Counts the keys in a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -15477,6 +15657,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structDelete</name>
 		<class>railo.runtime.functions.struct.StructDelete</class>
 		<member-name>delete</member-name>
+		<keywords>struct</keywords>
 		<description>Removes an element from a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -15507,6 +15688,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.struct.StructEach</class>
 		<member-name>each</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>struct,iterator</keywords>
 		<description>call the given UDF/Closure with every entry (key/value) in the struct.</description>
 		<argument>
 			<name>struct</name>
@@ -15545,6 +15727,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.query.QueryEach</class>
 		<member-name>each</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>query,iterator</keywords>
 		<description>call the given UDF/Closure with every row (struct) in the query.</description>
 		<argument>
 			<name>query</name>
@@ -15581,6 +15764,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>each</name>
 		<class>railo.runtime.functions.closure.Each</class>
+		<keywords>iterator</keywords>
+		<status>deprecated</status>
 		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
 		<argument>
 			<name>collection</name>
@@ -15618,6 +15803,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structFilter</name>
 		<class>railo.runtime.functions.struct.StructFilter</class>
 		<member-name>filter</member-name>
+		<keywords>struct,iterator</keywords>
 		<description>This function creates a new Struct that returns all entries from an struct that match the given filter.</description>
 		<argument>
 			<name>struct</name>
@@ -15655,6 +15841,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryFilter</name>
 		<class>railo.runtime.functions.query.QueryFilter</class>
 		<member-name>filter</member-name>
+		<keywords>query,iterator</keywords>
 		<description>This function creates a new Query that returns all rows from an query that match the given filter.</description>
 		<argument>
 			<name>query</name>
@@ -15691,6 +15878,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>collectionReduce</name>
 		<class>railo.runtime.functions.closure.Reduce</class>
+		<keywords>iterator</keywords>
 		<description>Iterates over every entry of the collection and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
 		<argument>
@@ -15723,7 +15911,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>arrayReduce</name>
 		<class>railo.runtime.functions.arrays.ArrayReduce</class>
 		<member-name>reduce</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>Iterates over every entry of the given array and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
 		<argument>
@@ -15756,7 +15944,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>ListReduce</name>
 		<class>railo.runtime.functions.list.ListReduce</class>
 		<member-name>reduce</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>Iterates over every entry of the given array and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
 		<argument>
@@ -15802,6 +15990,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structReduce</name>
 		<class>railo.runtime.functions.struct.StructReduce</class>
 		<member-name>reduce</member-name>
+		<keywords>struct,iterator</keywords>
 		<description>Iterates over every entry of the given struct and calls the closure with every key/value. 
 		This function will reduce the struct to a single value and will return this value.</description>
 		<argument>
@@ -15835,6 +16024,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>QueryReduce</name>
 		<class>railo.runtime.functions.query.QueryReduce</class>
 		<member-name>reduce</member-name>
+		<keywords>query,iterator</keywords>
 		<description>Iterates over every row of the given query and calls the closure with that row. 
 		This function will reduce the query to a single value and will return this value.</description>
 		<argument>
@@ -15867,7 +16057,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>collectionFilter</name>
 		<class>railo.runtime.functions.closure.Filter</class>
-		<member-name>filter</member-name>
+		<keywords>iterator</keywords>
 		<description>This function creates a new collection that returns all entries from an collection that match the given filter.</description>
 		<argument>
 			<name>collection</name>
@@ -15905,6 +16095,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>collectionSome</name>
 		<class>railo.runtime.functions.closure.Some</class>
+		<keywords>iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given collection and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>collection</name>
@@ -15943,7 +16134,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>arraySome</name>
 		<class>railo.runtime.functions.arrays.ArraySome</class>
 		<member-name>some</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given array and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>array</name>
@@ -15983,7 +16174,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>ListSome</name>
 		<class>railo.runtime.functions.list.ListSome</class>
 		<member-name>some</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given string list and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>list</name>
@@ -16035,6 +16226,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structSome</name>
 		<class>railo.runtime.functions.struct.StructSome</class>
 		<member-name>some</member-name>
+		<keywords>struct,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given struct and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>struct</name>
@@ -16073,6 +16265,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>QuerySome</name>
 		<class>railo.runtime.functions.query.QuerySome</class>
 		<member-name>some</member-name>
+		<keywords>query,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given query and returns true, if one of the closure calls returns true.</description>
 		<argument>
 			<name>query</name>
@@ -16110,6 +16303,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>collectionEvery</name>
 		<class>railo.runtime.functions.closure.Every</class>
+		<keywords>iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given collection and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>collection</name>
@@ -16149,7 +16343,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>arrayEvery</name>
 		<class>railo.runtime.functions.arrays.ArrayEvery</class>
 		<member-name>every</member-name>
-		<keywords>array,closure</keywords>
+		<keywords>array,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given array and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>array</name>
@@ -16188,7 +16382,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>listEvery</name>
 		<class>railo.runtime.functions.list.ListEvery</class>
 		<member-name>every</member-name>
-		<keywords>list,string</keywords>
+		<keywords>list,string,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given string list and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>list</name>
@@ -16240,6 +16434,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structEvery</name>
 		<class>railo.runtime.functions.struct.StructEvery</class>
 		<member-name>every</member-name>
+		<keywords>struct,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given struct and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>struct</name>
@@ -16278,6 +16473,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>queryEvery</name>
 		<class>railo.runtime.functions.query.QueryEvery</class>
 		<member-name>every</member-name>
+		<keywords>query,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given query and returns true, if all of the closure calls returns true.</description>
 		<argument>
 			<name>query</name>
@@ -16413,6 +16609,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structGet</name>
 		<class>railo.runtime.functions.struct.StructGet</class>
+		<keywords>struct</keywords>
 		<description>Gets a structure(s) from a specified path.</description>
 		<argument>
 			<name>PathDesired</name>
@@ -16430,6 +16627,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.struct.StructInsert</class>
 		<member-name>insert</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>struct,iterator</keywords>
 		<description>Inserts a key-value pair into a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -16464,6 +16662,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structIsEmpty</name>
 		<class>railo.runtime.functions.struct.StructIsEmpty</class>
 		<member-name>isEmpty</member-name>
+		<keywords>struct,decision</keywords>
 		<description>Determines whether a structure contains data.</description>
 		<argument>
 			<name>structure</name>
@@ -16480,6 +16679,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structKeyArray</name>
 		<class>railo.runtime.functions.struct.StructKeyArray</class>
 		<member-name>keyArray</member-name>
+		<keywords>struct</keywords>
 		<description>Finds the keys in a struct.
         An array of keys; if structure does not exist, CFML
         throws an exception.</description>
@@ -16499,6 +16699,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.struct.StructKeyExists</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.StructKeyExists</tte-class>
 		<member-name>keyExists</member-name>
+		<keywords>struct</keywords>
 		<description>Determines whether a specific key is present in a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -16521,6 +16722,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structKeyList</name>
 		<class>railo.runtime.functions.struct.StructKeyList</class>
 		<member-name>keyList</member-name>
+		<keywords>struct</keywords>
 		<description>Extracts keys from a struct.</description>
 		<argument>
 			<name>structure</name>
@@ -16545,6 +16747,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structKeyTranslate</name>
 		<class>railo.runtime.functions.struct.StructKeyTranslate</class>
 		<member-name>keyTranslate</member-name>
+		<keywords>struct</keywords>
 		<description></description>
 		<argument>
 			<name>structure</name>
@@ -16578,6 +16781,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structNew</name>
 		<class>railo.runtime.functions.struct.StructNew</class>
+		<keywords>struct,iterator</keywords>
 		<description>Creates a structure.</description>
 		<argument>
 			<name>type</name>
@@ -16602,6 +16806,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structSort</name>
 		<class>railo.runtime.functions.struct.StructSort</class>
 		<member-name>sort</member-name>
+		<keywords>struct,sort</keywords>
 		<description>Returns a sorted array of the top level keys in a structure.
         Sorts using alphabetic or numeric sorting, and can sort based
         on the values of any structure element.</description>
@@ -16648,6 +16853,7 @@ _- asc (default): ascending (a to z) sort order
 		<class>railo.runtime.functions.struct.StructUpdate</class>
 		<member-name>update</member-name>
 		<member-chaining>true</member-chaining>
+		<keywords>struct</keywords>
 		<description>Updates a key with a value.</description>
 		<argument>
 			<name>structure</name>
@@ -16730,6 +16936,7 @@ _- asc (default): ascending (a to z) sort order
 	<function>
 		<name>tan</name>
 		<class>railo.runtime.functions.math.Tan</class>
+		<keywords>number,math</keywords>
 		<description>Calculates the tangent of an angle that is entered in radians.</description>
 		<argument>
 			<name>number</name>
@@ -17136,6 +17343,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>valueArray</name>
 		<class>railo.runtime.functions.query.ValueArray</class>
 		<status>deprecated</status>
+		<keywords>query</keywords>
 		<description>Returns a array of all the values, for a given column within the query.
 		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
@@ -17153,6 +17361,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>valueList</name>
 		<class>railo.runtime.functions.query.ValueList</class>
 		<status>deprecated</status>
+		<keywords>query</keywords>
 		<description>Returns a list of all the values, for a given column within the query, delimited by the value given.
 		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
@@ -17316,6 +17525,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlChildPos</name>
 		<class>railo.runtime.functions.xml.XmlChildPos</class>
+		<keywords>XML</keywords>
 		<description>Gets the position of a child element within an XML document
         object.
         The position, in an XmlChildren array, of the Nth child that
@@ -17347,6 +17557,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlElemNew</name>
 		<class>railo.runtime.functions.xml.XmlElemNew</class>
+		<keywords>XML</keywords>
 		<description>Creates an XML document object element</description>
 		<argument>
 			<name>xmlObj</name>
@@ -17377,7 +17588,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xMLFormat</name>
 		<class>railo.runtime.functions.other.XMLFormat</class>
-		<keywords>xml,string,formatting</keywords>
+		<keywords>XML,string,formatting</keywords>
 		<description>Escapes special XML characters in a string, so that the
         string is safe to use with XML.</description>
 		<argument>
@@ -17394,6 +17605,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>XmlGetNodeType</name>
 		<class>railo.runtime.functions.xml.XmlGetNodeType</class>
+		<keywords>XML</keywords>
 		<description>Determines the type of an XML document object node.</description>
 		<argument>
 			<name>xml</name>
@@ -17410,6 +17622,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlNew</name>
 		<class>railo.runtime.functions.xml.XmlNew</class>
+		<keywords>XML</keywords>
 		<description>Creates an XML document object.</description>
 		<argument>
 			<name>caseSensitive</name>
@@ -17425,6 +17638,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlParse</name>
 		<class>railo.runtime.functions.xml.XmlParse</class>
+		<keywords>XML</keywords>
 		<description>Converts an XML document that is represented as a string
         variable into an XML document object.</description>
 		<argument>
@@ -17458,6 +17672,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>htmlParse</name>
 		<class>railo.runtime.functions.xml.HtmlParse</class>
+		<keywords>HTML</keywords>
 		<description>parse the given html (not only xhtml) as xml Object, work similar to xmlParse, but this function is very forgiving with the syntax..</description>
 		<argument>
 			<name>html</name>
@@ -17480,6 +17695,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlSearch</name>
 		<class>railo.runtime.functions.xml.XmlSearch</class>
+		<keywords>XML</keywords>
 		<description>Uses an XPath language expression to search an XML document object.</description>
 		<argument>
 			<name>xml</name>
@@ -17503,7 +17719,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>xmlTransform</name>
 		<class>railo.runtime.functions.xml.XmlTransform</class>
-		<keywords>xml,string</keywords>
+		<keywords>XML,string</keywords>
 		<description>Applies an Extensible Stylesheet Language Transformation (XSLT)
         to an XML document object that is represented as a string
         variable. An XSLT converts an XML document to another format
@@ -17541,6 +17757,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>XmlValidate</name>
 		<class>railo.runtime.functions.xml.XmlValidate</class>
+		<keywords>XML</keywords>
 		<description>Uses a Document Type Definition (DTD) or XML Schema to validate an XML text document or an XML document object.</description>
 		<argument>
 			<name>xmlDoc</name>
