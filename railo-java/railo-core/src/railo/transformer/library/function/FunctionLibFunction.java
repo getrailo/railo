@@ -15,6 +15,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.BIFProxy;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
@@ -59,6 +60,7 @@ public final class FunctionLibFunction {
 	private short memberType=CFTypes.TYPE_UNKNOW;
 	private boolean memberChaining;
 	private BIF bif;
+	private String[] keywords;
 
 	
 	/**
@@ -333,6 +335,13 @@ public final class FunctionLibFunction {
 	}
 	
 
+	public void setKeywords(String keywords) {
+		this.keywords=ListUtil.trimItems(ListUtil.listToStringArray(keywords, ','));	
+	}
+	public String[] getKeywords() {
+		return keywords;
+	}
+	
 	public void setMemberPosition(int pos) {
 		this.memberPosition=pos;	
 	}

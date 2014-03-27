@@ -250,7 +250,9 @@ public final class FunctionLibFactory extends DefaultHandler {
 				
 				else if(inside.equals("tte-class"))
 					function.setTteClass(value);
-    			
+				if(inside.equals("keywords"))
+					function.setKeywords(value);
+				
 
 				else if(inside.equals("description"))
 					function.setDescription(value);
