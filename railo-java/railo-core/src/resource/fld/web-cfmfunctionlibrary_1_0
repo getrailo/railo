@@ -5772,10 +5772,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
-	<!-- GetBuildInFunction -->
+	<!-- GetBuiltInFunction -->
 	<function>
-		<name>GetBuildInFunction</name>
-		<class>railo.runtime.functions.system.GetBuildInFunction</class>
+		<name>GetBuiltInFunction</name>
+		<class>railo.runtime.functions.system.GetBuiltInFunction</class>
 		<status>hidden</status>
 		<description>return a build in function as a object, matching the given name, throws a exception when the function does not exist.</description>
 		<argument>

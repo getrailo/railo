@@ -9,7 +9,7 @@ import railo.runtime.interpreter.ref.func.BIFCall;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 
-public class GetBuildInFunction extends BIF {
+public class GetBuiltInFunction extends BIF {
 	
 	private static final long serialVersionUID = 5639839935753070955L;
 
@@ -23,7 +23,7 @@ public class GetBuildInFunction extends BIF {
     	if(args.length==2)
 			return call(pc, Caster.toString(args[0]));
     	
-		throw new FunctionException(pc, "GetBuildInFunction", 1, 1, args.length);
+		throw new FunctionException(pc, "GetBuiltInFunction", 1, 1, args.length);
 	}
 
 }
