@@ -220,31 +220,40 @@ public final class AxisCaster {
         }
         return al;
     }
-    private static Object[] toNativeArray(TypeMapping tm,Object value,Class targetClass, Set<Object> done) throws PageException {
+    private static Object[] toNativeArray(TypeMapping tm,QName type,Object value,Class targetClass, Set<Object> done) throws PageException {
     	Object[] objs = Caster.toNativeArray(value);
     	Object[] rtns;
-    	Class componentType = null;
+    	
+    	QName componentType=null;
+    	
+    	if(type!=null && type.getLocalPart().startsWith("ArrayOf")) {
+    		String tmp = type.getLocalPart().substring(7);
+    		if(tmp.startsWith("_"))tmp=tmp.substring(1);
+    		componentType=new QName(type.getNamespaceURI(), tmp);
+    	}
+
+    	Class componentClass = null;
     	if(targetClass!=null) {
-        	componentType = targetClass.getComponentType();
+        	componentClass = targetClass.getComponentType();
         }
     	
-        if(componentType!=null) {
-        	componentType=toAxisTypeClass(componentType);
-        	rtns = (Object[]) java.lang.reflect.Array.newInstance(componentType, objs.length);
+        if(componentClass!=null) {
+        	componentClass=toAxisTypeClass(componentClass);
+        	rtns = (Object[]) java.lang.reflect.Array.newInstance(componentClass, objs.length);
         }
         else 
         	rtns = new Object[objs.length];
     	try{
 	        for(int i=0;i<objs.length;i++) {
 	        	//print.e(">>>>"+(componentType!=null?:"")+">>>>"+rtns.getClass().getName()+":"+_toAxisType(tm,null,null,objs[i],componentType,done).getClass().getName());
-	        	rtns[i]=_toAxisType(tm,null,null,objs[i],componentType,done);
+	        	rtns[i]=_toAxisType(tm,null,componentType,objs[i],componentClass,done);
 	        }
     	}
     	// just in case something goes wrong with typed array
     	catch(ArrayStoreException ase){
     		rtns = new Object[objs.length];
     		for(int i=0;i<objs.length;i++) {
-	        	rtns[i]=_toAxisType(tm,null,null,objs[i],componentType,done);
+	        	rtns[i]=_toAxisType(tm,null,componentType,objs[i],componentClass,done);
 	        }
     	}
     	
@@ -467,7 +476,7 @@ public final class AxisCaster {
     	// Array
     	if(Decision.isArray(value) && !(value instanceof Argument)) {
     		if(value instanceof byte[]) return value;
-    		return toNativeArray(tm,value,targetClass,done);
+    		return toNativeArray(tm,type,value,targetClass,done);
     	}
     	// Struct
         if(Decision.isStruct(value)) {
