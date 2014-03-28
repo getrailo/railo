@@ -13,7 +13,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 		data=service.run(reqParams:param);
 		
-		assertEquals("railo",data);
+		assertEquals("RUN OK",data);
 		
 	}
 

@@ -15,7 +15,7 @@ function: run()
 --->
 <cffunction name="run" returnType="string" access="remote">
 <cfargument name="reqParams" type="wstest01Request" required="true">
-  <cfset var resp="RUN OK - " & now()>
+  <cfset var resp="RUN OK">
   <!--- test --->
   <cfreturn resp>
 </cffunction>
