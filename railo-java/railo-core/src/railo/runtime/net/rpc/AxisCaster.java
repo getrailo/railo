@@ -267,7 +267,7 @@ public final class AxisCaster {
 	public static Component toComponent(PageContext pc, Pojo pojo, String compPath , Component defaultValue) {
 		try {
 			Component cfc = pc.loadComponent(compPath);
-			Property[] props = cfc.getProperties(false);
+			Property[] props = ComponentProUtil.getProperties(cfc, false, true, false, false);
 			PojoIterator it=new PojoIterator(pojo);
 			// only when the same amount of properties
 			if(props.length==it.size()) {
