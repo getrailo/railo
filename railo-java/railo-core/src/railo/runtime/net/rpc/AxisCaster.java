@@ -68,6 +68,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import coldfusion.xml.rpc.QueryBean;
 
@@ -321,7 +322,7 @@ public final class AxisCaster {
 		}
     	
     	// initialize Pojo
-		Property[] props=comp.getProperties(false);
+		Property[] props=ComponentProUtil.getProperties(comp, false, true, false, false);
 		initPojo(pc,pojo,props,scope,comp,targetClass,tm,done);
 
     	return pojo;
@@ -374,12 +375,16 @@ public final class AxisCaster {
     	Object v;
     	Collection.Key k;
 		CFMLExpressionInterpreter interpreter = new CFMLExpressionInterpreter();
+		
+		
+		
     	for(int i=0;i<props.length;i++){
     		p=props[i];
     		k=Caster.toKey(p.getName());
     	// value
     		v=sct.get(k,null);
     		if(v==null && comp!=null)v=comp.get(k, null);
+    		
     	// default
     		
     		if(v!=null)v=Caster.castTo(pc, p.getType(), v, false);
