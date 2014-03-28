@@ -10992,7 +10992,7 @@ The following things are considered to be empty:
 	<function>
 		<name>left</name>
 		<class>railo.runtime.functions.string.Left</class>
-		<description>Returns the leftmost count characters in a string.</description>
+		<description>Returns a substring from beginning of the input string, with a length specified by the count argument.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -11003,7 +11003,8 @@ The following things are considered to be empty:
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>A positive integer. Number of characters to return.</description>
+		<description>A non-zero integer. A positive value of n will return n characters from the beginning of the string.
+		A negative value of n will return (length - n) characters from the beginning of the string.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -14157,8 +14158,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>right</name>
 		<class>railo.runtime.functions.string.Right</class>
-		<description>Gets a specified number of characters from a string,
-        beginning at the right.</description>
+		<description>Returns a substring from end of the input string, with a length specified by the count argument.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -14169,7 +14169,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>A positive integer. Number of characters to return.</description>
+		<description>A non-zero integer. A positive value of n will return n characters from the end of the string.
+		A negative value of n will return (length - n) characters from the end of the string.</description>
     </argument>
 		<return>
 			<type>string</type>
