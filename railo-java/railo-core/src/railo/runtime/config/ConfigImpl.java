@@ -1005,7 +1005,7 @@ public abstract class ConfigImpl implements Config {
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
         Mapping mapping;
         String path;
-        
+        Map<Mapping,String> possibleMappings = new HashMap<Mapping,String>();
         // app-cfc mappings
         if(mappings!=null){
             for(int i=0;i<mappings.length;i++) {
@@ -1015,7 +1015,7 @@ public abstract class ConfigImpl implements Config {
                if(mapping.hasPhysical()) {
                	path=ResourceUtil.getPathToChild(res, mapping.getPhysical());
                    if(path!=null) {
-                   	return mapping.getPageSource(path);
+                   	possibleMappings.put(mapping,path);
                    }
                }
            // Archive
@@ -1023,7 +1023,7 @@ public abstract class ConfigImpl implements Config {
             	   Resource archive = mapping.getArchive();
             	   CompressResource cr = ((CompressResource) res);
             	   if(archive.equals(cr.getCompressResource())) {
-            		   return mapping.getPageSource(cr.getCompressPath());
+            		   possibleMappings.put(mapping,cr.getCompressPath());
             	   }
                }
             }
@@ -1037,7 +1037,7 @@ public abstract class ConfigImpl implements Config {
             if(mapping.hasPhysical()) {
             	path=ResourceUtil.getPathToChild(res, mapping.getPhysical());
                 if(path!=null) {
-                	return mapping.getPageSource(path);
+                   	possibleMappings.put(mapping,path);
                 }
             }
         // Archive
@@ -1045,9 +1045,27 @@ public abstract class ConfigImpl implements Config {
         		Resource archive = mapping.getArchive();
         		CompressResource cr = ((CompressResource) res);
         		if(archive.equals(cr.getCompressResource())) {
-        			return mapping.getPageSource(cr.getCompressPath());
+                   	possibleMappings.put(mapping,cr.getCompressPath());
         		}
             }
+        }
+        
+        // pick the pagesource with the shortest virtual path... adds some consistency when a resource could be found in several mappings
+        // without this contractPath() could return a different path depending on how the site is configured..
+        if(possibleMappings.size() > 0) {
+	        Iterator<Entry<Mapping, String>> it = possibleMappings.entrySet().iterator();
+	        Mapping shortestMapping = null;
+	        while (it.hasNext()) {
+	            Entry<Mapping, String> entry = it.next();
+	            if( shortestMapping == null || 
+	            		( entry.getKey().getVirtual().length() < shortestMapping.getVirtual().length() )
+	            			&& !entry.getKey().getVirtual().equals("/") )
+	            		{
+	            	shortestMapping = entry.getKey();
+	            }
+	        }
+	        // return the pagesource from the mapping with the shortest virtual path, instead of from the first mapping it could find.
+	        return shortestMapping.getPageSource(possibleMappings.get(shortestMapping));
         }
         
     // map resource to root mapping when same filesystem
