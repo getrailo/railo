@@ -163,6 +163,10 @@ c","abc".wrap(2));
 		assertEquals(97,"abc".asc(1));
 		assertEquals(99,"abc".asc(3));
 	}
+
+	/*
+	LIST MEMBER FUNCTIONS
+	
 	public void function testAppend(){
 		assertEquals("a,b","a".append('b'));
 	}
@@ -247,7 +251,7 @@ c","abc".wrap(2));
 		assertEquals(1,"a,bb,ccc".valueCountNoCase('bb'));
 		assertEquals(1,"a,bb,ccc".valueCountNoCase('BB'));
 	}
-
+*/
 
 
 

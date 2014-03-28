@@ -11579,7 +11579,7 @@ The following things are considered to be empty:
 		<name>listAppend</name>
 		<class>railo.runtime.functions.list.ListAppend</class>
 		<keywords>list,string</keywords>
-		<member-name>append</member-name>
+		<!-- <member-name>append</member-name> -->
 		<description>Concatenates a list or element to a list.</description>
 		<argument>
 			<name>list</name>
@@ -11611,7 +11611,7 @@ The following things are considered to be empty:
 		<name>listAvg</name>
 		<class>railo.runtime.functions.list.ListAvg</class>
 		<keywords>list,string</keywords>
-		<member-name>avg</member-name>
+		<!-- <member-name>avg</member-name> -->
 		<description></description>
 		<argument>
 			<name>list</name>
@@ -11636,7 +11636,7 @@ The following things are considered to be empty:
 		<name>listChangeDelims</name>
 		<class>railo.runtime.functions.list.ListChangeDelims</class>
 		<keywords>list,string</keywords>
-		<member-name>changeDelims</member-name>
+		<!-- <member-name>changeDelims</member-name> -->
 		<description>Changes a list delimiter.
         Returns a copy of the list, with each delimiter character
         replaced by new_delimiter.</description>
@@ -11676,7 +11676,7 @@ The following things are considered to be empty:
 		<name>ListCompact</name>
 		<class>railo.runtime.functions.list.ListCompact</class>
 		<keywords>list,string</keywords>
-		<member-name>compact</member-name>
+		<!-- <member-name>compact</member-name> -->
 		<description>remove empty items at the and and at the start of the list</description>
 		<argument>
 			<name>list</name>
@@ -11701,7 +11701,7 @@ The following things are considered to be empty:
 		<name>listContains</name>
 		<class>railo.runtime.functions.list.ListContains</class>
 		<keywords>list,string</keywords>
-		<member-name>contains</member-name>
+		<!-- <member-name>contains</member-name> -->
 		<description>Determines the index of the first list element that contains a
         specified substring.
         Returns the index of the first list element that contains
@@ -11741,7 +11741,7 @@ The following things are considered to be empty:
 		<name>listContainsNoCase</name>
 		<class>railo.runtime.functions.list.ListContainsNoCase</class>
 		<keywords>list,string</keywords>
-		<member-name>ContainsNoCase</member-name>
+		<!-- <member-name>ContainsNoCase</member-name> -->
 		<description>Determines the index of the first list element that contains a
         specified substring.</description>
 		<argument>
@@ -11779,7 +11779,7 @@ The following things are considered to be empty:
 		<name>listDeleteAt</name>
 		<class>railo.runtime.functions.list.ListDeleteAt</class>
 		<keywords>list,string</keywords>
-		<member-name>DeleteAt</member-name>
+		<!-- <member-name>DeleteAt</member-name> -->
 		<description>Deletes an element from a list.
         Returns a copy of the list, without the specified element.</description>
 		<argument>
@@ -11869,7 +11869,7 @@ The following things are considered to be empty:
 		<name>listFind</name>
 		<class>railo.runtime.functions.list.ListFind</class>
 		<keywords>list,string,find</keywords>
-		<member-name>listFind</member-name>
+		<!-- <member-name>listFind</member-name> -->
 		<description>Determines the index of the first list element in which a
         specified value occurs. Case-sensitive</description>
 		<argument>
@@ -11907,7 +11907,7 @@ The following things are considered to be empty:
 		<name>listFindNoCase</name>
 		<class>railo.runtime.functions.list.ListFindNoCase</class>
 		<keywords>list,string,find</keywords>
-		<member-name>listFindNoCase</member-name>
+		<!-- <member-name>listFindNoCase</member-name> -->
 		<description>Determines the index of the first list element in which a
         specified value occurs</description>
 		<argument>
@@ -11945,7 +11945,7 @@ The following things are considered to be empty:
 		<name>listFirst</name>
 		<class>railo.runtime.functions.list.ListFirst</class>
 		<keywords>list,string</keywords>
-		<member-name>first</member-name>
+		<!-- <member-name>first</member-name> -->
 		<description>Gets the first element of a list.</description>
 		<argument>
 			<name>list</name>
@@ -11976,7 +11976,7 @@ The following things are considered to be empty:
 		<name>listGetAt</name>
 		<class>railo.runtime.functions.list.ListGetAt</class>
 		<keywords>list,string</keywords>
-		<member-name>getAt</member-name>
+		<!-- <member-name>getAt</member-name> -->
 		<description>Gets a list element at a specified position.</description>
 		<argument>
 			<name>list</name>
@@ -12013,7 +12013,7 @@ The following things are considered to be empty:
 		<name>listInsertAt</name>
 		<class>railo.runtime.functions.list.ListInsertAt</class>
 		<keywords>list,string</keywords>
-		<member-name>insertAt</member-name>
+		<!-- <member-name>insertAt</member-name> -->
 		<description>Inserts an element in a list.</description>
 		<argument>
 			<name>list</name>
@@ -12056,7 +12056,7 @@ The following things are considered to be empty:
 		<name>ListIndexExists</name>
 		<class>railo.runtime.functions.list.ListIndexExists</class>
 		<keywords>list,string</keywords>
-		<member-name>IndexExists</member-name>
+		<!-- <member-name>IndexExists</member-name> -->
 		<description>Determines if an element at the given position exists or not</description>
 		<argument>
 			<name>list</name>
@@ -12092,7 +12092,7 @@ The following things are considered to be empty:
 		<name>ListItemTrim</name>
 		<class>railo.runtime.functions.list.ListItemTrim</class>
 		<keywords>list,string</keywords>
-		<member-name>ItemTrim</member-name>
+		<!-- <member-name>ItemTrim</member-name> -->
 		<description>Removes all the white space surrounding each element, returning back the new list</description>
 		<argument>
 			<name>list</name>
@@ -12123,7 +12123,7 @@ The following things are considered to be empty:
 		<name>listLast</name>
 		<class>railo.runtime.functions.list.ListLast</class>
 		<keywords>list,string</keywords>
-		<member-name>last</member-name>
+		<!-- <member-name>last</member-name> -->
 		<description>Gets the last element of a list.</description>
 		<argument>
 			<name>list</name>
@@ -12154,7 +12154,7 @@ The following things are considered to be empty:
 		<name>listLen</name>
 		<class>railo.runtime.functions.list.ListLen</class>
 		<keywords>list,string</keywords>
-		<member-name>ListLen</member-name>
+		<!-- <member-name>ListLen</member-name> -->
 		<description>Determines the number of elements in a list.</description>
 		<argument>
 			<name>list</name>
@@ -12185,7 +12185,7 @@ The following things are considered to be empty:
 		<name>listPrepend</name>
 		<class>railo.runtime.functions.list.ListPrepend</class>
 		<keywords>list,string</keywords>
-		<member-name>prepend</member-name>
+		<!-- <member-name>prepend</member-name> -->
 		<description>Inserts an element at the beginning of a list.</description>
 		<argument>
 			<name>list</name>
@@ -12216,7 +12216,7 @@ The following things are considered to be empty:
 		<name>listQualify</name>
 		<class>railo.runtime.functions.list.ListQualify</class>
 		<keywords>list,string</keywords>
-		<member-name>qualify</member-name>
+		<!-- <member-name>qualify</member-name> -->
 		<description>Inserts a string at the beginning and end of list elements.</description>
 		<argument>
 			<name>list</name>
@@ -12264,7 +12264,7 @@ The following things are considered to be empty:
 		<name>listRest</name>
 		<class>railo.runtime.functions.list.ListRest</class>
 		<keywords>list,string</keywords>
-		<member-name>Rest</member-name>
+		<!-- <member-name>Rest</member-name> -->
 		<description>Gets a list, without its first element.</description>
 		<argument>
 			<name>list</name>
@@ -12295,7 +12295,7 @@ The following things are considered to be empty:
 		<name>ListRemoveDuplicates</name>
 		<class>railo.runtime.functions.list.ListRemoveDuplicates</class>
 		<keywords>list,string</keywords>
-		<member-name>RemoveDuplicates</member-name>
+		<!-- <member-name>RemoveDuplicates</member-name> -->
 		<description>Removes duplicate values from list.</description>
 		<argument>
 			<name>list</name>
@@ -12327,7 +12327,7 @@ The following things are considered to be empty:
 		<name>listSetAt</name>
 		<class>railo.runtime.functions.list.ListSetAt</class>
 		<keywords>list,string</keywords>
-		<member-name>setAt</member-name>
+		<!-- <member-name>setAt</member-name> -->
 		<description>Replaces the contents of a list element.</description>
 		<argument>
 			<name>list</name>
@@ -12370,7 +12370,7 @@ The following things are considered to be empty:
 		<name>listSort</name>
 		<class>railo.runtime.functions.list.ListSort</class>
 		<keywords>list,string,sort</keywords>
-		<member-name>sort</member-name>
+		<!-- <member-name>sort</member-name> -->
 		<description>Sorts list elements according to a sort type and sort order.</description>
 		<argument>
 			<name>list</name>
@@ -12421,7 +12421,7 @@ The following things are considered to be empty:
 		<name>listToArray</name>
 		<class>railo.runtime.functions.list.ListToArray</class>
 		<keywords>list,string,array</keywords>
-		<member-name>toArray</member-name>
+		<!-- <member-name>toArray</member-name> -->
 		<description>Copies the elements of a list to an array.</description>
 		<argument>
 			<name>list</name>
@@ -12484,7 +12484,7 @@ The following things are considered to be empty:
 		<name>listValueCount</name>
 		<class>railo.runtime.functions.list.ListValueCount</class>
 		<keywords>list,string</keywords>
-		<member-name>valueCount</member-name>
+		<!-- <member-name>valueCount</member-name> -->
 		<description>Counts instances of a specified value in a list. The search is
         case-sensitive.</description>
 		<argument>
@@ -12522,7 +12522,7 @@ The following things are considered to be empty:
 		<name>listValueCountNoCase</name>
 		<class>railo.runtime.functions.list.ListValueCountNoCase</class>
 		<keywords>list,string</keywords>
-		<member-name>ValueCountNoCase</member-name>
+		<!-- <member-name>ValueCountNoCase</member-name> -->
 		<description>Counts instances of a specified value in a list. The search is
         case-insensitive.</description>
 		<argument>
