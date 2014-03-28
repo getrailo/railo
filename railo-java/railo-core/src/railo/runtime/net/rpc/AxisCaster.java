@@ -268,7 +268,6 @@ public final class AxisCaster {
 			Component cfc = pc.loadComponent(compPath);
 			Property[] props = cfc.getProperties(false);
 			PojoIterator it=new PojoIterator(pojo);
-			
 			// only when the same amount of properties
 			if(props.length==it.size()) {
 				Map<Collection.Key, Property> propMap = toMap(props);
@@ -279,7 +278,10 @@ public final class AxisCaster {
 					pair=it.next();
 					p=propMap.get(pair.getName());
 					if(p==null) return defaultValue;
-					scope.setEL(pair.getName(), Caster.castTo(pc, p.getType(), pair.getValue(), false));
+					Object val = Caster.castTo(pc, p.getType(), pair.getValue(), false);
+					// store in variables and this scope
+					scope.setEL(pair.getName(), val);
+					cfc.setEL(pair.getName(), val);
 				}
 				return cfc;
 			}
