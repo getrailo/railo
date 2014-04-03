@@ -11,6 +11,7 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.TypeMappingUtil;
 
 public final class ComponentProvider extends RPCProvider {
 
@@ -24,7 +25,7 @@ public final class ComponentProvider extends RPCProvider {
 		Component c= (Component) mc.getProperty(Constants.COMPONENT);
         
 		RPCServer server = RPCServer.getInstance(pc.getId(),pc.getServletContext());
-		TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
+		TypeMapping tm =TypeMappingUtil.getServerTypeMapping(server.getEngine().getTypeMappingRegistry());
 		
 		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(pc,args)),null);
 	}

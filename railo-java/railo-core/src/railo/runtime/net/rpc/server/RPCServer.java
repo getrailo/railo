@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 import javax.xml.namespace.QName;
-import javax.xml.rpc.encoding.TypeMapping;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
@@ -33,7 +32,6 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.SimpleChain;
 import org.apache.axis.SimpleTargetedChain;
 import org.apache.axis.components.logger.LogFactory;
-import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.management.ServiceAdmin;
 import org.apache.axis.security.servlet.ServletSecurityProvider;
 import org.apache.axis.server.AxisServer;
@@ -675,7 +673,6 @@ public final class RPCServer{
         
         while (i.hasNext()) {
             String queryHandler = (String) i.next();
-            //print.ln("queryhandler:"+queryHandler);
             if (queryHandler.startsWith("qs.")) {
                 // Only attempt to match the query string with transport
                 // parameters prefixed with "qs:".
@@ -683,7 +680,6 @@ public final class RPCServer{
                 String handlerName = queryHandler.substring
                                      (queryHandler.indexOf(".") + 1).
                                      toLowerCase();
-                //print.ln("handlerName:"+handlerName);
                 // Determine the name of the plugin to invoke by using all text
                 // in the query string up to the first occurence of &, =, or the
                 // whole string if neither is present.
@@ -803,21 +799,13 @@ public final class RPCServer{
 
 	public void registerTypeMapping(Class clazz) {
 		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://rpc.xml.coldfusion",fullname);
+		QName qname = new QName("http://rpc.xml.cfml",fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
 	private void registerTypeMapping(Class clazz,QName qname) {
-		//org.apache.axis.encoding.TypeMapping tm;
-		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
-		TypeMapping tm = reg.getDefaultTypeMapping();
-		if(tm==null)reg.registerDefault(tm=reg.createTypeMapping());
-		//tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		/*Class c = tm.getClassForQName(qname);
-		if(c!=null && c!=clazz) {
-			tm.removeDeserializer(c, qname);
-			tm.removeSerializer(c, qname);
-		}*/
+		
+		org.apache.axis.encoding.TypeMapping tm = TypeMappingUtil.getServerTypeMapping(axisServer);
 		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
 	}
 }

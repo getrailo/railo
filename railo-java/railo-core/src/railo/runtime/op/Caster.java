@@ -3209,7 +3209,7 @@ public final class Caster {
     	if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
-        		return ComponentUtil.getServerComponentPropertiesClass(pc,c);
+        		return ComponentUtil.getComponentPropertiesClass(pc,c);
     		} 
             catch (PageException e) {
             	pe=e;

@@ -10,6 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
@@ -68,7 +69,7 @@ public final class ComponentController {
 		// cast return value to Axis type
 		try {
 			RPCServer server = RPCServer.getInstance(p.getId(),p.getServletContext());
-			TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
+			TypeMapping tm = TypeMappingUtil.getServerTypeMapping(server.getEngine().getTypeMappingRegistry());
 			rtn=Caster.castTo(p, rtnType, rtn, false);
 			Class<?> clazz = Caster.cfTypeToClass(rtnType);
 			return AxisCaster.toAxisType(tm,rtn,clazz.getComponentType()!=null?clazz:null);

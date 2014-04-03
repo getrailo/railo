@@ -8,6 +8,7 @@ import org.apache.axis.encoding.ser.ArrayDeserializerFactory;
 import org.apache.axis.encoding.ser.ArraySerializerFactory;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import org.apache.axis.server.AxisServer;
 
 import railo.runtime.net.rpc.server.StringDeserializerFactory;
 import railo.runtime.net.rpc.server.StringSerializerFactory;
@@ -53,6 +54,17 @@ public class TypeMappingUtil {
     			new BeanSerializerFactory(clazz, qName), 
     			new BeanDeserializerFactory(clazz, qName));
 		
+		
+	}
+
+	public static org.apache.axis.encoding.TypeMapping getServerTypeMapping(AxisServer axisServer) {
+		org.apache.axis.encoding.TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
+		return reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
+		
+	}
+	public static org.apache.axis.encoding.TypeMapping getServerTypeMapping(TypeMappingRegistry reg) {
+		//org.apache.axis.encoding.TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
+		return ((org.apache.axis.encoding.TypeMappingRegistry)reg).getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
 		
 	}
 	
