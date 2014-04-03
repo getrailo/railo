@@ -20,11 +20,11 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.Component;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -33,6 +33,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -369,6 +371,16 @@ public final class Reflector {
 		else if(trgClass==TimeZone.class && Decision.isString(src)) return Caster.toTimeZone(Caster.toString(src));
 		else if(trgClass==Collection.Key.class) return KeyImpl.toKey(src);
 		else if(trgClass==Locale.class && Decision.isString(src)) return Caster.toLocale(Caster.toString(src));
+		else if(Reflector.isInstaneOf(trgClass, Pojo.class) && src instanceof Map) {
+			Struct sct=Caster.toStruct(src);
+			try{
+				Pojo pojo=(Pojo) trgClass.newInstance();
+				if(sct instanceof Component)
+					return AxisCaster.toPojo(pojo, null, null, null, (Component)sct, new HashSet<Object>());
+				return AxisCaster.toPojo(pojo, null, null, null,sct, new HashSet<Object>());
+			}
+			catch(Throwable t){}
+		}
 		if(trgClass.isPrimitive()) {
 			//return convert(src,srcClass,toReferenceClass(trgClass));
 			return _convert(src,toReferenceClass(trgClass));
@@ -1256,16 +1268,20 @@ public final class Reflector {
 			else										objs=(Object[])obj;//toRefArray((Object[])obj);
 			
 		}
-		if(clazz==objs.getClass()) return objs;
+		if(clazz==objs.getClass()) {
+			return objs;
+		}
 		
 		//if(objs==null) return defaultValue;
 		//Class srcClass = objs.getClass().getComponentType();
-		Class trgClass = clazz.getComponentType();
-		Object rtn = java.lang.reflect.Array.newInstance(trgClass, objs.length);
+		Class compClass = clazz.getComponentType();
+		Object rtn = java.lang.reflect.Array.newInstance(compClass, objs.length);
+		//try{
 		for(int i=0;i<objs.length;i++) {
-			//java.lang.reflect.Array.set(rtn, i, convert(objs[i], srcClass, trgClass));
-			java.lang.reflect.Array.set(rtn, i, convert(objs[i], trgClass,null));
+			java.lang.reflect.Array.set(rtn, i, convert(objs[i], compClass,null));
 		}
+		//}catch(Throwable t){t.printStackTrace();}
+		
 		return rtn;
 	}
 	

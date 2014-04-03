@@ -679,7 +679,7 @@ final class Axis1Client extends WSClient {
 		
 		QName paramType = Utils.getXSIType(p);
 		
-		Object res = AxisCaster.toAxisType(tm,tz,p,paramType,arg);
+		Object res = AxisCaster.toAxisType(tm,tz,p.getType(),paramType,arg);
 		print.e(res);
 		return res;
 		

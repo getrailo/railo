@@ -1,16 +1,21 @@
 package railo.runtime.net.rpc;
 
 import java.io.StringReader;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.axis.wsdl.symbolTable.ElementDecl;
+import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.client.WSClient;
@@ -105,6 +110,24 @@ public class AxisUtil {
         MessageContext context = MessageContext.getCurrentContext();
         if(context == null) throw new AxisFault("not inside a Soap Request");
         return context;
+	}
+
+	public static TypeEntry getContainedElement(TypeEntry type, String name, TypeEntry defaultValue) {
+		if(type==null) return defaultValue;
+		Vector v = type.getContainedElements();
+		Iterator it = v.iterator();
+		ElementDecl ed;
+		String tmp;
+		while(it.hasNext()){
+			ed=(ElementDecl) it.next();
+			if(ed.getQName()==null) continue;
+			tmp=railo.runtime.type.util.ListUtil.last(ed.getQName().getLocalPart(), '>');
+        	
+			
+			if(tmp.equalsIgnoreCase(name))
+				return ed.getType();
+		}
+		return defaultValue;
 	}
 	
 	

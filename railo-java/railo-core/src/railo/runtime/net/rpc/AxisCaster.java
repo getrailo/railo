@@ -35,7 +35,6 @@ import org.apache.axis.types.URI;
 import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.axis.types.Year;
 import org.apache.axis.types.YearMonth;
-import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 
 import railo.commons.lang.ClassException;
@@ -87,8 +86,8 @@ public final class AxisCaster {
      * @return Axis Compatible Type
      * @throws PageException
      */
-    public static Object toAxisType(TypeMapping tm,TimeZone tz,Parameter param,QName type, Object value) throws PageException {
-    	return _toAxisType(tm, tz, param,type,null, value,new HashSet<Object>());
+    public static Object toAxisType(TypeMapping tm,TimeZone tz,TypeEntry typeEntry,QName type, Object value) throws PageException {
+    	return _toAxisType(tm, tz, typeEntry,type,null, value,new HashSet<Object>());
 	}
 
     public static Object toAxisType(TypeMapping tm,Object value, Class targetClass) throws PageException {
@@ -102,7 +101,7 @@ public final class AxisCaster {
      * @return Axis Compatible Type
      * @throws PageException
      */
-    private static Object _toAxisType(TypeMapping tm,TimeZone tz,Parameter param,QName type, Class targetClass, Object value,Set<Object> done) throws PageException {
+    private static Object _toAxisType(TypeMapping tm,TimeZone tz,TypeEntry typeEntry,QName type, Class targetClass, Object value,Set<Object> done) throws PageException {
         if(done.contains(value)){
 			return null;// TODO not sure what in this case is the best solution.
 		}
@@ -113,7 +112,7 @@ public final class AxisCaster {
 
     			// Array Of
     			if(type.getLocalPart().startsWith("ArrayOf")) {
-    				return toArray(tm,param,type,value,done);
+    				return toArray(tm,typeEntry,type,value,done);
     	    	}
     			
     			
@@ -135,7 +134,7 @@ public final class AxisCaster {
 		        	return toAxisTypeSoap(tm,type.getLocalPart().substring(5), value,done);
 		        }
 	        }
-	    	return _toDefinedType(tm,type,targetClass,value,done);
+	    	return _toDefinedType(tm,typeEntry,type,targetClass,value,done);
         
     	}
     	finally{
@@ -143,7 +142,7 @@ public final class AxisCaster {
     	}
     }
     
-    private static Object toArray(TypeMapping tm, Parameter param,QName type, Object value, Set<Object> done) throws PageException {
+    private static Object toArray(TypeMapping tm, TypeEntry typeEntry,QName type, Object value, Set<Object> done) throws PageException {
     	if(type==null || !type.getLocalPart().startsWith("ArrayOf"))
     		throw new ApplicationException("invalid call of the functionn toArray");
     	
@@ -152,8 +151,8 @@ public final class AxisCaster {
 		QName componentType=null;
 		
 		// no arrayOf embeded anymore
-		if(tmp.indexOf("ArrayOf")==-1 && param!=null) {
-			TypeEntry ref = param.getType().getRefType();
+		if(tmp.indexOf("ArrayOf")==-1 && typeEntry!=null) {
+			TypeEntry ref = typeEntry.getRefType();
 			componentType=ref.getQName();
 		}
 		if(componentType==null) {
@@ -168,7 +167,7 @@ public final class AxisCaster {
     	Class componentClass=null;
     	Object v;
     	for(int i=0;i<objs.length;i++) {
-	    	v=_toAxisType(tm,null,param,componentType,null,objs[i],done);
+	    	v=_toAxisType(tm,null,typeEntry,componentType,null,objs[i],done);
 	    	list.add(v);
 	    	if(i==0) {
 	    		if(v!=null) componentClass=v.getClass();
@@ -214,7 +213,7 @@ public final class AxisCaster {
         if(local.equals(Constants.SOAP_STRING.getLocalPart())) return Caster.toString(value);
         if(local.equals(Constants.SOAP_VECTOR.getLocalPart())) return toVector(tm,value,done);
         
-        return _toDefinedType(tm,null,null,value,done);
+        return _toDefinedType(tm,null,null,null,value,done);
         
         
     }
@@ -268,7 +267,7 @@ public final class AxisCaster {
         if(local.equalsIgnoreCase(Constants.XSD_UNSIGNEDSHORT.getLocalPart())) return Caster.toShort(value);
         if(local.equalsIgnoreCase(Constants.XSD_YEAR.getLocalPart())) return toYear(value);
         if(local.equalsIgnoreCase(Constants.XSD_YEARMONTH.getLocalPart())) return toYearMonth(value);
-        return _toDefinedType(tm, null,null, value, done);
+        return _toDefinedType(tm, null,null,null, value, done);
     }
 
     private static ArrayList<Object> toArrayList(TypeMapping tm,Object value, Set<Object> done) throws PageException {
@@ -363,17 +362,17 @@ public final class AxisCaster {
 		return map;
 	}
 
-	private static Pojo toPojo(Pojo pojo, TypeMapping tm,Component comp, Set<Object> done) throws PageException {
+	public static Pojo toPojo(Pojo pojo, TypeMapping tm,TypeEntry typeEntry,QName type,Component comp, Set<Object> done) throws PageException {
     	PageContext pc = ThreadLocalPageContext.get(); 
 	    try {
-	    	return _toPojo(pc,pojo, tm, comp,done);
+	    	return _toPojo(pc,pojo, tm,typeEntry,type, comp,done);
 		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
 	}
 	
-	private static Pojo _toPojo(PageContext pc, Pojo pojo, TypeMapping tm,Component comp, Set<Object> done) throws PageException {//print.ds();System.exit(0);
+	private static Pojo _toPojo(PageContext pc, Pojo pojo, TypeMapping tm,TypeEntry typeEntry,QName type,Component comp, Set<Object> done) throws PageException {//print.ds();System.exit(0);
     	comp=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,comp);
 		ComponentScope scope = comp.getComponentScope();
     	
@@ -388,22 +387,22 @@ public final class AxisCaster {
     	
     	// initialize Pojo
 		Property[] props=ComponentProUtil.getProperties(comp, false, true, false, false);
-		_initPojo(pc,pojo,props,scope,comp,tm,done);
+		_initPojo(pc,typeEntry,type,pojo,props,scope,comp,tm,done);
 
     	return pojo;
     }
 	
-	private static Pojo toPojo(Pojo pojo, TypeMapping tm,Struct sct, Set<Object> done) throws PageException {
+	public static Pojo toPojo(Pojo pojo, TypeMapping tm,TypeEntry typeEntry,QName type,Struct sct, Set<Object> done) throws PageException {
     	PageContext pc = ThreadLocalPageContext.get(); 
 	    try {
-	    	return _toPojo(pc,pojo, tm, sct,done);
+	    	return _toPojo(pc,pojo, tm,typeEntry,type, sct,done);
 		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
 	}
 
-	private static Pojo _toPojo(PageContext pc, Pojo pojo, TypeMapping tm,Struct sct, Set<Object> done) throws PageException {//print.ds();System.exit(0);
+	private static Pojo _toPojo(PageContext pc, Pojo pojo, TypeMapping tm,TypeEntry typeEntry,QName type,Struct sct, Set<Object> done) throws PageException {//print.ds();System.exit(0);
 		if(pojo==null) {
 			try {
 				PhysicalClassLoader cl=(PhysicalClassLoader) pc.getConfig().getRPCClassLoader(false);
@@ -431,12 +430,12 @@ public final class AxisCaster {
 			props.add(p);
 		}
 		
-		_initPojo(pc,pojo,props.toArray(new Property[props.size()]),sct,null,tm,done);
+		_initPojo(pc,typeEntry,type,pojo,props.toArray(new Property[props.size()]),sct,null,tm,done);
 
     	return pojo;
     }
     
-    private static void _initPojo(PageContext pc, Pojo pojo, Property[] props, Struct sct, Component comp, TypeMapping tm, Set<Object> done) throws PageException {
+    private static void _initPojo(PageContext pc, TypeEntry typeEntry, QName type, Pojo pojo, Property[] props, Struct sct, Component comp, TypeMapping tm, Set<Object> done) throws PageException {
     	Property p;
     	Object v;
     	Collection.Key k;
@@ -477,7 +476,14 @@ public final class AxisCaster {
     			if(p.isRequired())throw new ExpressionException("required property ["+p.getName()+"] is not defined");
     		}
     		else {
-    			Reflector.callSetter(pojo, p.getName().toLowerCase(), _toAxisType(tm,null,null,null,null,v,done));	
+    			TypeEntry childTE=null;
+    			QName childT=null;
+    			if(typeEntry!=null) {
+	    			childTE = AxisUtil.getContainedElement(typeEntry,p.getName(),null);
+	    			if(childTE!=null) childT=childTE.getQName();
+	    			
+    			}
+    			Reflector.callSetter(pojo, p.getName().toLowerCase(), _toAxisType(tm,null,childTE,childT,null,v,done));	
     		}
     	}
 	}
@@ -524,7 +530,7 @@ public final class AxisCaster {
         
     }
 
-    private static Object _toDefinedType(TypeMapping tm,QName type,Class targetClass,Object value,Set<Object> done) throws PageException {
+    private static Object _toDefinedType(TypeMapping tm,TypeEntry typeEntry,QName type,Class targetClass,Object value,Set<Object> done) throws PageException {
     	
     	// Date
     	if(value instanceof Date) {// not set to Decision.isDate(value)
@@ -546,9 +552,10 @@ public final class AxisCaster {
     		}
     		// Struct
             if(Decision.isStruct(value)) {
+            	
             	if(value instanceof Component) 
-            		return toPojo(pojo,tm,(Component)value,done);
-            	return toPojo(pojo,tm,Caster.toStruct(value),done);
+            		return toPojo(pojo,tm,typeEntry,type,(Component)value,done);
+            	return toPojo(pojo,tm,typeEntry,type,Caster.toStruct(value),done);
             }
     	}
 
@@ -563,7 +570,7 @@ public final class AxisCaster {
     	// Struct
         if(Decision.isStruct(value)) {
         	if(value instanceof Component) {
-        		Object pojo= toPojo(null,tm,(Component)value,done);
+        		Object pojo= toPojo(null,tm,null,null,(Component)value,done);
         		try	{
         			if(type==null || type.getLocalPart().equals("anyType")) {
         				type= new QName("http://rpc.xml.cfml",pojo.getClass().getName());
