@@ -77,14 +77,6 @@ public class MemberUtil {
 							refs.add(new Casting(flfa.getTypeAsString(),flfa.getType(),args[argIndex]));
 						}
 					}
-					
-					
-					if(methodName.equals("replace")) {
-						print.e("first:"+methodName);
-						print.e(refs);
-					}
-					
-				
 				return new BIFCall(coll, member, refs.toArray(new Ref[refs.size()])).getValue(pc);
 			}
 			
