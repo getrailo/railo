@@ -3,7 +3,6 @@
  */
 package railo.runtime.functions.string;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
@@ -19,7 +18,7 @@ public final class Reverse extends BIF {
 	}
 
     @Override
-	public Object invoke(PageContext pc, Object[] args) throws PageException {print.ds();
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
     	if(args.length==1)
 			return call(pc, Caster.toString(args[0]));
     	

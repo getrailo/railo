@@ -74,7 +74,7 @@ public final class Each extends BIF {
 			invoke(pc, (Iteratorable)obj, udf,execute,futures);
 		}
 		// Map
-		else if(obj instanceof Map) {print.ds();
+		else if(obj instanceof Map) {
 			Iterator it = ((Map)obj).entrySet().iterator();
 			Entry e;
 			while(it.hasNext()){
