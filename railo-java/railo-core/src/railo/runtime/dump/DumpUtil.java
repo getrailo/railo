@@ -2,17 +2,20 @@ package railo.runtime.dump;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
@@ -30,6 +33,7 @@ import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.text.xml.XMLCaster;
@@ -51,7 +55,6 @@ public class DumpUtil {
 	}
 
 	public static DumpData toDumpData(Object o, PageContext pageContext, int maxlevel, DumpProperties props) {
-
 		if(maxlevel<0)
 			return MAX_LEVEL_REACHED;
 
@@ -363,7 +366,80 @@ public class DumpUtil {
 			    }
 			    return setId(id,htmlBox);
 			}
-		
+			
+			if(o instanceof Pojo) {
+				DumpTable table = new DumpTable(o.getClass().getName(),"#ff99cc","#ffccff","#000000");
+				
+				Class clazz=o.getClass();
+				if(o instanceof Class) clazz=(Class) o;
+				String fullClassName=clazz.getName();
+				int pos=fullClassName.lastIndexOf('.');
+				String className=pos==-1?fullClassName:fullClassName.substring(pos+1);
+				
+				table.setTitle("Java Bean - "+className +" ("+fullClassName+")");
+				table.appendRow(3,
+						new SimpleDumpData("Property Name"),
+						new SimpleDumpData("Value")
+				);
+				
+				// collect the properties
+				Method[] methods=clazz.getMethods();
+				String propName;
+				Object value;
+				String exName=null;
+				String exValue=null;
+				for(int i=0;i<methods.length;i++) {
+					Method method = methods[i];
+					if(Object.class==method.getDeclaringClass()) continue;
+					propName=method.getName();
+					if(propName.startsWith("get") && method.getParameterTypes().length==0) {
+						propName=propName.substring(3);
+						value=null;
+						try {
+							value=method.invoke(o, new Object[0]);
+							
+							if(exName==null && value instanceof String && ((String)value).length()<20) {
+								exName=propName;
+								exValue=value.toString();
+							}
+							
+						}
+						catch (Throwable t) {value="not able to retrieve the data:"+t.getMessage();}
+						
+						
+						
+						
+						table.appendRow(0,
+								new SimpleDumpData(propName),
+								toDumpData(value, pageContext, maxlevel, props)
+						);
+					}
+				}
+				
+				if(exName==null) {
+					exName="LastName";
+					exValue="Sorglos";
+				}
+				
+				table.setComment("JavaBeans are reusable software components for Java." +
+						"\nThey are classes that encapsulate many objects into a single object (the bean)." +
+						"\nThey allow access to properties using getter and setter methods or directly." );
+						
+						/*"\n\nExample:\n" +
+						"   x=myBean.get"+exName+"(); // read a property with a getter method\n" +
+						"   x=myBean."+exName+"; // read a property directly\n" +
+						"   myBean.set"+exName+"(\""+exValue+"\"); // write a property with a setter method\n" +
+						"   myBean."+exName+"=\""+exValue+"\"; // write a property directly");*/
+				
+				
+				
+				
+				return setId(id,table);
+				
+				
+				
+				
+			}
 		
 		// reflect
 		//else {
