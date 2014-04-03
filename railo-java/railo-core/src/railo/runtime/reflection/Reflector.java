@@ -7,6 +7,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
@@ -348,6 +350,11 @@ public final class Reflector {
 			else if(isInstaneOf(trgClass, Array.class)) {
 				return Caster.toArray(src);
 			}
+		}
+		
+		if(trgClass==Calendar.class && Decision.isDate(src, true)) {
+			TimeZone tz = ThreadLocalPageContext.getTimeZone();
+			return Caster.toCalendar(Caster.toDate(src, tz),tz,Locale.US);
 		}
 		
 		if(trgClass==Date.class) return Caster.toDate(src,true,null);
@@ -1042,7 +1049,7 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static void callSetter(Object obj, String prop,Object value) throws PageException {
-	    try {
+		try {
 		    getSetter(obj, prop, value).invoke(obj);
 		}
 		catch (InvocationTargetException e) {
