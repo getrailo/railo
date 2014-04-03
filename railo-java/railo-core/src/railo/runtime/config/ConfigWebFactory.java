@@ -31,6 +31,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -101,6 +102,7 @@ import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.listener.AppListenerUtil;
+import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
@@ -133,6 +135,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
@@ -2510,20 +2513,54 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 	private static void loadTag(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
 		Element parent = getChildByName(doc.getDocumentElement(), "tags");
-		Element[] tags = getChildren(parent, "tag");
-		Element tag;
-
-		String nss, ns, n, c;
-		if (tags != null) {
-			for (int i = 0; i < tags.length; i++) {
-				tag = tags[i];
-				ns = tag.getAttribute("namespace");
-				nss = tag.getAttribute("namespace-seperator");
-				n = tag.getAttribute("name");
-				c = tag.getAttribute("class");
-				config.addTag(ns, nss, n, c);
+		
+		
+		{
+			Element[] tags = getChildren(parent, "tag");
+			Element tag;
+	
+			String nss, ns, n, c;
+			if (tags != null) {
+				for (int i = 0; i < tags.length; i++) {
+					tag = tags[i];
+					ns = tag.getAttribute("namespace");
+					nss = tag.getAttribute("namespace-seperator");
+					n = tag.getAttribute("name");
+					c = tag.getAttribute("class");
+					config.addTag(ns, nss, n, c);
+				}
 			}
 		}
+		
+		// set tag default values
+		Element[] defaults = getChildren(parent, "default");
+		if(!ArrayUtil.isEmpty(defaults)){
+			Element def;
+			String tagName,attrName,attrValue;
+			Struct tags=new StructImpl(),tag;
+			Map<Key, Map<Key, Object>> trg=new HashMap<Key, Map<Key,Object>>();
+			for (int i = 0; i < defaults.length; i++) {
+				def = defaults[i];
+				tagName = def.getAttribute("tag");
+				attrName = def.getAttribute("attribute-name");
+				attrValue = def.getAttribute("attribute-value");
+				if(StringUtil.isEmpty(tagName) || StringUtil.isEmpty(attrName) || StringUtil.isEmpty(attrValue)) continue;
+				
+				tag=(Struct) tags.get(tagName,null);
+				if(tag==null) {
+					tag=new StructImpl();
+					tags.setEL(tagName, tag);
+				}
+				tag.setEL(attrName, attrValue);
+				ApplicationContextSupport.initTagDefaultAttributeValues(config, trg, tags);
+				config.setTagDefaultAttributeValues(trg);
+			}
+			
+			// initTagDefaultAttributeValues
+			
+			
+		}
+		
 
 	}
 
