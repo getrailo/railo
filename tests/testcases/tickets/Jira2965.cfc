@@ -15,7 +15,7 @@ component extends="org.railo.cfml.test.RailoTestCase" {
 
 	function testGiveIntegerPropertyAsInteger2 () {
 		var item=new Jira2965.MyItemWithString();
-		dump(ws);abort;
+		//dump(ws);abort;
 		item.name="Susi";
 		item.id=1;
 		local.accept = variables.ws.giveIntegerPropertyAsInteger(item);
