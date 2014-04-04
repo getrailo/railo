@@ -38,7 +38,6 @@ import org.apache.axis.wsdl.symbolTable.Parameters;
 import org.apache.axis.wsdl.symbolTable.ServiceEntry;
 import org.apache.axis.wsdl.symbolTable.SymTabEntry;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
-import org.apache.axis.wsdl.symbolTable.Type;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.axis.wsdl.toJava.Utils;
 import org.w3c.dom.Document;
@@ -47,7 +46,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import railo.commons.digest.HashUtil;
 import railo.commons.lang.ClassUtil;
@@ -59,7 +57,6 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -67,7 +64,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.proxy.Proxy;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.AxisCaster;
-import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
@@ -253,7 +249,7 @@ final class Axis1Client extends WSClient {
         }
         
         
-        org.apache.axis.encoding.TypeMapping tm=call.getMessageContext().getTypeMapping();
+        org.apache.axis.encoding.TypeMapping tm=call.getTypeMapping();
         Vector<String> inNames = new Vector<String>();
 		Vector<Parameter> inTypes = new Vector<Parameter>();
 		Vector<String> outNames = new Vector<String>();
@@ -511,7 +507,6 @@ final class Axis1Client extends WSClient {
 		if(pc==null)pojo = ComponentUtil.getComponentPropertiesClass(secondChanceConfig,clientClassName,props,ex);
 		else pojo = ComponentUtil.getClientComponentPropertiesClass(pc,clientClassName,props,ex);
 		
-		//print.e("map.register:"+type.getQName()+"->"+pojo);
 		TypeMappingUtil.registerBeanTypeMapping(tm,pojo, type.getQName());
 		
     	return pojo;
