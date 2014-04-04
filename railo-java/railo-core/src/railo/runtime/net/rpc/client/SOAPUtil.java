@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPBody;
 
 import org.apache.axis.Constants;
 import org.apache.axis.wsdl.symbolTable.BaseType;
@@ -17,20 +15,16 @@ import org.apache.axis.wsdl.symbolTable.DefinedType;
 import org.apache.axis.wsdl.symbolTable.ElementDecl;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.Type;
-import org.apache.axis.wsdl.toJava.Utils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import railo.print;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.net.rpc.client.SOAPUtil.TempType;
 import railo.runtime.text.xml.ArrayNodeList;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.Collection;
 
 public class SOAPUtil {
 	
@@ -149,14 +143,7 @@ public class SOAPUtil {
 		}
 		
 		// now convert to types
-		
-		
-		print.o(res);
 		return toTypes(res,false);
-		//print.o(types);
-		//print.e(hrefs);
-		//print.e(ids);
-		
 	}
 	
 	private static Vector toTypes(List<TempType> res,boolean contained) {
@@ -221,7 +208,6 @@ public class SOAPUtil {
 	private static TempType toTempType(Element e,List<TempType> hrefs,Map<String,TempType> ids,List<TempType> root) {
 		String name=e.getLocalName();
 		Pair<String, String> arrayType=null;
-		print.e("name:"+name);
 		// type and namespace
 		int index;
 		Pair<String, String> type = parseType(e.getAttribute("xsi:type"));
@@ -247,7 +233,6 @@ public class SOAPUtil {
 	        Attr attr;
 	        for(int i=0;i<len;i++) {
 	        	attr=(Attr)attrs.item(i);
-	        	print.e("-->"+attr.getName());
 	        	if(attr.getName().startsWith("xmlns:"))
 	        		namespace=attr.getValue();
 	        }
