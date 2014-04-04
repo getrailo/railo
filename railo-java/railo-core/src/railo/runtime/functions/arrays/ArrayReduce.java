@@ -4,7 +4,6 @@
 package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;

@@ -20,7 +20,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryColumnImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;

@@ -3,7 +3,6 @@ package railo.runtime.type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
@@ -29,7 +28,6 @@ import railo.runtime.interpreter.ref.literal.LString;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.UDFUtil;
-import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;

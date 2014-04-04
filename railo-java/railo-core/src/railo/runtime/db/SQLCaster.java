@@ -1,7 +1,6 @@
 package railo.runtime.db;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -29,7 +28,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeImpl;
 import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
-import railo.transformer.bytecode.statement.Switch.Case;
 
 /**
  * SQL Caster 

@@ -7,7 +7,6 @@ import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Reduce;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Query;
-import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 
 

@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -33,7 +31,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.it.ObjectsEntryIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 

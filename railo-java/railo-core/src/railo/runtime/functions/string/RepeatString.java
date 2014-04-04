@@ -8,7 +8,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.function.Function;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 

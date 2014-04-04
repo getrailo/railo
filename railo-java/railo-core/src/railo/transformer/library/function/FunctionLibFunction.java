@@ -9,7 +9,6 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.BIF;

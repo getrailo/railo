@@ -3,24 +3,13 @@
  */
 package railo.runtime.functions.list;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import railo.runtime.PageContext;
-import railo.runtime.concurrency.Data;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
-import railo.runtime.functions.arrays.ArrayEach;
-import railo.runtime.functions.closure.Each;
 import railo.runtime.functions.closure.Every;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Array;
 import railo.runtime.type.UDF;
-import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StringListData;
 
 

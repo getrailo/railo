@@ -3,9 +3,6 @@
  */
 package railo.runtime.functions.struct;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -14,11 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Filter;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Array;
-import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 
 

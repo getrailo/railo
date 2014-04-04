@@ -6,7 +6,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Every;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Array;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 

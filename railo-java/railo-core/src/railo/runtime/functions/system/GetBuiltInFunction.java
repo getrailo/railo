@@ -4,10 +4,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
-import railo.runtime.functions.BIFProxy;
-import railo.runtime.interpreter.ref.func.BIFCall;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Array;
 
 public class GetBuiltInFunction extends BIF {
 	

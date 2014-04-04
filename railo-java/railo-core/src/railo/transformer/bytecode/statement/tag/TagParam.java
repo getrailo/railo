@@ -10,7 +10,6 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastInt;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.impl.Argument;
 

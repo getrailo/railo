@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
 import railo.runtime.listener.AppListenerUtil;
 import railo.transformer.bytecode.Body;

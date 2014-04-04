@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import railo.runtime.exp.CasterException;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;

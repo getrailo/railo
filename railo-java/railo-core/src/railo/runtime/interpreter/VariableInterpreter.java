@@ -19,7 +19,6 @@ import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
-import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 /**

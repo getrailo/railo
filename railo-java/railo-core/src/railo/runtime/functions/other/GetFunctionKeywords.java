@@ -3,18 +3,14 @@ package railo.runtime.functions.other;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.arrays.ArraySort;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;

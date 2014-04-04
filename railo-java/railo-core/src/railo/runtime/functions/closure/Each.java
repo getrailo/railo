@@ -14,26 +14,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import railo.print;
-import railo.commons.lang.StringList;
 import railo.runtime.PageContext;
 import railo.runtime.concurrency.Data;
-import railo.runtime.concurrency.UDFCaller;
 import railo.runtime.concurrency.UDFCaller2;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Query;
-import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StringListData;
-import railo.runtime.type.Iteratorable;
-import railo.runtime.type.UDF;
 
 
 public final class Each extends BIF {

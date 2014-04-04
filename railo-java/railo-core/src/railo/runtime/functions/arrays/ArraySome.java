@@ -1,11 +1,9 @@
 package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
-import railo.runtime.functions.closure.Map;
 import railo.runtime.functions.closure.Some;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;

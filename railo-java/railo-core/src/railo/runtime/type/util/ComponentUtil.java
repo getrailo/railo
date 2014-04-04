@@ -17,7 +17,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.commons.digest.HashUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;

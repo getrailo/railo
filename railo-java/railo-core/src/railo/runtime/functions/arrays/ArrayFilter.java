@@ -3,8 +3,6 @@
  */
 package railo.runtime.functions.arrays;
 
-import java.util.Iterator;
-
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -14,8 +12,6 @@ import railo.runtime.functions.BIF;
 import railo.runtime.functions.closure.Filter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.UDF;
 
 

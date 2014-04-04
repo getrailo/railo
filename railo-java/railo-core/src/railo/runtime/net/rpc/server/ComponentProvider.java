@@ -11,7 +11,6 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
-import railo.runtime.net.rpc.TypeMappingUtil;
 
 public final class ComponentProvider extends RPCProvider {
 
