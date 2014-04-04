@@ -17,8 +17,11 @@ import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 /**
  * Class to check and interpret Variable Strings
  */
@@ -278,6 +281,36 @@ public final class VariableInterpreter {
 		if(!(coll instanceof Collection))
 			throw new InterpreterException("invalid variable ["+var+"]");
 		return new VariableReference((Collection)coll,list.next());
+	}
+	
+	public static VariableReference getVariableReference(PageContext pc,Collection.Key[] keys, boolean keepScope) throws PageException { 
+	   
+		if(keys.length==1) {
+			if(keepScope) {
+				Collection coll = ((UndefinedImpl)pc.undefinedScope()).getScopeFor(keys[0],null);
+				if(coll!=null) return new VariableReference(coll,keys[0]); 
+			}
+			return new VariableReference(pc.undefinedScope(),keys[0]); 
+		}
+		int scope=scopeKey2Int(keys[0]);
+		
+		Object coll;
+		
+		if(scope==Scope.SCOPE_UNDEFINED){
+			coll=pc.touch(pc.undefinedScope(),keys[0]);
+		}
+		else{
+			coll=VariableInterpreter.scope(pc, scope, keys.length>1);
+		}
+		
+		for(int i=1;i<(keys.length-1);i++){
+			coll=pc.touch(coll,keys[i]);
+		}
+		
+
+		if(!(coll instanceof Collection))
+			throw new InterpreterException("invalid variable ["+ListUtil.arrayToList(keys, ".")+"]");
+		return new VariableReference((Collection)coll,keys[keys.length-1]);
 	} 
 	
 	/**
