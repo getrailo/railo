@@ -87,6 +87,31 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	}
 
 	@Override
+	public void appendHTMLBody(String text) throws IOException {
+		writer.appendHTMLBody(text);
+	}
+
+	@Override
+	public void writeHTMLBody(String text) throws IOException {
+		writer.writeHTMLBody(text);
+	}
+
+	@Override
+	public String getHTMLBody() throws IOException {
+		return writer.getHTMLBody();
+	}
+
+	@Override
+	public void flushHTMLBody() throws IOException {
+		writer.flushHTMLBody();
+	}
+
+	@Override
+	public void resetHTMLBody() throws IOException {
+		writer.resetHTMLBody();
+	}
+
+	@Override
 	public void appendHTMLHead(String text) throws IOException {
 		writer.appendHTMLHead(text);
 	}
@@ -99,6 +124,11 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	@Override
 	public String getHTMLHead() throws IOException {
 		return writer.getHTMLHead();
+	}
+
+	@Override
+	public void flushHTMLHead() throws IOException {
+		writer.flushHTMLHead();
 	}
 
 	@Override
