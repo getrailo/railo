@@ -25,7 +25,7 @@ public final class ComponentProvider extends RPCProvider {
 		Component c= (Component) mc.getProperty(Constants.COMPONENT);
         
 		RPCServer server = RPCServer.getInstance(pc.getId(),pc.getServletContext());
-		TypeMapping tm =TypeMappingUtil.getServerTypeMapping(server.getEngine().getTypeMappingRegistry());
+		TypeMapping tm =mc.getTypeMapping();//TypeMappingUtil.getServerTypeMapping(server.getEngine().getTypeMappingRegistry());
 		
 		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(pc,args)),null);
 	}

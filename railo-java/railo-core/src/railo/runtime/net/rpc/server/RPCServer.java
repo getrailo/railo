@@ -225,7 +225,8 @@ public final class RPCServer{
             /** get message context w/ various properties set
              */
             msgContext = createMessageContext(engine, req, res,component);
-
+            ComponentController.set(msgContext);
+        	
             // ? OK to move this to 'getMessageContext',
             // ? where it would also be picked up for 'doGet()' ?
             if (securityProvider != null) {
