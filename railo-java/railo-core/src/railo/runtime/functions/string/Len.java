@@ -37,6 +37,7 @@ public final class Len implements Function {
 		if(obj instanceof long[])return ((long[])obj).length;
 		if(obj instanceof char[])return ((char[])obj).length;
 		if(obj instanceof boolean[])return ((boolean[])obj).length;
+		if(obj instanceof byte[])return ((byte[])obj).length;
 		String str = Caster.toString(obj,null);
 		if(str!=null) return str.length();
 		
