@@ -61,6 +61,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
@@ -102,7 +103,14 @@ public final class AxisCaster {
      * @throws PageException
      */
     private static Object _toAxisType(TypeMapping tm,TimeZone tz,TypeEntry typeEntry,QName type, Class targetClass, Object value,Set<Object> done) throws PageException {
-        if(done.contains(value)){
+        
+    	// first make sure we have no wrapper
+    	if(value instanceof ObjectWrap) {
+    		value=((ObjectWrap)value).getEmbededObject();
+    	}
+    	
+    	
+    	if(done.contains(value)){
 			return null;// TODO not sure what in this case is the best solution.
 		}
         
@@ -285,8 +293,7 @@ public final class AxisCaster {
     private static Object[] toNativeArray(TypeMapping tm,Class targetClass,Object value, Set<Object> done) throws PageException {
         	Object[] objs = Caster.toNativeArray(value);
         	Object[] rtns;
-        	
-        	
+
         	Class<?> componentClass = null;
         	if(targetClass!=null) {
             	componentClass = targetClass.getComponentType();
@@ -298,6 +305,7 @@ public final class AxisCaster {
             }
             else 
             	rtns = new Object[objs.length];
+            
         	try{
     	        for(int i=0;i<objs.length;i++) {
     	        	rtns[i]=_toAxisType(tm,null,null,null,componentClass,objs[i],done);
@@ -311,8 +319,7 @@ public final class AxisCaster {
     	        }
         	}
         	
-        	
-            return rtns;
+	        return rtns;
         }
 
     private static Vector<Object> toVector(TypeMapping tm,Object value, Set<Object> done) throws PageException {
