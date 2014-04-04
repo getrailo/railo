@@ -10617,6 +10617,25 @@ The following things are considered to be empty:
 			<type>boolean</type>
 		</return>
 	</function>
+
+	<!-- StringIsEmpty - added to support member method on String -->
+	<function>
+		<name>StringIsEmpty</name>
+		<class>railo.runtime.functions.string.StringIsEmpty</class>
+		<status>hidden</status>
+		<member-name>isEmpty</member-name>
+		<description>return true if a string is "empty".</description>
+		<argument>
+			<name>value</name>
+			<type>string</type>
+			<required>true</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
 	<!-- IsImage -->
 	<function>
 		<name>IsImage</name>
