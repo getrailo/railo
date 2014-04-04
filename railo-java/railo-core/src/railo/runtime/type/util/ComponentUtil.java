@@ -17,6 +17,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.commons.digest.HashUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -83,7 +84,7 @@ public final class ComponentUtil {
 	public static Class getComponentJavaAccess(PageContext pc,Component component, RefBoolean isNew,boolean create,boolean writeLog, boolean suppressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
-    	String className=getClassname(component).concat("_wrap");
+    	String className=getClassname(component,null).concat("_wrap");
     	String real=className.replace('.','/');
     	String realOriginal=classNameOriginal.replace('.','/');
     	Mapping mapping = component.getPageSource().getMapping();
@@ -111,8 +112,7 @@ public final class ComponentUtil {
     	//print.out("new");
     // CREATE CLASS	
 		ClassWriter cw = ASMUtil.getClassWriter();
-        //ClassWriter cw = new ClassWriter(true);
-    	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, real, null, "java/lang/Object", null);
+        cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, real, null, "java/lang/Object", null);
 
     	//GeneratorAdapter ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,Page.STATIC_CONSTRUCTOR,null,null,cw);
 		BytecodeContext statConstr = null;//new BytecodeContext(null,null,null,cw,real,ga,Page.STATIC_CONSTRUCTOR);
@@ -286,32 +286,24 @@ public final class ComponentUtil {
 		registerTypeMapping(server,clazz);
 	}
 
-	public static String getClassname(Component component) {
+	public static String getClassname(Component component, ASMProperty[] props) {
+		
+		StringBuilder sb=new StringBuilder();
+		String prefix="";
+		if(props!=null) {
+			for(int i=0;i<props.length;i++){
+				sb.append(props[i].toString()).append(';');
+			}
+			
+			
+			prefix = Long.toString(HashUtil.create64BitHash(sb),Character.MAX_RADIX);
+			char c=prefix.charAt(0);
+			if(c>='0' && c<='9') prefix="a"+prefix;
+			prefix=prefix+".";
+		}
+    	
     	PageSource ps = component.getPageSource();
-    	return ps.getComponentName();
-    	
-    	
-    	/*String path=ps.getDisplayPath();// Must remove webroot
-    	Config config = ps.getMapping().getConfig();
-    	String root = config.getRootDirectory().getAbsolutePath();
-    	if(path.startsWith(root))
-    		path=path.substring(root.length());
-
-    	path=path.replace('\\', '/').toLowerCase();
-    	path=ListUtil.trim(path, "/");
-    	String[] arr = ListUtil.listToStringArray(path, '/');
-    	
-    	StringBuffer rtn=new StringBuffer();
-    	for(int i=0;i<arr.length;i++) {
-    		if(i+1==arr.length) {
-    			rtn.append(StringUtil.toVariableName(StringUtil.replaceLast(arr[i],".cfc","")));
-    		}
-    		else {
-    			rtn.append(StringUtil.toVariableName(arr[i]));
-    			rtn.append('.');
-    		}
-    	}
-    	return rtn.toString();*/
+    	return prefix+ps.getComponentName();
 	}
 
 	/*
@@ -394,7 +386,10 @@ public final class ComponentUtil {
     }
 
     private static Class _getComponentPropertiesClass(PageContext pc,Component component) throws PageException, IOException, ClassNotFoundException {
-    	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
+
+		ASMProperty[] props = ASMUtil.toASMProperties(ComponentProUtil.getProperties(component, false, true, false, false));
+    	
+    	String className=getClassname(component,props);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
 
     	Mapping mapping = component.getPageSource().getMapping();
@@ -423,10 +418,8 @@ public final class ComponentUtil {
 			ext = Caster.cfTypeToClass(strExt);
 		}
 		//
-
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(
-				ComponentProUtil.getProperties(component, false, true, false, false)),ext,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, props,ext,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
 		ResourceUtil.touch(classFile);
 		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(true);

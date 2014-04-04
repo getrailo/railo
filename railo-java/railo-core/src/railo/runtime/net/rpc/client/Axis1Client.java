@@ -20,7 +20,6 @@ import javax.wsdl.Port;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.encoding.TypeMapping;
-import javax.xml.soap.SOAPException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.EngineConfiguration;
@@ -50,7 +49,6 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.digest.HashUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.ExceptionUtil;
@@ -370,14 +368,14 @@ final class Axis1Client extends WSClient {
         		
         		// get the missing types from the SOAP Body, if possible
         		String msg = cause.getMessage();
-        		if(StringUtil.indexOfIgnoreCase(msg, "deserializer")!=-1) {
+        		//if(StringUtil.indexOfIgnoreCase(msg, "deserializer")!=-1) {
 	        		try {
 	        			InputSource is = new InputSource(new StringReader(call.getResponseMessage().getSOAPPartAsString()));
 	        			Document doc = XMLUtil.parse(is, null, false);
 	        			Element body = XMLUtil.getChildWithName("soapenv:Body", doc.getDocumentElement());
 	        			
 	        			Vector types = SOAPUtil.getTypes(body, symbolTable);
-						map(pc,symbolTable,secondChanceConfig,(org.apache.axis.encoding.TypeMapping) (axisService.getTypeMappingRegistry().getDefaultTypeMapping()),types);
+	        			map(pc,symbolTable,secondChanceConfig,(org.apache.axis.encoding.TypeMapping) (axisService.getTypeMappingRegistry().getDefaultTypeMapping()),types);
 						ret = invoke(call,inputs);
 	    				rethrow=false;
 	        			
@@ -385,7 +383,7 @@ final class Axis1Client extends WSClient {
 					catch (Throwable t) {
 						t.printStackTrace();
 					}
-				}
+				//}
         	}
         	if(rethrow) throw af;
         }
@@ -433,8 +431,8 @@ final class Axis1Client extends WSClient {
 	}
 
 	private Class map(PageContext pc,SymbolTable symbolTable, Config secondChanceConfig,org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
-		print.e("MAP");
-		print.e(type.getQName());
+		//print.e("MAP");
+		//print.e(type.getQName());
 		
 		// Simple Type
 		if(type.getContainedElements()==null) return null;
@@ -460,7 +458,6 @@ final class Axis1Client extends WSClient {
 	private Class mapComplex(PageContext pc,SymbolTable symbolTable,Config secondChanceConfig,org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		TypeEntry ref=type.getRefType();
 		if(ref==null) return _mapComplex(pc,symbolTable,secondChanceConfig, tm, type);
-		print.e(ref.getQName());
 		
 		// Array
 		if(ref.getContainedElements()==null) return null;
@@ -505,7 +502,6 @@ final class Axis1Client extends WSClient {
 	        	name=railo.runtime.type.util.ListUtil.last(el.getQName().getLocalPart(), '>');
 	        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
 	        	if(clazz==null)clazz=Object.class;
-	        	print.e(t.getQName()+":"+clazz);
 	        	properties.add(new ASMPropertyImpl(clazz,name));
 	        }
 		}
@@ -515,8 +511,7 @@ final class Axis1Client extends WSClient {
 		if(pc==null)pojo = ComponentUtil.getComponentPropertiesClass(secondChanceConfig,clientClassName,props,ex);
 		else pojo = ComponentUtil.getClientComponentPropertiesClass(pc,clientClassName,props,ex);
 		
-		print.e("register:"+type.getQName()+"->"+pojo);
-		
+		//print.e("map.register:"+type.getQName()+"->"+pojo);
 		TypeMappingUtil.registerBeanTypeMapping(tm,pojo, type.getQName());
 		
     	return pojo;
@@ -674,13 +669,12 @@ final class Axis1Client extends WSClient {
 	
 
 	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
-		print.e("ArgumentData");
-		//print.e(paramType);
+		//print.e("ArgumentData");
 		
 		QName paramType = Utils.getXSIType(p);
 		
 		Object res = AxisCaster.toAxisType(tm,tz,p.getType(),paramType,arg);
-		print.e(res);
+		//print.e(res);
 		return res;
 		
 	}
