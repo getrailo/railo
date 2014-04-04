@@ -15,11 +15,10 @@ public class IsEmpty implements Function {
 		if(value==null) return true;
 		if(value instanceof Boolean) return !Caster.toBoolean(value);
 		if(value instanceof Number) return Caster.toDoubleValue(value)==0D;
-		
-		
+
+
 		double len=Len.invoke(value, -1);
 		if(len==-1)throw new FunctionException(pc,"isEmpty",1,"variable","this type  ["+Caster.toTypeName(value)+"] is not supported");
 		return len==0;
 	}
-
 }
