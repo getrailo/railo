@@ -2275,13 +2275,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(KeyConstants._cfid,null);
-        Object oCftoken = urlScope().get(KeyConstants._cftoken,null);
+        Object oCfid = urlScope().get(KeyConstants._CFID,null);
+        Object oCftoken = urlScope().get(KeyConstants._CFTOKEN,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(KeyConstants._cfid,null);
-            oCftoken = cookieScope().get(KeyConstants._cftoken,null);
+            oCfid = cookieScope().get(KeyConstants._CFID,null);
+            oCftoken = cookieScope().get(KeyConstants._CFTOKEN,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2313,9 +2313,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	private void setClientCookies() {
 
-		String domain = PageContextUtil.getCookieDomain( this );
-		cookieScope().setCookieEL( KeyConstants._cfid, cfid, CookieImpl.NEVER,false, "/", domain, true, true, false );
-		cookieScope().setCookieEL( KeyConstants._cftoken, cftoken, CookieImpl.NEVER,false, "/", domain, true, true, false );
+		String domain = PageContextUtil.getCookieDomain(this);
+		cookieScope().setCookieEL(KeyConstants._CFID, cfid, CookieImpl.NEVER, false, "/", domain, true, true, false);
+		cookieScope().setCookieEL(KeyConstants._CFTOKEN, cftoken, CookieImpl.NEVER, false, "/", domain, true, true, false);
 	}
     
 

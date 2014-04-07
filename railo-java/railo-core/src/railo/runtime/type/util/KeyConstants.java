@@ -286,10 +286,10 @@ public class KeyConstants {
 	public static final Key _cfdocument=KeyImpl._const("cfdocument");
 	public static final Key _cfglobals=KeyImpl._const("cfglobals");
 	public static final Key _cfhttp=KeyImpl._const("cfhttp");
-	public static final Key _cfid=KeyImpl._const("cfid");
+	//	public static final Key _cfid=KeyImpl._const("cfid");           // use uppercase CFID/CFTOKEN, see JIRA-3020
+	//	public static final Key _cftoken=KeyImpl._const("cftoken");
 	public static final Key _cflock=KeyImpl._const("cflock");
 	public static final Key _cfscript=KeyImpl._const("cfscript");
-	public static final Key _cftoken=KeyImpl._const("cftoken");
 	public static final Key _circuits=KeyImpl._const("circuits");
 	public static final Key _class=KeyImpl._const("class");
 	public static final Key _classname=KeyImpl._const("classname");
