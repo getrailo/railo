@@ -13,8 +13,8 @@ public abstract class SQLExecutorSupport implements SQLExecutor {
 	
 	protected static final  Set<Collection.Key> ignoreSet=new HashSet<Collection.Key>();
 	static {
-		ignoreSet.add(KeyConstants._cfid);
-		ignoreSet.add(KeyConstants._cftoken);
+		ignoreSet.add(KeyConstants._CFID);
+		ignoreSet.add(KeyConstants._CFTOKEN);
 		ignoreSet.add(KeyConstants._urltoken);
 	}
 
