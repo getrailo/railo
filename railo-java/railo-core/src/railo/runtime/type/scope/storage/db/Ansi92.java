@@ -146,7 +146,7 @@ public class Ansi92 extends SQLExecutorSupport {
 		
 		String cfid,name;
 		for(int row=1;row<=recordcount;row++){
-			cfid=Caster.toString(query.getAt(KeyConstants._cfid, row, null),null);
+			cfid=Caster.toString(query.getAt(KeyConstants._CFID, row, null),null);
 			name=Caster.toString(query.getAt(KeyConstants._name, row, null),null);
 			
 			if(listener!=null)listener.doEnd(engine, cleaner,name, cfid);
