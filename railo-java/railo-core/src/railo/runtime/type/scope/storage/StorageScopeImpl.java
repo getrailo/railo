@@ -32,8 +32,8 @@ import railo.runtime.type.util.StructUtil;
 
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
 
-	public static Collection.Key CFID=KeyConstants._cfid;
-	public static Collection.Key CFTOKEN=KeyConstants._cftoken;
+	public static Collection.Key CFID=KeyConstants._CFID;
+	public static Collection.Key CFTOKEN=KeyConstants._CFTOKEN;
 	public static Collection.Key URLTOKEN=KeyConstants._urltoken;
 	public static Collection.Key LASTVISIT=KeyConstants._lastvisit;
 	public static Collection.Key HITCOUNT=KeyConstants._hitcount;
@@ -128,8 +128,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		
 		//lastvisit=System.currentTimeMillis();
 		if(sct==null) sct=new StructImpl();
-		sct.setEL(KeyConstants._cfid, pc.getCFID());
-		sct.setEL(KeyConstants._cftoken, pc.getCFToken());
+		sct.setEL(KeyConstants._CFID, pc.getCFID());
+		sct.setEL(KeyConstants._CFTOKEN, pc.getCFToken());
 		sct.setEL(URLTOKEN, pc.getURLToken());
 		sct.setEL(LASTVISIT, _lastvisit);
 		_lastvisit=new DateTimeImpl(pc.getConfig());
@@ -206,7 +206,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)
 	 */
 	public boolean hasContent() {
-		if(sct.size()==(type==SCOPE_CLIENT?6:5) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyConstants._cftoken) && sct.containsKey(KeyConstants._cfid)) {
+		if(sct.size()==(type==SCOPE_CLIENT?6:5) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyConstants._CFTOKEN) && sct.containsKey(KeyConstants._CFID)) {
 			return false;
 		}
 		return true;
