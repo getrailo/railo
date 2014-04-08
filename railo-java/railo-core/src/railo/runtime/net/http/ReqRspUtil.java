@@ -545,4 +545,12 @@ public final class ReqRspUtil {
 		Config config = ThreadLocalPageContext.getConfig(pc);
 		return ((ConfigImpl)config)._getWebCharset();
 	}
+
+	public static void removeCookie(HttpServletResponse rsp, String name) {
+		javax.servlet.http.Cookie cookie=new javax.servlet.http.Cookie(name,"");
+		cookie.setMaxAge(0);
+		cookie.setSecure(false);
+		cookie.setPath("/");
+		rsp.addCookie(cookie);
+	}
 }

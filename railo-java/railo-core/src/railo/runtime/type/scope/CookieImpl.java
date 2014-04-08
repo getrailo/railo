@@ -137,11 +137,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     }
     
     private void removeCookie(Collection.Key key) {
-        javax.servlet.http.Cookie cookie=new javax.servlet.http.Cookie(key.getUpperString(),"");
-		cookie.setMaxAge(0);
-		cookie.setSecure(false);
-		cookie.setPath("/");
-		rsp.addCookie(cookie);
+        ReqRspUtil.removeCookie(rsp, key.getUpperString());
     }
     
     @Override
