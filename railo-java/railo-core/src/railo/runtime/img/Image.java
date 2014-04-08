@@ -81,12 +81,14 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.img.filter.QuantizeFilter;
 import railo.runtime.img.gif.GifEncoder;
+import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
 import railo.runtime.op.Decision;
@@ -205,13 +207,28 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	}
 	
 
-	public Image(String b64str) throws IOException, ExpressionException {
-		this(ImageUtil.readBase64(b64str),null);
+	public Image(String b64str) throws IOException {
+		this(b64str,null);
 	}
 	
-	public Image(String b64str, String format) throws IOException, ExpressionException {
-		this(ImageUtil.readBase64(b64str),format);
+	
+	public Image(String b64str, String format) throws IOException {
+		
+		// load binary from base64 string and get format
+		StringBuilder mimetype=new StringBuilder();
+		byte[] binary = ImageUtil.readBase64(b64str,mimetype);
+		if(StringUtil.isEmpty(format) && !StringUtil.isEmpty(mimetype)) {
+			format=ImageUtil.getFormatFromMimeType(mimetype.toString());
+		}
+
+		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(binary,null);
+		checkRestriction();
+		this.format=format;
+		_image=ImageUtil.toBufferedImage(binary,format);
+		if(_image==null) throw new IOException("can not read in image");
 	}
+	
+	
 
 	public Image(int width, int height, int imageType, Color canvasColor) throws ExpressionException {
 		checkRestriction();
@@ -1329,8 +1346,47 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	}
 
 	public static Image toImage(Object obj) throws PageException {
+		return toImage(ThreadLocalPageContext.get(), obj, true);
+	}
+	
+	// used in bytecode
+	public static Image toImage(Object obj,PageContext pc) throws PageException {
+		return toImage(pc, obj, true);
+	}
+	
+
+	public static Image toImage(PageContext pc,Object obj) throws PageException {
+		return toImage(pc, obj, true);
+	}
+	
+	public static Image toImage(PageContext pc,Object obj, boolean checkForVariables) throws PageException {
 		if(obj instanceof Image) return (Image) obj;
-		if(obj instanceof ObjectWrap) return toImage(((ObjectWrap)obj).getEmbededObject());
+		if(obj instanceof ObjectWrap) return toImage(pc,((ObjectWrap)obj).getEmbededObject(),checkForVariables);
+		
+		// try to load from binary
+		if(Decision.isBinary(obj)) {
+			try {
+				return new Image(Caster.toBinary(obj),null);
+			}
+			catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		// try to load from String (base64)
+		if(Decision.isString(obj)) {
+			String str=Caster.toString(obj);
+			if(checkForVariables && pc!=null) {
+				Object o = VariableInterpreter.getVariableEL(pc, str, null);
+				if(o!=null) return toImage(pc, o, false);
+			}
+			try {
+				return new Image(str);
+			}
+			catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		
 		throw new CasterException(obj,"Image");
 	}
 	

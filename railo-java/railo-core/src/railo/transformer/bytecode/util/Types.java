@@ -31,6 +31,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
@@ -102,6 +103,7 @@ public final class Types {
     public static final Type FLOAT = Type.getType(Float.class);
     public static final Type FLOAT_VALUE = Type.getType(float.class);
 
+    public static final Type IMAGE = Type.getType(Image.class);
     public static final Type INTEGER = Type.getType(Integer.class);
     public static final Type INT_VALUE = Type.getType(int.class);
 
@@ -267,6 +269,7 @@ public final class Types {
         case 'i':
             if("int".equals(lcType))								return INT_VALUE;
             else if("integer".equals(lcType))						return INTEGER;
+            else if("image".equals(lcType))							return IMAGE;
         break;
         case 'j':
             if("java.lang.boolean".equals(lcType))					return BOOLEAN;

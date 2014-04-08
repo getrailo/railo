@@ -9667,11 +9667,13 @@ wood
 	<function>
 		<name>ImageGetHeight</name>
 		<class>railo.runtime.functions.image.ImageGetHeight</class>
+		<member-name>getHeight</member-name>
 		<keywords>image</keywords>
 		<description>Retrieves the height of the image in pixels.</description>
 		<argument>
-			<name>name</name>
-			<type>any</type>
+			<name>image</name>
+			<alias>name</alias>
+			<type>image</type>
 			<required>Yes</required>
 		<description>The image on which this operation is performed.</description>
     </argument>
@@ -9683,11 +9685,14 @@ wood
 	<function>
 		<name>ImageGetWidth</name>
 		<class>railo.runtime.functions.image.ImageGetWidth</class>
+		<member-name>getWidth</member-name>
 		<keywords>image</keywords>
 		<description>Retrieves the width of the specified image.</description>
 		<argument>
-			<name>name</name>
-			<type>any</type>
+			
+			<name>image</name>
+			<alias>name</alias>
+			<type>image</type>
 			<required>Yes</required>
 		<description>The image on which this operation is performed.</description>
     </argument>
@@ -14148,7 +14153,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.query.QuerySetCell</class>
 		<member-name>setCell</member-name>
 		<member-chaining>true</member-chaining>
-	<keywords>query</keywords>
+		<keywords>query</keywords>
 		<description>Sets a cell to a value. If no row number is specified,
         the cell on the last row is set.</description>
 		<argument>
