@@ -12,8 +12,9 @@ import railo.runtime.op.Caster;
  */
 public class StringIsEmpty extends BIF {
 
+	private static final long serialVersionUID = -85767818984230151L;
 
-	public static boolean call(PageContext pc , String value) throws PageException {
+	public static boolean call(PageContext pc , String value) {
 
 		return StringUtil.isEmpty(value);
 	}
