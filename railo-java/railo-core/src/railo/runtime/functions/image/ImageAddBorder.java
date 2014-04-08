@@ -8,7 +8,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 
 public class ImageAddBorder implements Function {
 	public static String call(PageContext pc, Object name) throws PageException {

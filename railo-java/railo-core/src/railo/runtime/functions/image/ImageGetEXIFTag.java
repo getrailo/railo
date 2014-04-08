@@ -5,7 +5,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 
 public class ImageGetEXIFTag {

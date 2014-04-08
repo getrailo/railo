@@ -9,7 +9,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 
 public class ImageShear {
 	public static String call(PageContext pc, Object name, double shear) throws PageException {

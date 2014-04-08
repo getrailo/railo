@@ -5,7 +5,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 
 public class ImageRotateDrawingAxis implements Function {
 

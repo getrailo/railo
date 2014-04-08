@@ -4,7 +4,6 @@ import railo.commons.color.ColorCaster;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 
 public class ImageXORDrawingMode {
 
