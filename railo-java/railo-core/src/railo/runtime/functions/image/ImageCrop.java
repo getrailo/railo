@@ -9,8 +9,8 @@ import railo.runtime.op.Caster;
 public class ImageCrop {
 
 	public static String call(PageContext pc, Object name, double x, double y, double width, double height) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		if (width < 0)
 		    throw new FunctionException(pc,"ImageCrop",3,"width","width must contain a none negative value");

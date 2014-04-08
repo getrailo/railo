@@ -21,9 +21,8 @@ public class ImageResize implements Function {
 	
 	public static String call(PageContext pc, Object name,String width, String height,String interpolation, double blurFactor) throws PageException {
 		// image
-		if(name instanceof String)
-			name=pc.getVariable(Caster.toString(name));
-		Image image=Image.toImage(name);
+		//if(name instanceof String)name=pc.getVariable(Caster.toString(name));
+		Image image=Image.toImage(pc,name);
 		
 		interpolation = interpolation.toLowerCase().trim();
 		

@@ -15,8 +15,8 @@ public class ImageTranslate {
 	}
 	
 	public static String call(PageContext pc, Object name, double xTrans, double yTrans, String strInterpolation) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		strInterpolation=strInterpolation.toLowerCase().trim();
 		Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;

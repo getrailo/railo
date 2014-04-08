@@ -9,8 +9,8 @@ import railo.runtime.op.Caster;
 public class ImageXORDrawingMode {
 
 	public static String call(PageContext pc, Object name, String color) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		img.setXorMode(ColorCaster.toColor(color));
 		return null;

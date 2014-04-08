@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import railo.commons.color.ColorCaster;
+import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
@@ -55,7 +56,7 @@ public class ImageFilterUtil {
 
 	public static BufferedImage toBufferedImage(Object o, String argName) throws PageException {
 		if(o instanceof BufferedImage) return (BufferedImage) o;
-		return Image.toImage(o).getBufferedImage();
+		return Image.toImage(ThreadLocalPageContext.get(),o).getBufferedImage();
 	}
 
 	public static Colormap toColormap(Object value, String argName) throws FunctionException {

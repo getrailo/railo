@@ -14,8 +14,8 @@ public class ImageFlip {
 		return call(pc,name,"vertical");
 	}
 	public static String call(PageContext pc, Object name, String strTranspose) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		strTranspose=strTranspose.toLowerCase().trim();
 		TransposeType transpose = TransposeDescriptor.FLIP_VERTICAL;

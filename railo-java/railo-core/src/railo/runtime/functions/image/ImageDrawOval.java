@@ -12,8 +12,8 @@ public class ImageDrawOval {
 		return call(pc, name, x, y, width, height,false);
 	}
 	public static String call(PageContext pc, Object name, double x, double y, double width,double height, boolean filled) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		if (width < 0)
 		    throw new FunctionException(pc,"ImageDrawOval",3,"width","width must contain a none negative value");

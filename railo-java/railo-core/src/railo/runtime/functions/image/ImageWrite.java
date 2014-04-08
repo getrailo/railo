@@ -26,9 +26,8 @@ public class ImageWrite implements Function {
 	}
 	
 	public static String call(PageContext pc, Object name, String destination, double quality, boolean overwrite) throws PageException {
-		if(name instanceof String)
-			name=pc.getVariable(Caster.toString(name));
-		Image image=Image.toImage(name);
+		//if(name instanceof String)name=pc.getVariable(Caster.toString(name));
+		Image image=Image.toImage(pc,name);
 		
 		if(quality<0 || quality>1)
 			throw new FunctionException(pc,"ImageWrite",3,"quality","value have to be between 0 and 1");

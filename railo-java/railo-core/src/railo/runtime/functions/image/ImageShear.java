@@ -21,8 +21,8 @@ public class ImageShear {
 	}
 	
 	public static String call(PageContext pc, Object name, double shear, String strDirection, String strInterpolation) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		// direction
 		strDirection=strDirection.toLowerCase().trim();

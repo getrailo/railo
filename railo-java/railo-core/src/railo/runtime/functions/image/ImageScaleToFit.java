@@ -16,8 +16,8 @@ public class ImageScaleToFit {
 	}
 	
 	public static String call(PageContext pc, Object name, String fitWidth, String fitHeight, String strInterpolation, double blurFactor) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		img.scaleToFit(fitWidth, fitHeight, strInterpolation, blurFactor);
 		return null;
 	}

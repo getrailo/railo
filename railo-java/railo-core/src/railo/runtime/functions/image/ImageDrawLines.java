@@ -18,8 +18,8 @@ public class ImageDrawLines {
 	}
 
 	public static String call(PageContext pc, Object name, Array xcoords, Array ycoords, boolean isPolygon, boolean filled) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		if(xcoords.size()!=ycoords.size())
 			throw new ExpressionException("xcoords and ycoords has not the same size");

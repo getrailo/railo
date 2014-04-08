@@ -11,8 +11,8 @@ import railo.runtime.type.Struct;
 public class ImageGetEXIFTag {
 
 	public static Object call(PageContext pc, Object name, String tagName) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		Struct data = ImageGetEXIFMetadata.getData(img);
 		Object value = data.get(tagName, null);

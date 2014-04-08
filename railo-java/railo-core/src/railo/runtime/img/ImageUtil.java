@@ -13,6 +13,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.img.coder.Coder;
 
@@ -58,12 +59,20 @@ public class ImageUtil {
 	
 	
 
-	public static byte[] readBase64(String b64str) throws ExpressionException {
+	public static byte[] readBase64(String b64str, StringBuilder mimetype) throws IOException {
 		if(StringUtil.isEmpty(b64str))
-			throw new ExpressionException("base64 string is empty");
+			throw new IOException("base64 string is empty");
 		
+		// data:image/png;base64,
 		int index = b64str.indexOf("base64,");
-		if(index!=-1)b64str=b64str.substring(index + 7);
+		if(index!=-1){
+			int semiIndex=b64str.indexOf(";");
+			if(mimetype!=null && semiIndex<index && StringUtil.startsWithIgnoreCase(b64str, "data:")){
+				mimetype.append(b64str.substring(5,semiIndex).trim());
+			}
+			
+			b64str=b64str.substring(index + 7);
+		}
 		
 		return Base64.decodeBase64(b64str.getBytes());
 	}

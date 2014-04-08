@@ -11,8 +11,8 @@ public class ImageSetAntialiasing {
 		return call(pc, name,"on");
 	}
 	public static String call(PageContext pc, Object name, String strAntialias) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		strAntialias=strAntialias.trim().toLowerCase();
 		boolean antialias;

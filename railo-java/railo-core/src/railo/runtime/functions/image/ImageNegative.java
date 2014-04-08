@@ -8,9 +8,9 @@ import railo.runtime.op.Caster;
 public class ImageNegative {
 	
 	public static String call(PageContext pc, Object name) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
 		
-		Image.toImage(name).invert();
+		Image.toImage(pc,name).invert();
 		return null;
 	}
 }
