@@ -123,6 +123,8 @@ public class OPUnary extends ExpressionBase implements ExprDouble {
 			else if(operation==CONCAT) adapter.invokeStatic(Types.OPERATOR, UNARY_PRE_CONCAT);
 		}
 		
+		if(operation==CONCAT) return Types.STRING;
+		
 		// convert from Double to double (if necessary)
 		if(mode==MODE_VALUE) {
             adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_DOUBLE_VALUE_FROM_DOUBLE);
