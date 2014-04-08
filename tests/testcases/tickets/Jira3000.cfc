@@ -10,13 +10,19 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 			});
 		} 
 		assertEquals("1-2-3-4-",c);
-	}
+	} 
 
 	public void function testPostIncrement(){
 		url._testPostIncrement=1;
 		assertEquals(1,_testPostIncrement++);
 		assertEquals(2,url._testPostIncrement);
+
+		application._testPostIncrement2=1;
+		assertEquals(1,application._testPostIncrement2++);
+		assertEquals(2,application._testPostIncrement2);
 	}
+
+
 	public void function testPreIncrement(){
 		url._testPreIncrement=1;
 		assertEquals(2,++_testPreIncrement);
