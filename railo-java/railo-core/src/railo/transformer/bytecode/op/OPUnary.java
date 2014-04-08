@@ -7,6 +7,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.runtime.interpreter.VariableInterpreter;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -18,6 +19,7 @@ import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
@@ -91,12 +93,21 @@ public class OPUnary extends ExpressionBase implements ExprDouble {
 		// PageContext instance
 		adapter.loadArg(0);
 		
+		String scope=VariableInterpreter.scopeInt2String(var.getScope());
+		
 		// Collection key Array
 		ArrayVisitor av=new ArrayVisitor();
 		int index=0;
-		av.visitBegin(adapter, Types.COLLECTION_KEY, members.size());
+		av.visitBegin(adapter, Types.COLLECTION_KEY, scope!=null?members.size()+1:members.size());
 			Iterator<Member> it = members.iterator();
 			Member m;DataMember dm;
+			
+			if(scope!=null) {
+				av.visitBeginItem(adapter, index++);
+				Variable.registerKey(bc,LitString.toExprString(scope));
+				av.visitEndItem(adapter);
+			}
+			
 			while(it.hasNext()){
 				av.visitBeginItem(adapter, index++);
 				m = it.next();
