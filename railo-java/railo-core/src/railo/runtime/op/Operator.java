@@ -941,6 +941,6 @@ public final class Operator {
     	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
     	String rtn=Caster.toString(ref.get(pc)).concat(value);
     	ref.set(pc,rtn);
-		return rtn; 
+		return rtn;
 	}
 }
