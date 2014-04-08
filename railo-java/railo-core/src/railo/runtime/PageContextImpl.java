@@ -114,6 +114,7 @@ import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Operator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
@@ -2358,14 +2359,46 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         // From URL
         Object oCfid = urlScope().get(KeyConstants._cfid,null);
         Object oCftoken = urlScope().get(KeyConstants._cftoken,null);
+        
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
             oCfid = cookieScope().get(KeyConstants._cfid,null);
             oCftoken = cookieScope().get(KeyConstants._cftoken,null);
         }
-        if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
-        	oCfid=null;
+
+        // check cookie value
+        if(oCfid!=null) {
+        	// cookie value is invalid, maybe from ACF
+        	if(!Decision.isGUIdSimple(oCfid)) {
+        		oCfid=null;
+        		oCftoken=null;
+        		Charset charset = getWebCharset();
+        		
+        		// check if we have multiple cookies with the name "cfid" and a other one is valid
+        		javax.servlet.http.Cookie[] cookies = getHttpServletRequest().getCookies();
+        		String name,value;
+        		for(int i=0;i<cookies.length;i++){
+        			name=ReqRspUtil.decode(cookies[i].getName(),charset.name(),false);
+        			// CFID
+        			if(name.equalsIgnoreCase("cfid")) {
+        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
+        				if(Decision.isGUIdSimple(value)) oCfid=value;
+        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
+        			}
+        			// CFToken
+        			else if(name.equalsIgnoreCase("cftoken")) {
+        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
+        				if(isValidCfToken(value)) oCftoken=value;
+        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
+        			}
+        		}
+        		
+        		if(oCfid!=null) {
+        			setCookie=true;
+        			if(oCftoken==null)oCftoken="0";
+        		}
+        	}
         }
         // New One
         if(oCfid==null || oCftoken==null) {
@@ -2383,7 +2416,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
 
-    public void resetIdAndToken() {
+    private boolean isValidCfToken(String value) {
+		return Operator.compare(value, "0")==0;
+	}
+
+
+
+	public void resetIdAndToken() {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
 
