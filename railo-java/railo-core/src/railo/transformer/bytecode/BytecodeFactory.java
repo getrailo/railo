@@ -61,6 +61,7 @@ public class BytecodeFactory extends Factory {
 	private final LitString EMPTY;
 	private final LitString NULL;
 	private final LitDouble DOUBLE_ZERO;
+	private final LitDouble DOUBLE_ONE;
 	
 	public BytecodeFactory(){
 		TRUE=createLitBoolean(true);
@@ -68,6 +69,7 @@ public class BytecodeFactory extends Factory {
 		EMPTY=createLitString("");
 		NULL=createLitString("NULL");
 		DOUBLE_ZERO=createLitDouble(0);
+		DOUBLE_ONE=createLitDouble(1);
 	}
 
 	@Override
@@ -182,6 +184,11 @@ public class BytecodeFactory extends Factory {
 	@Override
 	public LitDouble DOUBLE_ZERO() {
 		return DOUBLE_ZERO;
+	}
+
+	@Override
+	public LitDouble DOUBLE_ONE() {
+		return DOUBLE_ONE;
 	}
 
 	@Override

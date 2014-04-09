@@ -15,7 +15,7 @@ import railo.runtime.functions.BIF;
 import railo.runtime.functions.BIFProxy;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.util.ListUtil;
-import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.TransformerException;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
 
@@ -163,7 +163,7 @@ public final class FunctionLibFunction {
 				clazz=ClassUtil.loadClass(cls);
 			}
 			catch (ClassException e) {
-				throw new BytecodeException(e, null);
+				throw new TransformerException(e, null);
 			}
 		}
 		

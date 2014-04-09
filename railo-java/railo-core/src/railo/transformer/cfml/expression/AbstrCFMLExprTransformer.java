@@ -29,7 +29,6 @@ import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.op.OPDecision;
 import railo.transformer.bytecode.op.OPUnary;
-import railo.transformer.bytecode.op.OpBool;
 import railo.transformer.bytecode.op.OpContional;
 import railo.transformer.bytecode.op.OpDouble;
 import railo.transformer.bytecode.op.OpElvis;
@@ -854,7 +853,7 @@ public abstract class AbstrCFMLExprTransformer {
 			start=leftEnd;
 			end=new Position(leftEnd.line, leftEnd.column+2, leftEnd.pos+2);
 		}
-		return new OPUnary((Variable)expr,LitDouble.ONE,OPUnary.POST,op,start,end);
+		return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.POST,op,start,end);
 		
 		
 		
@@ -879,7 +878,7 @@ public abstract class AbstrCFMLExprTransformer {
 			if (data.cfml.forwardIfCurrent('-')) {
 				comments(data);
 				Expression expr = clip(data);
-				return new OPUnary((Variable)expr,LitDouble.ONE,OPUnary.PRE,OpDouble.MINUS,line,data.cfml.getPosition());
+				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.MINUS,line,data.cfml.getPosition());
 				
 				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.MINUS);
 				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
@@ -895,7 +894,7 @@ public abstract class AbstrCFMLExprTransformer {
 				comments(data);
 				Expression expr = clip(data);
 				
-				return new OPUnary((Variable)expr,LitDouble.ONE,OPUnary.PRE,OpDouble.PLUS,line,data.cfml.getPosition());
+				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.PLUS,line,data.cfml.getPosition());
 				
 				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
 				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());

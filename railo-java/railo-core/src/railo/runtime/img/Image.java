@@ -98,7 +98,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.UDFPlus;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

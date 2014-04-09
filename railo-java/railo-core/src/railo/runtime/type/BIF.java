@@ -8,7 +8,6 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.MemberSupport;
@@ -36,7 +35,7 @@ public class BIF extends MemberSupport implements UDFPlus {
 	
 	private final FunctionLibFunction flf;
 	private short rtnType=CFTypes.TYPE_UNKNOW;
-	private ComponentImpl owner;
+	private Component owner;
 	private final ConfigImpl ci;
 	private FunctionArgument[] args;
 
@@ -209,7 +208,7 @@ public class BIF extends MemberSupport implements UDFPlus {
 	}
 
 	@Override
-	public void setOwnerComponent(ComponentImpl owner) {
+	public void setOwnerComponent(Component owner) {
 		this.owner=owner;
 	}
 

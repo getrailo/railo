@@ -29,6 +29,7 @@ public abstract class Factory {
 	public abstract  LitBoolean FALSE();
 	public abstract  LitString EMPTY();
 	public abstract LitDouble DOUBLE_ZERO();
+	public abstract LitDouble DOUBLE_ONE();
 	public abstract LitString NULL();
 
 	// CREATION

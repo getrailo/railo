@@ -6,7 +6,6 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.ObjectWrap;
 

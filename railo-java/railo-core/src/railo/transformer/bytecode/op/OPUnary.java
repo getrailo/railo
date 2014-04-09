@@ -8,21 +8,20 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.runtime.interpreter.VariableInterpreter;
+import railo.transformer.Position;
+import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
-import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.ExprDouble;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.expression.var.DataMember;
-import railo.transformer.bytecode.expression.var.Member;
-import railo.transformer.bytecode.expression.var.Variable;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
+import railo.transformer.expression.ExprDouble;
+import railo.transformer.expression.Expression;
+import railo.transformer.expression.var.DataMember;
+import railo.transformer.expression.var.Member;
+import railo.transformer.expression.var.Variable;
 
 public class OPUnary extends ExpressionBase implements ExprDouble {
 
@@ -75,7 +74,7 @@ public class OPUnary extends ExpressionBase implements ExprDouble {
 	private final int operation;
 
 	public OPUnary(Variable var, Expression value, short type, int operation, Position start, Position end) { 
-		super(start, end);
+		super(var.getFactory(),start, end);
 		this.var=var;
 		this.value=value;
 		this.type=type;
@@ -83,7 +82,7 @@ public class OPUnary extends ExpressionBase implements ExprDouble {
 	}
 
 	@Override
-	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		List<Member> members = var.getMembers();
 
@@ -104,21 +103,21 @@ public class OPUnary extends ExpressionBase implements ExprDouble {
 			
 			if(scope!=null) {
 				av.visitBeginItem(adapter, index++);
-				Variable.registerKey(bc,LitString.toExprString(scope));
+				bc.getFactory().registerKey(bc,bc.getFactory().createLitString(scope),false);
 				av.visitEndItem(adapter);
 			}
 			
 			while(it.hasNext()){
 				av.visitBeginItem(adapter, index++);
 				m = it.next();
-				if(!(m instanceof DataMember)) throw new BytecodeException("you cannot use a unary operator with a function "+m.getClass().getName(), getStart());
-				Variable.registerKey(bc,((DataMember) m).getName());
+				if(!(m instanceof DataMember)) throw new TransformerException("you cannot use a unary operator with a function "+m.getClass().getName(), getStart());
+				bc.getFactory().registerKey(bc,((DataMember) m).getName(),false);
 				av.visitEndItem(adapter);
 			}
 		av.visitEnd();
 		
 		if(type==POST) {
-			if(operation!=OpDouble.PLUS && operation!=OpDouble.MINUS ) throw new BytecodeException("Post only possible with plus or minus "+operation, value.getStart());
+			if(operation!=OpDouble.PLUS && operation!=OpDouble.MINUS ) throw new TransformerException("Post only possible with plus or minus "+operation, value.getStart());
 			
 			value.writeOut(bc, MODE_VALUE);
 			if(operation==PLUS) adapter.invokeStatic(Types.OPERATOR, UNARY_POST_PLUS);

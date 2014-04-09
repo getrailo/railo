@@ -71,7 +71,6 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.functions.file.FileStreamWrapper;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
-import railo.runtime.img.ImageUtil;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.rpc.AxisCaster;

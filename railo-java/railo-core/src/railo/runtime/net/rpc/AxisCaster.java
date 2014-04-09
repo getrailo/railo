@@ -71,7 +71,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 import coldfusion.xml.rpc.QueryBean;
 
@@ -337,7 +336,7 @@ public final class AxisCaster {
 	public static Component toComponent(PageContext pc, Pojo pojo, String compPath , Component defaultValue) {
 		try {
 			Component cfc = pc.loadComponent(compPath);
-			Property[] props = ComponentProUtil.getProperties(cfc, false, true, false, false);
+			Property[] props = cfc.getProperties(false, true, false, false);
 			PojoIterator it=new PojoIterator(pojo);
 			// only when the same amount of properties
 			if(props.length==it.size()) {
@@ -393,7 +392,7 @@ public final class AxisCaster {
 		}
     	
     	// initialize Pojo
-		Property[] props=ComponentProUtil.getProperties(comp, false, true, false, false);
+		Property[] props=comp.getProperties(false, true, false, false);
 		_initPojo(pc,typeEntry,type,pojo,props,scope,comp,tm,done);
 
     	return pojo;
