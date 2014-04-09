@@ -6,12 +6,14 @@ import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
 
 public class ImageClearRect {
-
+	
+	@Deprecated
 	public static String call(PageContext pc, Object name, double x, double y, double width, double height) throws PageException {
-		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(pc,name);
-		
+		return call(pc, Image.toImage(pc,name), x, y, width, height);
+	}
 
+	public static String call(PageContext pc, Image img, double x, double y, double width, double height) throws PageException {
+		
 		if (width < 0)
 		    throw new FunctionException(pc,"ImageClearRect",3,"width","width must contain a none negative value");
 		if (height < 0)

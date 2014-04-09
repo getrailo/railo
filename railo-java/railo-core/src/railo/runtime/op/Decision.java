@@ -34,6 +34,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.img.Image;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.mail.MailUtil;
 import railo.runtime.net.rpc.AxisCaster;
@@ -1328,6 +1329,7 @@ public final class Decision {
         case CFTypes.TYPE_GUID:         return isGUId(o);
         case CFTypes.TYPE_VARIABLE_NAME:return isVariableName(o);
         case CFTypes.TYPE_FUNCTION:		return isFunction(o);
+        case CFTypes.TYPE_IMAGE:        return Image.isCastableToImage(pc,o);
         case CFTypes.TYPE_XML:          return isXML(o);
 		}
 		

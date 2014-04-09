@@ -80,15 +80,13 @@ public final class CFTypes {
      */
     public static final short TYPE_XML = 16;
     
-    /**
-     * Field <code>TYPE_SIZE</code>
-     */
-    public static final short TYPE_SIZE = 21;
+    //public static final short TYPE_SIZE = 21;
 
     public static final short TYPE_GUID = 22;
 
     public static final short TYPE_FUNCTION = 23;
     public static final short TYPE_QUERY_COLUMN=24;
+    public static final short TYPE_IMAGE=25;
     
     /**
 	 * Wandelt einen String Datentypen in ein CFML short Typ um.
@@ -105,6 +103,7 @@ public final class CFTypes {
 			case TYPE_BOOLEAN:return "boolean";
 			case TYPE_DATETIME:return "datetime";
 			case TYPE_GUID:return "guid";
+			case TYPE_IMAGE:return "image";
 			case TYPE_NUMERIC:return "numeric";
 			case TYPE_QUERY:return "query";
 			case TYPE_QUERY_COLUMN:return "querycolumn";
@@ -145,6 +144,9 @@ public final class CFTypes {
 	        	break; 
 	        	case 'g':
 	                if("guid".equals(type)) 							return TYPE_GUID;
+	            break;
+	        	case 'i':
+	                if("image".equals(type)) 							return TYPE_IMAGE;
 	            break;
 	            case 'n':
 	        	    if(type.equals("numeric")) return TYPE_NUMERIC;
@@ -223,6 +225,7 @@ public final class CFTypes {
 
 	            case 'i':
 	                if(alsoAlias && ("int".equals(type) || "integer".equals(type))) 	return TYPE_NUMERIC;
+	                if("image".equals(type)) 	return TYPE_NUMERIC;
 	            break;
 
 	            case 'l':

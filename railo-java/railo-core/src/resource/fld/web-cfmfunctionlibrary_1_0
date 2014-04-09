@@ -7192,14 +7192,16 @@ Only valid if the borderType is not specified or if borderType = "constant".</de
 	<function>
 		<name>ImageBlur</name>
 		<class>railo.runtime.functions.image.ImageBlur</class>
+		<member-name>blur</member-name>
 		<keywords>image</keywords>
 		<description>Smooths image.</description>
 		<argument>
-			<name>name</name>
-			<type>any</type>
+			<name>image</name>
+			<alias>name</alias>
+			<type>image</type>
 			<required>Yes</required>
-		<description>The image on which this operation is performed.</description>
-    </argument>
+			<description>The image on which this operation is performed.</description>
+    	</argument>
 		<argument>
 			<name>blurRadius</name>
 			<type>number</type>
@@ -7216,14 +7218,16 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 	<function>
 		<name>ImageClearRect</name>
 		<class>railo.runtime.functions.image.ImageClearRect</class>
-		<keywords>image</keywords>
+		<member-name>blur</member-name>
+		<keywords>clearRect</keywords>
 		<description>Clears the specified rectangle by filling it with the background color of the current drawing surface.</description>
 		<argument>
-			<name>name</name>
-			<type>any</type>
+			<name>image</name>
+			<alias>name</alias>
+			<type>image</type>
 			<required>Yes</required>
-		<description>The image on which this operation is performed.</description>
-    </argument>
+			<description>The image on which this operation is performed.</description>
+    	</argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>

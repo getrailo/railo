@@ -75,6 +75,7 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.font.FontUtil;
 import railo.runtime.PageContext;
@@ -96,12 +97,15 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.UDFPlus;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.StructSupport;
 
 public class Image extends StructSupport implements Cloneable,Struct {
@@ -1389,11 +1393,43 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		throw new CasterException(obj,"Image");
 	}
-	
+
+	public static Image toImage(PageContext pc,Object obj, boolean checkForVariables, Image defaultValue) {
+		try {
+			return toImage(pc, obj, checkForVariables);
+		}
+		catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
 	public static boolean isImage(Object obj) {
 		if(obj instanceof Image) return true;
 		if(obj instanceof ObjectWrap) return isImage(((ObjectWrap)obj).getEmbededObject(""));
 		return false;
+	}
+	
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).call(pc,methodName,args,false);
+		}
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_IMAGE, "image");
+	}
+
+    @Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDFPlus) {
+			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
+		}
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_IMAGE, "image");
+	}
+
+	public static boolean isCastableToImage(PageContext pc,Object obj) {
+		if(isImage(obj)) return true;
+		return toImage(pc, obj, true, null)!=null;
 	}
 
 	public static Image createImage(PageContext pc,Object obj, boolean check4Var, boolean clone, boolean checkAccess, String format) throws PageException {

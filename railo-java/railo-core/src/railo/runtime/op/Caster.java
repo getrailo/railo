@@ -71,6 +71,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.functions.file.FileStreamWrapper;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.rpc.AxisCaster;
@@ -3522,6 +3523,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
+        else if(type==CFTypes.TYPE_IMAGE)          return Image.toImage(pc,o);
 
     	return _castTo(pc, strType, o);
     }   
@@ -3592,6 +3594,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
+        else if(type==CFTypes.TYPE_IMAGE)            return Image.toImage(pc,o);
 
         if(type==CFTypes.TYPE_UNDEFINED)
             throw new ExpressionException("type isn't defined (TYPE_UNDEFINED)");
