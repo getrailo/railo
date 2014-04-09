@@ -50,7 +50,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/jpedal-gpl-3-51-12.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jta-1-1-0.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jtds-1-2-5.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/jug-2-0-0.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/junit-3-8-1.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/log4j-1-2-16.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/lowagie-itext-2-1-2-1.jar"/>
@@ -78,7 +77,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/org-apache-commons-net-3-1-0.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/org-apache-felix-main-4-2-1.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/org-apache-oro-2-0-8.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/org-apache-sanselan-sanselan-0-97-0-incubator.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/org-h2-1-3-172.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/org-joda-time-2-1-0.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/org-objectweb-asm-all-4-0-0.jar"/>
@@ -110,5 +108,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/xmlbeans-2-3-0-r540734.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xmlparserv2-1-2-2.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/org-apache-sanselan-0-97-0-incubator.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
