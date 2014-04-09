@@ -54,5 +54,7 @@ public interface QueryEntry extends Serializable {
     public abstract String getDatasource();
     
     public long getStartTime();
+	
+	public String getCacheType();
 
 }
