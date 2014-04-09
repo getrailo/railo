@@ -1,5 +1,9 @@
 <cfcomponent extends="org.railo.cfml.test.RailoTestCase">
 	<cfscript>
+	private function removeSpace(str){
+		return replace(replace(replace(replace(str,'	','','all'),' ','','all'),chr(10),'','all'),chr(13),'','all');
+	}
+
 	function setup(){
 		dir=expandPath("{temp-directory}");
 	}
@@ -36,7 +40,7 @@
 					<cfset content=trim(getOut(data))>
 			</cffinally>
 		</cftry>
-		<cfset assertEquals("callersLocalScope string XcallersLocalScope",content)>
+		<cfset assertEquals("callersLocalScopestringXcallersLocalScope",removeSpace(content))>
 		
 	</cffunction>
 	
@@ -51,7 +55,7 @@
 					<cfset content=trim(getOut(data))>
 			</cffinally>
 		</cftry>
-		<cfset assertEquals("local.callersLocalScope string XcallersLocalScope",content)>
+		<cfset assertEquals("local.callersLocalScopestringXcallersLocalScope",removeSpace(content))>
 		
 	</cffunction>
 	
@@ -66,7 +70,7 @@
 					<cfset content=trim(getOut(data))>
 			</cffinally>
 		</cftry>
-		<cfset assertEquals("callersargscope string xcallersargscope",content)>
+		<cfset assertEquals("callersargscopestringxcallersargscope",removeSpace(content))>
 	</cffunction>
 	
 	<cffunction name="testArgumentsCallersArgScope" output="yes">
@@ -80,7 +84,7 @@
 					<cfset content=trim(getOut(data))>
 			</cffinally>
 		</cftry>
-		<cfset assertEquals("arguments.callersargscope string xcallersargscope",content)>
+		<cfset assertEquals("arguments.callersargscopestringxcallersargscope",removeSpace(content))>
 	</cffunction>
 	
 	
@@ -95,7 +99,7 @@
 					<cfset content=trim(getOut(data))>
 			</cffinally>
 		</cftry>
-		<cfset assertEquals("callersVarScope string xcallersVarScope",content)>
+		<cfset assertEquals("callersVarScopestringxcallersVarScope",removeSpace(content))>
 	</cffunction>
 	
 	
@@ -110,7 +114,7 @@
 					<cfset content=trim(getOut(data))>
 			</cffinally>
 		</cftry>
-		<cfset assertEquals("variables.callersVarScope string xcallersVarScope",content)>
+		<cfset assertEquals("variables.callersVarScopestringxcallersVarScope",removeSpace(content))>
 	</cffunction>
 	
 	

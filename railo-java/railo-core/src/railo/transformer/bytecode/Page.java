@@ -426,7 +426,6 @@ public final class Page extends BodyBase {
         
     	List<LitString> keys=new ArrayList<LitString>();
     	ClassWriter cw = ASMUtil.getClassWriter(); 
-    	//ClassWriter cw = new ClassWriter(true);
     	
     	ArrayList<String> imports = new ArrayList<String>();
         getImports(imports, this); 

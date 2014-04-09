@@ -23,6 +23,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
@@ -72,8 +73,11 @@ public final class GetFunctionData implements Function {
 		Struct sct=new StructImpl();
 		sct.set(KeyConstants._name,function.getName());
         sct.set(KeyConstants._status,TagLibFactory.toStatus(function.getStatus()));
-		sct.set(KeyConstants._description,StringUtil.emptyIfNull(function.getDescription()));
-        sct.set(RETURN_TYPE,StringUtil.emptyIfNull(function.getReturnTypeAsString()));
+        sct.set(KeyConstants._description,StringUtil.emptyIfNull(function.getDescription()));
+        if(!ArrayUtil.isEmpty(function.getKeywords()))sct.set("keywords",Caster.toArray(function.getKeywords()));
+         
+		
+		sct.set(RETURN_TYPE,StringUtil.emptyIfNull(function.getReturnTypeAsString()));
         sct.set(ARGUMENT_TYPE,StringUtil.emptyIfNull(function.getArgTypeAsString()));
         sct.set(ARG_MIN,Caster.toDouble(function.getArgMin()));
         sct.set(ARG_MAX,Caster.toDouble(function.getArgMax()));
@@ -85,6 +89,7 @@ public final class GetFunctionData implements Function {
         	mem.set(KeyConstants._name,mm);
         	mem.set(KeyConstants._chaining,Caster.toBoolean(function.getMemberChaining()));
             mem.set(KeyConstants._type, function.getMemberTypeAsString());
+            mem.set("position", Caster.toDouble(function.getMemberPosition()));
         }
 		
 		Array _args=new ArrayImpl();

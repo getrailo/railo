@@ -7,6 +7,9 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		
 		variables.sctURL =createURL("Jira2615/TestStruct.cfc?wsdl");
 		variables.sctWS = CreateObject("webservice", sctURL);
+		
+		variables.strURL =createURL("Jira2615/TestString.cfc?wsdl");
+		variables.strWS = CreateObject("webservice", strURL);
 
 		variables.arrURL =createURL("Jira2615/TestArray.cfc?wsdl");
 		variables.arrWS = CreateObject("webservice", arrURL);
@@ -17,8 +20,43 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		variables.myiURL =createURL("Jira2615/TestMyItem.cfc?wsdl");
 		variables.myiWS = CreateObject("webservice", myiURL);
 		
+		variables.serviceAnyURL =createURL("Jira2615/TestServiceAny.cfc?wsdl");
+		variables.serviceAny = CreateObject("webservice", serviceAnyURL);
+		
 
 	}
+
+/** STRING **/
+	public void function testStringEchoAny() localMode="modern" {
+		data=strWS.echoAny('Susi');
+		assertEquals("Susi",data);
+	}
+
+	public void function testStringEchoString() localMode="modern" {
+		data=strWS.echoString("Susi");
+		assertEquals("Susi",data);
+	}
+
+	public void function testStringEchoArray() localMode="modern" {
+		data=strWS.echoArray(['Susi']);
+		assertEquals("['Susi']",serialize(data));
+	}
+
+	public void function testStringEchoStringArray() localMode="modern" {
+		data=strWS.echoStringArray(["Susi"]);
+		assertEquals("['Susi']",serialize(data));
+	}
+
+	public void function testStringEchoStringStringArray() localMode="modern" {
+		data=strWS.echoStringStringArray([["Susi"]]);
+		assertEquals("[['Susi']]",serialize(data));
+	}
+
+	public void function testStringEchoStringStringStringArray() localMode="modern" {
+		data=strWS.echoStringStringStringArray([[["Susi"]]]);
+		assertEquals("[[['Susi']]]",serialize(data));
+	}
+
 
 
 /** STRUCT **/
@@ -124,6 +162,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 	public void function testMyItemEchoArray() localMode="modern" {
+		//dump(myiWS);abort;
 		data=myiWS.echoArray([new Jira2615.MyItem("Test")]);
 
 		assertEquals(true,isArray(data));
@@ -149,7 +188,11 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 	public void function testMyItemEchoMyItemMyItemMyItemArray() localMode="modern" {
-		data=myiWS.echoMyItemMyItemMyItemArray([[new Jira2615.MyItem("Test")]]);
+		//data=myiWS.callMyItemMyItemMyItemArray([[new Jira2615.MyItem("Test")]]);
+		
+		data=myiWS.callMyItemMyItemMyItemArray([[[new Jira2615.MyItem("Test")]]]);
+		
+		data=myiWS.echoMyItemMyItemMyItemArray([[[new Jira2615.MyItem("Test")]]]);
 		assertEquals(true,isArray(data));
 		data=data[1];
 		assertEquals(true,isArray(data));
@@ -203,6 +246,12 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 	public void function testReturnAny() localMode="modern" {
 		item=service.getAny();
+		assertEquals("getany",item.getItemKey());
+	}
+
+	public void function testReturnAny2() localMode="modern" {
+		//dump(serviceAny);abort;
+		item=serviceAny.getAny();
 		assertEquals("getany",item.getItemKey());
 	}
 

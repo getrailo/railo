@@ -5,6 +5,7 @@ package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.query.QueryColumnExists;
@@ -36,6 +37,9 @@ public final class StructKeyExists extends BIF {
 
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
-		return call(pc,Caster.toStruct(args[0]),Caster.toKey(args[1]));
+		if(args.length==2)
+			return call(pc,Caster.toStruct(args[0]),Caster.toKey(args[1]));
+		    	
+		throw new FunctionException(pc, "StructKeyExists", 2, 2, args.length);
 	}
 }

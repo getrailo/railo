@@ -19,6 +19,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -264,6 +265,49 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			}
 		}
 		return sct;
+	}
+	
+	/**
+	 * returns the scope that contains a specific key
+	 * @param key
+	 * @return
+	 */
+	public Collection getScopeFor(Collection.Key key, Scope defaultValue) {
+		Object rtn=null;
+		
+		if(checkArguments) {
+		    rtn=local.get(key,NullSupportHelper.NULL());
+		    if(rtn!=NullSupportHelper.NULL()) return local;;
+		    rtn=argument.getFunctionArgument(key,NullSupportHelper.NULL());
+		    if(rtn!=NullSupportHelper.NULL()) return argument;
+		}
+				
+		// get data from queries
+		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
+			QueryColumn qc = qryStack.getColumnFromACollection(key);
+			if(qc!=null) return (Query)qc.getParent();
+		}
+		
+		// variable
+		rtn=variable.get(key,NullSupportHelper.NULL());
+		if(rtn!=NullSupportHelper.NULL()) {
+			return variable;
+		}
+		
+		// thread scopes
+		if(pc.hasFamily()) {
+			Threads t = (Threads) pc.getThreadScope(key,NullSupportHelper.NULL());
+			if(rtn!=NullSupportHelper.NULL()) return t; 
+		}
+		
+		// get a scope value
+		for(int i=0;i<scopes.length;i++) {
+			rtn=scopes[i].get(key,NullSupportHelper.NULL());
+			if(rtn!=NullSupportHelper.NULL()) {
+				return scopes[i]; 
+			}
+		}
+		return defaultValue;
 	}
 
 

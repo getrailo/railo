@@ -401,13 +401,19 @@ public final class CFMLTransformer {
 					}
 					else {
 						if(text.length()>0)	{
-							parent.addPrintOut(data.factory,text.toString(),null,null);
+							Position end = data.cfml.getPosition();
+							Position start = data.cfml.getPosition(end.pos-text.length());
+							
+							
+							parent.addPrintOut(text.toString(),start,end);
+							start=end;
 							text=new StringBuffer();
 						}
-						Position line = data.cfml.getPosition();
+						Position end = data.cfml.getPosition();
+						Position start = data.cfml.getPosition(end.pos-text.length());
+						
 						PrintOut po;
-						parent.addStatement(po=new PrintOut(transformer.transform(data.factory,data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings),line,null));
-
+						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings),start,end));
 						po.setEnd(data.cfml.getPosition());
 						
 						if(!data.cfml.isCurrent('#'))
@@ -421,7 +427,12 @@ public final class CFMLTransformer {
 					text.append(data.cfml.getCurrent());
 			data.cfml.next();
 			}
-			if(text.length()>0)parent.addPrintOut(data.factory,text.toString(), null,null);
+			if(text.length()>0){
+				Position end = data.cfml.getPosition();
+				Position start = data.cfml.getPosition(end.pos-text.length());
+				
+				parent.addPrintOut(text.toString(), start,end);
+			}
 		}
 		// no expression
 		else {
@@ -437,7 +448,10 @@ public final class CFMLTransformer {
 				text=data.cfml.substring(start,end-start);
 				data.cfml.setPos(end);
 			}
-			parent.addPrintOut(data.factory,text, null,null);
+			Position e = data.cfml.getPosition();
+			Position s = data.cfml.getPosition(start);
+			
+			parent.addPrintOut(text, s,e);
 			
 		}
 	}

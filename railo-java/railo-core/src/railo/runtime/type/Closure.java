@@ -104,7 +104,7 @@ public class Closure extends UDFImpl {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties dp) {
-		return UDFUtil.toDumpData(pageContext, maxlevel, dp,this,true);
+		return UDFUtil.toDumpData(pageContext, maxlevel, dp,this,UDFUtil.TYPE_CLOSURE);
 	}
 
 	@Override

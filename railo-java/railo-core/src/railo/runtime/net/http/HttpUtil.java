@@ -67,7 +67,7 @@ public class HttpUtil {
 		while(e.hasMoreElements()){
 			name=(String) e.nextElement();
 			values=req.getParameterValues(name);
-			if(values==null && ReqRspUtil.needEncoding(name, true))
+			if(values==null && ReqRspUtil.needEncoding(name, false))
 				values=req.getParameterValues(ReqRspUtil.encode(name, ReqRspUtil.getCharacterEncoding(null,req)));
 			if(values==null) {
 				PageContext pc = ThreadLocalPageContext.get();

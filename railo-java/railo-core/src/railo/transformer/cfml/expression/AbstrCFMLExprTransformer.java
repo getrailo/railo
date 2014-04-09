@@ -1,6 +1,5 @@
 package railo.transformer.cfml.expression;
 
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -29,6 +28,8 @@ import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.op.OPDecision;
+import railo.transformer.bytecode.op.OPUnary;
+import railo.transformer.bytecode.op.OpBool;
 import railo.transformer.bytecode.op.OpContional;
 import railo.transformer.bytecode.op.OpDouble;
 import railo.transformer.bytecode.op.OpElvis;
@@ -658,9 +659,13 @@ public abstract class AbstrCFMLExprTransformer {
 			if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 				data.cfml.next();
 				comments(data);
-				Expression right = assignOp(data);
-				ExprString res = data.factory.opString(expr, right);
-				expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
+				Expression value = assignOp(data);
+				
+				expr = new OPUnary((Variable)expr,value,OPUnary.PRE,OPUnary.CONCAT,expr.getStart(),data.cfml.getPosition());
+				
+				
+				//ExprString res = OpString.toExprString(expr, right);
+				//expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			else {
 	            comments(data);
@@ -697,22 +702,19 @@ public abstract class AbstrCFMLExprTransformer {
 
 	private Expression _plusMinusOp(ExprData data,Expression expr,int opr) throws TemplateException {
 		// +=
+		// plus|Minus Assignment
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
 			comments(data);
-			Expression right = assignOp(data);
-			ExprDouble res = OpDouble.toExprDouble(expr, right,opr);
-			expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
+			Expression value = assignOp(data);
+			//if(opr==OpDouble.MINUS) value=OpNegateNumber.toExprDouble(value, null, null);
+			
+			expr = new OPUnary((Variable)expr,value,OPUnary.PRE,opr,expr.getStart(),data.cfml.getPosition());
+			
+			//ExprDouble res = OpDouble.toExprDouble(expr, right,opr);
+			//expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
 		}
-		/*/ ++
-		else if (data.cfml.isCurrent(opr==OpDouble.PLUS?'+':'-') && expr instanceof Variable) {
-			data.cfml.next();
-			comments(data);
-			ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),opr);
-			expr=new OpVariable((Variable)expr,res);
-			expr=OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D, -1),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
-			//comments(data);
-		}*/
+		
 		else {
 			comments(data);
             expr=OpDouble.toExprDouble(expr, modOp(data), opr);	
@@ -799,9 +801,15 @@ public abstract class AbstrCFMLExprTransformer {
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
 			comments(data);
-			Expression right = assignOp(data);
-			ExprDouble res = OpDouble.toExprDouble(expr, right,iOp);
-			return new OpVariable((Variable)expr,res,data.cfml.getPosition());
+			Expression value = assignOp(data);
+			
+			return new OPUnary((Variable)expr,value,OPUnary.PRE,iOp,expr.getStart(),data.cfml.getPosition());
+			
+			
+			
+			
+			//ExprDouble res = OpDouble.toExprDouble(expr, right,iOp);
+			//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 		}
         comments(data);
         return OpDouble.toExprDouble(expr, expoOp(data), iOp);
@@ -839,17 +847,20 @@ public abstract class AbstrCFMLExprTransformer {
 		return expr;
 	}
 	
-	private Expression _unaryOp(ExprData data,Expression expr,int opr) throws TemplateException {
+	private Expression _unaryOp(ExprData data,Expression expr,int op) throws TemplateException {
 		Position leftEnd = expr.getEnd(),start=null,end=null;
 		comments(data);
 		if(leftEnd!=null){
 			start=leftEnd;
 			end=new Position(leftEnd.line, leftEnd.column+2, leftEnd.pos+2);
 		}
+		return new OPUnary((Variable)expr,LitDouble.ONE,OPUnary.POST,op,start,end);
 		
-		ExprDouble res = OpDouble.toExprDouble(expr, data.factory.createLitDouble(1D,start,end),opr);
-		expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
-		return OpDouble.toExprDouble(expr,data.factory.createLitDouble(1D,start,end),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
+		
+		
+		//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,start,end),opr);
+		//expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
+		//return OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D,start,end),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
 	}
 	
 	
@@ -864,11 +875,16 @@ public abstract class AbstrCFMLExprTransformer {
 		// And Operation
 		Position line=data.cfml.getPosition();
 		if (data.cfml.forwardIfCurrent('-')) {
+			// pre increment
 			if (data.cfml.forwardIfCurrent('-')) {
 				comments(data);
 				Expression expr = clip(data);
-				ExprDouble res = OpDouble.toExprDouble(expr, data.factory.createLitDouble(1D),OpDouble.MINUS);
-				return new OpVariable((Variable)expr,res,data.cfml.getPosition());
+				return new OPUnary((Variable)expr,LitDouble.ONE,OPUnary.PRE,OpDouble.MINUS,line,data.cfml.getPosition());
+				
+				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.MINUS);
+				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
+				
+				
 			}
 			comments(data);
 			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line,data.cfml.getPosition());
@@ -878,8 +894,11 @@ public abstract class AbstrCFMLExprTransformer {
 			if (data.cfml.forwardIfCurrent('+')) {
 				comments(data);
 				Expression expr = clip(data);
-				ExprDouble res = OpDouble.toExprDouble(expr, data.factory.createLitDouble(1D),OpDouble.PLUS);
-				return new OpVariable((Variable)expr,res,data.cfml.getPosition());
+				
+				return new OPUnary((Variable)expr,LitDouble.ONE,OPUnary.PRE,OpDouble.PLUS,line,data.cfml.getPosition());
+				
+				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
+				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			comments(data);
 			return data.factory.toExprDouble(clip(data));//OpNegateNumber.toExprDouble(clip(),OpNegateNumber.PLUS,line);
@@ -930,9 +949,7 @@ public abstract class AbstrCFMLExprTransformer {
 		// Dynamic
 			if((expr=dynamic(data))!=null) {
 				expr = newOp(data, expr);
-				//if(res==expr)
-					expr = subDynamic(data,expr);
-				//else expr=res;
+				expr = subDynamic(data,expr);
 				data.mode=DYNAMIC;
 				return expr;
 			} 
@@ -943,10 +960,12 @@ public abstract class AbstrCFMLExprTransformer {
 			} 
 		// JSON
 			if((expr=json(data,JSON_ARRAY,'[',']'))!=null) {
+				expr = subDynamic(data,expr);
 				data.mode=DYNAMIC;
 				return expr;
 			} 
 			if((expr=json(data,JSON_STRUCT,'{','}'))!=null) {
+				expr = subDynamic(data,expr);
 				data.mode=DYNAMIC;
 				return expr;
 			} 

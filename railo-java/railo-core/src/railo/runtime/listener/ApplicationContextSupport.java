@@ -35,6 +35,7 @@ public abstract class ApplicationContextSupport implements ApplicationContext {
 
 	public ApplicationContextSupport(ConfigWeb config) {
 		this.config=config;
+		tagDefaultAttributeValues=((ConfigImpl)config).getTagDefaultAttributeValues();
 	}
 	
 

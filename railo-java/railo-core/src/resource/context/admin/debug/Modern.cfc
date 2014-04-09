@@ -142,7 +142,6 @@
 			,nanosecond:"ns"
 			} />
 			
-			
 		<cfset var ordermap={}>
 		<cfloop query="#arguments.debugging.history#">
 			<cfif !structkeyExists(ordermap, arguments.debugging.history.id)><cfset ordermap[ arguments.debugging.history.id ]=structCount(ordermap)+1></cfif>
@@ -152,7 +151,6 @@
 		<cfif arguments.context EQ "web">
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 		</cfif>
-
 		<style type="text/css">
 			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; background-color: #FFF; color: #222; border: 1px solid #CCC; border-radius: 5px; text-shadow: none; }
 			#-railo-debug.collapsed	{ padding: 0; border-width: 0; }
@@ -590,7 +588,7 @@
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 									<table><tr><td>
-
+									<cfset hasCachetype=ListFindNoCase(queries.columnlist,"cachetype") gt 0>
 										<cfloop query="queries">
 
 											<table class="details">
@@ -601,18 +599,21 @@
 													<th>Time (ms)</th>
 													<th>Datasource</th>
 													<th>Source</th>
+													<cfif hasCachetype><th>Cache Type</th></cfif>
+													
 												</tr>
 												<tr>
 													<th></th>
-													<td class="bold">#queries.name#</td>
+													<td>#queries.name#</td>
 													<td class="txt-r">#queries.count#</td>
 													<td class="txt-r">#unitFormat(arguments.custom.unit, queries.time,prettify)#</td>
 													<td>#queries.datasource#</td>
 													<td>#queries.src#</td>
+													<cfif hasCachetype><td>#isEmpty(queries.cacheType)?"none":queries.cacheType#</td></cfif>
 												</tr>
 												<tr>
 													<th class="label">SQL:</th>
-													<td id="-railo-debug-query-sql-#queries.currentRow#" colspan="5" oncontextmenu="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
+													<td id="-railo-debug-query-sql-#queries.currentRow#" colspan="6" oncontextmenu="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
 												</tr>
 
 												<cfif listFindNoCase(queries.columnlist, 'usage') && isStruct(queries.usage)>
@@ -630,17 +631,15 @@
 													</cfloop>
 
 													<tr>
-														<th></th>
-														<th colspan="5" class="txt-l">Query usage within the request:</th>
+														<th colspan="7"><b>Query usage within the request</b></th>
 													</tr>
 
 													<cfset local.arr = usageRead>
 													<cfset local.arrLenU = arrayLen( arr )>
 													<cfif arrLenU>
 														<tr>
-															<th class="label">Used:</th>
-															<td>
-																<cfloop from="1" to="#arrLenU#" index="local.ii">
+															<td colspan="7">
+																Used:<cfloop from="1" to="#arrLenU#" index="local.ii">
 																	#arr[ ii ]# <cfif ii LT arrLenU>, </cfif>
 																</cfloop>
 															</td>
@@ -650,16 +649,15 @@
 													<cfset local.arrLenN = arrayLen( arr )>
 													<cfif arrLenN>
 														<tr class="red">
-															<th class="label">Unused:</th>
-															<td>
+															<td colspan="7"> 
+																Unused:
 																<cfloop from="1" to="#arrLenN#" index="local.ii">
 																	#arr[ ii ]# <cfif ii LT arrLenN>, </cfif>
 																</cfloop>
 															</td>
 														</tr>
 														<tr class="red">
-															<th></th>
-															<td><b>#arrLenU ? numberFormat( arrLenU / ( arrLenU + arrLenN ) * 100, "999.9" ) : 100# %</b></td>
+															<td colspan="7"><b>#arrLenU ? numberFormat( arrLenU / ( arrLenU + arrLenN ) * 100, "999.9" ) : 100# %</b></td>
 														</tr>
 													</cfif>
 												</cfif>

@@ -24,5 +24,7 @@ component {
 	remote MyItem[][][] function echoMyItemMyItemMyItemArray(MyItem[][][] data) { 
 		return arguments.data;
 	}
-
+	remote string function callMyItemMyItemMyItemArray(MyItem[][][] data) { 
+		return "Susi";
+	}
 }

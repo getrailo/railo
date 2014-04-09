@@ -95,6 +95,7 @@ import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.rest.RestSettingImpl;
@@ -104,6 +105,7 @@ import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -207,6 +209,8 @@ public abstract class ConfigImpl implements Config {
     private int _debug;
     private int debugLogOutput=SERVER_BOOLEAN_FALSE;
     private int debugOptions=0;
+    //private DebugFilter[] debugFilters=new DebugFilter[]{new IPDebugFiler()};
+    
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -403,6 +407,8 @@ public abstract class ConfigImpl implements Config {
 	
 	private List<Layout> consoleLayouts=new ArrayList<Layout>();
 	private List<Layout> resourceLayouts=new ArrayList<Layout>();
+
+	private Map<Key, Map<Key, Object>> tagDefaultAttributeValues;
 
 
 	
@@ -649,20 +655,29 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public boolean debug() {
-    	return _debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE;
+    	if(!(_debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE)) return false;
+    	
+    	/*if(!ArrayUtil.isEmpty(debugFilters)) {
+    		for(int i=0;i<debugFilters.length;i++){
+    			
+    		}
+    	}*/
+    	
+    	
+    	return true;
     }
     
     public boolean debugLogOutput() {
     	return debug() && debugLogOutput==CLIENT_BOOLEAN_TRUE || debugLogOutput==SERVER_BOOLEAN_TRUE;
     }
 
-    public int intDebug() {
+    /*public int intDebug() {
         return _debug;
     }
 
     public int intDebugLogOutput() {
         return debugLogOutput;
-    }
+    }*/
     
     @Override
     public Resource getTempDirectory() {
@@ -3317,6 +3332,8 @@ public abstract class ConfigImpl implements Config {
 	private int externalizeStringGTE=-1;
 
 
+	
+
 
 
 	public boolean getBufferOutput() {
@@ -3475,6 +3492,28 @@ public abstract class ConfigImpl implements Config {
 			return addLogger(name, Level.ERROR, "console", null, "pattern", null,true);
 		}
 		return las;
+	}
+
+	public Map<Key, Map<Key, Object>> getTagDefaultAttributeValues() {
+		return tagDefaultAttributeValues==null?null:Duplicator.duplicateMap(tagDefaultAttributeValues,new HashMap<Key, Map<Key, Object>>(),true);
+		
+		/*Map<Key, Map<Key, Object>> map=new HashMap<Key, Map<Key, Object>>();
+		Map<Key, Object> func=new HashMap<Key, Object>();
+		Map<Key, Object> qry=new HashMap<Key, Object>();
+		Map<Key, Object> inc=new HashMap<Key, Object>();
+		map.put(KeyImpl.init("function"), func);
+		map.put(KeyImpl.init("include"), inc);
+		map.put(KeyImpl.init("query"), qry);
+
+		func.put(KeyImpl.init("cachedWithin"), "smart");
+		inc.put(KeyImpl.init("cachedWithin"), "smart");
+		qry.put(KeyImpl.init("cachedWithin"), "smart");
+		
+		return  map;*/
+	}
+	
+	protected void setTagDefaultAttributeValues(Map<Key, Map<Key, Object>> values) {
+		this.tagDefaultAttributeValues=values;
 	}
 
 	

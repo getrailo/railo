@@ -16,6 +16,7 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
@@ -51,6 +52,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	//private LinkedList<SpoolerTask> openTaskss=new LinkedList<SpoolerTask>();
 	//private LinkedList<SpoolerTask> closedTasks=new LinkedList<SpoolerTask>();
 	private SimpleThread simpleThread;
+	private SerializableObject token=new SerializableObject();
 	private SpoolerThread thread;
 	//private ExecutionPlan[] plans;
 	private Resource persisDirectory;
@@ -132,14 +134,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	private void start(Task task) {
 		if(task==null) return;
-		if(simpleThread==null || !simpleThread.isAlive()) {
-			simpleThread=new SimpleThread(config,task);
-			simpleThread.setPriority(Thread.MIN_PRIORITY);
-			simpleThread.start();
-		}
-		else {
-			simpleThread.tasks.add(task);
-			simpleThread.interrupt();
+		synchronized (task) {
+			if(simpleThread==null || !simpleThread.isAlive()) {
+				simpleThread=new SimpleThread(config,task);
+				
+				simpleThread.setPriority(Thread.MIN_PRIORITY);
+				simpleThread.start();
+			}
+			else {
+				simpleThread.tasks.add(task);
+				simpleThread.interrupt();
+			}
 		}
 	}
 

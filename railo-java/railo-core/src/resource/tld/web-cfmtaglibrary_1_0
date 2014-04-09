@@ -58,6 +58,7 @@
 			<type>multiple</type>
 			<rtexprvalue>true</rtexprvalue>
 		</script>
+		<status>hidden</status>
 		<description>Tag for the railo web/server administrator</description>
 		<attribute-type>dynamic</attribute-type>
 
@@ -5570,11 +5571,63 @@ To use cached data, the function must be called with the exact same arguments.</
 	statusCode attribute.</description>
 		</attribute>
 	</tag>
+	<!-- HtmlBody -->
+	<tag>
+		<name>htmlbody</name>
+		<tag-class>railo.runtime.tag.HtmlBody</tag-class>
+		<body-content>free</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<description>Writes the text specified in the text attribute to the 'body' section of a generated HTML page.
+	 The cfhtmlbody tag can be useful for embedding JavaScript code, or placing other HTML tags that should go at the bottom
+	 of the page just before the closing body tag.</description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is
+		placed in the 'head' section</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>variable</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Name of variable to contain the text for htmlbody.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>id</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>ID of the snippet that is added, used to ensure that the same snippet will not be added more than once.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>action</name>
+			<values>append,read,reset,write</values>
+			<default-value>append</default-value>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>possible actions are:
+- append (default): append text to the html head
+- read: return the text already set to html head
+- reset: reset/remove text already set to hrml head
+- write: write text to html head, overwrite already existing text in html head
+- flush: writes the buffer in the html head to the response stream
+			</description>
+		</attribute>
+	</tag>
 	<!-- HtmlHead -->
 	<tag>
 		<name>htmlhead</name>
 		<tag-class>railo.runtime.tag.HtmlHead</tag-class>
-		<body-content>empty</body-content>
+		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
 			<type>multiple</type>
@@ -5601,6 +5654,13 @@ To use cached data, the function must be called with the exact same arguments.</
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>id</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>ID of the snippet that is added, used to ensure that the same snippet will not be added more than once.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>action</name>
 			<values>append,read,reset,write</values>
 			<default-value>append</default-value>
@@ -5611,9 +5671,11 @@ To use cached data, the function must be called with the exact same arguments.</
 - read: return the text already set to html head
 - reset: reset/remove text already set to hrml head
 - write: write text to html head, overwrite already existing text in html head
+- flush: writes the buffer in the html head to the response stream
 			</description>
 		</attribute>
 	</tag>
+
 	<!-- Http -->
 	<tag>
 		<name>http</name>
@@ -5931,7 +5993,21 @@ To use cached data, the function must be called with the exact same arguments.</
 			<name>type</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The transaction type.</description>
+			<values>body,CGI,cookie,file,form,formfield,header,URL,XML</values>
+			<description>valid values are:
+- header: specifies an HTTP header. 
+- CGI: specifies an HTTP header. encodes the value depending on the attribute "encoded
+- body: specifies the body of the HTTP request.
+- XML: identifies the request as having a content-type of text/xml. Specifies that the value attribute contains the body of the HTTP request. Used to send XML to the destination URL.
+- file: tells Railo to send the contents of the specified file. 
+- URL: specifies a URL query string name-value pair to append to the cfhttp url attribute.
+- form,formField: specifies a form field to send. 
+- cookie: specifies a cookie to send as an HTTP header. 
+			
+			
+			
+			
+			</description>
 		</attribute>
 		<attribute>
 			<type>any</type>
@@ -8035,12 +8111,12 @@ Valid only for cfinput type="text".</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>spoolenable</name>
-			<alias>async</alias>
+			<name>async</name>
+			<alias>spoolenable</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<default>false</default>
-			<description>only works in combination with the attribute "file", if set to true the file is written in a seperate thread.</description>
+			<description>only works in combination with the attribute "file", if set to true the file is written in a separate thread.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8200,6 +8276,15 @@ Valid only for cfinput type="text".</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Collection to loop over</description>
 		</attribute>
+		
+		<attribute>
+			<type>struct</type>
+			<name>struct</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>struct to loop over</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>item</name>
@@ -8478,12 +8563,16 @@ Railo uses the number of characters in the file.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>spoolenable</name>
-			<alias>async</alias>
+			<name>async</name>
+			<alias>spoolenable</alias>
+			<default>true</default>
 			<required>false</required>
+			<default>true</default>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies whether to spool mail or always send it
-            Immediately. Overrides the Railo Administrator spool mail messages to disk for delivery setting.</description>
+			<description>if set to true, the mail is sent asynchronously by the Railo Task manager (with multiple tries),
+			if set to false the mail is sent in the same thread that executes the request, which is useful for troubleshooting because you get an error message if there is one.
+			This setting overrides the setting with the same name in the Railo Administrator.
+			This attribute replaces the old "spoolenable" attribute which is still supported as an alias.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>

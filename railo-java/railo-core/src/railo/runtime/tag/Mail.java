@@ -295,9 +295,16 @@ public final class Mail extends BodyTagImpl {
 	/**
 	 * @param spoolenable The spoolenable to set.
 	 */
-	public void setSpoolenable(boolean spoolenable) {
+	public void setAsync(boolean spoolenable) {
 		smtp.setSpoolenable(spoolenable);
 	}
+	
+
+	// old function for backward compatiblity
+	public void setSpoolenable(boolean async){
+		setAsync(async);
+	}
+	
 	
 	/** set the value server
 	* @param strServer value to set

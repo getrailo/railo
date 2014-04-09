@@ -269,6 +269,7 @@ public final class Cache extends BodyTagImpl {
     @Override
 	public int doStartTag() throws PageException	{
 		now = new DateTimeImpl(pageContext.getConfig());
+		if(action==CACHE && hasBody) action=CONTENT;
 		try {
 	        if(action==CACHE) {
 	            doClientCache();

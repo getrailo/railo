@@ -61,11 +61,21 @@ public class MemberUtil {
 			FunctionLibFunctionArg arg;
 			if(args.length<_args.size()){
 				ArrayList<Ref> refs=new ArrayList<Ref>();
-				refs.add(new Casting(strType,type,coll));
-				for(int y=0;y<args.length;y++){
-					arg = _args.get(y+1);
-					refs.add(new Casting(arg.getTypeAsString(),arg.getType(),args[y]));
-				}
+				
+					int pos = member.getMemberPosition();
+					FunctionLibFunctionArg flfa;
+					Iterator<FunctionLibFunctionArg> it = _args.iterator();
+					int glbIndex=0,argIndex=-1;
+					while(it.hasNext()){
+						glbIndex++;
+						flfa = it.next();
+						if(glbIndex==pos) {
+							refs.add(new Casting(strType,type,coll));
+						}
+						else if(args.length>++argIndex) { // careful, argIndex is only incremented when condition above is false
+							refs.add(new Casting(flfa.getTypeAsString(),flfa.getType(),args[argIndex]));
+						}
+					}
 				return new BIFCall(coll, member, refs.toArray(new Ref[refs.size()])).getValue(pc);
 			}
 			

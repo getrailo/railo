@@ -193,9 +193,9 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 	public void function testY(){
 		// year
-		assertEquals("09",DateTimeFormat(date,"y"));
+		assertEquals("2009",DateTimeFormat(date,"y"));
 		assertEquals("09",DateTimeFormat(date,"yy"));
-		assertEquals("09",DateTimeFormat(date,"yyy"));
+		assertEquals("2009",DateTimeFormat(date,"yyy"));
 		assertEquals("2009",DateTimeFormat(date,"yyyy"));
 		assertEquals("02009",DateTimeFormat(date,"yyyyy"));
 		
@@ -228,7 +228,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 	public void function testSpecialCharacter(){
 		assertEquals("'",DateTimeFormat(date,"''"));
-		assertEquals("3 'P' 3",DateTimeFormat(date,"s 't' s"));
+		assertEquals("3 t 3",DateTimeFormat(date,"s 't' s"));
 		
 	}
 }

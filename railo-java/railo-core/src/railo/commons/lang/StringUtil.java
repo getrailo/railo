@@ -1,5 +1,6 @@
 package railo.commons.lang;
 
+import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -136,16 +137,20 @@ public final class StringUtil {
 	 * @return escapes String
 	 */
 	public static String escapeJS(String str, char quotesUsed) {
-		return escapeJS(str,quotesUsed, true);
+		return escapeJS(str,quotesUsed, (CharsetEncoder)null);
+	}
+
+	public static String escapeJS(String str, char quotesUsed, java.nio.charset.Charset charset) {
+		return escapeJS(str, quotesUsed, charset==null?null:charset.newEncoder());
 	}
 
 	/**
 	 * escapes JS sensitive characters
 	 * @param str String to escape
-	 * @param escapeNoneUSAscci escape all us ascci characters
+	 * @param charset if not null, it checks if the given string is supported by the encoding, if not, railo encodes the string
 	 * @return escapes String
 	 */
-	public static String escapeJS(String str, char quotesUsed, boolean escapeNoneUSAscci) {
+	public static String escapeJS(String str, char quotesUsed, CharsetEncoder enc) {
 		char[] arr=str.toCharArray();
 		StringBuilder rtn=new StringBuilder(arr.length);
 		rtn.append(quotesUsed);
@@ -187,7 +192,7 @@ public final class StringUtil {
 					default : rtn.append(arr[i]); break;
 				}
 			}
-			else if(escapeNoneUSAscci) {
+			else if(enc==null || !enc.canEncode(arr[i])) {
 				if (arr[i] < 0x10)			rtn.append("\\u000");
 			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
 			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
@@ -1192,7 +1197,28 @@ public final class StringUtil {
 		return str.substring(off,off+len);
 	}
 	
-	
+
+	public static String insertAt(String str, CharSequence substring, int pos) {
+
+		if (isEmpty(substring))
+			return str;
+
+		int len = str.length();
+
+		StringBuilder sb = new StringBuilder(len + substring.length());
+
+		if (pos > len)
+			pos = len;
+
+		if (pos > 0)
+			sb.append(str.substring(0, pos));
+
+		sb.append(substring);
+		sb.append(str.substring(pos));
+
+		return sb.toString();
+	}
+
 	
 	/**
 	 * this is the public entry point for the replaceMap() method

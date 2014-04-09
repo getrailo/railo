@@ -2,6 +2,7 @@ package railo.runtime.debug;
 
 import railo.runtime.db.SQL;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 
 /**
  * 
@@ -78,4 +79,9 @@ public final class QueryEntryImpl implements QueryEntry {
 	public long getStartTime() {
         return startTime;
     }
+
+	@Override
+	public String getCacheType() {
+		return (qry instanceof QueryImpl)?((QueryImpl)qry).getCacheType():null;
+	}
 }

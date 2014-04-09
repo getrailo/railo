@@ -71,6 +71,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.functions.file.FileStreamWrapper;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.rpc.AxisCaster;
@@ -3210,7 +3211,7 @@ public final class Caster {
     	if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
-        		return ComponentUtil.getServerComponentPropertiesClass(pc,c);
+        		return ComponentUtil.getComponentPropertiesClass(pc,c);
     		} 
             catch (PageException e) {
             	pe=e;
@@ -3523,6 +3524,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
+        else if(type==CFTypes.TYPE_IMAGE)          return Image.toImage(pc,o);
 
     	return _castTo(pc, strType, o);
     }   
@@ -3593,6 +3595,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
+        else if(type==CFTypes.TYPE_IMAGE)            return Image.toImage(pc,o);
 
         if(type==CFTypes.TYPE_UNDEFINED)
             throw new ExpressionException("type isn't defined (TYPE_UNDEFINED)");
@@ -4195,16 +4198,16 @@ public final class Caster {
 		return (Vector) Duplicator.duplicateList(toList(obj,false),new Vector(), false);
 	} 
 
-	public static Calendar toCalendar(Date date, TimeZone tz) {
+	public static Calendar toCalendar(Date date, TimeZone tz, Locale l) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance(tz,l):JREDateTimeUtil.newInstance(tz,l);
 		c.setTime(date);
 		return c;
 	}
 	
-	public static Calendar toCalendar(long time, TimeZone tz) {
+	public static Calendar toCalendar(long time, TimeZone tz, Locale l) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance(tz,l):JREDateTimeUtil.newInstance(tz,l);
 		c.setTimeInMillis(time);
 		return c;
 	}

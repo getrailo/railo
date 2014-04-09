@@ -6,7 +6,6 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 
 public class ImageResize implements Function {
 
@@ -21,9 +20,8 @@ public class ImageResize implements Function {
 	
 	public static String call(PageContext pc, Object name,String width, String height,String interpolation, double blurFactor) throws PageException {
 		// image
-		if(name instanceof String)
-			name=pc.getVariable(Caster.toString(name));
-		Image image=Image.toImage(name);
+		//if(name instanceof String)name=pc.getVariable(Caster.toString(name));
+		Image image=Image.toImage(pc,name);
 		
 		interpolation = interpolation.toLowerCase().trim();
 		

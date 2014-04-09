@@ -83,7 +83,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		if (attrib.format eq "html") {
 			attrib.format = "modern";
 		}
-		variables.addJS_CSS = !(attrib.format eq "simple");
+		variables.addJS_CSS = !(attrib.format eq "simple" || attrib.format eq "text");
 
 		if (len(attrib.format) EQ 0) {
 			if (attrib.output EQ "console") 

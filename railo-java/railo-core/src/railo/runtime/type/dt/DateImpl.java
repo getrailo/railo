@@ -51,6 +51,11 @@ public final class DateImpl extends  Date implements SimpleValue {
             return "{d '"+railoFormatter.format(this)+"'}";
         }
 	}
+	
+	@Override
+	public String toString() {
+		return castToString();
+	}
 
     @Override
     public String castToString(String defaultValue) {

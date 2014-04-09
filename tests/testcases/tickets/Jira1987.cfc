@@ -25,7 +25,11 @@
 
 		<cfset container = service.getItemsMixed() />	
 		<cfset assertEquals(4,arrayLen(container.items))>
-		<cfset assertEquals(true,isNull(container.items[1].getId()))>
+		
+
+
+		<cfset assertEquals(false,isNull(container.items[1].url))>
+		<cfset assertEquals(true,isNull(container.items[2].url))>
 		
 
 	</cffunction>

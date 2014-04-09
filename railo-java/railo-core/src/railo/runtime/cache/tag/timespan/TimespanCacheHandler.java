@@ -131,4 +131,9 @@ public class TimespanCacheHandler implements CacheHandler {
 		return c;
 	}
 
+	@Override
+	public String label() throws PageException {
+		return "timespan";
+	}
+
 }

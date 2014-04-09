@@ -186,7 +186,7 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return UDFUtil.toDumpData(pageContext, maxlevel, properties, this,false);
+		return UDFUtil.toDumpData(pageContext, maxlevel, properties, this,UDFUtil.TYPE_UDF);
 	}
 	
 	@Override

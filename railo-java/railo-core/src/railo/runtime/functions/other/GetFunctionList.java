@@ -5,6 +5,7 @@ package railo.runtime.functions.other;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
@@ -30,15 +31,18 @@ public final class GetFunctionList implements Function {
 			FunctionLib[] flds;
 			flds = ((ConfigImpl)pc.getConfig()).getFLDs();
 			FunctionLibFunction func;
+			Map<String, FunctionLibFunction> _functions;
+			Iterator<Entry<String, FunctionLibFunction>> it;
+			Entry<String, FunctionLibFunction> e;
 			for(int i=0;i<flds.length;i++) {
-				Map functions = flds[i].getFunctions();
-				Iterator it = functions.keySet().iterator();
+				_functions = flds[i].getFunctions();
+				it = _functions.entrySet().iterator();
 				
 				while(it.hasNext()){
-					Object n=it.next();
-					func = flds[i].getFunction(n.toString());
+					e = it.next();
+					func = e.getValue();
 					if(func.getStatus()!=TagLib.STATUS_HIDDEN && func.getStatus()!=TagLib.STATUS_UNIMPLEMENTED)
-						sct.set(n.toString(),"");
+						sct.set(e.getKey(),"");
 				}
 			}
 			functions=sct;

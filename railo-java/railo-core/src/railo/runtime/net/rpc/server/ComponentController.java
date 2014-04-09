@@ -3,6 +3,7 @@ package railo.runtime.net.rpc.server;
 import javax.xml.rpc.encoding.TypeMapping;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.MessageContext;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
@@ -10,6 +11,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
@@ -22,6 +24,7 @@ public final class ComponentController {
 
 	private static ThreadLocal<Component> component=new ThreadLocal<Component>();
 	private static ThreadLocal<PageContext> pagecontext=new ThreadLocal<PageContext>();
+	private static ThreadLocal<MessageContext> messageContext=new ThreadLocal<MessageContext>();
 
 	/**
 	 * invokes thread local component
@@ -43,6 +46,7 @@ public final class ComponentController {
 		Key key = Caster.toKey(name);
 		Component c=component.get();
 		PageContext p=pagecontext.get();
+		MessageContext mc = messageContext.get();
 		if(c==null) throw new ApplicationException("missing component");
 		if(p==null) throw new ApplicationException("missing pagecontext");
 		
@@ -68,7 +72,7 @@ public final class ComponentController {
 		// cast return value to Axis type
 		try {
 			RPCServer server = RPCServer.getInstance(p.getId(),p.getServletContext());
-			TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
+			TypeMapping tm = mc!=null?mc.getTypeMapping():TypeMappingUtil.getServerTypeMapping(server.getEngine().getTypeMappingRegistry());
 			rtn=Caster.castTo(p, rtnType, rtn, false);
 			Class<?> clazz = Caster.cfTypeToClass(rtnType);
 			return AxisCaster.toAxisType(tm,rtn,clazz.getComponentType()!=null?clazz:null);
@@ -88,6 +92,9 @@ public final class ComponentController {
 		pagecontext.set(p);
 		component.set(c);
 	}
+	public static void set(MessageContext mc) {
+		messageContext.set(mc);
+	}
 	
 	/**
 	 * 
@@ -95,5 +102,6 @@ public final class ComponentController {
 	public static void release() {
 		pagecontext.set(null);
 		component.set(null);
+		messageContext.set(null);
 	}
 }

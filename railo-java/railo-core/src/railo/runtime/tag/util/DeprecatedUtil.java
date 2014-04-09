@@ -13,7 +13,7 @@ public class DeprecatedUtil {
 	public static void tagAttribute(PageContext pc,String tagName,String attrName) {
 		pc = ThreadLocalPageContext.get(pc);
 		if(pc==null) return;
-		SystemOut.printDate(pc.getConfig().getErrWriter(), "attribute "+attrName+" of the tag "+tagName+" is deprecated and will be ignored");
+		SystemOut.printDate(pc.getConfig().getErrWriter(), "attribute "+attrName+" of the tag "+tagName+" is no longer supported and ignored.");
 	}
 
 	public static void function(PageContext pc, String old) {

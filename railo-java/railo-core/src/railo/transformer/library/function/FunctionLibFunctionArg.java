@@ -143,7 +143,7 @@ public final class FunctionLibFunctionArg {
 		this.name = name;
 	}
 
-	public Object getDescription() {
+	public String getDescription() {
 		return description;
 	}
 

@@ -44,7 +44,7 @@ public final class ASMPropertyImpl implements ASMProperty {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "name:"+name+";type:"+type.getClassName();
+		return "class:"+(clazz==null?null:clazz.getName())+"name:"+name+";type:"+type.getClassName();
 	}
 
 
