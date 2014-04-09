@@ -53,7 +53,7 @@ import railo.commons.net.http.HTTPResponse;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.eh.EHCache;
@@ -1201,7 +1201,7 @@ public final class ConfigWebAdmin {
     	// requesttimeout
     	fixLogging(cs,doc,app, "requesttimeout","requesttimeout-log","requesttimeout-log-level",false,"{railo-config}/logs/requesttimeout.log");
     	
-    	setVersion(doc,Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),4.2D));
+    	setVersion(doc,Caster.toDoubleValue(config.getFactory().getEngine().getInfo().getVersionAsString().substring(0,3),4.2D));
     	
     	
     	return true;
@@ -3264,7 +3264,7 @@ public final class ConfigWebAdmin {
     	File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
         File patch=null;
         for(int i=0;i<patches.length;i++) {
-        	 if(patch==null || isNewerThan(Info.toInVersion(patches[i].getName()),Info.toInVersion(patch.getName()))) {
+        	 if(patch==null || isNewerThan(InfoImpl.toInVersion(patches[i].getName()),InfoImpl.toInVersion(patch.getName()))) {
                  patch=patches[i];
              }
         }

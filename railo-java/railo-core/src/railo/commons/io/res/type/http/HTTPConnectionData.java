@@ -1,12 +1,13 @@
 package railo.commons.io.res.type.http;
 
+import railo.Info;
 import railo.commons.lang.StringUtil;
-import railo.runtime.Info;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.net.proxy.ProxyData;
 
 public final class HTTPConnectionData {
 	
-	public static final String DEFAULT_USER_AGENT = "Railo "+Info.getVersionAsString()+" "+Info.getStateAsString();
+	//public static final String DEFAULT_USER_AGENT = "Railo "+Info.getVersionAsString()+" "+Info.getStateAsString();
 	
 
 	public String username="";
@@ -15,7 +16,7 @@ public final class HTTPConnectionData {
 	public int port=0;
     public ProxyData proxyData;
 	public String path;
-	public String userAgent=DEFAULT_USER_AGENT;
+	public String userAgent;
 
 
 	public int timeout;
@@ -28,17 +29,28 @@ public final class HTTPConnectionData {
 		this.proxyData = proxyData;
 		this.path = path;
 		if(!StringUtil.isEmpty(userAgent))this.userAgent = userAgent;
+		else {
+			this.userAgent=defaultUserAgent();
+		}
 	}
+
+
 
 
 
 	public HTTPConnectionData(String path,int timeout) {
 		load(path);
 		this.timeout=timeout;
-		
+		this.userAgent=defaultUserAgent();
 	}
 	public HTTPConnectionData(String path) {
 		load(path);
+		this.userAgent=defaultUserAgent();
+	}
+
+	private static String defaultUserAgent() {
+		Info info = CFMLEngineFactory.getInstance().getInfo();
+		return "Railo "+info.getVersionAsString()+" "+info.getStateAsString();
 	}
 
 

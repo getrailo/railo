@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.cache.legacy.CacheItem;
@@ -23,7 +22,7 @@ import railo.runtime.op.Caster;
 public class CFMLWriterImpl extends CFMLWriter { 
      
 	private static final int BUFFER_SIZE = 100000;
-	private static final String VERSION = Info.getVersionAsString();  
+	//private static final String VERSIONj = Info.getVersionAsString();  
     private OutputStream out;
 	private HttpServletResponse response;
     private boolean flushed;
@@ -37,7 +36,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     private CacheItem cacheItem;
 	private HttpServletRequest request;
 	private Boolean _allowCompression;
-	private PageContext pc; 
+	private PageContext pc;
+	private String version; 
     
     /**
      * constructor of the class
@@ -56,6 +56,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         this.showVersion=showVersion;
         this.contentLength=contentLength;
         //this.allowCompression=allowCompression;
+        version=pc.getConfig().getFactory().getEngine().getInfo().getVersionAsString();
     }
 
     /* *
@@ -252,7 +253,7 @@ public class CFMLWriterImpl extends CFMLWriter {
     protected final void flushBuffer(boolean closeConn) throws IOException {
     	if(!flushed && closeConn) {
         	response.setHeader("connection", "close");
-        	if(showVersion)response.setHeader("Railo-Version", VERSION);
+        	if(showVersion)response.setHeader("Railo-Version", version);
         	
         }
     	initOut();
@@ -350,7 +351,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	}
         	
         	if(closeConn)response.setHeader("connection", "close");
-        	if(showVersion)response.setHeader("Railo-Version", VERSION);
+        	if(showVersion)response.setHeader("Railo-Version", version);
         	boolean allowCompression;
             if(barr.length<=512) 
             	allowCompression=false;

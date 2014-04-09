@@ -26,7 +26,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.extension.RHExtension;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -43,8 +43,9 @@ public class DeployHandler {
 	public static void deploy(Config config){
 		synchronized (config) {
 			Resource dir = getDeployDirectory(config);
-			int ma = Info.getMajorVersion();
-			int mi = Info.getMinorVersion();
+			railo.Info info = config.getFactory().getEngine().getInfo();
+			int ma = info.getMajorVersion();
+			int mi = info.getMinorVersion();
 			if(!dir.exists()) {
 				if(ma>4 || ma==4 && mi>1) {// FUTURE remove the if contition
 					dir.mkdirs();
@@ -185,7 +186,6 @@ public class DeployHandler {
         int minCoreVersion=0;
         double minLoaderVersion=0;
         String strMinCoreVersion="",strMinLoaderVersion="",version=null,name=null,id=null;
-        
         if(manifest!=null) {
         	Attributes attr = manifest.getMainAttributes();
         	// version
@@ -200,7 +200,7 @@ public class DeployHandler {
 
         	// core version
         	strMinCoreVersion=unwrap(attr.getValue("railo-core-version"));
-        	minCoreVersion=Info.toIntVersion(strMinCoreVersion,minCoreVersion);
+        	minCoreVersion=InfoImpl.toIntVersion(strMinCoreVersion,minCoreVersion);
         	
         	// loader version
         	strMinLoaderVersion=unwrap(attr.getValue("railo-loader-version"));
@@ -216,7 +216,8 @@ public class DeployHandler {
         
         
         // check core version
-		if(minCoreVersion>Info.getVersionAsInt()) {
+		railo.Info info = config.getFactory().getEngine().getInfo();
+        if(minCoreVersion>info.getVersionAsInt()) {
 			logger.log(Log.LEVEL_ERROR,"extension", "cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
 			moveToFailedFolder(ext);
 			return;

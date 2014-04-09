@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.Info;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -28,7 +29,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
-import railo.runtime.Info;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWeb;
@@ -105,7 +106,7 @@ public final class PDFDocument {
 	private static final int MIMETYPE_IMAGE = 2;  
 	private static final int MIMETYPE_APPLICATION = 3;
 	private static final int MIMETYPE_OTHER = -1;
-	private static final String USER_AGENT = "Railo "+Info.getVersionAsString()+" "+Info.getStateAsString();
+	//private static final String USER_AGENT = "Railo "+Info.getVersionAsString()+" "+Info.getStateAsString();
 	
 		
 	private double margintop=-1;
@@ -134,7 +135,7 @@ public final class PDFDocument {
 	private String name;
 	private String authUser;
 	private String authPassword;
-	private String userAgent=USER_AGENT;
+	private String userAgent;
 	private boolean localUrl;
 	private boolean bookmark; 
 	private boolean htmlBookmark;
@@ -142,11 +143,11 @@ public final class PDFDocument {
 	
 	
 	public PDFDocument(){
-		//this.isEvaluation=isEvaluation;
-	    
+		Info info = CFMLEngineFactory.getInstance().getInfo();
+		userAgent= "Railo "+info.getVersionAsString()+" "+info.getStateAsString();
+		
 	}
-
-
+	
 	public void setHeader(PDFPageMark header) {
 		this.header=header;
 	}

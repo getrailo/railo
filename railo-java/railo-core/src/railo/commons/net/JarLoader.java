@@ -16,7 +16,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SystemOut;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 
@@ -104,7 +103,7 @@ public class JarLoader {
 	private static URL toURL(Config config, String jarName) throws MalformedURLException {
 		URL hostUrl=config.getUpdateLocation();
         if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
-        return new URL(hostUrl,"/railo/remote/jars/"+(Info.getMajorVersion()+"."+Info.getMinorVersion())+"/"+jarName);
+        return new URL(hostUrl,"/railo/remote/jars/"+(config.getFactory().getEngine().getInfo().getMajorVersion()+"."+config.getFactory().getEngine().getInfo().getMinorVersion())+"/"+jarName);
 	}
 
 

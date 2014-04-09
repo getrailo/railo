@@ -17,7 +17,7 @@ import railo.commons.io.res.util.FileWrapper;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -36,14 +36,15 @@ public class PDF {
 			//classLoader=new URLClassLoader(new URL[]{new File("/Users/mic/Downloads/java/pd4ml/fullversion/pd4ml.volume.310/lib/pd4ml.jar").toURL()},this.getClass().getClassLoader());
 			if(classLoader==null) {
 				Resource temp = config.getConfigDir().getRealResource("temp");
-				Resource file=temp.getRealResource(Md5.getDigestAsString(Info.getVersionAsString())+".lmdp");
+				railo.Info info = config.getFactory().getEngine().getInfo();
+				Resource file=temp.getRealResource(Md5.getDigestAsString(info.getVersionAsString())+".lmdp");
 		        
 				if(!file.exists()){
 					ResourceUtil.removeChildrenEL(temp, new ExtensionResourceFilter(".lmdp"));
 					
 		        	file.createFile(true);
 		        	//print.out(new Info().getClass().getResource("/resource/lib/pd4ml.jar"));
-		        	InputStream jar = new Info().getClass().getResourceAsStream("/resource/lib/pd4ml.jar");
+		        	InputStream jar = InfoImpl.class.getResourceAsStream("/resource/lib/pd4ml.jar");
 		    		IOUtil.copy(jar, file,true);
 		        }
 		        ClassLoader parent = Version.class.getClassLoader();

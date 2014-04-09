@@ -33,7 +33,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
@@ -272,7 +272,7 @@ public final class SystemUtil {
         try {
             return frp.getResource(".").getCanonicalResource();
         } catch (IOException e) {}
-        URL url=new Info().getClass().getClassLoader().getResource(".");
+        URL url=InfoImpl.class.getClassLoader().getResource(".");
         try {
             return frp.getResource(FileUtil.URLToFile(url).getAbsolutePath());
         } catch (MalformedURLException e) {
@@ -399,7 +399,7 @@ public final class SystemUtil {
         
         
     // pathes from url class Loader (dynamic loaded classes)
-        ClassLoader cl = new Info().getClass().getClassLoader();
+        ClassLoader cl = InfoImpl.class.getClassLoader();
         if(cl instanceof URLClassLoader) 
             getClassPathesFromClassLoader((URLClassLoader) cl, pathes);
         

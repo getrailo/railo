@@ -5,7 +5,7 @@ import java.io.File;
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.Info;
+import railo.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -93,9 +93,9 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 	}
 	
 	public void reload(PageContext pc) {		
-	    
+	    Info info=pc.getConfig().getFactory().getEngine().getInfo();
 	    ReadOnlyStruct coldfusion=new ReadOnlyStruct();
-			coldfusion.setEL(PRODUCT_LEVEL,Info.getLevel());
+			coldfusion.setEL(PRODUCT_LEVEL,info.getLevel());
 			//coldfusion.setEL(PRODUCT_CONTEXT_COUNT,"inf");
 			coldfusion.setEL(PRODUCT_VERSION,"10,0,0,0");
 			//coldfusion.setEL(PRODUCT_VERSION,"8,0,0,1");
@@ -136,11 +136,11 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		super.setEL (OS,os);
 		
 		ReadOnlyStruct railo=new ReadOnlyStruct();
-			railo.setEL(VERSION,Info.getVersionAsString());
-			railo.setEL(VERSION_NAME,Info.getVersionName());
-			railo.setEL(VERSION_NAME_EXPLANATION,Info.getVersionNameExplanation());
-			railo.setEL(STATE,Info.getStateAsString());
-			railo.setEL(RELEASE_DATE,Info.getRealeaseDate());
+			railo.setEL(VERSION,info.getVersionAsString());
+			railo.setEL(VERSION_NAME,info.getVersionName());
+			railo.setEL(VERSION_NAME_EXPLANATION,info.getVersionNameExplanation());
+			railo.setEL(STATE,info.getStateAsString());
+			railo.setEL(RELEASE_DATE,new DateTimeImpl(info.getRealeaseTime(),false));
 			railo.setEL(LOADER_VERSION,Caster.toDouble(SystemUtil.getLoaderVersion()));
 			railo.setEL(LOADER_PATH, ClassUtil.getSourcePathForClass("railo.loader.servlet.CFMLServlet", ""));
 

@@ -20,7 +20,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.security.Credentials;
 import railo.commons.security.CredentialsImpl;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
@@ -54,7 +54,7 @@ public final class StorageUtil {
 	 */
 	public void loadFile(Resource res,String resourcePath) throws IOException {
 		res.createFile(true);
-		InputStream is = new Info().getClass().getResourceAsStream(resourcePath);
+		InputStream is = InfoImpl.class.getResourceAsStream(resourcePath);
         IOUtil.copy(is,res,true);
 	}
 

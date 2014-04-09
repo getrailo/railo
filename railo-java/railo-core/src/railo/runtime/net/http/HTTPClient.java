@@ -18,8 +18,8 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
 import railo.commons.net.http.Header;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.ComponentPage;
-import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.converter.ConverterException;
@@ -64,7 +64,7 @@ public class HTTPClient implements Objects, Iteratorable {
 
 	private static final long serialVersionUID = -7920478535030737537L;
 
-	private static final String USER_AGENT = "Railo "+Info.getFullVersionInfo();
+	//private static final String USER_AGENT = ;
 
 	
 	private URL metaURL;
@@ -151,12 +151,13 @@ public class HTTPClient implements Objects, Iteratorable {
 	}
 	
 	private Struct getMetaData(PageContext pc) {
+		
 		if(meta==null) {
 			pc=ThreadLocalPageContext.get(pc);
 			InputStream is=null;
 			
 			try{
-				HTTPResponse rsp = HTTPEngine.get(metaURL, username, password, -1, 0, "UTF-8", USER_AGENT, proxyData, null);
+				HTTPResponse rsp = HTTPEngine.get(metaURL, username, password, -1, 0, "UTF-8", createUserAgent(pc), proxyData, null);
 				MimeType mt = getMimeType(rsp,null);
 				int format = MimeType.toFormat(mt, -1);
 				if(format==-1) throw new ApplicationException("cannot convert response with mime type ["+mt+"] to a CFML Object");
@@ -184,6 +185,10 @@ public class HTTPClient implements Objects, Iteratorable {
 			}
 		}
 		return meta;
+	}
+
+	private String createUserAgent(PageContext pc) {
+		return "Railo "+CFMLEngineFactory.getInstance().getInfo().getFullVersionInfo();
 	}
 
 	@Override
@@ -278,7 +283,7 @@ public class HTTPClient implements Objects, Iteratorable {
 		InputStream is=null;
 		try {
 			// call remote cfc
-			HTTPResponse rsp = HTTPEngine.post(url, username, password, -1, 0, "UTF-8", USER_AGENT, proxyData,headers, formfields);
+			HTTPResponse rsp = HTTPEngine.post(url, username, password, -1, 0, "UTF-8", createUserAgent(pc), proxyData,headers, formfields);
 			
 			// read result
 			Header[] rspHeaders = rsp.getAllHeaders();

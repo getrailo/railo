@@ -11,7 +11,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
-import railo.runtime.Info;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 
@@ -243,7 +242,7 @@ public final class CFMLTransformer {
 
 		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(factory,source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
+		Page page=new Page(factory,source,source.getPhyscalFile(),source.getFullClassName(),config.getFactory().getEngine().getInfo().getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
 		TagData data = new TagData(factory,_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;

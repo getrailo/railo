@@ -10,7 +10,6 @@ import railo.commons.io.SystemUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
-import railo.runtime.Info;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
@@ -47,7 +46,7 @@ public class FDControllerImpl implements IFDController {
 
 	@Override
 	public String getEngineVersion() {
-		return Info.getVersionAsString();
+		return engine.getInfo().getVersionAsString();
 	}
 
 	@Override

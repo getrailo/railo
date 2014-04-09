@@ -18,6 +18,7 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.SystemOut;
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
@@ -154,6 +155,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
     @Override
 	public void releasePageContext(javax.servlet.jsp.PageContext pc) {
 		releaseRailoPageContext((PageContext)pc);
+	}
+
+    @Override
+	public CFMLEngine getEngine() {
+		return engine;
 	}
 	
 	/**

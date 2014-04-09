@@ -20,7 +20,8 @@ import railo.commons.lang.StringUtil;
 import railo.commons.pdf.PDFDocument;
 import railo.commons.pdf.PDFException;
 import railo.commons.pdf.PDFPageMark;
-import railo.runtime.Info;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.Info;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -631,7 +632,8 @@ public final class Document extends BodyTagImpl {
 		if(PDFDocument.ENC_NONE!=encryption) {
 			PdfReader reader = new PdfReader(pdf);
 			com.lowagie.text.Document document = new com.lowagie.text.Document(reader.getPageSize(1));
-			document.addCreator("Railo "+Info.getVersionAsString()+" "+Info.getStateAsString());
+			Info info = CFMLEngineFactory.getInstance().getInfo();
+			document.addCreator("Railo "+info.getVersionAsString()+" "+info.getStateAsString());
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PdfCopy copy = new PdfCopy(document,baos);
 			//PdfWriter writer = PdfWriter.getInstance(document, pdfOut);

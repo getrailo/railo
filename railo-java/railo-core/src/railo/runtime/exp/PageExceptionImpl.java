@@ -12,7 +12,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -385,7 +384,7 @@ public abstract class PageExceptionImpl extends PageException {
 		
 		//FFFFCF
     	DumpTable htmlBox = new DumpTable("exception","#ff9900","#FFCC00","#000000");
-		htmlBox.setTitle("Railo ["+Info.getVersionAsString()+"] - Error ("+StringUtil.ucFirst(getTypeAsString())+")");
+		htmlBox.setTitle("Railo ["+pageContext.getConfig().getFactory().getEngine().getInfo().getVersionAsString()+"] - Error ("+StringUtil.ucFirst(getTypeAsString())+")");
 		
 		
 		// Message

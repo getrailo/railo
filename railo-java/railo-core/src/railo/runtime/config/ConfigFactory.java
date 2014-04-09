@@ -17,16 +17,18 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SystemOut;
-import railo.runtime.Info;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.InfoImpl;
 import railo.runtime.text.xml.XMLUtil;
 
 public abstract class ConfigFactory {
 	static boolean doNew(Resource contextDir) {
-
+		railo.Info info = CFMLEngineFactory.getInstance().getInfo();
 		final boolean readonly = false;
 		try {
+			
 			Resource version = contextDir.getRealResource("version");
-			String v = Info.getVersionAsString() + "-" + Info.getStateAsString() + "-" + Info.getRealeaseTime();
+			String v = info.getVersionAsString() + "-" + info.getStateAsString() + "-" + info.getRealeaseTime();
 			if (!version.exists()) {
 				if (!readonly) {
 					version.createNewFile();
@@ -56,7 +58,9 @@ public abstract class ConfigFactory {
 	 * @throws IOException
 	 */
 	static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
+		print.e("len1:"+xmlFile);
 		print.e("len1:"+xmlFile.length());
+		print.e("len1:"+xmlFile.exists());
 		InputStream is = null;
 		try {
 			return _loadDocument(is = IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
@@ -163,7 +167,7 @@ public abstract class ConfigFactory {
 	static void createFileFromResource(String resource, Resource file, String password) throws IOException {
 		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT), "write file:" + file);
 		file.createNewFile();
-		InputStream is = new Info().getClass().getResourceAsStream(resource);
+		InputStream is = InfoImpl.class.getResourceAsStream(resource);
 		if(is==null) throw new IOException("file ["+resource+"] does not exist.");
 		IOUtil.copy(is, file, true);
 	}

@@ -3,6 +3,10 @@ package railo.runtime;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.osgi.framework.Bundle;
+
+import railo.Info;
+import railo.print;
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
@@ -15,14 +19,8 @@ import railo.runtime.type.util.ListUtil;
 /**
  * Info to this Version
  */
-public final class Info {
+public final class InfoImpl implements Info  {
 
-	/**
-	 * @return the level
-	 */
-	public static String getLevel() {
-		return level;
-	}
 
 	public static final int STATE_ALPHA = 2*100000000;
 	public static final int STATE_BETA = 1*100000000;
@@ -30,36 +28,84 @@ public final class Info {
 	public static final int STATE_FINAL = 0;
 	
 	// Mod this
-    private static DateTime releaseDate;//=DateUtil.toDateTime(TimeZone.getDefault(),2009,6,29,0,0,0,null);
+    private DateTime releaseDate;
+    private String versionName;
+	private String versionNameExplanation;
+    private int state;
+    private int major;
+    private int minor;
+    private int releases;
+    private int patches;
+    private final long releaseTime;
+    private String version;
+	private String level;
+    private final String strState;
+    private final int intVersion;
+    private final int fullVersion;
     
-    private static String versionName;//="Barry";
-	private static String versionNameExplanation;//="http://en.wikipedia.org/wiki/Barry_(dog)";
 
-    // 3.1
-    private static int state;//=STATE_BETA;
-    private static int major;//=3;
-    private static int minor;//=1;
-    private static int releases;//=0;
-    private static int patches;//=18;
-   
+    public InfoImpl() {
+    	this(null);
+    }
     
-    private static final long releaseTime;//=releaseDate.getTime();
-    private static String version;
-	private static String level;
-    private static final String strState;//=toStringState(state);
-    private static final int intVersion;
-    private static final int fullVersion;
-    
-    static {
+    public InfoImpl(Bundle bundle) {
     	
-    	InputStream is = Info.class.getClassLoader().getResourceAsStream("default.properties");
-    	
+    	InputStream is=null;
     	try{
     		Properties prop = new Properties();
-    		prop.load(is);
+    	    
+    		// first check the bundle for the default.properties
+    		if(bundle!=null) {
+	    		try {
+	    			is = bundle.getEntry("default.properties").openStream();
+	    			prop.load(is);
+	    		}
+	    		catch (Throwable t) {}
+	    		finally {IOUtil.closeEL(is);}
+    		}
+
+    		if(prop.getProperty("railo.core.name")==null) {
+    			try{
+        	    	is = getClass().getClassLoader().getResourceAsStream("default.properties");
+    	            prop.load(is);
+        		}
+	    		catch (Throwable t) {}
+	    		finally {IOUtil.closeEL(is);}
+	    		
+	    		if(prop.getProperty("railo.core.name")==null) {
+	    			try{
+	        	    	is = getClass().getClassLoader().getResourceAsStream("/default.properties");
+	    	            prop.load(is);
+	        		}
+		    		catch (Throwable t) {}
+		    		finally {IOUtil.closeEL(is);}
+		    		
+		    		if(prop.getProperty("railo.core.name")==null) {
+		    			try{
+		        	    	is = getClass().getResourceAsStream("/default.properties");
+		    	            prop.load(is);
+		        		}
+			    		catch (Throwable t) {}
+			    		finally {IOUtil.closeEL(is);}
+			    		
+			    		if(prop.getProperty("railo.core.name")==null) {
+			    			try{
+			        	    	is = getClass().getResourceAsStream("../../default.properties");
+			    	            prop.load(is);
+			        		}
+				    		catch (Throwable t) {}
+				    		finally {IOUtil.closeEL(is);}
+			    		}
+		    		}
+	    		}
+    		}
+
+    		print.o("-->"+prop.getProperty("railo.core.name"));
+    		
     		//IniFile ini=new IniFile(is);
     		//Map verIni=ini.getSection("version");
     		versionName=StringUtil.removeQuotes(prop.getProperty("railo.core.name"),true);
+    		if(versionName==null)throw new RuntimeException("missing railo.core.name");
     		versionNameExplanation=StringUtil.removeQuotes(prop.getProperty("railo.core.name.explanation"),true);
     		releaseDate=DateCaster.toDateAdvanced(StringUtil.removeQuotes(prop.getProperty("railo.core.release.date"),true), TimeZoneConstants.EUROPE_ZURICH);
     		state=toIntState(StringUtil.removeQuotes(prop.getProperty("railo.core.state"),true));
@@ -89,6 +135,14 @@ public final class Info {
         intVersion=(major*1000000)+(minor*10000)+(releases*100)+patches;
         fullVersion=intVersion+state;       
     }
+    
+
+	/**
+	 * @return the level
+	 */
+	public String getLevel() {
+		return level;
+	}
 
 	public static int toIntVersion(String version, int defaultValue) {
     	try{
@@ -109,42 +163,42 @@ public final class Info {
     /**
      * @return Returns the releaseDate.
      */
-    public static DateTime getRealeaseDate() {
+    public DateTime getRealeaseDate() {
         return releaseDate;
     }
     
     /**
      * @return Returns the releaseTime.
      */
-    public static long getRealeaseTime() {
+    public long getRealeaseTime() {
         return releaseTime;
     }
     
     /**
      * @return Returns the version.
      */
-    public static String getVersionAsString() {
+    public String getVersionAsString() {
         return version;
     }
 
     /**
      * @return Returns the intVersion.
      */
-    public static int getVersionAsInt() {
+    public int getVersionAsInt() {
         return intVersion;
     }
 
     /**
      * @return returns the state
      */
-    public static int getStateAsInt() {
+    public int getStateAsInt() {
         return state;
     }
 
     /**
      * @return returns the state
      */
-    public static String getStateAsString() {
+    public String getStateAsString() {
         return strState;
     }
     
@@ -162,7 +216,7 @@ public final class Info {
     /**
      * @return returns the state
      */
-    public static int toIntState(String state) {
+    public int toIntState(String state) {
     	state=state.trim().toLowerCase();
     	if("final".equals(state)) return STATE_FINAL;
     	else if("beta".equals(state)) return STATE_BETA;
@@ -171,40 +225,24 @@ public final class Info {
     }
     
 
-	public static int getFullVersionInfo() {
+	public int getFullVersionInfo() {
 		return fullVersion;
 	}
 
-	public static String getVersionName() {
+	public String getVersionName() {
 		return versionName;
 	}
-	public static int getMajorVersion() {
+	public int getMajorVersion() {
 		return major;
 	}
-	public static int getMinorVersion() {
+	public int getMinorVersion() {
 		return minor;
 	}
 	
-	public static String getVersionNameExplanation() {
+	public String getVersionNameExplanation() {
 		return versionNameExplanation;
 	}
 	
-	/*public static void main(String[] args) {
-		print.out("getFullVersionInfo(103010018):"+getFullVersionInfo());
-		print.out("getStateAsString(beta):"+getStateAsString());
-		print.out("getStateAsInt(100000000):"+getStateAsInt());
-		print.out("getVersionAsInt(3010018):"+getVersionAsInt());
-		print.out("getVersionAsString(3.1.0.018):"+getVersionAsString());
-		print.out("getVersionName(Barry):"+getVersionName());
-		print.out("getVersionNameExplanation(http://en.wikipedia.org/wiki/Barry_(dog)):"+getVersionNameExplanation());
-		print.out("getRealeaseDate({ts '2009-06-29 00:00:00'}):"+getRealeaseDate());
-		print.out("getRealeaseTime(1246226400000):"+getRealeaseTime());
-		print.out("getLevel():"+getLevel());
-		
-		
-		
-		
-	}*/
 	
 	/**
      * cast a railo string version to a int version

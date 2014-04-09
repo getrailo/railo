@@ -20,7 +20,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.StringUtil;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
@@ -475,7 +475,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
 	private final static void createSearchFile(Resource searchFile) throws IOException {
 	
 		searchFile.createFile(true);
-		InputStream in = new Info().getClass().getResourceAsStream("/resource/search/default.xml");
+		InputStream in = InfoImpl.class.getResourceAsStream("/resource/search/default.xml");
 		IOUtil.copy(in,searchFile,true);
     	
 	}

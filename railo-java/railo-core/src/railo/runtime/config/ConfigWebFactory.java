@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -24,7 +25,6 @@ import javax.servlet.ServletConfig;
 
 import org.apache.log4j.Level;
 import org.jfree.chart.block.LabelBlockImpl;
-import org.safehaus.uuid.UUIDGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -61,7 +61,7 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.cache.CacheConnection;
@@ -661,7 +661,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		try {
 			if (!res.exists()) {
 				res.createNewFile();
-				IOUtil.write(res, securityKey = UUIDGenerator.getInstance().generateRandomBasedUUID().toString(), SystemUtil.getCharset(), false);
+				IOUtil.write(res, securityKey = UUID.randomUUID().toString(), SystemUtil.getCharset(), false);
 			}
 			else {
 				securityKey = IOUtil.toString(res, SystemUtil.getCharset());
@@ -671,7 +671,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		}
 
 		if (StringUtil.isEmpty(securityKey))
-			securityKey = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+			securityKey = UUID.randomUUID().toString();
 
 		config.setSecurityKey(securityKey);
 	}
@@ -884,7 +884,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 	static String createMD5FromResource(String resource) throws IOException {
 		InputStream is = null;
 		try {
-			is = new Info().getClass().getResourceAsStream(resource);
+			is = InfoImpl.class.getResourceAsStream(resource);
 			byte[] barr = IOUtil.toBytes(is);
 			return MD5.getDigestAsString(barr);
 		}
@@ -917,7 +917,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 	 */
 	static void createFileFromResourceCheckSizeDiff(String resource, Resource file) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		IOUtil.copy(new Info().getClass().getResourceAsStream(resource), baos, true, false);
+		IOUtil.copy(InfoImpl.class.getResourceAsStream(resource), baos, true, false);
 		byte[] barr = baos.toByteArray();
 
 		if (file.exists()) {

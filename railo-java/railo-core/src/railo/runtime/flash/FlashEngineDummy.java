@@ -2,13 +2,13 @@ package railo.runtime.flash;
 
 import java.io.InputStream;
 
-import railo.runtime.Info;
+import railo.runtime.InfoImpl;
 
 public class FlashEngineDummy implements FlashEngine {
 
 	@Override
 	public InputStream createFlash(String input) {
-		return new Info().getClass().getResourceAsStream("/resource/media/flash/railo.swf");
+		return InfoImpl.class.getResourceAsStream("/resource/media/flash/railo.swf");
 	}
 
 }

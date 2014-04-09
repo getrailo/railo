@@ -7,7 +7,7 @@ import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ExceptionUtil;
-import railo.runtime.Info;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageSource;
 import railo.transformer.Factory;
 import railo.transformer.Position;
@@ -49,7 +49,7 @@ public class TagComponent extends TagBase{
 				, rel
 				, rel.getPhyscalFile()
 				, rel.getFullClassName()
-				, Info.getFullVersionInfo()
+				, CFMLEngineFactory.getInstance().getInfo().getFullVersionInfo()
 				, bc.getPage().getLastModifed()
 				, bc.getPage().writeLog()
 				, bc.getSupressWSbeforeArg());

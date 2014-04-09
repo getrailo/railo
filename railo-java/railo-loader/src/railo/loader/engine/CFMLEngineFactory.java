@@ -512,7 +512,7 @@ framework.start();
     	
     	URL updateProvider = getUpdateLocation();
     	URL updateUrl=new URL(updateProvider,"/rest/update/provider/download/"+symbolicName+"/"+symbolicVersion+"/?ioid={ioid}");
-        
+        System.out.println("update-loc:"+updateUrl);
         if(jar.createNewFile()) {
             copy((InputStream)updateUrl.getContent(),new FileOutputStream(jar));
             return jar;

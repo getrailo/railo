@@ -2,11 +2,10 @@ package railo.runtime.type.scope;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpSession;
-
-import org.safehaus.uuid.UUIDGenerator;
 
 import railo.commons.collection.MapFactory;
 import railo.commons.io.log.Log;
@@ -63,7 +62,6 @@ public final class ScopeContext {
 	private static final long CLIENT_MEMORY_TIMESPAN =  5*MINUTE;
 	private static final long SESSION_MEMORY_TIMESPAN =  5*MINUTE;
 	
-	private static UUIDGenerator generator = UUIDGenerator.getInstance();
 	private Map<String,Map<String,Scope>> cfSessionContextes=MapFactory.<String,Map<String,Scope>>getConcurrentMap();
 	private Map<String,Map<String,Scope>> cfClientContextes=MapFactory.<String,Map<String,Scope>>getConcurrentMap();
 	private Map<String,Application> applicationContextes=MapFactory.<String,Application>getConcurrentMap();
@@ -912,7 +910,7 @@ public final class ScopeContext {
 	 * @return returns a new CFIs
 	 */
 	public static String getNewCFId() {
-		return generator.generateRandomBasedUUID().toString();
+		return UUID.randomUUID().toString();
 	}
 	
 	/**

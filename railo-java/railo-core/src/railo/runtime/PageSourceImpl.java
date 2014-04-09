@@ -259,7 +259,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     				}
                     
                     // check version
-                    if(!isNew && page.getVersion()!=Info.getFullVersionInfo()) {
+                    if(!isNew && page.getVersion()!=pc.getConfig().getFactory().getEngine().getInfo().getFullVersionInfo()) {
                     	isNew=true;
                     	this.page=page=compile(config,classRootDir,null);
                     }
