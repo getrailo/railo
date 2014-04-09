@@ -12,7 +12,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 	public void function testImage() localmode="true"{
-		//assertEquals(92,imageGetWidth(image));
+		assertEquals(92,imageGetWidth(image));
 		assertEquals(92,image.GetWidth());
 	} 
 
