@@ -14,8 +14,6 @@ public final class Right extends BIF {
 	
 	private static final long serialVersionUID = 2270997683293984478L;
 
-public final class Right implements Function {
-
 	public static String call(PageContext pc, String str, double number) throws ExpressionException {
 		int len = (int)number;
 		if (len == 0) throw new ExpressionException("parameter 2 of the function right can not be 0");
