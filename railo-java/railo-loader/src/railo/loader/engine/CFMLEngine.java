@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import railo.Info;
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigServer;
@@ -108,13 +109,18 @@ public interface CFMLEngine {
     public abstract void serviceRest(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException; 
     
     
+
+    public Info getInfo();
+    
     /**
      * @return returns the version of the engine in the format [x.x.x.xxx]
+     * @deprecated use instead getInfo()
      */
     public String getVersion();
     
     /**
      * @return returns the stae of the version (alpha,beta,rc,final)
+     * @deprecated use instead getInfo()
      */
     public String getState();
     

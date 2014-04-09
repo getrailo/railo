@@ -45,7 +45,8 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.CFMLEngineWrapper;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
-import railo.runtime.Info;
+import railo.Info;
+import railo.runtime.InfoImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigServer;
@@ -104,7 +105,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	private Monitor monitor;
 	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>();
 	private long uptime;
-	private Bundle bundle; 
+	private Bundle bundle;
+	private InfoImpl info; 
 	
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
@@ -112,6 +114,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private CFMLEngineImpl(CFMLEngineFactory factory, Bundle bundle) {
     	this.factory=factory; 
     	this.bundle=bundle;
+    	this.info=new InfoImpl(bundle);
     	Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader()); // MUST better location for this
 		
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
@@ -402,7 +405,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
     @Override
     public String getVersion() {
-        return Info.getVersionAsString();
+        return info.getVersionAsString();
+    }
+    
+    public Info getInfo() {
+        return info;
     }
 
     @Override
@@ -548,7 +555,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
 	@Override
 	public String getState() {
-		return Info.getStateAsString();
+		return info.getStateAsString();
 	}
 
 	public void allowRequestTimeout(boolean allowRequestTimeout) {
