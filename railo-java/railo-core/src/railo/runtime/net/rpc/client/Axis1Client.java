@@ -1,6 +1,7 @@
 package railo.runtime.net.rpc.client;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -20,6 +21,7 @@ import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.encoding.TypeMapping;
 
+import org.apache.axis.AxisFault;
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -29,6 +31,7 @@ import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
+import org.apache.axis.wsdl.symbolTable.DefinedType;
 import org.apache.axis.wsdl.symbolTable.ElementDecl;
 import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.Parameters;
@@ -37,10 +40,12 @@ import org.apache.axis.wsdl.symbolTable.SymTabEntry;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.axis.wsdl.toJava.Utils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 
 import railo.commons.digest.HashUtil;
 import railo.commons.lang.ClassUtil;
@@ -59,7 +64,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.proxy.Proxy;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.AxisCaster;
-import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
@@ -197,7 +201,12 @@ final class Axis1Client extends WSClient {
     private Object _callMethod(PageContext pc,Config secondChanceConfig,String methodName, Struct namedArguments,Object[] arguments) throws PageException, ServiceException, RemoteException {
         
 		javax.wsdl.Service service = getWSDLService();
+		
 		Service axisService = new Service(parser, service.getQName());
+		//TypeMappingRegistry tmr = axisService.getTypeMappingRegistry();
+		//TypeMappingDelegate dtm = (TypeMappingDelegate) tmr.getDefaultTypeMapping();
+		//dtm.setDoAutoTypes(true);
+		
 		TypeMappingUtil.registerDefaults(axisService.getTypeMappingRegistry());
 		Port port = WSUtil.getSoapPort(service);
 		
@@ -205,7 +214,6 @@ final class Axis1Client extends WSClient {
         
         SymbolTable symbolTable = parser.getSymbolTable();
 		BindingEntry bEntry = symbolTable.getBindingEntry(binding.getQName());
-		
 		
 
 		// get matching operation/method
@@ -234,17 +242,14 @@ final class Axis1Client extends WSClient {
 			}
 			throw new RPCException(ExceptionUtil.similarKeyMessage(keys, methodName, "method/operation", "methods/operations", true) +" Webservice: " + wsdlUrl);
 		}
-		
-        org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(operation.getName()));
-        
+		org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(operation.getName()));
         if(!StringUtil.isEmpty(username,true)){
         	call.setUsername(username);
 	        call.setPassword(password);
         }
         
         
-        org.apache.axis.encoding.TypeMapping tm=call.getMessageContext().getTypeMapping();
-
+        org.apache.axis.encoding.TypeMapping tm=call.getTypeMapping();
         Vector<String> inNames = new Vector<String>();
 		Vector<Parameter> inTypes = new Vector<Parameter>();
 		Vector<String> outNames = new Vector<String>();
@@ -253,7 +258,7 @@ final class Axis1Client extends WSClient {
 		for(int j = 0; j < parameters.list.size(); j++) {
 			p = (Parameter)parameters.list.get(j);
 			
-			map(pc,secondChanceConfig,call,tm,p);
+			map(pc,symbolTable,secondChanceConfig,tm,p.getType());
 			switch(p.getMode()) {
             case Parameter.IN:
                 inNames.add(p.getQName().getLocalPart());
@@ -277,7 +282,7 @@ final class Axis1Client extends WSClient {
         	QName rtnQName = parameters.returnParam.getQName();
         	//TypeEntry rtnType = parameters.returnParam.getType();
         	
-        	map(pc,secondChanceConfig,call,tm,parameters.returnParam);
+        	map(pc,symbolTable,secondChanceConfig,tm,parameters.returnParam.getType());
             outNames.add(rtnQName.getLocalPart());
             outTypes.add(parameters.returnParam);
             
@@ -331,19 +336,55 @@ final class Axis1Client extends WSClient {
         	}
         }
         
-        if(proxyData!=null && !StringUtil.isEmpty(proxyData.getServer(),true)) {
-        	try {
-	        	Proxy.start(proxyData);
-	    		ret = call.invoke(inputs);
-	        	
-	        }
-	        finally {
-	        	Proxy.end();
-	        }
+        try{
+        	ret = invoke(call,inputs);
         }
-        else {
-        	ret = call.invoke(inputs);
+        catch(AxisFault af){
+        	boolean rethrow=true;
+        	Throwable cause = af.getCause();
+        	if(cause!=null) {
+        		/*
+        		// first check if that missing type is around
+        		String[] notFound=new String[]{"could not find deserializer for type","No deserializer for"};
+        		int index;
+        		if(msg!=null)for(int i=0; i<notFound.length;i++) {
+        			if((index=msg.indexOf(notFound[i]))==-1)continue;;
+        			
+        			String raw=msg.substring(index+notFound[i].length()+1).trim();
+        			QName qn = QName.valueOf(raw);
+        			print.e(qn.getLocalPart());
+        			print.e(qn.getNamespaceURI());
+        			Type type = symbolTable.getType(qn);
+        			if(type!=null) {
+        				map(pc,secondChanceConfig,call.getTypeMapping(),type);
+        				ret = invoke(call,inputs);
+        				rethrow=false;
+        			}
+        		}*/
+        		
+        		// get the missing types from the SOAP Body, if possible
+        		String msg = cause.getMessage();
+        		//if(StringUtil.indexOfIgnoreCase(msg, "deserializer")!=-1) {
+	        		try {
+	        			InputSource is = new InputSource(new StringReader(call.getResponseMessage().getSOAPPartAsString()));
+	        			Document doc = XMLUtil.parse(is, null, false);
+	        			Element body = XMLUtil.getChildWithName("soapenv:Body", doc.getDocumentElement());
+	        			
+	        			Vector types = SOAPUtil.getTypes(body, symbolTable);
+	        			map(pc,symbolTable,secondChanceConfig,(org.apache.axis.encoding.TypeMapping) (axisService.getTypeMappingRegistry().getDefaultTypeMapping()),types);
+						ret = invoke(call,inputs);
+	    				rethrow=false;
+	        			
+					}
+					catch (Throwable t) {
+						t.printStackTrace();
+					}
+				//}
+        	}
+        	if(rethrow) throw af;
         }
+        
+        
         last=call;
 		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
@@ -363,51 +404,79 @@ final class Axis1Client extends WSClient {
 		}
 		return sct;
 	}
-    
-	private void map(PageContext pc, Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, Parameter param) throws PageException {
-		TypeEntry type=param.getType();
-		Vector els = type.getContainedElements();
 
-		
-		if(els==null) mapSimple(tm, type);
-        else {
-        	// class is already registed
-        	Class rtnClass=tm.getClassForQName(type.getQName());
-        	if(rtnClass!=null && rtnClass.getName().equals(getClientClassName(type))) return;
-
-			ClassLoader cl=null;
-			try {
-				if(pc==null)cl = secondChanceConfig.getRPCClassLoader(false);
-				else cl = ((PageContextImpl)pc).getRPCClassLoader(false);
-			} 
-			catch (IOException e) {}
-			
-			Class cls = mapComplex(pc,secondChanceConfig,call,tm, type);
-			// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
-			if(cls!=null && cl!=cls.getClassLoader()){
-				mapComplex(pc,secondChanceConfig,call,tm, type); 
-			}
-		}
+	private Object invoke(Call call, Object[] inputs) throws RemoteException {
+		if(proxyData!=null && !StringUtil.isEmpty(proxyData.getServer(),true)) {
+        	try {
+	        	Proxy.start(proxyData);
+	    		return call.invoke(inputs);
+	        	
+	        }
+	        finally {
+	        	Proxy.end();
+	        }
+        }
+        return call.invoke(inputs);
 	}
 	
-	private Class mapComplex(PageContext pc,Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
-		Vector children = type.getContainedElements();
-		TypeEntry ref=type.getRefType();
-		if(ref==null) return _mapComplex(pc,secondChanceConfig, call, tm, type);
-		children = ref.getContainedElements();
-		
-		if(children==null) {
-			mapSimple(tm, ref);
-			return null;
+	private void map(PageContext pc,SymbolTable symbolTable, Config secondChanceConfig,org.apache.axis.encoding.TypeMapping tm, Vector types) throws PageException {
+		Iterator it = types.iterator();
+		while(it.hasNext()){
+			map(pc,symbolTable, secondChanceConfig, tm, (TypeEntry)it.next());
 		}
-		Class clazz = mapComplex(pc,secondChanceConfig, call, tm, ref);
+	}
+
+	private Class map(PageContext pc,SymbolTable symbolTable, Config secondChanceConfig,org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+		//print.e("MAP");
+		//print.e(type.getQName());
+		
+		// Simple Type
+		if(type.getContainedElements()==null) return null;
+
+    	// is class already registered!
+    	//Class clazz=tm.getClassForQName(type.getQName());
+    	//if(clazz!=null && clazz.getName().equals(getClientClassName(type))) return clazz;
+		
+		Class clazz = mapComplex(pc,symbolTable,secondChanceConfig,tm, type);
+		
+		// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
+		if(clazz!=null && getClassLoader(pc,secondChanceConfig)!=clazz.getClassLoader()){
+			clazz=mapComplex(pc,symbolTable,secondChanceConfig,tm, type); 
+		}
+		return clazz;
+		
+	}
+	
+	
+	
+	
+
+	private Class mapComplex(PageContext pc,SymbolTable symbolTable,Config secondChanceConfig,org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+		TypeEntry ref=type.getRefType();
+		if(ref==null) return _mapComplex(pc,symbolTable,secondChanceConfig, tm, type);
+		
+		// Array
+		if(ref.getContainedElements()==null) return null;
+		Class clazz = mapComplex(pc,symbolTable,secondChanceConfig, tm, ref);
 		if(clazz==null) return null;
+		
 		Class arr = ClassUtil.toArrayClass(clazz);
 		TypeMappingUtil.registerBeanTypeMapping(tm, arr, type.getQName());
 		return arr;
 	}
 
-	private Class _mapComplex(PageContext pc,Config secondChanceConfig,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+	private Class _mapComplex(PageContext pc,SymbolTable symbolTable,Config secondChanceConfig, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+		
+		// extension
+		Class ex=null;
+		if(type instanceof DefinedType) {
+			DefinedType dt=(DefinedType) type;
+			TypeEntry exType = dt.getComplexTypeExtensionBase(symbolTable);
+			if(exType!=null)ex=map(pc, symbolTable, secondChanceConfig, tm, exType);
+		}
+		
+		
+		
 		Vector children = type.getContainedElements();
 		ArrayList<ASMPropertyImpl> properties=new ArrayList<ASMPropertyImpl>();
 		if(children!=null) {
@@ -421,35 +490,51 @@ final class Axis1Client extends WSClient {
 	        	el=(ElementDecl) it.next();
 	        	t=el.getType();
 	        	Vector els = t.getContainedElements();
+	        	
+	        	// again handle children
 	            if(els!=null) {
-	            	clazz=mapComplex(pc,secondChanceConfig, call, tm, t);
+	            	clazz=mapComplex(pc,symbolTable,secondChanceConfig, tm, t);
 	            }
 	        	name=railo.runtime.type.util.ListUtil.last(el.getQName().getLocalPart(), '>');
-	        	
 	        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
 	        	if(clazz==null)clazz=Object.class;
-	        	
 	        	properties.add(new ASMPropertyImpl(clazz,name));
 	        }
 		}
 		ASMProperty[] props = properties.toArray(new ASMProperty[properties.size()]);
-		String clientClassName=getClientClassName(type);
-		Pojo pojo;
-		if(pc==null)pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(secondChanceConfig,clientClassName,props);
-		else pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(pc,clientClassName,props);
+		String clientClassName=getClientClassName(type,props);
+		Class pojo;
+		if(pc==null)pojo = ComponentUtil.getComponentPropertiesClass(secondChanceConfig,clientClassName,props,ex);
+		else pojo = ComponentUtil.getClientComponentPropertiesClass(pc,clientClassName,props,ex);
 		
-		TypeMappingUtil.registerBeanTypeMapping(tm,
-    			pojo.getClass(), 
-        		type.getQName());
+		TypeMappingUtil.registerBeanTypeMapping(tm,pojo, type.getQName());
 		
-    	return pojo.getClass();
+    	return pojo;
 	}
 	
-	private String getClientClassName(TypeEntry type) {
+
+	private ClassLoader getClassLoader(PageContext pc, Config secondChanceConfig) {
+		ClassLoader cl=null;
+		try {
+			if(pc==null)cl = secondChanceConfig.getRPCClassLoader(false);
+			else cl = ((PageContextImpl)pc).getRPCClassLoader(false);
+		} 
+		catch (IOException e) {}
+		return cl;
+	}
+	
+	private String getClientClassName(TypeEntry type, ASMProperty[] props) {
+		// properties
+		StringBuilder sb=new StringBuilder();
+		if(props!=null)for(int i=0;i<props.length;i++){
+			sb.append(props[i].toString()).append(';');
+		}
+		
+		
 		String className=StringUtil.toJavaClassName(type.getQName().getLocalPart());
 		String url=urlToClass(wsdlUrl);
 		String ns = type.getQName().getNamespaceURI();
-		String prefix = Long.toString(HashUtil.create64BitHash(url+":"+ns),Character.MAX_RADIX);
+		String prefix = Long.toString(HashUtil.create64BitHash(sb.append(url).append(':').append(ns)),Character.MAX_RADIX);
 		char c=prefix.charAt(0);
 		if(c>='0' && c<='9') prefix="a"+prefix;
 		return prefix+"."+className;
@@ -522,12 +607,6 @@ final class Axis1Client extends WSClient {
 		return sb.toString();
 	}
 
-	private void mapSimple(org.apache.axis.encoding.TypeMapping tm, TypeEntry type) {
-		//print.out("simple");
-		//print.out(tm);
-		//print.out(type);
-	}
-
 	private String getErrorDetailForArguments(String[] names, String[] argKeys) {
         String name;
         boolean found;
@@ -556,17 +635,17 @@ final class Axis1Client extends WSClient {
 		SymTabEntry symTabEntry = null;
 		Map.Entry entry = null;
 		Vector v = null;
-		Iterator it = parser.getSymbolTable().getHashMap().entrySet().iterator();
+		Iterator<Map.Entry> it = parser.getSymbolTable().getHashMap().entrySet().iterator();
 		
 		
 		while(it.hasNext()) {
-			entry = (Map.Entry)it.next();
+			entry = it.next();
 			v = (Vector)entry.getValue();
 			for(int i = 0; i < v.size(); i++) {
 				if(!(org.apache.axis.wsdl.symbolTable.ServiceEntry.class).isInstance(v.elementAt(i)))
 					continue;
 				symTabEntry = (SymTabEntry)v.elementAt(i);
-				break;
+				//break;
 			}
 
 		}
@@ -585,8 +664,14 @@ final class Axis1Client extends WSClient {
 	
 
 	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
+		//print.e("ArgumentData");
+		
 		QName paramType = Utils.getXSIType(p);
-		return AxisCaster.toAxisType(tm,tz,paramType,arg,null);
+		
+		Object res = AxisCaster.toAxisType(tm,tz,p.getType(),paramType,arg);
+		//print.e(res);
+		return res;
+		
 	}
 
 	@Override

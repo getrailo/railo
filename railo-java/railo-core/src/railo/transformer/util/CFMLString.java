@@ -755,6 +755,10 @@ public final class CFMLString {
 	
 
 	public Position getPosition() {
+		return getPosition(pos);
+	}
+	
+	public Position getPosition(int pos) {
 		int line=0;
 		int posAtStart=0;
 		for(int i=0;i<lines.length;i++) {
@@ -766,8 +770,6 @@ public final class CFMLString {
 		}
 		if(line==0)
 			throw new RuntimeException("syntax error");
-		
-		
 		
 		int column=pos-posAtStart;
 		

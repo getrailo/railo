@@ -19,10 +19,11 @@ public class WSUtil {
 		List list = null;
 		Map ports = service.getPorts();
 		Iterator it;
+		Iterator<Port> itr = ports.values().iterator();
 		Object v;
-		for(Iterator itr = ports.keySet().iterator(); itr.hasNext();) {
-			name = (String)itr.next();
-			port = (Port)ports.get(name);
+		while(itr.hasNext()) {
+			port = itr.next();
+			
 			list=port.getExtensibilityElements();
 			if(list != null) {
 				it = list.iterator();

@@ -14,25 +14,54 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.thread.ThreadUtil;
+import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 
-public abstract class Caller implements Callable<String> { 
+public class UDFCaller2<P> implements Callable<Data<P>> { 
 
 	private PageContext parent;
 	private PageContextImpl pc;
 	private ByteArrayOutputStream baos;
+	
+	private UDF udf;
+	private boolean doIncludePath;
+	private Object[] arguments;
+	private Struct namedArguments;
+	private P passed;
 
-	public Caller(PageContext parent) {
+
+	private UDFCaller2(PageContext parent) {
 		this.parent = parent;
 		this.baos = new ByteArrayOutputStream();
 		this.pc=ThreadUtil.clonePageContext(parent, baos, false, false, true);
 	}
 	
-	public final String call() throws PageException {
+	public UDFCaller2(PageContext parent, UDF udf, Object[] arguments,P passed, boolean doIncludePath) {
+		this(parent);
+		this.udf=udf;
+		this.arguments=arguments;
+		this.doIncludePath=doIncludePath;
+		this.passed=passed;
+	}
+	public UDFCaller2(PageContext parent, UDF udf,Struct namedArguments, P passed,boolean doIncludePath) {
+		this(parent);
+		this.udf=udf;
+		this.namedArguments=namedArguments;
+		this.doIncludePath=doIncludePath;
+		this.passed=passed;
+	}
+	
+	
+	
+	public final Data<P> call() throws PageException {
 		ThreadLocalPageContext.register(pc);
 		pc.getRootOut().setAllowCompression(false); // make sure content is not compressed
 		String str=null;
+		Object result=null;
 		try{
-			_call(parent,pc);
+			if(namedArguments!=null) result=udf.callWithNamedValues(pc, namedArguments, doIncludePath);
+			else result=udf.call(pc, arguments, doIncludePath);
+			
 		} 
 		finally{
 			try {
@@ -51,9 +80,6 @@ public abstract class Caller implements Callable<String> {
 				e.printStackTrace();
 			}
 		}
-		return str;
+		return new Data<P>(str,result,passed);
 	}
-
-	public abstract void _call(PageContext parent, PageContext pc) throws PageException;
-	//public abstract void afterCleanup(PageContext parent, ByteArrayOutputStream baos);
 }

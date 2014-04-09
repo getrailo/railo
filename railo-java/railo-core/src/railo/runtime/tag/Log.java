@@ -175,7 +175,12 @@ public final class Log extends TagImpl {
 		this.application=application;
 	}
 	
+	// old function for backward compatiblity
 	public void setSpoolenable(boolean async){
+		setAsync(async);
+	}
+	
+	public void setAsync(boolean async){
 		this.async=async;
 	}
 

@@ -17,7 +17,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.query.QueryCacheEntry;
 import railo.runtime.type.dt.TimeSpan;
 
 public class TimespanCacheHandler implements CacheHandler {
@@ -130,6 +129,11 @@ public class TimespanCacheHandler implements CacheHandler {
 			return defaultCache;
 		}
 		return c;
+	}
+
+	@Override
+	public String label() throws PageException {
+		return "timespan";
 	}
 
 }

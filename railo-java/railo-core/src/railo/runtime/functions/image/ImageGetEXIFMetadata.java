@@ -8,15 +8,14 @@ import java.util.Map.Entry;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class ImageGetEXIFMetadata {
 
 	public static Struct call(PageContext pc, Object name) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		return getData(img);
 	}
 

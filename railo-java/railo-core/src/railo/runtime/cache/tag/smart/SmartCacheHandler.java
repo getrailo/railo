@@ -479,4 +479,9 @@ public class SmartCacheHandler implements CacheHandler {
 	private String enc(TimeSpan ts) {
 		return Caster.toString(ts.getMillis());
 	}
+
+	@Override
+	public String label() throws PageException {
+		return "smart";
+	}
 }

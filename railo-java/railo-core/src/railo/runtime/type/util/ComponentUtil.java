@@ -83,7 +83,7 @@ public final class ComponentUtil {
 	public static Class getComponentJavaAccess(PageContext pc,Component component, RefBoolean isNew,boolean create,boolean writeLog, boolean suppressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
-    	String className=getClassname(component).concat("_wrap");
+    	String className=getClassname(component,null).concat("_wrap");
     	String real=className.replace('.','/');
     	String realOriginal=classNameOriginal.replace('.','/');
     	Mapping mapping = component.getPageSource().getMapping();
@@ -111,8 +111,7 @@ public final class ComponentUtil {
     	//print.out("new");
     // CREATE CLASS	
 		ClassWriter cw = ASMUtil.getClassWriter();
-        //ClassWriter cw = new ClassWriter(true);
-    	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, real, null, "java/lang/Object", null);
+        cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, real, null, "java/lang/Object", null);
 
     	//GeneratorAdapter ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,Page.STATIC_CONSTRUCTOR,null,null,cw);
 		BytecodeContext statConstr = null;//new BytecodeContext(null,null,null,cw,real,ga,Page.STATIC_CONSTRUCTOR);
@@ -286,32 +285,25 @@ public final class ComponentUtil {
 		registerTypeMapping(server,clazz);
 	}
 
-	public static String getClassname(Component component) {
+	public static String getClassname(Component component, ASMProperty[] props) {
+		
+		String prefix="";
+		/*if(props!=null) {
+		 	StringBuilder sb=new StringBuilder();
+		
+			for(int i=0;i<props.length;i++){
+				sb.append(props[i].toString()).append(';');
+			}
+			
+			
+			prefix = Long.toString(HashUtil.create64BitHash(sb),Character.MAX_RADIX);
+			char c=prefix.charAt(0);
+			if(c>='0' && c<='9') prefix="a"+prefix;
+			prefix=prefix+".";
+		}*/
+    	
     	PageSource ps = component.getPageSource();
-    	return ps.getComponentName();
-    	
-    	
-    	/*String path=ps.getDisplayPath();// Must remove webroot
-    	Config config = ps.getMapping().getConfig();
-    	String root = config.getRootDirectory().getAbsolutePath();
-    	if(path.startsWith(root))
-    		path=path.substring(root.length());
-
-    	path=path.replace('\\', '/').toLowerCase();
-    	path=ListUtil.trim(path, "/");
-    	String[] arr = ListUtil.listToStringArray(path, '/');
-    	
-    	StringBuffer rtn=new StringBuffer();
-    	for(int i=0;i<arr.length;i++) {
-    		if(i+1==arr.length) {
-    			rtn.append(StringUtil.toVariableName(StringUtil.replaceLast(arr[i],".cfc","")));
-    		}
-    		else {
-    			rtn.append(StringUtil.toVariableName(arr[i]));
-    			rtn.append('.');
-    		}
-    	}
-    	return rtn.toString();*/
+    	return prefix+ps.getComponentName();
 	}
 
 	/*
@@ -322,9 +314,9 @@ public final class ComponentUtil {
 	 * @return
 	 * @throws PageException
 	 */
-	public static Object getClientComponentPropertiesObject(PageContext pc, String className, ASMProperty[] properties) throws PageException {
+	public static Class getClientComponentPropertiesClass(PageContext pc, String className, ASMProperty[] properties, Class extendsClass) throws PageException {
 		try {
-			return _getClientComponentPropertiesObject(pc,pc.getConfig(), className, properties);
+			return _getComponentPropertiesClass(pc,pc.getConfig(), className, properties,extendsClass);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
@@ -337,9 +329,9 @@ public final class ComponentUtil {
 	 * @return
 	 * @throws PageException
 	 */
-	public static Object getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException {
+	public static Class getComponentPropertiesClass(Config config, String className, ASMProperty[] properties,Class extendsClass) throws PageException {
 		try {
-			return _getClientComponentPropertiesObject(null,config, className, properties);
+			return _getComponentPropertiesClass(null,config, className, properties,extendsClass);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
@@ -347,7 +339,7 @@ public final class ComponentUtil {
 	
 
     
-    private static Object _getClientComponentPropertiesObject(PageContext pc, Config secondChanceConfig, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
+    private static Class _getComponentPropertiesClass(PageContext pc, Config secondChanceConfig, String className, ASMProperty[] properties, Class extendsClass) throws PageException, IOException, ClassNotFoundException {
     	String real=className.replace('.','/');
     	
 		PhysicalClassLoader cl;
@@ -363,7 +355,7 @@ public final class ComponentUtil {
 				Field field = clazz.getField("_md5_");
 				if(ASMUtil.createMD5(properties).equals(field.get(null))){
 				//if(equalInterface(properties,clazz)) {
-					return ClassUtil.loadInstance(clazz);
+					return clazz;
 				}
 			}
 			catch(Exception e) {
@@ -371,7 +363,8 @@ public final class ComponentUtil {
 			}
 		}
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{Pojo.class},null);
+		if(extendsClass==null)extendsClass=Object.class;
+		byte[] barr = ASMUtil.createPojo(real, properties,extendsClass,new Class[]{Pojo.class},null);
     	boolean exist=classFile.exists();
 		ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
@@ -379,21 +372,24 @@ public final class ComponentUtil {
     	if(pc==null)cl = (PhysicalClassLoader)secondChanceConfig.getRPCClassLoader(exist);
     	else cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(exist);
     	
-		return ClassUtil.loadInstance(cl.loadClass(className));
+		return cl.loadClass(className);
 
 	}
 
-	public static Class getServerComponentPropertiesClass(PageContext pc,Component component) throws PageException {
+	public static Class getComponentPropertiesClass(PageContext pc,Component component) throws PageException {
 		try {
-	    	return _getServerComponentPropertiesClass(pc,component);
+	    	return _getComponentPropertiesClass(pc,component);
 		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
     }
 
-    private static Class _getServerComponentPropertiesClass(PageContext pc,Component component) throws PageException, IOException, ClassNotFoundException {
-    	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
+    private static Class _getComponentPropertiesClass(PageContext pc,Component component) throws PageException, IOException, ClassNotFoundException {
+
+		ASMProperty[] props = ASMUtil.toASMProperties(ComponentProUtil.getProperties(component, false, true, false, false));
+    	
+    	String className=getClassname(component,props);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
 
     	Mapping mapping = component.getPageSource().getMapping();
@@ -422,26 +418,24 @@ public final class ComponentUtil {
 			ext = Caster.cfTypeToClass(strExt);
 		}
 		//
-
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(
-				ComponentProUtil.getProperties(component, false, true, false, false)),ext,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, props,ext,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
 		ResourceUtil.touch(classFile);
 		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		cl = (PhysicalClassLoader)((PageContextImpl)pc).getRPCClassLoader(true);
 		return cl.loadClass(className); //ClassUtil.loadInstance(cl.loadClass(className));
 	}
 
-	public static Class getServerStructPropertiesClass(PageContext pc,Struct sct, PhysicalClassLoader cl) throws PageException {
+	public static Class getStructPropertiesClass(PageContext pc,Struct sct, PhysicalClassLoader cl) throws PageException {
 		try {
-			return _getServerStructPropertiesClass(pc,sct,cl);
+			return _getStructPropertiesClass(pc,sct,cl);
 		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
 	}
 
-	private static Class _getServerStructPropertiesClass(PageContext pc,Struct sct, PhysicalClassLoader cl) throws PageException, IOException, ClassNotFoundException {
+	private static Class _getStructPropertiesClass(PageContext pc,Struct sct, PhysicalClassLoader cl) throws PageException, IOException, ClassNotFoundException {
 		// create hash based on the keys of the struct
 		String hash = StructUtil.keyHash(sct);
 		char c=hash.charAt(0);

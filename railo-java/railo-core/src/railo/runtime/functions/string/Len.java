@@ -24,7 +24,7 @@ public final class Len implements Function {
 	}
 	
 	public static double invoke(Object obj, double defaultValue) {
-		if(obj instanceof String)return ((String)obj).length();
+		if(obj instanceof CharSequence)return ((CharSequence)obj).length();
 		if(obj instanceof Query)return ((Query)obj).getRecordcount();
 		if(obj instanceof Collection)return ((Collection)obj).size();
 		if(obj instanceof Map)return ((Map)obj).size();
@@ -37,8 +37,10 @@ public final class Len implements Function {
 		if(obj instanceof long[])return ((long[])obj).length;
 		if(obj instanceof char[])return ((char[])obj).length;
 		if(obj instanceof boolean[])return ((boolean[])obj).length;
-		if(obj instanceof StringBuffer)return ((StringBuffer)obj).length();
-		if(obj instanceof StringBuilder)return ((StringBuilder)obj).length();
+		if(obj instanceof byte[])return ((byte[])obj).length;
+		String str = Caster.toString(obj,null);
+		if(str!=null) return str.length();
+		
 		return defaultValue;
 	}
 }

@@ -5,9 +5,12 @@ package railo.runtime.functions.string;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 
-public final class Mid implements Function {
+public final class Mid extends BIF {
 	public static String call(PageContext pc , String str, double start) throws ExpressionException {
 		return call(pc,str,start,-1);
 	}
@@ -24,5 +27,15 @@ public final class Mid implements Function {
 		else {
 			return str.substring(s,c);
 		}
+	}
+
+    @Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+    	if(args.length==2)
+			return call(pc, Caster.toString(args[0]), Caster.toDoubleValue(args[1]));
+    	if(args.length==3)
+			return call(pc, Caster.toString(args[0]), Caster.toDoubleValue(args[1]), Caster.toDoubleValue(args[2]));
+
+		throw new FunctionException(pc, "Mid", 2, 3, args.length);
 	}
 }

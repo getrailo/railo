@@ -553,8 +553,7 @@ public final class ASMUtil {
     		}
     	}
     // CREATE CLASS	
-		//ClassWriter cw = new ClassWriter(true);
-    	ClassWriter cw = ASMUtil.getClassWriter();
+		ClassWriter cw = ASMUtil.getClassWriter();
         cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
         String md5;
         try{
@@ -773,70 +772,9 @@ public final class ASMUtil {
 
 
 	public static ClassWriter getClassWriter() {
-		return new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
-		/*if(true) return new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		return new ClassWriter(ClassWriter.COMPUTE_MAXS);//|ClassWriter.COMPUTE_FRAMES);
 		
-		
-		if(version==VERSION_2)
-			return new ClassWriter(ClassWriter.COMPUTE_MAXS+ClassWriter.COMPUTE_FRAMES);
-		
-		try{
-			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			version=VERSION_2;
-			return cw;
-		}
-		catch(NoSuchMethodError err){
-			if(version==0){
-				version=VERSION_3;
-			}
-			
-			PrintWriter ew = ThreadLocalPageContext.getConfig().getErrWriter();
-			SystemOut.printDate(ew, VERSION_MESSAGE);
-			
-			try {
-				return  ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
-				
-			} 
-			catch (Exception e) {
-				throw new RuntimeException(Caster.toPageException(e));
-				
-			}
-		}*/
 	}
-
-	/*
-	 * For 3.1
-	 * 
-	 * public static ClassWriter getClassWriter() {
-		if(version==VERSION_3)
-			return new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		
-		try{
-			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			version=VERSION_3;
-			return cw;
-		}
-		catch(NoSuchMethodError err){
-			if(version==0){
-				version=VERSION_2;
-				throw new RuntimeException(new ApplicationException(VERSION_MESSAGE+
-						", after reload this version will work as well, but please update to newer version"));
-			}
-			
-			PrintWriter ew = ThreadLocalPageContext.getConfig().getErrWriter();
-			SystemOut.printDate(ew, VERSION_MESSAGE);
-			//err.printStackTrace(ew);
-			
-			try {
-				return (ClassWriter) ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
-				
-			} 
-			catch (Exception e) {
-				throw new RuntimeException(Caster.toPageException(e));
-				
-			}
-		}
-	}*/
 
 
 	public static String createOverfowMethod(String prefix, int id) { // pattern is used in function callstackget

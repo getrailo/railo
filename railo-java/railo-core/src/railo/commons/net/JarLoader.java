@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
@@ -78,17 +79,23 @@ public class JarLoader {
 					SystemOut.printDate(out,"jar "+jar+" is up to date");
 					return jar;
 				}
-				if(!jar.delete()) throw new IOException("cannot update jar ["+jar+"], jar is locked or write protected, stop the servlet engine and delete this jar manually."); 
+				//if(!jar.delete()) throw new IOException("cannot update jar ["+jar+"], jar is locked or write protected, stop the servlet engine and delete this jar manually."); 
 			}
 			else throw new IOException("jar ["+jar+"] exists already"); 
 		}
 		
-		
-        //long len=HTTPUtil.length();
-        InputStream is = (InputStream)dataUrl.getContent();
-        // copy input stream to lib directory
-        IOUtil.copy(is, jar,true);
-        
+		Resource tmp = SystemUtil.getTempFile(".jar", false);
+		try {
+	        //long len=HTTPUtil.length();
+	        InputStream is = (InputStream)dataUrl.getContent();
+	        // copy input stream to lib directory
+	        IOUtil.copy(is, tmp,true);
+	        jar.delete();
+	        tmp.moveTo(jar);
+		}
+		finally{
+			tmp.delete();
+		}
         SystemOut.printDate(out,"created/updated jar  "+jar);
         
         return jar;

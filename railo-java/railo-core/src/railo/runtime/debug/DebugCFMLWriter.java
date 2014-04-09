@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.io.SystemUtil.TemplateLine;
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.op.Caster;
@@ -291,7 +292,10 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	}
 
 	private void log(String str) {
-		fragments.add(new DebugTextFragment(str, SystemUtil.getCurrentContext()));
+		TemplateLine tl = SystemUtil.getCurrentContext();
+		if(tl!=null){
+			fragments.add(new DebugTextFragment(str, tl));
+		}
 	}
 
 	@Override

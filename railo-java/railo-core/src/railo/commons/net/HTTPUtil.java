@@ -389,7 +389,7 @@ public final class HTTPUtil {
 
     
     public static String escapeQSValue(String str) {
-    	if(!ReqRspUtil.needEncoding(str,true)) return str;
+    	if(!ReqRspUtil.needEncoding(str,false)) return str;
     	PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
     	if(pc!=null){
     		try {

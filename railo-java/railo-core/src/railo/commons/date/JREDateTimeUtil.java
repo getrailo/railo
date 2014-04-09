@@ -152,20 +152,6 @@ public class JREDateTimeUtil extends DateTimeUtil {
         return sb.toString();
 	}
 
-
-	public static Calendar newInstance() {
-		return Calendar.getInstance(Locale.US);
-	}
-	
-	public static Calendar newInstance(Locale l) {
-		return Calendar.getInstance(l);
-	}
-
-	public static Calendar newInstance(TimeZone tz) {
-		if(tz==null)tz=ThreadLocalPageContext.getTimeZone();
-		return Calendar.getInstance(tz,Locale.US);
-	}
-
 	public static Calendar newInstance(TimeZone tz,Locale l) {
 		if(tz==null)tz=ThreadLocalPageContext.getTimeZone();
 		return Calendar.getInstance(tz,l);
@@ -194,15 +180,6 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		c.setTimeZone(tz);
 		return c;
 	}
-
-	/**
-	 * important:this function returns always the same instance for a specific thread, 
-	 * so make sure only use one thread calendar instance at time.
-	 * @return calendar instance
-	 */
-	public static Calendar getThreadCalendar(Locale l){
-		return localeCalendar.get(l);
-	}
 	
 	/**
 	 * important:this function returns always the same instance for a specific thread, 
@@ -210,8 +187,8 @@ public class JREDateTimeUtil extends DateTimeUtil {
 	 * @return calendar instance
 	 */
 	public static Calendar getThreadCalendar(Locale l,TimeZone tz){
-		Calendar c = localeCalendar.get(l);
 		if(tz==null)tz=ThreadLocalPageContext.getTimeZone();
+		Calendar c = localeCalendar.get(tz,l);
 		c.setTimeZone(tz);
 		return c;
 	}
@@ -233,7 +210,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 	 * internally we use a other instance to avoid conflicts
 	 */
 	private static Calendar _getThreadCalendar(Locale l,TimeZone tz){
-		Calendar c = _localeCalendar.get(l);
+		Calendar c = _localeCalendar.get(tz,l);
 		if(tz==null)tz=ThreadLocalPageContext.getTimeZone();
 		c.setTimeZone(tz);
 		return c;
@@ -264,17 +241,17 @@ class CalendarThreadLocal extends ThreadLocal<Calendar> {
 }
 
 
-class LocaleCalendarThreadLocal extends ThreadLocal<Map<Locale,Calendar>> {
-	protected synchronized Map<Locale,Calendar> initialValue() {
-        return new HashMap<Locale, Calendar>();
+class LocaleCalendarThreadLocal extends ThreadLocal<Map<String,Calendar>> {
+	protected synchronized Map<String,Calendar> initialValue() {
+        return new HashMap<String, Calendar>();
     }
 
-	public Calendar get(Locale l) {
-		Map<Locale, Calendar> map = get();
-		Calendar c = map.get(l);
+	public Calendar get(TimeZone tz,Locale l) {
+		Map<String, Calendar> map = get();
+		Calendar c = map.get(l+":"+tz);
 		if(c==null) {
-			c=JREDateTimeUtil.newInstance(l);
-			map.put(l, c);
+			c=JREDateTimeUtil.newInstance(tz,l);
+			map.put(l+":"+tz, c);
 		}
 		else c.clear();
 		return c;

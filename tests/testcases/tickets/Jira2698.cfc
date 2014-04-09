@@ -1,4 +1,4 @@
-component extends='mxunit.framework.TestCase' {
+component extends='org.railo.cfml.test.RailoTestCase' {
 	public void function trySavingLargeNestedStruct() {
 		// Prove that it doesn't happen with nested structures
 		var nestedStruct = {};

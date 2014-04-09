@@ -4,7 +4,6 @@ package railo.runtime;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +42,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.CharsetUtil;
@@ -77,7 +75,6 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
-import railo.runtime.db.driver.ConnectionProxy;
 import railo.runtime.debug.ActiveLock;
 import railo.runtime.debug.ActiveQuery;
 import railo.runtime.debug.DebugCFMLWriter;
@@ -117,6 +114,7 @@ import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Operator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
@@ -2361,14 +2359,46 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         // From URL
         Object oCfid = urlScope().get(KeyConstants._cfid,null);
         Object oCftoken = urlScope().get(KeyConstants._cftoken,null);
+        
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
             oCfid = cookieScope().get(KeyConstants._cfid,null);
             oCftoken = cookieScope().get(KeyConstants._cftoken,null);
         }
-        if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
-        	oCfid=null;
+
+        // check cookie value
+        if(oCfid!=null) {
+        	// cookie value is invalid, maybe from ACF
+        	if(!Decision.isGUIdSimple(oCfid)) {
+        		oCfid=null;
+        		oCftoken=null;
+        		Charset charset = getWebCharset();
+        		
+        		// check if we have multiple cookies with the name "cfid" and a other one is valid
+        		javax.servlet.http.Cookie[] cookies = getHttpServletRequest().getCookies();
+        		String name,value;
+        		for(int i=0;i<cookies.length;i++){
+        			name=ReqRspUtil.decode(cookies[i].getName(),charset.name(),false);
+        			// CFID
+        			if(name.equalsIgnoreCase("cfid")) {
+        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
+        				if(Decision.isGUIdSimple(value)) oCfid=value;
+        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
+        			}
+        			// CFToken
+        			else if(name.equalsIgnoreCase("cftoken")) {
+        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
+        				if(isValidCfToken(value)) oCftoken=value;
+        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
+        			}
+        		}
+        		
+        		if(oCfid!=null) {
+        			setCookie=true;
+        			if(oCftoken==null)oCftoken="0";
+        		}
+        	}
         }
         // New One
         if(oCfid==null || oCftoken==null) {
@@ -2386,7 +2416,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
 
-    public void resetIdAndToken() {
+    private boolean isValidCfToken(String value) {
+		return Operator.compare(value, "0")==0;
+	}
+
+
+
+	public void resetIdAndToken() {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
 

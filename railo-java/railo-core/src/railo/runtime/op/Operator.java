@@ -13,15 +13,18 @@ import java.util.Set;
 
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;
 
@@ -31,6 +34,7 @@ import railo.runtime.type.wrap.MapAsStruct;
  * 
  */
 public final class Operator {
+	
 	private static final Object NULL = new Object();
 
 
@@ -889,5 +893,54 @@ public final class Operator {
     
     public static Double multiplyRef(Object left, Object right) throws PageException {
 		return Caster.toDouble(Caster.toDoubleValue(left)*Caster.toDoubleValue(right));
+	}
+
+    public static Double unaryPostPlus(PageContext pc,Collection.Key[] keys,double value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	double rtn=Caster.toDoubleValue(ref.get(pc));
+    	ref.set(rtn+value);
+		return rtn;
+	}
+
+    public static Double unaryPostMinus(PageContext pc,Collection.Key[] keys,double value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	double rtn=Caster.toDoubleValue(ref.get(pc));
+    	ref.set(rtn-value);
+		return rtn;
+	}
+    
+    public static Double unaryPrePlus(PageContext pc,Collection.Key[] keys,double value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	double rtn=Caster.toDoubleValue(ref.get(pc))+value;
+    	ref.set(rtn);
+		return rtn;
+	}
+
+    public static Double unaryPreMinus(PageContext pc,Collection.Key[] keys,double value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	double rtn=Caster.toDoubleValue(ref.get(pc))-value;
+    	ref.set(rtn);
+		return rtn;
+	}
+    
+    public static Double unaryPreMultiply(PageContext pc,Collection.Key[] keys,double value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	double rtn=Caster.toDoubleValue(ref.get(pc))*value;
+    	ref.set(rtn);
+		return rtn;
+	}
+    
+    public static Double unaryPreDivide(PageContext pc,Collection.Key[] keys,double value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	double rtn=Caster.toDoubleValue(ref.get(pc))/value;
+    	ref.set(rtn);
+		return rtn;
+	}
+    
+    public static String unaryPreConcat(PageContext pc,Collection.Key[] keys,String value) throws PageException {
+    	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
+    	String rtn=Caster.toString(ref.get(pc)).concat(value);
+    	ref.set(pc,rtn);
+		return rtn;
 	}
 }

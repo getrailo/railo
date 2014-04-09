@@ -48,7 +48,8 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	public static final int TYPE_INNER_GROUP = 9;
 	public static final int TYPE_INNER_QUERY = 10;
 	public static final int TYPE_NOTHING = 11;
-	public static final int TYPE_TIMES = 12;
+	public static final int TYPE_STRUCT = 12;
+	public static final int TYPE_TIMES = 13;
 	
 
 	
@@ -223,6 +224,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		boolean old;
 
 		switch(type) {
+		case TYPE_STRUCT:
 		case TYPE_COLLECTION:
 			writeOutTypeCollection(bc);
 		break;
@@ -327,7 +329,9 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		loopVisitor=whileVisitor;
 		// java.util.Iterator it=Caster.toIterator(@collection');
 		int it=adapter.newLocal(Types.ITERATOR);
-		getAttribute("collection").getValue().writeOut(bc,Expression.MODE_REF);
+		Attribute coll = getAttribute("struct");
+		if(coll==null)coll=getAttribute("collection");
+		coll.getValue().writeOut(bc,Expression.MODE_REF);
 		
 		// item and index
 		int entry=-1;

@@ -66,6 +66,14 @@ public final class FunctionException extends ExpressionException {
         setAdditional(KeyConstants._pattern,getFunctionInfo(pc,functionName));
     }
     
+	public FunctionException(PageContext pc, String functionName, int min, int max, int actual) {
+		super(actual<min?
+				"too few arguments ["+actual+"] for "+functionName+" function call, you need at least ["+min+"] arguments"
+				:
+				"too many arguments ["+actual+"] for "+functionName+" function call, you cannot pass more than ["+max+"] arguments"
+				);
+	}
+
 	private static String getFunctionInfo(PageContext pc,String functionName) {
 		FunctionLib[] flds;
 		flds = ((ConfigImpl)pc.getConfig()).getFLDs();

@@ -9,12 +9,13 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.BIF;
 import railo.runtime.functions.BIFProxy;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.type.util.ListUtil;
+import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
 
@@ -54,9 +55,11 @@ public final class FunctionLibFunction {
 	private String tteClass;	
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private String memberName;
+	private int memberPosition=1;
 	private short memberType=CFTypes.TYPE_UNKNOW;
 	private boolean memberChaining;
 	private BIF bif;
+	private String[] keywords;
 
 	
 	/**
@@ -152,11 +155,26 @@ public final class FunctionLibFunction {
 	/**
 	 * Gibt die Klasse zurueck, welche diese Funktion implementiert.
 	 * @return Klasse der Function.
+	 * @throws ClassException 
 	 */
-	public Class getClazz() {
+	public Class getClazz() throws TemplateException {
 		if(clazz==null) {
-			clazz=ClassUtil.loadClass(cls,(Class)null);
+			try {
+				clazz=ClassUtil.loadClass(cls);
+			}
+			catch (ClassException e) {
+				throw new BytecodeException(e, null);
+			}
 		}
+		
+		return clazz;
+	}
+	
+	public Class getClazz(Class defaultValue) {
+		if(clazz==null) {
+			clazz=ClassUtil.loadClass(cls,defaultValue);
+		}
+		
 		return clazz;
 	}
 
@@ -314,6 +332,22 @@ public final class FunctionLibFunction {
 	public String getMemberName() {
 		return memberName;
 	}
+	
+
+	public void setKeywords(String keywords) {
+		this.keywords=ListUtil.trimItems(ListUtil.listToStringArray(keywords, ','));	
+	}
+	public String[] getKeywords() {
+		return keywords;
+	}
+	
+	public void setMemberPosition(int pos) {
+		this.memberPosition=pos;	
+	}
+	public int getMemberPosition() {
+		return memberPosition;
+	}
+	
 	public void setMemberChaining(boolean memberChaining) {
 		this.memberChaining=memberChaining;	
 	}
@@ -336,8 +370,13 @@ public final class FunctionLibFunction {
 	public BIF getBIF() {
 		if(bif!=null) return bif;
 		
-		Class clazz=getClazz();
-        if(clazz==null)throw new PageRuntimeException(new ExpressionException("class "+clazz+" not found"));
+		Class clazz=null;
+		try {
+			clazz = getClazz();
+		}
+		catch (TemplateException e) {
+			throw new PageRuntimeException(e);
+		}
         
 		if(Reflector.isInstaneOf(clazz, BIF.class)) {
 			try {
