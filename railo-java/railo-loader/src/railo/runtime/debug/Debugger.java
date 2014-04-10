@@ -2,6 +2,7 @@ package railo.runtime.debug;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -130,4 +131,19 @@ public interface Debugger {
     public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
     
     public DebugTrace[] getTraces(PageContext pc);
+    
+    
+
+    /**
+     * 
+     * @param labelCategory the name of the category, multiple records with the same category get combined
+     * @param data you wanna show
+     */
+    public void addGenericData(String labelCategory,Map<String,String> data);
+    
+    /**
+     * returning the generic data set for this request
+     * @return a Map organized by category/data-column/data-value
+     */
+    public Map<String,Map<String,List<String>>> getGenericData();
 }

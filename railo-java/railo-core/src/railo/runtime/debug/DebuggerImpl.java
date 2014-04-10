@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.util.ResourceSnippet;
@@ -77,6 +79,8 @@ public final class DebuggerImpl implements Debugger {
 	private long starttime=System.currentTimeMillis();
 
 	private DebugOutputLog outputLog;
+
+	private Map<String, Map<String, List<String>>> genericData; 
 
 	final static Comparator DEBUG_ENTRY_TEMPLATE_COMPARATOR = new DebugEntryTemplateComparator();
 	final static Comparator DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR = new DebugEntryTemplatePartComparator();
@@ -818,6 +822,49 @@ public final class DebuggerImpl implements Debugger {
 	public void resetTraces() {
 		traces.clear();
 	}
+
+	@Override
+    public void addGenericData(String labelCategory,Map<String,String> data){
+    	// init generic data if necessary
+		if(genericData==null) genericData=new ConcurrentHashMap<String,Map<String,List<String>>>();
+    	
+    	// category
+    	Map<String, List<String>> cat = genericData.get(labelCategory);
+    	if(cat==null) genericData.put(labelCategory, cat=new ConcurrentHashMap<String, List<String>>());
+    	
+    	// data
+    	Iterator<Entry<String, String>> it = data.entrySet().iterator();
+    	Entry<String, String> e;
+    	List<String> entry;
+    	while(it.hasNext()){
+    		e = it.next();
+    		entry = cat.get(e.getKey());
+    		if(entry==null) {
+    			cat.put(e.getKey(), entry=createAndFillList(cat));
+    		}
+    		entry.add(e.getValue());
+    	}
+    }
+    
+    private List<String> createAndFillList(Map<String, List<String>> cat) {
+		Iterator<List<String>> it = cat.values().iterator();
+		int size=0;
+		while(it.hasNext()){
+			size=it.next().size();
+			break;
+		}
+		ArrayList<String> list = new ArrayList<String>();
+		
+		// fill with empty values to be on the same level as other columns
+		for(int i=0;i<size;i++)list.add("");
+		
+		return list;
+	}
+
+	@Override
+    public Map<String,Map<String,List<String>>> getGenericData(){
+    	return genericData;
+    }
 
 }
 
