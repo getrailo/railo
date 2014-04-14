@@ -22,7 +22,6 @@ import railo.commons.io.res.type.datasource.core.MSSQL;
 import railo.commons.io.res.type.datasource.core.MySQL;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -34,13 +33,12 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 
 
 /**
  * Resource Provider for ram resource
  */
-public final class DatasourceResourceProvider implements ResourceProvider,Sizeable {
+public final class DatasourceResourceProvider implements ResourceProvider {
 
 	public static final int DBTYPE_ANSI92=0;
 	public static final int DBTYPE_MSSQL=1;
@@ -64,15 +62,6 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	private Map attrCache=new ReferenceMap();
 	private Map attrsCache=new ReferenceMap();
 	private Map arguments;
-
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(cores)+SizeOf.size(attrCache)+SizeOf.size(attrsCache)+SizeOf.size(lock);
-	}
-
-	
-
 
 	/**
 	 * initalize ram resource

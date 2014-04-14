@@ -22,7 +22,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
@@ -34,7 +33,7 @@ import railo.runtime.type.util.MemberUtil;
 /**
  * 
  */
-public class ListAsArray implements Array,List,Sizeable {
+public class ListAsArray implements Array,List {
 
 	protected List list;
 	
@@ -495,11 +494,6 @@ public class ListAsArray implements Array,List,Sizeable {
 
 	public Iterator valueIterator() {
 		return list.iterator();
-	}
-
-	@Override
-	public long sizeOf() {
-		return ArrayUtil.sizeOf(list);
 	}
 
 	@Override

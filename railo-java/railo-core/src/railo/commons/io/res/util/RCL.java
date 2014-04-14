@@ -11,10 +11,8 @@ import java.util.zip.ZipFile;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.SizeOf;
-import railo.runtime.type.Sizeable;
 
-public final class RCL extends ClassLoader implements Sizeable,Closeable {
+public final class RCL extends ClassLoader implements Closeable {
     
     private final ClassLoader pcl;
 	private ZipFile[] zips;
@@ -176,11 +174,6 @@ public final class RCL extends ClassLoader implements Sizeable,Closeable {
         }
         return null;
     }
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(zips);
-	}
 
 	public void close() throws IOException {
 		for(int i=0;i<zips.length;i++){

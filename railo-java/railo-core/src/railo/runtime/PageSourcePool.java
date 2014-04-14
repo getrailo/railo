@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collection.LongKeyList;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.dump.DumpData;
@@ -17,14 +16,13 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
  * pool to handle pages
  */
-public final class PageSourcePool implements Dumpable,Sizeable {
+public final class PageSourcePool implements Dumpable {
 	
 	private Map<Object,PageSource> pageSources=Collections.synchronizedMap(new ReferenceMap(ReferenceMap.SOFT, ReferenceMap.SOFT));
 	//timeout timeout for files
@@ -173,12 +171,5 @@ public final class PageSourcePool implements Dumpable,Sizeable {
 	}
 	public int getMaxSize() {
 		return maxSize;
-	}
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(this.timeout)
-		+SizeOf.size(this.maxSize)
-		+SizeOf.size(this.pageSources);
 	}
 }

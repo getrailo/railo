@@ -3,7 +3,6 @@ package railo.runtime.type;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import railo.commons.lang.SizeOf;
 import railo.runtime.exp.ExpressionException;
 
 
@@ -11,7 +10,7 @@ import railo.runtime.exp.ExpressionException;
 /**
  * CFML array object
  */
-public final class ArrayInt implements Sizeable,Serializable {
+public final class ArrayInt implements Serializable {
 	
 	private static final int NULL = 0;
 	private int[] arr;
@@ -183,15 +182,4 @@ public final class ArrayInt implements Sizeable,Serializable {
     public boolean contains(int key) {
         return get(key,NULL)!=NULL;
     }
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(arr)
-		+SizeOf.size(cap)
-		+SizeOf.size(size)
-		+SizeOf.size(offset)
-		+SizeOf.size(offCount)
-		+SizeOf.REF_SIZE;
-	}
-
 }

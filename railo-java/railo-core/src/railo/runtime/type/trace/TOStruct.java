@@ -74,12 +74,6 @@ public class TOStruct extends TOCollection implements Struct {
 	}
 
 	@Override
-	public long sizeOf() {
-		log(null);
-		return sct.sizeOf();
-	}
-
-	@Override
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     } 

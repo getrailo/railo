@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
@@ -38,7 +37,7 @@ import railo.runtime.util.ArrayIterator;
 /**
  * implementation of the query column
  */
-public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
+public class QueryColumnImpl implements QueryColumnPro,Objects {
 
 	private static final long serialVersionUID = -5544446523204021493L;
 	private static final int CAPACITY=32;
@@ -559,11 +558,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(key)+SizeOf.size(data);
-	}
-	
 	public Iterator iterator() {
 		return keyIterator();
 	}

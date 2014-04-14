@@ -9,7 +9,6 @@ import java.util.Set;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.ExternalizableUtil;
-import railo.commons.lang.SizeOf;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
@@ -266,28 +265,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, 
 				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, null, meta);
 	}
-
-	@Override
-	public long sizeOf() {
-		return 
-		SizeOf.size(functionName)+
-		SizeOf.size(returnType)+
-		SizeOf.size(strReturnType)+
-		SizeOf.size(output)+
-		SizeOf.size(bufferOutput)+
-		SizeOf.size(hint)+
-		SizeOf.size(index)+
-		SizeOf.size(displayName)+
-		SizeOf.size(arguments)+
-		SizeOf.size(meta)+
-		SizeOf.size(description)+
-		SizeOf.size(secureJson)+
-		SizeOf.size(verifyClient)+
-		SizeOf.size(strReturnFormat)+
-		SizeOf.size(returnFormat)+
-		SizeOf.size(cachedWithin);
-	}
-	
 
 	 /**
 	 * @return the access

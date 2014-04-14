@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
@@ -30,7 +29,7 @@ import railo.runtime.type.util.ArrayUtil;
 /**
  * CFML array object
  */
-public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
+public final class ArrayImplNS extends ArraySupport implements Array {
 	
 	private Object[] arr;
 	private int dimension=1;
@@ -580,16 +579,5 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	@Override
 	public String toString() {
 		return LazyConverter.serialize(this);
-	}
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(arr)
-		+SizeOf.size(dimension)
-		+SizeOf.size(cap)
-		+SizeOf.size(size)
-		+SizeOf.size(offset)
-		+SizeOf.size(offCount)
-		+SizeOf.REF_SIZE;
 	}
 }

@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import railo.commons.lang.CFTypes;
-import railo.commons.lang.SizeOf;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -43,7 +42,7 @@ import railo.runtime.writer.BodyContentUtil;
 /**
  * defines a abstract class for a User defined Functions
  */
-public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externalizable {
+public class UDFImpl extends MemberSupport implements UDFPlus,Externalizable {
 	
 	//private static final RamCache DEFAULT_CACHE=new RamCache();
 	private static final long serialVersionUID = -7288148349256615519L; // do not change
@@ -64,11 +63,6 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 		this.properties= (UDFPropertiesImpl) properties;
 	}
 
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(properties);
-	}
-	
 	public UDF duplicate(Component cfc) {
 		UDFImpl udf = new UDFImpl(properties);
 		udf.ownerComponent=cfc;

@@ -12,14 +12,12 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.net.proxy.Proxy;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 
 // TODO check connection timeout
-public final class FTPResourceProvider implements ResourceProvider,Sizeable {
+public final class FTPResourceProvider implements ResourceProvider {
 	private String scheme="ftp";
 	private final Map clients=new HashMap();
 	private int clientTimeout=60000;
@@ -219,11 +217,6 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 	@Override
 	public boolean isModeSupported() {
 		return true;
-	}
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(lock)+SizeOf.size(clients);
 	}
 
 	@Override

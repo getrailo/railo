@@ -3,7 +3,6 @@ package railo.runtime.text.xml.struct;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
@@ -22,7 +21,6 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsArrayList;
 
 public class XMLMultiElementArray extends ArraySupport {
@@ -337,10 +335,4 @@ public class XMLMultiElementArray extends ArraySupport {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	public long sizeOf() {
-		return ArrayUtil.sizeOf((List)this);
-	}
-
 }

@@ -8,16 +8,14 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ListUtil;
 
 /**
  * Resource Provider for ram resource
  */
-public final class RamResourceProviderOld implements ResourceProvider,Sizeable {
+public final class RamResourceProviderOld implements ResourceProvider {
 
 	private String scheme="ram";
 	private RamResourceCore root;
@@ -139,11 +137,6 @@ public final class RamResourceProviderOld implements ResourceProvider,Sizeable {
 	@Override
 	public boolean isModeSupported() {
 		return true;
-	}
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(root)+SizeOf.size(lock);
 	}
 
 	@Override

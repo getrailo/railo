@@ -8,12 +8,11 @@ import java.net.URL;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
-import railo.runtime.type.Sizeable;
 
 /**
  * Directory ClassLoader
  */
-public final class PCLBlock extends ExtendableClassLoader implements Sizeable  {
+public final class PCLBlock extends ExtendableClassLoader {
     
     private Resource directory;
     private ClassLoader pcl;
@@ -239,11 +238,6 @@ public final class PCLBlock extends ExtendableClassLoader implements Sizeable  {
 		return directory;
 	}
 
-	@Override
-	public long sizeOf() {
-		return 0;
-	}
-	
 	public int count() {
 		return count;
 	}

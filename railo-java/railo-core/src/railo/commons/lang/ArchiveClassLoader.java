@@ -12,12 +12,11 @@ import java.util.zip.ZipFile;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.FileWrapper;
-import railo.runtime.type.Sizeable;
 
 // TODO umbauen auf ZipInputStream oder ein wrapper schreiben fﾟr resorces der das file interface einhﾊlt
 
 
-public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Closeable {
+public final class ArchiveClassLoader extends ClassLoader implements Closeable {
     
     private final ZipFile zip;
     private final ClassLoader pcl;
@@ -162,11 +161,6 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
         }
         return null;
     }
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(zip);
-	}
 
 	public void close() throws IOException {
 		zip.close();

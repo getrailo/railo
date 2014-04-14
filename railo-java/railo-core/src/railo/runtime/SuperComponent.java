@@ -18,7 +18,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -29,7 +28,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements Component, Member,Sizeable {
+public class SuperComponent extends MemberSupport implements Component, Member {
 	
 	private ComponentImpl comp;
 
@@ -424,13 +423,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public void setProperty(Property property) throws PageException {
 		comp.setProperty(property);
 	}
-
-
-	@Override
-	public long sizeOf() {
-		return StructUtil.sizeOf(this);
-	}
-
 
 	public boolean equalTo(String type) {
 		return comp.top.equalTo(type);

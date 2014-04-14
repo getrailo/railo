@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -24,14 +23,13 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.GetDirectoryFromPath;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a cfml file on the runtime system
  */
-public final class PageSourceImpl implements PageSource, Sizeable {
+public final class PageSourceImpl implements PageSource {
 
 	private static final long serialVersionUID = -7661676586215092539L;
 	//public static final byte LOAD_NONE=1;
@@ -827,18 +825,6 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 	@Override
 	public String toString() {
 		return getDisplayPath();
-	}
-	
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(page,0)+
-		SizeOf.size(className)+
-		SizeOf.size(packageName)+
-		SizeOf.size(javaName)+
-		SizeOf.size(fileName)+
-		SizeOf.size(compName)+
-		SizeOf.size(lastAccess)+
-		SizeOf.size(accessCount);
 	}
 
 	public static PageSource best(PageSource[] arr) {

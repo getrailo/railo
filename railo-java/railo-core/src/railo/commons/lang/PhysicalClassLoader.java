@@ -17,14 +17,12 @@ import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
-
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
  * Directory ClassLoader
  */
-public final class PhysicalClassLoader extends ExtendableClassLoader implements Sizeable  {
+public final class PhysicalClassLoader extends ExtendableClassLoader {
     
     private Resource directory;
     private ClassLoader parent;
@@ -255,11 +253,6 @@ public final class PhysicalClassLoader extends ExtendableClassLoader implements 
 		return directory;
 	}
 
-	@Override
-	public long sizeOf() {
-		return 0;
-	}
-	
 	public int count() {
 		return count;
 	}

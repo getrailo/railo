@@ -3,7 +3,6 @@ package railo.runtime.text.xml;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
@@ -28,7 +27,6 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ArrayIterator;
 
 /**
@@ -485,10 +483,5 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare XML NodeList with a String");
-	}
-
-	@Override
-	public long sizeOf() {
-		return ArrayUtil.sizeOf((List)this);
 	}
 }

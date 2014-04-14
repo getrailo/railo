@@ -16,13 +16,12 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 
-public abstract class StructSupport implements Map,Struct,Sizeable {
+public abstract class StructSupport implements Map,Struct {
 
 	private static final long serialVersionUID = 7433668961838400995L;
 
@@ -47,12 +46,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		
 		return new ExpressionException( "key [" + key.getString() + "] doesn't exist" );
 	}
-	
-	@Override
-	public long sizeOf() {
-		return StructUtil.sizeOf(this);
-	}
-	
+
 	@Override
 	public Set entrySet() {
 		return StructUtil.entrySet(this);

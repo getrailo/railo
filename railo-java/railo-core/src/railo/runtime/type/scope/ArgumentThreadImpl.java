@@ -18,13 +18,11 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.MemberUtil;
-import railo.runtime.type.util.StructUtil;
 
-public final class ArgumentThreadImpl implements Argument,Sizeable {
+public final class ArgumentThreadImpl implements Argument {
 
 	private final Struct sct;
 
@@ -417,11 +415,6 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	@Override
 	public Object clone(){
 		return duplicate(true);
-	}
-
-	@Override
-	public long sizeOf() {
-		return StructUtil.sizeOf(this);
 	}
 
 	@Override

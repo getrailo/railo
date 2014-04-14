@@ -7,7 +7,6 @@ import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
 import railo.commons.lang.CFTypes;
-import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
@@ -22,14 +21,13 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Objects;
 import railo.runtime.type.SimpleValue;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.MemberUtil;
 
 /**
  * Printable and Castable DateTime Object
  */
-public final class DateTimeImpl extends DateTime implements SimpleValue,Sizeable,Objects {
+public final class DateTimeImpl extends DateTime implements SimpleValue,Objects {
 	
 	public DateTimeImpl(PageContext pc) {
 		this(pc,System.currentTimeMillis(),true);
@@ -166,12 +164,6 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Sizeable
             return javaFormatter.format(this);
         }*/
 	}
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.LONG_SIZE+SizeOf.REF_SIZE;
-	}
-
 
 	@Override
 	public Object get(PageContext pc, Key key, Object defaultValue) {

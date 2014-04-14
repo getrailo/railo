@@ -9,12 +9,10 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 
-public final class FileResourceProvider implements ResourceProvider,Sizeable {
+public final class FileResourceProvider implements ResourceProvider {
 
 	private String scheme="file";
 	
@@ -88,11 +86,7 @@ public final class FileResourceProvider implements ResourceProvider,Sizeable {
 	public boolean isModeSupported() {
 		return false;//SystemUtil.isUnix(); FUTURE add again
 	}
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(lock);
-	}
-	
+
 	public Map getArguments() {
 		return arguments;
 	}

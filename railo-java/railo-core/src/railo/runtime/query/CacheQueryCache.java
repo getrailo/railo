@@ -135,10 +135,4 @@ import railo.runtime.type.Query;
 			return 0;
 		}
 	}
-
-
-	public long sizeOf() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

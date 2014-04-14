@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.RandomUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -20,7 +19,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -30,7 +28,7 @@ import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
-public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
+public abstract class StorageScopeImpl extends StructSupport implements StorageScope {
 
 	public static Collection.Key CFID=KeyConstants._cfid;
 	public static Collection.Key CFTOKEN=KeyConstants._cftoken;
@@ -391,12 +389,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	public java.util.Collection values() {
 		return sct.values();
 	}
-	
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(sct);
-	}
-	
+
 	public final int getType() {
 		return type;
 	}

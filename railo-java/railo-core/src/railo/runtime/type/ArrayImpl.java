@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
@@ -31,7 +30,7 @@ import railo.runtime.type.util.ListIteratorImpl;
 /**
  * CFML array object
  */
-public class ArrayImpl extends ArraySupport implements Sizeable {
+public class ArrayImpl extends ArraySupport {
 	
 	private static final long serialVersionUID = -6187994169003839005L;
 	
@@ -579,16 +578,5 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	@Override
 	public Iterator iterator() {
 		return new ListIteratorImpl(this,0);
-	}
-
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(arr)
-		+SizeOf.size(dimension)
-		+SizeOf.size(cap)
-		+SizeOf.size(size)
-		+SizeOf.size(offset)
-		+SizeOf.size(offCount)
-		+SizeOf.REF_SIZE;
 	}
 }

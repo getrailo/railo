@@ -49,7 +49,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.lang.PhysicalClassLoader;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.mimetype.MimeType;
@@ -131,7 +130,6 @@ import railo.runtime.type.Iterator;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.SVArray;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -186,7 +184,7 @@ import railo.runtime.writer.DevNullBodyContent;
  * for example you have the method getSession to get jsp combatible session object (HTTPSession)
  *  and with sessionScope() you get CFML combatible session object (Struct,Scope).
  */
-public final class PageContextImpl extends PageContext implements Sizeable {
+public final class PageContextImpl extends PageContext {
 	
 	private static final RefBoolean DUMMY_BOOL = new RefBooleanImpl(false);
 	
@@ -306,56 +304,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private String serverPassword;
 
 	private PageException pe;
-
-	public long sizeOf() {
-		
-		return 
-		SizeOf.size(pathList)+
-		SizeOf.size(includePathList)+
-		SizeOf.size(executionTime)+
-		SizeOf.size(writer)+
-		SizeOf.size(forceWriter)+
-		SizeOf.size(bodyContentStack)+
-		SizeOf.size(variables)+
-		SizeOf.size(url)+
-		SizeOf.size(form)+
-		SizeOf.size(_url)+
-		SizeOf.size(_form)+
-		SizeOf.size(request)+
-
-		SizeOf.size(argument)+
-		SizeOf.size(local)+
-		SizeOf.size(cookie)+
-		SizeOf.size(debugger)+
-		SizeOf.size(requestTimeout)+
-		SizeOf.size(enablecfoutputonly)+
-		SizeOf.size(outputState)+
-		SizeOf.size(cfid)+
-		SizeOf.size(cftoken)+
-		SizeOf.size(id)+
-		SizeOf.size(psq)+
-		SizeOf.size(locale)+
-		SizeOf.size(errorPagePool)+
-		SizeOf.size(tagHandlerPool)+
-		SizeOf.size(ftpPool)+
-		SizeOf.size(activeComponent)+
-		SizeOf.size(activeUDF)+
-		SizeOf.size(remoteUser)+
-		SizeOf.size(exception)+
-		SizeOf.size(base)+
-		SizeOf.size(applicationContext)+
-		SizeOf.size(defaultApplicationContext)+
-		SizeOf.size(parentTag)+
-		SizeOf.size(currentTag)+
-		SizeOf.size(startTime)+
-		SizeOf.size(isCFCRequest)+
-		SizeOf.size(transConns)+
-		SizeOf.size(lazyStats)+
-		SizeOf.size(serverPassword)+
-		SizeOf.size(ormSession);
-	}
-	
-	
 
 	/** 
 	 * default Constructor

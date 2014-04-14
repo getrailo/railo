@@ -417,11 +417,6 @@ public abstract class ComponentProxy implements Component {
     }
 
 	@Override
-	public long sizeOf() {
-		return getComponent().sizeOf();
-	}
-	
-	@Override
 	public String getWSDLFile() {
 		return getComponent().getWSDLFile();
 	}

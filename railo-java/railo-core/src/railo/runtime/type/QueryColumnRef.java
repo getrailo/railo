@@ -20,12 +20,11 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.QueryUtil;
 
 /**
  * Recordcount Query Column
  */
-public final class QueryColumnRef implements QueryColumn,Sizeable {
+public final class QueryColumnRef implements QueryColumn {
     
     private Query query;
     private Collection.Key columnName;
@@ -353,13 +352,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
         QueryColumn clone=new QueryColumnRef(query,columnName,type);
         return clone;
     }
-	
 
-	@Override
-	public long sizeOf() {
-		return QueryUtil.sizeOf(this);
-	}
-	
 	@Override
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();

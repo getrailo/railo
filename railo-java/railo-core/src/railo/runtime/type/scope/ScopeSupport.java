@@ -17,7 +17,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.CastableStruct;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ListUtil;
@@ -28,7 +27,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * Simple standart implementation of a Scope, for standart use.
  */
-public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable {
+public abstract class ScopeSupport extends StructImpl implements Scope {
 	
 	private static final long serialVersionUID = -4185219623238374574L;
 	
@@ -292,8 +291,4 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
     public String getTypeAsString() {
         return name;
     }
-	public long sizeOf() {
-		return StructUtil.sizeOf(this);
-	}
-    
 }

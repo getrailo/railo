@@ -24,7 +24,6 @@ import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Pair;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -62,7 +61,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -93,7 +91,7 @@ import railo.runtime.type.util.UDFUtil;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public final class ComponentImpl extends StructSupport implements Externalizable,Component,coldfusion.runtime.TemplateProxy,Sizeable {
+public final class ComponentImpl extends StructSupport implements Externalizable,Component,coldfusion.runtime.TemplateProxy {
 	private static final long serialVersionUID = -245618330485511484L; // do not change this
 
 
@@ -128,23 +126,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	private boolean loaded;
 	private boolean hasInjectedFunctions;
 
-
-
-	
-	public long sizeOf() {
-		return 
-			SizeOf.size(properties)+
-			SizeOf.size(_data)+
-			SizeOf.size(scope)+
-			SizeOf.size(dataMemberDefaultAccess)+
-			SizeOf.size(false)+
-			SizeOf.size(interfaceCollection)+
-			SizeOf.size(useShadow)+
-			SizeOf.size(entity)+
-			SizeOf.size(afterConstructor)+
-			SizeOf.size(base);
-	}
-	
     /**
      * Constructor of the Component, USED ONLY FOR DESERIALIZE
      */

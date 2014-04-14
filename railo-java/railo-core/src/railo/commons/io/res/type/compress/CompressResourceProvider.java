@@ -8,14 +8,12 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 
-public abstract class CompressResourceProvider implements ResourceProvider,Sizeable {
+public abstract class CompressResourceProvider implements ResourceProvider {
 	
 	private static final long serialVersionUID = 5930090603192203086L;
 	
@@ -189,10 +187,4 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 			}
 		}
 	}*/
-
-	
-	@Override
-	public long sizeOf() {
-		return SizeOf.size(lock);
-	}
 }

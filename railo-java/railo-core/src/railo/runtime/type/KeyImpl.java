@@ -7,7 +7,6 @@ import java.io.ObjectOutput;
 import java.util.Date;
 
 import railo.commons.digest.WangJenkins;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
@@ -18,7 +17,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
-public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable,WangJenkins {
+public class KeyImpl implements Collection.Key,Castable,Comparable,Externalizable,WangJenkins {
 
 	private static final long serialVersionUID = -8864844181140115609L; // do not change
 
@@ -364,15 +363,6 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		String str = Caster.toString(obj,null);
 		if(str==null) throw new CasterException(obj,Collection.Key.class);
 		return init(str);
-	}
-
-
-	public long sizeOf() {
-		return 
-		SizeOf.size(this.key)+
-		SizeOf.size(this.lcKey)+
-		SizeOf.size(this.ucKey)+
-		SizeOf.REF_SIZE;
 	}
 
 	@Override
