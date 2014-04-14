@@ -16,6 +16,10 @@ public interface Mapping  extends Dumpable{
 	public Class<?> getArchiveClass(String className, Class<?> defaultValue);
 
 	public InputStream getArchiveResourceAsStream(String string);
+	
+	public Class<?> getPhysicalClass(String className) throws ClassNotFoundException;
+	public Class<?> getPhysicalClass(String className, byte[] code);
+			
 
     /**
      * @return Returns the physical.

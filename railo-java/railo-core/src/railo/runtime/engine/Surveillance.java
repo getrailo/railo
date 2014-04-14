@@ -113,10 +113,7 @@ import railo.runtime.type.util.KeyConstants;
 			sct.set("archiveClassLoader", Caster.toDouble(size));
 			
 			// physical classloader
-			size=0;
-			try {
-				size=SizeOf.size(mapping.touchPCLCollection());
-			} catch (Exception e) {}
+			size=mapping.getPhysical()!=null?mapping.getPhysical().length():0;
 			sct.set("physicalClassLoader", Caster.toDouble(size));
 			
 			// pagepool

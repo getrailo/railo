@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
-import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import railo.Info;
 import railo.runtime.CFMLFactory;
@@ -244,9 +244,11 @@ public interface CFMLEngine {
 
     public long uptime();
     
-    /**
+    /*
      * get the OSGi Bundle of the core
      * @return 
-     */
-	public abstract Bundle getCoreBundle();
+     * /
+	public abstract Bundle getCoreBundle();*/
+	
+	public BundleContext getBundleContext();
 }

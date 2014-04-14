@@ -245,8 +245,9 @@ public final class PageSourceImpl implements PageSource, Sizeable {
                     // load page
                     else {
                     	try {
-							this.page=page=newInstance(mapping.touchPCLCollection().getClass(this));
-						} catch (Throwable t) {t.printStackTrace();
+                    		//this.page=page=newInstance(mapping.getPhysicalClass(getClazz()));
+                    		this.page=page=newInstance(mapping.touchPCLCollection().getClass(this));
+    					} catch (Throwable t) {t.printStackTrace();
 							this.page=page=null;
 						}
                     	if(page==null) this.page=page=compile(config,classRootDir,Boolean.TRUE);
@@ -307,6 +308,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
         
         byte[] barr = cwi.getCompiler().
         	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
+        //Class<?> clazz = mapping.getPhysicalClass(getClazz(),barr);
         Class<?> clazz = mapping.touchPCLCollection().loadClass(getClazz(), barr,isComponent());
         try{
         	return  newInstance(clazz);

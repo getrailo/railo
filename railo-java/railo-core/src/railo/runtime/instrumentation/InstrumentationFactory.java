@@ -25,19 +25,20 @@ public class InstrumentationFactory {
 		if(doInit) {
 			doInit=false;
 			
-			Class agent = ClassUtil.loadClass("railo.runtime.instrumentation.Agent",null);
+			/*Class agent = ClassUtil.loadClass("railo.runtime.instrumentation.Agent",null);
 			if(agent==null) {
 				SystemOut.printDate("missing class railo.runtime.instrumentation.Agent");
 				return null;
-			}
+			}*/
 			
 			// if Agent was loaded at startup there is already a Instrumentation
-			inst=getInstrumentation(agent);
+			inst=Agent6.getInstrumentation();
+			//inst=getInstrumentation(agent);
 			
 			// try to load Agent
 			if(inst==null) {
-				SystemOut.printDate("class railo.runtime.instrumentation.Agent.getInstrumentation() is not returning a Instrumentation");
-				try {
+				SystemOut.printDate("class railo.runtime.instrumentation.Agent6.getInstrumentation() is not returning a Instrumentation");
+				/*try {
 					String id=getPid();
 					String path=getResourcFromLib().getAbsolutePath();
 					
@@ -50,16 +51,17 @@ public class InstrumentationFactory {
 					//t.printStackTrace();
 					return null;
 				}
-				inst=getInstrumentation(agent);
+				inst=getInstrumentation(agent);*/
 			}
 			
-			if(inst!=null)SystemOut.printDate("java.lang.instrument.Instrumentation is used to reload class files");
+			//if(inst!=null)
+			else SystemOut.printDate("java.lang.instrument.Instrumentation is used to reload class files");
 				
 		}
 		return inst;
 	}
 
-	private static Instrumentation getInstrumentation(Class agent) {
+	/*private static Instrumentation getInstrumentation(Class agent) {
 		try {
 			Method getInstrumentation = agent.getMethod("getInstrumentation", new Class[0]);
 			return (Instrumentation) getInstrumentation.invoke(null, new Object[0]);
@@ -68,7 +70,7 @@ public class InstrumentationFactory {
 			t.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 
 	private static Object attach(Class vmClass, String id) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Method attach = vmClass.getMethod("attach", new Class[]{String.class});

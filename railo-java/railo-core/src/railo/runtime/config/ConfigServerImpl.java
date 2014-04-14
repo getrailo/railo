@@ -19,7 +19,6 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.ClassUtil;
-import railo.commons.lang.PCLCollection;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.loader.TP;
@@ -484,8 +483,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	private static int shrink(Mapping mapping, boolean force) {
 		try {
-			PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
-			if(pcl!=null)return pcl.shrink(force);
+			//PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
+			//if(pcl!=null)return pcl.shrink(force);
+			((MappingImpl)mapping).shrink();
 		} 
 		catch (Throwable t) {
 			t.printStackTrace();
@@ -495,14 +495,17 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	
 	 public long countLoadedPages() {
-		 long count=0;
+		 /*long count=0;
 		 ConfigWeb[] webs = getConfigWebs();
 			for(int i=0;i<webs.length;i++){
 	    	count+=_count((ConfigWebImpl) webs[i]);
 		}	
 		return count;
+		*/
+		return -1;
+		// MUST implement
 	 }
-	 private static long _count(ConfigWebImpl config) {
+	 /*private static long _countx(ConfigWebImpl config) {
 		 long count=0;
 		count+=_count(config.getMappings());
 		count+=_count(config.getCustomTagMappings());
@@ -513,20 +516,20 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		count+=_count(config.getServerTagMapping());
 		//count+=_count(((ConfigWebImpl)config).getServerTagMapping());
 		return count;
-	}
+	}*/
 
-	 private static long _count(Mapping[] mappings) {
+	 /*private static long _count(Mapping[] mappings) {
 		 long count=0;
 		for(int i=0;i<mappings.length;i++){
 			count+=_count(mappings[i]);
 		}
 		return count;
-	}
+	}*/
 
-	private static long _count(Mapping mapping) {
+	/*private static long _countx(Mapping mapping) {
 		PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
 		return pcl==null?0:pcl.count();
-	}
+	}*/
 
 	@Override
 	public Cluster createClusterScope() throws PageException {

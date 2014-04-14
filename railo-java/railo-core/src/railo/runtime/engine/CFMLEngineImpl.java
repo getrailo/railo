@@ -2,15 +2,18 @@ package railo.runtime.engine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -21,7 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 import railo.cli.servlet.HTTPServletImpl;
 import railo.commons.collection.MapFactory;
@@ -46,6 +52,7 @@ import railo.loader.engine.CFMLEngineWrapper;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.Info;
+import railo.print;
 import railo.runtime.InfoImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -105,8 +112,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	private Monitor monitor;
 	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>();
 	private long uptime;
+	private InfoImpl info;
+	
 	private final Bundle bundle;
-	private InfoImpl info; 
+	private BundleContext bundleContext; 
 	
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
@@ -114,6 +123,56 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private CFMLEngineImpl(CFMLEngineFactory factory, Bundle bundle) {
     	this.factory=factory; 
     	this.bundle=bundle;
+    	
+    	// bundle context
+    	if(bundle!=null) {
+    		bundleContext=bundle.getBundleContext();
+    	}
+    	// happen when Railo is loaded directly
+    	else {
+    		Properties prop = new Properties();
+    		InputStream is=null;
+    		try{
+    			is = getClass().getResourceAsStream("/default.properties");
+    			prop.load(is);
+    			
+    			String storageClean = CFMLEngineFactory.removeQuotes(prop.getProperty("org.osgi.framework.storage.clean"),true);
+    			String bootDelegation = CFMLEngineFactory.removeQuotes(prop.getProperty("org.osgi.framework.bootdelegation"),true);
+    			int logLevel=1; // 1 = error, 2 = warning, 3 = information, and 4 = debug
+    			String strLogLevel = CFMLEngineFactory.removeQuotes(prop.getProperty("felix.log.level"),true);
+    			String parentClassLoader = CFMLEngineFactory.removeQuotes(prop.getProperty("org.osgi.framework.bundle.parent"),true);
+    			if(StringUtil.isEmpty(parentClassLoader)) parentClassLoader=Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK;
+    			
+    			
+    			if(!StringUtil.isEmpty(strLogLevel)) {
+    				if("warn".equalsIgnoreCase(strLogLevel) || "warning".equalsIgnoreCase(strLogLevel)) 
+    					logLevel=2;
+    				else if("info".equalsIgnoreCase(strLogLevel) || "information".equalsIgnoreCase(strLogLevel)) 
+    					logLevel=3;
+    				else if("debug".equalsIgnoreCase(strLogLevel)) 
+    					logLevel=4;
+    			}
+    			print.e("factory.getResourceRoot():"+factory.getResourceRoot());
+    			print.e("storageClean:"+storageClean);
+    			print.e("bootDelegation:"+bootDelegation);
+    			print.e("logLevel:"+logLevel);
+    			
+    			Map<String,Object> config=new HashMap<String, Object>();
+    			config.put(FelixConstants.FRAMEWORK_SYSTEMPACKAGES, FelixConstants.FRAMEWORK_SYSTEMPACKAGES_EXTRA);
+    			
+    			
+    			bundleContext=factory.getFelix(factory.getResourceRoot(),storageClean, bootDelegation, parentClassLoader, logLevel,config).getBundleContext();
+    		}
+    		catch (Throwable t) {
+				throw new RuntimeException(t);
+			}
+    		finally {
+    			IOUtil.closeEL(is);
+    		}
+    	}
+    	
+    	
+    	
     	this.info=new InfoImpl(bundle);
     	Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader()); // MUST better location for this
 		
@@ -655,9 +714,13 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return uptime;
 	}
 
-	@Override
-	public Bundle getCoreBundle() {
+	/*public Bundle getCoreBundle() {
 		return bundle;
+	}*/
+
+	@Override
+	public BundleContext getBundleContext() {
+		return bundleContext;
 	}
 
 }

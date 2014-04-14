@@ -310,7 +310,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
     
     
 
-	public Felix getFelix(File cacheRootDir, String storageClean,String bootDelegation, String parentClassLoader, int logLevel) throws BundleException {
+	public Felix getFelix(File cacheRootDir, String storageClean,String bootDelegation, String parentClassLoader, int logLevel,Map<String,Object> initalMap) throws BundleException {
 		/* this is done before this call if(felix!=null){
 			log(Log.LEVEL_INFO,"remove existing bundle");
 			removeBundle(bundle);
@@ -320,7 +320,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 		log(Log.LEVEL_INFO,"load felix");
     	
 		
-		Map<String,Object> config = new HashMap<String,Object>();
+		Map<String,Object> config = initalMap==null? new HashMap<String,Object>():initalMap;
 		
 		// storage clean
 		if(!Util.isEmpty(storageClean))
@@ -351,6 +351,9 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
 		//
 		// felix.log.level
 		config.put("felix.log.level", ""+logLevel);
+		
+		
+		
 		
 		// TODO felix.log.logger 
 		

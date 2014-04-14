@@ -13,7 +13,6 @@ import org.osgi.framework.BundleException;
 
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.MappingUtil;
 import railo.commons.lang.PCLCollection;
 import railo.commons.lang.StringUtil;
@@ -45,7 +44,7 @@ public final class MappingImpl implements Mapping {
     private boolean topLevel;
     private short inspect;
     private boolean physicalFirst;
-    private ArchiveClassLoader archiveClassLoader;
+    //private ArchiveClassLoader archiveClassLoader;
     //private PhysicalClassLoader physicalClassLoader;
     private PCLCollection pclCollection;
     private Resource archive;
@@ -148,9 +147,8 @@ public final class MappingImpl implements Mapping {
     
     private void loadArchive() {
     	CFMLEngine engine = ConfigWebUtil.getEngine(config);
-    	Bundle bundle = engine.getCoreBundle();
-    	if(bundle!=null) {
-    		BundleContext bc = bundle.getBundleContext();
+    	BundleContext bc = engine.getBundleContext();
+    	//if(bc!=null) {
     		try {
 				archiveBundle=OSGiUtil.installBundle(config.getLog("application"), bc, archive);
 			}
@@ -162,21 +160,20 @@ public final class MappingImpl implements Mapping {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    	}
-    	else {
+    	/*}else {
             try {
                 archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
             } 
             catch (Throwable t) {
                 archive=null;
             }
-    	}
+    	}*/
 	}
 	
 	@Override
     public Class<?> getArchiveClass(String className) throws ClassNotFoundException {
 		if(archiveBundle!=null) return archiveBundle.loadClass(className);
-		else if(archiveClassLoader!=null) return archiveClassLoader.loadClass(className);
+		//else if(archiveClassLoader!=null) return archiveClassLoader.loadClass(className);
 		throw new ClassNotFoundException("there is no archive context to load "+className+" from it");
     }
 	
@@ -185,8 +182,7 @@ public final class MappingImpl implements Mapping {
 		try {
 			if(archiveBundle!=null) 
 				return archiveBundle.loadClass(className);
-			else if(archiveClassLoader!=null) 
-				return archiveClassLoader.loadClass(className);
+			//else if(archiveClassLoader!=null) return archiveClassLoader.loadClass(className);
 		}
 		catch (ClassNotFoundException e) {}
 		
@@ -194,11 +190,20 @@ public final class MappingImpl implements Mapping {
     }
 	
 	@Override
-	public InputStream getArchiveResourceAsStream(String string) {
-		// TODO Auto-generated method stub
+	public InputStream getArchiveResourceAsStream(String name) {
+		// MUST implement
 		return null;
 	}
+
+	@Override
+	public Class<?> getPhysicalClass(String className) throws ClassNotFoundException {
+		return null;
+    }
 	
+	@Override
+	public Class<?> getPhysicalClass(String className, byte[] code) {
+		return null;
+    }
 	
 	
     
@@ -210,9 +215,9 @@ public final class MappingImpl implements Mapping {
     	return pclCollection;
     }
     
-	public PCLCollection getPCLCollection() {
+	/*public PCLCollection getPCLCollectionX() {
 		return pclCollection;
-	}
+	}*/
 
     
     
@@ -493,6 +498,11 @@ public final class MappingImpl implements Mapping {
 	
 	public boolean getDotNotationUpperCase(){
 		return ((ConfigImpl)config).getDotNotationUpperCase();
+	}
+
+	public void shrink() {
+		// MUST implement
+		
 	}
 
 }
