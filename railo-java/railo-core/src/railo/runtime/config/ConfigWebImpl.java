@@ -21,6 +21,7 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lock.KeyLock;
+import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -70,6 +71,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
     private DebuggerPool debuggerPool;
+	private final CFMLFactoryImpl factory; 
     
     
 
@@ -84,9 +86,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
      * @param cloneServer 
      */
     protected ConfigWebImpl(CFMLFactoryImpl factory,ConfigServerImpl configServer, ServletConfig config, Resource configDir, Resource configFile) {
-    	super(factory,configDir, configFile,configServer.getTLDs(),configServer.getFLDs());
+    	super(configDir, configFile,configServer.getTLDs(),configServer.getFLDs());
     	this.configServer=configServer;
         this.config=config;
+        this.factory=factory;
         factory.setConfig(this);
     	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
         
@@ -100,6 +103,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     
     public void reset() {
     	super.reset();
+    	factory.resetPageContext();
     	tagHandlerPool.reset();
     	contextLock=null;
     	baseComponentPage=null;
@@ -461,4 +465,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public String getServerApiKey() {
 			return configServer.getApiKey();
 	    }
+		
+		@Override
+		public CFMLFactory getFactory() {
+			return factory;
+		}
 }

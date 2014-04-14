@@ -1138,7 +1138,6 @@ public final class ConfigWebAdmin {
      * @param doc
      * @return
      */
-
     public static boolean fixLogging(ConfigServerImpl cs,ConfigImpl config,Document doc) {
     	
     	if(config.setVersion(doc)>=4.2D) return false;
@@ -1201,7 +1200,7 @@ public final class ConfigWebAdmin {
     	// requesttimeout
     	fixLogging(cs,doc,app, "requesttimeout","requesttimeout-log","requesttimeout-log-level",false,"{railo-config}/logs/requesttimeout.log");
     	
-    	setVersion(doc,Caster.toDoubleValue(config.getFactory().getEngine().getInfo().getVersionAsString().substring(0,3),4.2D));
+    	setVersion(doc,Caster.toDoubleValue(ConfigWebUtil.getEngine(config).getInfo().getVersionAsString().substring(0,3),4.2D));
     	
     	
     	return true;

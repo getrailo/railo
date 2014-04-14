@@ -176,7 +176,7 @@ public class ComponentListPackage implements Function {
 					className=packageName+"."+className;
 					
 					try {
-						Class<?> clazz = mapping.getClassLoaderForArchive().loadClass(className);
+						Class<?> clazz = mapping.getArchiveClass(className);
 						sourceName=ASMUtil.getSourceName(pc.getConfig(),clazz,true);
 					}
 					catch (Throwable t) {}

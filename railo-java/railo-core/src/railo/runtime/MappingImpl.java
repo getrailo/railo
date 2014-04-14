@@ -1,12 +1,15 @@
 package railo.runtime;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
@@ -14,6 +17,7 @@ import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.MappingUtil;
 import railo.commons.lang.PCLCollection;
 import railo.commons.lang.StringUtil;
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -25,6 +29,7 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
+import railo.runtime.osgi.OSGiUtil;
 import railo.runtime.type.util.ArrayUtil;
 
 /**  
@@ -46,7 +51,7 @@ public final class MappingImpl implements Mapping {
     private Resource archive;
     
     private boolean hasArchive;
-    private Config config;
+    private final Config config;
     private Resource classRootDirectory;
     private PageSourcePool pageSourcePool=new PageSourcePool();
     
@@ -63,6 +68,7 @@ public final class MappingImpl implements Mapping {
     private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
 	private int classLoaderMaxElements=1000;
+	
 	/**
 	 * @return the classLoaderMaxElements
 	 */
@@ -74,6 +80,8 @@ public final class MappingImpl implements Mapping {
 	private boolean ignoreVirtual;
 
 	private ApplicationListener appListener;
+
+	private Bundle archiveBundle;
 
     public MappingImpl(Config config, String virtual, String strPhysical,String strArchive, short inspect, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual,ApplicationListener appListener) {
@@ -126,14 +134,8 @@ public final class MappingImpl implements Mapping {
         // Archive
         archive=ConfigWebUtil.getExistingResource(cs,strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                 config);
-        if(archive!=null) {
-            try {
-                archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
-            } 
-            catch (Throwable t) {
-                archive=null;
-            }
-        }
+        if(archive!=null) loadArchive();
+        
         hasArchive=archive!=null;
 
         if(archive==null) this.physicalFirst=true;
@@ -144,10 +146,61 @@ public final class MappingImpl implements Mapping {
         //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
     }
     
-    @Override
-    public ClassLoader getClassLoaderForArchive() {
-        return archiveClassLoader;
+    private void loadArchive() {
+    	CFMLEngine engine = ConfigWebUtil.getEngine(config);
+    	Bundle bundle = engine.getCoreBundle();
+    	if(bundle!=null) {
+    		BundleContext bc = bundle.getBundleContext();
+    		try {
+				archiveBundle=OSGiUtil.installBundle(config.getLog("application"), bc, archive);
+			}
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (BundleException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	else {
+            try {
+                archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
+            } 
+            catch (Throwable t) {
+                archive=null;
+            }
+    	}
+	}
+	
+	@Override
+    public Class<?> getArchiveClass(String className) throws ClassNotFoundException {
+		if(archiveBundle!=null) return archiveBundle.loadClass(className);
+		else if(archiveClassLoader!=null) return archiveClassLoader.loadClass(className);
+		throw new ClassNotFoundException("there is no archive context to load "+className+" from it");
     }
+	
+	@Override
+    public Class<?> getArchiveClass(String className, Class<?> defaultValue) {
+		try {
+			if(archiveBundle!=null) 
+				return archiveBundle.loadClass(className);
+			else if(archiveClassLoader!=null) 
+				return archiveClassLoader.loadClass(className);
+		}
+		catch (ClassNotFoundException e) {}
+		
+		return defaultValue;
+    }
+	
+	@Override
+	public InputStream getArchiveResourceAsStream(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
     
     public PCLCollection touchPCLCollection() throws IOException {
     	
@@ -318,20 +371,14 @@ public final class MappingImpl implements Mapping {
         }
         // Archive
         if(getArchive()==null && strArchive!=null && strArchive.length()>0) {
-            try {
+            
                 archive=ConfigWebUtil.getExistingResource(cs,strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                         config);
                 if(archive!=null) {
-                    try {
-                        archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
-                    } 
-                    catch (MalformedURLException e) {
-                        archive=null;
-                    }
+                	loadArchive();
                 }
                 hasArchive=archive!=null;
-            } 
-            catch (IOException e) {}
+            
         }
     }
 
@@ -447,4 +494,5 @@ public final class MappingImpl implements Mapping {
 	public boolean getDotNotationUpperCase(){
 		return ((ConfigImpl)config).getDotNotationUpperCase();
 	}
+
 }

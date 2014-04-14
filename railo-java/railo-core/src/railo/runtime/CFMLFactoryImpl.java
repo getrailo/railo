@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspEngineInfo;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
@@ -72,6 +73,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 */
 	public CFMLFactoryImpl(CFMLEngineImpl engine,QueryCache queryCache) {
 		this.engine=engine; 
+		if(engine==null)print.ds();
 		this.queryCache=queryCache;
 	}
     

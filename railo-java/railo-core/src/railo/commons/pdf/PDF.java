@@ -19,6 +19,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.runtime.InfoImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
@@ -36,7 +37,7 @@ public class PDF {
 			//classLoader=new URLClassLoader(new URL[]{new File("/Users/mic/Downloads/java/pd4ml/fullversion/pd4ml.volume.310/lib/pd4ml.jar").toURL()},this.getClass().getClassLoader());
 			if(classLoader==null) {
 				Resource temp = config.getConfigDir().getRealResource("temp");
-				railo.Info info = config.getFactory().getEngine().getInfo();
+				railo.Info info = ConfigWebUtil.getEngine(config).getInfo();
 				Resource file=temp.getRealResource(Md5.getDigestAsString(info.getVersionAsString())+".lmdp");
 		        
 				if(!file.exists()){

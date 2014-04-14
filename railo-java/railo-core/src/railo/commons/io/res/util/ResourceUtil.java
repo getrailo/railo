@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -13,6 +14,7 @@ import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.IgnoreSystemFiles;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -1435,6 +1437,21 @@ public final class ResourceUtil {
 			
 		}
 		if(ArrayUtil.isEmpty(children)) dir.remove(true);
+	}
+	public static List<Resource> listRecursive(Resource res,ResourceFilter filter) {
+		List<Resource> list=new ArrayList<Resource>();
+		listRecursive(list, res,filter);
+		return list;
+	}
+	private static void listRecursive(List<Resource> list,Resource res,ResourceFilter filter) {
+		if(res==null) return;
+		if(filter==null || filter.accept(res)) list.add(res);
+		
+		if(!res.isDirectory()) return;
+		Resource[] children = res.listResources(DirectoryResourceFilter.FILTER);
+		if(children!=null)for(int i=0;i<children.length;i++){
+			listRecursive(children[i], filter);
+		}
 	}
 
 }

@@ -366,6 +366,8 @@
 	<data key="application.listenertypedescription">Please select the type of the listener</data>
 	<data key="application.allowurlrequesttimeoutdesc">When the URL parameter [RequestTimeout] is passed in the URL obey it</data>
 	<data key="application.listenermodedescription_curr2root">Looks for the file &quot;Application.cfc/Application.cfm&quot; from the current up to the webroot directory.</data>
+	<data key="application.listenermodedescription_currorroot">Looks for the file &quot;Application.cfc/Application.cfm&quot; in the current directory and in the webroot directory.</data>
+	
 	<data key="application.requesttimeout">Request timeout</data>
 	<data key="application.listenertypedescription_none">When a request is called no other initialization template will be invoked by Railo</data>
 	<data key="application.scriptprotectnone">Script-protect is not active</data>
@@ -384,6 +386,7 @@
 	<data key="application.listenertypedescription_mixed">Mixed handling. Railo looks for a file &quot;Application.cfm/OnRequestEnd.cfm&quot; as well as for the file &quot;Application.cfc&quot;</data>
 	<data key="application.listenermode_curr">Current</data>
 	<data key="application.listenermode_curr2root">Current to root (CFML default)</data>
+	<data key="application.listenermode_currorroot">Current or root</data>
 	<data key="application.listenermodedescription">Defines where Railo looks for the files &quot;Application.cfc/Application.cfm&quot;. In case of type &quot;none&quot; this setting is meaningless.</data>
 	<data key="application.missingscriptprotect">Please select a value for script-protect</data>
 	<data key="application.listenermodedescription_root">Looks for the file &quot;Application.cfc/Application.cfm&quot; only in the webroot .</data>

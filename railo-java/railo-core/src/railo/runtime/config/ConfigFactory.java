@@ -11,7 +11,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -58,9 +57,6 @@ public abstract class ConfigFactory {
 	 * @throws IOException
 	 */
 	static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
-		print.e("len1:"+xmlFile);
-		print.e("len1:"+xmlFile.length());
-		print.e("len1:"+xmlFile.exists());
 		InputStream is = null;
 		try {
 			return _loadDocument(is = IOUtil.toBufferedInputStream(xmlFile.getInputStream()));

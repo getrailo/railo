@@ -38,9 +38,8 @@ public class BundleLoader {
 	 * @throws BundleBuilderFactoryException 
 	 */
 	public static Bundle loadBundles(CFMLEngineFactory engFac, File cacheRootDir, File jarDirectory, File rc, Bundle old) throws IOException, BundleException {
-		
 		JarFile jf = new JarFile(rc);// TODO this should work in any case, but we should still improve this code
-		
+		//new Throwable().printStackTrace();
 	// Manifest
 		Manifest mani =  jf.getManifest();
 		if(mani==null) throw new IOException("railo core ["+rc+"] is invalid, there is no META-INF/MANIFEST.MF File");
@@ -59,19 +58,18 @@ public class BundleLoader {
 		// org.osgi.framework.storage.clean
 		String storageClean = unwrap(defProp.getProperty("org.osgi.framework.storage.clean"));
 		if(Util.isEmpty(storageClean)) storageClean=Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT;
-		CFMLEngineFactory.log(Log.LEVEL_INFO, "org.osgi.framework.storage.clean:"+storageClean);
+		engFac.log(Log.LEVEL_INFO, "org.osgi.framework.storage.clean:"+storageClean);
 		
 		// org.osgi.framework.bootdelegation
 		String bootDelegation = unwrap(defProp.getProperty("org.osgi.framework.bootdelegation"));
 		if(Util.isEmpty(bootDelegation)) throw new IOException("[org.osgi.framework.bootdelegation] setting is necessary in file {Railo-Core}/default.properties");
-		CFMLEngineFactory.log(Log.LEVEL_INFO, "org.osgi.framework.bootdelegation:"+bootDelegation);
+		engFac.log(Log.LEVEL_INFO, "org.osgi.framework.bootdelegation:"+bootDelegation);
 		
 		// org.osgi.framework.bundle.parent
 		String parentClassLoader = unwrap(defProp.getProperty("org.osgi.framework.bundle.parent"));
 		if(Util.isEmpty(parentClassLoader)) parentClassLoader=Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK;
 		else parentClassLoader=BundleUtil.toFrameworkBundleParent(parentClassLoader);
-		
-		CFMLEngineFactory.log(Log.LEVEL_INFO, "org.osgi.framework.bundle.parent:"+parentClassLoader);
+		engFac.log(Log.LEVEL_INFO, "org.osgi.framework.bundle.parent:"+parentClassLoader);
 
 		// felix.log.level
 		int logLevel=1; // 1 = error, 2 = warning, 3 = information, and 4 = debug
@@ -84,7 +82,7 @@ public class BundleLoader {
 			else if("debug".equalsIgnoreCase(strLogLevel)) 
 				logLevel=4;
 		}
-		CFMLEngineFactory.log(Log.LEVEL_INFO, "felix.log.level (1 = error, 2 = warning, 3 = information, and 4 = debug):"+logLevel);
+		engFac.log(Log.LEVEL_INFO, "felix.log.level (1 = error, 2 = warning, 3 = information, and 4 = debug):"+logLevel);
 		
 		// resuse existing BundleContext if possible
 		BundleContext bc;
@@ -94,14 +92,19 @@ public class BundleLoader {
 		}
 		else bc = engFac.getFelix(cacheRootDir,storageClean,bootDelegation,parentClassLoader,logLevel).getBundleContext();
 		
-		// get jars needed for that core
+		// get bundle needed for that core
 		String rb = attrs.getValue("Require-Bundle");
 		if(Util.isEmpty(rb)) {
 			throw new IOException("railo core ["+rc+"] is invalid, no Require-Bundle defintion found in the META-INF/MANIFEST.MF File");
 		}
 		
+		// get fragments needed for that core (Railo specific Key)
+		String rbf = attrs.getValue("Require-Bundle-Fragment");
+		
+		
 		// load Required/Available Bundles
 		Map<String, String> requiredBundles=readRequireBundle(rb); // <bundle-name,bundle-version>
+		Map<String, String> requiredBundleFragments=readRequireBundle(rbf); // <bundle-name,bundle-version>
 		Map<String, File> availableBundles = loadAvailableBundles(jarDirectory);
 		
 		// Add Required Bundles
@@ -115,15 +118,20 @@ public class BundleLoader {
 			id=e.getKey()+"|"+e.getValue();
 			f = availableBundles.get(id);
 			
-			if(f==null) {
-				f=engFac.downloadBundle(e.getKey(), e.getValue());
-				// availableBundles.put(id, f); 
-			}
-			/*if(f==null) {
-				throw new IOException("there is no bundle ["+e.getKey()+";bundle-version="+e.getValue()+"] available"); // MUST load bundle from somewhere
-			}*/
+			if(f==null) f=engFac.downloadBundle(e.getKey(), e.getValue());
+			bundles.add(BundleUtil.addBundle(engFac,bc, f));
+		}
+		
+		// Add Required Bundle Fragments
+		it = requiredBundleFragments.entrySet().iterator();
+		List<Bundle> fragments=new ArrayList<Bundle>();
+		while(it.hasNext()){
+			e = it.next();
+			id=e.getKey()+"|"+e.getValue();
+			f = availableBundles.get(id);
 			
-			bundles.add(BundleUtil.addBundle(bc,id, f, false));
+			if(f==null) f=engFac.downloadBundle(e.getKey(), e.getValue());
+			fragments.add(BundleUtil.addBundle(engFac,bc, f));
 		}
 		
 		/* list existing bundles
@@ -134,11 +142,10 @@ public class BundleLoader {
 			
 		// Add Railo core Bundle
 		Bundle bundle;
-		bundles.add(bundle=BundleUtil.addBundle(bc,"railo.core", rc, false));
+		bundles.add(bundle=BundleUtil.addBundle(engFac,bc,rc));
 		
 		// Start the bundles
-		BundleUtil.start(bundles);
-		//bundle.start(); // only start main bundle, not fragment bundles
+		BundleUtil.start(engFac,bundles);
 		
 		return bundle;
 	}
@@ -155,15 +162,18 @@ public class BundleLoader {
 		Attributes attrs;
 		for(int i=0;i<jars.length;i++){
 			if(!jars[i].isFile() || !jars[i].getName().endsWith(".jar")) continue;
-			jf=new JarFile(jars[i]);
-			attrs = jf.getManifest().getMainAttributes();
-			symbolicName=attrs.getValue("Bundle-SymbolicName");
-			version=attrs.getValue("Bundle-Version");
-			if(Util.isEmpty(symbolicName))
-				throw new IOException("OSGi bundle ["+jars[i]+"] is invalid, {Railo-Core}META-INF/MANIFEST.MF does not contain a \"Bundle-SymbolicName\"");
-			if(Util.isEmpty(version))
-				throw new IOException("OSGi bundle ["+jars[i]+"] is invalid, {Railo-Core}META-INF/MANIFEST.MF does not contain a \"Bundle-Version\"");
-			rtn.put(symbolicName+"|"+version, jars[i]);
+			try{
+				jf=new JarFile(jars[i]);
+				attrs = jf.getManifest().getMainAttributes();
+				symbolicName=attrs.getValue("Bundle-SymbolicName");
+				version=attrs.getValue("Bundle-Version");
+				if(Util.isEmpty(symbolicName))
+					throw new IOException("OSGi bundle ["+jars[i]+"] is invalid, {Railo-Core}META-INF/MANIFEST.MF does not contain a \"Bundle-SymbolicName\"");
+				if(Util.isEmpty(version))
+					throw new IOException("OSGi bundle ["+jars[i]+"] is invalid, {Railo-Core}META-INF/MANIFEST.MF does not contain a \"Bundle-Version\"");
+				rtn.put(symbolicName+"|"+version, jars[i]);
+			}
+			catch(Throwable t){}
 		}
 		return rtn;
 	}

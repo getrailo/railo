@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspFactory;
 
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.query.QueryCache;
 
@@ -82,6 +83,9 @@ public abstract class CFMLFactory extends JspFactory {
 	 * @return the servlet
 	 */
 	public abstract HttpServlet getServlet();
+
+
+	public abstract CFMLEngine getEngine();
 
 
 }

@@ -10,9 +10,11 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -23,11 +25,17 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.felix.framework.Felix;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import railo.Version;
 import railo.commons.io.log.Log;
@@ -362,9 +370,13 @@ framework.start();
 		return felix;
 	}
 
+
+    public void log(Throwable t) {
+    	System.err.println(t.getClass().getName()+":"+t.getMessage());
+    }
 	
 
-	public static void log(int level, String msg) {
+	public void log(int level, String msg) {
 		//System.out.println(msg);
 		System.err.println(msg);
 	}
@@ -509,28 +521,51 @@ framework.start();
     	File jarDir=getJarDirectory();
 	    File jar=new File(jarDir,symbolicName+"-"+symbolicVersion.replace('.', '-')+(".jar"));
         
-    	
     	URL updateProvider = getUpdateLocation();
     	URL updateUrl=new URL(updateProvider,"/rest/update/provider/download/"+symbolicName+"/"+symbolicVersion+"/?ioid={ioid}");
-        System.out.println("update-loc:"+updateUrl);
-        if(jar.createNewFile()) {
-            copy((InputStream)updateUrl.getContent(),new FileOutputStream(jar));
+        
+    	log(Log.LEVEL_INFO, "download bundle ["+symbolicName+":"+symbolicVersion+"] from "+updateUrl);
+    	
+    	int code;
+    	HttpURLConnection conn;
+    	try {
+	    	conn=(HttpURLConnection) updateUrl.openConnection();
+	    	conn.setRequestMethod("GET");
+	    	conn.connect();
+	    	code = conn.getResponseCode();
+    	}
+    	catch(UnknownHostException e){
+    		log(e);
+    		throw e;
+    	}
+    	
+    	if(code!=200) {
+    		String msg = "Railo is not able do download the bundle for ["+symbolicName+"] from "+updateUrl+", please donwload manually and copy to ["+jarDir+"]";
+    		log(Log.LEVEL_ERROR, msg);
+    	    throw new IOException(msg);
+    	}
+        	
+        //if(jar.createNewFile()) {	
+        	copy((InputStream)conn.getContent(),new FileOutputStream(jar));
             return jar;
-        }
+        /*}
         else {
         	throw new IOException("File ["+jar.getName()+"] already exists, won't copy new one");
-        }
+        }*/
     }
     
     private File downloadCore() throws IOException, ServletException {
     	URL updateProvider = getUpdateLocation();
     	
     	// MUST get IOID
-        URL infoUrl=new URL(updateProvider,"/rest/update/provider/update-for/"+version+"?ioid={ioid}");
+    	//URL infoUrl=new URL(updateProvider,"/rest/update/provider/download/"+version+"?ioid={ioid}");
+    	URL infoUrl=new URL(updateProvider,"/rest/update/provider/update-for/"+toStringVersion(version)+"?ioid={ioid}");
         
         tlog("Check for update at "+updateProvider);
         
         String strAvailableVersion = toString((InputStream)infoUrl.getContent()).trim();
+        tlog("recieve available update version from update provider ("+strAvailableVersion+") ");
+        
         strAvailableVersion=CFMLEngineFactory.removeQuotes(strAvailableVersion,true);
         CFMLEngineFactory.removeQuotes(strAvailableVersion,true); // not necessary but does not hurt
         
@@ -556,14 +591,42 @@ framework.start();
 	}
 
 	private URL getUpdateLocation() throws MalformedURLException {
-		URL updateProvider=null;
-		try {
-			updateProvider = getEngine().getUpdateLocation();
-		} 
-		catch (ServletException e) {}
+		URL location = engine==null?null: engine.getUpdateLocation();
 		
-        if(updateProvider==null)updateProvider=new URL("http://www.getrailo.org");
-        return updateProvider;
+		// read location directly from xml
+		if(location==null) {
+			InputStream is=null;;
+			try{
+				File xml = new File(getResourceRoot(),"context/railo-server.xml");
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(xml);
+				Element root = doc.getDocumentElement();
+				
+				NodeList children = root.getChildNodes();
+				
+				for (int i = children.getLength()-1; i >=0; i--) {
+					Node node = children.item(i);
+					if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("update")) {
+						String loc=((Element)node).getAttribute("location");
+						if(!Util.isEmpty(loc)){
+							location=new URL(loc);
+						}
+					}
+				}
+			}
+			catch(Throwable t){t.printStackTrace();}
+			finally{
+				CFMLEngineFactory.closeEL(is);
+			}
+		}
+		
+		// should never happen
+		if(location==null)location=new URL("http://www.getrailo.org"); // MUST from server.xml
+        
+		System.out.println("location::"+location);
+		
+		return location;
 	}
 
 	/**
@@ -818,6 +881,8 @@ framework.start();
     	out.write(""+obj+"\n");   
     	out.flush();
     }
+    
+    
     
     private class UpdateChecker extends Thread {
         private CFMLEngineFactory factory;

@@ -180,7 +180,8 @@ public final class PageSourceImpl implements PageSource, Sizeable {
         
         try {
             synchronized(this) {
-                Class clazz=mapping.getClassLoaderForArchive().loadClass(getClazz());
+                Class clazz=mapping.getArchiveClass(getClazz());
+                
                 this.page=page=newInstance(clazz);
                 page.setPageSource(this);
                 //page.setTimeCreated(System.currentTimeMillis());
@@ -514,6 +515,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 		return className;
 	}
 	
+	
 	/**
 	 * @return returns the a classname matching to filename (Example: test_cfm)
 	 */
@@ -647,7 +649,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
         try {
         	String clazz = getClazz();
         	if(clazz==null) return getArchiveFile().exists();
-        	mapping.getClassLoaderForArchive().loadClass(clazz);
+        	mapping.getArchiveClass(clazz);
         	return true;
         } 
         catch(ClassNotFoundException cnfe){
@@ -671,7 +673,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
             if(name.length()>0)name.append("/");
             name.append(getFileName());
             
-            return mapping.getClassLoaderForArchive().getResourceAsStream(name.toString());
+            return mapping.getArchiveResourceAsStream(name.toString());
         }
         else {
             return null;

@@ -13,6 +13,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import railo.Info;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.compress.ZipUtil;
@@ -43,7 +44,8 @@ public class DeployHandler {
 	public static void deploy(Config config){
 		synchronized (config) {
 			Resource dir = getDeployDirectory(config);
-			railo.Info info = config.getFactory().getEngine().getInfo();
+			railo.Info info=ConfigWebUtil.getEngine(config).getInfo();
+			
 			int ma = info.getMajorVersion();
 			int mi = info.getMinorVersion();
 			if(!dir.exists()) {
@@ -216,8 +218,8 @@ public class DeployHandler {
         
         
         // check core version
-		railo.Info info = config.getFactory().getEngine().getInfo();
-        if(minCoreVersion>info.getVersionAsInt()) {
+        Info info = ConfigWebUtil.getEngine(config).getInfo();
+		if(minCoreVersion>info.getVersionAsInt()) {
 			logger.log(Log.LEVEL_ERROR,"extension", "cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
 			moveToFailedFolder(ext);
 			return;

@@ -22,10 +22,11 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Pair;
 import railo.loader.engine.CFMLEngine;
-import railo.runtime.CFMLFactoryImpl;
+import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -260,7 +261,10 @@ public final class CreationImpl implements Creation,Serializable {
 	@Override
 	public PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out) {
 		Config config = ThreadLocalPageContext.getConfig();
-		return (PageContext) ((CFMLFactoryImpl)config.getFactory()).getPageContext(config.getFactory().getServlet(), req, rsp, null, false, -1, false);
+		if(!(config instanceof ConfigWeb)) throw new RuntimeException("need a web context to create a PageContext");
+		CFMLFactory factory = ((ConfigWeb)config).getFactory();
+		
+		return (PageContext) factory.getPageContext(factory.getServlet(), req, rsp, null, false, -1, false);
 	}
 
 	@Override

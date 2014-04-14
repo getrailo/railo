@@ -13,6 +13,7 @@ import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -142,7 +143,11 @@ public final class ClassUtil {
 		
 		
 		try {
-			if(cl==null)return Class.forName(className.trim());
+			if(cl==null){
+				print.e("Class.forName("+className+")");
+				return Class.forName(className.trim());
+			}
+			
 			return cl.loadClass(className.trim());
 			
 		}

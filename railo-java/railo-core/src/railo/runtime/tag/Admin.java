@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -25,7 +27,7 @@ import org.xml.sax.SAXException;
 
 import railo.commons.collection.MapFactory;
 import railo.commons.db.DBUtil;
-import railo.commons.digest.MD5;
+import railo.commons.digest.HashUtil;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -118,6 +120,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.osgi.BundleBuilderFactory;
 import railo.runtime.osgi.BundleFile;
+import railo.runtime.osgi.ManifestUtil;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.rest.RestUtil;
 import railo.runtime.security.SecurityManager;
@@ -143,6 +146,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterEntryImpl;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 
@@ -759,7 +763,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doGetUpdate();
         else if(check("listPatches",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) listPatches();
         else if(check("needNewJars",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) needNewJars();
-        else if(check("updateJars",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateJars();
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
         else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
@@ -803,10 +806,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doRunUpdate() throws PageException {
-    	try{
-    		doUpdateJars();
-    	}
-    	catch(Throwable t){}
     	admin.runUpdate(password);
         adminSync.broadcast(attributes, config);
     }
@@ -866,54 +865,42 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		else  {
     			filter=new ExtensionResourceFilter(new String[]{"class","MF"},true,true);
     		}
+    		String id = HashUtil.create64BitHashAsString(mapping.getStrPhysical(), Character.MAX_RADIX);
+    		//String id = MD5.getDigestAsString(mapping.getStrPhysical());
+    		
+    		String type;
+    		if(mappingType==MAPPING_CFC)type="cfc";
+    		else if(mappingType==MAPPING_CT)type="ct";
+    		else type="regular";
+    		
+    		String token = HashUtil.create64BitHashAsString(System.currentTimeMillis()+"", Character.MAX_RADIX);
+    		
     		
     		
     		// create manifest
-    		StringBuilder manifest=new StringBuilder();
+    		Manifest mf=new Manifest();
+    		//StringBuilder manifest=new StringBuilder();
     		
-    		// id
-    		manifest.append("mapping-id: \"");
-			manifest.append(MD5.getDigestAsString(mapping.getStrPhysical()));
-    		manifest.append("\"\n");
-    		
-    		
-    		manifest.append("mapping-type: \"");
-    		if(mappingType==MAPPING_CFC)manifest.append("cfc");
-    		else if(mappingType==MAPPING_CT)manifest.append("ct");
-    		else manifest.append("regular");
-    		manifest.append("\"\n");
-    		
-    		manifest.append("mapping-virtual-path: \"");
-    		manifest.append(mapping.getVirtual());
-        	manifest.append("\"\n");
-    		
-    		// Hidden
-    		manifest.append("mapping-hidden: ");
-			manifest.append(mapping.isHidden());
-    		manifest.append("\n");
-    		// Physical First
-    		manifest.append("mapping-physical-first: ");
-			manifest.append(mapping.isPhysicalFirst());
-    		manifest.append("\n");
-    		// Readonly
-    		manifest.append("mapping-readonly: ");
-			manifest.append(mapping.isReadonly());
-    		manifest.append("\n");
-    		// Top Level
-    		manifest.append("mapping-top-level: ");
-			manifest.append(mapping.isTopLevel());
-    		manifest.append("\n");
-    		
-    		// Trusted
-    		manifest.append("mapping-inspect: \"");
-			manifest.append(ConfigWebUtil.inspectTemplate(mapping.getInspectTemplateRaw(), ""));
-			manifest.append("\"\n");
-    		
-    		
+    		// Write OSGi specific stuff
+    		Attributes attrs = mf.getMainAttributes();
+    		attrs.putValue("Bundle-ManifestVersion", Caster.toString(BundleBuilderFactory.MANIFEST_VERSION));
+    		attrs.putValue("Bundle-SymbolicName",id);	
+    		attrs.putValue("Bundle-Name",ListUtil.trim(mapping.getVirtual().replace('/', '.'),"."));
+    		attrs.putValue("Bundle-Description","this is a "+type+" mapping generated by Railo.");
+    		attrs.putValue("Bundle-Version","1.0.0."+token);
 
-    		
+    		// Mapping
+    		attrs.putValue("mapping-id",id);
+    		attrs.putValue("mapping-type",type);
+    		attrs.putValue("mapping-virtual-path",mapping.getVirtual());
+    		attrs.putValue("mapping-hidden",Caster.toString(mapping.isHidden()));
+    		attrs.putValue("mapping-physical-first",Caster.toString(mapping.isPhysicalFirst()));
+    		attrs.putValue("mapping-readonly",Caster.toString(mapping.isReadonly()));
+    		attrs.putValue("mapping-top-level",Caster.toString(mapping.isTopLevel()));
+    		attrs.putValue("mapping-inspect",ConfigWebUtil.inspectTemplate(mapping.getInspectTemplateRaw(), ""));
+			    		
     		mani.createFile(true);
-    		IOUtil.write(mani, manifest.toString(), "UTF-8", false);
+    		IOUtil.write(mani, ManifestUtil.toString(mf, 100, null, null), "UTF-8", false);
     		
 		// source files
     		Resource[] sources;
@@ -2394,17 +2381,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		}
     }
 
-    private void doUpdateJars() throws PageException  {
-    	try {
-			JarLoader.download(pageContext.getConfig(), UPDATE_JARS);
-		} catch (IOException e) {
-			throw Caster.toPageException(e);
-		}
-    	
-    }
-    
-    
-    
     private void doGetMailServers() throws PageException {
         
         
@@ -4463,29 +4439,47 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doBuildBundle() throws PageException {
     	String name=getString("admin",action,"name");
     	String symName=getString("symbolicname",null);
-    	String activator=getString("activator",null);
-    	String version=getString("version",null);
-    	String description=getString("description",null);
-    	String classPath=getString("classPath",null);
-    	String dynamicImportPackage=getString("dynamicimportpackage",null);
-    	String importPackage=getString("importpackage",null);
-    	String exportPackage=getString("exportpackage",null);
-    	String fragmentHost=getString("fragmentHost",null);
-    	String jars=getString("admin",action,"jars");
     	boolean ignoreExistingManifest=getBoolV("ignoreExistingManifest",false);
     	Resource dest=ResourceUtil.toResourceNotExisting(pageContext, getString("admin",action,"destination"));
     	
-    	BundleBuilderFactory factory=new BundleBuilderFactory(name, StringUtil.isEmpty(symName,true)?null:symName.trim(),ignoreExistingManifest);
     	
+    	// get jar
+    	String strJar=getString("admin",action,"jar");
+    	if(StringUtil.isEmpty(strJar,true)) throw new ApplicationException("missing valid jar path");
+    	Resource jar = ResourceUtil.toResourceExisting(pageContext,strJar.trim());
+    	
+    	
+    	BundleBuilderFactory factory;
+		try {
+			factory = new BundleBuilderFactory(jar, name, StringUtil.isEmpty(symName,true)?null:symName.trim(),ignoreExistingManifest);
+		}
+		catch (IOException ioe) {
+			throw Caster.toPageException(ioe);
+		}
+    	
+    	String activator=getString("activator",null);
     	if(!StringUtil.isEmpty(activator,true))factory.setActivator(activator.trim());
+    	
+    	String version=getString("version",null);
     	if(!StringUtil.isEmpty(version,true))factory.setBundleVersion(version.trim());
+    	
+    	String description=getString("description",null);
     	if(!StringUtil.isEmpty(description,true))factory.setDescription(description.trim());
+    	
+    	String classPath=getString("classPath",null);
     	if(!StringUtil.isEmpty(classPath,true))factory.addClassPath(classPath.trim());
+    	
+    	String dynamicImportPackage=getString("dynamicimportpackage",null);
     	if(!StringUtil.isEmpty(dynamicImportPackage,true))factory.addDynamicImportPackage(dynamicImportPackage.trim());
+    	
+    	String importPackage=getString("importpackage",null);
     	if(!StringUtil.isEmpty(importPackage,true))factory.addImportPackage(importPackage.trim());
+    	
+    	String exportPackage=getString("exportpackage",null);
     	if(!StringUtil.isEmpty(exportPackage,true))factory.addExportPackage(exportPackage.trim());
+    	String fragmentHost=getString("fragmentHost",null);
     	if(!StringUtil.isEmpty(fragmentHost,true))factory.addFragmentHost(fragmentHost.trim());
-    	if(!StringUtil.isEmpty(jars,true))factory.addJars(pageContext,jars);
+    	
     	
     	
     	try {
@@ -4693,7 +4687,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		}
 		// Web
 		else {
-			CFMLFactoryImpl factory = (CFMLFactoryImpl) config.getFactory();
+			CFMLFactoryImpl factory = (CFMLFactoryImpl) ((ConfigWeb)config).getFactory();
 			pageContext.setVariable(getString("admin",action,"returnVariable"),
 					factory.getInfo());
 		}

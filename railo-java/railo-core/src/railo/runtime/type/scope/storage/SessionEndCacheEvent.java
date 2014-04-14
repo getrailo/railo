@@ -4,6 +4,7 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEventListener;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.listener.ApplicationListener;
@@ -32,7 +33,7 @@ public class SessionEndCacheEvent implements CacheEventListener {
 				
 		Config config = ThreadLocalPageContext.getConfig();
 		
-		_doEnd((CFMLFactoryImpl) config.getFactory(), appName, cfid);
+		_doEnd((CFMLFactoryImpl)( ((ConfigWeb)config).getFactory()), appName, cfid);
 	}
 	
 	private void _doEnd(CFMLFactoryImpl factory,String appName, String cfid) {

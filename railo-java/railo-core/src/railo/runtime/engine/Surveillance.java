@@ -64,17 +64,17 @@ import railo.runtime.type.util.KeyConstants;
 		//infoResources(server,cs);
 		// web
 		if(isConfigWeb){
-			_getInfoMemory(web, server,config);
+			_getInfoMemory(web, server,(ConfigWeb) config);
 		}
 		else  {
 			ConfigWeb[] configs = ((ConfigServer) config).getConfigWebs();
 			for(int i=0;i<configs.length;i++){
-				_getInfoMemory(web,server, (ConfigImpl) configs[i]);	
+				_getInfoMemory(web,server, configs[i]);	
 			}
 		}
 	}
 
-	private static void _getInfoMemory(Struct web, Struct server, ConfigImpl config) throws PageException {
+	private static void _getInfoMemory(Struct web, Struct server, ConfigWeb config) throws PageException {
 		DoubleStruct sct = new DoubleStruct();
 		infoMapping(sct,config);
 		//infoResources(sct,config);
@@ -109,7 +109,7 @@ import railo.runtime.type.util.KeyConstants;
 			mapping=(MappingImpl) mappings[i];
 			
 			// archive classloader
-			size=SizeOf.size(mapping.getClassLoaderForArchive());
+			size=mapping.getArchive()!=null?mapping.getArchive().length():0;
 			sct.set("archiveClassLoader", Caster.toDouble(size));
 			
 			// physical classloader
@@ -129,7 +129,7 @@ import railo.runtime.type.util.KeyConstants;
 		}
 	}
 
-	private static void infoScopes(Struct web,Struct server,ConfigImpl config) throws PageException {
+	private static void infoScopes(Struct web,Struct server,ConfigWeb config) throws PageException {
 		ScopeContext sc = ((CFMLFactoryImpl)config.getFactory()).getScopeContext();
 		DoubleStruct webScopes=new DoubleStruct();
 		DoubleStruct srvScopes=new DoubleStruct();

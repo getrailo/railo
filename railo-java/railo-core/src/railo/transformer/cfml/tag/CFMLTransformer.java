@@ -15,6 +15,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
@@ -242,7 +243,7 @@ public final class CFMLTransformer {
 
 		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(factory,source,source.getPhyscalFile(),source.getFullClassName(),config.getFactory().getEngine().getInfo().getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
+		Page page=new Page(factory,source,source.getPhyscalFile(),source.getFullClassName(),ConfigWebUtil.getEngine(config).getInfo().getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
 		TagData data = new TagData(factory,_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;

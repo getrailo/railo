@@ -11,7 +11,6 @@ import java.util.TimeZone;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
-import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -596,8 +595,6 @@ public interface Config {
 	public String getDefaultEncoding();
 	
 	public ResourceProvider getDefaultResourceProvider();
-	
-	public CFMLFactory getFactory();
 	
 	public boolean isExtensionEnabled();
 

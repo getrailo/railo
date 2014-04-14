@@ -48,15 +48,15 @@ public class MappingUtil {
 	private static PageSource searchArchive(Mapping mapping, String name, boolean onlyCFC) {
 		Resource archive = mapping.getArchive();
 		if(archive!=null && archive.isFile()) {
-			ClassLoader cl = mapping.getClassLoaderForArchive();
+			//ClassLoader cl = mapping.getClassLoaderForArchive();
 			ZipInputStream zis = null;
 			try{
 				zis = new ZipInputStream(archive.getInputStream());
 				ZipEntry entry;
-				Class clazz;
+				Class<?> clazz;
 				while((entry=zis.getNextEntry())!=null){
 					if(entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
-					clazz=toClass(cl,entry.getName());
+					clazz=mapping.getArchiveClass(toClassName(entry.getName()),null);
 					
 					if(clazz==null) continue;
 					Pair<String, String> nameAndPath = ASMUtil.getSourceNameAndPath(mapping.getConfig(),clazz,onlyCFC);
@@ -82,13 +82,8 @@ public class MappingUtil {
 		return null;
 	}
 	
-	private static Class toClass(ClassLoader cl,String name) {
-		name=name.replace('/', '.').substring(0,name.length()-6);
-		try {
-			return cl.loadClass(name);
-		}
-		catch (ClassNotFoundException e) {}
-		return null;
+	private static String toClassName(String name) {
+		return name.replace('/', '.').substring(0,name.length()-6);
 	}
 
 	

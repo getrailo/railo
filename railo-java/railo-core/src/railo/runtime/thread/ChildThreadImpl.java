@@ -211,7 +211,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	            }
             }
             
-			((ConfigImpl)pc.getConfig()).getFactory().releasePageContext(pc);
+			pc.getConfig().getFactory().releasePageContext(pc);
 			pc=null;
 			if(oldPc!=null)ThreadLocalPageContext.register(oldPc);
 		}

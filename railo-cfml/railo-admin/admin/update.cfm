@@ -7,6 +7,7 @@
 	<cfargument name="update">
 	<cfset var http="">
 	<cftry>
+		<cfset systemOutput("HEREEE",true,true)>
 		<cfhttp 
 			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 			method="get" resolveurl="no" result="http">

@@ -23,7 +23,9 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.log4j.Level;
+import org.hsqldb.jdbcDriver;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,6 +33,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
@@ -1815,6 +1818,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 		 * ,DataSource.ALLOW_ALL, new StructImpl() );
 		 */
 		// Default query of query DB
+		ReferenceMap m = new ReferenceMap();
+		print.e(m);
+		Class clazz=jdbcDriver.class;
+		print.e(clazz);
 		setDatasource(config, datasources, QOQ_DATASOURCE_NAME, "org.hsqldb.jdbcDriver", "", "", -1, "jdbc:hsqldb:.", "sa", "", -1, -1, 60000, true, true, DataSource.ALLOW_ALL,
 				false, false, null, new StructImpl(), "");
 
@@ -2022,10 +2029,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 					else
 						cacheClazz = ClassUtil.loadClass(config.getClassLoader(), clazzName);
 
-					
-					
-					
-					
 					cc = new CacheConnectionImpl(config, name, cacheClazz, custom, Caster.toBooleanValue(
 							eConnection.getAttribute("read-only"), false), Caster.toBooleanValue(eConnection.getAttribute("storage"), false));
 					if (!StringUtil.isEmpty(name)) {

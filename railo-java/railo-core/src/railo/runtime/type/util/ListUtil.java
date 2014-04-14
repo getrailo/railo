@@ -1593,4 +1593,13 @@ public final class ListUtil {
 		return false;
 	}
 
+	public static List<String> toList(Set<String> set) {
+		Iterator<String> it = set.iterator();
+		List<String> list=new ArrayList<String>();
+		while(it.hasNext()){
+			list.add(it.next());
+		}
+		return list;
+	}
+
 }

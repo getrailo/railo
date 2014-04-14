@@ -8,7 +8,6 @@ import java.util.concurrent.Callable;
 import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
@@ -43,7 +42,7 @@ public abstract class CallerResponseStreamResult implements Callable<String> {
 			
 			pc.getOut().flush(); //make sure content is flushed
 			
-			((ConfigImpl)pc.getConfig()).getFactory().releasePageContext(pc);
+			pc.getConfig().getFactory().releasePageContext(pc);
 				str=IOUtil.toString((new ByteArrayInputStream(baos.toByteArray())), cs); // TODO add support for none string content
 			} 
 			catch (Throwable e) {

@@ -1,5 +1,7 @@
 package railo.runtime;
 
+import java.io.InputStream;
+
 import railo.commons.io.res.Resource;
 import railo.runtime.config.Config;
 import railo.runtime.dump.Dumpable;
@@ -9,11 +11,11 @@ import railo.runtime.dump.Dumpable;
  * interface of the mapping definition
  */
 public interface Mapping  extends Dumpable{
+	
+	public Class<?> getArchiveClass(String className) throws ClassNotFoundException;
+	public Class<?> getArchiveClass(String className, Class<?> defaultValue);
 
-    /**
-     * @return returns the archiveClassLoader
-     */
-    public abstract ClassLoader getClassLoaderForArchive();
+	public InputStream getArchiveResourceAsStream(String string);
 
     /**
      * @return Returns the physical.

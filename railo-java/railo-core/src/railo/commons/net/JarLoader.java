@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import railo.Info;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -18,6 +19,7 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 
 public class JarLoader {
 
@@ -103,7 +105,8 @@ public class JarLoader {
 	private static URL toURL(Config config, String jarName) throws MalformedURLException {
 		URL hostUrl=config.getUpdateLocation();
         if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
-        return new URL(hostUrl,"/railo/remote/jars/"+(config.getFactory().getEngine().getInfo().getMajorVersion()+"."+config.getFactory().getEngine().getInfo().getMinorVersion())+"/"+jarName);
+        Info info = ConfigWebUtil.getEngine(config).getInfo();
+        return new URL(hostUrl,"/railo/remote/jars/"+(info.getMajorVersion()+"."+info.getMinorVersion())+"/"+jarName);
 	}
 
 

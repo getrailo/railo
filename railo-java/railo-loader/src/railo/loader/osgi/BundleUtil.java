@@ -14,54 +14,82 @@ import org.osgi.framework.Constants;
 
 import railo.commons.io.log.Log;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.Util;
 
 public class BundleUtil {
 	/*public static Bundle addBundlex(BundleContext context,File bundle, boolean start) throws IOException, BundleException {
     	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
     }*/
 
-	public static Bundle addBundle(BundleContext context,String id,File bundle, boolean start) throws IOException, BundleException {
-		CFMLEngineFactory.log(Log.LEVEL_INFO,"add bundle:"+id);
+	public static Bundle addBundle(CFMLEngineFactory factory,BundleContext context,File bundle) throws IOException, BundleException {
+		factory.log(Log.LEVEL_INFO,"add bundle:"+bundle);
     	InputStream is = new FileInputStream(bundle);
 		try {
 			Bundle b = context.installBundle(bundle.getAbsolutePath(),is);
-			if(start){
-        		CFMLEngineFactory.log(Log.LEVEL_INFO,"start bundle:"+id);
-            	b.start();
-        	}
+			//if(start)start(factory,b);
         	return b;
         }
         finally {
         	CFMLEngineFactory.closeEL(is);
         }
 	}
-
-/*
-	public static Bundle addBundle(BundleContext context,Resource bundle, boolean start) throws IOException, BundleException {
-    	return addBundle(context,bundle.getAbsolutePath(),bundle,start);
-    }
 	
-	public static Bundle addBundle(BundleContext context,String id,Resource bundle, boolean start) throws IOException, BundleException {
-		
-		InputStream is = bundle.getInputStream();
-		try {
-        	Bundle b = context.installBundle(id,is);
-        	if(start)b.start();
-        	return b;
-        }
-        finally {
-        	is.close();
-        }
-	}
-	*/
+	
+	
+	/*
+	 * at railo.loader.osgi.BundleLoader.loadBundles(BundleLoader.java:41)
+	at railo.loader.engine.CFMLEngineFactory.getCore(CFMLEngineFactory.java:388)
+	at railo.loader.engine.CFMLEngineFactory.initEngine(CFMLEngineFactory.java:254)
+	at railo.loader.engine.CFMLEngineFactory.getEngine(CFMLEngineFactory.java:209)
+	at railo.loader.engine.CFMLEngineFactory.getUpdateLocation(CFMLEngineFactory.java:561)
+	at railo.loader.engine.CFMLEngineFactory.downloadBundle(CFMLEngineFactory.java:513)
+	at railo.loader.osgi.BundleLoader.loadBundles(BundleLoader.java:119)
+	at railo.loader.engine.CFMLEngineFactory.getCore(CFMLEngineFactory.java:388)
+	at railo.loader.engine.CFMLEngineFactory.initEngine(CFMLEngineFactory.java:254)
+	at railo.loader.engine.CFMLEngineFactory.getEngine(CFMLEngineFactory.java:209)
+	at railo.loader.engine.CFMLEngineFactory.getUpdateLocation(CFMLEngineFactory.java:561)
+	at railo.loader.engine.CFMLEngineFactory.downloadBundle(CFMLEngineFactory.java:513)
+	at railo.loader.osgi.BundleLoader.loadBundles(BundleLoader.java:119)
+	at railo.loader.engine.CFMLEngineFactory.getCore(CFMLEngineFactory.java:388)
+	at railo.loader.engine.CFMLEngineFactory.initEngine(CFMLEngineFactory.java:254)
+	at railo.loader.engine.CFMLEngineFactory.getEngine(CFMLEngineFactory.java:209)
+	at railo.loader.engine.CFMLEngineFactory.getUpdateLocation(CFMLEngineFactory.java:561)
+	at railo.loader.engine.CFMLEngineFactory.downloadBundle(CFMLEngineFactory.java:513)
+	at railo.loader.osgi.BundleLoader.loadBundles(BundleLoader.java:119)
+	at railo.loader.engine.CFMLEngineFactory.getCore(CFMLEngineFactory.java:388)
+	at railo.loader.engine.CFMLEngineFactory.initEngine(CFMLEngineFactory.java:254)
+	at railo.loader.engine.CFMLEngineFactory.getEngine(CFMLEngineFactory.java:209)
+	at railo.loader.engine.CFMLEngineFactory.getUpdateLocation(CFMLEngineFactory.java:561)
+	at railo.loader.engine.CFMLEngineFactory.downloadBundle(CFMLEngineFactory.java:513)
+	at railo.loader.osgi.BundleLoader.loadBundles(BundleLoader.java:119)
+	at railo.loader.engine.CFMLEngineFactory.getCore(CFMLEngineFactory.java:388)
+	at railo.loader.engine.CFMLEngineFactory.initEngine(CFMLEngineFactory.java:254)
+	at railo.loader.engine.CFMLEngineFactory.getEngine(CFMLEngineFactory.java:209)
+	at railo.loader.engine.CFMLEngineFactory.getUpdateLocation(CFMLEngineFactory.java:561)
+	at railo.loader.engine.CFMLEngineFactory.downloadBundle(CFMLEngineFactory.java:513)
+	at railo.loader.osgi.BundleLoader.loadBundles(BundleLoader.java:119)
 
-	public static void start(List<Bundle> bundles) throws BundleException {
+	 */
+
+	public static void start(CFMLEngineFactory factory,List<Bundle> bundles) throws BundleException {
 		if(bundles==null || bundles.isEmpty()) return;
 		
 		Iterator<Bundle> it = bundles.iterator();
 		while(it.hasNext()){
-			it.next().start();
+			start(factory,it.next());
 		}
+	}
+	
+
+	private static void start(CFMLEngineFactory factory, Bundle bundle) throws BundleException {
+		String fh=bundle.getHeaders().get("Fragment-Host");
+		if(!Util.isEmpty(fh)) {
+			factory.log(Log.LEVEL_INFO,"do not start ["+bundle.getSymbolicName()+"], because this is a fragment bundle for ["+fh+"]");
+			return;
+		}
+		
+		factory.log(Log.LEVEL_INFO,"start bundle:"+bundle.getSymbolicName()+":"+bundle.getVersion().toString());
+		bundle.start();
 	}
 	
 	public static String bundleState(int state, String defaultValue) {

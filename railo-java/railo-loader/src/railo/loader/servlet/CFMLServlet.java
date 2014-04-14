@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import railo.commons.io.log.Log;
 import railo.loader.engine.CFMLEngineFactory;
 
 /**
@@ -21,7 +20,7 @@ public class CFMLServlet extends RailoServlet {
      */
     public void init(ServletConfig sg) throws ServletException {
         super.init(sg);
-        CFMLEngineFactory.log(Log.LEVEL_INFO, "init servlet");
+        //CFMLEngineFactory.log(Log.LEVEL_INFO, "init servlet");
         try{
         	engine=CFMLEngineFactory.getInstance(sg,this);
         }
@@ -37,7 +36,7 @@ public class CFMLServlet extends RailoServlet {
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void service(HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
-    	CFMLEngineFactory.log(Log.LEVEL_INFO, "service CFML");
+    	//CFMLEngineFactory.log(Log.LEVEL_INFO, "service CFML");
 		try{
     		engine.serviceCFML(this,req,rsp);
         }

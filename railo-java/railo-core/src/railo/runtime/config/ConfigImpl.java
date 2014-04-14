@@ -52,7 +52,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.IPRange;
 import railo.loader.engine.CFMLEngine;
-import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -350,7 +349,6 @@ public abstract class ConfigImpl implements Config {
 	private Resource remoteClientDirectory;
 
 	private boolean allowURLRequestTimeout=false;
-	private CFMLFactory factory;
 	private boolean errorStatusCode=true;
 	private int localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
 	
@@ -437,7 +435,6 @@ public abstract class ConfigImpl implements Config {
     public void reset() {
     	timeServer="";
         componentDumpTemplate="";
-        factory.resetPageContext();
         //resources.reset();
         ormengines.clear();
         compressResources.clear();
@@ -467,8 +464,8 @@ public abstract class ConfigImpl implements Config {
      * @param configDir - config directory
      * @param configFile - config file
      */
-    protected ConfigImpl(CFMLFactory factory,Resource configDir, Resource configFile) {
-        this(factory,configDir,configFile,
+    protected ConfigImpl(Resource configDir, Resource configFile) {
+        this(configDir,configFile,
         		loadTLDs() , 
         		loadFLDs());
     }
@@ -490,12 +487,10 @@ public abstract class ConfigImpl implements Config {
 		}
 	}
 
-	public ConfigImpl(CFMLFactory factory,Resource configDir, Resource configFile, TagLib[] tlds, FunctionLib[] flds) {
+	public ConfigImpl(Resource configDir, Resource configFile, TagLib[] tlds, FunctionLib[] flds) {
 		
 		this.configDir=configDir;
         this.configFile=configFile;
-        this.factory=factory;
-        
         this.tlds=duplicate(tlds,false);
         this.flds=duplicate(flds,false);
 	}
@@ -2593,15 +2588,6 @@ public abstract class ConfigImpl implements Config {
 		this.remoteClientSpoolerEngine=spoolerEngine;
 	}
 
-	/**
-	 * @return the factory
-	 */
-	public CFMLFactory getFactory() {
-		return factory;
-	}
-
-	
-	
 	/* *
 	 * @return the structCase
 	 * /

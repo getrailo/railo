@@ -24,17 +24,16 @@ import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.loader.util.Util;
-import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageException;
+import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public class BundleBuilderFactory {
 		
 	//Indicates the OSGi specification to use for reading this bundle.
-	private static final int MANIFEST_VERSION=2;
+	public static final int MANIFEST_VERSION=2;
 
 	private static final Set<String> INDIVIDUAL_FILTER = new HashSet<String>();
 	private static final Set<String> MAIN_FILTER = new HashSet<String>();
@@ -53,26 +52,23 @@ public class BundleBuilderFactory {
 	private String description;
 	private BundleVersion bundleVersion;
 	private Manifest manifest;
+	private Set<String> existingPackages=new HashSet<String>();
 	private final boolean ignoreExistingManifest;
 
 	
-	public BundleVersion getBundleVersion() {
-		return bundleVersion;
-	}
-
-	public void setBundleVersion(String version) {
-		if(StringUtil.isEmpty(version,true))return ;
-		this.bundleVersion=new BundleVersion(version);
-	}
 	private String activator;
 
-	private List<Resource> jars=new ArrayList<Resource>();
+	//private List<Resource> jars=new ArrayList<Resource>();
 	
 	private List<String> exportPackage;
 	private List<String> fragmentHost;
 	private List<String> importPackage; 
 	private List<String> dynImportPackage; 
-	private List<String> classPath; 
+	private List<String> classPath;
+
+	//private BundleFile bf;
+
+	private Resource jar; 
 
 	/**
 	 * 
@@ -82,9 +78,15 @@ public class BundleBuilderFactory {
 	 * @param version Designates a version number to the bundle.
 	 * @param activator Indicates the class name to be invoked once a bundle is activated.
 	 * @param name 
+	 * @throws IOException 
 	 * @throws BundleBuilderFactoryException 
 	 */
-	public BundleBuilderFactory(String name, String symbolicName, boolean ignoreExistingManifest) throws ApplicationException {
+	public BundleBuilderFactory(Resource jar,String name, String symbolicName, boolean ignoreExistingManifest) throws ApplicationException, IOException {
+		if(!jar.isFile())throw new ApplicationException("["+jar+"] is not a file");
+    	this.jar=jar;
+		//bf = new BundleFile(jar);
+		
+		
 		if(StringUtil.isEmpty(symbolicName)) {
 			if(StringUtil.isEmpty(name))
 				throw new ApplicationException("symbolic name is reqired");
@@ -93,6 +95,16 @@ public class BundleBuilderFactory {
 		this.name=name;
 		this.symbolicName=symbolicName;
 		this.ignoreExistingManifest=ignoreExistingManifest;
+	}
+	
+
+	public BundleVersion getBundleVersion() {
+		return bundleVersion;
+	}
+
+	public void setBundleVersion(String version) {
+		if(StringUtil.isEmpty(version,true))return ;
+		this.bundleVersion=new BundleVersion(version);
 	}
 
 	private String toSymbolicName(String name) {
@@ -189,7 +201,14 @@ public class BundleBuilderFactory {
 			addImportPackage("org.osgi.framework");
 		}
 		String str = attrs.getValue("Export-Package");
-		if(Util.isEmpty(str,true)) addList(attrs,"Export-Package",exportPackage);
+		print.e(this.symbolicName+"->"+str);
+		// no existing Export-Package
+		if(Util.isEmpty(str,true)) {
+			if(ArrayUtil.isEmpty(exportPackage) || isAsterix(exportPackage)) {
+				exportPackage=ListUtil.toList(existingPackages);
+			}
+			addList(attrs,"Export-Package",exportPackage);
+		}
 		
 		//str = attrs.getValue("Fragment-Host");
 		//if(Util.isEmpty(str,true)) 
@@ -206,8 +225,43 @@ public class BundleBuilderFactory {
 		if(Util.isEmpty(str,true)) addList(attrs,"Bundle-ClassPath",classPath);
 	}
 
+	/*private static List<String> createExportPackageFromResource(Resource jar) {
+		// get all directories
+		List<Resource> dirs = ResourceUtil.listRecursive(jar,DirectoryResourceFilter.FILTER);
+		List<String> rtn=new ArrayList<String>();
+		// remove directories with no files (of any kind)
+		Iterator<Resource> it = dirs.iterator();
+		Resource[] children;
+		int count;
+		while(it.hasNext()) {
+			Resource r = it.next();
+			children = r.listResources();
+			count=0;
+			if(children!=null)for(int i=0;i<children.length;i++){
+				if(children[i].isFile())count++;
+			}
+			// has files
+			if(count>0) {
+				
+			}
+		}
+		
+		return null;
+	}*/
+
+
+	private boolean isAsterix(List<String> list) {
+		if(list==null) return false;
+		Iterator<String> it = list.iterator();
+		while(it.hasNext()){
+			if("*".equals(it.next())) return true;
+		}
+		return false;
+	}
+
+
 	private void addList(Attributes attrs,String name,List<String> values) {
-		if(values==null || values.size()==0) return;
+		if(values==null || values.isEmpty()) return;
 
 		StringBuilder sb=new StringBuilder();
 		Iterator<String> it = values.iterator();
@@ -222,7 +276,7 @@ public class BundleBuilderFactory {
 		attrs.putValue(name, sb.toString());
 	}
 
-	public void addJar(Resource jar) throws ApplicationException{
+	/*public void addJar(Resource jar) throws ApplicationException{
 		if(!jar.isFile())
 			throw new ApplicationException("["+jar+"] is not a file");
 		jars.add(jar);
@@ -233,7 +287,7 @@ public class BundleBuilderFactory {
 		while(st.hasMoreTokens()){
 			addJar(ResourceUtil.toResourceExisting(pc,st.nextToken().trim()));
 		}
-	}
+	}*/
 	
 	
 	
@@ -251,6 +305,10 @@ public class BundleBuilderFactory {
 		ZipOutputStream zos=new MyZipOutputStream(os,CharsetUtil.UTF8);
 		try{
 			
+			// jar
+			handleEntry(zos,jar, new JarEntryListener(zos));
+				
+			/*
 			// jars
 			List<String> jarsUsed=new ArrayList<String>();
 			{
@@ -262,9 +320,9 @@ public class BundleBuilderFactory {
 					jarsUsed.add(jar.getName());
 					handleEntry(zos,jar, new JarEntryListener(zos));
 				}
-			}
+			}*/
 			
-			// manifest
+			// Manifest (do a blank one when method above has not loaded one)
 			if(manifest==null)manifest=new Manifest();
 			extendManifest(manifest);
 			
@@ -314,11 +372,23 @@ public class BundleBuilderFactory {
 		
 		@Override
 		public void handleEntry(Resource zipFile,ZipInputStream source,ZipEntry entry) throws IOException {
+			
+			// log for export-package
+			if(!entry.isDirectory()) {
+				String name=entry.getName();
+				int index=name.lastIndexOf('/');
+				if(index!=-1 && !name.startsWith("META-INF")) {
+					name=name.substring(0,index);
+					if(name.length()>0)
+						existingPackages.add(ListUtil.trim(name.replace('/', '.'), "."));
+				}
+			}
+			
 			// security
 			if("META-INF/IDRSIG.DSA".equalsIgnoreCase(entry.getName()) 
 					|| "META-INF/IDRSIG.SF".equalsIgnoreCase(entry.getName())
 					|| "META-INF/INDEX.LIST".equalsIgnoreCase(entry.getName())) {
-				print.e(zipFile+"->"+entry.getName());
+				//print.e(zipFile+"->"+entry.getName());
 				return;
 			}
 			

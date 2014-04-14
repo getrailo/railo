@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.osgi.framework.Bundle;
+
 import railo.Info;
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
@@ -272,5 +274,10 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	@Override
 	public Info getInfo() {
 		return engine.getInfo();
+	}
+
+	@Override
+	public Bundle getCoreBundle() {
+		return engine.getCoreBundle();
 	}
 }

@@ -89,7 +89,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @param configFile
      */
     protected ConfigServerImpl(CFMLEngineImpl engine,Map<String,CFMLFactory> initContextes, Map<String,CFMLFactory> contextes, Resource configDir, Resource configFile) {
-    	super(null,configDir, configFile);
+    	super(configDir, configFile);
     	this.engine=engine;
         this.initContextes=initContextes;
         //this.contextes=contextes;
@@ -246,6 +246,11 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
     @Override
     public CFMLEngine getCFMLEngine() {
+        return getEngine();
+    }
+
+    @Override
+    public CFMLEngine getEngine() {
         return engine;
     }
 

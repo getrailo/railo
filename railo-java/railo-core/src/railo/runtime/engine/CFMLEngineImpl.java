@@ -105,7 +105,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	private Monitor monitor;
 	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>();
 	private long uptime;
-	private Bundle bundle;
+	private final Bundle bundle;
 	private InfoImpl info; 
 	
     
@@ -653,6 +653,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	@Override
 	public long uptime() {
 		return uptime;
+	}
+
+	@Override
+	public Bundle getCoreBundle() {
+		return bundle;
 	}
 
 }

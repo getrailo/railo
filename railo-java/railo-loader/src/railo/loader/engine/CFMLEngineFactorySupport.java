@@ -96,7 +96,7 @@ public abstract class CFMLEngineFactorySupport {
         if(endIndex==-1) return defaultValue;
         int intVersion=0;
         try{
-        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000000;
+        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000000;
         }
         catch(Throwable t){
         	return defaultValue;
@@ -107,7 +107,7 @@ public abstract class CFMLEngineFactorySupport {
         endIndex=version.indexOf('.',beginIndex);
         if(endIndex==-1) return defaultValue;
         try{
-        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000;
+        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100000;
         }
         catch(Throwable t){
         	return defaultValue;
@@ -118,7 +118,7 @@ public abstract class CFMLEngineFactorySupport {
         endIndex=version.indexOf('.',beginIndex);
         if(endIndex==-1) return defaultValue;
         try{
-        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100;
+        	intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000;
         }
         catch(Throwable t){
         	return defaultValue;
@@ -145,20 +145,20 @@ public abstract class CFMLEngineFactorySupport {
     	StringBuffer sb=new StringBuffer();
 
     	// Major
-    	int tmp=(version/1000000); // FUTURE 10000000
-    	version-=tmp*1000000; // FUTURE 10000000
+    	int tmp=(version/10000000); // FUTURE 10000000
+    	version-=tmp*10000000; // FUTURE 10000000
     	sb.append(String.valueOf(tmp));
     	sb.append(".");
 
     	// Minor
-    	tmp=(version/10000); // FUTURE 100000
-    	version-=tmp*10000; // FUTURE 100000
+    	tmp=(version/100000); // FUTURE 100000
+    	version-=tmp*100000; // FUTURE 100000
     	sb.append(len(String.valueOf(tmp),2));
     	sb.append(".");
 
     	// releases
-    	tmp=(version/100); // FUTURE 1000
-    	version-=tmp*100; // FUTURE 1000
+    	tmp=(version/1000); // FUTURE 1000
+    	version-=tmp*1000; // FUTURE 1000
     	sb.append(len(String.valueOf(tmp),2));
     	sb.append(".");
     	

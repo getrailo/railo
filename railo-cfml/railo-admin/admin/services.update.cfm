@@ -3,6 +3,7 @@
 <cfparam name="url.action2" default="none">
 <cfset error.message="">
 <cfset error.detail="">
+<cfset restBasePath="/rest/update/provider/">
 
 <cftry>
 <cfswitch expression="#url.action2#">
@@ -28,14 +29,7 @@
 			password="#session["password"&request.adminType]#"
 			remoteClients="#request.getRemoteClients()#">
 	</cfcase>
-	<cfcase value="updateJars">
-		<cfsetting requesttimeout="10000">
-		<cfadmin 
-			action="updateJars"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
-			remoteClients="#request.getRemoteClients()#">
-	</cfcase>
+	
 	<cfcase value="remove">
 		<cfadmin 
 			action="removeUpdate"
@@ -78,48 +72,50 @@ because this is only about optional updates, we do this only in background from 
 ---->
 <cfset needNewJars=false>
 
+<cfscript>
+stText.services.update.serverNotReachable="Could not reach server {url}.";
+stText.services.update.serverFailed="server {url} failed to return a valid response.";
 
-<cffunction name="getAvailableVersion" output="false">
-	
-	<cfset var http="">
-	<cftry>
-	<cfhttp 
-			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
-		method="get" resolveurl="no" result="http">
-	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="local.wddx">
-	<cfset session.availableVersion=wddx>
-	<cfreturn session.availableVersion>
-		<cfcatch>
-			<cfreturn "">
-		</cfcatch>
-	</cftry>
-</cffunction>
+	struct function getAvailableVersion() localmode="true"{
+		try{
+			http 
+			url="#update.location##restBasePath#info/#server.railo.version#?ioid={ioid}" 
+			method="get" resolveurl="no" result="local.http";
+			// i have a response
+			if(isJson(http.filecontent)) {
+				rsp=deserializeJson(http.filecontent);
+			}
+			// service not available
+			else if(http.status_code==404) {
+				rsp={"type":"warning","message":replace(stText.services.update.serverNotReachable,'{url}',update.location)};
+			}
+			// server failed
+			else {
+				rsp={"type":"warning","message":replace(stText.services.update.serverFailed,'{url}',update.location)&" "&http.filecontent};
+			}
+		}
+		catch(e){
+			rsp={"type":"warning","message":replace(stText.services.update.serverFailed,'{url}',update.location)&" "&e.message};
+		}
+		return rsp;
+	}
 
-<cffunction name="getAvailableVersionDoc" output="false">
-	
-	<cfset var http="">
-	<cftry>
-	<cfhttp 
-		url="#update.location#/railo/remote/version/Info.cfc?method=getPatchVersionDocFor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
-		method="get" resolveurl="no" result="http"><!--- #server.railo.version# --->
-	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="wddx">
-	<cfreturn wddx>
-		<cfcatch>
-			<cfreturn "-">
-		</cfcatch>
-	</cftry>
-</cffunction>
-
-<cfadmin 
+// get info for the update location
+admin 
 	action="getUpdate"
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
-	returnvariable="update">
+	returnvariable="update";
 
-<cfset curr=server.railo.version>
-<cfset avi=getAvailableVersion()>
-<cfset hasAccess=1>
-<cfset hasUpdate=curr LT avi>
+
+curr=server.railo.version;
+updateData=getAvailableVersion();
+hasAccess=1;
+hasUpdate=structKeyExists(updateData,"available");
+
+</cfscript>
+
+
 
 <cfoutput>
 	<div class="pageintro">#stText.services.update.desc#</div>
@@ -225,34 +221,19 @@ because this is only about optional updates, we do this only in background from 
 			jira=stText.services.update.jira;
 			jira=replace(jira,'{a}','<a href="http://jira.jboss.org/jira/browse/RAILO" target="_blank">');
 			jira=replace(jira,'{/a}','</a>');
-			try	{
-				// Changelog
-				content=getAvailableVersionDoc();
-				start=1;
-				arr=array();
-				matches=REMatchNoCase("\[\ *(RAILO-([0-9]*)) *\]",content);
-				
-				for(i=arrayLen(matches);i>=1;i--){
-					match=trim(matches[i]);
-					nbr=mid(match,8,len(match)-8);
-					content=replace(content,match,'<a target="_blank" href="http://jira.jboss.org/jira/browse/RAILO-'&nbr&'">'& mid(match,2,len(match)-2) & '</a>',"all");
-				}
-					content=replace(content,"
-Version ","
-
-Version ","all");
-			}
-			catch(e){}
 		</cfscript>
 		<h2>#stText.services.update.infoTitle#</h2>
 		<div class="text">
-			#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{available}','<b>(#avi#)</b>')#
+			#updatedata.message#
 		</div>
-		<div style="overflow:auto;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
+		<div style="overflow:auto;height:200px;border-style:solid;border-width:1px;padding:10px">
+<pre><cfloop list="#listSort(structKeyList(updateData.changelog),'textnocase')#" item="key"><!--- 
+			---><a target="_blank" href="http://jira.jboss.org/jira/browse/RAILO-#key#">#key#</a> - #updateData.changelog[key]#
+</cfloop></pre></div>
 		#jira#
-	<cfelseif not needNewJars>
+	<cfelse>
 		<h2>#stText.services.update.infoTitle#</h2>
-		<div class="text">#replace(stText.services.update.noUpdate,'{current}',curr)#</div>
+		<div class="text">#updateData.message#</div>
 	</cfif>
 	
 	

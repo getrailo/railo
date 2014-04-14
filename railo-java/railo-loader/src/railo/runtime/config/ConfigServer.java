@@ -83,6 +83,13 @@ public interface ConfigServer extends Config {
 
 	public RemoteClient[] getRemoteClients();
 
+    /**
+     * @deprecated use instead getEngine
+     * @return
+     */
     public abstract CFMLEngine getCFMLEngine();
+    
+    
+    public abstract CFMLEngine getEngine();
 
 }

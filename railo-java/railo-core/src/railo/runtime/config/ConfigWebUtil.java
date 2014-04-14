@@ -15,6 +15,8 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.loader.engine.CFMLEngine;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.AppListenerUtil;
@@ -448,5 +450,11 @@ public final class ConfigWebUtil {
 			case Config.SCOPE_STANDARD: return "standard";
 			default: return defaultValue;
 		}
+	}
+
+	public static CFMLEngine getEngine(Config config) {
+		if(config instanceof ConfigWeb) return ((ConfigWeb)config).getFactory().getEngine();
+		if(config instanceof ConfigServer) return ((ConfigServer)config).getEngine();
+		return CFMLEngineFactory.getInstance();
 	}
 }
