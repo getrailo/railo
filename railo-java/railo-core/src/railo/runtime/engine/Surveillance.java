@@ -11,7 +11,6 @@ import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.Collection;
 import railo.runtime.type.DoubleStruct;
 import railo.runtime.type.KeyImpl;
@@ -152,7 +151,7 @@ import railo.runtime.type.util.KeyConstants;
 	}
 
 	private static void infoQueryCache(Struct parent,CFMLFactory factory) throws PageException {
-		long size= ((QueryCacheSupport)factory.getDefaultQueryCache()).sizeOf();
+		long size= SizeOf.size(factory.getDefaultQueryCache());
 		parent.set(QUERY_CACHE, Caster.toDouble(size));
 	}
 	

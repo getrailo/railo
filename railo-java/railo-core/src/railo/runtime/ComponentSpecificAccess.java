@@ -16,7 +16,6 @@ import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
-
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 

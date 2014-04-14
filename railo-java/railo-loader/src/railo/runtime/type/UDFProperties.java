@@ -3,7 +3,7 @@ package railo.runtime.type;
 import java.io.Externalizable;
 import java.io.Serializable;
 
-public interface UDFProperties extends Sizeable,Serializable,Externalizable {
+public interface UDFProperties extends Serializable,Externalizable {
 
 /*
 	public  String functionName;

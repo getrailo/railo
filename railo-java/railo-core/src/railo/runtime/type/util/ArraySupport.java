@@ -15,11 +15,10 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
-import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ArraySupport extends AbstractList implements Array,List,Sizeable,Objects {
+public abstract class ArraySupport extends AbstractList implements Array,List,Objects {
 
 	
 	public static final short TYPE_OBJECT = 0;

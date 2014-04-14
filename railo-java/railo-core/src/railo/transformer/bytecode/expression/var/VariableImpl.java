@@ -11,6 +11,7 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Constants;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;

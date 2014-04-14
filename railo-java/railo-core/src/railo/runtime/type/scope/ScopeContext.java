@@ -2,8 +2,8 @@ package railo.runtime.type.scope;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 

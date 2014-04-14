@@ -2,6 +2,7 @@ package railo.transformer.bytecode.expression;
 
 import org.objectweb.asm.Type;
 
+import railo.runtime.exp.TemplateException;
 import railo.transformer.Context;
 import railo.transformer.Factory;
 import railo.transformer.Position;

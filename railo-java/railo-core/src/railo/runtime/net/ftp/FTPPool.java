@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.apache.commons.net.ftp.FTPClient;
 
 import railo.runtime.exp.PageException;
-// FUTURE make this interface independent from org.apache so that the loader no longer need the apache.commons... jar
 
 /**
  * FTP Pool

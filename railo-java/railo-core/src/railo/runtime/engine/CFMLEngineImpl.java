@@ -29,6 +29,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 
+import railo.Info;
+import railo.print;
 import railo.cli.servlet.HTTPServletImpl;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
@@ -51,8 +53,6 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.CFMLEngineWrapper;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
-import railo.Info;
-import railo.print;
 import railo.runtime.InfoImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;

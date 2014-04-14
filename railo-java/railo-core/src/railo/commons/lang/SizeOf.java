@@ -1,5 +1,6 @@
 package railo.commons.lang;
 
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -13,11 +14,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.instrumentation.InstrumentationFactory;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Sizeable;
 
 /**
  * Calculation of object size.
@@ -89,9 +91,6 @@ public class SizeOf {
     	if(done.contains(o.hashCode())) return 0;
     	done.add(o.hashCode());
     	
-    	if(o instanceof Sizeable){
-    		return ((Sizeable)o).sizeOf();
-    	}
     	Class clazz = o.getClass();
     	long size=0;
     	
@@ -143,8 +142,15 @@ public class SizeOf {
     	return size(object, Integer.MAX_VALUE);
     }
 	
-	public static long size(Object object,int maxDepth) {
-    	if (object==null)return 0;
+	private static long size(Object object,int maxDepth) {
+		if (object==null)return 0;
+    	
+		Instrumentation inst = InstrumentationFactory.getInstance();
+		if(inst!=null){
+			print.e("size from instrumentation");
+			return inst.getObjectSize(object);
+		}
+		
     	boolean wasInside=inside(true);
     	Map instances=get(!wasInside);
     	//IdentityHashMap instances = new IdentityHashMap();
@@ -169,8 +175,6 @@ public class SizeOf {
         if (object==null || instances.containsKey(object) || maxDepth==0 || maxSize < 0) return 0;
         
         instances.put(object, object);
-        
-        if(object instanceof Sizeable)return ((Sizeable)object).sizeOf();
         
         if(object instanceof String){
         	return (SizeOf.CHAR_SIZE*((String)object).length())+SizeOf.REF_SIZE;

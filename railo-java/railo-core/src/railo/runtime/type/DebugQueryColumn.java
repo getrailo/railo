@@ -9,7 +9,7 @@ import railo.runtime.exp.DeprecatedException;
 /**
  * implementation of the query column
  */
-public final class DebugQueryColumn extends QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
+public final class DebugQueryColumn extends QueryColumnImpl implements QueryColumnPro,Objects {
       
 	
 	private boolean used;

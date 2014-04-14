@@ -11,8 +11,6 @@ import java.util.Set;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.cache.tag.CacheHandlerFactory;
-import railo.runtime.cache.tag.smart.SmartEntry;
-
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.op.Caster;

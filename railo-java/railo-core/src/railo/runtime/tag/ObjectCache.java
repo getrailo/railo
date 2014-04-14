@@ -2,14 +2,12 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
+import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.type.cache.CacheResourceProvider;
-
-import org.apache.oro.text.regex.MalformedPatternException;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheHandlerFilter;

@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.Layout;
-
 import org.apache.log4j.helpers.CountingQuietWriter;
+import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
 import railo.commons.io.res.Resource;

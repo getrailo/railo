@@ -1,11 +1,11 @@
 package railo.runtime.tag;
 
 
+import java.io.IOException;
+
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
-
-import java.io.IOException;
 
 /**
 * Writes the text specified in the text attribute to the 'head' section of a generated HTML page. 

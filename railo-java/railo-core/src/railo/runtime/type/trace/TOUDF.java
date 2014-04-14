@@ -10,10 +10,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
-import railo.runtime.type.util.UDFUtil;
-
 import railo.runtime.type.UDFPlus;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.UDFUtil;
 
 public class TOUDF extends TOObjects implements UDF {
 

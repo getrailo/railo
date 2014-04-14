@@ -14,7 +14,6 @@ import java.sql.Time;
 import java.util.Date;
 
 import railo.commons.lang.FormatUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
@@ -48,7 +47,7 @@ import railo.runtime.type.query.SimpleQuery;
 
 public class QueryUtil {
 
-	public static long sizeOf(QueryColumn column) {
+	/*public static long sizeOf(QueryColumn column) {
 		if(column instanceof QueryColumnImpl){
 			return ((QueryColumnImpl)column).sizeOf();
 		}
@@ -58,7 +57,7 @@ public class QueryUtil {
 			size+=SizeOf.size(column.get(i,null));
 		}
 		return size;
-	}
+	}*/
 
 	/**
 	 * return column names as Key from a query
