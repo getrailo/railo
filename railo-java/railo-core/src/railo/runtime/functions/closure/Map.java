@@ -115,7 +115,7 @@ public class Map extends BIF {
 		Object res;
 		while(it.hasNext()){
 			e = it.next();
-			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list},e.getKey(), es, futures);
+			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list,sld.delimiter},e.getKey(), es, futures);
 			if(!async) rtn.set(e.getKey(),res);
 		}
 		return rtn;

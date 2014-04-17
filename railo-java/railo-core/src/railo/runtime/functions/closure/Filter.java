@@ -131,7 +131,7 @@ public class Filter extends BIF {
 		Object res;
 		while(it.hasNext()){
 			e = it.next();
-			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list},e.getKey(),e.getValue(), es, futures);
+			res=_inv(pc, udf, new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list,sld.delimiter},e.getKey(),e.getValue(), es, futures);
 			if(!async && Caster.toBooleanValue(res)) {
 				rtn.append(e.getValue());
 			}

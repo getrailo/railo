@@ -437,7 +437,8 @@ All elements in the array must contain values that can be automatically converte
 			<alias>udf,function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>UDF/Closure that call with the values from array</description>
+			<description>function/closure that implements the following constructor [function(any value, numeric index,string list, string delimiter):void].</description>
+		
 		</argument>
 		<argument>
 			<name>delimiter</name>
@@ -781,7 +782,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<alias>udf,function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>filter can be a function/closure that implements the following constructor [function(any value[, number index, string list]):any].</description>
+			<description>filter can be a function/closure that implements the following constructor [function(any value, number index, string list, string delimiter):any].</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
@@ -11858,7 +11859,7 @@ The following things are considered to be empty:
 			<alias>closure,function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>filter can be a function/closure that implements the following constructor [function(any value):boolean].</description>
+			<description>function/closure that implements the following constructor [function(any value, numeric index,string list, string delimiter):boolean].</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
@@ -15986,7 +15987,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>closure</name>
 			<type>function</type>
 			<required>Yes</required>
-			<description>function/closure that implements the following constructor [function(any result, object value, [, numeric index [, string list]]):any].</description>
+			<description>function/closure that implements the following constructor [function(any result, object value, numeric index , string list, string delimiter):any].</description>
 		</argument>
 		<argument>
 			<name>initalValue</name>
@@ -16216,7 +16217,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<alias>function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>function/closure that implements the following constructor [function(any value[, numeric index,string list]):boolean].</description>
+			<description>function/closure that implements the following constructor [function(any value, numeric index,string list, string delimiter):boolean].</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
@@ -16424,7 +16425,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<alias>function</alias>
 			<type>function</type>
 			<required>Yes</required>
-			<description>function/closure that implements the following constructor [function(any value[numeric index,array array]):boolean].</description>
+			<description>function/closure that implements the following constructor [function(any value, numeric index, string list, string delimiter):boolean].</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
