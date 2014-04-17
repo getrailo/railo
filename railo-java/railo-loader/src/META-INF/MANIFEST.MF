@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Premain-Class: railo.runtime.instrumentation.Agent6
-Agent-Class: railo.runtime.instrumentation.Agent6
+Premain-Class: railo.runtime.instrumentation.Agent
+Agent-Class: railo.runtime.instrumentation.Agent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true

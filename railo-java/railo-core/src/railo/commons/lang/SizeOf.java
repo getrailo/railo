@@ -16,6 +16,7 @@ import java.util.Set;
 
 import railo.print;
 import railo.commons.io.SystemUtil;
+import railo.commons.management.MemoryInfo;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.instrumentation.InstrumentationFactory;
@@ -148,7 +149,7 @@ public class SizeOf {
 		Instrumentation inst = InstrumentationFactory.getInstance();
 		if(inst!=null){
 			print.e("size from instrumentation");
-			return inst.getObjectSize(object);
+			return MemoryInfo.deepMemoryUsageOf(inst,object);
 		}
 		
     	boolean wasInside=inside(true);

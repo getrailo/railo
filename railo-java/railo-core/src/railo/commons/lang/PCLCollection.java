@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
@@ -80,9 +81,11 @@ public final class PCLCollection {
     	if(cl!=null) {
     		// if can upate class
     		if(InstrumentationUtil.isSupported()){
+    			
     			try{
     				Class<?> old = cl.loadClass(name);
             		InstrumentationUtil.redefineClass(old, barr);
+            		print.e("redefined:"+old.getName());
             		return old;
     			}
     			catch(Throwable t){

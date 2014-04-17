@@ -91,41 +91,7 @@ public final class PCLBlock extends ExtendableClassLoader {
         }
         return c;
    }
-    
-    
 
-    
-    public static long lastModified(Resource res, long defaultValue)  {
-    	InputStream in = null;
-        try{
-	        in=res.getInputStream();
-	        byte[] buffer = new byte[10];
-	    	in.read(buffer);
-	    	if(!ClassUtil.hasCF33Prefix(buffer)) return defaultValue;
-	    	
-	    	 byte[] _buffer = new byte[]{
-	    			 buffer[2],
-	    			 buffer[3],
-	    			 buffer[4],
-	    			 buffer[5],
-	    			 buffer[6],
-	    			 buffer[7],
-	    			 buffer[8],
-	    			 buffer[9],
-	    	 };
-	    	
-	    	
-	    	return NumberUtil.byteArrayToLong(_buffer);
-        }
-        catch(IOException ioe){
-        	return defaultValue;
-        }
-        finally {
-        	IOUtil.closeEL(in);
-        }
-        
-    }
-    
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {//if(name.indexOf("sub")!=-1)print.ds(name);
     	//if(!name.endsWith("$cf")) return super.findClass(name); this break Webervices

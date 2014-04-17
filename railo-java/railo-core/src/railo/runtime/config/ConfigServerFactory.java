@@ -157,7 +157,12 @@ public final class ConfigServerFactory extends ConfigFactory{
 		Resource contextDir = configDir.getRealResource("context");
 		Resource adminDir = contextDir.getRealResource("admin");
 		
-		
+		/*{
+		Resource lib = configDir.getRealResource("lib");
+		Resource f = lib.getRealResource("railo-external-agent.jar");
+		if (!f.exists())
+			createFileFromResourceEL("/resource/lib/railo-external-agent.jar", f);
+		}*/
 
 		// Debug
 		Resource debug = adminDir.getRealResource("debug");

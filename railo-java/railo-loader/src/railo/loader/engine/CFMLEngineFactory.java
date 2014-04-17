@@ -219,8 +219,7 @@ public class CFMLEngineFactory extends CFMLEngineFactorySupport {
     }
 
     private void initEngine() throws ServletException {
-        
-        int coreVersion=Version.getIntVersion();
+    	int coreVersion=Version.getIntVersion();
         long coreCreated=Version.getCreateTime();
         
         

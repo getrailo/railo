@@ -18,6 +18,7 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Mapping;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
@@ -456,5 +457,12 @@ public final class ConfigWebUtil {
 		if(config instanceof ConfigWeb) return ((ConfigWeb)config).getFactory().getEngine();
 		if(config instanceof ConfigServer) return ((ConfigServer)config).getEngine();
 		return CFMLEngineFactory.getInstance();
+	}
+
+	public static Resource getConfigServerDirectory(Config config) {
+		if(config==null)config=ThreadLocalPageContext.getConfig();
+		if(config instanceof ConfigWeb) return ((ConfigWeb)config).getConfigServerDir();
+		if(config==null) return null;
+		return ((ConfigServer)config).getConfigDir();
 	}
 }

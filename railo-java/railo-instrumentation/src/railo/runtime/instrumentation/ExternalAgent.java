@@ -2,25 +2,17 @@ package railo.runtime.instrumentation;
 
 import java.lang.instrument.Instrumentation;
 
+import sun.instrument.InstrumentationImpl;
 
-public class Agent {
-	  private static Instrumentation instrumentation;
+public class ExternalAgent {
 	  
 	  public static void premain(String agentArgs, Instrumentation inst) {
+		  if(inst!=null)Agent.setInstrumentation(inst);
 		  //System.out.println("Agent-premain:"+agentArgs);
-		  if(inst!=null)instrumentation = inst;
 	  }
 	  
 	  public static void agentmain(String agentArgs, Instrumentation inst) {
+		  if(inst!=null)Agent.setInstrumentation(inst);
 		  //System.out.println("Agent-agentmain:"+agentArgs);
-		  if(inst!=null)instrumentation = inst;
 	  }
-
-	  public static Instrumentation getInstrumentation() {
-		  return instrumentation;
-	  }
-
-		public static void setInstrumentation(Instrumentation inst) {
-			if(inst!=null)instrumentation=inst;
-		}
-	}
+}

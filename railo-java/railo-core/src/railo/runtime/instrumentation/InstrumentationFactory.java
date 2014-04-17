@@ -1,19 +1,30 @@
 package railo.runtime.instrumentation;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Date;
 
-import org.objectweb.asm.ClassReader;
 
-import railo.commons.io.SystemUtil;
+import railo.print;
+import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.SystemOut;
+import railo.loader.TP;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.InfoImpl;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.engine.ThreadLocalPageContext;
+import sun.instrument.InstrumentationImpl;
 import sun.management.VMManagement;
 
 public class InstrumentationFactory {
@@ -22,8 +33,17 @@ public class InstrumentationFactory {
 	private static boolean doInit=true;
 	
 	public static synchronized Instrumentation getInstance() {
+		
+		//System.loadLibrary("instrument");
+		
+		//if(true) return new InstrumentationImpl(0,true,true);
+		
+		
 		if(doInit) {
 			doInit=false;
+			
+			
+			
 			
 			/*Class agent = ClassUtil.loadClass("railo.runtime.instrumentation.Agent",null);
 			if(agent==null) {
@@ -32,15 +52,33 @@ public class InstrumentationFactory {
 			}*/
 			
 			// if Agent was loaded at startup there is already a Instrumentation
-			inst=Agent6.getInstrumentation();
+			inst=Agent.getInstrumentation(null);
 			//inst=getInstrumentation(agent);
 			
+			
+			// try to load directly
+			if(inst==null) {
+				print.e(new Date(140697380388720L));
+				try{
+					Constructor<InstrumentationImpl> constr = InstrumentationImpl.class.getDeclaredConstructor(new Class[]{long.class,boolean.class,boolean.class});
+					constr.setAccessible(true);
+					inst=constr.newInstance(new Object[]{140697380388721L,true,true});
+				
+				}
+				catch(Throwable t){
+					print.e(t);
+				}
+			}
+
 			// try to load Agent
 			if(inst==null) {
-				SystemOut.printDate("class railo.runtime.instrumentation.Agent6.getInstrumentation() is not returning a Instrumentation");
-				/*try {
+				
+				SystemOut.printDate("class railo.runtime.instrumentation.Agent.getInstrumentation() is not returning a Instrumentation");
+				try {
 					String id=getPid();
-					String path=getResourcFromLib().getAbsolutePath();
+					String path=getResourcFromLib(ThreadLocalPageContext.getConfig()).getAbsolutePath();
+					
+					print.e("agent:"+path);
 					
 					Class vmClass = ClassUtil.loadClass("com.sun.tools.attach.VirtualMachine");
 					Object vmObj=attach(vmClass,id);
@@ -48,14 +86,29 @@ public class InstrumentationFactory {
 					detach(vmClass,vmObj);
 				} 
 				catch (Throwable t) {
-					//t.printStackTrace();
+					if(t instanceof InvocationTargetException)
+						print.e(((InvocationTargetException)t).getTargetException());
+					else 
+						print.e(t);
 					return null;
 				}
-				inst=getInstrumentation(agent);*/
+				inst=Agent.getInstrumentation(null);
 			}
 			
-			//if(inst!=null)
-			else SystemOut.printDate("java.lang.instrument.Instrumentation is used to reload class files");
+			if(inst!=null) {
+				try{
+					print.e(inst.getClass().getName());
+					print.e(inst.getClass().getDeclaredFields());
+					
+					Field f = inst.getClass().getDeclaredField("mNativeAgent");
+					f.setAccessible(true);
+					print.e("mNativeAgent:"+f.get(inst));
+				}
+				catch(Throwable t){
+					print.e(t);
+				}
+				SystemOut.printDate("java.lang.instrument.Instrumentation is used to reload class files");
+		}
 				
 		}
 		return inst;
@@ -87,36 +140,51 @@ public class InstrumentationFactory {
 		detach.invoke(vmObj, new Object[]{});
 	}
 	
-	private static Resource getResourcFromLib() {
+	/*private static Resource getResourcFromLib() {
 		Resource[] pathes = SystemUtil.getClassPathes();
 		Resource res = null;
 		String name=null;
 		if(pathes!=null)for(int i=0;i<pathes.length;i++){
 			name=pathes[i].getName();
-			if(name.equalsIgnoreCase("railo-instrumentation.jar") || name.equalsIgnoreCase("railo-inst.jar")) {
+			if(name.equalsIgnoreCase("railo.jar")) {
 				res=pathes[i];
 				break;
 			}
 		}
 		
 		if(res==null) {
-			Class agent = ClassUtil.loadClass("railo.runtime.instrumentation.Agent",null);
-			if(agent!=null)res=getResourcFromLib(agent);
-			else res=getResourcFromLib(ClassReader.class);
+			res=getResourcFromLib( Agent.class);
 			
 		}
 		return res;
+	}*/
+	
+	private static Resource getResourcFromLib(Config c) throws IOException {
+		Resource dir=ConfigWebUtil.getConfigServerDirectory(c);
+		if(dir==null) dir= ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
+		
+		Resource trg = dir.getRealResource("railo-external-agent.jar");
+		if(!trg.exists()) {
+			InputStream jar = InfoImpl.class.getResourceAsStream("/resource/lib/railo-external-agent.jar");
+			IOUtil.copy(jar, trg,true);
+		}
+		return trg;
 	}
+	
 
-	private static Resource getResourcFromLib(Class clazz) {
+	
+	
+
+	/*private static Resource getResourcFromLib(Class clazz) {
 		String path=clazz.getClassLoader().getResource(".").getFile();
 		Resource dir = ResourcesImpl.getFileResourceProvider().getResource(path);
 		Resource res = dir.getRealResource("railo-instrumentation.jar");
 		if(!res.exists())res=dir.getRealResource("railo-inst.jar");
 		if(!res.exists())res=null;
 		return res;
-	}
-	private static String getPid() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+	}*/
+	
+	public static String getPid() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		RuntimeMXBean mxbean = ManagementFactory.getRuntimeMXBean();
 	    Field jvmField = mxbean.getClass().getDeclaredField("jvm");
 

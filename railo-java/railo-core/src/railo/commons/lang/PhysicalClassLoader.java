@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.commons.digest.MD5;
+import railo.commons.digest.HashUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
@@ -121,41 +121,7 @@ public final class PhysicalClassLoader extends ExtendableClassLoader {
         }
         return c;
    }
-    
-    
-
-    
-    public static long lastModified(Resource res, long defaultValue)  {
-    	InputStream in = null;
-        try{
-	        in=res.getInputStream();
-	        byte[] buffer = new byte[10];
-	    	in.read(buffer);
-	    	if(!ClassUtil.hasCF33Prefix(buffer)) return defaultValue;
-	    	
-	    	 byte[] _buffer = new byte[]{
-	    			 buffer[2],
-	    			 buffer[3],
-	    			 buffer[4],
-	    			 buffer[5],
-	    			 buffer[6],
-	    			 buffer[7],
-	    			 buffer[8],
-	    			 buffer[9],
-	    	 };
-	    	
-	    	
-	    	return NumberUtil.byteArrayToLong(_buffer);
-        }
-        catch(IOException ioe){
-        	return defaultValue;
-        }
-        finally {
-        	IOUtil.closeEL(in);
-        }
-        
-    }
-    
+   
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
     	Resource res=directory.getRealResource(name.replace('.','/').concat(".class"));
@@ -177,6 +143,7 @@ public final class PhysicalClassLoader extends ExtendableClassLoader {
     }
     
 
+    @Override
     public Class<?> loadClass(String name, byte[] barr) {
     	int start=0;
     	if(ClassUtil.hasCF33Prefix(barr)) start=10;
@@ -194,16 +161,6 @@ public final class PhysicalClassLoader extends ExtendableClassLoader {
     
     @Override
     public URL getResource(String name) {
-        /*URL url=super.getResource(name);
-        if(url!=null) return url;
-        
-        Resource f =_getResource(name);
-        if(f!=null) {
-            try {
-                return f.toURL();
-            } 
-            catch (MalformedURLException e) {}
-        }*/
         return null;
     }
 
@@ -280,7 +237,7 @@ public final class PhysicalClassLoader extends ExtendableClassLoader {
 			sb.append(ResourceUtil.getCanonicalPathEL(resources[i]));
 			sb.append(';');
 		}
-		return MD5.getDigestAsString(sb.toString(),null);
+		return HashUtil.create64BitHashAsString(sb.toString(),Character.MAX_RADIX);
 	}
 
 }
