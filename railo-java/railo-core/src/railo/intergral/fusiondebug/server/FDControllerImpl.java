@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.io.SystemUtil;
@@ -105,12 +106,12 @@ public class FDControllerImpl implements IFDController {
 	}
 	
 	private void pause(String name,CFMLFactoryImpl factory,List<IFDThread> threads) {
-		Struct pcs = factory.getRunningPageContexts();
-		Iterator<Entry<Key, Object>> it = pcs.entryIterator();
+		Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+		Iterator<PageContextImpl> it = pcs.values().iterator();
 		PageContextImpl pc;
 		
 		while(it.hasNext()){
-			pc=(PageContextImpl) it.next().getValue();
+			pc=it.next();
 			try {
 				pc.getThread().wait();
 			} catch (InterruptedException e) {
@@ -153,12 +154,12 @@ public class FDControllerImpl implements IFDController {
 	 * @return matching thread or null
 	 */
 	private FDThreadImpl getByNativeIdentifier(String name,CFMLFactoryImpl factory,String id) {
-		Struct pcs = factory.getRunningPageContexts();
-		Iterator it = pcs.entrySet().iterator();
+		Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+		Iterator<PageContextImpl> it = pcs.values().iterator();
 		PageContextImpl pc;
 		
 		while(it.hasNext()){
-			pc=(PageContextImpl) ((Entry) it.next()).getValue();
+			pc=it.next();
 			if(equals(pc,id)) return new FDThreadImpl(this,factory,name,pc);
 		}
 		return null;

@@ -2,7 +2,10 @@ package railo.runtime;
 
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletRequest;
@@ -33,13 +36,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCache;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
@@ -55,7 +54,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	private static JspEngineInfo info=new JspEngineInfoImpl("1.0");
 	private ConfigWebImpl config;
 	Stack<PageContext> pcs=new Stack<PageContext>();
-    private Struct runningPcs=new StructImpl();
+    private final Map<Integer,PageContextImpl> runningPcs=new ConcurrentHashMap<Integer, PageContextImpl>();
     int idCounter=1;
     private QueryCache queryCache;
     private ScopeContext scopeContext=new ScopeContext(this);
@@ -83,13 +82,9 @@ public final class CFMLFactoryImpl extends CFMLFactory {
             pcs.clear();
         }
         
-        if(runningPcs!=null) {
-        	synchronized(runningPcs) {
-        	Iterator<Object> it = runningPcs.valueIterator();
-        	while(it.hasNext()){
-        		((PageContextImpl)it.next()).reset();
-        	}
-        	}
+        Iterator<PageContextImpl> it = runningPcs.values().iterator();
+        while(it.hasNext()){
+        	it.next().reset();
         }
     }
     
@@ -142,7 +137,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         		synchronized (pcs) {
 		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,queryCache,idCounter++,servlet);
 		            else pc=((PageContextImpl)pcs.pop());
-		            runningPcs.setEL(ArgumentIntKey.init(pc.getId()),pc);
+		            runningPcs.put(Integer.valueOf(pc.getId()),pc);
 		            this.servlet=servlet;
 		            if(registerPageContext2Thread)ThreadLocalPageContext.register(pc);
 		    		
@@ -165,12 +160,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         pc.release();
         ThreadLocalPageContext.release();
         //if(!pc.hasFamily()){
-			synchronized (runningPcs) {
-	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
+			    runningPcs.remove(Integer.valueOf(pc.getId()));
 	            if(pcs.size()<100)// not more than 100 PCs
 	            	pcs.push(pc);
 	            //SystemOut.printDate(config.getOutWriter(),"Release: (id:"+pc.getId()+";running-requests:"+config.getThreadQueue().size()+";)");
-	        }
+	        
        /*}
         else {
         	 SystemOut.printDate(config.getOutWriter(),"Unlink: ("+pc.getId()+")");
@@ -182,19 +176,21 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 */
 	public void checkTimeout() {
 		if(!engine.allowRequestTimeout())return;
-		synchronized (runningPcs) {
+		
+		//synchronized (runningPcs) {
             //int len=runningPcs.size();
-			Iterator it = runningPcs.keyIterator();
-            PageContext pc;
-            Collection.Key key;
+			Iterator<Entry<Integer, PageContextImpl>> it = runningPcs.entrySet().iterator();
+            PageContextImpl pc;
+            //Collection.Key key;
+            Entry<Integer, PageContextImpl> e;
             while(it.hasNext()) {
-            	key=KeyImpl.toKey(it.next(),null);
-                //print.out("key:"+key);
-                pc=(PageContext) runningPcs.get(key,null);
+            	e = it.next();
+            	/*pc=runningPcs.get(e.getKey());
                 if(pc==null) {
                 	runningPcs.removeEL(key);
                 	continue;
-                }
+                }*/
+            	pc=e.getValue();
                 
                 long timeout=pc.getRequestTimeout();
                 if(pc.getStartTime()+timeout<System.currentTimeMillis()) {
@@ -210,7 +206,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                     catch(Throwable t) {}
                 }
             }
-        }
+        //}
 	}
 	
 	public static void terminate(PageContext pc) {
@@ -318,15 +314,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		this.config=config;
 	}
 
-	public Struct getRunningPageContexts() {
+	public Map<Integer, PageContextImpl> getRunningPageContexts() {
 		return runningPcs;
 	}
 	
-	// exists because it is used in Morpheus
-	public Struct getRunningPageContextes() {
-		return getRunningPageContexts();
-	}
-
 	public long getPageContextsSize() {
 		return SizeOf.size(pcs);
 	}
@@ -334,25 +325,22 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public Array getInfo() {
 		Array info=new ArrayImpl();
 		
-		synchronized (runningPcs) {
+		//synchronized (runningPcs) {
             //int len=runningPcs.size();
-			Iterator<Key> it = runningPcs.keyIterator();
+			Iterator<PageContextImpl> it = runningPcs.values().iterator();
             PageContextImpl pc;
             Struct data,sctThread,scopes;
-    		Collection.Key key;
-            Thread thread;
+    		Thread thread;
+    		Entry<Integer, PageContextImpl> e;
     		while(it.hasNext()) {
+    			pc = it.next();
             	data=new StructImpl();
             	sctThread=new StructImpl();
             	scopes=new StructImpl();
             	data.setEL("thread", sctThread);
                 data.setEL("scopes", scopes);
                 
-            	
-            	key=KeyImpl.toKey(it.next(),null);
-                //print.out("key:"+key);
-                pc=(PageContextImpl) runningPcs.get(key,null);
-                if(pc==null || pc.isGatewayContext()) continue;
+            	if(pc.isGatewayContext()) continue;
                 thread=pc.getThread();
                 if(thread==Thread.currentThread()) continue;
 
@@ -386,15 +374,15 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 scopes.setEL(KeyConstants._name, pc.getApplicationContext().getName());
                 try {
 					scopes.setEL(KeyConstants._application, pc.applicationScope());
-				} catch (PageException e) {}
+				} catch (PageException pe) {}
 
                 try {
 					scopes.setEL(KeyConstants._session, pc.sessionScope());
-				} catch (PageException e) {}
+				} catch (PageException pe) {}
                 
                 try {
 					scopes.setEL(KeyConstants._client, pc.clientScope());
-				} catch (PageException e) {}
+				} catch (PageException pe) {}
                 scopes.setEL(KeyConstants._cookie, pc.cookieScope());
                 scopes.setEL(KeyConstants._variables, pc.variablesScope());
                 if(!(pc.localScope() instanceof LocalNotSupportedScope)){
@@ -409,18 +397,16 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 info.appendEL(data);
             }
             return info;
-        }
+        //}
 	}
 
 	public void stopThread(String threadId, String stopType) {
-		synchronized (runningPcs) {
-            //int len=runningPcs.size();
-			Iterator it = runningPcs.keyIterator();
+		//synchronized (runningPcs) {
+            Iterator<PageContextImpl> it = runningPcs.values().iterator();
             PageContext pc;
     		while(it.hasNext()) {
             	
-            	pc=(PageContext) runningPcs.get(KeyImpl.toKey(it.next(),null),null);
-                if(pc==null) continue;
+            	pc=it.next();
                 try {
 					String id = Hash.call(pc, pc.getId()+":"+pc.getStartTime());
 					if(id.equals(threadId)){
@@ -438,7 +424,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 				} catch (PageException e1) {}
                 
             }
-        }
+        //}
 	}
 
 	@Override
