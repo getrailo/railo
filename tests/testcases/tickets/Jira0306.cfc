@@ -13,7 +13,7 @@
 		        CREATE TABLE User306 (
 		            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
 		            data VARCHAR(100) 
-		        )TYPE=innodb;
+		        );
 		    </cfquery>
 		    </cfcatch>
 		</cftry>
@@ -30,7 +30,7 @@
 		            User_id INT , 
 		            
 		            Foreign Key (User_id) references User306(id)
-		        )TYPE=innodb;
+		        );
 		    </cfquery>
 		    </cfcatch>
 		</cftry>

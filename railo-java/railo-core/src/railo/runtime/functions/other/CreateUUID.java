@@ -23,6 +23,6 @@ public final class CreateUUID implements Function {
 	}
 	public static String invoke() {
 		String uuid = generator.generateRandomBasedUUID().toString().toUpperCase();
-        return new StringBuffer(uuid.substring(0,23)).append(uuid.substring(24)).toString();
+        return new StringBuilder(uuid.substring(0,23)).append(uuid.substring(24)).toString();
 	}
 }

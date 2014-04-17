@@ -4,12 +4,11 @@
 package railo.runtime.functions.other;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
@@ -24,6 +23,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
@@ -89,7 +89,7 @@ public final class GetTagData implements Function {
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		
 		Component cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
-        ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
+        ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE, cfc);
 		Struct metadata=Caster.toStruct(cw.get("metadata",null),null,false);
 		
 		
@@ -208,18 +208,19 @@ public final class GetTagData implements Function {
 		Struct _args=new StructImpl();
 		sct.set(KeyConstants._attributes,_args);
 		
-		Map atts = tag.getAttributes();
-		Iterator it = atts.keySet().iterator();
-		
+		//Map<String,TagLibTagAttr> atts = tag.getAttributes();
+		Iterator<Entry<String, TagLibTagAttr>> it = tag.getAttributes().entrySet().iterator();
+		Entry<String, TagLibTagAttr> e;
 		while(it.hasNext()) {
-		    Object key = it.next();
-		    TagLibTagAttr attr=(TagLibTagAttr) atts.get(key);
+		    e = it.next();
+		    TagLibTagAttr attr=e.getValue();
 		    if(attr.getHidden()) continue;
 		//for(int i=0;i<args.size();i++) {
 			Struct _arg=new StructImpl();
 			_arg.set(KeyConstants._status,TagLibFactory.toStatus(attr.getStatus()));
 			_arg.set(KeyConstants._description,attr.getDescription());
 			_arg.set(KeyConstants._type,attr.getType());
+			if(attr.getAlias()!=null)_arg.set(KeyConstants._alias,ListUtil.arrayToList(attr.getAlias(), ","));
 			if(attr.getValues()!=null)_arg.set(KeyConstants._values,Caster.toArray(attr.getValues()));
 			if(attr.getDefaultValue()!=null)_arg.set("defaultValue",attr.getDefaultValue());
 			_arg.set(KeyConstants._required,attr.isRequired()?Boolean.TRUE:Boolean.FALSE);

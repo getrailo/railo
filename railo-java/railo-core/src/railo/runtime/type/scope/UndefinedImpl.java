@@ -19,6 +19,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -154,7 +155,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	public Object get(Collection.Key key) throws PageException {
-		
+		//print.e();
 		Object rtn;
 		if(checkArguments) {
 		    rtn=local.get(key,NullSupportHelper.NULL());
@@ -264,6 +265,49 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			}
 		}
 		return sct;
+	}
+	
+	/**
+	 * returns the scope that contains a specific key
+	 * @param key
+	 * @return
+	 */
+	public Collection getScopeFor(Collection.Key key, Scope defaultValue) {
+		Object rtn=null;
+		
+		if(checkArguments) {
+		    rtn=local.get(key,NullSupportHelper.NULL());
+		    if(rtn!=NullSupportHelper.NULL()) return local;;
+		    rtn=argument.getFunctionArgument(key,NullSupportHelper.NULL());
+		    if(rtn!=NullSupportHelper.NULL()) return argument;
+		}
+				
+		// get data from queries
+		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
+			QueryColumn qc = qryStack.getColumnFromACollection(key);
+			if(qc!=null) return (Query)qc.getParent();
+		}
+		
+		// variable
+		rtn=variable.get(key,NullSupportHelper.NULL());
+		if(rtn!=NullSupportHelper.NULL()) {
+			return variable;
+		}
+		
+		// thread scopes
+		if(pc.hasFamily()) {
+			Threads t = (Threads) pc.getThreadScope(key,NullSupportHelper.NULL());
+			if(rtn!=NullSupportHelper.NULL()) return t; 
+		}
+		
+		// get a scope value
+		for(int i=0;i<scopes.length;i++) {
+			rtn=scopes[i].get(key,NullSupportHelper.NULL());
+			if(rtn!=NullSupportHelper.NULL()) {
+				return scopes[i]; 
+			}
+		}
+		return defaultValue;
 	}
 
 
@@ -478,13 +522,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
 	@Override
 	public void initialize(PageContext pc) {
-		if(isInitalized()) return;
+		//if(isInitalized()) return;
 		isInit=true;
 		variable=pc.variablesScope();
         argument=pc.argumentsScope();
 		local=pc.localScope();
 		allowImplicidQueryCall=pc.getConfig().allowImplicidQueryCall();
-        type=pc.getConfig().getScopeCascadingType();
+        type=((PageContextImpl)pc).getScopeCascadingType();
         debug=pc.getConfig().debug() && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS);
 		
 		// Strict
@@ -713,5 +757,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			return ((UDFPlus)obj).callWithNamedValues(pc,methodName,args,false);
 		}
 		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
+
+
+	public short getScopeCascadingType() {
+		return type;
 	}
 }

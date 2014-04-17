@@ -17,6 +17,10 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.apache.log4j.HTMLLayout;
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.xml.XMLLayout;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -29,7 +33,9 @@ import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
-import railo.commons.io.log.LogUtil;
+import railo.commons.io.log.log4j.appender.ConsoleAppender;
+import railo.commons.io.log.log4j.appender.RollingResourceAppender;
+import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.filter.ResourceNameFilter;
@@ -48,7 +54,9 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
 import railo.runtime.Info;
+import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
+import railo.runtime.cache.eh.EHCache;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
@@ -155,7 +163,10 @@ public final class ConfigWebAdmin {
     }
 
     public void setVersion(double version) {
-    	
+    	setVersion(doc,version);
+        
+    }
+    public static void setVersion(Document doc,double version) {
     	Element root=doc.getDocumentElement();
     	String str = Caster.toString(version);
     	if(str.length()>3)str=str.substring(0,3);
@@ -199,53 +210,8 @@ public final class ConfigWebAdmin {
     	this.config=config;
     	this.password=password;
         doc=loadDocument(config.getConfigFile());
-        if(config.getVersion()<2.0D){
-        	try {
-    			updateTo2(config);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-        }
         //setId(config.getId());
-    }    
-    // FUTURE resources for old version of railo remove in newer
-    private void updateTo2(ConfigImpl config) throws PageException, ClassException, SAXException, IOException, TagLibException, FunctionLibException {
-//    	 Server
-    	if(config instanceof ConfigServer) {
-    		addResourceProvider(
-    				"ftp",
-    				"railo.commons.io.res.type.ftp.FTPResourceProvider",
-    				"lock-timeout:20000;socket-timeout:-1;client-timeout:60000");
-    		// zip
-    		addResourceProvider(
-    				"zip",
-    				"railo.commons.io.res.type.zip.ZipResourceProvider",
-    				"lock-timeout:1000;case-sensitive:true;");
-    		// tar
-    		addResourceProvider(
-    				"tar",
-    				"railo.commons.io.res.type.tar.TarResourceProvider",
-    				"lock-timeout:1000;case-sensitive:true;");
-    		// tgz
-    		addResourceProvider(
-    				"tgz",
-    				"railo.commons.io.res.type.tgz.TGZResourceProvider",
-    				"lock-timeout:1000;case-sensitive:true;");
-    		
-    		
-    		
-    	}
-    	else {
-    		// ram
-    		addResourceProvider(
-    				"ram",
-    				"railo.commons.io.res.type.ram.RamResourceProvider",
-    				"case-sensitive:true;lock-timeout:1000;");
-    		
-    	}
-    	setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
-    	_store(config);
-    }
+    } 
     
     public static void checkForChangesInConfigFile(Config config) {
     	ConfigImpl ci=(ConfigImpl) config;
@@ -391,10 +357,32 @@ public final class ConfigWebAdmin {
             throw new SecurityException("no access to update mail server settings");
         ConfigWebUtil.getFile(config,config.getRootDirectory(),logFile,FileUtil.TYPE_FILE);
         
-        Element mail=_getRootElement("mail");
-        mail.setAttribute("log",logFile);
-        mail.setAttribute("log-level",level);
-        //config.setMailLogger(logFile.getCanonicalPath());
+        
+        Element logging = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "logging");
+		Element[] children = XMLUtil.getChildElementsAsArray(logging);
+		Element logger=null;
+    	
+		for(int i=0;i<children.length;i++){
+			if(children[i].getTagName().equals("logger") && "mail".equalsIgnoreCase(children[i].getAttribute("name"))) {
+				logger=children[i];
+				break;
+			}
+		}
+		if(logger==null) {
+			logger = doc.createElement("logger");
+			logging.appendChild(logger);
+		}
+		logger.setAttribute("name", "mail");
+    	if("console".equalsIgnoreCase(logFile)) {
+	    	logger.setAttribute("appender", "console");
+    		logger.setAttribute("layout", "pattern");
+    	}
+    	else {
+	    	logger.setAttribute("appender", "resource");
+	    	logger.setAttribute("appender-arguments", "path:"+logFile);
+    		logger.setAttribute("layout", "classic");
+		}
+    	logger.setAttribute("log-level",level);
     }
 
     /**
@@ -546,6 +534,24 @@ public final class ConfigWebAdmin {
 	      	}
         }
     }
+
+	
+	public void removeLogSetting(String name) throws SecurityException {
+		checkWriteAccess();
+    	Element logging=_getRootElement("logging");
+        Element[] children = ConfigWebFactory.getChildren(logging,"logger");
+        if(children.length>0) {
+        	String _name;
+	      	for(int i=0;i<children.length;i++) {
+	      		Element el=children[i];
+	      		_name=el.getAttribute("name");
+	      		
+	  			if(_name!=null && _name.equalsIgnoreCase(name)) {
+	  				logging.removeChild(children[i]);
+	  			}
+	      	}
+        }
+	}
     
     static void updateMapping(ConfigImpl config, String virtual, String physical,String archive,String primary, short inspect, boolean toplevel) throws SAXException, IOException, PageException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
@@ -1125,6 +1131,135 @@ public final class ConfigWebAdmin {
         }
     	return false;
     }
+    
+
+    /**
+     * the following code remove all logging defintions spread over the complete xml and adds them to the new "logging" tag
+     * 
+     * @param doc
+     * @return
+     */
+
+    public static boolean fixLogging(ConfigServerImpl cs,ConfigImpl config,Document doc) {
+    	
+    	if(config.setVersion(doc)>=4.2D) return false;
+    		
+    	//setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
+        
+    	
+    	// mapping
+    	Element src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "mappings");
+    	fixLogging(cs,doc,src, "mapping",false,"{railo-config}/logs/mapping.log");
+    	
+    	// rest
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "rest");
+    	fixLogging(cs,doc,src, "rest",false,"{railo-config}/logs/rest.log");
+    	
+    	// gateway
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "gateways");
+    	fixLogging(cs,doc,src, "gateway",false,"{railo-config}/logs/gateway.log");
+    	
+    	// remote clients
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "remote-clients");
+    	fixLogging(cs,doc,src, "remoteclient",false,"{railo-config}/logs/remoteclient.log");
+    	
+    	// orm
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "orm");
+    	fixLogging(cs,doc,src, "orm",false,"{railo-config}/logs/orm.log");
+    	
+    	// mail
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "mail");
+    	fixLogging(cs,doc,src, "mail",false,"{railo-config}/logs/mail.log");
+    			
+		// search
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "search");
+    	fixLogging(cs,doc,src, "search",false,"{railo-config}/logs/search.log");
+    	
+    	// scheduler
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "scheduler");
+    	fixLogging(cs,doc,src, "scheduler",false,"{railo-config}/logs/scheduler.log");
+    	
+		// scope
+    	src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "scope");
+    	fixLogging(cs,doc,src, "scope",false,"{railo-config}/logs/scope.log");
+    	
+    	// application
+    	Element app = src = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "application");
+    	fixLogging(cs,doc,src, "application","application-log","application-log-level",false,"{railo-config}/logs/application.log");
+    	
+    	// exception
+    	fixLogging(cs,doc,app, "exception","exception-log","exception-log-level",false,"{railo-config}/logs/exception.log");
+    	
+    	// trace
+    	fixLogging(cs,doc,app, "trace","trace-log","trace-log-level",false,"{railo-config}/logs/trace.log");
+    	
+    	// thread
+    	fixLogging(cs,doc,app, "thread","thread-log","thread-log-level",false,"{railo-config}/logs/thread.log");
+    	
+    	// deploy
+    	fixLogging(cs,doc,app, "deploy","deploy-log","deploy-log-level",false,"{railo-config}/logs/deploy.log");
+    	
+    	// requesttimeout
+    	fixLogging(cs,doc,app, "requesttimeout","requesttimeout-log","requesttimeout-log-level",false,"{railo-config}/logs/requesttimeout.log");
+    	
+    	setVersion(doc,Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),4.2D));
+    	
+    	
+    	return true;
+    }
+
+    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name,boolean deleteSourceAttributes, String defaultValue) {
+    	return fixLogging(cs, doc, src, name, "log", "log-level", deleteSourceAttributes, defaultValue);
+    }
+    private static boolean fixLogging(ConfigServerImpl cs, Document doc,Element src, String name,String logName, String levelName,boolean deleteSourceAttributes, String defaultValue) {
+    	
+    	
+    	String path,level;
+    	// Mapping logging
+    	
+    	path = src.getAttribute(logName);
+    	level = src.getAttribute(levelName);
+    	
+    	if(StringUtil.isEmpty(path) && !StringUtil.isEmpty(defaultValue) && (cs==null || cs.getLog(name)==null)) {
+    		// ignore defaultValue, when there is a setting in server context
+    		path=defaultValue;
+    	}
+    	if(!StringUtil.isEmpty(path)) {
+	    	if(deleteSourceAttributes)src.removeAttribute(logName);
+	    	if(deleteSourceAttributes)src.removeAttribute(levelName);
+    		
+    		Element logging = ConfigWebFactory.getChildByName(doc.getDocumentElement(), "logging");
+    		
+    		// first of all we have to make sure this is not already existing, if it does we ignore the old settings
+    		Element[] children = XMLUtil.getChildElementsAsArray(logging);
+    		for(int i=0;i<children.length;i++){
+    			if(children[i].getTagName().equals("logger") && name.equalsIgnoreCase(children[i].getAttribute("name"))) {
+    				return false;
+    			}
+    		}
+	    	
+    		SystemOut.printDate("move "+name+" logging");
+	    	Element logger = doc.createElement("logger");
+	    	logger.setAttribute("name", name);
+	    	if("console".equalsIgnoreCase(path)) {
+		    	logger.setAttribute("appender", "console");
+	    		logger.setAttribute("layout", "pattern");
+	    	}
+	    	else {
+		    	logger.setAttribute("appender", "resource");
+		    	logger.setAttribute("appender-arguments", "path:"+path);
+	    		logger.setAttribute("layout", "classic");
+    		}
+	    	
+	    	if(!StringUtil.isEmpty(level,true))logger.setAttribute("level", level.trim());
+
+	    	logging.appendChild(logger);
+	    	
+	    	return true;
+    	}
+    	return false;
+    }
+
 
     public static boolean fixS3(Document doc) {
     	Element resources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"resources",false,true);
@@ -1413,7 +1548,8 @@ public final class ConfigWebAdmin {
     }
 
 	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly,boolean storage) throws PageException {
-    	checkWriteAccess();
+    	
+		checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
 		if(!hasAccess)
             throw new SecurityException("no access to update cache connection");
@@ -1427,7 +1563,10 @@ public final class ConfigWebAdmin {
     		//throw new ExpressionException("name ["+name+"] is not allowed for a cache connection, the following names are reserved words [object,template]");	
         
         try {
-        	Class clazz = ClassUtil.loadClass(config.getClassLoader(),classname);
+        	Class clazz;
+        	if("railo.extension.io.cache.eh.EHCacheLite".equals(classname)) clazz=EHCache.class;
+        	else if("railo.runtime.cache.eh.EHCacheLite".equals(classname)) clazz=EHCache.class;
+        	else clazz = ClassUtil.loadClass(config.getClassLoader(),classname);
 			if(!Reflector.isInstaneOf(clazz, Cache.class))
 				throw new ExpressionException("class ["+clazz.getName()+"] is not of type ["+Cache.class.getName()+"]");
 		}
@@ -1447,6 +1586,8 @@ public final class ConfigWebAdmin {
     		parent.removeAttribute("default-resource");
         if(name.equalsIgnoreCase(parent.getAttribute("default-function")))
     		parent.removeAttribute("default-function");
+        if(name.equalsIgnoreCase(parent.getAttribute("default-include")))
+    		parent.removeAttribute("default-include");
         
         
         if(_default==ConfigImpl.CACHE_DEFAULT_OBJECT){
@@ -1463,6 +1604,9 @@ public final class ConfigWebAdmin {
         }
         else if(_default==ConfigImpl.CACHE_DEFAULT_FUNCTION){
         	parent.setAttribute("default-function",name);
+        }
+        else if(_default==ConfigImpl.CACHE_DEFAULT_INCLUDE){
+        	parent.setAttribute("default-include",name);
         }
         
         // Update
@@ -1517,6 +1661,9 @@ public final class ConfigWebAdmin {
         else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
         	parent.removeAttribute("default-function");
         }
+        else if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE){
+        	parent.removeAttribute("default-include");
+        }
     }
 	
 	public void updateCacheDefaultConnection(int type,String name) throws PageException {
@@ -1541,6 +1688,9 @@ public final class ConfigWebAdmin {
         }
         else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
         	parent.setAttribute("default-function", name);
+        }
+        else if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE){
+        	parent.setAttribute("default-include", name);
         }
     }
 	
@@ -1651,7 +1801,7 @@ public final class ConfigWebAdmin {
 	private static String toStringURLStyle(Struct sct) {
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
-        StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
         while(it.hasNext()) {
             e = it.next();
             if(rtn.length()>0)rtn.append('&');
@@ -1664,7 +1814,7 @@ public final class ConfigWebAdmin {
 
 	private static String toStringCSSStyle(Struct sct) {
         //Collection.Key[] keys = sct.keys();
-        StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
         Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
         
@@ -1875,6 +2025,21 @@ public final class ConfigWebAdmin {
         datasources.setAttribute("inspect-template",str);
 
 	}
+	
+
+	public void updateTypeChecking(Boolean typeChecking) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update");
+        
+        Element datasources=_getRootElement("application");
+        if(typeChecking==null)datasources.removeAttribute("type-checking");
+        else datasources.setAttribute("type-checking",Caster.toString(typeChecking.booleanValue()));
+
+	}
+	
+	
     
     
     /**
@@ -2516,7 +2681,7 @@ public final class ConfigWebAdmin {
      * @param debug if value is null server setting is used
      * @throws SecurityException
      */
-    public void updateDebug(Boolean debug, Boolean database, Boolean exception, Boolean tracing, Boolean timer, 
+    public void updateDebug(Boolean debug, Boolean database, Boolean exception, Boolean tracing, Boolean dump, Boolean timer, 
     		Boolean implicitAccess, Boolean queryUsage) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
@@ -2535,6 +2700,9 @@ public final class ConfigWebAdmin {
         
         if(tracing!=null)debugging.setAttribute("tracing",Caster.toString(tracing.booleanValue()));
         else debugging.removeAttribute("tracing");
+        
+        if(dump!=null)debugging.setAttribute("dump",Caster.toString(dump.booleanValue()));
+        else debugging.removeAttribute("dump");
         
         if(timer!=null)debugging.setAttribute("timer",Caster.toString(timer.booleanValue()));
         else debugging.removeAttribute("timer");
@@ -3145,10 +3313,11 @@ public final class ConfigWebAdmin {
 	}
 
 	public void updateTemplateCharset(String charset) throws PageException {
+		
     	checkWriteAccess();
     	
     	Element element = _getRootElement("charset");
-		if(StringUtil.isEmpty(charset)){
+		if(StringUtil.isEmpty(charset,true)){
 			element.removeAttribute("template-charset");
 		}
 		else {
@@ -3433,10 +3602,10 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void updateExtension(Extension extension) throws PageException {
+	public void updateExtension(PageContext pc,Extension extension) throws PageException {
 		checkWriteAccess();
 		
-		String uid = createUid(extension.getProvider(),extension.getId());
+		String uid = createUid(pc,extension.getProvider(),extension.getId());
 		
 		Element extensions=_getRootElement("extensions");
 		Element[] children = ConfigWebFactory.getChildren(extensions,"extension");
@@ -3448,7 +3617,7 @@ public final class ConfigWebAdmin {
       	    el=children[i];
       	    provider=el.getAttribute("provider");
       	    id=el.getAttribute("id");
-  			if(uid.equalsIgnoreCase(createUid(provider, id))) {
+  			if(uid.equalsIgnoreCase(createUid(pc,provider, id))) {
   				setExtensionAttrs(el,extension);
   				return ;
   			}
@@ -3464,11 +3633,11 @@ public final class ConfigWebAdmin {
 	}
 
 
-	private String createUid(String provider, String id) throws PageException {
+	private String createUid(PageContext pc,String provider, String id) throws PageException {
 		if(Decision.isUUId(id)) {
-			return Hash.invoke(config,id,null,null, 1);
+			return Hash.invoke(pc.getConfig(),id,null,null, 1);
 		}
-		return Hash.invoke(config,provider+id,null,null, 1);
+		return Hash.invoke(pc.getConfig(),provider+id,null,null, 1);
 	}
 
 
@@ -3687,76 +3856,6 @@ public final class ConfigWebAdmin {
 		IOUtil.copy(is, fileLib.getOutputStream(), closeStream, true);
 		ConfigWebFactory.reloadLib((ConfigImpl) config);
 	}
-
-	public void updateLogSettings(String name, int level,String virtualpath, int maxfile, int maxfilesize) throws ApplicationException {
-		name=name.toLowerCase().trim();
-		
-		
-		
-		
-		if("application".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","application") ;
-		}
-		else if("exception".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","exception") ;
-		}
-		else if("trace".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","trace") ;
-		}
-		else if("thread".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","thread") ;
-		}
-		else if("orm".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "orm") ;
-		}
-		else if("gateway".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "gateways") ;
-		}
-		else if("mail".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "mail") ;
-		}  
-		else if("mapping".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "mappings") ;
-		}  
-		else if("remote-client".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "remote-clients") ;
-		}  
-		else if("request-timeout".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","requesttimeout") ;
-		}  
-		else if("request-timeout".equals(name)) {
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","requesttimeout") ;
-		}  
-		else if("schedule-task".equals(name)) {
-			if(config instanceof ConfigServer)
-				throw new ApplicationException("scheduled task logger is not supported for server context");
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "scheduler") ;
-		}  
-		else if("search".equals(name)) {
-			if(config instanceof ConfigServer)
-				throw new ApplicationException("search logger is not supported for server context");
-			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "search") ;
-		}  
-		else {
-			throw new ApplicationException("invalid logger name ["+name+"], supported names are [application,exception,trace,thread,orm,gateway,mail,mapping,remote-client,request-timeout,request-timeout,schedule-task,search]");
-		}
-	}
-
-	private void updateLogSettings(String name, int level, String virtualpath,int maxfile, int maxfilesize, String elName){
-		updateLogSettings(name, level, virtualpath,maxfile,maxfilesize,elName, null);
-	}
-
-	private void updateLogSettings(String name, int level, String virtualpath,int maxfile, int maxfilesize, String elName, String prefix) {
-		if(StringUtil.isEmpty(prefix)) prefix="";
-		else prefix+="-";
-		
-		Element el = _getRootElement(elName);
-		el.setAttribute(prefix+"log", virtualpath);
-		el.setAttribute(prefix+"log-level", LogUtil.toStringType(level, ""));
-		el.setAttribute(prefix+"log-max-file", Caster.toString(maxfile));
-		el.setAttribute(prefix+"log-max-file-size", Caster.toString(maxfilesize));
-	}
-
 
 	public void updateRemoteClientUsage(String code, String displayname) {
 		Struct usage = config.getRemoteClientUsage();
@@ -4039,9 +4138,73 @@ public final class ConfigWebAdmin {
         login.setAttribute("delay",Caster.toString(delay));
 		
 	}
+	
 
 
-	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg, Boolean nullSupport) throws PageException {
+
+	public void updateLogSettings(String name, Level level, String appenderClassName, Struct appenderArgs, String layoutClassName, Struct layoutArgs) throws PageException {
+		checkWriteAccess();
+		// TODO
+    	//boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_GATEWAY);
+        // if(!hasAccess) throw new SecurityException("no access to update gateway entry");
+        
+        // check parameters
+		name=name.trim();
+    	if(StringUtil.isEmpty(name))
+            throw new ApplicationException("name can't be a empty value");
+
+    	if(StringUtil.isEmpty(appenderClassName))
+    		throw new ExpressionException("you must define appender class name");
+    	if(StringUtil.isEmpty(layoutClassName))
+    		throw new ExpressionException("you must define layout class name");
+    	
+        try {
+        	ClassUtil.loadClass(appenderClassName);
+        	ClassUtil.loadClass(layoutClassName);
+        	
+		}
+        catch (ClassException e) {
+            throw Caster.toPageException(e);
+		}
+        
+        Element parent=_getRootElement("logging");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(parent,"logger");
+        Element el=null;
+      	for(int i=0;i<children.length;i++) {
+      	    String n=children[i].getAttribute("name");
+      	    if(name.equalsIgnoreCase(n)) {
+      	    	el=children[i];
+      	    	break;
+  			}
+      	  
+      	}
+      	// Insert
+      	if(el==null) {
+	      	el=doc.createElement("logger");
+	      	parent.appendChild(el);
+	      	el.setAttribute("name",name);
+      	}
+      	
+      	// appender
+      	if(appenderClassName.equals(ConsoleAppender.class.getName())) appenderClassName="console";
+      	if(appenderClassName.equals(RollingResourceAppender.class.getName())) appenderClassName="resource";
+      	// layout
+      	if(layoutClassName.equals(PatternLayout.class.getName())) layoutClassName="pattern";
+      	if(layoutClassName.equals(ClassicLayout.class.getName())) layoutClassName="classic";
+      	if(layoutClassName.equals(HTMLLayout.class.getName())) layoutClassName="html";
+      	if(layoutClassName.equals(XMLLayout.class.getName())) layoutClassName="xml";
+
+      	el.setAttribute("level",level.toString());
+  		el.setAttribute("appender",appenderClassName);
+      	el.setAttribute("appender-arguments",toStringCSSStyle(appenderArgs));
+	    el.setAttribute("layout",layoutClassName);
+	    el.setAttribute("layout-arguments",toStringCSSStyle(layoutArgs));
+	}
+
+
+	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean suppressWSBeforeArg, Boolean nullSupport) throws PageException {
 		
 		Element element = _getRootElement("compiler");
 		
@@ -4054,12 +4217,17 @@ public final class ConfigWebAdmin {
     		element.setAttribute("dot-notation-upper-case", Caster.toString(dotNotationUpperCase));
     	}
     	
-    	if(supressWSBeforeArg==null){
-			if(element.hasAttribute("supress-ws-before-arg"))
-				element.removeAttribute("supress-ws-before-arg");
+
+		// remove old settings
+		if(element.hasAttribute("supress-ws-before-arg"))
+			element.removeAttribute("supress-ws-before-arg");
+		
+    	if(suppressWSBeforeArg==null){
+			if(element.hasAttribute("suppress-ws-before-arg"))
+				element.removeAttribute("suppress-ws-before-arg");
 		}
     	else {
-    		element.setAttribute("supress-ws-before-arg", Caster.toString(supressWSBeforeArg));
+    		element.setAttribute("suppress-ws-before-arg", Caster.toString(suppressWSBeforeArg));
     	}
     	
     	// full null support
@@ -4254,6 +4422,7 @@ public final class ConfigWebAdmin {
 		}
 	}
 
+
 	public boolean _removeExtension(ConfigImpl config,String extensionID) throws IOException, PageException, SAXException {
 		if(!Decision.isUUId(extensionID)) throw new IOException("id ["+extensionID+"] is invalid, it has to be a UUID"); 
 		
@@ -4438,7 +4607,4 @@ public final class ConfigWebAdmin {
 		}
 		return sb.toString();
 	}
-
-
-
 }

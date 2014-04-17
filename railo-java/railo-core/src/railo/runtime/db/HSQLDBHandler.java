@@ -1,5 +1,7 @@
 package railo.runtime.db;
 
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -30,7 +32,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.util.CollectionUtil;
-import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 /**
  * class to reexecute queries on the resultset object inside the cfml enviroment
@@ -75,9 +76,9 @@ public final class HSQLDBHandler {
 			int[] innerTypes=toInnerTypes(types);
 			// CREATE STATEMENT
 				String comma="";
-				StringBuffer create=new StringBuffer("CREATE TABLE "+name+" (");
-				StringBuffer insert=new StringBuffer("INSERT INTO  "+name+" (");
-				StringBuffer values=new StringBuffer("VALUES (");
+				StringBuilder create=new StringBuilder("CREATE TABLE "+name+" (");
+				StringBuilder insert=new StringBuilder("INSERT INTO  "+name+" (");
+				StringBuilder values=new StringBuilder("VALUES (");
 				for(int i=0;i<keys.length;i++) {
 					String key=keys[i].getString();
 					String type=(doSimpleTypes)?"VARCHAR_IGNORECASE":toUsableType(types[i]);
@@ -364,7 +365,7 @@ public final class HSQLDBHandler {
 	    	finally {
 	    		removeAll(conn,usedTables);
                 DBUtil.setAutoCommitEL(conn,true);
-	    		pool.releaseDatasourceConnection(dc);
+	    		pool.releaseDatasourceConnection(config,dc,true);
 	    		
 	    		//manager.releaseConnection(dc);
 	    	}

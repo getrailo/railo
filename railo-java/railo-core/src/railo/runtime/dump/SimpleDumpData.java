@@ -46,7 +46,7 @@ public class SimpleDumpData implements DumpData,Castable {
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(data,true,null,defaultValue);
+        return DateCaster.toDateAdvanced(data,DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 	
 	@Override

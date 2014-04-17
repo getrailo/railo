@@ -1,9 +1,19 @@
 package railo.runtime.orm.hibernate;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,15 +26,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.component.PropertyImpl;
 import railo.runtime.config.Config;
@@ -38,6 +45,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.orm.hibernate.tuplizer.proxy.ComponentProProxy;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -45,7 +53,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.util.ListUtil;
@@ -68,11 +75,27 @@ public class CommonUtil {
 	public static final Key INIT=CommonUtil.createKey("init");
 	private static final short INSPECT_UNDEFINED = (short)4; /*ConfigImpl.INSPECT_UNDEFINED*/
 	
+	private static Charset charset;
+	
 	public static final Charset UTF8;
+	public static final Charset ISO88591;
+	public static final Charset UTF16BE;
+	public static final Charset UTF16LE;
 	
 	static {
 		UTF8=Charset.forName("utf-8");
+		ISO88591=Charset.forName("iso-8859-1");
+		UTF16BE=Charset.forName("utf-16BE");
+		UTF16LE=Charset.forName("UTF-16LE");
+		
+		String strCharset=System.getProperty("file.encoding");
+		if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
+			strCharset="cp1252";
+
+		if(strCharset.equalsIgnoreCase("utf-8")) charset=UTF8;
+		else charset=Charset.forName(strCharset);
 	}
+	
 
 	
 	private static Cast caster;
@@ -146,9 +169,101 @@ public class CommonUtil {
 	public static String toString(long l) {
 		return caster().toString(l);
 	}
-	public static String toString(Resource file, Charset charset) throws IOException {
-		return IOUtil.toString(file, charset);
-	}
+
+	/**
+	    * reads String data from File
+	     * @param file 
+	     * @param charset 
+	     * @return readed string
+	    * @throws IOException
+	    */
+	   public static String toString(Resource file, Charset charset) throws IOException {
+	       Reader r = null;
+	       try {
+	    	   r = getReader(file,charset);
+	           String str = toString(r);
+	           return str;
+	       }
+	       finally {
+	           closeEL(r);
+	       }
+	   }
+	
+	   public static String toString(Reader reader) throws IOException {
+	       StringWriter sw=new StringWriter(512);
+	       copy(toBufferedReader(reader),sw);
+	       sw.close();
+	       return sw.toString();
+	   }
+	   
+	   public static BufferedReader toBufferedReader(Reader r) {
+			if(r instanceof BufferedReader) return (BufferedReader) r;
+			return new BufferedReader(r);
+		}
+	   
+	   private static final void copy(Reader r, Writer w) throws IOException {
+	        copy(r,w,0xffff);
+	    }
+	   
+	   private static final void copy(Reader r, Writer w, int blockSize) throws IOException {
+	        char[] buffer = new char[blockSize];
+	        int len;
+
+	        while((len = r.read(buffer)) !=-1)
+	          w.write(buffer, 0, len);
+	    }
+	
+ 	public static Reader getReader(Resource res, Charset charset) throws IOException {
+ 		InputStream is=null;
+ 		try {
+	 		is = res.getInputStream();
+	 		boolean markSupported=is.markSupported();
+	        if(markSupported) is.mark(4);
+	        int first = is.read();
+	        int second = is.read();
+	        // FE FF 	UTF-16, big-endian
+	        if (first == 0xFE && second == 0xFF)    {
+	        	return _getReader(is, UTF16BE);
+	        }
+	        // FF FE 	UTF-16, little-endian
+	        if (first == 0xFF && second == 0xFE)    {
+	        	return _getReader(is, UTF16LE);
+	        }
+	        
+	        int third=is.read();
+	        // EF BB BF 	UTF-8
+	        if (first == 0xEF && second == 0xBB && third == 0xBF)    {
+	        	//is.reset();
+	 			return _getReader(is,UTF8);
+	        }
+
+	        if(markSupported) {
+	    		is.reset();
+	    		return _getReader(is,charset);
+	    	}
+ 		}
+ 		catch(IOException ioe) {
+ 			closeEL(is);
+ 			throw ioe;
+ 		}
+ 		
+ 	// when mark not supported return new reader
+        closeEL(is);
+        is=null;
+ 		try {
+ 			is=res.getInputStream();
+ 		}
+ 		catch(IOException ioe) {
+ 			closeEL(is);
+ 			throw ioe;
+ 		}
+        return _getReader(is, charset);             
+   }
+ 	
+ 	private static Reader _getReader(InputStream is, Charset cs)  {
+		 if(cs==null) cs=charset;
+	     return new BufferedReader(new InputStreamReader(is,cs));
+	 }
 
 	public static String[] toStringArray(String list, char delimiter) { 
 		return ListUtil.listToStringArray(list, delimiter);
@@ -227,8 +342,8 @@ public class CommonUtil {
 	}
 	
 
-	public static Document toDocument(Resource res) throws IOException, SAXException {
-		return XMLUtil.parse(XMLUtil.toInputSource(res), null, false);
+	public static Document toDocument(Resource res, Charset cs) throws IOException, SAXException {
+		return XMLUtil.parse(XMLUtil.toInputSource(res,cs), null, false);
 	}
 	
 	
@@ -405,7 +520,13 @@ public class CommonUtil {
 	}
 
 	public static DataSource getDataSource(PageContext pc, String name) throws PageException {
-		return ((PageContextImpl)pc).getDataSource(name); // TODO use reflection
+		try{
+			Method m = pc.getClass().getMethod("getDataSource", new Class[]{String.class});
+			return (DataSource) m.invoke(pc, new Object[]{name});
+		}
+		catch (Throwable t) {
+			throw caster().toPageException(t);
+		}
 	}
 
 	public static DatasourceConnection getDatasourceConnection(PageContext pc, DataSource ds) throws PageException {
@@ -413,7 +534,7 @@ public class CommonUtil {
 	}
 	
 	public static void releaseDatasourceConnection(PageContext pc, DatasourceConnection dc) {
-		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc); // TODO use reflection
+		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(pc.getConfig(),dc,true); // TODO use reflection
 	}
 
 	public static MappingImpl createMapping(Config config, String virtual, String physical) {
@@ -454,17 +575,41 @@ public class CommonUtil {
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties,preferBaseProperties,preferBaseProperties);
-		return c.getProperties(onlyPeristent);
+		return ComponentProProxy.getProperties(c, onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
+	}
+
+	public static void write(Resource res, String string, Charset cs, boolean append) throws IOException {
+		if(cs==null) cs=charset;
+
+		Writer writer=null;
+		try {
+			writer=getWriter(res, cs,append);
+			writer.write(string);
+		}
+		finally {
+			closeEL(writer);
+		}
 	}
 	
-	public static void write(Resource res, String string, Charset charset, boolean append) throws IOException {
-		IOUtil.write(res, string, charset, append);
+	public static Writer getWriter(Resource res, Charset charset, boolean append) throws IOException {
+ 		OutputStream os=null;
+ 		try {
+ 			os=res.getOutputStream(append);
+ 		}
+ 		catch(IOException ioe) {
+ 			closeEL(os);
+ 			throw ioe;
+ 		}
+ 		return getWriter(os, charset);
+ 	}
+	
+	public static Writer getWriter(OutputStream os, Charset cs) {
+		if(cs==null) cs=charset;
+		return new BufferedWriter(new OutputStreamWriter(os,charset));
 	}
 
 	public static BufferedReader toBufferedReader(Resource res, Charset charset) throws IOException {
-		return IOUtil.toBufferedReader(IOUtil.getReader(res,(Charset)null));
+		return toBufferedReader(getReader(res,(Charset)null));
 	}
 	
 	public static boolean equalsComplexEL(Object left, Object right) {
@@ -472,7 +617,7 @@ public class CommonUtil {
 	}
 
 	public static void setEntity(Component c, boolean entity) { 
-		((ComponentAccess)c).setEntity(entity);
+		ComponentProProxy.setEntity(c,entity);
 	}
 
 	public static PageContext pc() {
@@ -484,4 +629,53 @@ public class CommonUtil {
 		//return CFMLEngineFactory.getInstance().getThreadPageContext().getConfig();
 		return ThreadLocalPageContext.getConfig();
 	}
+
+	public static boolean isPersistent(Component c) {
+		return ComponentProProxy.isPersistent(c);
+	}
+
+	public static Object getMetaStructItem(Component c, Key name) {
+		return ComponentProProxy.getMetaStructItem(c,name);
+	}
+	
+	public static void closeEL(OutputStream os) {
+		if(os!=null) {
+			try {
+				os.close();
+			}
+			catch (Throwable t) {}
+		}
+	}
+	
+	public static void closeEL(Writer w) {
+		if(w!=null) {
+			try {
+				w.close();
+			}
+			catch (Throwable t) {}
+		}
+	}
+
+	public static void closeEL(ResultSet rs) {
+		if(rs!=null) {
+			try {
+				rs.close();
+			}
+			catch (Throwable t) {}
+		}
+	}
+	
+	public static void closeEL(InputStream is) {
+   	 try {
+   		 if(is!=null)is.close();
+   	 } 
+   	 catch (Throwable t) {}
+    }
+	
+	public static void closeEL(Reader r) {
+   	 try {
+   		 if(r!=null)r.close();
+   	 } 
+   	 catch (Throwable t) {}
+    }
 }

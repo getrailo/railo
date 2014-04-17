@@ -53,6 +53,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
@@ -70,8 +71,11 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.functions.file.FileStreamWrapper;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.img.Image;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
@@ -366,7 +370,7 @@ public final class Caster {
      */
     public static Double toDouble(Object o, Double defaultValue) {
         if(o instanceof Double) return (Double)o;
-        double dbl = toDoubleValue(o,Double.NaN);
+        double dbl = toDoubleValue(o,true,Double.NaN);
         if(Double.isNaN(dbl)) return defaultValue;
         return new Double(dbl);
         
@@ -525,16 +529,26 @@ public final class Caster {
     }
     
     private static double toDoubleValueViaDate(String str) throws CasterException {
-		DateTime date = DateCaster.toDateSimple(str, false,false, null, null);// not advanced here, neo also only support simple
+		DateTime date = DateCaster.toDateSimple(str, DateCaster.CONVERTING_TYPE_NONE,false, null, null);// not advanced here, neo also only support simple
 		if(date==null)throw new CasterException("can't cast ["+str+"] string to a number value");
     	return date.castToDoubleValue(0);
 	}
     
     private static double toDoubleValueViaDate(String str,double defaultValue) {
-    	DateTime date = DateCaster.toDateSimple(str, false,false, null, null);// not advanced here, neo also only support simple
+    	DateTime date = DateCaster.toDateSimple(str, DateCaster.CONVERTING_TYPE_NONE,false, null, null);// not advanced here, neo also only support simple
 		if(date==null)return defaultValue;
     	return date.castToDoubleValue(0);
 	}
+    
+    /**
+     * cast a Object to a double value (primitive value Type)
+     * @param o Object to cast
+     * @param defaultValue if can't cast return this value
+     * @return casted double value
+     * /
+    public static double toDoubleValue(Object o,double defaultValue) {
+    	return toDoubleValue(o, true, defaultValue);
+    }*/
 
 	/**
      * cast a Object to a double value (primitive value Type)
@@ -542,16 +556,16 @@ public final class Caster {
      * @param defaultValue if can't cast return this value
      * @return casted double value
      */
-    public static double toDoubleValue(Object o,double defaultValue) {
+    public static double toDoubleValue(Object o,boolean alsoFromDate,double defaultValue) {
         if(o instanceof Number) return ((Number)o).doubleValue();
         else if(o instanceof Boolean) return ((Boolean)o).booleanValue()?1:0;
-        else if(o instanceof String) return toDoubleValue(o.toString(),defaultValue);
+        else if(o instanceof String) return toDoubleValue(o.toString(),alsoFromDate,defaultValue);
         else if(o instanceof Castable) {
             return ((Castable)o).castToDoubleValue(defaultValue);
             
         }
         //else if(o == null) return defaultValue;
-        else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),defaultValue);
+        else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),true,defaultValue);
 			
         return defaultValue;
     }
@@ -832,7 +846,7 @@ public final class Caster {
      * @return casted decimal value
      */
     public static String toDecimal(Object value, String defaultValue) {
-        double res=toDoubleValue(value,Double.NaN);
+        double res=toDoubleValue(value,true,Double.NaN);
         if(Double.isNaN(res)) return defaultValue;
         return toDecimal(res);
     }
@@ -1845,10 +1859,10 @@ public final class Caster {
 			}
         }
         else if(o instanceof InputStream) {
-        	Config config = ThreadLocalPageContext.getConfig();
+        	PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
         	InputStream r=null;
 			try {
-				return IOUtil.toString(r=(InputStream)o,config.getWebCharset());
+				return IOUtil.toString(r=(InputStream)o,pc.getWebCharset());
 			} 
 			catch (IOException e) {
 				throw Caster.toPageException(e);
@@ -1858,10 +1872,10 @@ public final class Caster {
 			}
         }
         else if(o instanceof byte[]) {
-        	Config config = ThreadLocalPageContext.getConfig();
+        	PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
         	
         	try {
-				return new String((byte[])o,config.getWebCharset());
+				return new String((byte[])o,pc.getWebCharset());
 			} catch (Throwable t) {
 				return new String((byte[])o);
 			}
@@ -2679,7 +2693,7 @@ public final class Caster {
      * @throws PageException 
      */
     public static DateTime toDate(Object o,boolean alsoNumbers, TimeZone tz) throws PageException {
-        return DateCaster.toDateAdvanced(o,alsoNumbers,tz);
+        return DateCaster.toDateAdvanced(o,alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,tz);
     }
     
     /**
@@ -2691,7 +2705,7 @@ public final class Caster {
      * @return casted DateTime Object
      */
     public static DateTime toDate(Object o,boolean alsoNumbers, TimeZone tz, DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(o,alsoNumbers,tz,defaultValue);
+        return DateCaster.toDateAdvanced(o,alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,tz,defaultValue);
     }
 
     /**
@@ -2703,7 +2717,7 @@ public final class Caster {
      * @return casted DateTime Object
      */
     public static DateTime toDate(String str,boolean alsoNumbers, TimeZone tz, DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(str,alsoNumbers,tz,defaultValue);
+        return DateCaster.toDateAdvanced(str,alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,tz,defaultValue);
     }
 
     /**
@@ -2974,7 +2988,7 @@ public final class Caster {
             return toTimespan(((ObjectWrap)o).getEmbededObject());
         }
         
-        double dbl = toDoubleValue(o,Double.NaN);
+        double dbl = toDoubleValue(o,true,Double.NaN);
         if(!Double.isNaN(dbl))return TimeSpanImpl.fromDays(dbl);
         
         throw new CasterException(o,"timespan");
@@ -3196,7 +3210,7 @@ public final class Caster {
     	if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
-        		return ComponentUtil.getServerComponentPropertiesClass(pc,c);
+        		return ComponentUtil.getComponentPropertiesClass(pc,c);
     		} 
             catch (PageException e) {
             	pe=e;
@@ -3401,15 +3415,8 @@ public final class Caster {
         	}        	
         	return trg;	
         }
-        
-        
-        if(o instanceof Component) {
-            Component comp=((Component)o);
-            if(comp.instanceOf(type)) return o;
-            // neo batch
-            throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
-        }
-        throw new CasterException(o,type);
+
+    	return _castTo(pc, type, o);
     }
 
 	public static String toZip(Object o) throws PageException {
@@ -3516,11 +3523,22 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
+        else if(type==CFTypes.TYPE_IMAGE)          return Image.toImage(pc,o);
+
+    	return _castTo(pc, strType, o);
+    }   
+    
+    private static Object _castTo(PageContext pc, String strType, Object o) throws PageException {
 
         if(o instanceof Component) {
             Component comp=((Component)o);
             if(comp.instanceOf(strType)) return o;
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+strType+"]");
+        }
+        if(o instanceof Pojo) {
+        	Component cfc = AxisCaster.toComponent(pc,((Pojo)o),strType,null);
+        	if(cfc!=null) return cfc;
+        	throw new ExpressionException("can't cast Pojo of Type ["+o.getClass().getName()+"] to ["+strType+"]");
         }
         
         if(strType.endsWith("[]") && Decision.isArray(o)){
@@ -3548,7 +3566,7 @@ public final class Caster {
 	    	
 	    }
         throw new CasterException(o,strType);
-    }   
+    }
     
     /**
      * cast a value to a value defined by type argument
@@ -3576,6 +3594,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
+        else if(type==CFTypes.TYPE_IMAGE)            return Image.toImage(pc,o);
 
         if(type==CFTypes.TYPE_UNDEFINED)
             throw new ExpressionException("type isn't defined (TYPE_UNDEFINED)");
@@ -3778,6 +3797,8 @@ public final class Caster {
         }
         return defaultValue;
     }
+    
+    
     
     /**
      * cast a Object to a Collection, if not returns null
@@ -4146,7 +4167,7 @@ public final class Caster {
 		if(src instanceof String) {
 			if(existing)
 				return ResourceUtil.toResourceExisting(pc, (String)src,allowRealpath);
-			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath);
+			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath,false);
 		}
 		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
         throw new CasterException(src,"Resource");
@@ -4176,16 +4197,16 @@ public final class Caster {
 		return (Vector) Duplicator.duplicateList(toList(obj,false),new Vector(), false);
 	} 
 
-	public static Calendar toCalendar(Date date, TimeZone tz) {
+	public static Calendar toCalendar(Date date, TimeZone tz, Locale l) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance(tz,l):JREDateTimeUtil.newInstance(tz,l);
 		c.setTime(date);
 		return c;
 	}
 	
-	public static Calendar toCalendar(long time, TimeZone tz) {
+	public static Calendar toCalendar(long time, TimeZone tz, Locale l) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance(tz,l):JREDateTimeUtil.newInstance(tz,l);
 		c.setTimeInMillis(time);
 		return c;
 	}

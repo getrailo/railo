@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
@@ -21,7 +22,7 @@ public class FileWriteLine {
 					close=true;
 					Resource res = Caster.toResource(pc,obj,false);
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
-					fsw=new FileStreamWrapperWrite(res,pc.getConfig().getResourceCharset(),false,false);
+					fsw=new FileStreamWrapperWrite(res,((PageContextImpl)pc).getResourceCharset().name(),false,false);
 				}
 				fsw.write(text+"\n");
 			}

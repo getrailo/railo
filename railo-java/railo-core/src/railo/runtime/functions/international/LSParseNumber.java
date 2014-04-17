@@ -55,7 +55,7 @@ public final class LSParseNumber implements Function {
 	
 	
 	private static String optimze(char[] carr) {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		char c;
 		for(int i=0;i<carr.length;i++){
 			c=carr[i];

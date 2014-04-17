@@ -27,6 +27,10 @@ public final class TagLibTagAttr {
 	public static final short SCRIPT_SUPPORT_REQUIRED = 2;
 	
 	private String name="noname";
+	private String[] alias=null;
+	
+
+
 	private String type;
 	private String description="";
 	private boolean required;
@@ -46,6 +50,7 @@ public final class TagLibTagAttr {
 	public TagLibTagAttr duplicate(TagLibTag tag) {
 		TagLibTagAttr tlta=new TagLibTagAttr(tag);
 		tlta.name=name;
+		tlta.alias=alias;
 		tlta.type=type;
 		tlta.description=description;
 		tlta.required=required;
@@ -93,6 +98,20 @@ public final class TagLibTagAttr {
 	public String getName() {
 		return name;
 	}
+	
+
+	public TagLibTag getTag() {
+		return tag;
+	}
+	
+	public String[] getAlias() {
+		return alias;
+	}
+
+
+	public void setAlias(String strAlias) {
+		this.alias = railo.runtime.type.util.ListUtil.trimItems(railo.runtime.type.util.ListUtil.listToStringArray(strAlias.toLowerCase(),','));
+	}
 
 	/**
 	 * Gibt zurueck, ob das Attribut Pflicht ist oder nicht.
@@ -103,13 +122,13 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Gibt den Typ des Attribut zurŸck (query, struct, string usw.)
+	 * Gibt den Typ des Attribut zurï¿½ck (query, struct, string usw.)
 	 * @return Typ des Attribut
 	 */
 	public String getType() {
 	    if(this.type==null) {
 	    	try {
-	        String methodName=  "set"+
+	        String methodName="set"+
 			(name.length()>0?""+Character.toUpperCase(name.charAt(0)):"")+
 			(name.length()>1?name.substring(1):"");
 	        

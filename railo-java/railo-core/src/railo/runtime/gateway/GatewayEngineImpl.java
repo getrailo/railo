@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.Md5;
 import railo.commons.lang.Pair;
@@ -47,7 +48,7 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 	
 	public GatewayEngineImpl(ConfigWeb config){
 		this.config=config;
-		this.log=((ConfigWebImpl)config).getGatewayLogger();
+		this.log=((ConfigWebImpl)config).getLog("gateway");
 		
 	}
 	
@@ -410,6 +411,8 @@ public class GatewayEngineImpl implements GatewayEnginePro {
 		case LOGLEVEL_FATAL:l=Log.LEVEL_FATAL;
 		break;
 		case LOGLEVEL_WARN:l=Log.LEVEL_WARN;
+		break;
+		case LOGLEVEL_TRACE:l=LogUtil.LEVEL_TRACE;
 		break;
 		}
 		log.log(l, "Gateway:"+gatewayId, message);

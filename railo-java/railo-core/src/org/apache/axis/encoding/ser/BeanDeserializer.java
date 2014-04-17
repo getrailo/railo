@@ -214,7 +214,7 @@ public class BeanDeserializer extends DeserializerImpl implements Serializable
         
         // Workaround
         if (propDesc == null) {
-        	StringBuffer sb=new StringBuffer();
+        	StringBuilder sb=new StringBuilder();
             sb.append(Character.toLowerCase(localName.charAt(0)));
         	if(localName.length()>1)sb.append(localName.substring(1));
             // look for a field by this name.

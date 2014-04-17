@@ -1,6 +1,7 @@
 package railo.transformer.bytecode.statement.tag;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 /**
  * 
@@ -24,7 +26,8 @@ public abstract class TagBase extends StatementBase implements Tag {
 	private String fullname;
 	private TagLibTag tagLibTag;
 	Map<String,Attribute> attributes=new LinkedHashMap<String,Attribute>();
-	Map<String,String> missingAttributes=new HashMap<String,String>();
+	//Map<String,String> missingAttributes=new HashMap<String,String>();
+	HashSet<TagLibTagAttr> missingAttributes=new HashSet<TagLibTagAttr>();
 	private boolean scriptBase=false;
 	
 	private Map<String, Attribute> metadata;
@@ -44,7 +47,7 @@ public abstract class TagBase extends StatementBase implements Tag {
 	}
 
 	@Override
-	public Map getAttributes() {
+	public Map<String,Attribute> getAttributes() {
 		return attributes;
 	}
 
@@ -142,13 +145,14 @@ public abstract class TagBase extends StatementBase implements Tag {
 	}
 	
 	@Override
-	public void addMissingAttribute(String name, String type) {
-		missingAttributes.put(name, type);
+	public void addMissingAttribute(TagLibTagAttr attr) {
+		missingAttributes.add(attr);
 	}
 	
 	@Override
-	public Map getMissingAttributes() {
-		return missingAttributes;
+	public TagLibTagAttr[] getMissingAttributes() {
+		
+		return missingAttributes.toArray(new TagLibTagAttr[missingAttributes.size()]);
 	}
 	
 	@Override
@@ -161,4 +165,6 @@ public abstract class TagBase extends StatementBase implements Tag {
 	public Map<String, Attribute> getMetaData() {
 		return metadata;
 	}
+	
+	
 }

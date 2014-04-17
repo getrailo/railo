@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
@@ -27,21 +26,41 @@ public final class QueryNew extends BIF {
 
 	private static final long serialVersionUID = -4313766961671090938L;
 	
-	public static railo.runtime.type.Query call(PageContext pc , String columnList) throws DatabaseException {
-	    return new QueryImpl(ListUtil.listToArrayTrim(columnList,","),0,"query");
-	}
-	public static railo.runtime.type.Query call(PageContext pc , String columnList, String columnTypeList) throws PageException {
-		if(StringUtil.isEmpty(columnTypeList)) return call(pc, columnList);
-		return new QueryImpl(ListUtil.listToArrayTrim(columnList,","),ListUtil.listToArrayTrim(columnTypeList,","),0,"query");
+	/** @deprecated used by old railo archives */
+	public static railo.runtime.type.Query call(PageContext pc , String columnNames) throws PageException {
+		return call(pc, (Object)columnNames);
 	}
 	
-	public static railo.runtime.type.Query call(PageContext pc , String strColumnList, String strColumnTypeList, Object data) throws PageException {
-		Array columnList = ListUtil.listToArrayTrim(strColumnList,",");
+	/** @deprecated used by old railo archives */
+	public static railo.runtime.type.Query call(PageContext pc , String columnNames, String columnTypes) throws PageException {
+		return call(pc, (Object)columnNames, (Object)columnTypes);
+	}
+	
+	/** @deprecated used by old railo archives */
+	public static railo.runtime.type.Query call(PageContext pc , String columnNames, String columnTypes, Object data) throws PageException {
+		return call(pc, (Object)columnNames, (Object)columnTypes,data);
+	}
+		
+	
+	
+	
+	public static railo.runtime.type.Query call(PageContext pc , Object columnNames) throws PageException {
+		return new QueryImpl(toArray(pc,columnNames,1),0,"query");
+	}
+
+	public static railo.runtime.type.Query call(PageContext pc , Object columnNames, Object columnTypes) throws PageException {
+		if(StringUtil.isEmpty(columnTypes)) return call(pc, columnNames);
+		return new QueryImpl(toArray(pc,columnNames,1),toArray(pc,columnTypes,2),0,"query");
+	}
+	
+	public static railo.runtime.type.Query call(PageContext pc , Object columnNames, Object columnTypes, Object data) throws PageException {
+		
+		Array cn = toArray(pc, columnNames, 1);
 		railo.runtime.type.Query qry;
-		if(StringUtil.isEmpty(strColumnTypeList))
-			qry= new QueryImpl(columnList,0,"query");
+		if(StringUtil.isEmpty(columnTypes))
+			qry= new QueryImpl(cn,0,"query");
 		else
-			qry= new QueryImpl(columnList,ListUtil.listToArrayTrim(strColumnTypeList,","),0,"query");
+			qry= new QueryImpl(cn,toArray(pc, columnTypes, 2),0,"query");
 		
 		if(data==null) return qry;
 		return populate(pc, qry, data);	
@@ -90,14 +109,8 @@ public final class QueryNew extends BIF {
 			qry.setAt(column, row, it.next());
 		}
 	}
+
 	private static Query _populate(PageContext pc, Query qry,Array data) throws PageException {
-		/*
-		 * 3 types of structures are supported
-		 * array - ["Urs","Weber"]
-		 * array of struct - [{firstname="Urs",lastname="Weber"},{firstname="Peter",lastname="Mueller"}]
-		 * array of array - [["Urs","Weber"],["Peter","Mueller"]]
-		 */
-		
 		// check if the array only contains simple values or mixed
 		Iterator<?> it = data.valueIterator();
 		Object o;
@@ -126,7 +139,7 @@ public final class QueryNew extends BIF {
 		}
 		return qry;
 	}
-	
+
 	private static void populateRow(Query qry, Struct data) throws PageException {
 		Key[] columns = QueryUtil.getColumnNames(qry);
 		int row=qry.getRecordcount();
@@ -137,6 +150,7 @@ public final class QueryNew extends BIF {
 		}
 		
 	}
+
 	private static void populateRow(Query qry, Array data) throws PageException {
 		Iterator<?> it = data.valueIterator();
 		Key[] columns = QueryUtil.getColumnNames(qry);
@@ -147,5 +161,13 @@ public final class QueryNew extends BIF {
 			if(index>=columns.length) break;
 			qry.setAt(columns[index], row, it.next());
 		}
+	}
+	
+	private static Array toArray(PageContext pc,Object columnNames, int index) throws PageException {
+		if(Decision.isArray(columnNames))
+			return Caster.toArray(columnNames);
+		String str=Caster.toString(columnNames,null);
+		if(str==null) throw new FunctionException(pc, "QueryNew", index, index==1?"columnNames":"columnTypes", "cannot cast to a array or a string list");
+		return ListUtil.listToArrayTrim(str,",");
 	}
 }  

@@ -175,8 +175,8 @@ public class ImageFilter {
 		return call(pc, name, filterName, EMPTY_STRUCT);
 	}
 	public static String call(PageContext pc, Object name, String filterName, Struct parameters) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		String lcFilterName = filterName.trim().toLowerCase();
 		
 		// get filter class

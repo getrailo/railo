@@ -47,7 +47,7 @@ public class MetadataUtil {
         }
         
         // check base
-		return hasChanged(pc, lastMetaCreation, (ComponentImpl)cfc._base());
+		return hasChanged(pc, lastMetaCreation, (ComponentImpl)cfc.getBaseComponent());
 	}
 	
 	private static boolean hasChanged(PageContext pc,long lastMetaCreation,InterfaceImpl[] interfaces) throws PageException {

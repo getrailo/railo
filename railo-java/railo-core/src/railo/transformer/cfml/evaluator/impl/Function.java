@@ -17,7 +17,6 @@ import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
@@ -75,7 +74,11 @@ public final class Function extends EvaluatorSupport {
 		Attribute attrCachedWithin = tag.getAttribute("cachedwithin");
 		if(attrCachedWithin!=null) {
 			Expression val = attrCachedWithin.getValue();
-			tag.addAttribute(new Attribute(attrCachedWithin.isDynamicType(), attrCachedWithin.getName(), LitLong.toExpr(ASMUtil.timeSpanToLong(val), null, null), "numeric"));
+			tag.addAttribute(new Attribute(
+					attrCachedWithin.isDynamicType(), 
+					attrCachedWithin.getName(), 
+					ASMUtil.cachedWithinValue(val),
+					attrCachedWithin.getType()));
 		}
 		
 		// Attribute localMode
@@ -127,7 +130,7 @@ public final class Function extends EvaluatorSupport {
 		FunctionLibFunction flf;
 		for (int i = 0; i < flibs.length; i++) {
 			flf = flibs[i].getFunction(name);
-			if(flf!=null && flf.getClazz()!=CFFunction.class) {
+			if(flf!=null && flf.getClazz(null)!=CFFunction.class) {
 				throw new EvaluatorException("The name ["+name+"] is already used by a built in Function");
 			}
 		}

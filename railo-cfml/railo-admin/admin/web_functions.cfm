@@ -314,10 +314,10 @@ ACCESS.CFX_USAGE=securityManager.getAccess(smClass.TYPE_CFX_USAGE);
 	<cfset var desc  = len( arguments.text ) ? arguments.text : stText.settings.appcfcdesc>
 
 	<cfif !arguments.isExpand>
-		<div class="coding-tip-trigger">#stText.settings.tip#</div>		
+		<div class="coding-tip-trigger-#request.adminType#">&lt;?/&gt;<!--- #stText.settings.tip#---></div>		
 	</cfif>
-	<div class="coding-tip #arguments.isExpand ? 'expanded' : ''#">
-		<div>#desc#:</div>
+	<div class="coding-tip-#request.adminType# #arguments.isExpand ? 'expanded' : ''#">
+		<div><cfif !(isBoolean(desc) && !desc)>#desc#:</cfif></div>
 		<code>#trim( arguments.codeSample )#</code>
 	</div>
 </cffunction>

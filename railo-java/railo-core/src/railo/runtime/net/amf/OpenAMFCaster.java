@@ -20,7 +20,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
 import flashgateway.io.ASObject;
 
 /**
@@ -88,12 +87,11 @@ public final class OpenAMFCaster implements AMFCaster {
     }
     private Object toAMFObject(Component c) throws PageException {
     	ASObject aso = new ASObject();
-    	if(c instanceof ComponentAccess) {
-    		Property[] prop = c.getProperties(false);
-        	if(prop!=null)for(int i=0;i<prop.length;i++) {
-        		aso.put(prop[i].getName().toUpperCase(), toAMFObject(c.get(prop[i].getName(),null)));
-        	}
-    	}
+    	Property[] prop = c.getProperties(false);
+        if(prop!=null)for(int i=0;i<prop.length;i++) {
+        	aso.put(prop[i].getName().toUpperCase(), toAMFObject(c.get(prop[i].getName(),null)));
+        }
+    	
     	return aso;
     }
     private ASRecordSet toAMFObject(Query qry) throws PageException {

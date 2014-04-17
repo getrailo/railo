@@ -1,5 +1,6 @@
 package railo.runtime.tag;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,12 +13,13 @@ import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -46,28 +48,57 @@ public class TagUtil {
 
 	//private static final String "invalid call of the function ["+tlt.getName()+", you can not mix named on regular arguments]" = "invalid argument for function, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")";
 
-	public static void setAttributeCollection(PageContext pc,Tag tag, MissingAttribute[] missingAttrs, Struct attrs, int attrType) throws PageException {
+	public static void setAttributeCollection(PageContext pc,Tag tag, MissingAttribute[] missingAttrs, Struct _attrs, int attrType) throws PageException {
 		// check missing tags
-		if(!ArrayUtil.isEmpty(missingAttrs)){
-			Object value;
-			for(int i=0;i<missingAttrs.length;i++) {
-				value=attrs.get(
-						missingAttrs[i].getName()
-						,null);
-				if(value==null)
-					throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required but missing");
-					//throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required for tag "+tag.getFullName());
-				attrs.put(missingAttrs[i].getName(), Caster.castTo(pc, missingAttrs[i].getType(), value, false));
+		Map<Key, Object> att=new HashMap<Key, Object>();
+		{
+			Iterator<Entry<Key, Object>> it = _attrs.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()){
+				e = it.next();
+				att.put(e.getKey(), e.getValue());
 			}
 		}
 		
-		
-		//Key[] keys = attrs.keys();
+		if(!ArrayUtil.isEmpty(missingAttrs)){
+			Key k;
+			Object value;
+			MissingAttribute miss;
+			for(int i=0;i<missingAttrs.length;i++) {
+				miss = missingAttrs[i];
+				value=att.get(miss.getName());
+				// check alias
+				if(value==null && !ArrayUtil.isEmpty(miss.getAlias())) {
+					String[] alias = miss.getAlias();
+					for(int y=0;y<alias.length;y++){
+						value=att.get(k=KeyImpl.init(alias[y]));
+						if(value!=null) {
+							att.remove(k);
+							break;
+						}
+					}
+				}
+				
+				
+				if(value==null)
+					throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required but missing");
+					//throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required for tag "+tag.getFullName());
+				att.put(
+						missingAttrs[i].getName(), 
+						Caster.castTo(pc, missingAttrs[i].getType(), value, false));
+			}
+		}
+		setAttributes(pc,tag,att,attrType);
+	}
+	
+
+	public static void setAttributes(PageContext pc,Tag tag, Map<Key, Object> att, int attrType) throws PageException {
 		Iterator<Entry<Key, Object>> it;
 		Entry<Key, Object> e;
+		//TagLibTag tlt=null;
 		if(TagLibTag.ATTRIBUTE_TYPE_DYNAMIC==attrType) {
 			DynamicAttributes da=(DynamicAttributes) tag;
-			it = attrs.entryIterator();
+			it = att.entrySet().iterator();
 			while(it.hasNext()) {
 				e = it.next();
 				da.setDynamicAttribute(null, e.getKey(),e.getValue());
@@ -75,20 +106,35 @@ public class TagUtil {
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_FIXED==attrType) {
 			Object value;
-			it = attrs.entryIterator();
+			it = att.entrySet().iterator();
+			MethodInstance setter;
 			while(it.hasNext()) {
 				e = it.next();
 				value=e.getValue();
-				if(value!=null)Reflector.callSetterEL(tag, e.getKey().getString(),value);
+				if(value!=null){
+					setter = Reflector.getSetter(tag, e.getKey().getLowerString(),value,null);
+					//if(tlt==null) tlt=getTLT(pc.getConfig(), tag);
+					//setter=getSetter(pc,tlt,tag,e.getKey().getLowerString(),value);
+					if(setter!=null) {
+						try {
+							setter.invoke(tag);
+						} 
+						catch (Exception _e) {
+							throw Caster.toPageException(_e);
+						}
+					}
+				}
 				//}catch(PageException pe){}
 			}	
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_MIXED==attrType) {
 			MethodInstance setter;
-			it = attrs.entryIterator();
+			it = att.entrySet().iterator();
 			while(it.hasNext()) {
 				e = it.next();
-				setter = Reflector.getSetter(tag, e.getKey().getString(),e.getValue(),null);
+				setter = Reflector.getSetter(tag, e.getKey().getLowerString(),e.getValue(),null);
+				//if(tlt==null) tlt=getTLT(pc.getConfig(), tag);
+				//setter=getSetter(pc,tlt,tag,e.getKey().getLowerString(),e.getValue());
 				if(setter!=null) {
 					try {
 						setter.invoke(tag);
@@ -103,6 +149,30 @@ public class TagUtil {
 				}
 			}
 		}
+	}
+
+	/*private static MethodInstance getSetter(PageContext pc,TagLibTag tlt, Tag tag, String name, Object value) throws PageException { 
+		MethodInstance setter = Reflector.getSetter(tag, name,value,null);
+		if(setter==null && tlt!=null) {
+			TagLibTagAttr attr = tlt.getAttribute(name);
+			if(attr==null)
+				throw new TemplateException(
+					"Attribute "+name+" is not allowed for tag "+tlt.getFullName(),
+					"valid attribute names are ["+tlt.getAttributeNames()+"]");
+			value=Caster.castTo(pc, attr.getType(), value, false);
+			setter = Reflector.getSetter(tag, name,value,null);
+		}
+		return setter;
+	}*/
+
+	private static TagLibTag getTLT(ConfigWeb config, Tag tag) {
+		TagLib[] tlds = ((ConfigWebImpl)config).getTLDs();
+		TagLibTag tlt;
+		for(int i=0;i<tlds.length;i++){
+			tlt = tlds[i].getTag(tag.getClass());
+			if(tlt!=null) return tlt;
+		}
+		return null;
 	}
 
 	public static void setDynamicAttribute(StructImpl attributes,Collection.Key name, Object value, short caseType) {
@@ -203,7 +273,7 @@ public class TagUtil {
 			
 			Page p = ps.loadPage(pc);
 			ComponentImpl c = ComponentLoader.loadComponent(pc, p, ps, filename, true,true);
-			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
+			ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,c);
 			Struct meta = Caster.toStruct( cw.get(KeyConstants._metadata,null),null);
 
 			// TODO handle all metadata here and make checking at runtime useless

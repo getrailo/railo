@@ -5,9 +5,12 @@ package railo.runtime.functions.string;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 
-public final class RemoveChars implements Function {
+public final class RemoveChars extends BIF {
 	public static String call(PageContext pc , String str, double s, double l) throws ExpressionException {
 		int start=(int) s;
 		int length=(int) l;
@@ -27,5 +30,13 @@ public final class RemoveChars implements Function {
 		
 		if(start+length<=strLength) rtn+=str.substring(start+length-1);
 		return rtn;
+	}
+
+    @Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+    	if(args.length==3)
+			return call(pc, Caster.toString(args[0]), Caster.toDoubleValue(args[1]), Caster.toDoubleValue(args[2]));
+
+		throw new FunctionException(pc, "RemoveChars", 3, 3, args.length);
 	}
 }

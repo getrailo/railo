@@ -9,7 +9,6 @@ import railo.commons.io.SystemUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
@@ -28,6 +27,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 
@@ -229,9 +229,7 @@ public class ORMUtil {
 	}*/
 
 	private static Property[] getProperties(Component cfc) {
-		if(cfc instanceof ComponentPro)
-			return ((ComponentPro)cfc).getProperties(true,true,false,false);
-		return cfc.getProperties(true);
+		return ComponentProUtil.getProperties(cfc, true,true,false,false);
 	}
 	
 	public static boolean isRelated(Property prop) {
@@ -283,12 +281,8 @@ public class ORMUtil {
 		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
 		
 		if(StringUtil.isEmpty(o))
-			throw ExceptionUtil.createException(ORMUtil.getSession(pc),null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
+			throw ExceptionUtil.createException((ORMSession)null/* no session here, otherwise we get a infiniti loop*/,null,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME,null);
 		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
-	
-		
-	
-	
 	}
 	
 	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {

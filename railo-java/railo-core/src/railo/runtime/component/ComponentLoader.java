@@ -9,6 +9,7 @@ import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
+import railo.commons.lang.MappingUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
@@ -28,6 +29,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.writer.BodyContentUtil;
 
 public class ComponentLoader {
@@ -60,9 +62,28 @@ public class ComponentLoader {
     	boolean isRealPath=!StringUtil.startsWith(pathWithCFC,'/');
     	PageSource currPS = pc.getCurrentPageSource();
     	Page currP=((PageSourceImpl)currPS).loadPage(pc,(Page)null);
-    	
     	PageSource ps=null;
     	Page page=null;
+    	
+    	// no cache for per application pathes
+    	Mapping[] acm = pc.getApplicationContext().getComponentMappings();
+    	if(!ArrayUtil.isEmpty(acm)) {
+    		Mapping m;
+        	for(int y=0;y<acm.length;y++){
+        		m=acm[y];
+        		ps=m.getPageSource(pathWithCFC);
+        		page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
+	    		if(page!=null)	{
+	    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	        	}
+        	}
+    	}
+    	
+    	
+    	
+    	
+    	
+    	
     	
 	    if(searchLocal==null)
 	    	searchLocal=Caster.toBoolean(config.getComponentLocalSearch());
@@ -227,12 +248,11 @@ public class ComponentLoader {
     		page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
     		
     		// recursive search
-    		if(page==null && config.doComponentDeepSearch() && m.hasPhysical() && path.indexOf('/')==-1) {
-    			String _path=getPagePath(pc, m.getPhysical(), null,pathWithCFC,DirectoryResourceFilter.FILTER);
-    			if(_path!=null) {
-    				ps=m.getPageSource(_path);
-        			page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
-        			doCache=false;// do not cache this, it could be ambigous
+    		if(page==null && config.doComponentDeepSearch() && path.indexOf('/')==-1) {
+    			ps=MappingUtil.searchMappingRecursive(m, pathWithCFC, true);
+    			if(ps!=null) {
+    				page = ((PageSourceImpl)ps).loadPage(pc,(Page)null);
+    				if(page!=null) doCache=false;// do not cache this, it could be ambigous
     			}
     		}
     		
@@ -273,7 +293,7 @@ public class ComponentLoader {
         		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);
         	}
     	}
-    	throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
+    	throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+(interfaceUDFs==null?"component":"interface")+" ["+rawPath+"]");
     	
 		
     	

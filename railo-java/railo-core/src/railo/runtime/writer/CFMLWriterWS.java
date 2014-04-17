@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.runtime.PageContext;
+
 /**
  * JSP Writer that Remove WhiteSpace from given content
  */
@@ -26,9 +28,9 @@ public final class CFMLWriterWS extends CFMLWriterImpl implements WhiteSpaceWrit
 	 * @param bufferSize 
 	 * @param autoFlush 
 	 */
-	public CFMLWriterWS(HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
-			boolean showVersion, boolean contentLength, boolean allowCompression) {
-		super(req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength,allowCompression);
+	public CFMLWriterWS(PageContext pc,HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
+			boolean showVersion, boolean contentLength) {
+		super(pc,req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
+import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
@@ -18,6 +19,8 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.visitor.OnFinally;
+import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 
 public final class ExpressionUtil {
 	
@@ -29,6 +32,11 @@ public final class ExpressionUtil {
 			"exeLogEnd",
 			Types.VOID,
 			new Type[]{Types.INT_VALUE,Types.STRING});
+
+	public static final Method CURRENT_LINE = new Method(
+			"currentLine",
+			Types.VOID,
+			new Type[]{Types.INT_VALUE});
 	
 
 	private static Map<String,String> last=new HashMap<String,String>();
@@ -58,9 +66,21 @@ public final class ExpressionUtil {
    }
     private static synchronized void visitLine(BytecodeContext bc, int line) {
     	if(line>0){
+    		
+    		/*Type[] methodTypes = bc.getMethod().getArgumentTypes();
+			if(methodTypes!=null && methodTypes.length>0 && methodTypes[0].equals(Types.PAGE_CONTEXT)) {
+    			GeneratorAdapter adapter = bc.getAdapter();
+    	    	adapter.loadArg(0);
+    	    	adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+    	        adapter.push(line);
+    		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,CURRENT_LINE );
+			}*/
+    		
     		if(!(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
-	    		//writeLog(bc,line);
-	    		bc.visitLineNumber(line);
+	    		
+    			
+    			
+    			bc.visitLineNumber(line);
 	    		last.put(bc.getClassName()+":"+bc.getId(),""+line);
 	    		last.put(bc.getClassName(),""+line);
 	    	}
@@ -90,6 +110,23 @@ public final class ExpressionUtil {
 	}
 	public static void writeOut(Expression value, BytecodeContext bc, int mode) throws BytecodeException {
 		value.writeOut(bc, mode);
+	}
+
+	public static void writeOut(final Statement s, BytecodeContext bc) throws BytecodeException {
+		if(ExpressionUtil.doLog(bc)) {
+    		final String id=BodyBase.id();
+    		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+    			public void writeOut(BytecodeContext bc) {
+    				ExpressionUtil.callEndLog(bc, s,id);
+    			}
+    		},null);
+    		
+    		tfv.visitTryBegin(bc);
+    			ExpressionUtil.callStartLog(bc, s,id);
+    			s.writeOut(bc);
+    		tfv.visitTryEnd(bc)	;
+    	}
+    	else s.writeOut(bc);
 	}
 
 	public static short toShortType(ExprString expr,boolean alsoAlias, short defaultValue) {

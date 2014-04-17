@@ -15,6 +15,8 @@ public class HashUtil {
 			h = (h * hmult) ^ ht[ch & 0xff];
 			h = (h * hmult) ^ ht[(ch >>> 8) & 0xff];
 		}
+		if(h<0)
+			return 0-h;
 		return h;
 	}
 	

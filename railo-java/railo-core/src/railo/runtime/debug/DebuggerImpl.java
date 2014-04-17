@@ -11,7 +11,6 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.util.ResourceSnippet;
 import railo.commons.io.res.util.ResourceSnippetsMap;
 import railo.commons.lang.StringUtil;
@@ -33,6 +32,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.DebugQueryColumn;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
@@ -63,6 +63,7 @@ public final class DebuggerImpl implements DebuggerPro {
 	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
+	private List<DebugDump> dumps=new ArrayList<DebugDump>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
 	private Map<String,ImplicitAccessImpl> implicitAccesses=new HashMap<String,ImplicitAccessImpl>();
 	
@@ -79,6 +80,8 @@ public final class DebuggerImpl implements DebuggerPro {
 	final static Comparator DEBUG_ENTRY_TEMPLATE_COMPARATOR = new DebugEntryTemplateComparator();
 	final static Comparator DEBUG_ENTRY_TEMPLATE_PART_COMPARATOR = new DebugEntryTemplatePartComparator();
 
+	private static final Key CACHE_TYPE = KeyImpl.init("cacheType");
+
 	@Override
 	public void reset() {
 		entries.clear();
@@ -87,6 +90,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		implicitAccesses.clear();
 		timers.clear();
 		traces.clear();
+		dumps.clear();
 		exceptions.clear();
 		historyId.clear();
 		historyLevel.clear();
@@ -137,7 +141,7 @@ public final class DebuggerImpl implements DebuggerPro {
     		partEntries=new HashMap<String, DebugEntryTemplatePartImpl>();
     	}
 
-		ResourceSnippet snippet = snippetsMap.getSnippet( source, startPos, endPos, pc.getConfig().getResourceCharset() );
+		ResourceSnippet snippet = snippetsMap.getSnippet( source, startPos, endPos, ((PageContextImpl)pc).getResourceCharset().name());
         de=new DebugEntryTemplatePartImpl(source, startPos, endPos, snippet.getStartLine(), snippet.getEndLine(), snippet.getContent());
         partEntries.put(src,de);
         return de;
@@ -189,12 +193,14 @@ public final class DebuggerImpl implements DebuggerPro {
 	
 	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
-		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+		addQuery(query, datasource, name, sql, recordcount, src, (long)time);
 	}
 	
 	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time) {
-		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+		String path="";
+		if(src!=null) path=src.getDisplayPath();
+		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,path,time));
 	}
 	
 	@Override
@@ -292,8 +298,9 @@ public final class DebuggerImpl implements DebuggerPro {
         		KeyConstants._src,
         		KeyConstants._count,
         		KeyConstants._datasource,
-        		KeyConstants._usage};
-        String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY"};
+        		KeyConstants._usage,
+        		CACHE_TYPE};
+        String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY","VARCHAR"};
         
         //queries
         Query qryQueries=null;
@@ -313,6 +320,7 @@ public final class DebuggerImpl implements DebuggerPro {
 				qryQueries.setAt(KeyConstants._src,row,qe.getSrc());
                 qryQueries.setAt(KeyConstants._count,row,Integer.valueOf(qe.getRecordcount()));
                 qryQueries.setAt(KeyConstants._datasource,row,qe.getDatasource());
+                qryQueries.setAt(CACHE_TYPE,row,qe.getCacheType());
                 
                 Struct usage = getUsage(qe);
                 if(usage!=null) qryQueries.setAt(KeyConstants._usage,row,usage);
@@ -484,6 +492,31 @@ public final class DebuggerImpl implements DebuggerPro {
 			}
 			catch(PageException dbe) {}
         }
+        
+     // dumps
+		len=dumps==null?0:dumps.size();
+		if(!((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DUMP))len=0;
+        Query qryDumps=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._output,
+                		KeyConstants._template,
+                		KeyConstants._line},
+                len,"dumps");
+        if(len>0) {
+        	try {
+	        	Iterator<DebugDump> it = dumps.iterator();
+	        	DebugDump dd;
+	        	row=0;
+	        	while(it.hasNext()) {
+	        		dd= it.next();
+	        		row++;
+	        		qryDumps.setAt(KeyConstants._output,row,dd.getOutput());  
+	        		if(!StringUtil.isEmpty(dd.getTemplate()))qryDumps.setAt(KeyConstants._template,row,dd.getTemplate()); 
+	        		if(dd.getLine()>0)qryDumps.setAt(KeyConstants._line,row,new Double(dd.getLine())); 
+	        	}
+			}
+			catch(PageException dbe) {}
+        }
 
 		// traces
 		len=traces==null?0:traces.size();
@@ -508,7 +541,7 @@ public final class DebuggerImpl implements DebuggerPro {
 	        	while(it.hasNext()) {
 	        		trace= it.next();
 	        		row++;
-	        		qryTraces.setAt(KeyConstants._type,row,LogUtil.toStringType(trace.getType(), "INFO"));  
+	        		qryTraces.setAt(KeyConstants._type,row,DebugTraceImpl.toType(trace.getType(), "INFO"));  
 	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
 	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
 	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyConstants._template,row,trace.getTemplate()); 
@@ -571,6 +604,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		debugging.setEL(KeyConstants._queries,qryQueries);
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
+		debugging.setEL("dumps",qryDumps);
 		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
 		//debugging.setEL(OUTPUT_LOG,qryOutputLog);
 		
@@ -640,7 +674,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
 		lastTrace = System.currentTimeMillis();
-        StackTraceElement[] _traces = new Exception("Stack trace").getStackTrace();
+        /*StackTraceElement[] _traces = Thread.currentThread().getStackTrace();
 		String clazz=page.getFullClassName();
 		int line=0;
 		
@@ -649,13 +683,38 @@ public final class DebuggerImpl implements DebuggerPro {
 			StackTraceElement trace=_traces[i];
     		if(trace.getClassName().startsWith(clazz)) {
     			line=trace.getLineNumber();
+    			print.e(SystemUtil.getCurrentContext());
+    			print.e(page.getDisplayPath());
+    			print.e(line);
     			break;
 			}
-		}
+		}*/
 		
-		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace);
+		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),SystemUtil.getCurrentContext().line,"",varName,varValue,lastTrace-_lastTrace);
 		traces.add(t);
 		return t;
+	}
+	
+	
+	public DebugDump addDump(PageSource ps,String dump) {
+		/*
+		StackTraceElement[] _traces = Thread.currentThread().getStackTrace();
+		String clazz=ps.getFullClassName();
+		
+		// line
+		int line=0;
+		for(int i=0;i<_traces.length;i++) {
+			StackTraceElement trace=_traces[i];
+    		if(trace.getClassName().startsWith(clazz)) {
+    			line=trace.getLineNumber();
+    			break;
+			}
+		}*/
+		
+		
+		DebugDump dt=new DebugDumpImpl(ps.getDisplayPath(),SystemUtil.getCurrentContext().line,dump);
+		dumps.add(dt);
+		return dt;
 	}
 	
 	@Override

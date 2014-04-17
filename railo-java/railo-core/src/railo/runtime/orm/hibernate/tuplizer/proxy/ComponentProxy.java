@@ -6,7 +6,6 @@ import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -21,11 +20,12 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ComponentProxy implements ComponentPro {
-	
+public abstract class ComponentProxy implements Component {
+
+	private static final long serialVersionUID = -8709126025976358501L;
+
 	public abstract Component getComponent(); 
 	
-
 	@Override
 	public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
 		return getComponent().getJavaAccessClass(isNew);
@@ -403,12 +403,6 @@ public abstract class ComponentProxy implements ComponentPro {
     	getComponent().registerUDF(key, props);
     }
 	
-
-	@Override
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
-		return ((ComponentPro)getComponent()).getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
-	}
-	
 	@Override
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
@@ -417,5 +411,15 @@ public abstract class ComponentProxy implements ComponentPro {
 	@Override
 	public long sizeOf() {
 		return getComponent().sizeOf();
+	}
+	
+	@Override
+	public String getWSDLFile() {
+		return getComponent().getWSDLFile();
+	}
+
+	@Override
+	public Collection duplicate(boolean deepCopy) {
+		return getComponent().duplicate(deepCopy);
 	}
 }

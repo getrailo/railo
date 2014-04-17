@@ -13,11 +13,12 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogConsole;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import railo.commons.io.log.log4j.Log4jUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
@@ -31,7 +32,7 @@ public class ServletContextDummy implements ServletContext {
 	private int majorVersion;
 	private int minorVersion;
 	private Config config;
-	private LogConsole log;
+	private Logger log;
 	private Resource root;
 	
 	
@@ -42,7 +43,7 @@ public class ServletContextDummy implements ServletContext {
 		this.parameters=parameters;
 		this.majorVersion=majorVersion;
 		this.minorVersion=minorVersion;
-		log=new LogConsole(Log.LEVEL_INFO,config.getOutWriter());
+		log=Log4jUtil.getConsoleLog(config, false,"servlet-context-dummy",Level.INFO);
 		
 	}
 
@@ -128,8 +129,8 @@ public class ServletContextDummy implements ServletContext {
 
 	@Override
 	public void log(String msg, Throwable t) {
-		if(t==null)log.log(Log.LEVEL_INFO, "ServletContext", msg);
-		else log.log(Log.LEVEL_ERROR, "ServletContext", msg+":\n"+ExceptionUtil.getStacktrace(t,false));
+		if(t==null)log.log(Level.INFO,msg);
+		else log.log(Level.ERROR, msg,t);
 	}
 
 	@Override

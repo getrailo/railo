@@ -1,23 +1,27 @@
 package railo.transformer.cfml.tag;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Info;
-import railo.runtime.SourceFile;
+import railo.runtime.MappingImpl;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
@@ -33,6 +37,7 @@ import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.Data;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -51,24 +56,8 @@ import railo.transformer.util.CFMLString;
 
 
 /**
- * Die Klasse CFMLTransformer ist das Herzst￼ck des ￜbersetzungsprozess, 
- * es liest die ￼bergebene CFML Datei ein und ￼bersetzt diese in ein valid (CFXD) XML Dokument 
- * in der Form eines org.w3c.dom.Document Object, 
- * die dann als weitere Vorlage zum ￼bersetzten in PHP dient.
- * Der CFMLTransformer ￼bersetzt nur die Tags die innerhalb einer CFML Seite vorkommen, 
- * nicht die Ausdr￼cke die innerhalb von Attributen und dem Body eines Tag vorkommen k￶nnen, 
- * f￼r dies ist der ExprTransformer zust￤ndig, 
- * der in der jeweiligen Tag Library definiert ist.
- * Der CFMLTransformer kann zwar durch seine Grammatik, 
- * Tags erkennen aber nicht validieren. 
- * Erst mithilfe der im zugeteilten Tag Libraries kann er vergleichen ob ein Tag nur 
- * ein normaler HTML Tag ist, das er einfach als literale Zeichenkette aufnimmt, 
- * oder ob es sich um einen Tag handelt der eine konkrete Anweisung implementiert. 
- * Die Tag Library definiert alle in CFML vorhanden Tags, 
- * deren individuelle Grammatik und deren Aufbau und Verhalten. 
-
  * <pre>
-		Parser Grammatik nach EBNF (Extended Backus-Naur Form) 
+		EBNF (Extended Backus-Naur Form) 
 		
 		transform	= {body}
 		body		= [comment] ("</" | "<" tag body | literal body);
@@ -113,37 +102,37 @@ public final class CFMLTransformer {
 	 * EBNF:<br />
 	 * <code>{body}</code>
 	 * @param config
-	 * @param sf CFML File
+	 * @param ps CFML File
 	 * @param tlibs Tag Library Deskriptoren, nach denen innerhalb der CFML Datei gepr￼ft werden soll.
 	 * @param flibs Function Library Deskriptoren, nach denen innerhalb der Expressions der CFML Datei gepr￼ft werden soll.
 	 * @return ￜbersetztes CFXD Dokument Element.
 	 * @throws TemplateException
 	 * @throws IOException
 	 */
-	public Page transform(ConfigImpl config,SourceFile sf, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
+	public Page transform(ConfigImpl config,PageSource ps, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
 		Page p;
 		CFMLString cfml;
 		
 		boolean writeLog=config.getExecutionLogEnabled();
-		String charset=config.getTemplateCharset();
-		boolean dotUpper = config.getDotNotationUpperCase();
+		Charset charset = config._getTemplateCharset();
+		boolean dotUpper = ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
 		
 		
 		while(true){
 			try {
-				cfml=new CFMLString(sf,charset,writeLog);
-				p = transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
+				cfml=new CFMLString(ps,charset,writeLog);
+				p = transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 				break;
 			}
 			catch(ProcessingDirectiveException pde) {
 				if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 				if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-				if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+				if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 			}
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(sf.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
+		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 
@@ -151,23 +140,23 @@ public final class CFMLTransformer {
 			// try inside a cfscript
 			tlt = CFMLTransformer.getTLT(original,"script");
 			String text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
-			cfml=new CFMLString(text,charset,writeLog,sf);
+			cfml=new CFMLString(text,charset,writeLog,ps);
 			
 			try {
 				while(true){
 					if(cfml==null){
-						cfml=new CFMLString(sf,charset,writeLog);
+						cfml=new CFMLString(ps,charset,writeLog);
 						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
-						cfml=new CFMLString(text,charset,writeLog,sf);
+						cfml=new CFMLString(text,charset,writeLog,ps);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
+						p= transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 						cfml=null;
 					}
 				}
@@ -186,22 +175,22 @@ public final class CFMLTransformer {
 			if(p.isPage()){
 				tlt = CFMLTransformer.getTLT(original,"component");
 				text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
-				cfml=new CFMLString(text,charset,writeLog,sf);
+				cfml=new CFMLString(text,charset,writeLog,ps);
 						
 				while(true){
 					if(cfml==null){
-						cfml=new CFMLString(sf,charset,writeLog);
+						cfml=new CFMLString(ps,charset,writeLog);
 						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
-						cfml=new CFMLString(text,charset,writeLog,sf);
+						cfml=new CFMLString(text,charset,writeLog,ps);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified(),dotUpper);
+						p= transform(config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
 						if(pde.getWriteLog()!=null)writeLog=pde.getWriteLog().booleanValue();
 						if(pde.getDotNotationUpperCase()!=null)dotUpper=pde.getDotNotationUpperCase().booleanValue();
-						if(!StringUtil.isEmpty(pde.getCharset()))charset=pde.getCharset();
+						if(!StringUtil.isEmpty(pde.getCharset()))charset=CharsetUtil.toCharset(pde.getCharset());
 						cfml=null;
 					}
 				}
@@ -252,9 +241,9 @@ public final class CFMLTransformer {
 		
 		
 
-		SourceFile source=cfml.getSourceFile(); 
+		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(config,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
+		Page page=new Page(source,source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
 		TagData data = new TagData(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;
@@ -271,7 +260,7 @@ public final class CFMLTransformer {
 						page.addPrintOut("</", null,null);
 					}
 					else {
-						String name = identifier(data.cfml,true);
+						String name = identifier(data.cfml,true,true);
 						if(tagLib.getIgnoreUnknowTags()) {
 							TagLibTag tlt = tagLib.getTag(name);
 							if(tlt==null) {
@@ -412,12 +401,19 @@ public final class CFMLTransformer {
 					}
 					else {
 						if(text.length()>0)	{
-							parent.addPrintOut(text.toString(),null,null);
+							Position end = data.cfml.getPosition();
+							Position start = data.cfml.getPosition(end.pos-text.length());
+							
+							
+							parent.addPrintOut(text.toString(),start,end);
+							start=end;
 							text=new StringBuffer();
 						}
-                        Position line = data.cfml.getPosition();
+						Position end = data.cfml.getPosition();
+						Position start = data.cfml.getPosition(end.pos-text.length());
+						
 						PrintOut po;
-						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings),line,null));
+						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings),start,end));
 						po.setEnd(data.cfml.getPosition());
 						
 						if(!data.cfml.isCurrent('#'))
@@ -431,7 +427,12 @@ public final class CFMLTransformer {
 					text.append(data.cfml.getCurrent());
 			data.cfml.next();
 			}
-			if(text.length()>0)parent.addPrintOut(text.toString(), null,null);
+			if(text.length()>0){
+				Position end = data.cfml.getPosition();
+				Position start = data.cfml.getPosition(end.pos-text.length());
+				
+				parent.addPrintOut(text.toString(), start,end);
+			}
 		}
 		// no expression
 		else {
@@ -447,7 +448,10 @@ public final class CFMLTransformer {
 				text=data.cfml.substring(start,end-start);
 				data.cfml.setPos(end);
 			}
-			parent.addPrintOut(text, null,null);
+			Position e = data.cfml.getPosition();
+			Position s = data.cfml.getPosition(start);
+			
+			parent.addPrintOut(text, s,e);
 			
 		}
 	}
@@ -482,7 +486,7 @@ public final class CFMLTransformer {
 		}
 				
 		// Get matching tag from tag lib
-		String strNameNormal=identifier(data.cfml,false);
+		String strNameNormal=identifier(data.cfml,false,true);
 		if(strNameNormal==null) {
 			data.cfml.setPos((data.cfml.getPos()-tagLib.getNameSpaceAndSeparator().length())-1);
 			return false;
@@ -575,7 +579,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(data.page,this,data.ep,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,data.settings);
+				tdbt.transform(data.page,this,data.ep,data.tlibs,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,data.settings);
 				
 				//	get TagLib of end Tag
 				if(!data.cfml.forwardIfCurrent("</")) {
@@ -592,7 +596,7 @@ public final class CFMLTransformer {
 				if(!(tagLibEnd!=null && tagLibEnd.getNameSpaceAndSeparator().equals(tagLib.getNameSpaceAndSeparator())))
 					throw new TemplateException(data.cfml,"invalid construct");
 				// get end Tag
-				String strNameEnd=identifier(data.cfml,true).toLowerCase();
+				String strNameEnd=identifier(data.cfml,true,true).toLowerCase();
 
 				// not the same name Tag
 				if(!strName.equals(strNameEnd)) {
@@ -656,7 +660,7 @@ public final class CFMLTransformer {
 					    if(tagLibEnd.getNameSpaceAndSeparator().equals(tagLib.getNameSpaceAndSeparator())) {
 					        
 						    // get end Tag
-							strNameEnd=identifier(data.cfml,true).toLowerCase();
+							strNameEnd=identifier(data.cfml,true,true).toLowerCase();
 							// not the same name Tag
 							
 							// new part
@@ -752,7 +756,7 @@ public final class CFMLTransformer {
 	 * <code>< tagLib[].getNameSpaceAndSeperator() >(* Vergleicht Zeichen mit den Namespacedefinitionen der Tag Libraries. *) </code>
 	 * @return TagLib Passende Tag Lirary oder null.
 	 */
-	private TagLib nameSpace(TagData data) {
+	public static TagLib nameSpace(Data data) {
 		boolean hasTag=false;
 		int start = data.cfml.getPos();
 		TagLib tagLib=null;
@@ -820,18 +824,21 @@ public final class CFMLTransformer {
             
 			// set default values
 			if(tag.hasDefaultValue()) {
-			    Map<String, TagLibTagAttr> hash = tag.getAttributes();
-				Iterator<String> it = hash.keySet().iterator();
-			
+				Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<Entry<String, TagLibTagAttr>> it = hash.entrySet().iterator();
+				Entry<String, TagLibTagAttr> e;
+				TagLibTagAttr att;
 				while(it.hasNext())	{
-					TagLibTagAttr att=hash.get(it.next());
+					e = it.next();
+					att=e.getValue();
 					if(!parent.containsAttribute(att.getName()) && att.hasDefaultValue())	{
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
-				    			att.getName(),
-				    			CastOther.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
+				    		att.getName(),
+				    		CastOther.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
 				    	);
-				    	parent.addAttribute(attr);
+						attr.setDefaultAttribute(true);
+						parent.addAttribute(attr);
 					}
 				}
 			}
@@ -848,14 +855,15 @@ public final class CFMLTransformer {
 			
 			// not defined attributes
 			if(type==TagLibTag.ATTRIBUTE_TYPE_FIXED || type==TagLibTag.ATTRIBUTE_TYPE_MIXED)	{
-				Map<String, TagLibTagAttr> hash = tag.getAttributes();
-				Iterator<String> it = hash.keySet().iterator();
+				//Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<TagLibTagAttr> it = tag.getAttributes().values().iterator();
 				
 				while(it.hasNext())	{
-					TagLibTagAttr att=hash.get(it.next());
-					if(att.isRequired() && !args.contains(att.getName()) && att.getDefaultValue()==null)	{
+					
+					TagLibTagAttr att=it.next();
+					if(att.isRequired() && !contains(args,att) && att.getDefaultValue()==null)	{
 						if(!hasAttributeCollection)throw createTemplateException(data.cfml,"attribute "+att.getName()+" is required for tag "+tag.getFullName(),tag);
-						parent.addMissingAttribute(att.getName(),att.getType());
+						parent.addMissingAttribute(att);
 					}
 				}
 			}
@@ -874,7 +882,28 @@ public final class CFMLTransformer {
 		}
 	}
 
-    private static void attrNoName(Tag parent, TagLibTag tag, TagData data,TagLibTagAttr attr) throws TemplateException {
+    private static boolean contains(ArrayList<String> names, TagLibTagAttr attr) {
+		
+		Iterator<String> it = names.iterator();
+		String name;
+		String[] alias;
+		while(it.hasNext()){
+			name=it.next();
+			
+			// check name
+			if(name.equals(attr.getName())) return true;
+			
+			// and aliases
+			alias = attr.getAlias();
+			if(!ArrayUtil.isEmpty(alias)) for(int i=0;i<alias.length;i++){
+				if(alias[i].equals(attr.getName())) return true;
+			}
+		}
+		return false;
+	}
+
+
+	private static void attrNoName(Tag parent, TagLibTag tag, TagData data,TagLibTagAttr attr) throws TemplateException {
     	if(attr==null)attr=tag.getFirstAttribute();
 		String strName="noname";
 		String strType="any";
@@ -964,7 +993,7 @@ public final class CFMLTransformer {
 	private static String attributeName(CFMLString cfml,RefBoolean dynamic, ArrayList<String> args, TagLibTag tag, 
 			StringBuffer sbType, boolean[] parseExpression,boolean allowDefaultValue) throws TemplateException {
 		
-		String _id = identifier(cfml,!allowDefaultValue);
+		String _id = identifier(cfml,!allowDefaultValue,true);
 		if(StringUtil.isEmpty(_id)){
 			return null;
 		}
@@ -975,13 +1004,13 @@ public final class CFMLTransformer {
 		args.add(id);
 		
 		if("attributecollection".equals(id)){
-			dynamic.setValue(tag.getAttribute(id)==null);
+			dynamic.setValue(tag.getAttribute(id,true)==null);
 			sbType.append("struct");
 			parseExpression[0]=true;
 			parseExpression[1]=true;
 		}
 		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED || typeDef==TagLibTag.ATTRIBUTE_TYPE_MIXED) {
-			TagLibTagAttr attr=tag.getAttribute(id);
+			TagLibTagAttr attr=tag.getAttribute(id,true);
 			if(attr==null) {
 				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
 					String names=tag.getAttributeNames();
@@ -1000,6 +1029,7 @@ public final class CFMLTransformer {
 				dynamic.setValue(true);
 			}
 			else {
+				id=attr.getName();
 				sbType.append(attr.getType());
 				parseExpression[0]=attr.getRtexpr();
 			}
@@ -1045,14 +1075,14 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings);
+			    expr=transfomer.transform(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings);
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,data.settings,true);
+			else expr=transfomer.transformAsString(data.page,data.ep,data.tlibs,data.flibs,data.scriptTags,data.cfml,data.settings,true);
 			if(type.length()>0) {
 				expr=CastOther.toExpression(expr, type);
 			}
@@ -1071,10 +1101,11 @@ public final class CFMLTransformer {
 	 * @return Identifier String.
 	 * @throws TemplateException
 	 */
-	public static String identifier(CFMLString cfml,boolean throwError) throws TemplateException  {
+	public static String identifier(CFMLString cfml,boolean throwError, boolean allowColon) throws TemplateException  {
 		int start = cfml.getPos();
+		
 		if(!cfml.isCurrentBetween('a','z') && !cfml.isCurrent('_')) {
-			if(throwError)throw new TemplateException(cfml,"Invalid Identifier.");
+			if(throwError)throw new TemplateException(cfml,"Invalid Identifier, the following character cannot be part of a identifier ["+cfml.getCurrent()+"]");
 			return null;
 		}
 		do {
@@ -1082,7 +1113,7 @@ public final class CFMLTransformer {
 			if(!(cfml.isCurrentBetween('a','z')
 				|| cfml.isCurrentBetween('0','9')
 				|| cfml.isCurrent('_')
-				|| cfml.isCurrent(':')
+				|| (allowColon && cfml.isCurrent(':'))
 				|| cfml.isCurrent('-'))) {
 					break;
 				}
@@ -1139,7 +1170,7 @@ public final class CFMLTransformer {
 			if(!attr.isRequired()) tmp.append("[");
 			if(c++>0)pattern.append(" ");
 			tmp.append(attr.getName());
-			tmp.append("\"");
+			tmp.append("=\"");
 			tmp.append(attr.getType());
 			tmp.append("\"");
 			if(!attr.isRequired()) tmp.append("]");

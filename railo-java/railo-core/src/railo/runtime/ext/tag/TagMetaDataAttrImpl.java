@@ -16,8 +16,8 @@ public class TagMetaDataAttrImpl extends MissingAttribute implements TagMetaData
 	 * @param required
 	 * @param type
 	 */
-	public TagMetaDataAttrImpl(String name, boolean required, String type, boolean isRuntimeExpressionValue,String defaultValue,String description) {
-		this(KeyImpl.getInstance(name),required,type,isRuntimeExpressionValue,defaultValue,description);
+	public TagMetaDataAttrImpl(String name,String[] alias, boolean required, String type, boolean isRuntimeExpressionValue,String defaultValue,String description) {
+		this(KeyImpl.getInstance(name),alias,required,type,isRuntimeExpressionValue,defaultValue,description);
 	}
 	
 	/**
@@ -27,8 +27,8 @@ public class TagMetaDataAttrImpl extends MissingAttribute implements TagMetaData
 	 * @param type
 	 * @param description
 	 */
-	public TagMetaDataAttrImpl(Collection.Key name, boolean required, String type, boolean isRuntimeExpressionValue,String defaultValue, String description) {
-		super(name,type);
+	public TagMetaDataAttrImpl(Collection.Key name,String[] alias, boolean required, String type, boolean isRuntimeExpressionValue,String defaultValue, String description) {
+		super(name,type,alias);
 		this.required = required;
 		this.description = description;
 		this.defaultValue = defaultValue;

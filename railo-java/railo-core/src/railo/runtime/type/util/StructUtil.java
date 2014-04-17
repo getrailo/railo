@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.commons.collection.LinkedHashMapPro;
+import railo.commons.collection.MapPro;
+import railo.commons.collection.MapProWrapper;
+import railo.commons.collection.SyncMap;
+import railo.commons.collection.WeakHashMapPro;
+import railo.commons.digest.HashUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -73,10 +80,10 @@ public final class StructUtil {
 	}
 
 	public static void putAll(Struct struct, Map map) {
-		Iterator it = map.entrySet().iterator();
+		Iterator<Entry> it = map.entrySet().iterator();
 		Map.Entry entry;
 		while(it.hasNext()) {
-			entry=(Entry) it.next();
+			entry= it.next();
 			struct.setEL(KeyImpl.toKey(entry.getKey(),null), entry.getValue());
 		}
 	}
@@ -92,9 +99,9 @@ public final class StructUtil {
 		return set;
 	}
 	
-	public static Set<String> keySet(Struct sct) {
+	public static Set<String> keySet(Struct sct, boolean linked) {
 		Iterator<Key> it = sct.keyIterator();
-		Set<String> set=new HashSet<String>();
+		Set<String> set=linked?new LinkedHashSet<String>():new HashSet<String>();
 		while(it.hasNext()){
 			set.add(it.next().getString());
 		}
@@ -113,6 +120,44 @@ public final class StructUtil {
 		else if(sct.size()>10 && dp.getMetainfo()) {
 			table.setComment("Entries: "+sct.size());
 		}
+		
+		// advanced
+		/*Map<Key, FunctionLibFunction> members = MemberUtil.getMembers(pageContext, CFTypes.TYPE_STRUCT);
+		if(members!=null) {
+			StringBuilder sb=new StringBuilder("This Struct is supporting the following Object functions:");
+			Iterator<Entry<Key, FunctionLibFunction>> it = members.entrySet().iterator();
+			Entry<Key, FunctionLibFunction> e;
+			while(it.hasNext()){
+				e = it.next();
+				sb.append("\n	.")
+				.append(e.getKey())
+				.append('(');
+				
+				
+				ArrayList<FunctionLibFunctionArg> args = e.getValue().getArg();
+				int optionals = 0;
+				for(int i=1;i<args.size();i++) {
+					FunctionLibFunctionArg arg=args.get(i);
+					if(i!=0)sb.append(", ");
+					if(!arg.getRequired()) {
+						sb.append("[");
+						optionals++;
+					}
+					sb.append(arg.getName());
+					sb.append(":");
+					sb.append(arg.getTypeAsString());
+				}
+				for(int i=0;i<optionals;i++)
+					sb.append("]");
+				sb.append("):"+e.getValue().getReturnTypeAsString());
+				
+				
+			}
+			table.setComment(sb.toString());
+		}*/
+		
+		
+		
 		if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;
 		int index=0;
@@ -215,5 +260,32 @@ public final class StructUtil {
 			}
 		}
 		return sct;
+	}
+    
+    public static int getType(MapPro m){
+    	if(m instanceof SyncMap)
+    		return ((SyncMap)m).getType();
+    	
+    	if(m instanceof LinkedHashMapPro) return Struct.TYPE_LINKED;
+    	if(m instanceof WeakHashMapPro) return Struct.TYPE_WEAKED;
+    	//if(map instanceof SyncMap) return TYPE_SYNC;
+    	if(m instanceof MapProWrapper) return Struct.TYPE_SOFT;
+    	return Struct.TYPE_REGULAR;
+    }
+
+    /**
+     * creates a hash based on the keys of the Map/Struct
+     * @param map
+     * @return 
+     */
+	public static String keyHash(Struct sct) {
+		Key[] keys;
+		Arrays.sort(keys=CollectionUtil.keys(sct));
+		
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<keys.length;i++){
+			sb.append(keys[i].getString()).append(';');
+		}
+		return Long.toString(HashUtil.create64BitHash(sb),Character.MAX_RADIX);
 	}
 }

@@ -61,4 +61,9 @@ public final class Casting extends RefSupport implements Ref {
     public String getTypeName() {
         return "operation";
     }
+    
+
+    public String toString() {
+        return strType+":"+ref+":"+val;
+    }
 }

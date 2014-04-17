@@ -9,6 +9,7 @@ import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.literal.LitString;
@@ -90,8 +91,8 @@ public class Assign extends ExpressionBase {
 	 * @param variable
 	 * @param value
 	 */
-	public Assign(Variable variable, Expression value) {
-		super(variable.getStart(),variable.getEnd());
+	public Assign(Variable variable, Expression value, Position end) {
+		super(variable.getStart(),end);
 		this.variable=variable;
 		this.value=value;
 		//this.returnOldValue=returnOldValue;

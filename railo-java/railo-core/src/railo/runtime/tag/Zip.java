@@ -24,8 +24,10 @@ import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.FileWrapper;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.io.res.util.UDFFilter;
 import railo.commons.io.res.util.WildcardPatternFilter;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -33,6 +35,7 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public final class Zip extends BodyTagImpl {
@@ -42,7 +45,9 @@ public final class Zip extends BodyTagImpl {
 	private Resource destination;
 	private String entryPath;
 	private Resource file;
-	private WildcardPatternFilter filter;
+	private ResourceFilter filter;
+	private String pattern;
+	private String patternDelimiters;
 	private String name;
 	private boolean overwrite;
 	private String prefix;
@@ -73,6 +78,8 @@ public final class Zip extends BodyTagImpl {
     	source=null;
     	storePath=true;
     	variable=null;
+	    pattern = null;
+	    patternDelimiters = null;
 
     	if(params!=null)params.clear();
     	if(alreadyUsed!=null)alreadyUsed.clear();
@@ -99,7 +106,7 @@ public final class Zip extends BodyTagImpl {
 
 
 	/**
-	 * @param destination the destination to set
+	 * @param strDestination the destination to set
 	 * @throws ExpressionException 
 	 * @throws PageException 
 	 */
@@ -142,12 +149,28 @@ public final class Zip extends BodyTagImpl {
 	/**
 	 * @param filter the filter to set
 	 */
-	public void setFilter(String filter) {
-		
-		if ( !filter.isEmpty() )
-			this.filter = new WildcardPatternFilter( filter );
+	public void setFilter(Object filter) throws PageException {
+
+		if (filter instanceof UDF)
+			this.setFilter((UDF)filter);
+		else if (filter instanceof String)
+			this.setFilter((String)filter);
 	}
 
+	public void setFilter(UDF filter) throws PageException	{
+
+		this.filter = UDFFilter.createResourceAndResourceNameFilter(filter);
+	}
+
+	public void setFilter(String pattern) {
+
+		this.pattern = pattern;
+	}
+
+	public void setFilterdelimiters(String patternDelimiters) {
+
+		this.patternDelimiters = patternDelimiters;
+	}
 
 
 	/**
@@ -196,12 +219,11 @@ public final class Zip extends BodyTagImpl {
 
 
 	/**
-	 * @param source the source to set
+	 * @param strSource the source to set
 	 * @throws PageException 
 	 */
 	public void setSource(String strSource) throws PageException {
 		source = ResourceUtil.toResourceExisting(pageContext, strSource);
-		
 	}
 
 
@@ -231,7 +253,6 @@ public final class Zip extends BodyTagImpl {
 
 	private void actionDelete() throws ApplicationException, IOException {
 		required("file",file,true);
-		
 
 		Resource existing = pageContext.getConfig().getTempDirectory().getRealResource(getTempName());
 		IOUtil.copy(file, existing);
@@ -260,7 +281,7 @@ public final class Zip extends BodyTagImpl {
 	        	//dir=index==-1?"":path.substring(0,index);
             	name=path.substring(index+1);
             	
-            	if(filter!=null && !filter.accept(name)) accept=true;
+            	if(filter!=null && !filter.accept(file.getRealResource(name))) accept=true;
             	if(!entryPathMatch(path)) accept=true;
 	        	
             	if(!accept) continue;
@@ -282,9 +303,6 @@ public final class Zip extends BodyTagImpl {
 	private void actionList() throws PageException, IOException {
 		required("file",file,true);
 		required("name",name);
-		
-		
-		
 		
 		railo.runtime.type.Query query=new QueryImpl(
                 new String[]{"name","size","type","dateLastModified","directory","crc","compressedSize","comment"},
@@ -308,9 +326,8 @@ public final class Zip extends BodyTagImpl {
             	
             	dir=index==-1?"":path.substring(0,index);
             	name=path.substring(index+1);
-            	            	
-            	if(filter!=null && !filter.accept(null, name)) continue;
-            	
+
+            	if(filter!=null && !filter.accept( file.getRealResource(name) )) continue;
             	
             	if(!entryPathMatch(dir)) continue;
             	//if(entryPath!=null && !(dir.equalsIgnoreCase(entryPath) || StringUtil.startsWithIgnoreCase(dir,entryPath+"/"))) ;///continue;
@@ -326,7 +343,6 @@ public final class Zip extends BodyTagImpl {
             	query.setAt("comment", row, ze.getComment());
             	query.setAt("directory", row, dir);
             	//zis.closeEntry();
-                
             }
         }
         finally {
@@ -362,7 +378,7 @@ public final class Zip extends BodyTagImpl {
 			if(binary)
 				pageContext.setVariable(variable, baos.toByteArray());
 			else {
-				if(charset==null)charset=pageContext.getConfig().getResourceCharset();
+				if(charset==null)charset=((PageContextImpl)pageContext).getResourceCharset().name();
 				pageContext.setVariable(variable, new String(baos.toByteArray(),charset));
 			}
 		}
@@ -395,18 +411,21 @@ public final class Zip extends BodyTagImpl {
             	if(!recurse && index!=-1) {
             		zis.closeEntry();
             		continue;
-            	}
-            	// filter
-            	if(filter!=null && !filter.accept(path.substring(index+1))) {
-            		zis.closeEntry();
-            		continue;
-            	}
-            	// entrypath
-            	if(!entryPathMatch(path)) {
-            		zis.closeEntry();
-            		continue;
-            	}
-	        	target=destination.getRealResource(entry.getName());
+	            }
+
+		        target=destination.getRealResource(entry.getName());
+
+		        // filter
+		        if(filter!=null && !filter.accept(target)) {
+		            zis.closeEntry();
+		            continue;
+	            }
+
+		        // entrypath
+		        if(!entryPathMatch(path)) {
+		            zis.closeEntry();
+		            continue;
+	            }
 	        	if(!storePath) target=destination.getRealResource(target.getName());
 	            if(entry.isDirectory()) {
 	                target.mkdirs();
@@ -508,7 +527,7 @@ public final class Zip extends BodyTagImpl {
 		}
 		else {
 			String charset=zpc.getCharset();
-			if(StringUtil.isEmpty(charset))charset=pageContext.getConfig().getResourceCharset();
+			if(StringUtil.isEmpty(charset))charset=((PageContextImpl)pageContext).getResourceCharset().name();
 			add(zos, new ByteArrayInputStream(content.toString().getBytes(charset)), zpc.getEntryPath(), System.currentTimeMillis(), true);
 		}
 	}
@@ -606,6 +625,10 @@ public final class Zip extends BodyTagImpl {
     @Override
 	public int doEndTag() throws PageException	{//print.out("doEndTag"+doCaching+"-"+body);
 		try {
+
+			if (this.filter == null && !StringUtil.isEmpty(this.pattern))
+				this.filter = new WildcardPatternFilter(pattern, patternDelimiters);
+
 			if(action.equals("delete")) actionDelete();
 			else if(action.equals("list")) actionList();
 			else if(action.equals("read")) actionRead(false);
@@ -637,7 +660,7 @@ public final class Zip extends BodyTagImpl {
     /**
 	 * throw a error if the value is empty (null)
      * @param attributeName
-     * @param atttributValue
+     * @param attributValue
 	 * @throws ApplicationException
      */
     private void required(String attributeName, String attributValue) throws ApplicationException {
@@ -650,7 +673,7 @@ public final class Zip extends BodyTagImpl {
     /**
 	 * throw a error if the value is empty (null)
      * @param attributeName
-     * @param atttributValue
+     * @param attributValue
 	 * @throws ApplicationException
      */
     private void required(String attributeName, Resource attributValue, boolean exists) throws ApplicationException {

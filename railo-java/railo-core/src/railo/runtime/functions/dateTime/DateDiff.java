@@ -4,6 +4,7 @@
 package railo.runtime.functions.dateTime;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.JREDateTimeUtil;
@@ -68,7 +69,7 @@ public final class DateDiff implements Function {
 		Calendar _cLeft = JREDateTimeUtil.getThreadCalendar(tz);
 		_cLeft.setTimeInMillis(msLeft);
 		
-		Calendar _cRight = JREDateTimeUtil.newInstance(tz);
+		Calendar _cRight = JREDateTimeUtil.newInstance(tz,Locale.US);
 		_cRight.setTimeInMillis(msRight);
 			
 			

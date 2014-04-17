@@ -44,7 +44,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	public String serialize(Object object, String clientVariableName) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize(clientVariableName,object,sb,new HashSet<Object>());
 		String str = sb.toString().trim();
 		return clientVariableName+"="+str+(StringUtil.endsWith(str, ';')?"":";");
@@ -60,7 +60,7 @@ public final class JSConverter extends ConverterSupport {
 		writer.flush();
 	}
 	private String _serialize(Object object) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize("tmp",object,sb,new HashSet<Object>());
 		String str = sb.toString().trim();
 		return str+(StringUtil.endsWith(str, ';')?"":";");
@@ -69,19 +69,18 @@ public final class JSConverter extends ConverterSupport {
 	
 	
 	
-	private void _serialize(String name,Object object,StringBuffer sb,Set<Object> done) throws ConverterException {
+	private void _serialize(String name,Object object,StringBuilder sb,Set<Object> done) throws ConverterException {
 		// NULL
 		if(object==null) {
 			sb.append(goIn());
 			sb.append(NULL+";");
 			return;
 		}
-		// String
-		if(object instanceof String || object instanceof StringBuffer) {
+		// CharSequence (String, StringBuilder ...)
+		if(object instanceof CharSequence) {
 			sb.append(goIn());
-			sb.append("\"");
-			sb.append(StringUtil.escapeJS(object.toString()));
-			sb.append("\";");
+			sb.append(StringUtil.escapeJS(object.toString(),'"'));
+			sb.append(";");
 			return;
 		}
 		// Number
@@ -159,7 +158,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized array
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(String name, Array array, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeArray(String name, Array array, StringBuilder sb, Set<Object> done) throws ConverterException {
 		_serializeList(name,array.toList(),sb,done);
 	}
 	
@@ -172,7 +171,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized list
 	 * @throws ConverterException
 	 */
-	private void _serializeList(String name, List list, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeList(String name, List list, StringBuilder sb, Set<Object> done) throws ConverterException {
 		
 		
 		if(useShortcuts)sb.append("[];");
@@ -198,7 +197,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized struct
 	 * @throws ConverterException
 	 */
-	private String _serializeStruct(String name, Struct struct, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private String _serializeStruct(String name, Struct struct, StringBuilder sb, Set<Object> done) throws ConverterException {
 		if(useShortcuts)sb.append("{};");
 		else sb.append("new Object();");
 		
@@ -207,14 +206,9 @@ public final class JSConverter extends ConverterSupport {
 		while(it.hasNext()) {
 			e = it.next();
 			// lower case ist ok!
-			String key=StringUtil.escapeJS(Caster.toString(e.getKey().getLowerString(),""));
-            sb.append(name+"[\""+key+"\"]=");
-			//try {
-				_serialize(name+"[\""+key+"\"]",e.getValue(),sb,done);
-			/*} 
-			catch (PageException pe) {
-				_serialize(name+"[\""+key+"\"]",pe.getMessage(),sb,done);
-			}*/
+			String key=StringUtil.escapeJS(Caster.toString(e.getKey().getLowerString(),""),'"');
+            sb.append(name+"["+key+"]=");
+			_serialize(name+"["+key+"]",e.getValue(),sb,done);
 		}
         return sb.toString();
 	}
@@ -228,16 +222,16 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized map
 	 * @throws ConverterException
 	 */
-	private String _serializeMap(String name, Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
+	private String _serializeMap(String name, Map map, StringBuilder sb, Set<Object> done) throws ConverterException {
 
 		if(useShortcuts)sb.append("{}");
 		else sb.append("new Object();");
 		Iterator it=map.keySet().iterator();
 		while(it.hasNext()) {
 			Object key=it.next();
-			String skey=StringUtil.toLowerCase(StringUtil.escapeJS(key.toString()));
-            sb.append(name+"[\""+skey+"\"]=");
-			_serialize(name+"[\""+skey+"\"]",map.get(key),sb,done);
+			String skey=StringUtil.toLowerCase(StringUtil.escapeJS(key.toString(),'"'));
+            sb.append(name+"["+skey+"]=");
+			_serialize(name+"["+skey+"]",map.get(key),sb,done);
 			//sb.append(";");
 		}
 		return sb.toString();
@@ -250,12 +244,12 @@ public final class JSConverter extends ConverterSupport {
 	 * @return serialized query
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeQuery(String name,Query query,StringBuilder sb, Set<Object> done) throws ConverterException {
 		if(useWDDX)_serializeWDDXQuery(name,query,sb,done);
 		else _serializeASQuery(name,query,sb,done);
 	}
 
-	private void _serializeWDDXQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeWDDXQuery(String name,Query query,StringBuilder sb, Set<Object> done) throws ConverterException {
 		Iterator<Key> it = query.keyIterator();
 		Key k;
 		sb.append("new WddxRecordset();");
@@ -268,7 +262,7 @@ public final class JSConverter extends ConverterSupport {
 			if(useShortcuts)sb.append("col"+i+"=[];");
 			else sb.append("col"+i+"=new Array();");
 			// lower case ist ok!
-			String skey = StringUtil.escapeJS(k.getLowerString());
+			String skey = StringUtil.escapeJS(k.getLowerString(),'"');
 			for(int y=0;y<recordcount;y++) {
 				
 				sb.append("col"+i+"["+y+"]=");
@@ -276,16 +270,16 @@ public final class JSConverter extends ConverterSupport {
 				_serialize("col"+i+"["+y+"]",query.getAt(k,y+1,null),sb,done);
 				
 			}
-			sb.append(name+"[\""+skey+"\"]=col"+i+";col"+i+"=null;");
+			sb.append(name+"["+skey+"]=col"+i+";col"+i+"=null;");
 		}
 	}
 
-	private void _serializeASQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+	private void _serializeASQuery(String name,Query query,StringBuilder sb, Set<Object> done) throws ConverterException {
 
 		Collection.Key[] keys = CollectionUtil.keys(query);
 		String[] strKeys = new String[keys.length];
 		for(int i=0;i<strKeys.length;i++) {
-			strKeys[i] = StringUtil.escapeJS(keys[i].getString());
+			strKeys[i] = StringUtil.escapeJS(keys[i].getString(),'"');
 		}
 		if(useShortcuts)sb.append("[];");
 		else sb.append("new Array();");
@@ -296,8 +290,8 @@ public final class JSConverter extends ConverterSupport {
 			else sb.append(name+"["+i+"]=new Object();");
 			
 			for(int y=0;y<strKeys.length;y++) {
-				sb.append(name+"["+i+"]['"+strKeys[y]+"']=");
-				_serialize(name+"["+i+"]['"+strKeys[y]+"']",query.getAt(keys[y],i+1,null),sb,done);
+				sb.append(name+"["+i+"]["+strKeys[y]+"]=");
+				_serialize(name+"["+i+"]["+strKeys[y]+"]",query.getAt(keys[y],i+1,null),sb,done);
 			}
 		}
 	}
@@ -311,7 +305,7 @@ public final class JSConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private synchronized void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
+	private synchronized void _serializeDateTime(DateTime dateTime, StringBuilder sb) {
 	   
 		Calendar c = JREDateTimeUtil.getThreadCalendar(ThreadLocalPageContext.getTimeZone());
 		c.setTime(dateTime);
@@ -332,7 +326,7 @@ public final class JSConverter extends ConverterSupport {
 	}
 
 	private String goIn() {
-		//StringBuffer rtn=new StringBuffer(deep);
+		//StringBuilder rtn=new StringBuilder(deep);
 		//for(int i=0;i<deep;i++) rtn.append('\t');
 		return "";//rtn.toString();
 	}

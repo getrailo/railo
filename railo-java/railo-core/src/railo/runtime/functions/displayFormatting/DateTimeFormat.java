@@ -66,6 +66,8 @@ public final class DateTimeFormat extends BIF {
 			format=java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.LONG, java.text.DateFormat.LONG, locale);
 		else if("full".equalsIgnoreCase(mask)) 
 			format=java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.FULL, java.text.DateFormat.FULL, locale);
+		else if ("iso8601".equalsIgnoreCase(mask))
+			format = new SimpleDateFormat( convertMask( "yyyy-mm-dd'T'HH:nn:ssZ" ) );
 		else {
 			SimpleDateFormat sdf;
 			format = sdf= new SimpleDateFormat(convertMask(mask), locale);

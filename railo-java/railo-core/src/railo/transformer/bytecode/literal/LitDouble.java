@@ -20,6 +20,8 @@ public final class LitDouble extends ExpressionBase implements Literal,ExprDoubl
 
 	private static final Type CONSTANTS_DOUBLE = Type.getType(ConstantsDouble.class);
 	public static final LitDouble ZERO=new LitDouble(0,null,null);
+	public static final LitDouble ONE=new LitDouble(1,null,null);
+	public static final LitDouble MINUS_ONE=new LitDouble(-1,null,null);
 	
     private double d;
 

@@ -1,11 +1,10 @@
 package railo.commons.lang;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
@@ -19,6 +18,30 @@ import railo.runtime.type.util.ArrayUtil;
  * Util to do some additional String Operations
  */
 public final class StringUtil {
+	
+	private static final char[] SPECIAL_WHITE_SPACE_CHARS=new char[]{
+		 0x85		// NEL, Next line
+		,0xa0		// no-break space
+		,0x1680		// ogham space mark
+		,0x180e		// mongolian vowel separator
+		,0x2000		// en quad
+		,0x2001		// em quad
+		,0x2002		// en space
+		,0x2003		// em space
+		,0x2004		// three-per-em space
+		,0x2005		// four-per-em space
+		,0x2006		// six-per-em space
+		,0x2007		// figure space
+		,0x2008		// punctuation space
+		,0x2009		// thin space
+		,0x200A		// hair space
+		,0x2028		// line separator
+		,0x2029		// paragraph separator
+		,0x202F		// narrow no-break space
+		,0x205F		// medium mathematical space
+		,0x3000		// ideographic space
+	};
+	
     
 	/**
 	 * do first Letter Upper case
@@ -107,29 +130,80 @@ public final class StringUtil {
 	public static String escapeHTML(String html) {
 		return HTMLEntities.escapeHTML(html);
 	}
-	
+
 	/**
 	 * escapes JS sensitive characters
 	 * @param str String to escape
 	 * @return escapes String
 	 */
-	public static String escapeJS(String str) {
+	public static String escapeJS(String str, char quotesUsed) {
+		return escapeJS(str,quotesUsed, (CharsetEncoder)null);
+	}
+
+	public static String escapeJS(String str, char quotesUsed, java.nio.charset.Charset charset) {
+		return escapeJS(str, quotesUsed, charset==null?null:charset.newEncoder());
+	}
+
+	/**
+	 * escapes JS sensitive characters
+	 * @param str String to escape
+	 * @param charset if not null, it checks if the given string is supported by the encoding, if not, railo encodes the string
+	 * @return escapes String
+	 */
+	public static String escapeJS(String str, char quotesUsed, CharsetEncoder enc) {
 		char[] arr=str.toCharArray();
 		StringBuilder rtn=new StringBuilder(arr.length);
+		rtn.append(quotesUsed);
+		
 		for(int i=0;i<arr.length;i++) {
-			switch(arr[i]) {
-				case '\\': rtn.append("\\\\"); break;
-				case '\n': rtn.append("\\n"); break;
-				case '\r': rtn.append("\\r"); break;
-				case '\f': rtn.append("\\f"); break;
-				case '\b': rtn.append("\\b"); break;
-				case '\t': rtn.append("\\t"); break;
-				case '"' : rtn.append("\\\""); break;
-				case '\'': rtn.append("\\\'"); break;
-				default : rtn.append(arr[i]); break;
+			if(arr[i] < 128){
+				switch(arr[i]) {
+					case '\\': rtn.append("\\\\"); break;
+					case '\n': rtn.append("\\n"); break;
+					case '\r': rtn.append("\\r"); break;
+					case '\f': rtn.append("\\f"); break;
+					case '\b': rtn.append("\\b"); break;
+					case '\t': rtn.append("\\t"); break;
+					case '"' : 
+						if(quotesUsed=='"') rtn.append("\\\"");
+						else rtn.append('"'); 
+					break;
+					case '\'': 
+						if(quotesUsed=='\'') rtn.append("\\\'");
+						else rtn.append('\''); 
+					break;
+					case '/': 
+						// escape </script>
+						if(
+							i>0 && arr[i-1]=='<'
+							&& i+1<arr.length && arr[i+1]=='s'
+							&& i+2<arr.length && arr[i+2]=='c'
+							&& i+3<arr.length && arr[i+3]=='r'
+							&& i+4<arr.length && arr[i+4]=='i'
+							&& i+5<arr.length && arr[i+5]=='p'
+							&& i+6<arr.length && arr[i+6]=='t'
+							&& i+7<arr.length && (isWhiteSpace(arr[i+7]) || arr[i+7]=='>')
+							
+						) {
+							rtn.append("\\/");
+							break;
+						} 
+					
+					default : rtn.append(arr[i]); break;
+				}
+			}
+			else if(enc==null || !enc.canEncode(arr[i])) {
+				if (arr[i] < 0x10)			rtn.append("\\u000");
+			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
+			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
+			    else 						rtn.append( "\\u");
+				rtn.append(Integer.toHexString(arr[i]));
+			}
+			else {
+				rtn.append(arr[i]);
 			}
 		}
-		return rtn.toString();
+		return rtn.append(quotesUsed).toString();
 	}
 
 	/**
@@ -244,11 +318,16 @@ public final class StringUtil {
 	 * @param str string to translate
 	 * @return translated String
 	 */
-
 	public static String toVariableName(String str) {
-		return toVariableName(str, true);
+		return toVariableName(str, true,false);
 	}
-	public static String toVariableName(String str, boolean addIdentityNumber) {
+	
+
+	public static String toJavaClassName(String str) {
+		return toVariableName(str, true, true);
+	}
+	
+	public static String toVariableName(String str, boolean addIdentityNumber, boolean allowDot) {
 		
 		StringBuilder rtn=new StringBuilder();
 		char[] chars=str.toCharArray();
@@ -257,7 +336,7 @@ public final class StringUtil {
 		for(int i=0;i<chars.length;i++) {
 			char c=chars[i];
 			if(i==0 && (c>='0' && c<='9'))rtn.append("_"+c);
-			else if((c>='a' && c<='z') ||(c>='A' && c<='Z') ||(c>='0' && c<='9') || c=='_' || c=='$')
+			else if((c>='a' && c<='z') ||(c>='A' && c<='Z') ||(c>='0' && c<='9') || c=='_' || c=='$' || (allowDot && c=='.'))
 				rtn.append(c);
 			else {	
 			    doCorrect=false;
@@ -384,7 +463,7 @@ public final class StringUtil {
             } 
             return ((st > 0)) ? str.substring(st) : str; 
     } 
-    
+
     /** 
      * This function returns a string with whitespace stripped from the end of str 
      * @param str String to clean 
@@ -398,11 +477,87 @@ public final class StringUtil {
                 len--; 
             } 
             return (len < str.length()) ? str.substring(0, len) : str; 
-    }	
+    }
     
+	/**
+	 * trim given value, return defaultvalue when input is null
+	 * @param str
+	 * @param defaultValue
+	 * @return trimmed string or defaultValue
+	 */
+	public static String trim(String str,String defaultValue) {
+		if(str==null) return defaultValue;
+		return str.trim();
+	}
+	
+	/**
+	 * 
+	 * @param c character to check
+	 * @param checkSpecialWhiteSpace if set to true, railo checks also uncommon white spaces.
+	 * @return
+	 */
+	public static boolean isWhiteSpace(char c,boolean checkSpecialWhiteSpace) {
+		if(Character.isWhitespace(c)) return true;
+		if(checkSpecialWhiteSpace) {
+			for(int i=0;i<SPECIAL_WHITE_SPACE_CHARS.length;i++){
+				if(c==SPECIAL_WHITE_SPACE_CHARS[i]) return true;
+			}
+		}
+		return false;
+	}
+	
 
+	public static boolean isWhiteSpace(char c) {
+		return isWhiteSpace(c,false);
+	}
 
-    /**
+	/**
+	 * trim given value, return defaultvalue when input is null
+	 * this function no only removes the "classic" whitespaces, 
+	 * it also removes Byte order masks forgotten to remove when reading a UTF file. 
+	 * @param str
+	 * @param removeBOM if set to true, Byte Order Mask that got forgotten get removed as well
+	 * @param removeSpecialWhiteSpace if set to true, railo removes also uncommon white spaces.
+	 * @param defaultValue
+	 * @return trimmed string or defaultValue
+	 */
+	public static String trim(String str,boolean removeBOM,boolean removeSpecialWhiteSpace,String defaultValue) {
+		if(str==null) return defaultValue;
+		if(str.isEmpty()) return str;
+		// remove leading BOM Marks
+		if(removeBOM) {
+			// UTF-16, big-endian
+	        if (str.charAt(0) == '\uFEFF') str=str.substring(1);
+	        else if (str.charAt(0) == '\uFFFD') str=str.substring(1);
+	        
+	        // UTF-16, little-endian
+	        else if (str.charAt(0) == '\uFFFE') str=str.substring(1);
+			
+	        // UTF-8
+	        else if(str.length()>=2) {
+	        	// TODO i get this from UTF-8 files generated by suplime text, i was expecting something else
+	        	if (str.charAt(0) == '\uBBEF' && str.charAt(1) == '\uFFFD') str=str.substring(2);
+	        }
+		}
+		
+		if(removeSpecialWhiteSpace) {
+			int len = str.length();
+	        int startIndex = 0,endIndex=len-1;
+	        // left
+	        while ((startIndex < len) && isWhiteSpace(str.charAt(startIndex),true)) {
+	            startIndex++;
+	        }
+	        // right
+	        while ((startIndex < endIndex) && isWhiteSpace(str.charAt(endIndex),true)) {
+	            endIndex--;
+	        }
+	        return ((startIndex > 0) || (endIndex+1 < len)) ? str.substring(startIndex, endIndex+1) : str;
+		}
+        
+        return str.trim();
+	}
+	
+	/**
      * return if in a string are line feeds or not
      * @param str string to check
      * @return translated string
@@ -432,7 +587,7 @@ public final class StringUtil {
         for(int i=0;i<len;i++) {
             c=str.charAt(i);
             if(c=='\n' || c=='\r')		buffer='\n';
-            else if(c==' ' || c=='\t')	{
+            else if(isWhiteSpace(c))	{
             	if(buffer==0)buffer=c;
             }
             else {
@@ -784,39 +939,7 @@ public final class StringUtil {
         if(isEmpty(str)) return 0;
         return str.charAt(0);
     }
-
-	/**
-	 * change charset of string from system default to givenstr
-	 * @param str
-	 * @param charset
-	 * @return
-	 * @throws UnsupportedEncodingException 
-	 */
-	public static String changeCharset(String str, String charset) throws UnsupportedEncodingException {
-		if(str==null) return str;
-		return new String(str.getBytes(charset),charset);
-	}
-
-	/**
-	 * change charset of string from system default to givenstr
-	 * @param str
-	 * @param charset
-	 * @return
-	 * @throws UnsupportedEncodingException 
-	 */
-	public static String changeCharset(String str, String charset, String defaultValue) {
-		if(str==null) return str;
-		try {
-			return new String(str.getBytes(SystemUtil.getCharset()),charset);
-		} catch (UnsupportedEncodingException e) {
-			return defaultValue;
-		}
-	}
-
-	public static boolean isWhiteSpace(char c) {
-		return c<=' ';
-	}
-
+    
 	public static String removeWhiteSpace(String str) {
 		if(isEmpty(str)) return str;
 		StringBuilder sb=new StringBuilder();
@@ -918,17 +1041,6 @@ public final class StringUtil {
 		return !str.equals(str.toLowerCase());
 	}
 
-	/**
-	 * trim given value, return defaultvalue when input is null
-	 * @param str
-	 * @param defaultValue
-	 * @return trimmed string or defaultValue
-	 */
-	public static String trim(String str,String defaultValue) {
-		if(str==null) return defaultValue;
-		return str.trim();
-	}
-
 	public static boolean contains(String str, String substr) {
 		if(str==null) return false;
 		return str.indexOf(substr)!=-1;
@@ -1027,13 +1139,39 @@ public final class StringUtil {
 	}
 
 
+	/**
+	 * returns true if the input string has letters and they are all UPPERCASE
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static boolean isAllUpperCase(String str) {
+
+		if ( str == null )  return false;
+
+		boolean hasLetters = false;
+		char c;
+
+		for (int i=str.length()-1; i >= 0; i--) {
+
+			c = str.charAt(i);
+			if ( Character.isLetter( c )) {
+
+				if ( !Character.isUpperCase( c ))
+					return false;
+
+				hasLetters = true;
+			}
+		}
+
+		return hasLetters;
+	}
+
+
 	public static boolean isWhiteSpace(String str) {
 		if(str==null) return false;
-		int len=str.length();
-		char c;
-		for(int i=0;i<len;i++){
-			c=str.charAt(i);
-			if(c!=' ' && c!='\t' && c!='\b' && c!='\r' && c!='\n') return false;
+		for(int i=str.length()-1;i>=0;i--){
+			if(!isWhiteSpace(str.charAt(i))) return false;
 		}
 		return true;
 	}

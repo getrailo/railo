@@ -1,6 +1,7 @@
 package railo.runtime.spooler;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.http.HTTPResponse;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.converter.ConverterException;
@@ -56,13 +58,14 @@ public abstract class SpoolerTaskHTTPCall extends SpoolerTaskSupport {
 		params.put("method",methodName);
 		params.put("returnFormat","json");
 		try {
-			params.put("argumentCollection",new JSONConverter(true).serialize(pc, args, false));
+			Charset cs = ((PageContextImpl)pc).getWebCharset();
+			params.put("argumentCollection",new JSONConverter(true,cs).serialize(pc, args, false));
 		
 		
 			HTTPResponse res = HTTPEngine4Impl.post(
 				HTTPUtil.toURL(url,true), 
 				client.getServerUsername(), 
-				client.getServerPassword(), -1L, -1, config.getWebCharset(), "Railo Remote Invocation", client.getProxyData(), null,params);
+				client.getServerPassword(), -1L, -1, ((PageContextImpl)pc).getWebCharset().name(), "Railo Remote Invocation", client.getProxyData(), null,params);
 		
 			return new JSONExpressionInterpreter().interpret(pc, res.getContentAsString());
 			

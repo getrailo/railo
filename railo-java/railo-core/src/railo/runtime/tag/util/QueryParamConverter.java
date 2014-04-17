@@ -87,7 +87,7 @@ public class QueryParamConverter {
 		if(oType==null)oType=sct.get(KeyConstants._sqltype,null);
 		if(oType==null)oType=sct.get(KeyConstants._type,null);
 		if(oType!=null) {
-			item.setType(SQLCaster.toIntType(Caster.toString(oType)));
+			item.setType(SQLCaster.toSQLType(Caster.toString(oType)));
 		}
 		
 		// nulls (optional)
@@ -159,7 +159,7 @@ public class QueryParamConverter {
 					int y=i+1;
 					for(;y<sqlLen;y++){
 						cc=sql.charAt(y);
-						if(isSpace(cc))break;
+						if(Character.isWhitespace(cc))break;
 						name.append(cc);
 					}
 					if(name.length()>0) {
@@ -179,10 +179,6 @@ public class QueryParamConverter {
 		return new SQLImpl(sb.toString(),items.toArray(new SQLItem[items.size()]));
 	}
 
-	
-	private static boolean isSpace(char c) {
-		return c==' ' || c=='\t' || c=='\n' || c=='\b';
-	}
 
 	private static SQLItem get(String name, List<NamedSQLItem> items) throws ApplicationException {
 		Iterator<NamedSQLItem> it = items.iterator();

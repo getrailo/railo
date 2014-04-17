@@ -1,5 +1,6 @@
 package railo.transformer.bytecode;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,29 +112,33 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	}
 
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-        writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),statements, bc);
-    }
-
-	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,List<Statement> statements,BytecodeContext bc) throws BytecodeException {
-		Iterator<Statement> it = statements.iterator();
-		while(it.hasNext()) {
-			Statement s = it.next();
-			s.writeOut(bc);
-        }	
+		writeOut(bc,this);
     }
 	
-	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,List<Statement> statements,final BytecodeContext bc) throws BytecodeException {
+	
+	
+
+	public static void writeOut(final BytecodeContext bc, Body body) throws BytecodeException {
+		writeOut(bc,body.getStatements());
+	}
+	
+
+	
+	public static void writeOut(final BytecodeContext bc, List<Statement> statements) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
         boolean isOutsideMethod;
         GeneratorAdapter a=null;
 		Method m;
 		BytecodeContext _bc=bc;
 		Iterator<Statement> it = statements.iterator();
+		boolean split = bc.getPage().getSplitIfNecessary();
+        
+		
 		//int lastLine=-1;
 		while(it.hasNext()) {
 			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
 	    	Statement s = it.next();
-	    	if(_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
+	    	if(split && _bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
 					(isOutsideMethod || !s.hasFlowController()) && s.getStart()!=null) {
         		if(a!=null){
         			a.returnValue();
@@ -146,7 +151,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
     			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
     			
-    			_bc=new BytecodeContext(statConstr,constr,keys,bc,a,m);
+    			_bc=new BytecodeContext(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),bc,a,m);
     			if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
     			else _bc.setRoot(bc);
     			
@@ -162,22 +167,103 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 				_bc=bc;
 				a=null;
 			}
-        	        	
-        	if(ExpressionUtil.doLog(bc)) {
-        		String id=id();
-        		ExpressionUtil.callStartLog(bc, s,id);
-            	s.writeOut(_bc);
-            	ExpressionUtil.callEndLog(bc, s,id);
-        	}
-        	else s.writeOut(_bc);
+        	ExpressionUtil.writeOut(s, _bc);
         }	
         if(a!=null){
         	a.returnValue();
 			a.endMethod();
         } 
     }
+	
+	
+	public static void writeOutNew(final BytecodeContext bc, List<Statement> statements) throws BytecodeException {
+		
+		if(statements==null || statements.size()==0) return;
+		
+		Statement s;
+		Iterator<Statement> it = statements.iterator();
+		boolean isVoidMethod=bc.getMethod().getReturnType().equals(Types.VOID);
+        boolean split = bc.getPage().getSplitIfNecessary();
+        
+        
+        
+		// split
+        if(split && isVoidMethod && statements.size()>1 && bc.doSubFunctions()) {
+        	int collectionSize=statements.size()/10;
+    		if(collectionSize<1) collectionSize=1;
+    		List<Statement> _statements=new ArrayList<Statement>();
+    		while(it.hasNext()){
+				s=it.next();
+				
+				if(s.hasFlowController()) {
+		    		// add existing statements to sub method
+					if(_statements.size()>0) {
+						addToSubMethod(bc,_statements.toArray(new Statement[_statements.size()]));
+						_statements.clear();
+					}
+					ExpressionUtil.writeOut(s, bc);
+				}
+				else {
+					_statements.add(s);
+					if(_statements.size()>=collectionSize) {
+						if(_statements.size()<=10 && ASMUtil.count(_statements,true)<=20) {
+							Iterator<Statement> _it = _statements.iterator();
+							while(_it.hasNext())
+								ExpressionUtil.writeOut(_it.next(), bc);
+						}
+						else 
+							addToSubMethod(bc,_statements.toArray(new Statement[_statements.size()]));
+						_statements.clear();
+					}
+				}
+			}
+    		
+    		if(_statements.size()>0)
+    			addToSubMethod(bc,_statements.toArray(new Statement[_statements.size()]));
+		}
+		// no split
+		else {
+			while(it.hasNext()){
+				ExpressionUtil.writeOut(it.next(), bc);
+			}
+		}
+    }
     
-	private static synchronized String id() {
+	private static void addToSubMethod(BytecodeContext bc, Statement... statements) throws BytecodeException {
+		if(statements==null || statements.length==0) return; 
+		
+		GeneratorAdapter adapter = bc.getAdapter();
+		String method= ASMUtil.createOverfowMethod(bc.getMethod().getName(),bc.getPage().getMethodCount());
+		
+		for(int i=0;i<statements.length;i++){
+			if(statements[i].getStart()!=null) {
+				ExpressionUtil.visitLine(bc, statements[i].getStart());
+				break;
+			}
+		}
+		
+		//ExpressionUtil.lastLine(bc);
+		Method m = new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
+		GeneratorAdapter a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
+		
+		BytecodeContext _bc = new BytecodeContext(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),bc,a,m);
+		if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
+		else _bc.setRoot(bc);
+		
+		adapter.visitVarInsn(Opcodes.ALOAD, 0);
+    	adapter.visitVarInsn(Opcodes.ALOAD, 1);
+    	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), method, "(Lrailo/runtime/PageContext;)V");
+		
+    	for(int i=0;i<statements.length;i++){
+    		ExpressionUtil.writeOut(statements[i], _bc);
+		}
+    	
+		a.returnValue();
+		a.endMethod();
+	}
+
+
+	public static synchronized String id() {
 		counter++;
 		if(counter<0) counter=1;
 		return Long.toString(counter, Character.MAX_RADIX);

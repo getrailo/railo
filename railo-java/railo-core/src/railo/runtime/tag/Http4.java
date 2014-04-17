@@ -55,9 +55,8 @@ import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
 import railo.commons.net.http.httpclient4.HTTPPatchFactory;
 import railo.commons.net.http.httpclient4.HTTPResponse4Impl;
 import railo.commons.net.http.httpclient4.ResourceBody;
-import railo.runtime.config.Config;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWeb;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.HTTPException;
@@ -320,7 +319,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	}
 	
 
-	public void setEncoded(boolean encoded)	{
+	public void setEncodeurl(boolean encoded)	{
 		this.encoded=encoded;
 	}
 
@@ -613,7 +612,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     	HttpContext httpContext=null;
 		//HttpRequestBase req = init(pageContext.getConfig(),this,client,params,url,port);
     	{
-    		if(StringUtil.isEmpty(charset,true)) charset=cw.getWebCharset();
+    		if(StringUtil.isEmpty(charset,true)) charset=((PageContextImpl)pageContext).getWebCharset().name();
     		else charset=charset.trim();
     		
     		
@@ -1137,7 +1136,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        cfhttp.set(FILE_CONTENT,str);
 		        try {
 		        	if(file!=null){
-		        		IOUtil.write(file,str,pageContext.getConfig().getWebCharset(),false);
+		        		IOUtil.write(file,str,((PageContextImpl)pageContext).getWebCharset(),false);
                     }
                 } 
 		        catch (IOException e1) {}
@@ -1822,16 +1821,10 @@ public final class Http4 extends BodyTagImpl implements Http {
 			// text
 			if(HTTPUtil.isTextMimeType(contentType)) {
 				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType,null);
-				//String mimetype=tmp[0];
-				String charset=tmp[1];
-				
-				if(StringUtil.isEmpty(charset,true)) {
-					Config config = ThreadLocalPageContext.getConfig();
-					if(config!=null)charset=config.getWebCharset();
-				}
+				Charset cs=Http4.getCharset(tmp[1]);
 				
 				try {
-					return IOUtil.toString(is, charset);
+					return IOUtil.toString(is, cs);
 				} catch (IOException e) {}
 			}
 			// Binary
@@ -1872,6 +1865,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 			}
 		}
 		return null;
+	}
+
+	public static Charset getCharset(String strCharset) {
+		if(!StringUtil.isEmpty(strCharset,true)) 
+			return CharsetUtil.toCharset(strCharset);
+		return CharsetUtil.getWebCharset();
 	}
 	
 	

@@ -57,7 +57,7 @@ public final class NumberFormat implements Function {
     }
     
     public static double toNumber(PageContext pc, Object object) throws PageException {
-        double d=Caster.toDoubleValue(object,Double.NaN);
+        double d=Caster.toDoubleValue(object,true,Double.NaN);
         if(Decision.isValid(d)) return d;
         
         String str=Caster.toString(object);
@@ -74,7 +74,7 @@ public final class NumberFormat implements Function {
         if(value > 3999)
             throw new FunctionException(pc,"numberFormat",1,"number","a roman value can't be greater than 3999");
         
-        StringBuffer roman = new StringBuffer();
+        StringBuilder roman = new StringBuilder();
         
         
         

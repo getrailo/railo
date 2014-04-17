@@ -27,14 +27,18 @@ import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Util;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.img.Image;
 import railo.runtime.java.JavaObject;
 import railo.runtime.net.mail.MailUtil;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.text.xml.XMLCaster;
@@ -188,7 +192,7 @@ public final class Decision {
 
 	public static boolean isInteger(Object value,boolean alsoBooleans) {
 		if(!alsoBooleans && value instanceof Boolean) return false;
-		double dbl = Caster.toDoubleValue(value,Double.NaN);
+		double dbl = Caster.toDoubleValue(value,false,Double.NaN);
 		if(!Decision.isValid(dbl)) return false;
 		int i=(int)dbl;
 		return i==dbl;		
@@ -367,7 +371,7 @@ public final class Decision {
 		if(value instanceof DateTime) 		return true;
 		else if(value instanceof Date) 		return true;
 		// wrong timezone but this isent importend because date will not be importend
-		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers,alsoMonthString,TimeZone.getDefault(),null)!=null;
+		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,alsoMonthString,TimeZone.getDefault(),null)!=null;
 		else if(value instanceof ObjectWrap) {
         	return isDateSimple(((ObjectWrap)value).getEmbededObject(null),alsoNumbers);
         }
@@ -385,7 +389,7 @@ public final class Decision {
 		if(value instanceof DateTime) 		return true;
 		else if(value instanceof Date) 		return true;
 		// wrong timezone but this isent importend because date will not be importend
-		else if(value instanceof String) 	return DateCaster.toDateAdvanced(value.toString(),alsoNumbers,TimeZone.getDefault(),null)!=null;
+		else if(value instanceof String) 	return DateCaster.toDateAdvanced(value.toString(),alsoNumbers?DateCaster.CONVERTING_TYPE_OFFSET:DateCaster.CONVERTING_TYPE_NONE,TimeZone.getDefault(),null)!=null;
 		else if(value instanceof Castable) 	{
 		    return ((Castable)value).castToDateTime(null)!=null;
              
@@ -480,15 +484,12 @@ public final class Decision {
         else if(o instanceof Struct) {
             Struct sct=(Struct) o;
             Iterator<Key> it = sct.keyIterator();
-            try {
-                while(it.hasNext()) {
-                	Caster.toIntValue(it.next().getString());
-                }
-                return true;
-            } 
-            catch (Throwable t) {
-                return false;
+
+            while (it.hasNext()) {
+                if (!isInteger( it.next(), false ))
+	                return false;
             }
+            return true;
         }
         return false;
     }
@@ -1273,23 +1274,33 @@ public final class Decision {
                 break;
            }
         }
+        return _isCastableTo(null,type, o);
+    }
+    
+
+    private static boolean _isCastableTo(PageContext pcMaybeNull,String type, Object o) {
         if(o instanceof Component) {
             Component comp=((Component)o);
             return comp.instanceOf(type);
         }
+        if(o instanceof Pojo) {
+        	pcMaybeNull = ThreadLocalPageContext.get(pcMaybeNull);
+			return pcMaybeNull!=null && AxisCaster.toComponent(pcMaybeNull,((Pojo)o),type,null)!=null;
+        }
+        
         if(isArrayType(type) && isArray(o)){
-        	String t=type.substring(0,type.length()-2);
+        	String _strType=type.substring(0,type.length()-2);
+        	short _type=CFTypes.toShort(_strType, false, (short)-1);
         	Array arr = Caster.toArray(o,null);
         	if(arr!=null){
         		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(t, it.next(), alsoAlias,alsoPattern,-1))
-        				return false;
-        			
+        			Object obj = it.next();
+        			if(!isCastableTo(pcMaybeNull,_type,_strType, obj))
+        				return false; 
         		}
         		return true;
         	}
-        	
         }
 		return false;
     }
@@ -1300,7 +1311,7 @@ public final class Decision {
 		return type.endsWith("[]");
 	}
 
-	public static boolean isCastableTo(short type,String strType, Object o) {
+	public static boolean isCastableTo(PageContext pc,short type,String strType, Object o) {
 		switch(type){
 		case CFTypes.TYPE_ANY:          return true;
 		case CFTypes.TYPE_STRING:		return isCastableToString(o);
@@ -1318,30 +1329,11 @@ public final class Decision {
         case CFTypes.TYPE_GUID:         return isGUId(o);
         case CFTypes.TYPE_VARIABLE_NAME:return isVariableName(o);
         case CFTypes.TYPE_FUNCTION:		return isFunction(o);
+        case CFTypes.TYPE_IMAGE:        return Image.isCastableToImage(pc,o);
         case CFTypes.TYPE_XML:          return isXML(o);
 		}
 		
-        if(o instanceof Component) {
-        	Component comp=((Component)o);
-            return comp.instanceOf(strType);
-        }
-        if(isArrayType(strType) && isArray(o)){
-        	String _strType=strType.substring(0,strType.length()-2);
-        	short _type=CFTypes.toShort(_strType, false, (short)-1);
-        	Array arr = Caster.toArray(o,null);
-        	if(arr!=null){
-        		Iterator<Object> it = arr.valueIterator();
-        		while(it.hasNext()){
-        			Object obj = it.next();
-        			if(!isCastableTo(_type,_strType, obj))
-        				return false;
-        		}
-        		return true;
-        	}
-        	
-        }
-        
-		return false;
+		return _isCastableTo(pc,strType, o);
 	}
 
     public synchronized static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {
@@ -1350,7 +1342,7 @@ public final class Decision {
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=JREDateTimeUtil.getThreadCalendar(locale);
+        Calendar c=JREDateTimeUtil.getThreadCalendar(locale,tz);
         
         // datetime
         ParsePosition pp=new ParsePosition(0);

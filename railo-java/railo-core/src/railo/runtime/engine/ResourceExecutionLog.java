@@ -64,7 +64,7 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 			}
 			else {
 				try {
-					dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false);
+					dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false,false);
 					if(!dir.exists()){
 						dir.createDirectory(true);
 					}
@@ -98,7 +98,7 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 		
 		
 		//path
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Iterator<String> it = pathes.iterator();
 		int count=0;
 		while(it.hasNext()){

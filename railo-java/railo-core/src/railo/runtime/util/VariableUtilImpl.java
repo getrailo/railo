@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -27,6 +28,7 @@ import railo.runtime.type.UDFPlus;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.Type;
 import railo.runtime.type.wrap.MapAsStruct;
 
@@ -281,6 +283,15 @@ public final class VariableUtilImpl implements VariableUtil {
 			//print.out("get:"+key);
             return XMLStructFactory.newInstance((Node)coll,false).get(key);
         }
+		else if(coll instanceof String) {
+			if(Decision.isInteger(key.getString())) { // i do the decision call and the caster call, because in most cases the if will be false
+				String str=(String)coll;
+				int index = Caster.toIntValue(key.getString(),-1);
+				if(index>0 && index<=str.length()) {
+					return str.substring(index-1,index);
+				}
+			}
+		}
         // HTTPSession
 		/*else if(coll instanceof HttpSession) {
             return ((HttpSession)coll).getAttribute(key.getString());
@@ -709,7 +720,7 @@ public final class VariableUtilImpl implements VariableUtil {
 	
 	public Object callFunctionWithoutNamedValues(PageContext pc, Object coll, Collection.Key key, Object[] args) throws PageException {
 		// Objects
-        if(coll instanceof Objects) {
+		if(coll instanceof Objects) {
         	return ((Objects)coll).call(pc,key,args);
         }
         // call UDF
@@ -717,6 +728,11 @@ public final class VariableUtilImpl implements VariableUtil {
 	    if(prop instanceof UDFPlus) {
 	    	return ((UDFPlus)prop).call(pc,key,args,false);
 		}
+	    // Strings
+	    if(coll instanceof String) {
+			return MemberUtil.call(pc,coll,key,args, CFTypes.TYPE_STRING, "string");
+	    }
+	    
         // call Object Wrapper      
 	    if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
 	    	if(!(coll instanceof Undefined))return Reflector.callMethod(coll,key,args);
@@ -743,6 +759,13 @@ public final class VariableUtilImpl implements VariableUtil {
         if(prop instanceof UDFPlus) 		{
             return ((UDFPlus)prop).callWithNamedValues(pc,key,Caster.toFunctionValues(args),false);
         }
+        
+        // Strings
+	    if(coll instanceof String) {
+			return MemberUtil.callWithNamedValues(pc,coll,key,Caster.toFunctionValues(args), CFTypes.TYPE_STRING, "string");
+	    }
+	    
+        
         throw new ExpressionException("No matching Method/Function ["+key+"] for call with named arguments found ");
 	}
 

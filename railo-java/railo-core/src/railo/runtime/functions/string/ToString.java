@@ -3,8 +3,9 @@
  */
 package railo.runtime.functions.string;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
+import railo.commons.io.CharsetUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -20,18 +21,17 @@ public final class ToString implements Function {
 		return call(pc,object,null);
 	}
 	public static String call(PageContext pc , Object object, String encoding) throws PageException {
+		Charset charset;
 		if(StringUtil.isEmpty(encoding)) {
-			encoding = ReqRspUtil.getCharacterEncoding(pc,pc.getResponse());
+			charset = ReqRspUtil.getCharacterEncoding(pc,pc.getResponse());
 		}
+		else
+			charset = CharsetUtil.toCharset(encoding);
 		
 		if(object instanceof byte[]){
-			if(encoding!=null) {
-        		try {
-					return new String((byte[])object,encoding);
-				} 
-        		catch (UnsupportedEncodingException e) {e.printStackTrace();}
-        	}
-        	return new String((byte[])object);
+			if(charset!=null)
+				return new String((byte[])object,charset);
+			return new String((byte[])object);
 		}
 		return Caster.toString(object);
 	}

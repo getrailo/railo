@@ -65,7 +65,7 @@ public class TemplateException extends PageExceptionImpl {
 	 * @param message
 	 */
 	public TemplateException(CFMLString cfml, String message) {
-		this((PageSource)cfml.getSourceFile(),cfml.getLine(),cfml.getColumn(),message);
+		this(cfml.getPageSource(),cfml.getLine(),cfml.getColumn(),message);
 	}
 	
 	/**
@@ -75,7 +75,7 @@ public class TemplateException extends PageExceptionImpl {
 	 * @param detail
 	 */
 	public TemplateException(CFMLString cfml, String message, String detail) {
-		this((PageSource)cfml.getSourceFile(),cfml.getLine(),cfml.getColumn(),message);
+		this(cfml.getPageSource(),cfml.getLine(),cfml.getColumn(),message);
 		setDetail(detail);
 	}
 

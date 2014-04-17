@@ -8,7 +8,7 @@ import railo.runtime.net.smtp.SMTPClient.MimeMessageAndSession;
 
 public final class SMTPSender extends Thread {
 
-	private boolean hasSended=false;
+	private boolean isSent = false;
 	private Throwable throwable;
 	private Object lock;
 	private String host;
@@ -36,11 +36,10 @@ public final class SMTPSender extends Thread {
         	// connect
     		if(!transport.isConnected())
     			transport.connect(host,port,user,pass);
-
         	
 			mmas.message.saveChanges();  
 			transport.sendMessage(mmas.message, mmas.message.getAllRecipients());
-			hasSended=true;
+			isSent = true;
 		} 
 		catch (Throwable t) {
 			this.throwable=t;
@@ -59,10 +58,10 @@ public final class SMTPSender extends Thread {
 	}
 
 	/**
-	 * @return is message sended
+	 * @return was message sent
 	 */
-	public boolean hasSended() {
-		return hasSended;
+	public boolean isSent() {
+		return isSent;
 	}
 
 }

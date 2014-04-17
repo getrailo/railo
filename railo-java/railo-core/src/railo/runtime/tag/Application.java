@@ -1,15 +1,18 @@
 package railo.runtime.tag;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -18,13 +21,13 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ClassicApplicationContext;
-import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.scope.UndefinedImpl;
 
 /**
 * Defines scoping for a CFML application, enables or disables storing client variables, 
@@ -48,9 +51,10 @@ public final class Application extends TagImpl {
 	private String clientstorage;
 	private String sessionstorage;
 	private Boolean setClientManagement;
+	private TimeSpan applicationTimeout;
 	private TimeSpan sessionTimeout;
 	private TimeSpan clientTimeout;
-	private TimeSpan applicationTimeout;
+	private TimeSpan requestTimeout;
 	private Mapping[] mappings;
 	private Mapping[] customTagMappings;
 	private Mapping[] componentMappings;
@@ -58,6 +62,7 @@ public final class Application extends TagImpl {
 	private Boolean bufferOutput;
 	private Boolean secureJson;
 	private String scriptrotect;
+	private Boolean typeChecking;
 	private Object datasource;
 	private Object defaultdatasource;
 	private int loginstorage=Scope.SCOPE_UNDEFINED;
@@ -68,22 +73,30 @@ public final class Application extends TagImpl {
 	private int localMode=-1;
 	private Locale locale;
 	private TimeZone timeZone;
+	private Charset webCharset;
+	private Charset resourceCharset;
 	private short sessionType=-1;
+	private short wsType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
+	private Boolean compression;
 
 	private boolean ormenabled;
 	private Struct ormsettings;
+	private Struct tag;
 	private Struct s3;
 	
 	private Boolean triggerDataMember=null;
 	private String cacheFunction;
 	private String cacheQuery;
 	private String cacheTemplate;
+	private String cacheInclude;
 	private String cacheObject;
 	private String cacheResource;
 	private Struct datasources;
 	private UDF onmissingtemplate;
+	private short scopeCascading=-1;
+	private Boolean suppress;
 	
      
     @Override
@@ -97,6 +110,7 @@ public final class Application extends TagImpl {
         setClientManagement=null;
         sessionTimeout=null;
         clientTimeout=null;
+        requestTimeout=null;
         applicationTimeout=null;
         mappings=null;
         customTagMappings=null;
@@ -104,6 +118,8 @@ public final class Application extends TagImpl {
         bufferOutput=null;
         secureJson=null;
         secureJsonPrefix=null;
+        typeChecking=null;
+        suppress=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
         scriptrotect=null;
         datasource=null;
@@ -114,12 +130,17 @@ public final class Application extends TagImpl {
         localMode=-1;
         locale=null;
         timeZone=null;
+        webCharset=null;
+        resourceCharset=null;
         sessionType=-1;
+        wsType=-1;
         sessionCluster=false;
         clientCluster=false;
+        compression=null;
         
         ormenabled=false;
         ormsettings=null;
+        tag=null;
         s3=null;
         //appContext=null;
         
@@ -130,7 +151,9 @@ public final class Application extends TagImpl {
     	cacheTemplate=null;
     	cacheObject=null;
     	cacheResource=null;
+    	cacheInclude=null;
     	onmissingtemplate=null;
+    	scopeCascading=-1;
     }
     
     /** set the value setclientcookies
@@ -169,11 +192,11 @@ public final class Application extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setDatasource(Object datasource) throws PageException {
-		this.datasource = ModernApplicationContext.toDefaultDatasource(datasource);
+		this.datasource = AppListenerUtil.toDefaultDatasource(datasource);
 	}
 	
 	public void setDefaultdatasource(Object defaultdatasource) throws PageException {
-		this.defaultdatasource =  ModernApplicationContext.toDefaultDatasource(defaultdatasource);
+		this.defaultdatasource =  AppListenerUtil.toDefaultDatasource(defaultdatasource);
 	}
 	
 	public void setDatasources(Struct datasources) {
@@ -188,6 +211,26 @@ public final class Application extends TagImpl {
 	public void setTimezone(String strTimeZone) throws ExpressionException {
 		if(StringUtil.isEmpty(strTimeZone)) return;
 		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
+		
+	}
+	
+	public void setScopecascading(String scopeCascading) throws ApplicationException {
+		if(StringUtil.isEmpty(scopeCascading)) return;
+		short NULL=-1;
+		short tmp = ConfigWebUtil.toScopeCascading(scopeCascading,NULL);
+		if(tmp==NULL) throw new ApplicationException("invalid value ("+scopeCascading+") for attribute [ScopeCascading], valid values are [strict,small,standard]");
+		this.scopeCascading=tmp;
+	}
+	
+	public void setWebcharset(String charset) {
+		if(StringUtil.isEmpty(charset)) return;
+		webCharset = CharsetUtil.toCharset(charset);
+		
+	}
+	
+	public void setResourcecharset(String charset) {
+		if(StringUtil.isEmpty(charset)) return;
+		resourceCharset = CharsetUtil.toCharset(charset);
 		
 	}
 	
@@ -229,6 +272,9 @@ public final class Application extends TagImpl {
 	public void setSessiontype(String sessionType) throws ApplicationException	{
 		this.sessionType=AppListenerUtil.toSessionType(sessionType);
 	}
+	public void setWstype(String wstype) throws ApplicationException	{
+		this.wsType=AppListenerUtil.toWSType(wstype);
+	}
 	public void setClientcluster(boolean clientCluster) {
 		this.clientCluster=clientCluster;
 	}
@@ -238,6 +284,10 @@ public final class Application extends TagImpl {
 	
 	public void setClienttimeout(TimeSpan clientTimeout)	{
 		this.clientTimeout=clientTimeout;
+	}
+	
+	public void setRequesttimeout(TimeSpan requestTimeout)	{
+		this.requestTimeout=requestTimeout;
 	}
 	
 
@@ -253,6 +303,10 @@ public final class Application extends TagImpl {
 		if(StringUtil.isEmpty(cacheTemplate,true)) return;
 		this.cacheTemplate=cacheTemplate.trim();
 	}
+	public void setCacheinclude(String cacheInclude)	{
+		if(StringUtil.isEmpty(cacheInclude,true)) return;
+		this.cacheInclude=cacheInclude.trim();
+	}
 	public void setCacheobject(String cacheObject)	{
 		if(StringUtil.isEmpty(cacheObject,true)) return;
 		this.cacheObject=cacheObject.trim();
@@ -260,6 +314,9 @@ public final class Application extends TagImpl {
 	public void setCacheresource(String cacheResource)	{
 		if(StringUtil.isEmpty(cacheResource,true)) return;
 		this.cacheResource=cacheResource.trim();
+	}
+	public void setCompression(boolean compress)	{
+		this.compression=compress;
 	}
 	
 
@@ -282,6 +339,9 @@ public final class Application extends TagImpl {
 	 */
 	public void setOrmsettings(Struct ormsettings) {
 		this.ormsettings = ormsettings;
+	}
+	public void setTag(Struct tag) {
+		this.tag = tag;
 	}
 
 	/**
@@ -324,12 +384,11 @@ public final class Application extends TagImpl {
 	}
 	
 	public void setCustomtagpaths(Object mappings) throws PageException	{
-	    this.customTagMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings);
+	    this.customTagMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings,getSource());
 	}
 	
 	public void setComponentpaths(Object mappings) throws PageException	{
-	    this.componentMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings);
-		//getAppContext().setCustomTagMappings(AppListenerUtil.toCustomTagMappings(pageContext, mappings));
+	    this.componentMappings=AppListenerUtil.toComponentMappings(pageContext.getConfig(), mappings,getSource());
 	}
 	
 
@@ -359,9 +418,16 @@ public final class Application extends TagImpl {
 	/**
 	 * @param scriptrotect the scriptrotect to set
 	 */			
-	public void setScriptprotect(String strScriptrotect) {
+    public void setScriptprotect(String strScriptrotect) {
 		this.scriptrotect=strScriptrotect;
-		//getAppContext().setScriptProtect(strScriptrotect);
+	}
+    
+    public void setTypechecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
+	}
+    
+    public void setSuppressremotecomponentcontent(boolean suppress) {
+		this.suppress=suppress;
 	}
 
 	public void setOnmissingtemplate(Object oUDF) throws PageException {
@@ -384,6 +450,12 @@ public final class Application extends TagImpl {
         	initORM=set(ac);
         }
         
+        // scope cascading
+        if(((UndefinedImpl)pageContext.undefinedScope()).getScopeCascadingType()!=ac.getScopeCascading()) {
+	    	pageContext.undefinedScope().initialize(pageContext);
+	    }
+        
+        // ORM
         if(initORM) ORMUtil.resetEngine(pageContext,false);
         
         return SKIP_BODY; 
@@ -397,6 +469,7 @@ public final class Application extends TagImpl {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
+		if(requestTimeout!=null)				ac.setRequestTimeout(requestTimeout);
 		if(clientstorage!=null)	{
 			ac.setClientstorage(clientstorage);
 		}
@@ -424,11 +497,12 @@ public final class Application extends TagImpl {
 		if(onmissingtemplate!=null && ac instanceof ClassicApplicationContext){
 			((ClassicApplicationContext)ac).setOnMissingTemplate(onmissingtemplate);
 		}
-		
-		
+
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
 		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
+		if(typeChecking!=null)					ac.setTypeChecking(typeChecking.booleanValue());
+		if(suppress!=null)						ac.setSuppressContent(suppress.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());
 		if(setClientManagement!=null)			ac.setSetClientManagement(setClientManagement.booleanValue());
@@ -437,18 +511,25 @@ public final class Application extends TagImpl {
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(locale!=null) 						ac.setLocale(locale);
 		if(timeZone!=null) 						ac.setTimeZone(timeZone);
+		if(webCharset!=null) 					ac.setWebCharset(webCharset);
+		if(resourceCharset!=null) 				ac.setResourceCharset(resourceCharset);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
+		if(wsType!=-1) 							ac.setWSType(wsType);
 		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
-		
+		if(compression!=null) 					ac.setAllowCompression(compression.booleanValue());
 		if(cacheFunction!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION, cacheFunction);
 		if(cacheObject!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_OBJECT, cacheObject);
 		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);
 		if(cacheResource!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE, cacheResource);
 		if(cacheTemplate!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE, cacheTemplate);
-		
+		if(cacheInclude!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_INCLUDE, cacheInclude);
+		if(tag!=null) ac.setTagAttributeDefaultValues(tag);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));
+		
+		// Scope cascading
+		if(scopeCascading!=-1) ac.setScopeCascading(scopeCascading);
 		
 		// ORM
 		boolean initORM=false;

@@ -53,6 +53,7 @@ import railo.commons.net.http.httpclient4.entity.ByteArrayHttpEntity;
 import railo.commons.net.http.httpclient4.entity.EmptyHttpEntity;
 import railo.commons.net.http.httpclient4.entity.ResourceHttpEntity;
 import railo.commons.net.http.httpclient4.entity.TemporaryStreamHttpEntity;
+import railo.runtime.PageContextImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ReqRspUtil;
@@ -238,7 +239,7 @@ public class HTTPEngine4Impl {
     			e = it.next();
     			list.add(new BasicNameValuePair(e.getKey(),e.getValue()));
     		}
-    		if(StringUtil.isEmpty(charset)) charset=ThreadLocalPageContext.getConfig().getWebCharset();
+    		if(StringUtil.isEmpty(charset)) charset=((PageContextImpl)ThreadLocalPageContext.get()).getWebCharset().name();
     		
     		post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(list,charset));
     	}

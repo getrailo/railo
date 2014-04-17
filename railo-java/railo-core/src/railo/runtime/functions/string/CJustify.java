@@ -5,9 +5,14 @@ package railo.runtime.functions.string;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.ext.function.Function;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.BIF;
+import railo.runtime.op.Caster;
 
-public final class CJustify implements Function {
+public final class CJustify extends BIF {
+
+	private static final long serialVersionUID = -4145093552477680411L;
 
 	public static String call(PageContext pc , String string, double length) throws ExpressionException {
 		int len=(int)length;
@@ -24,6 +29,13 @@ public final class CJustify implements Function {
 			
 			return new String(chrs);
 		}
+	}
+
+    @Override
+	public Object invoke(PageContext pc, Object[] args) throws PageException {
+		if(args.length==2)
+			return call(pc, Caster.toString(args[0]), Caster.toDoubleValue(args[1]));
+		throw new FunctionException(pc, "CJustify", 2, 2, args.length);
 	}
 }
 

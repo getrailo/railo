@@ -19,12 +19,12 @@ public class Struct_ implements Function {
 	private static final long serialVersionUID = 8708684598035273346L;
 
 	public static Struct call(PageContext pc , Object[] objArr) throws PageException {
-		return _call(objArr, "invalid argument for function struct, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")");
+		return _call(objArr, "invalid argument for function struct, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")", StructImpl.TYPE_UNDEFINED);
 	}
 	
 	
-	protected static Struct _call(Object[] objArr,String expMessage) throws PageException {
-		Struct sct=new StructImpl();
+	protected static Struct _call(Object[] objArr,String expMessage, int type) throws PageException {
+		StructImpl sct=type<0?new StructImpl():new StructImpl(type);
 		FunctionValueImpl fv;
 		for(int i=0;i<objArr.length;i++) {
 			if(objArr[i] instanceof FunctionValue) {

@@ -250,13 +250,17 @@ public final class FunctionLibFactory extends DefaultHandler {
 				
 				else if(inside.equals("tte-class"))
 					function.setTteClass(value);
-    			
+				if(inside.equals("keywords"))
+					function.setKeywords(value);
+				
 
 				else if(inside.equals("description"))
 					function.setDescription(value);
 
 				else if(inside.equals("member-name"))
 					function.setMemberName(value);
+				else if(inside.equals("member-position"))
+					function.setMemberPosition(Caster.toIntValue(value,1));
 				else if(inside.equals("member-chaining"))
 					function.setMemberChaining(Caster.toBooleanValue(value,false));
 				

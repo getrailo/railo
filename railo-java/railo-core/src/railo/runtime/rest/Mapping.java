@@ -12,6 +12,7 @@ import railo.commons.io.res.filter.AndResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.lang.mimetype.MimeType;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
@@ -23,7 +24,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -114,7 +114,7 @@ public class Mapping {
 		ArrayList<Source> sources = new ArrayList<Source>(); 
 	
 		PageSource ps;
-		ComponentAccess cfc;
+		Component cfc;
 		Struct meta;
 		String path;
 		for(int i=0;i<children.length;i++){

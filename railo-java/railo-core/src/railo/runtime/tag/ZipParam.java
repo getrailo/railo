@@ -3,19 +3,25 @@ package railo.runtime.tag;
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.io.res.util.UDFFilter;
 import railo.commons.io.res.util.WildcardPatternFilter;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.type.UDF;
 
 public final class ZipParam extends TagImpl {
 	
 	private String charset;
 	private Object content;
 	private String entryPath;
-	private String filter;
+	private ResourceFilter filter;
+	private String pattern;
+	private String patternDelimiters;
 	private String prefix;
 	private railo.commons.io.res.Resource source;
 	private Boolean recurse=null;
@@ -34,6 +40,8 @@ public final class ZipParam extends TagImpl {
 		source=null;
 		recurse=null;
 		zip=null;
+		pattern = null;
+		patternDelimiters = null;
 	}
 	
 	
@@ -61,8 +69,27 @@ public final class ZipParam extends TagImpl {
 	/**
 	 * @param filter the filter to set
 	 */
-	public void setFilter(String filter) {
-		this.filter=filter;
+	public void setFilter(Object filter) throws PageException {
+
+		if (filter instanceof UDF)
+			this.setFilter((UDF)filter);
+		else if (filter instanceof String)
+			this.setFilter((String)filter);
+	}
+
+	public void setFilter(UDF filter) throws PageException	{
+
+		this.filter = UDFFilter.createResourceAndResourceNameFilter(filter);
+	}
+
+	public void setFilter(String pattern) {
+
+		this.pattern = pattern;
+	}
+
+	public void setFilterdelimiters(String patternDelimiters) {
+
+		this.patternDelimiters = patternDelimiters;
 	}
 
 	/**
@@ -92,13 +119,15 @@ public final class ZipParam extends TagImpl {
 
 	@Override
 	public int doStartTag() throws PageException	{
+
+		if (this.filter == null && !StringUtil.isEmpty(this.pattern))
+			this.filter = new WildcardPatternFilter(pattern, patternDelimiters);
 		
 		if(source!=null) {
 			notAllowed("source","charset", charset);
 			notAllowed("source","content", content);
 		
-			WildcardPatternFilter f = ( filter == null ? null : new WildcardPatternFilter( filter ) );
-			getZip().setParam( new ZipParamSource( source, entryPath, f, prefix, recurse() ) );		
+			getZip().setParam( new ZipParamSource( source, entryPath, filter, prefix, recurse() ) );
 		}
 		else if(content!=null) {
 			required("content","entrypath",entryPath);

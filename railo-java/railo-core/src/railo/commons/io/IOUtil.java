@@ -553,6 +553,7 @@ public final class IOUtil {
  	        }
  	        // FF FE 	UTF-16, little-endian
  	        if (first == 0xFF && second == 0xFE)    {
+ 	        	// TODO FF FE 00 00 UTF-32 little-endian
  	 			return _getReader(is, CharsetUtil.UTF16LE);
  	        }
  	        
@@ -561,6 +562,13 @@ public final class IOUtil {
  	        if (first == 0xEF && second == 0xBB && third == 0xBF)    {
  	        	return _getReader(is, CharsetUtil.UTF8);
  	        }
+ 	        
+ 	        // 00 00 FE FF UTF-32 big-endian
+ 	        int forth=is.read();
+	        if (first == 0x00 && second == 0x00 && third == 0xFE && forth == 0xFF)    {
+	        	return _getReader(is, CharsetUtil.UTF32BE);
+	        }
+ 	        
 
  	 		is.reset();
  	    	return _getReader(is,charset);       

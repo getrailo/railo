@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,12 +20,12 @@ import java.util.Set;
 import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
@@ -40,12 +42,12 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ComponentProUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
@@ -61,12 +63,15 @@ public final class JSONConverter extends ConverterSupport {
 
 	private boolean ignoreRemotingFetch;
 
+	private CharsetEncoder charsetEncoder;
 
 	/**
-     * constructor of the class
-     */
-    public JSONConverter(boolean ignoreRemotingFetch) {
+	 * @param ignoreRemotingFetch
+	 * @param charset if set, characters not supported by the charset are escaped.
+	 */
+    public JSONConverter(boolean ignoreRemotingFetch, Charset charset) {
     	this.ignoreRemotingFetch=ignoreRemotingFetch;
+    	charsetEncoder = charset!=null?charset.newEncoder():null;//.canEncode("string");
     }
 	
 	
@@ -79,7 +84,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @throws ConverterException
      */
     
-    private void _serializeClass(PageContext pc,Set test,Class clazz,Object obj, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeClass(PageContext pc,Set test,Class clazz,Object obj, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
     	Struct sct=new StructImpl(Struct.TYPE_LINKED);
     	if(test==null)test=new HashSet();
     	
@@ -130,7 +135,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDate(Date date, StringBuffer sb) {
+	private void _serializeDate(Date date, StringBuilder sb) {
 		_serializeDateTime(new DateTimeImpl(date),sb);
 	}
 	/**
@@ -139,13 +144,9 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
+	private void _serializeDateTime(DateTime dateTime, StringBuilder sb) {
 		
-		sb.append('"');
-		
-		//sb.append(escape(dateTime.toString()));
-		sb.append(escape(JSONDateFormat.format(dateTime,null)));
-		sb.append('"');
+		sb.append(StringUtil.escapeJS(JSONDateFormat.format(dateTime,null),'"',charsetEncoder));
 		
 		/*try {
 	        sb.append(goIn());
@@ -169,7 +170,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(PageContext pc,Set test,Array array, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeArray(PageContext pc,Set test,Array array, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		_serializeList(pc,test,array.toList(),sb,serializeQueryByColumns,done);
 	}
 	
@@ -181,7 +182,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeList(PageContext pc,Set test,List list, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeList(PageContext pc,Set test,List list, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -195,7 +196,7 @@ public final class JSONConverter extends ConverterSupport {
 		
 		sb.append(']');
 	}
-	private void _serializeArray(PageContext pc,Set test,Object[] arr, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeArray(PageContext pc,Set test,Object[] arr, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -215,7 +216,7 @@ public final class JSONConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs, Set<Object> done) throws ConverterException {
+    public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuilder sb, boolean serializeQueryByColumns, boolean addUDFs, Set<Object> done) throws ConverterException {
         // Component
     	if(struct instanceof Component){
     		String res = castToJson(pc, (Component)struct, NULL_STRING);
@@ -241,24 +242,19 @@ public final class JSONConverter extends ConverterSupport {
         	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
-            sb.append('"');
-            sb.append(escape(e.getKey().getString()));
-            sb.append('"');
+            sb.append(StringUtil.escapeJS(e.getKey().getString(),'"',charsetEncoder));
             sb.append(':');
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
         
         if(struct instanceof Component){
         	Boolean remotingFetch;
-        	Component cp = (Component)struct;
+        	Component cfc = (Component)struct;
         	boolean isPeristent=false;
-        	try {
-				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);
-				isPeristent=ca.isPersistent();
-			} catch (ExpressionException ee) {}
+        	isPeristent=ComponentProUtil.isPersistent(cfc);
 			
-        	Property[] props = cp.getProperties(false);
-        	ComponentScope scope = cp.getComponentScope();
+        	Property[] props = cfc.getProperties(false);
+        	ComponentScope scope = cfc.getComponentScope();
         	for(int i=0;i<props.length;i++) {
         		if(!ignoreRemotingFetch) {
         			remotingFetch=Caster.toBoolean(props[i].getDynamicAttributes().get(REMOTING_FETCH,null),null);
@@ -273,9 +269,7 @@ public final class JSONConverter extends ConverterSupport {
             	if(!addUDFs && (value instanceof UDF || value==null))continue;
             	if(doIt)sb.append(',');
                 doIt=true;
-                sb.append('"');
-                sb.append(escape(key.getString()));
-                sb.append('"');
+                sb.append(StringUtil.escapeJS(key.getString(),'"',charsetEncoder));
                 sb.append(':');
                 _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         	}
@@ -310,7 +304,7 @@ public final class JSONConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    private void _serializeMap(PageContext pc,Set test,Map map, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeMap(PageContext pc,Set test,Map map, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
         sb.append(goIn());
         sb.append("{");
         
@@ -320,9 +314,7 @@ public final class JSONConverter extends ConverterSupport {
             Object key=it.next();
             if(doIt)sb.append(',');
             doIt=true;
-            sb.append('"');
-            sb.append(escape(key.toString()));
-            sb.append('"');
+            sb.append(StringUtil.escapeJS(key.toString(),'"',charsetEncoder));
             sb.append(':');
             _serialize(pc,test,map.get(key),sb,serializeQueryByColumns,done);
         }
@@ -337,18 +329,13 @@ public final class JSONConverter extends ConverterSupport {
      * @param done 
      * @throws ConverterException
      */
-    private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
-    	try {
-			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component);
-	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
-		} 
-    	catch (ExpressionException e) {
-			throw toConverterException(e);
-		}
+    private void _serializeComponent(PageContext pc,Set test,Component component, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    	ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,component);
+	    _serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
     }
     
 
-    private void _serializeUDF(PageContext pc,Set test,UDF udf, StringBuffer sb,boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+    private void _serializeUDF(PageContext pc,Set test,UDF udf, StringBuilder sb,boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		Struct sct=new StructImpl();
 		try {
 			// Meta
@@ -383,7 +370,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 		Collection.Key[] _keys = CollectionUtil.keys(query);
 		sb.append(goIn());
@@ -405,10 +392,8 @@ public final class JSONConverter extends ConverterSupport {
 		sb.append("\"COLUMNS\":[");
 		String[] cols = query.getColumns();
 		for(int i=0;i<cols.length;i++) {
-			if(i>0)sb.append(",\"");
-			else sb.append('"');
-            sb.append(escape(cols[i].toUpperCase()));
-            sb.append('"');
+			if(i>0)sb.append(",");
+			sb.append(StringUtil.escapeJS(cols[i].toUpperCase(),'"',charsetEncoder));
 		}
 		sb.append("],");
 		
@@ -422,10 +407,8 @@ public final class JSONConverter extends ConverterSupport {
 			    if(oDoIt)sb.append(',');
 			    oDoIt=true;
 			    sb.append(goIn());
-	            sb.append('"');
-	            sb.append(escape(_keys[i].getString()));
-	            sb.append('"');
-				sb.append(":[");
+	            sb.append(StringUtil.escapeJS(_keys[i].getString(),'"',charsetEncoder));
+	            sb.append(":[");
 				boolean doIt=false;
 					for(int y=1;y<=len;y++) {
 					    if(doIt)sb.append(',');
@@ -471,12 +454,12 @@ public final class JSONConverter extends ConverterSupport {
 	/**
 	 * serialize a Object to his xml Format represenation
 	 * @param object Object to serialize
-	 * @param sb StringBuffer to write data
+	 * @param sb StringBuilder to write data
 	 * @param serializeQueryByColumns 
 	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serialize(PageContext pc,Set test,Object object, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
+	private void _serialize(PageContext pc,Set test,Object object, StringBuilder sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
 		// NULL
 		if(object==null || object==NULL) {
@@ -485,19 +468,15 @@ public final class JSONConverter extends ConverterSupport {
 		    return;
 		}
 		// String
-		if(object instanceof String || object instanceof StringBuffer) {
+		if(object instanceof String || object instanceof StringBuilder) {
 		    sb.append(goIn());
-		    sb.append('"');
-		    sb.append(escape(object.toString()));
-		    sb.append('"');
+		    sb.append(StringUtil.escapeJS(object.toString(),'"',charsetEncoder));
 		    return;
 		}
 		// Character
 		if(object instanceof Character) {
 		    sb.append(goIn());
-		    sb.append('"');
-		    sb.append(escape(String.valueOf(((Character)object).charValue())));
-		    sb.append('"');
+		    sb.append(StringUtil.escapeJS(String.valueOf(((Character)object).charValue()),'"',charsetEncoder));
 		    return;
 		}
 		// Number
@@ -617,17 +596,14 @@ public final class JSONConverter extends ConverterSupport {
 		}
 	}
 
-	private void _serializeXML(Node node, StringBuffer sb) {
+	private void _serializeXML(Node node, StringBuilder sb) {
     	node=XMLCaster.toRawNode(node);
     	sb.append(goIn());
-	    sb.append('"');
-	    sb.append(escape(XMLCaster.toString(node,"")));
-	    sb.append('"');
-    	
+	    sb.append(StringUtil.escapeJS(XMLCaster.toString(node,""),'"',charsetEncoder));
 	}
 
 
-	private void _serializeTimeSpan(TimeSpan span, StringBuffer sb) {
+	private void _serializeTimeSpan(TimeSpan span, StringBuilder sb) {
     	
 	        sb.append(goIn());
 		    sb.append("createTimeSpan(");
@@ -642,35 +618,6 @@ public final class JSONConverter extends ConverterSupport {
 		
 	}
 
-	
-	public static String escape(String str) {
-		char[] arr=str.toCharArray();
-		StringBuffer rtn=new StringBuffer(arr.length);
-		for(int i=0;i<arr.length;i++) {
-			if(arr[i] < 128){
-				switch(arr[i]) {
-					case '\\': rtn.append("\\\\"); break;
-					case '/': rtn.append("\\/"); break;
-					case '\n': rtn.append("\\n"); break;
-					case '\r': rtn.append("\\r"); break;
-					case '\f': rtn.append("\\f"); break;
-					case '\b': rtn.append("\\b"); break;
-					case '\t': rtn.append("\\t"); break;
-					case '"' : rtn.append("\\\""); break;
-					default : rtn.append(arr[i]); break;
-				}
-			}
-			else {
-				if (arr[i] < 0x10)			rtn.append("\\u000");
-			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
-			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
-			    else 						rtn.append( "\\u");
-				rtn.append(Integer.toHexString(arr[i]));
-			}
-		}
-		return rtn.toString();
-	}
-
     /**
 	 * serialize a Object to his literal Format
 	 * @param object Object to serialize
@@ -679,7 +626,7 @@ public final class JSONConverter extends ConverterSupport {
 	 * @throws ConverterException
 	 */
 	public String serialize(PageContext pc,Object object, boolean serializeQueryByColumns) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		_serialize(pc,null,object,sb,serializeQueryByColumns,new HashSet<Object>());
 		return sb.toString();
 	}

@@ -1,5 +1,6 @@
 package railo.runtime.orm.hibernate;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,17 +23,17 @@ import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourcePro;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextPro;
-import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
@@ -51,7 +52,6 @@ import railo.runtime.orm.hibernate.event.PreUpdateEventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
-import railo.runtime.type.util.ArrayUtil;
 
 public class HibernateORMEngine implements ORMEngine {
 	
@@ -151,7 +151,7 @@ public class HibernateORMEngine implements ORMEngine {
 						throw ExceptionUtil.createException(data,null,"orm setting autogenmap=false is not supported yet",null);
 				
 					// load entities
-					if(!ArrayUtil.isEmpty(data.tmpList)) {
+					if(data.tmpList!=null && data.tmpList.size()>0) {
 						data.getNamingStrategy();// caled here to make sure, it is called in the right context the first one
 						DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds);
 						try {
@@ -193,11 +193,13 @@ public class HibernateORMEngine implements ORMEngine {
 		//cacheprovider
 		//...
 		
+		Log log = ((ConfigImpl)pc.getConfig()).getLog("orm");
+		
 		String mappings=HibernateSessionFactory.createMappings(ormConf,data);
 		
 		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,ds);
 		try{
-			data.setConfiguration(mappings,dc);
+			data.setConfiguration(log,mappings,dc);
 		} 
 		catch (Exception e) {
 			throw CommonUtil.toPageException(e);
@@ -321,9 +323,16 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 	
 	private static String hash(ORMConfiguration ormConf,DataSource ds) {
-		if(ds instanceof DataSourcePro)
-			return ((DataSourcePro)ds).id()+":"+ormConf.hash();
-		return ds.getClazz()+":"+ds.getDsnTranslated()+":"+ormConf.hash();
+		String id;
+		try{
+			Method m = ds.getClass().getMethod("id", new Class[0]);
+			id=(String) m.invoke(ds, new Object[0]);
+		}
+		catch(Throwable t){
+			id=ds.getClazz()+":"+ds.getDsnTranslated();
+		}
+		
+		return id+":"+ormConf.hash();
 	}
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf,SessionFactoryData data) throws PageException {
@@ -478,7 +487,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(info!=null) {
 			Component cfc = info.getCFC();
 			if(unique){
-				cfc=(Component)Duplicator.duplicate(cfc,false);
+				cfc=(Component)cfc.duplicate(false);
 				if(cfc.contains(pc,CommonUtil.INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;

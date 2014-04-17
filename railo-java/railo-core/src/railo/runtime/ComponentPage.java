@@ -21,7 +21,6 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.mimetype.MimeType;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.BinaryConverter;
 import railo.runtime.converter.ConverterException;
@@ -58,11 +57,9 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPlus;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
@@ -115,7 +112,7 @@ public abstract class ComponentPage extends PagePlus  {
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
-	            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
+	            		if(!fromGateway)component=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_REMOTE,component);
 	            		
 	            		engine.setPersistentRemoteCFC(strRemotePersisId,component);
 	            	}
@@ -123,7 +120,7 @@ public abstract class ComponentPage extends PagePlus  {
 	            }
 	            else {
 	            	component=newInstance(pc,getPageSource().getComponentName(),false);
-            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
+            		if(!fromGateway)component=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_REMOTE,component);
 	            }
             }
             finally {
@@ -144,7 +141,7 @@ public abstract class ComponentPage extends PagePlus  {
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
-            boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
+            boolean suppressContent = ((PageContextImpl)pc).getSuppressContent();
             if(suppressContent)pc.clear();
             Object method;
             
@@ -176,7 +173,7 @@ public abstract class ComponentPage extends PagePlus  {
             // GET
             else {
             	// WSDL
-                if(qs!=null && qs.trim().equalsIgnoreCase("wsdl")) {
+                if(qs!=null && (qs.trim().equalsIgnoreCase("wsdl") || qs.trim().startsWith("wsdl&"))) {
                     callWSDL(pc,component);
             		//close(pc);
                     return;
@@ -202,7 +199,7 @@ public abstract class ComponentPage extends PagePlus  {
             //if(path.size()>1 ) {
             if(path.size()>1 && !(path.size()==3 && ListUtil.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
-            	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ComponentUtil.toComponentAccess(component));
+            	ComponentSpecificAccess c = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,component);
             	Key[] keys = c.keys();
             	Object el;
             	Scope var = pc.variablesScope();
@@ -585,7 +582,6 @@ public abstract class ComponentPage extends PagePlus  {
 		List<MimeType> accept = ReqRspUtil.getAccept(pc);
 		int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
 		
-		
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
         
@@ -600,6 +596,11 @@ public abstract class ComponentPage extends PagePlus  {
       //content-type
         Charset cs = getCharset(pc);
         Object o = component.get(pc,methodName,null);
+
+        // onMissingMethod
+        if(o==null) o=component.get(pc,KeyConstants._onmissingmethod,null);
+
+        
         Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
         
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
@@ -774,7 +775,7 @@ public abstract class ComponentPage extends PagePlus  {
     			else if(strQF.equalsIgnoreCase("column"))byColumn=true;
     			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
     		}
-    		JSONConverter converter = new JSONConverter(false);
+    		JSONConverter converter = new JSONConverter(false,cs);
     		String prefix="";
     		if(props.secureJson) {
     			prefix=pc.getApplicationContext().getSecureJsonPrefix();
@@ -832,8 +833,7 @@ public abstract class ComponentPage extends PagePlus  {
 	}
 	
 	private void callCFCMetaData(PageContext pc, Component cfc, int format) throws IOException, PageException, ConverterException {
-		ComponentAccess ca = ComponentUtil.toComponentAccess(cfc);
-		ComponentWrap cw = new ComponentWrap(Component.ACCESS_REMOTE,ca);  
+		ComponentSpecificAccess cw = new ComponentSpecificAccess(Component.ACCESS_REMOTE,cfc);
 		ComponentScope scope = cw.getComponentScope();
 		Struct udfs=new StructImpl(),sctUDF,sctArg;
 		Array arrArg;
@@ -882,9 +882,9 @@ public abstract class ComponentPage extends PagePlus  {
         // JSON
 		else if(UDF.RETURN_FORMAT_JSON==format) {
         	boolean byColumn = false;
-    		JSONConverter converter = new JSONConverter(false);
+        	cs = getCharset(pc);
+            JSONConverter converter = new JSONConverter(false,cs);
     		String str = converter.serialize(pc,rtn,byColumn);
-            cs = getCharset(pc);
             is = new ByteArrayInputStream(str.getBytes(cs));
     		
         }
@@ -936,9 +936,9 @@ public abstract class ComponentPage extends PagePlus  {
 
 	private Charset getCharset(PageContext pc) {
 		HttpServletResponse rsp = pc.getHttpServletResponse();
-        String str = ReqRspUtil.getCharacterEncoding(pc,rsp);
-        if(StringUtil.isEmpty(str)) str=pc.getConfig().getWebCharset();
-        return CharsetUtil.toCharset(str, CharsetUtil.UTF8);
+        Charset cs = ReqRspUtil.getCharacterEncoding(pc,rsp);
+        if(cs==null)cs=((PageContextImpl)pc).getWebCharset();
+        return cs;
 	}
 
 	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {

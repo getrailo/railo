@@ -71,7 +71,7 @@ public final class ResourceLockImpl implements ResourceLock {
 				Config config = ThreadLocalPageContext.getConfig();
 				if(config!=null)
 					SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path);
-				//throw new RuntimeException("conflict in same thread: on "+res);
+				//SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path+"\nStacktrace:\n"+StringUtil.replace(ExceptionUtil.getStacktrace(new Throwable(), false),"java.lang.Throwable\n","",true));
 				return;
 			}
 			// bugfix when lock von totem thread, wird es ignoriert

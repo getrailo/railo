@@ -110,6 +110,7 @@ Error Output --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<table class="maintbl">
 			<tbody>
+				<!--- scope cascading --->
 				<tr>
 					<th scope="row">#stText.Scopes.Cascading#</th>
 					<td>
@@ -124,8 +125,14 @@ Error Output --->
 							<b>#ucFirst(type)#</b>
 						</cfif>
 						<div class="comment">#stText.Scopes.CascadingDescription#</div>
+						
+						<cfsavecontent variable="codeSample">
+							this.scopeCascading = "#type#";
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample)>
 					</td>
 				</tr>
+				<!--- cascade to result --->
 				<tr>
 					<th scope="row">#stText.Scopes.CascadeToResultSet#</th>
 					<td>

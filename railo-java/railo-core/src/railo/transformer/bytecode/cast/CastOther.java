@@ -135,7 +135,6 @@ public final class CastOther extends ExpressionBase implements Cast {
     	GeneratorAdapter adapter = bc.getAdapter();
         char first=lcType.charAt(0);
         Type rtn;
-        
         switch(first) {
         case 'a':
             if("array".equals(lcType)) {
@@ -212,8 +211,10 @@ public final class CastOther extends ExpressionBase implements Cast {
                 
                 // Second Arg
                 adapter.loadArg(0);
-                adapter.invokeVirtual(Types.PAGE_CONTEXT,GET_CONFIG);
-                adapter.invokeInterface(Types.CONFIG_WEB,GET_TIMEZONE);
+                //adapter.invokeVirtual(Types.PAGE_CONTEXT,GET_CONFIG);
+                //adapter.invokeInterface(Types.CONFIG_WEB,GET_TIMEZONE);
+                adapter.invokeVirtual(Types.PAGE_CONTEXT,GET_TIMEZONE);
+                
                 adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_DATE[type]);
                 return Types.DATE_TIME;
             }
@@ -262,6 +263,14 @@ public final class CastOther extends ExpressionBase implements Cast {
             	if(!rtn.equals(Types.INTEGER))
                 	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_INTEGER[Types.getType(rtn)]);
                 return Types.INTEGER;
+            }
+            if("image".equals(lcType)) {
+            	rtn=expr.writeOut(bc,MODE_REF);
+                if(!rtn.equals(Types.IMAGE)) {
+                	adapter.loadArg(0);
+                    adapter.invokeStatic(Types.IMAGE,Methods_Caster.TO_IMAGE);
+                }
+                return Types.IMAGE;
             }
         break;
         case 'j':
@@ -334,8 +343,10 @@ public final class CastOther extends ExpressionBase implements Cast {
 
                 // Second Arg
                 adapter.loadArg(0);
-                adapter.invokeVirtual(Types.PAGE_CONTEXT,GET_CONFIG);
-                adapter.invokeVirtual(Types.CONFIG_WEB,GET_TIMEZONE);
+                //adapter.invokeVirtual(Types.PAGE_CONTEXT,GET_CONFIG);
+                //adapter.invokeVirtual(Types.CONFIG_WEB,GET_TIMEZONE);
+                adapter.invokeVirtual(Types.PAGE_CONTEXT,GET_TIMEZONE);
+                
                 adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_DATE[Types.getType(rtn)]);
                 return Types.DATE_TIME;
             }
@@ -494,6 +505,7 @@ public final class CastOther extends ExpressionBase implements Cast {
         break;
 
         case 'i':
+            if("image".equals(lcType)) 							return Types.IMAGE;
             if("int".equals(lcType)) 							return Types.INT_VALUE;
             if("integer".equals(lcType))						return Types.INTEGER;
         break;

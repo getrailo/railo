@@ -6,18 +6,17 @@ import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.spi.LocationAwareLogger;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.lang.ExceptionUtil;
+import railo.commons.io.log.LogUtil;
 import railo.runtime.op.Caster;
 
 public final class LoggerAdapterImpl extends MarkerIgnoringBase implements LocationAwareLogger {
 
 	private static final long serialVersionUID = 3875268250734654111L;
 	
-	private LogAndSource logger;
+	private Log logger;
 	private String _name;
 
-	public LoggerAdapterImpl(LogAndSource logger, String name){
+	public LoggerAdapterImpl(Log logger, String name){
 		this.logger=logger;
 		this._name=name;
 	}
@@ -56,7 +55,7 @@ public final class LoggerAdapterImpl extends MarkerIgnoringBase implements Locat
 		logger.log(level, _name, msg);
 	}
 	private void log(int level, String msg, Throwable t) {
-		log(level, msg+"\n"+ExceptionUtil.getStacktrace(t,true));
+		LogUtil.log(logger,level, _name, msg,t);
 	}
 	
 	private void log(int level, String format, Object arg) {

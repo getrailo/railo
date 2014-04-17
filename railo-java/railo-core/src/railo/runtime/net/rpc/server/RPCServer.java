@@ -32,7 +32,6 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.SimpleChain;
 import org.apache.axis.SimpleTargetedChain;
 import org.apache.axis.components.logger.LogFactory;
-import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.management.ServiceAdmin;
 import org.apache.axis.security.servlet.ServletSecurityProvider;
 import org.apache.axis.server.AxisServer;
@@ -79,7 +78,7 @@ public final class RPCServer{
 	private String webInfPath;
 	private String homeDir;
 	private AxisServer axisServer;
-	private org.apache.axis.encoding.TypeMapping typeMapping;
+	//private org.apache.axis.encoding.TypeMapping typeMapping;
 	
 	private static boolean isDevelopment=false;
 	private static boolean isDebug = false;
@@ -226,7 +225,8 @@ public final class RPCServer{
             /** get message context w/ various properties set
              */
             msgContext = createMessageContext(engine, req, res,component);
-
+            ComponentController.set(msgContext);
+        	
             // ? OK to move this to 'getMessageContext',
             // ? where it would also be picked up for 'doGet()' ?
             if (securityProvider != null) {
@@ -674,7 +674,6 @@ public final class RPCServer{
         
         while (i.hasNext()) {
             String queryHandler = (String) i.next();
-            //print.ln("queryhandler:"+queryHandler);
             if (queryHandler.startsWith("qs.")) {
                 // Only attempt to match the query string with transport
                 // parameters prefixed with "qs:".
@@ -682,7 +681,6 @@ public final class RPCServer{
                 String handlerName = queryHandler.substring
                                      (queryHandler.indexOf(".") + 1).
                                      toLowerCase();
-                //print.ln("handlerName:"+handlerName);
                 // Determine the name of the plugin to invoke by using all text
                 // in the query string up to the first occurence of &, =, or the
                 // whole string if neither is present.
@@ -772,7 +770,7 @@ public final class RPCServer{
             	Map environment = new HashMap();
                 environment.put(AxisEngine.ENV_SERVLET_CONTEXT, context);
                 axisServer = AxisServer.getServer(environment);
-                axisServer.setName("RailoCFC");
+                axisServer.setName("RailoServer");
             }
             
             // add Component Handler
@@ -802,20 +800,13 @@ public final class RPCServer{
 
 	public void registerTypeMapping(Class clazz) {
 		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://DefaultNamespace",fullname);
+		QName qname = new QName("http://rpc.xml.cfml",fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
 	private void registerTypeMapping(Class clazz,QName qname) {
-		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
 		
-		org.apache.axis.encoding.TypeMapping tm;
-		tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		Class c = tm.getClassForQName(qname);
-		if(c!=null && c!=clazz) {
-			tm.removeDeserializer(c, qname);
-			tm.removeSerializer(c, qname);
-		}
+		org.apache.axis.encoding.TypeMapping tm = TypeMappingUtil.getServerTypeMapping(axisServer);
 		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
 	}
 }

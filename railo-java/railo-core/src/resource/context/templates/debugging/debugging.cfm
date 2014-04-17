@@ -1,2 +1,0 @@
-<cfadmin action="printDebug">
-

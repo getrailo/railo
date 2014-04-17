@@ -112,31 +112,21 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 * @return
 	 */
 	public static Collection.Key init(String key) {
-		//return KeyConstants.getKey(key);
-		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
-	
 
 	public static Collection.Key _const(String key) {
-		//return KeyConstants.getKey(key);
-		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
-	
-	public synchronized static Collection.Key getInstance(String key) {
-		//return KeyConstants.getKey(key);
-		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
-		return new KeyImpl(key);
-	}
-	
 
-	public synchronized static Collection.Key intern(String key) {
-		//return KeyConstants.getKey(key);
-		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
+	public static Collection.Key getInstance(String key) {
 		return new KeyImpl(key);
 	}
-	
+
+	public static Collection.Key intern(String key) {
+		return new KeyImpl(key);
+	}
+
 	@Override
 	public char charAt(int index) {
 		return key.charAt(index);
@@ -228,7 +218,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateAdvanced(key,true,null,defaultValue);
+        return DateCaster.toDateAdvanced(key,DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 
 	@Override

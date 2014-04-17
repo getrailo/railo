@@ -6,14 +6,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
@@ -48,6 +51,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	//private LinkedList<SpoolerTask> openTaskss=new LinkedList<SpoolerTask>();
 	//private LinkedList<SpoolerTask> closedTasks=new LinkedList<SpoolerTask>();
+	private SimpleThread simpleThread;
+	private SerializableObject token=new SerializableObject();
 	private SpoolerThread thread;
 	//private ExecutionPlan[] plans;
 	private Resource persisDirectory;
@@ -101,6 +106,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	@Override
 	public synchronized void add(SpoolerTask task) {
+		// if there is no plan execute and forget
+		if(task.getPlans()==null) {
+			if(task instanceof Task)
+				start((Task)task);
+			else {
+				start(new TaskWrap(task));
+				log.error("spooler", "make class "+task.getClass().getName()+" a Task class");
+			}
+			return;
+		}
+		
 		//openTasks.add(task);
 		add++;
 		task.setNextExecution(System.currentTimeMillis());
@@ -108,7 +124,28 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		store(task);
 		start();
 	}
+	
+	// add to interface
+	public void add(Task task) {
+		start(task);
+	}
 
+
+	private void start(Task task) {
+		if(task==null) return;
+		synchronized (task) {
+			if(simpleThread==null || !simpleThread.isAlive()) {
+				simpleThread=new SimpleThread(config,task);
+				
+				simpleThread.setPriority(Thread.MIN_PRIORITY);
+				simpleThread.start();
+			}
+			else {
+				simpleThread.tasks.add(task);
+				simpleThread.interrupt();
+			}
+		}
+	}
 
 	private void start() {
 		if(thread==null || !thread.isAlive()) {
@@ -119,7 +156,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		else if(thread.sleeping) {
 			thread.interrupt();
 		}
-		//else print.out("- existing");
 	}
 
 	@Override
@@ -165,7 +201,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	        oos = new ObjectOutputStream(persis.getOutputStream());
 	        oos.writeObject(task);
         } 
-        catch (IOException e) {}
+        catch (IOException e) {e.printStackTrace();}
         finally {
         	IOUtil.closeEL(oos);
         }
@@ -308,6 +344,30 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			sct.setEL(KeyConstants._time,new DateTimeImpl(Caster.toLongValue(sct.get(KeyConstants._time,null),0),true));
 		}
 		return exp;
+	}
+	
+	class SimpleThread extends Thread {
+		
+		LinkedList<Task> tasks=new LinkedList<Task>();
+		private Config config;
+		
+		public SimpleThread(Config config, Task task){
+			this.config=config;
+			tasks.add(task);
+		}
+		
+		
+		public void run() {
+			Task task;
+			while(tasks.size()>0){
+				try {
+					task= tasks.poll();
+					if(task!=null)task.execute(config);
+				}
+				catch (Throwable t) {}
+			}
+		}
+		
 	}
 
 	class SpoolerThread extends Thread {
@@ -495,7 +555,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 				task.execute(config);
 			
 			unstore(task);
-			log.info("remote-client", task.subject());
+			log.log(Log.LEVEL_INFO,"remote-client", task.subject());
 			task.setLastExecution(System.currentTimeMillis());
 			task.setNextExecution(-1);
 			
@@ -505,7 +565,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		catch(Throwable t) {
 			task.setLastExecution(System.currentTimeMillis());
 			task.setNextExecution(calculateNextExecution(task));
-			log.error("remote-client", task.subject()+":"+t.getMessage());
+			LogUtil.log(log,Log.LEVEL_ERROR,"remote-client", task.subject(),t);
 			if(task.nextExecution()==-1) {
 				//openTasks.remove(task);
 				//if(!closedTasks.contains(task))closedTasks.add(task);

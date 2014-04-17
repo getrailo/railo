@@ -12,7 +12,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.HTMLUtil;
 import railo.commons.lang.StringUtil;
@@ -32,11 +32,11 @@ import railo.runtime.type.util.ArrayUtil;
 public final class WebCrawler {
     
     private static HTMLUtil htmlUtil=new HTMLUtil();
-	private LogAndSource log;
+	private Log log;
 	
     
     
-    public WebCrawler(LogAndSource log) {
+    public WebCrawler(Log log) {
     	this.log=log;
 	}
 
@@ -292,12 +292,12 @@ public final class WebCrawler {
 
     private static void info(Log log,String doc) {
 		if(log==null) return;
-		log.info("Webcrawler", "invoke "+doc);
+		log.log(Log.LEVEL_INFO,"Webcrawler", "invoke "+doc);
 	}
 
     private static void error(Log log,String doc, Exception e) {
 		if(log==null) return;
-		log.error("Webcrawler", "invoke "+doc+":"+e.getMessage());
+		LogUtil.log(log,Log.LEVEL_ERROR,"Webcrawler", "invoke "+doc+":",e);
 	}
 }
 

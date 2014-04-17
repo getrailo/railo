@@ -26,7 +26,7 @@ public final class GetBaseTagList implements Function {
     }
     public static String call(PageContext pc, String delimiter) {
         Tag tag=pc.getCurrentTag();
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         while(tag!=null) {
         	if(sb.length()>0)sb.append(delimiter);
             sb.append(getName(pc,tag));

@@ -1,16 +1,19 @@
 package railo.runtime.functions.system;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
@@ -56,6 +59,7 @@ public class GetApplicationSettings {
 		sct.setEL(KeyConstants._name, ac.getName());
 		sct.setEL("scriptProtect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
 		sct.setEL("secureJson", Caster.toBoolean(ac.getSecureJson()));
+		sct.setEL("typeChecking", Caster.toBoolean(ac.getTypeChecking()));
 		sct.setEL("secureJsonPrefix", ac.getSecureJsonPrefix());
 		sct.setEL("sessionManagement", Caster.toBoolean(ac.isSetSessionManagement()));
 		sct.setEL("sessionTimeout", ac.getSessionTimeout());
@@ -66,6 +70,14 @@ public class GetApplicationSettings {
 		sct.setEL("localMode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?Boolean.TRUE:Boolean.FALSE);
 		sct.setEL(KeyConstants._locale,LocaleFactory.toString(pc.getLocale()));
 		sct.setEL(KeyConstants._timezone,TimeZoneUtil.toString(pc.getTimeZone()));
+		sct.setEL("scopeCascading",ConfigWebUtil.toScopeCascading(ac.getScopeCascading(),null));
+		
+		Struct cs=new StructImpl();
+		cs.setEL("web",((PageContextImpl)pc).getWebCharset().name());
+		cs.setEL("resource",((PageContextImpl)pc).getResourceCharset().name());
+		sct.setEL("charset", cs);
+		
+		
 		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 
@@ -98,6 +110,13 @@ public class GetApplicationSettings {
 			sct.setEL(KeyConstants._s3, props.toStruct());
 		}
 		
+		// ws settings
+		{
+		Struct wssettings=new StructImpl();
+		wssettings.put(KeyConstants._type, AppListenerUtil.toWSType(ac.getWSType(),"Axis1"));
+		sct.setEL("wssettings", wssettings);
+		}
+		
 		// datasources
 		DataSource[] sources = ac.getDataSources();
 		if(!ArrayUtil.isEmpty(sources)){
@@ -109,13 +128,40 @@ public class GetApplicationSettings {
 			
 		}
 		
+		// tag
+		Map<Key, Map<Collection.Key, Object>> tags = ac.getTagAttributeDefaultValues();
+		if(tags!=null) {
+			Struct tag = new StructImpl(),s;
+			Iterator<Entry<Key, Map<Collection.Key, Object>>> it = tags.entrySet().iterator();
+			Entry<Collection.Key, Map<Collection.Key, Object>> e;
+			Iterator<Entry<Collection.Key, Object>> iit;
+			Entry<Collection.Key, Object> ee;
+			Struct tmp;
+			//TagLib lib = ((ConfigImpl)pc.getConfig()).getCoreTagLib();
+			while(it.hasNext()){
+				e = it.next();
+				iit=e.getValue().entrySet().iterator();
+				tmp=new StructImpl();
+				while(iit.hasNext()){
+					ee = iit.next();
+					//lib.getTagByClassName(ee.getKey());
+					tmp.setEL(ee.getKey(), ee.getValue());
+				}
+				tag.setEL(e.getKey(), tmp);
+				
+			}
+			sct.setEL(KeyConstants._tag, tag);
+		}
+		
+		
 		//cache
 		String func = ac.getDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION);
 		String obj = ac.getDefaultCacheName(Config.CACHE_DEFAULT_OBJECT);
 		String qry = ac.getDefaultCacheName(Config.CACHE_DEFAULT_QUERY);
 		String res = ac.getDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE);
 		String tmp = ac.getDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE);
-		if(func!=null || obj!=null || qry!=null || res!=null || tmp!=null) {
+		String inc = ac.getDefaultCacheName(Config.CACHE_DEFAULT_INCLUDE);
+		if(func!=null || obj!=null || qry!=null || res!=null || tmp!=null || inc!=null) {
 			Struct cache=new StructImpl();
 			sct.setEL(KeyConstants._cache, cache);
 			if(func!=null)cache.setEL(KeyConstants._function, func);
@@ -123,6 +169,7 @@ public class GetApplicationSettings {
 			if(qry!=null)cache.setEL(KeyConstants._query, qry);
 			if(res!=null)cache.setEL(KeyConstants._resource, res);
 			if(tmp!=null)cache.setEL(KeyConstants._template, tmp);
+			if(inc!=null)cache.setEL(KeyConstants._include, inc);
 		}
 		
 		// java settings
@@ -147,7 +194,7 @@ public class GetApplicationSettings {
 			sct.setEL(KeyConstants._component, cfc.getPageSource().getDisplayPath());
 			
 			try {
-				ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
+				ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE, cfc);
 				Iterator<Key> it = cw.keyIterator();
 				Collection.Key key;
 				Object value;

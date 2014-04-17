@@ -12,7 +12,7 @@ Path placeholders:
 
 -->
 
-<railo-configuration version="2.0">
+<railo-configuration version="4.2">
 
 	<!--
 	system:
@@ -72,12 +72,12 @@ Path placeholders:
 	</dump-writers>
 	
 	
-	<remote-clients directory="{railo-config}remote-client/" log="logs/" log-level="info"/>
+	<remote-clients directory="{railo-config}remote-client/"/>
 	
     <resources>
         <!--
         arguments:
-		lock-timeout   - 	define how long a request wait for a log
+		lock-timeout   - 	define how long a request wait for a lock
 	 	-->
     	<default-resource-provider 
     		class="railo.commons.io.res.type.file.FileResourceProvider"
@@ -95,7 +95,7 @@ Path placeholders:
 							The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
 							(in milliseconds)
 		client-timeout - 	how long a conection kep established (in milliseconds)
-		lock-timeout   - 	define how long a request wait for a log (in milliseconds)
+		lock-timeout   - 	define how long a request wait for a lock (in milliseconds)
 	 	-->
     	<resource-provider 
     		scheme="ftp"
@@ -104,7 +104,7 @@ Path placeholders:
     		
     	<!--
         arguments:
-		lock-timeout	- 	define how long a request wait for a log
+		lock-timeout	- 	define how long a request wait for a lock
 		case-sensitive	-	is zip handled case-sensitive or not
 		asynchronus - 		yes or no; define if a buffer is used to synchronize data to zip file.
 							no make resource very slow
@@ -115,7 +115,7 @@ Path placeholders:
     		arguments="lock-timeout:1000;case-sensitive:true;"/>	
     	<!--
         arguments:
-		lock-timeout   - 	define how long a request wait for a log
+		lock-timeout   - 	define how long a request wait for a lock
 		case-sensitive	-	is zip handled case-sensitive or not
 	 	-->
     	<resource-provider 
@@ -124,7 +124,7 @@ Path placeholders:
     		arguments="lock-timeout:1000;case-sensitive:true;"/>
     	<!--
         arguments:
-		lock-timeout   - 	define how long a request wait for a log
+		lock-timeout   - 	define how long a request wait for a lock
 		case-sensitive	-	is zip handled case-sensitive or not
 	 	-->
     	<resource-provider 
@@ -133,7 +133,7 @@ Path placeholders:
     		arguments="lock-timeout:1000;case-sensitive:true;"/>
     	<!--
         arguments:
-		lock-timeout   - 	define how long a request wait for a log
+		lock-timeout   - 	define how long a request wait for a lock
 		case-sensitive	-	is http handled case-sensitive or not
 	 	-->
     	<resource-provider 
@@ -142,7 +142,7 @@ Path placeholders:
     		arguments="lock-timeout:10000;case-sensitive:false;"/>
     	<!--
         arguments:
-		lock-timeout   - 	define how long a request wait for a log
+		lock-timeout   - 	define how long a request wait for a lock
 		case-sensitive	-	is http handled case-sensitive or not
 	 	-->
     	<resource-provider 
@@ -151,7 +151,7 @@ Path placeholders:
     		arguments="lock-timeout:10000;case-sensitive:false;"/>
     	<!--
         arguments:
-		lock-timeout   - 	define how long a request wait for a log
+		lock-timeout   - 	define how long a request wait for a lock
 		case-sensitive	-	is http handled case-sensitive or not
 	 	-->
     	<resource-provider 
@@ -190,7 +190,6 @@ Path placeholders:
 		applicationtimeout="1,0,0,0"
 		
 		requesttimeout="0,0,0,50"
-		requesttimeout-log="{railo-config}/logs/requesttimeout.log"
 		
 		sessionmanagement="yes"		
 		clientmanagement="no" 
@@ -202,7 +201,7 @@ Path placeholders:
 		
 		/>
 		
-	<mail spool-interval="5" log="{railo-config}/logs/mail.log" spool-enable="yes" timeout="30">
+	<mail spool-interval="5" spool-enable="yes" timeout="30">
 	</mail>
 	
 	<mappings>
@@ -310,7 +309,6 @@ Path placeholders:
 	 -->
 	<debugging
 		log-memory-usage="no"
-		memory-log="{railo-config}/logs/memory.log"
 		template="/railo-context/templates/debugging/debugging.cfm"
 		debug="no"
 		show-query-usage="no"/>
@@ -352,5 +350,72 @@ Path placeholders:
 	-->
 	<flex 
 		configuration="manual"/>
+		
+<!--
+LOGGING
+===========================
 
+Possible Layouts:
+- - - - - - - - - - - - - -
+
+Classic: 
+ Same layout as with Railo 1 - 4.1
+
+HTML: 
+a HTML table, possible arguments are 
+- locationinfo (boolean): By default, it is set to false which means there will be no location information output by this layout. If the the option is set to true, then the file name and line number of the statement at the origin of the log statement will be output.
+- title: The Title option takes a String value. This option sets the document title of the generated HTML document.
+
+XML:
+The output of the XMLLayout consists of a series of log4j:event elements as defined in the log4j.dtd. It does not output a complete well-formed XML file. The output is designed to be included as an external entity in a separate file to form a correct XML file.
+- locationinfo (boolean): By default, it is set to false which means there will be no location information output by this layout. If the the option is set to true, then the file name and line number of the statement at the origin of the log statement will be output.
+- properties: Sets whether MDC key-value pairs should be output, default false.
+
+Pattern:
+A flexible layout configurable with pattern string. 
+- pattern: This is the string which controls formatting and consists of a mix of literal content and conversion specifiers. for more details see: http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
+
+<layout-class>:
+A full class path to a Layout class available in the enviroemnt with a empty constructor.
+for every argument defined railo tries to call a matching setter method
+
+
+Possible Appenders:
+- - - - - - - - - - - - - -
+
+Console: 
+logs events to to the error or output stream
+- streamtype: "output" or "error" 
+
+Resource:
+Logs error to a resource (locale file, ftp, zip, ...)
+- path: path to the locale file
+-charset (default:resource charset): charset used to write the file
+- maxfiles (default:10): maximal files created
+- maxfilesize (default:1024*1024*10): the maxial size of a log file created
+
+<appender-class>:
+A full class path to a Appender class available in the enviroemnt with a empty constructor.
+for every argument defined railo tries to call a matching setter method
+
+ -->
+	<logging>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/mapping.log" layout="classic" name="mapping"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/rest.log" layout="classic" name="rest"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/gateway.log" layout="classic" name="gateway"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/remoteclient.log" level="info" layout="classic" name="remoteclient"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/orm.log" layout="classic" name="orm"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/mail.log" layout="classic" name="mail"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/search.log" layout="classic" name="search"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/scheduler.log" layout="classic" name="scheduler"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/scope.log" layout="classic" name="scope"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/application.log" layout="classic" name="application"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/exception.log" layout="classic" name="exception"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/trace.log" layout="classic" name="trace"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/thread.log" layout="classic" name="thread"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/deploy.log" layout="classic" name="deploy"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/requesttimeout.log" layout="classic" name="requesttimeout"/>
+		<logger appender="resource" appender-arguments="path:{railo-config}/logs/memory.log" layout="classic" name="memory"/>
+	</logging>
+	
 </railo-configuration>

@@ -51,13 +51,17 @@
 		}
 
 		function isSectionOpen( string name ) {
-
+			try{
 			if ( arguments.name == "ALL" && !structKeyExists( Cookie, variables.cookieName ) )
 				return true;
 
 			var cookieValue = structKeyExists( Cookie, variables.cookieName ) ? Cookie[ variables.cookieName ] : 0;
 
 			return cookieValue && ( bitAnd( cookieValue, this.allSections[ arguments.name ] ) );
+			}
+			catch(e){
+				return false;
+			}
 		}
 
 		function isEnabled( custom, key ) {
@@ -72,7 +76,7 @@
 
 		function buildSectionStruct() {
 
-			var otherSections = [ "ALL", "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Query", "Timer", "Trace", "More" ];
+			var otherSections = [ "ALL", "Dump", "ExecTime", "ExecOrder", "Exceptions", "ImpAccess", "Info", "Query", "Timer", "Trace", "More" ];
 			var i = 0;
 
 			var result = {};
@@ -107,8 +111,12 @@
 		<cfif not isDefined('arguments.debugging.traces')>
 			<cfset arguments.debugging.traces=queryNew('type,category,text,template,line,var,total,trace') />
 		</cfif>
+		<cfif not isDefined('arguments.debugging.dumps')>
+			<cfset arguments.debugging.traces=queryNew('output,template,line') />
+		</cfif>
 		<cfset var timers=arguments.debugging.timers />
 		<cfset var traces=arguments.debugging.traces />
+		<cfset var dumps=arguments.debugging.dumps />
 
 		<cfset this.allSections = this.buildSectionStruct()>
 		<cfset var isExecOrder  = this.isSectionOpen( "ExecOrder" )>
@@ -134,7 +142,6 @@
 			,nanosecond:"ns"
 			} />
 			
-			
 		<cfset var ordermap={}>
 		<cfloop query="#arguments.debugging.history#">
 			<cfif !structkeyExists(ordermap, arguments.debugging.history.id)><cfset ordermap[ arguments.debugging.history.id ]=structCount(ordermap)+1></cfif>
@@ -144,7 +151,6 @@
 		<cfif arguments.context EQ "web">
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 		</cfif>
-
 		<style type="text/css">
 			#-railo-debug 			{ margin: 2.5em 1em 0 1em; padding: 1em; background-color: #FFF; color: #222; border: 1px solid #CCC; border-radius: 5px; text-shadow: none; }
 			#-railo-debug.collapsed	{ padding: 0; border-width: 0; }
@@ -338,7 +344,7 @@
 										<tr class="red"><td colspan="3">red = over #unitFormat( arguments.custom.unit, arguments.custom.highlight * 1000 ,prettify)# ms average execution time</td></tr>
 									</cfif>
 								</table>
-							</td>	<!--- id="-railo-debug-#sectionId#" !--->
+							</td><!--- #-railo-debug-#sectionId# !--->
 						</tr>
 					</table>
 
@@ -379,7 +385,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -418,7 +424,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -453,7 +459,7 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -522,11 +528,46 @@
 										</cfloop>
 
 									</table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
-
 					</cfif>
+					
+					<!--- Dumps --->
+					<cfif dumps.recordcount>
+
+						<cfset sectionId = "Dump">
+						<cfset isOpen = this.isSectionOpen( sectionId )>
+
+						<div class="section-title">Dumps</div>
+
+						
+						<table>
+
+							<cfset renderSectionHeadTR( sectionId, "#dumps.recordcount# Dump#( dumps.recordcount GT 1 ) ? 's' : ''#" )>
+
+							<tr>
+								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
+									<table class="details">
+										<tr>
+											<th>Output</th>
+											<th>Template</th>
+											<th>Line</th>
+										</tr>
+										<cfset total=0 />
+										<cfloop query="dumps">
+											<tr>
+												<td>#dumps.output#</td>
+												<td>#dumps.template#</td>
+												<td class="txt-r">#dumps.line#</td>
+											</tr>
+										</cfloop>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</cfif>
+					
 
 					<!--- Queries --->
 					<cfif queries.recordcount>
@@ -547,7 +588,7 @@
 							<tr>
 								<td id="-railo-debug-#sectionId#" class="#isOpen ? '' : 'collapsed'#">
 									<table><tr><td>
-
+									<cfset hasCachetype=ListFindNoCase(queries.columnlist,"cachetype") gt 0>
 										<cfloop query="queries">
 
 											<table class="details">
@@ -558,18 +599,21 @@
 													<th>Time (ms)</th>
 													<th>Datasource</th>
 													<th>Source</th>
+													<cfif hasCachetype><th>Cache Type</th></cfif>
+													
 												</tr>
 												<tr>
 													<th></th>
-													<td class="bold">#queries.name#</td>
+													<td>#queries.name#</td>
 													<td class="txt-r">#queries.count#</td>
 													<td class="txt-r">#unitFormat(arguments.custom.unit, queries.time,prettify)#</td>
 													<td>#queries.datasource#</td>
 													<td>#queries.src#</td>
+													<cfif hasCachetype><td>#isEmpty(queries.cacheType)?"none":queries.cacheType#</td></cfif>
 												</tr>
 												<tr>
 													<th class="label">SQL:</th>
-													<td id="-railo-debug-query-sql-#queries.currentRow#" colspan="5" oncontextmenu="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
+													<td id="-railo-debug-query-sql-#queries.currentRow#" colspan="6" oncontextmenu="__RAILO.debug.selectText( this.id );"><pre>#trim( queries.sql )#</pre></td>
 												</tr>
 
 												<cfif listFindNoCase(queries.columnlist, 'usage') && isStruct(queries.usage)>
@@ -587,17 +631,15 @@
 													</cfloop>
 
 													<tr>
-														<th></th>
-														<th colspan="5" class="txt-l">Query usage within the request:</th>
+														<th colspan="7"><b>Query usage within the request</b></th>
 													</tr>
 
 													<cfset local.arr = usageRead>
 													<cfset local.arrLenU = arrayLen( arr )>
 													<cfif arrLenU>
 														<tr>
-															<th class="label">Used:</th>
-															<td>
-																<cfloop from="1" to="#arrLenU#" index="local.ii">
+															<td colspan="7">
+																Used:<cfloop from="1" to="#arrLenU#" index="local.ii">
 																	#arr[ ii ]# <cfif ii LT arrLenU>, </cfif>
 																</cfloop>
 															</td>
@@ -607,16 +649,15 @@
 													<cfset local.arrLenN = arrayLen( arr )>
 													<cfif arrLenN>
 														<tr class="red">
-															<th class="label">Unused:</th>
-															<td>
+															<td colspan="7"> 
+																Unused:
 																<cfloop from="1" to="#arrLenN#" index="local.ii">
 																	#arr[ ii ]# <cfif ii LT arrLenN>, </cfif>
 																</cfloop>
 															</td>
 														</tr>
 														<tr class="red">
-															<th></th>
-															<td><b>#arrLenU ? numberFormat( arrLenU / ( arrLenU + arrLenN ) * 100, "999.9" ) : 100# %</b></td>
+															<td colspan="7"><b>#arrLenU ? numberFormat( arrLenU / ( arrLenU + arrLenN ) * 100, "999.9" ) : 100# %</b></td>
 														</tr>
 													</cfif>
 												</cfif>
@@ -626,7 +667,7 @@
 										</cfloop>
 
 									</tr></td></table>
-								</td>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td><!--- #-railo-debug-#sectionId# !--->
 							</tr>
 						</table>
 					</cfif>
@@ -690,7 +731,7 @@
 											<cfelse>
 												the Scope will be displayed with the next request
 											</cfif>
-										</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+										</td></tr></table><!--- #-railo-debug-#sectionId# !--->
 									</td></tr>
 								<cfelse>
 
@@ -703,101 +744,15 @@
 						</table>
 					</cfif>
 
-				</div>	<!--- #-railo-debug-ALL !--->
-			</fieldset>	<!--- #-railo-debug !--->
+				</div><!--- #-railo-debug-ALL !--->
+			</fieldset><!--- #-railo-debug !--->
 		</cfoutput>
 
 
 		<script>
+			<cfset this.includeFileInline( "/railo-context/res/js/util.min.js" )>
+			
 			var __RAILO = __RAILO || {};
-
-			__RAILO.util = 	{
-
-				getCookie: 			function( name, def ) {
-
-					var cookies = document.cookie.split( '; ' );
-					var len = cookies.length;
-					var parts;
-
-					for ( var i=0; i<len; i++ ) {
-
-						parts = cookies[ i ].split( '=' );
-
-						if ( parts[ 0 ] == name )
-							return unescape( parts[ 1 ] );
-					}
-
-					return def;
-				}
-
-				, getCookieNames:	function() {
-
-					var result = [];
-					var cookies = document.cookie.split( '; ' );
-					var len = cookies.length;
-					var parts;
-
-					for ( var i=0; i<len; i++ ) {
-
-						parts = cookies[ i ].split( '=' );
-						result.push( parts[ 0 ] );
-					}
-
-					return result;
-				}
-
-				, setCookie: 		function( name, value, expires ) {
-
-					document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" ) + "; path=/";
-				}
-
-				, removeCookie: 	function( name ) {
-
-					__RAILO.util.setCookie( name, "", new Date( 0 ) );
-				}
-
-				, getDomObject: 	function( obj ) {			// returns the element if it is an object, or finds the object by id */
-
-					if ( typeof obj == 'string' || obj instanceof String )
-						return document.getElementById( obj );
-
-					return obj;
-				}
-
-				, hasClass: 		function( obj, cls ) {
-
-					obj = __RAILO.util.getDomObject( obj );
-					return ( obj.className.indexOf( cls ) > -1 );
-				}
-
-				, addClass: 		function( obj, cls ) {
-
-					if ( __RAILO.util.hasClass( obj, cls ) )
-						return;
-
-					obj = __RAILO.util.getDomObject( obj );
-					obj.className += " " + cls;
-				}
-
-				, removeClass: 		function( obj, cls ) {
-
-					obj = __RAILO.util.getDomObject( obj );
-					obj.className = obj.className.replace( cls, "" );
-				}
-
-				, toggleClass: 		function( obj, cls ) {
-
-					obj = __RAILO.util.getDomObject( obj );
-
-					if ( __RAILO.util.hasClass( obj, cls ) )
-						__RAILO.util.removeClass( obj, cls );
-					else
-						__RAILO.util.addClass( obj, cls );
-
-					return ( __RAILO.util.hasClass( obj, cls ) );
-				}
-			};
-
 
 			__RAILO.debug = {
 
@@ -861,7 +816,7 @@
 			};
 		</script>
 
-	</cffunction>	<!--- output() !--->
+	</cffunction><!--- output() !--->
 
 
 	<cffunction name="doMore" returntype="void">
@@ -924,6 +879,13 @@
 
 			return arguments.size & 'B';
 		}
+
+
+		function includeFileInline( filename ) cachedWithin=createTimeSpan(0, 1, 0, 0) {
+
+			echo( fileRead( expandPath( arguments.filename ) ) );
+		}
+
 	</cfscript>
 
 

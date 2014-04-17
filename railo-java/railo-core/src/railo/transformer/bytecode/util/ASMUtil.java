@@ -1,6 +1,7 @@
 package railo.transformer.bytecode.util;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -18,8 +20,10 @@ import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
@@ -52,12 +56,14 @@ import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
+import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlRetry;
+import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -67,7 +73,7 @@ import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
-
+	
 	//private static final int VERSION_2=1;
 	//private static final int VERSION_3=2;
 
@@ -85,7 +91,7 @@ public final class ASMUtil {
 	private static final Method _SRC_NAME = new Method("_srcName",
         			Types.STRING,
         			new Type[]{}
-            		);;
+            		);
 	//private static final String VERSION_MESSAGE = "you use an invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
@@ -489,7 +495,7 @@ public final class ASMUtil {
 		aprint.o(stat);
 		while(true)	{
 			parent=parent.getParent();
-			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getSource());
+			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getPageSource().getDisplayPath());
 			else aprint.o("parent-> "+ parent);
 			if(parent==null) break;
 		}
@@ -547,9 +553,8 @@ public final class ASMUtil {
     		}
     	}
     // CREATE CLASS	
-		//ClassWriter cw = new ClassWriter(true);
-    	ClassWriter cw = ASMUtil.getClassWriter();
-        cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
+		ClassWriter cw = ASMUtil.getClassWriter();
+        cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
         String md5;
         try{
     		md5=createMD5(properties);
@@ -559,7 +564,7 @@ public final class ASMUtil {
     		t.printStackTrace();
     	}
         
-        FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "_md5_", "Ljava/lang/String;", null, md5);
+    	FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "_md5_", "Ljava/lang/String;", null, md5);
         fv.visitEnd();
         
         
@@ -767,70 +772,9 @@ public final class ASMUtil {
 
 
 	public static ClassWriter getClassWriter() {
-		return new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
-		/*if(true) return new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		return new ClassWriter(ClassWriter.COMPUTE_MAXS);//|ClassWriter.COMPUTE_FRAMES);
 		
-		
-		if(version==VERSION_2)
-			return new ClassWriter(ClassWriter.COMPUTE_MAXS+ClassWriter.COMPUTE_FRAMES);
-		
-		try{
-			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			version=VERSION_2;
-			return cw;
-		}
-		catch(NoSuchMethodError err){
-			if(version==0){
-				version=VERSION_3;
-			}
-			
-			PrintWriter ew = ThreadLocalPageContext.getConfig().getErrWriter();
-			SystemOut.printDate(ew, VERSION_MESSAGE);
-			
-			try {
-				return  ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
-				
-			} 
-			catch (Exception e) {
-				throw new RuntimeException(Caster.toPageException(e));
-				
-			}
-		}*/
 	}
-
-	/*
-	 * For 3.1
-	 * 
-	 * public static ClassWriter getClassWriter() {
-		if(version==VERSION_3)
-			return new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		
-		try{
-			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			version=VERSION_3;
-			return cw;
-		}
-		catch(NoSuchMethodError err){
-			if(version==0){
-				version=VERSION_2;
-				throw new RuntimeException(new ApplicationException(VERSION_MESSAGE+
-						", after reload this version will work as well, but please update to newer version"));
-			}
-			
-			PrintWriter ew = ThreadLocalPageContext.getConfig().getErrWriter();
-			SystemOut.printDate(ew, VERSION_MESSAGE);
-			//err.printStackTrace(ew);
-			
-			try {
-				return (ClassWriter) ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
-				
-			} 
-			catch (Exception e) {
-				throw new RuntimeException(Caster.toPageException(e));
-				
-			}
-		}
-	}*/
 
 
 	public static String createOverfowMethod(String prefix, int id) { // pattern is used in function callstackget
@@ -1002,7 +946,6 @@ public final class ASMUtil {
 		return defaultValue;
 	}
 
-
 	public static ASMProperty[] toASMProperties(Property[] properties) {
 		ASMProperty[] asmp=new ASMProperty[properties.length];
 		for(int i=0;i<asmp.length;i++){
@@ -1061,11 +1004,25 @@ public final class ASMUtil {
 	}
 
 
-	public static long timeSpanToLong(Expression val) throws EvaluatorException {
+	public static Literal cachedWithinValue(Expression val) throws EvaluatorException {
 		if(val instanceof Literal) {
-			Double d = ((Literal)val).getDouble(null);
-			if(d==null) throw cacheWithinException();
-			return TimeSpanImpl.fromDays(d.doubleValue()).getMillis();
+			Literal l=(Literal)val;
+			
+			// double == days
+			Double d = l.getDouble(null);
+			if(d!=null) {
+				return new LitLong(TimeSpanImpl.fromDays(d.doubleValue()).getMillis(), null, null);
+			}
+			
+			// request
+			String str=l.getString();
+			if(str!=null && "request".equalsIgnoreCase(str.trim()))
+				return new LitString("request",null,null);
+			
+			if(str!=null && "smart".equalsIgnoreCase(str.trim()))
+				return new LitString("smart",null,null);
+			
+			throw cacheWithinException();
 		}
 		// createTimespan
 		else if(val instanceof Variable) {
@@ -1083,7 +1040,7 @@ public final class ASMUtil {
 							double minutes=toDouble(args[2].getValue());
 							double seconds=toDouble(args[3].getValue());
 							double millis=len==5?toDouble(args[4].getValue()):0;
-							return new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis();
+							return new LitLong(new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis(),null,null);
 						}
 					}
 				}
@@ -1095,7 +1052,7 @@ public final class ASMUtil {
 
 
 	private static EvaluatorException cacheWithinException() {
-		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4)");
+		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4) or the string \"request\" or the string \"smart\"");
 	}
 
 
@@ -1126,8 +1083,14 @@ public final class ASMUtil {
 	}
 
 
-	public static String getSourceName(Class clazz) throws IOException {
-		return SourceNameClassVisitor.getSourceName(clazz);
+	public static Pair<String, String> getSourceNameAndPath(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC);
+	}
+	public static String getSourceName(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getName();
+	}
+	public static String getSourcePath(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getValue();
 	}
 
 	public static boolean hasOnlyDataMembers(Variable var) {
@@ -1139,5 +1102,64 @@ public final class ASMUtil {
 		}
 		return true;
 	}
+
+
+	public static int count(List<Statement> statements, boolean recursive) {
+		if(statements==null) return 0;
+		int count=0;
+		Iterator<Statement> it = statements.iterator();
+		while(it.hasNext()){
+			count+=count(it.next(),recursive);
+		}
+		return count;
+	}
+
+
+	public static int count(Statement s, boolean recursive) {
+		int count=1;
+		if(recursive && s instanceof HasBody) {
+			Body b = ((HasBody) s).getBody();
+			if(b!=null) count+=count(b.getStatements(),recursive);
+		}
+		return count;
+	}
+
+	public static void dump(Statement s, int level) {
+		
+		for(int i=0;i<level;i++)System.err.print("-");
+		aprint.e(s.getClass().getName());
+		
+		if(s instanceof HasBody) {
+			Body b = ((HasBody) s).getBody();
+			if(b!=null) {
+				Iterator<Statement> it = b.getStatements().iterator();
+				while(it.hasNext()){
+					dump(it.next(),level+1);
+				}
+			}
+		}
+	}
 	
+
+
+	public static void size(ClassWriter cw) {
+		try {
+			MethodVisitor mw=null;
+			
+			Field[] fields = cw.getClass().getDeclaredFields();
+			Field f;
+			for(int i=0;i<fields.length;i++){
+				f=fields[i];
+				if(f.getType().getName().equals("org.objectweb.asm.MethodWriter")) {
+					f.setAccessible(true);
+					mw = (MethodVisitor) f.get(cw);
+					break;
+				}
+			}
+		}
+		catch (Throwable t) {
+			// TODO Auto-generated catch block
+			t.printStackTrace();
+		}
+	}
 }

@@ -66,7 +66,7 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
                 }
             	else if(cfml.isNext('u')){
                     cfml.next();
-                    StringBuffer sb=new StringBuffer();
+                    StringBuilder sb=new StringBuilder();
                     int i=0;
                     
                     for(;i<4 && cfml.hasNext();i++){

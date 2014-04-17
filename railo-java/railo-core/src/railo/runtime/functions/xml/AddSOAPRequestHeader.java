@@ -5,7 +5,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.net.rpc.AxisUtil;
-import railo.runtime.net.rpc.client.RPCClient;
+import railo.runtime.net.rpc.client.WSClient;
 
 public class AddSOAPRequestHeader implements Function {
 
@@ -15,10 +15,10 @@ public class AddSOAPRequestHeader implements Function {
 	}
 	public static boolean call(PageContext pc, Object client,String nameSpace, String name, Object value, boolean mustUnderstand) throws PageException {
 		//if(true)throw new FunctionNotSupported("AddSOAPRequestHeader");
-		if(!(client instanceof RPCClient))
+		if(!(client instanceof WSClient))
 			throw new FunctionException(pc, "addSOAPRequestHeader", 1, "webservice", "value must be a webservice Object generated with createObject/<cfobject>");
 		
-		AxisUtil.addSOAPRequestHeader((RPCClient) client, nameSpace, name, value, mustUnderstand);
+		AxisUtil.addSOAPRequestHeader((WSClient) client, nameSpace, name, value, mustUnderstand);
 		return true;
 	}
 }

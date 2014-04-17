@@ -32,6 +32,7 @@ public final class CacheGetProperties implements Function {
 				addDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY,arr);
 				addDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE,arr);
 				addDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION,arr);
+				addDefault(pc,ConfigImpl.CACHE_DEFAULT_INCLUDE,arr);
 				//arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_TEMPLATE).getCustomInfo());
 				//arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY).getCustomInfo());
 				//arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE).getCustomInfo());
@@ -52,6 +53,8 @@ public final class CacheGetProperties implements Function {
 						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE).getCustomInfo());
 					else if(name.equalsIgnoreCase("function"))
 						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION).getCustomInfo());
+					else if(name.equalsIgnoreCase("include"))
+						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_INCLUDE).getCustomInfo());
 					else
 						arr.appendEL(Util.getCache(pc.getConfig(),name).getCustomInfo());
 				}

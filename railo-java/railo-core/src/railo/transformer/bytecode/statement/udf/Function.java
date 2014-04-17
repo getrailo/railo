@@ -128,7 +128,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.STRING,
 					Types.BOOLEAN,
 					Types.BOOLEAN,
-					Types.LONG_VALUE,
+					Types.OBJECT,
 					Types.INTEGER,
 					Page.STRUCT_IMPL
 				}
@@ -151,7 +151,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.STRING,
 					Types.BOOLEAN,
 					Types.BOOLEAN,
-					Types.LONG_VALUE,
+					Types.OBJECT,
 					Types.INTEGER,
 					Page.STRUCT_IMPL
 				}
@@ -282,7 +282,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	ExprInt localMode;
 	protected int valueIndex;
 	protected int arrayIndex;
-	private long cachedWithin;
+	private Literal cachedWithin;
 	private boolean _abstract;
 	private boolean _final;
 	
@@ -301,7 +301,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression bufferOutput,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
-			Expression verifyClient,Expression localMode,long cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
+			Expression verifyClient,Expression localMode,Literal cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
 		super(start,end);
 		
 		this.name=CastString.toExprString(name);
@@ -431,11 +431,10 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		if(light && !LitString.EMPTY.equals(hint))light=false;
 		if(light && secureJson!=null)light=false;
 		if(light && verifyClient!=null)light=false;
-		if(light && cachedWithin>0)light=false;
+		if(light && cachedWithin!=null)light=false;
 		if(light && bufferOutput!=null)light=false;
 		if(light && localMode!=null)light=false;
 		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
-		
 		if(light){
 			adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT);
 			return;
@@ -465,7 +464,11 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		else ASMConstants.NULL(adapter);
 		
 		// cachedwithin
-		adapter.push(cachedWithin<0?0:cachedWithin);
+		if(cachedWithin!=null) {
+			cachedWithin.writeOut(bc, Expression.MODE_REF);
+		}
+		else ASMConstants.NULL(adapter);
+		//adapter.push(cachedWithin<0?0:cachedWithin);
 		
 		// localMode
 		if(localMode!=null)ExpressionUtil.writeOutSilent(localMode,bc, Expression.MODE_REF);
@@ -718,7 +721,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		}
 		else if("cachedwithin".equals(name))	{
 			try {
-				this.cachedWithin=ASMUtil.timeSpanToLong(attr.getValue());
+				this.cachedWithin=ASMUtil.cachedWithinValue(attr.getValue());//ASMUtil.timeSpanToLong(attr.getValue());
 			} catch (EvaluatorException e) {
 				throw new TemplateException(e.getMessage());
 			}

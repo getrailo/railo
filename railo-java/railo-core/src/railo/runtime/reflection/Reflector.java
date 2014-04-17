@@ -7,6 +7,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -23,6 +24,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.Component;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -31,6 +33,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -350,6 +354,11 @@ public final class Reflector {
 			}
 		}
 		
+		if(trgClass==Calendar.class && Decision.isDate(src, true)) {
+			TimeZone tz = ThreadLocalPageContext.getTimeZone();
+			return Caster.toCalendar(Caster.toDate(src, tz),tz,Locale.US);
+		}
+		
 		if(trgClass==Date.class) return Caster.toDate(src,true,null);
 		else if(trgClass==Query.class) return Caster.toQuery(src);
 		else if(trgClass==Map.class) return Caster.toMap(src);
@@ -362,6 +371,16 @@ public final class Reflector {
 		else if(trgClass==TimeZone.class && Decision.isString(src)) return Caster.toTimeZone(Caster.toString(src));
 		else if(trgClass==Collection.Key.class) return KeyImpl.toKey(src);
 		else if(trgClass==Locale.class && Decision.isString(src)) return Caster.toLocale(Caster.toString(src));
+		else if(Reflector.isInstaneOf(trgClass, Pojo.class) && src instanceof Map) {
+			Struct sct=Caster.toStruct(src);
+			try{
+				Pojo pojo=(Pojo) trgClass.newInstance();
+				if(sct instanceof Component)
+					return AxisCaster.toPojo(pojo, null, null, null, (Component)sct, new HashSet<Object>());
+				return AxisCaster.toPojo(pojo, null, null, null,sct, new HashSet<Object>());
+			}
+			catch(Throwable t){}
+		}
 		if(trgClass.isPrimitive()) {
 			//return convert(src,srcClass,toReferenceClass(trgClass));
 			return _convert(src,toReferenceClass(trgClass));
@@ -831,8 +850,8 @@ public final class Reflector {
 	
 	private static void checkAccessibility(Object objMaybeNull,Class clazz, Key methodName) {
 		// do not allow java.lang.System.exit()
-		if(methodName.equals(EXIT) && clazz==System.class) { // TODO better implementation
-			throw new PageRuntimeException(new SecurityException("Calling the method java.lang.System.exit is not allowed"));      	
+		if(methodName.equals(EXIT) && (clazz==System.class || clazz==Runtime.class)) { // TODO better implementation
+			throw new PageRuntimeException(new SecurityException("Calling the exit method is not allowed"));
         }
 		// change the accessibility of Railo methods is not allowed
 		else if(methodName.equals(SET_ACCESSIBLE)) {
@@ -1042,7 +1061,7 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static void callSetter(Object obj, String prop,Object value) throws PageException {
-	    try {
+		try {
 		    getSetter(obj, prop, value).invoke(obj);
 		}
 		catch (InvocationTargetException e) {
@@ -1156,7 +1175,7 @@ public final class Reflector {
 		if(rtn!=NULL) return rtn;
 		
 		char first=prop.charAt(0);
-        if(first>='0' && first<='9') throw new ApplicationException("there is no property with name ["+prop+"]");
+		if(first>='0' && first<='9') throw new ApplicationException("there is no property with name ["+prop+"]  found in ["+Caster.toTypeName(obj)+"]");
         return callGetter(obj,prop);
         
 	}
@@ -1249,16 +1268,20 @@ public final class Reflector {
 			else										objs=(Object[])obj;//toRefArray((Object[])obj);
 			
 		}
-		if(clazz==objs.getClass()) return objs;
+		if(clazz==objs.getClass()) {
+			return objs;
+		}
 		
 		//if(objs==null) return defaultValue;
 		//Class srcClass = objs.getClass().getComponentType();
-		Class trgClass = clazz.getComponentType();
-		Object rtn = java.lang.reflect.Array.newInstance(trgClass, objs.length);
+		Class compClass = clazz.getComponentType();
+		Object rtn = java.lang.reflect.Array.newInstance(compClass, objs.length);
+		//try{
 		for(int i=0;i<objs.length;i++) {
-			//java.lang.reflect.Array.set(rtn, i, convert(objs[i], srcClass, trgClass));
-			java.lang.reflect.Array.set(rtn, i, convert(objs[i], trgClass,null));
+			java.lang.reflect.Array.set(rtn, i, convert(objs[i], compClass,null));
 		}
+		//}catch(Throwable t){t.printStackTrace();}
+		
 		return rtn;
 	}
 	

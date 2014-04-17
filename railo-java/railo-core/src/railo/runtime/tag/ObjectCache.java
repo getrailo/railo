@@ -3,14 +3,14 @@ package railo.runtime.tag;
 import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.CacheHandlerFilter;
+import railo.runtime.cache.tag.query.QueryCacheHandlerFilter;
+import railo.runtime.cache.tag.query.QueryCacheHandlerFilterUDF;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.query.QueryCacheFilter;
-import railo.runtime.query.QueryCacheFilterImpl;
-import railo.runtime.query.QueryCacheFilterUDF;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.UDF;
 
 /**
@@ -23,7 +23,7 @@ public final class ObjectCache extends TagImpl {
 
 	/** Clears queries from the cache in the Application scope. */
 	private String action="clear";
-	private QueryCacheFilter filter;
+	private CacheHandlerFilter filter;
 	private String result="cfObjectCache";
 
 	/** set the value action
@@ -51,33 +51,27 @@ public final class ObjectCache extends TagImpl {
 	
 	
 	
-	public static QueryCacheFilter createFilter(Object filter,boolean ignoreCase) throws PageException	{
+	public static CacheHandlerFilter createFilter(Object filter,boolean ignoreCase) throws PageException	{
 	   if(filter instanceof UDF)
-		   return createFilter((UDF)filter);
-	   return createFilter(Caster.toString(filter),ignoreCase);
+		   return new QueryCacheHandlerFilterUDF((UDF)filter);
+		String sql=Caster.toString(filter,null);
+		if(!StringUtil.isEmpty(sql,true)) {
+			try {
+				return new QueryCacheHandlerFilter(sql,ignoreCase);
+			}
+			catch (MalformedPatternException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		return null;
 	}
-
 	
-	public static QueryCacheFilter createFilter(UDF filter) throws PageException	{
-		return new QueryCacheFilterUDF(filter);
-	}
-	
-	public static QueryCacheFilter createFilter(String pattern,boolean ignoreCase) throws PageException	{
-	    if(!StringUtil.isEmpty(pattern,true)) {
-            try {
-            	return new QueryCacheFilterImpl(pattern,ignoreCase);
-            } catch (MalformedPatternException e) {
-                throw Caster.toPageException(e);
-            }
+	/*public static CacheHandlerFilter createFilterx(String sql)	{
+	    if(!StringUtil.isEmpty(sql,true)) {
+            return new QueryCacheHandlerFilter(sql);
         }
 	    return null;
-	}
-	
-	
-	
-	
-	
-
+	}*/
 
 	@Override
 	public int doStartTag() throws PageException	{
@@ -85,15 +79,18 @@ public final class ObjectCache extends TagImpl {
 		return SKIP_BODY;
 	}
 	public void _doStartTag() throws PageException	{
-		QueryCacheSupport qc = ((QueryCacheSupport)pageContext.getQueryCache());
+		// QueryCacheSupport qc = ((QueryCacheSupport)pageContext.getQueryCache());
 		if(action.equalsIgnoreCase("clear")) {
 			if(filter==null)
-		    	qc.clear(pageContext);
+				CacheHandlerFactory.query.clear(pageContext);
+		    	//qc.clear(pageContext);
 		    else
-		    	qc.clear(pageContext,filter);
+		    	CacheHandlerFactory.query.clear(pageContext,filter);
+	    		//qc.clear(pageContext,filter);
 		}
 		else if(action.equalsIgnoreCase("size")) {
-			pageContext.setVariable(result, Caster.toDouble(qc.size(pageContext)));
+			pageContext.setVariable(result, Caster.toDouble(CacheHandlerFactory.query.size(pageContext)));
+			//pageContext.setVariable(result, Caster.toDouble(qc.size(pageContext)));
 		}
 		else throw new ApplicationException("attribute action has an invalid value ["+action+"], valid is only [clear,size]");
 		

@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -38,7 +38,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
@@ -125,9 +124,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		aso.setType(cfc.getCallName());
 		
 		
-		Component c=cfc;
-		if(cfc instanceof ComponentAccess)c=ComponentWrap.toComponentWrap(methodAccessLevel,cfc);
-		
+		Component c=ComponentSpecificAccess.toComponentSpecificAccess(methodAccessLevel,cfc);
 
 		Property[] prop = cfc.getProperties(false);
 		Object v; UDF udf;
@@ -261,7 +258,7 @@ public class ClassicAMFCaster implements AMFCaster {
 				if(p==null)throw new ApplicationException("Could not find a Component with name ["+aso.getType()+"]");
 				
 				Component cfc = ComponentLoader.loadComponent(pc, p, p.getPageSource(), aso.getType(), false);
-				ComponentWrap cw=ComponentWrap.toComponentWrap(config.getComponentDataMemberDefaultAccess(),cfc);
+				ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(config.getComponentDataMemberDefaultAccess(),cfc);
 				
 				Iterator it = aso.entrySet().iterator();
 				Map.Entry entry;

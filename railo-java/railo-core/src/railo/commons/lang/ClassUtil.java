@@ -562,6 +562,35 @@ public final class ClassUtil {
 
 		return defaultValue;
 	}
+	
+	/*
+	public static String getLocation(Class clazz) {
+		ClassLoader cl = clazz.getClassLoader();
+		if(cl instanceof ResourceClassLoader) {
+			StringBuilder sb=new StringBuilder();
+			Resource[] sources = ((ResourceClassLoader)cl).getResources();
+			if(sources!=null)for(int i=0;i<sources.length;i++){
+				if(i>0)sb.append(';');
+				sb.append(sources[i]);
+			}
+			return sb.toString();
+		}
+		else if(cl instanceof PhysicalClassLoader) {
+			return ((PhysicalClassLoader)cl).getDirectory().getAbsolutePath();
+		}
+		else if(cl instanceof ArchiveClassLoader) {
+			return ((ArchiveClassLoader)cl).getDirectory(); // not supporting info about source YET
+		}
+		
+		try {
+			URL loc = clazz.getProtectionDomain().getCodeSource().getLocation();
+			if(loc!=null) return loc.toExternalForm();
+			
+		}
+		catch (Throwable t) {}
+		return "";
+	}*/
+	
 
 
 	/**

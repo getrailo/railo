@@ -17,7 +17,6 @@
 package org.apache.axis.encoding.ser;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -27,6 +26,8 @@ import org.apache.axis.encoding.Deserializer;
 import org.apache.axis.utils.BeanPropertyDescriptor;
 import org.apache.axis.utils.BeanUtils;
 import org.apache.axis.utils.JavaUtils;
+
+import railo.runtime.type.StructImpl;
 
 /**
  * DeserializerFactory for Bean
@@ -63,7 +64,8 @@ public class BeanDeserializerFactory extends BaseDeserializerFactory {
             propertyMap = typeDesc.getPropertyDescriptorMap();
         } else {
             BeanPropertyDescriptor[] pd = BeanUtils.getPd(javaType, null);
-            propertyMap = new HashMap();
+            propertyMap = new StructImpl();// use this to get rid of case sensitivity
+            
             // loop through properties and grab the names for later
             for (int i = 0; i < pd.length; i++) {
                 BeanPropertyDescriptor descriptor = pd[i];

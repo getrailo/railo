@@ -34,13 +34,15 @@ import org.apache.commons.collections.ReferenceMap;
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.digest.MD5;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -64,11 +66,6 @@ import com.sun.mail.smtp.SMTPMessage;
 
 public final class SMTPClient implements Serializable  {
 
-	
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5227282806519740328L;
 	
 	private static final int SPOOL_UNDEFINED=0;
@@ -605,8 +602,9 @@ public final class SMTPClient implements Serializable  {
 		if(!StringUtil.isEmpty(att.getType())) mbp.setHeader("Content-Type", att.getType());
 		if(!StringUtil.isEmpty(att.getDisposition())){
 			mbp.setDisposition(att.getDisposition());
-			if(mp instanceof MimeMultipart)
+			/*if(mp instanceof MimeMultipart) {
 				((MimeMultipart)mp).setSubType("related");
+			}*/
 			
 		}
 		if(!StringUtil.isEmpty(att.getContentID()))mbp.setContentID(att.getContentID());
@@ -648,7 +646,7 @@ public final class SMTPClient implements Serializable  {
 		try {
 
         	Proxy.start(proxyData);
-		LogAndSource log = config.getMailLogger();
+		Log log = ((ConfigImpl)config).getLog("mail");
 		// Server
         Server[] servers = config.getMailServers();
         if(host!=null) {
@@ -719,7 +717,7 @@ public final class SMTPClient implements Serializable  {
             		sender.start();
             		SystemUtil.wait(lock, _timeout);
             		
-            		if(!sender.hasSended()) {
+            		if(!sender.isSent()) {
                 		Throwable t = sender.getThrowable();
                 		if(t!=null) throw Caster.toPageException(t);
                 		
@@ -729,8 +727,8 @@ public final class SMTPClient implements Serializable  {
                 		}
                 		catch(Throwable t2){}
                 		
-                		// after thread s stopped check send flag again
-                		if(!sender.hasSended()){
+                		// after thread is stopped check sent flag again
+                		if(!sender.isSent()){
                 			throw new MessagingException("timeout occurred after "+(_timeout/1000)+" seconds while sending mail message");
                 		}
                 	}
@@ -743,7 +741,7 @@ public final class SMTPClient implements Serializable  {
 					if(i+1==servers.length) {
 						
 						listener(config,server,log,e,System.nanoTime()-start);
-						MailException me = new MailException(server.getHostName()+" "+LogUtil.toMessage(e)+":"+i);
+						MailException me = new MailException(server.getHostName()+" "+ExceptionUtil.getStacktrace(e, true)+":"+i);
 						me.setStackTrace(e.getStackTrace());
 						
 						throw me;
@@ -757,16 +755,10 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 
-	private void listener(ConfigWeb config,Server server, LogAndSource log, Exception e, long exe) {
-		StringBuilder sbTos=new StringBuilder();
-		for(int i=0;i<tos.length;i++){
-			if(sbTos.length()>0)sbTos.append(", ");
-			sbTos.append(tos[i].toString());
-		}
+	private void listener(ConfigWeb config,Server server, Log log, Exception e, long exe) {
+		if(e==null) log.info("mail","mail sent (subject:"+subject+"from:"+toString(from)+"; to:"+toString(tos)+"; cc:"+toString(ccs)+"; bcc:"+toString(bccs)+"; ft:"+toString(fts)+"; rt:"+toString(rts)+")");
+		else LogUtil.log(log,Log.LEVEL_ERROR,"mail",e);
 
-		if(e==null) log.info("mail","mail sended (from:"+from.toString()+"; to:"+sbTos+" subject:"+subject+")");
-		else log.error("mail",LogUtil.toMessage(e));
-		
 		// listener
 		
 		Map<String,Object> props=new HashMap<String,Object>();
@@ -796,6 +788,18 @@ public final class SMTPClient implements Serializable  {
 		((ConfigWebImpl)config).getActionMonitorCollector()
 			.log(config, "mail", "Mail", exe, props);
 		
+	}
+
+
+	private static String toString(InternetAddress... ias) {
+		if(ArrayUtil.isEmpty(ias)) return "";
+		
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<ias.length;i++){
+			if(sb.length()>0)sb.append(", ");
+			sb.append(ias[i].toString());
+		}
+		return sb.toString();
 	}
 
 

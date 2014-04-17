@@ -107,7 +107,7 @@ public final class BinConverter {
     * @return the binhex string
     */
   public static String bytesToBinHex(byte[] data,int nStartPos,int nNumOfBytes) {
-    StringBuffer sbuf = new StringBuffer();
+	StringBuilder sbuf = new StringBuilder();
     sbuf.setLength(nNumOfBytes << 1);
     int nPos = 0;
     for (int nI = 0; nI < nNumOfBytes; nI++) {
@@ -173,7 +173,7 @@ public final class BinConverter {
     int nAvailCapacity = data.length - nStartPos;
     if (nAvailCapacity < nNumOfBytes)
       nNumOfBytes = nAvailCapacity;
-    StringBuffer sbuf = new StringBuffer();
+    StringBuilder sbuf = new StringBuilder();
     sbuf.setLength(nNumOfBytes >> 1);
     int nSBufPos = 0;
     while (nNumOfBytes > 0) {

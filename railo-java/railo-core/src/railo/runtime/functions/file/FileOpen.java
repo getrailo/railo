@@ -4,16 +4,17 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 
 public class FileOpen {
 
 	public static Object call(PageContext pc, String path) throws PageException {
-		return call(pc, path,"read",pc.getConfig().getResourceCharset(),false);
+		return call(pc, path,"read",((PageContextImpl)pc).getResourceCharset().name(),false);
 	}
 	public static Object call(PageContext pc, String path,String mode) throws PageException {
-		return call(pc, path,mode,pc.getConfig().getResourceCharset(),false);
+		return call(pc, path,mode,((PageContextImpl)pc).getResourceCharset().name(),false);
 	}
 
 	public static Object call(PageContext pc, String path,String strMode, String charset) throws PageException {
@@ -24,7 +25,7 @@ public class FileOpen {
 		
 		strMode=strMode.trim().toLowerCase();
 		if(StringUtil.isEmpty(charset,true))
-			charset=pc.getConfig().getResourceCharset();
+			charset=((PageContextImpl)pc).getResourceCharset().name();
 		//try {
 
 			if("read".equals(strMode)) {

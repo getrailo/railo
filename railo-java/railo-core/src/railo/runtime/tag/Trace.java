@@ -3,13 +3,14 @@ package railo.runtime.tag;
 import java.io.IOException;
 
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugTrace;
+import railo.runtime.debug.DebugTraceImpl;
 import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
@@ -102,6 +103,7 @@ public final class Trace extends BodyTagImpl {
 		else if("debug".equals(strType)) 				type=Log.LEVEL_DEBUG;
 		else if("debugging".equals(strType)) 			type=Log.LEVEL_DEBUG;
 		else if("debuging".equals(strType)) 			type=Log.LEVEL_DEBUG;
+		else if("trace".equals(strType)) 			type=LogUtil.LEVEL_TRACE;
 		else throw new ApplicationException("invalid value ["+strType+"] for attribute [type], valid values are [Debug, Information, Warning, Error, Fatal Information]");
 	}
 
@@ -202,7 +204,7 @@ public final class Trace extends BodyTagImpl {
 			sb.append("<td>");
 			sb.append("<font color=\"orange\">");
 			sb.append("<b>");
-			sb.append(LogUtil.toStringType(trace.getType(),"INFO")+" - ");
+			sb.append(DebugTraceImpl.toType(trace.getType(),"INFO")+" - ");
 			sb.append("[CFTRACE "+tf.format(new DateTimeImpl(pageContext.getConfig()), "hh:mm:ss:l")+"]");
 			sb.append("["+trace.getTime()+" ms "+total+"]");
 			sb.append("["+trace.getTemplate()+" @ line: "+trace.getLine()+"]");
@@ -221,7 +223,7 @@ public final class Trace extends BodyTagImpl {
 		}
 		
 		// log
-		LogAndSource log = pageContext.getConfig().getTraceLogger();
+		Log log = ((ConfigImpl)pageContext.getConfig()).getLog("trace");
 		StringBuffer msg=new StringBuffer();
 		msg.append("["+trace.getTime()+" ms "+total+"] ");
 		msg.append("["+trace.getTemplate()+" @ line: "+trace.getLine()+"]");

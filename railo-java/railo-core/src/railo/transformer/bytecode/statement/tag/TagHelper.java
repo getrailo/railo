@@ -2,7 +2,6 @@ package railo.transformer.bytecode.statement.tag;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.IterationTag;
@@ -16,10 +15,12 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.lang.ClassException;
 import railo.runtime.exp.Abort;
 import railo.runtime.tag.MissingAttribute;
+import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.type.LiteralStringArray;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
@@ -31,6 +32,7 @@ import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 
 public final class TagHelper {
 	private static final Type MISSING_ATTRIBUTE = Type.getType(MissingAttribute.class);
@@ -43,7 +45,8 @@ public final class TagHelper {
 			"setAttributeCollection",Types.VOID,new Type[]{Types.PAGE_CONTEXT,TAG,MISSING_ATTRIBUTE_ARRAY,Types.STRUCT,Types.INT_VALUE});
 	
 	// Tag use(String)
-	private static final Method USE= new Method("use",TAG,new Type[]{Types.STRING});
+	private static final Method USE1= new Method("use",TAG,new Type[]{Types.STRING});
+	private static final Method USE3= new Method("use",TAG,new Type[]{Types.STRING,Types.STRING,Types.INT_VALUE});
 	
 	// void setAppendix(String appendix)
 	private static final Method SET_APPENDIX = new Method("setAppendix",Type.VOID_TYPE,new Type[]{Types.STRING});
@@ -86,10 +89,15 @@ public final class TagHelper {
 			"newInstance",
 			ABORT,
 			new Type[]{Types.INT_VALUE});
-	private static final Method NEW_INSTANCE_MAX =  new Method(
+	private static final Method NEW_INSTANCE_MAX2 =  new Method(
 			"newInstance",
 			MISSING_ATTRIBUTE,
 			new Type[]{Types.COLLECTION_KEY,Types.STRING});
+	
+	private static final Method NEW_INSTANCE_MAX3 =  new Method(
+			"newInstance",
+			MISSING_ATTRIBUTE,
+			new Type[]{Types.COLLECTION_KEY,Types.STRING,Types.STRING_ARRAY});
 	
 	
 	
@@ -152,8 +160,11 @@ public final class TagHelper {
 		
 	// tag=pc.use(str);
 		adapter.loadArg(0);
+		adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 		adapter.push(tlt.getTagClassName());
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, USE);
+		adapter.push(tlt.getFullName());
+		adapter.push(tlt.getAttributeType());
+		adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, USE3);
 		adapter.checkCast(currType);
 		adapter.storeLocal(currLocal);
 	
@@ -181,13 +192,13 @@ public final class TagHelper {
 			adapter.push(hasBody);
 			adapter.invokeVirtual(currType, HAS_BODY);
 		}
-		
-	// attributes
-		Attribute attr;
+
+		// default attributes (get overwritten by attributeCollection because of that set before)
+		setAttributes(bc,tag,currLocal,currType, true);
 		
 		// attributeCollection
-		attr=tag.getAttribute("attributecollection");
-		if(attr!=null){
+		Attribute attrColl=tag.getAttribute("attributecollection");
+		if(attrColl!=null){
 			int attrType = tag.getTagLibTag().getAttributeType();
 			if(TagLibTag.ATTRIBUTE_TYPE_NONAME!=attrType) {
 				tag.removeAttribute("attributecollection");
@@ -197,19 +208,23 @@ public final class TagHelper {
 				adapter.cast(currType, TAG);
 				
 				///
-				Map missings = tag.getMissingAttributes();
-				if(missings.size()>0) {
+				TagLibTagAttr[] missings = tag.getMissingAttributes();
+				if(!ArrayUtil.isEmpty(missings)) {
 					ArrayVisitor av=new ArrayVisitor();
-		            av.visitBegin(adapter,MISSING_ATTRIBUTE,missings.size());
-		            Map.Entry entry;
+		            av.visitBegin(adapter,MISSING_ATTRIBUTE,missings.length);
 		            int count=0;
-		            Iterator it = missings.entrySet().iterator();
-		            while(it.hasNext()){
-		            	entry=(Entry) it.next();
-		    			av.visitBeginItem(adapter, count++);
-		    				Variable.registerKey(bc, LitString.toExprString((String)entry.getKey()));
-			    			adapter.push((String)entry.getValue());
-		    				adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX);
+		            TagLibTagAttr miss;
+		            for(int i=0;i<missings.length;i++){
+		            	miss = missings[i];
+		            	av.visitBeginItem(adapter, count++);
+		    				Variable.registerKey(bc, LitString.toExprString(miss.getName()));
+			    			adapter.push(miss.getType());
+			    			if(ArrayUtil.isEmpty(miss.getAlias()))
+		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX2);
+		    				else {
+		    					new LiteralStringArray(miss.getAlias()).writeOut(bc, Expression.MODE_REF); 
+		    					adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX3);
+		    				}
 		    			av.visitEndItem(bc.getAdapter());
 		            }
 		            av.visitEnd();
@@ -218,7 +233,7 @@ public final class TagHelper {
 					ASMConstants.NULL(adapter);
 				}
 				///
-				attr.getValue().writeOut(bc, Expression.MODE_REF);
+				attrColl.getValue().writeOut(bc, Expression.MODE_REF);
 				
 				adapter.push(attrType);
 				adapter.invokeStatic(TAG_UTIL, SET_ATTRIBUTE_COLLECTION);
@@ -227,6 +242,7 @@ public final class TagHelper {
 
 
 		// metadata
+		Attribute attr;
 		Map<String, Attribute> metadata = tag.getMetaData();
 		if(metadata!=null){
 			Iterator<Attribute> it = metadata.values().iterator();
@@ -238,40 +254,10 @@ public final class TagHelper {
 					adapter.invokeVirtual(currType, SET_META_DATA);
 			}
 		}
-		
-		
-		
-		String methodName;
-		Map attributes = tag.getAttributes();
 
-		// static attributes
-		Iterator it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=(Attribute) it.next();
-			if(!attr.isDynamicType()){
-				Type type = CastOther.getType(attr.getType());
-				methodName=tag.getTagLibTag().getSetter(attr,type);
-				adapter.loadLocal(currLocal);
-				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
-				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
-			}
-		}
-		
-		// dynamic attributes
-		it = attributes.values().iterator();
-		while(it.hasNext()) {
-			attr=(Attribute) it.next();
-			if(attr.isDynamicType()){
-				adapter.loadLocal(currLocal);
-				adapter.visitInsn(Opcodes.ACONST_NULL);
-				//adapter.push(attr.getName());
-				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
-				attr.getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
-			}
-		}
-		
-		
+		// set attributes
+		setAttributes(bc,tag,currLocal,currType,false);
+
 	// Body
 		if(hasBody){
 			final int state=adapter.newLocal(Types.INT_VALUE);
@@ -374,6 +360,35 @@ public final class TagHelper {
 
 		adapter.visitLabel(tagEnd);
 		ExpressionUtil.visitLine(bc, tag.getEnd());
+	}
+	
+	private static void setAttributes(BytecodeContext bc, Tag tag, int currLocal, Type currType, boolean doDefault) throws BytecodeException {
+		GeneratorAdapter adapter = bc.getAdapter();
+		Map<String,Attribute> attributes = tag.getAttributes();
+
+		String methodName;
+		Attribute attr;
+		Iterator<Attribute> it = attributes.values().iterator();
+		while(it.hasNext()) {
+			attr=it.next();
+			if(doDefault!=attr.isDefaultAttribute()) continue;
+			
+			if(attr.isDynamicType()){
+				adapter.loadLocal(currLocal);
+				adapter.visitInsn(Opcodes.ACONST_NULL);
+				//adapter.push(attr.getName());
+				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
+				attr.getValue().writeOut(bc, Expression.MODE_REF);
+				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
+			}
+			else {
+				Type type = CastOther.getType(attr.getType());
+				methodName=tag.getTagLibTag().getSetter(attr,type);
+				adapter.loadLocal(currLocal);
+				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
+				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
+			}
+		}
 	}
 
 	private static void doTry(BytecodeContext bc, GeneratorAdapter adapter, Tag tag, int currLocal, Type currType) throws BytecodeException {

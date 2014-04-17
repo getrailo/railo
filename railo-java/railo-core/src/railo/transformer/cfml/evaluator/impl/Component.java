@@ -66,7 +66,7 @@ public class Component extends EvaluatorSupport {
 		Page page=(Page) pPage;
 		
 		// is inside a file named cfc
-		String src=page.getSource();
+		String src=page.getPageSource().getDisplayPath();
 		int pos=src.lastIndexOf(".");
 		if(!(pos!=-1 && pos<src.length() && src.substring(pos+1).equals("cfc")))
 			throw new EvaluatorException("Wrong Context, "+tlt.getFullName()+" tag must be inside a file with extension cfc");

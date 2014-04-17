@@ -623,7 +623,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		HttpServletResponse rsp=new HttpServletResponseDummy(os);
 		
 		serviceCFML(servlet, req, rsp);
-		String res = os.toString(ReqRspUtil.getCharacterEncoding(null,rsp));
+		String res = os.toString(ReqRspUtil.getCharacterEncoding(null,rsp).name());
 		System.out.println(res);
 	}
 	

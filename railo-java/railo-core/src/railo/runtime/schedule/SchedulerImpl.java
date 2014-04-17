@@ -30,10 +30,9 @@ public final class SchedulerImpl implements Scheduler {
     private ScheduleTaskImpl[] tasks;
     private Resource schedulerFile;
     private Document doc;
-    private LogAndSource log;
     private StorageUtil su=new StorageUtil();
 	private String charset;
-	private Config config;
+	private final Config config;
 	//private String md5;
 
 	private CFMLEngineImpl engine;
@@ -47,12 +46,12 @@ public final class SchedulerImpl implements Scheduler {
      * @throws SAXException
      * @throws PageException
      */
-    public SchedulerImpl(CFMLEngine engine,Config config, Resource schedulerDir, LogAndSource log, String charset) throws SAXException, IOException, PageException {
+    public SchedulerImpl(CFMLEngine engine,Config config, Resource schedulerDir, String charset) throws SAXException, IOException, PageException {
     	this.engine=(CFMLEngineImpl) engine;
     	this.charset=charset;
     	this.config=config;
     	
-    	initFile(schedulerDir,log);
+    	initFile(schedulerDir);
         doc=su.loadDocument(schedulerFile);
         tasks=readInAllTasks();
         init();
@@ -68,7 +67,7 @@ public final class SchedulerImpl implements Scheduler {
      * @throws IOException
      * @throws PageException
      */
-    public SchedulerImpl(CFMLEngine engine,String xml,Config config, LogAndSource log) {
+    public SchedulerImpl(CFMLEngine engine,String xml,Config config) {
     	this.engine=(CFMLEngineImpl) engine;
     	this.config=config;
     	try {
@@ -81,10 +80,10 @@ public final class SchedulerImpl implements Scheduler {
     
     
     
-	private void initFile(Resource schedulerDir, LogAndSource log) throws IOException {
+	private void initFile(Resource schedulerDir) throws IOException {
 		this.schedulerFile=schedulerDir.getRealResource("scheduler.xml");
 		if(!schedulerFile.exists()) su.loadFile(schedulerFile,"/resource/schedule/default.xml");
-		this.log=log;  
+		//this.log=log;  
 	}
 	
     /**
@@ -97,7 +96,7 @@ public final class SchedulerImpl implements Scheduler {
     }
 
 	private void init(ScheduleTask task) {
-		new ScheduledTaskThread(engine,this,config,log,task,charset).start();
+		new ScheduledTaskThread(engine,this,config,task,charset).start();
 	}
 
 	/**
@@ -358,11 +357,11 @@ public final class SchedulerImpl implements Scheduler {
 	}
     
     public void execute(ScheduleTask task) {
-    	new ExecutionThread(config,log,task,charset).start();
+    	new ExecutionThread(config,task,charset).start();
     } 
 
     @Override
     public LogAndSource getLogger() {
-        return log;
+    	throw new RuntimeException("this method is no longer supported, call instead Config.getLogger");
     }
 }

@@ -27,7 +27,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
-import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageServletException;
@@ -390,11 +389,11 @@ public final class HTTPUtil {
 
     
     public static String escapeQSValue(String str) {
-    	if(!ReqRspUtil.needEncoding(str,true)) return str;
-    	Config config = ThreadLocalPageContext.getConfig();
-    	if(config!=null){
+    	if(!ReqRspUtil.needEncoding(str,false)) return str;
+    	PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
+    	if(pc!=null){
     		try {
-    			return URLEncoder.encode(str,config.getWebCharset());
+    			return URLEncoder.encode(str,pc.getWebCharset());
     		} 
     		catch (UnsupportedEncodingException e) {}
     	}

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -136,11 +137,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     }
     
     private void removeCookie(Collection.Key key) {
-        javax.servlet.http.Cookie cookie=new javax.servlet.http.Cookie(key.getUpperString(),"");
-		cookie.setMaxAge(0);
-		cookie.setSecure(false);
-		cookie.setPath("/");
-		rsp.addCookie(cookie);
+        ReqRspUtil.removeCookie(rsp, key.getUpperString());
     }
     
     @Override
@@ -245,7 +242,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		if(str.equals("now"))return 0;
 		else if(str.equals("never"))return NEVER;
 		else {
-			DateTime dt = DateCaster.toDateAdvanced(expires,false,null,null);
+			DateTime dt = DateCaster.toDateAdvanced(expires,DateCaster.CONVERTING_TYPE_NONE,null,null);
 			if(dt!=null) {
 		        return toExpires(dt);
 		    }
@@ -278,7 +275,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	@Override
 	public void initialize(PageContext pc) {
 		Config config = ThreadLocalPageContext.getConfig(pc);
-		charset = pc.getConfig().getWebCharset();
+		charset = ((PageContextImpl)pc).getWebCharset().name();
 		if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
@@ -287,7 +284,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		
 		HttpServletRequest req = pc. getHttpServletRequest();
 		this.rsp=pc. getHttpServletResponse();
-		javax.servlet.http.Cookie[] cookies=ReqRspUtil.getCookies(config,req);
+		javax.servlet.http.Cookie[] cookies=ReqRspUtil.getCookies(req,((PageContextImpl)pc).getWebCharset());
 		try {
 			for(int i=0;i<cookies.length;i++) {
 				set(config,cookies[i]);
@@ -340,7 +337,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     	return ReqRspUtil.decode(str,charset,false);
 	}
     public String enc(String str) {
-    	if(ReqRspUtil.needEncoding(str, true))
+    	if(ReqRspUtil.needEncoding(str, false))
     		return ReqRspUtil.encode(str,charset);
     	return str;
 	}

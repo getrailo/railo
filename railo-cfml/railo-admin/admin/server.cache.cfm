@@ -1,6 +1,10 @@
 <cfset error.message="">
 <cfset error.detail="">
 
+<cfset stText.setting.typeChecking="UDF Type Checking">
+<cfset stText.setting.typeCheckingDesc="If disabled Railo ignores type defintions with function arguments and return values">
+<cfparam name="stText.general.elements" default="item(s)">
+
 <cfadmin 
 	action="securityManager"
 	type="#request.adminType#"
@@ -21,15 +25,11 @@ Defaults --->
     </cfcatch>
 </cftry>
 
-<cfset btnClearTemplateCache=replace(stText.setting.templateCacheClearCount,'{count}',arrayLen(pagePoolList()))>
 
-<cfset btnClearQueryCache=stText.setting.queryCacheClear>
-<cfif qrySize GTE 0>
-	<cfset btnClearQueryCache=replace(stText.setting.queryCacheClearCount,'{count}',qrySize)>
-</cfif>
-
-<cfset btnClearComponentCache=replace(stText.setting.componentCacheClear,'{count}',structCount(componentCacheList()))>
-<cfset btnClearCTCache=replace(stText.setting.ctCacheClear,'{count}',structCount(ctCacheList()))>
+<cfset btnClearTemplateCache  = stText.setting.templateCacheClearCount>
+<cfset btnClearQueryCache     = stText.setting.queryCacheClear>
+<cfset btnClearComponentCache = stText.setting.componentCacheClear>
+<cfset btnClearCTCache        = stText.setting.ctCacheClear>
 
 <cfif hasAccess>
 	<cftry>
@@ -55,7 +55,7 @@ Defaults --->
 					password="#session["password"&request.adminType]#"
 					
 					inspectTemplate="#form.inspectTemplate#"
-					
+					typeChecking="#!isNull(form.typeChecking) and form.typeChecking EQ true#"
 					remoteClients="#request.getRemoteClients()#"
 					>
 			
@@ -68,6 +68,7 @@ Defaults --->
 					password="#session["password"&request.adminType]#"
 					
 					inspectTemplate=""
+					typeChecking=""
 					
 					remoteClients="#request.getRemoteClients()#"
 					>
@@ -149,6 +150,20 @@ Create Datasource --->
 						</cfif>
 					</td>
 				</tr>
+				
+				
+				<!--- Type Checking --->
+				<tr>
+					<th scope="row">#stText.setting.typeChecking#</th>
+					<td class="fieldPadded">
+						<label>
+							<input class="checkbox" type="checkbox" name="typeChecking" value="true"<cfif settings.typeChecking EQ true> checked="checked"</cfif>>
+						</label>
+						<div class="comment">#stText.setting.typeCheckingDesc#</div>
+						<cfset renderCodingTip( "this.typeChecking = "&settings.typeChecking&";" )>
+					</td>
+				</tr>
+				
 				<!--- PagePool --->
 				<tr>
 					<th scope="row">#stText.setting.templateCache#</th>
@@ -164,7 +179,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Object Cache --->
+				<!--- Query Cache --->
 				<tr>
 					<th scope="row">#stText.setting.queryCache#</th>
 					<td class="fieldPadded">
@@ -179,7 +194,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Component Cache --->
+				<!--- Component Path Cache --->
 				<tr>
 					<th scope="row">#stText.setting.componentCache#</th>
 					<td class="fieldPadded">
@@ -194,7 +209,7 @@ Create Datasource --->
 					</td>
 				</tr>
 				
-				<!--- Customtag Cache --->
+				<!--- Customtag Path Cache --->
 				<tr>
 					<th scope="row">#stText.setting.ctCache#</th>
 					<td class="fieldPadded">
@@ -208,9 +223,12 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
+				
+				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">
 				</cfif>
+				
 			</tbody>
 			<cfif hasAccess>
 				<tfoot>

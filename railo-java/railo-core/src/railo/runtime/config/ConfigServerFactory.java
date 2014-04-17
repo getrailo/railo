@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jacob.com.LibraryLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -22,6 +21,8 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLibException;
+
+import com.jacob.com.LibraryLoader;
 
 
 /**
@@ -180,14 +181,40 @@ public final class ConfigServerFactory extends ConfigFactory{
 		// Cache Drivers
 		Resource cDir = adminDir.getRealResource("cdriver");
 		create("/resource/context/admin/cdriver/",new String[]{
-		"Cache.cfc","RamCache.cfc","EHCacheLite.cfc","Field.cfc","Group.cfc"}
+		"Cache.cfc","RamCache.cfc","EHCache.cfc","Field.cfc","Group.cfc"}
 		,cDir,doNew);
+		
+		delete(cDir,new String[]{"EHCacheLite.cfc"});
+		
+		Resource wcdDir = configDir.getRealResource("web-context-deployment/admin");
+		Resource cdDir = wcdDir.getRealResource("cdriver");
+		delete(cdDir,new String[]{"EHCache.cfc","EHCacheLite.cfc"});
+		try {
+			ResourceUtil.deleteEmptyFolders(wcdDir);
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		// Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");
 		create("/resource/context/admin/gdriver/",new String[]{
 		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc","Gateway.cfc","Field.cfc","Group.cfc"}
 		,gDir,doNew);
+		
+		// Logging/appender
+		Resource app = adminDir.getRealResource("logging/appender");
+		create("/resource/context/admin/logging/appender/",new String[]{
+		"ConsoleAppender.cfc","ResourceAppender.cfc","Appender.cfc","Field.cfc","Group.cfc"}
+		,app,doNew);
+		
+		// Logging/layout
+		Resource lay = adminDir.getRealResource("logging/layout");
+		create("/resource/context/admin/logging/layout/",new String[]{
+		"ClassicLayout.cfc","HTMLLayout.cfc","PatternLayout.cfc","XMLLayout.cfc","Layout.cfc","Field.cfc","Group.cfc"}
+		,lay,doNew);
 		
 		// Security
 		Resource secDir = configDir.getRealResource("security");

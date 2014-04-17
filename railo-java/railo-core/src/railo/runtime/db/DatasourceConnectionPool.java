@@ -5,21 +5,24 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.type.util.ArrayUtil;
 
 public class DatasourceConnectionPool {
 
-	private Map<String,DCStack> dcs=new HashMap<String,DCStack>();
+	private ConcurrentHashMap<String,DCStack> dcs=new ConcurrentHashMap<String,DCStack>();
 	private Map<String,RefInteger> counter=new HashMap<String,RefInteger>();
 	
 	public DatasourceConnection getDatasourceConnection(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
@@ -77,6 +80,11 @@ public class DatasourceConnectionPool {
 		//print.err("create connection");
         return new DatasourceConnectionImpl(conn,ds,user,pass);
     }
+	
+	public void releaseDatasourceConnection(Config config,DatasourceConnection dc, boolean async) {
+		if(async)((SpoolerEngineImpl)config.getSpoolerEngine()).add((DatasourceConnectionImpl)dc);
+		else releaseDatasourceConnection(dc);
+	}
 	
 	public void releaseDatasourceConnection(DatasourceConnection dc) {
 		if(dc==null) return;

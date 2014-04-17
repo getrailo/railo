@@ -6,8 +6,10 @@ package railo.runtime.functions.system;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.functions.component.ComponentCacheClear;
 import railo.runtime.functions.other.CTCacheClear;
@@ -19,10 +21,10 @@ public final class SystemCacheClear implements Function {
 	
 	private static final long serialVersionUID = 2151674703665027213L;
 
-	public static String call(PageContext pc) throws FunctionException {
+	public static String call(PageContext pc) throws PageException {
 		return call(pc,null);
 	}
-	public static String call(PageContext pc, String cacheName) throws FunctionException {
+	public static String call(PageContext pc, String cacheName) throws PageException {
 		
 		if(StringUtil.isEmpty(cacheName,true) || "all".equals(cacheName=cacheName.trim().toLowerCase())) {
 			PagePoolClear.call(pc);
@@ -65,8 +67,9 @@ public final class SystemCacheClear implements Function {
 		return null;
 	}
 	
-	private static void queryCache(PageContext pc) {
-		pc.getQueryCache().clear(pc);
+	private static void queryCache(PageContext pc) throws PageException {
+		CacheHandlerFactory.query.clear(pc);
+		//pc.getQueryCache().clear(pc);
 	}
 
 	private static void tagCache(PageContext pc) {

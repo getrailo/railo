@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import railo.runtime.PageContext;
  
 /**
  * JSP Writer that Remove WhiteSpace from given content while preserving pre-formatted spaces 
@@ -13,7 +15,6 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 
 	public static final char CHAR_NL = '\n';
 	public static final char CHAR_RETURN = '\r';
-	public static final char CHAR_SPACE = ' ';
 
 	private static final char CHAR_GT = '>';
 	private static final char CHAR_LT = '<';
@@ -22,8 +23,6 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	
 	private static int minTagLen = 64;
 
-	private static final boolean doChangeWsToSpace = true;				// can help fight XSS attacks with characters like Vertical Tab
-	
 	private int[] depths;
 	private int depthSum = 0;
 	private char lastChar = 0;
@@ -33,7 +32,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 
 	static {
 		
-		// TODO: set EXCLUDE_TAGS (and perhaps doChangeWsToSpace) to values from WebConfigImpl
+		// TODO: set EXCLUDE_TAGS to values from WebConfigImpl
 		
 		for ( String s : EXCLUDE_TAGS )
 			if ( s.length() < minTagLen )
@@ -49,9 +48,9 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	 * @param bufferSize 
 	 * @param autoFlush 
 	 */
-	public CFMLWriterWSPref(HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
-			boolean showVersion, boolean contentLength, boolean allowCompression) {
-		super(req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength,allowCompression);
+	public CFMLWriterWSPref(PageContext pc, HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
+			boolean showVersion, boolean contentLength) {
+		super(pc,req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength);
 		depths = new int[ EXCLUDE_TAGS.length ];
 	}
 
@@ -160,7 +159,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 				return;
 			if ( sb.length() > 0 ) {
 				printBuffer();													// buffer should never contain WS so flush it
-                lastChar = c == CHAR_NL ? CHAR_NL : ( doChangeWsToSpace ? CHAR_SPACE : c );
+                lastChar = (c == CHAR_NL) ? CHAR_NL : c;
 				super.print( lastChar );
                 return;
 			}
@@ -178,8 +177,6 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 					if ( c != CHAR_NL ) {										// this WS char is not NL
 						if ( Character.isWhitespace( lastChar ) )
 							return;												// lastChar was WS but Not NL; discard this WS char
-						if ( doChangeWsToSpace )
-							c = CHAR_SPACE;										// this char is WS and not NL; change it to a regular space
 					}
 				}
 			}

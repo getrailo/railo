@@ -58,6 +58,7 @@
 			<type>multiple</type>
 			<rtexprvalue>true</rtexprvalue>
 		</script>
+		<status>hidden</status>
 		<description>Tag for the railo web/server administrator</description>
 		<attribute-type>dynamic</attribute-type>
 
@@ -387,6 +388,14 @@ Specifies how Railo stores session variables:
 		the Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>
+			<type>timespan</type>
+			<name>requestTimeout</name>
+			<alias>timeout</alias>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Sets the amount of time Railo will wait for a request to finish before a request timeout will be raised. This means that the execution of the request will be stopped.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>setDomainCookies</name>
 			<required>false</required>
@@ -433,6 +442,39 @@ Specifies how Railo stores session variables:
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>wstype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>webservice type used, this can be one of the following values
+- Axis1 (default): The Apache Axis 1 implementation is used
+- CXF: The CXF implementation is used</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>typeChecking</name>
+			<required>false</required>
+			<default-value>true</default-value>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If disabled, Railo ignores type defintions with function arguments and return values</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>compression</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Enable compression (GZip) for the Railo Response stream for text-based responses when supported by the client (Web Browser).</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>suppressRemoteComponentContent</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</description>
+		</attribute>
+		
+		
+		<attribute>
+			<type>string</type>
 			<name>secureJsonPrefix</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -448,6 +490,14 @@ Specifies how Railo stores session variables:
 - classic (CFML standard): the local scope is only invoked when the key already exists in it</description>
 		</attribute>
 
+		<attribute>
+			<type>struct</type>
+			<name>tag</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>tags/attributes default value in the following structure:
+#{location:{addtoken=false}}#</description>
+		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>ormenabled</name>
@@ -557,6 +607,13 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<description>name of the cache used to store data from ram resource in this context</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>cacheInclude</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used to store data from a include</description>
+		</attribute>
+		<attribute>
 			<type>object</type>
 			<name>onMissingTemplate</name>
 			<required>false</required>
@@ -579,6 +636,32 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>change the timezone defintion for the current application context.</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>webcharset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>character set used for output streams, form-, url-, and cgi scope variables and reading/writing the header</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>resourcecharset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>character set used for reading from/writing to various resources</description>
+		</attribute>
+		<attribute>
+			<type>String</type>
+			<name>scopecascading</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#), the following values are supported:
+- strict: scans only the variables scope
+- small: scans the scopes variables,url,form
+- standard: scans the scopes variables,cgi,url,form,cookie
+			</description>
 		</attribute>
 		
 	</tag>
@@ -1221,6 +1304,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<description>Format for Y-axis labels.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>categoryLabelPositions</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Label postion relative to axis: standard, up_45, up_90, down_45, down_90 or horizontal (standard) and vertical (down_90).  Default is horizontal.</description>
+		</attribute>
+		<attribute>
 			<type>number</type>
 			<name>markerSize</name>
 			<required>false</required>
@@ -1716,6 +1806,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>displayname</name>
+			<alias>display</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>A string to be displayed when using introspection to show
@@ -1723,17 +1814,6 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
             heading, following the component name.
             If the style attribute is set to document, the displayname
             attribute is used as the name of the service element in the WSDL.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>display</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>A string to be displayed when using introspection to show
-            information about the CFC. The information appears on the
-            heading, following the component name.
-            If the style attribute is set to document, the displayname
-            attribute is used as the name of the service element in the WSDL (alias for displayname).</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2012,18 +2092,11 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>encode</name>
+			<name>encodeValue</name>
+			<alias>encode</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>if set to true, Railo url encodes the given name and value if necessary.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>encodeValue</name>
-			<status>deprecated</status>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for encode.</description>
 		</attribute>
 	</tag>
 	<!-- DBInfo -->
@@ -2082,16 +2155,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>dbname</name>
+			<alias>dbnames</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the database</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>dbnames</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Name of the database (alias for dbname)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2167,7 +2234,8 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>object</type>
-			<name>acl</name>
+			<name>storeacl</name>
+			<alias>acl</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>An array of struct where each struct represents a permission or grant.
@@ -2176,25 +2244,12 @@ Example:
 </description>
 		</attribute>
 		<attribute>
-			<type>object</type>
-			<name>storeacl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for attribute "acl"</description>
-		</attribute>
-		<attribute>
 			<type>string</type>
-			<name>storage</name>
+			<name>storelocation</name>
+			<alias>storage</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Only used for S3 Resources. The location of the created bucket/object. The location can either be EU,US or US-WEST. The default location is US.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>storelocation</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for attribute "storage"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2202,7 +2257,7 @@ Example:
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
-	-  file: includes only filenames.
+	- file: includes only filenames.
     - dir: includes only directory names.
     - all: includes both filenames and directory names.</description>
 		</attribute>
@@ -2233,8 +2288,17 @@ Example:
 			<name>filter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Optional for action = "list". Ignored by all other actions. File extension filter applied to
-		returned names. For example: *m. Only one mask filter can be applied at a time.</description>
+			<description>Optional for action = "list". Ignored by all other actions. Can be either a wildcard filter,
+			e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
+			whether that item should be included in the result or not.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>filterDelimiters</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+			Default is the pipe "|" character.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2526,17 +2590,11 @@ Example:
 
 		<attribute>
 			<type>string</type>
-			<name>proxyServer</name>
+			<name>proxyHost</name>
+			<alias>proxyServer</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>alias for proxyHost</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>proxyHost</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Host name or IP address of a proxy server.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -3163,20 +3221,14 @@ Determines if the contents of the cfdocumentitem tag body has to be evaluated at
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>object</type>
-			<name>acl</name>
+			<name>storeacl</name>
+			<alias>acl</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>An array of struct where each struct represents a permission or grant.
 Example:
 [{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
 			</description>
-		</attribute>
-		<attribute>
-			<type>object</type>
-			<name>storeacl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -4171,6 +4223,14 @@ If omitted, the file's attributes are maintained.</description>
 			<description>String; a type name; data type of the function return value</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>bufferoutput</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>this attribute is only used when output of the function is set to false. if this attribute is set to true (default) the output written to the body of the function is buffered and in case of a exception also outputted.
+			if set to false the content to body is ignored and not disabled when a failure in the body of the tag occur.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>roles</name>
 			<required>false</required>
@@ -4261,6 +4321,19 @@ no: the function is processed as if it were within a cfsilent tag </description>
 - classic (default): The local scope is only invoked when the key already exists in it.
 - modern: The local scope is always invoked.</description>
 		</attribute>
+		
+		<attribute>
+			<type>object</type>
+			<name>cachedWithin</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		<description>
+possible values are:
+String "request": If original content was created within the current request, cached content data isused.
+a timespan (created with function CreateTimeSpan): If original content date falls within the time span, cached content data isused. 
+
+To use cached data, the function must be called with the exact same arguments.</description>
+    </attribute>
 	</tag>
 	<!-- Graph -->
 	<tag>
@@ -5565,17 +5638,16 @@ no: the function is processed as if it were within a cfsilent tag </description>
 	an absolute URL, including the protocol (http or https) and hostname. It may optionally contain a port
 	number. Port numbers specified in the url attribute override the port attribute.</description>
 		</attribute>
-		
 		<attribute>
 			<type>boolean</type>
-			<name>encoded</name>
+			<name>encodeurl</name>
+			<alias>encoded,encode</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
 			if set to true (default value) URL encodes the value of the attribute "URL" if necessary (no double encoding is happeing).
 			This setting has no influence on the values from httpparam type="url", for this use the attribute "encoded" from httpparam</description>
 		</attribute>
-		
 		<attribute>
 			<type>string</type>
 			<name>compression</name>
@@ -5587,8 +5659,6 @@ no: the function is processed as if it were within a cfsilent tag </description>
 - none (deprecated): use "false" instead
 </description>
 		</attribute>
-		
-		
 		<attribute>
 			<type>string</type>
 			<name>result</name>
@@ -5656,7 +5726,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>multiparttype</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>alias for multiparttype</description>
+			<status>deprecated</status>
+			<description>
+			This attribute has been deprecated, use instead the attribute "multipart".
+			</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -5704,7 +5777,9 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>delimiter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Required for creating a query. Options are a tab or comma. Default is a comma.</description>
+			<description>Used only when creating a query from an http request that returns data in a CSV format. This
+			value specifies the Field delimiter for the CSV data. Only the first character is used. Default is a comma.
+			</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -5857,7 +5932,21 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>type</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The transaction type.</description>
+			<values>body,CGI,cookie,file,form,formfield,header,URL,XML</values>
+			<description>valid values are:
+- header: specifies an HTTP header. 
+- CGI: specifies an HTTP header. encodes the value depending on the attribute "encoded
+- body: specifies the body of the HTTP request.
+- XML: identifies the request as having a content-type of text/xml. Specifies that the value attribute contains the body of the HTTP request. Used to send XML to the destination URL.
+- file: tells Railo to send the contents of the specified file. 
+- URL: specifies a URL query string name-value pair to append to the cfhttp url attribute.
+- form,formField: specifies a form field to send. 
+- cookie: specifies a cookie to send as an HTTP header. 
+			
+			
+			
+			
+			</description>
 		</attribute>
 		<attribute>
 			<type>any</type>
@@ -6053,16 +6142,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<attribute>
 			<type>string</type>
 			<name>structName</name>
+			<alias>result</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the structure to be created.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>result</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Name of the structure to be created (alias for structname).</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -6331,6 +6414,21 @@ both functions must have the same attributes; otherwise
 			<script-support>required</script-support>
 			<description>A logical path to an existing page.</description>
 		</attribute>
+		
+		
+		<attribute>
+			<type>object</type>
+			<name>cachedWithin</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+possible values are:
+String "request": If original content was created within the current request, cached content data isused.
+a timespan (created with function CreateTimeSpan): If original content date falls within the time span, cached content data isused. 
+
+To use cached data, the function must be called with the exact same arguments.
+		</description>
+    	</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>runOnce</name>
@@ -7864,6 +7962,7 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
+			<alias>id</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the name of the lock. Only one request can execute inside a cflock tag with a given
@@ -7891,18 +7990,12 @@ Valid only for cfinput type="text".</description>
 	A read-only lock allows more than one request to read shared data. An exclusive lock allows only one
 	request to read or write to shared data.</description>
 		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>id</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		<description>alias for name</description>
-    </attribute>
 	</tag>
 	<!-- Log -->
 	<tag>
 		<name>Log</name>
 		<tag-class>railo.runtime.tag.Log</tag-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.Log</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Writes a message to a log file.</description>
@@ -7914,7 +8007,14 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>text</name>
-			<required>true</required>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>a exception to log.</description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>exception</name>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The message text to log.</description>
 		</attribute>
@@ -7930,33 +8030,47 @@ Valid only for cfinput type="text".</description>
 			<name>log</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>If you omit the file attribute, specifies the standard log file in which to write the message.
-		Ignored if you specify a file attribute</description>
+			<description>If you omit the file attribute, specifies the log in which to write the message.
+			this references can be defined in the Railo Administrator.
+		Ignored if you specify a file attribute.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>file</name>
 			<required>false</required>
+			<status>deprecated</status>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Message file. Specify only the main part of the filename.
+		<description>Define instead a log reference in the Railo Administrator and use the name of the genrated log with the attribute log.
+		 Specify only the main part of the filename.
             For example, to log to the Testing.log file, specify
             "Testing".
-
             The file must be located in the default log directory. You
             cannot specify a directory path. If the file does not
             exist, it is created automatically, with the suffix .log.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>async</name>
+			<alias>spoolenable</alias>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<default>false</default>
+			<description>only works in combination with the attribute "file", if set to true the file is written in a separate thread.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>type</name>
+			<alias>level</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
-			Type (severity) of the message:
-- information (default)
-- warning
-- error
-- fatal 
+			the following is the log type (level) in decreasing order of severity:
+- fatal: Severe errors that cause premature termination.
+- error: Other runtime errors or unexpected conditions.
+- warn,warning: Use of deprecated APIs, poor use of API, 'almost' errors, other runtime situations that are undesirable or unexpected, but not necessarily "wrong". 
+- info,information (default): Interesting runtime events.
+- debug: Detailed information on the flow through the system.
+- trace:Most detailed information.
 			</description>
 		</attribute>
 		<attribute>
@@ -8101,6 +8215,15 @@ Valid only for cfinput type="text".</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Collection to loop over</description>
 		</attribute>
+		
+		<attribute>
+			<type>struct</type>
+			<name>struct</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>struct to loop over</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>item</name>
@@ -8369,22 +8492,21 @@ Railo uses the number of characters in the file.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>spoolenable</name>
+			<name>async</name>
+			<alias>spoolenable</alias>
+			<default>true</default>
 			<required>false</required>
+			<default>true</default>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies whether to spool mail or always send it
-            Immediately. Overrides the Railo Administrator spool mail messages to disk for delivery setting.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>tls</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for usetls</description>
+			<description>if set to true, the mail is sent asynchronously by the Railo Task manager (with multiple tries),
+			if set to false the mail is sent in the same thread that executes the request, which is useful for troubleshooting because you get an error message if there is one.
+			This setting overrides the setting with the same name in the Railo Administrator.
+			This attribute replaces the old "spoolenable" attribute which is still supported as an alias.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>usetls</name>
+			<alias>tls,starttls</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Whether to use Transport Level Security.</description>
@@ -8401,31 +8523,11 @@ Railo uses the number of characters in the file.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
-			<name>starttls</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for useTls</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>ssl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for usessl</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
 			<name>usessl</name>
+			<alias>ssl,secure</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Whether to use Secure Sockets Layer.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>secure</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>alias for ssl</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -9493,7 +9595,6 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<type>boolean</type>
 			<name>preserveCase</name>
 			<required>false</required>
-			<status>hidden</status>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
 declare how variable keys defined by dot notation are handled.
@@ -10007,18 +10108,16 @@ sct["bracketNotation"] --> keyname: "bracketNotation"
 			<description>This is the age of which the query data can be</description>
 		</attribute>
 		<attribute>
-			<type>timeSpan</type>
+			<type>object</type>
 			<name>cachedWithin</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Timespan, using the CreateTimeSpan function. If original
-            query date falls within the time span, cached query data is
-            used. CreateTimeSpan defines a period from the present,
-            back. Takes effect only if query caching is enabled in the
-            Administrator.
+		<description>
+possible values are:
+String "request": If original query was created within the current request, cached query data isused.
+a timespan (created with function CreateTimeSpan): If original query date falls within the time span, cached query data isused. 
 
-            To use cached data, the current query must use the same SQL
-            statement, data source, query name, user name, and password.</description>
+To use cached data, the current query must use the same SQL statement, data source, query name, user name, and password.</description>
     </attribute>
 		<attribute>
 			<type>string</type>
@@ -10106,9 +10205,8 @@ sct["bracketNotation"] --> keyname: "bracketNotation"
 			<type>object</type>
 			<name>params</name>
 			<required>false</required>
-			<status>hidden</status>
 			<rtexprvalue>true</rtexprvalue>
-			<description>experimentell</description>
+			<description></description>
 		</attribute>
 		
 	</tag>
@@ -11504,6 +11602,60 @@ dWord: creates a value of 0 (zero)</description>
 			if set to false the content to body is ignored and not disabled when a failure in the body of the tag occur.</description>
 		</attribute>
 	</tag>
+	
+	<!-- SmartCache -->
+	<tag>
+		<name>SmartCache</name>
+		<tag-class>railo.runtime.tag.SmartCache</tag-class>
+		<body-content>empty</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<handle-exception>false</handle-exception>
+		<status>hidden</status>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<description></description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>action</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>type</name>
+			<values>include,query,function</values>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>type of the data you need, if not defined all types are returned</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>returnvariable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>entryhash</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>timespan</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+	</tag>
+	
+	
 	<!-- Slider -->
 	<tag>
 		<name>Slider</name>
@@ -11823,20 +11975,21 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>This is the age of which the query data can be</description>
 		</attribute>
+    
 		<attribute>
-			<type>timeSpan</type>
+			<type>object</type>
 			<name>cachedWithin</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Timespan, using the CreateTimeSpan function. If original
-            query date falls within the time span, cached query data is
-            used. CreateTimeSpan defines a period from the present,
-            back. Takes effect only if query caching is enabled in the
-            Administrator.
+		<description>
+possible values are:
+String "request": If original query was created within the current request, cached query data isused.
+a timespan (created with function CreateTimeSpan): If original query date falls within the time span, cached query data isused. 
 
-            To use cached data, the current query must use the same SQL
-            statement, data source, query name, user name, and password.</description>
+To use cached data, the current query must use the same SQL statement, data source, query name, user name, and password.</description>
     </attribute>
+    
+    
 		<attribute>
 			<type>string</type>
 			<name>cachename</name>
@@ -12617,6 +12770,7 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
 		<attribute>
 			<type>any</type>
 			<name>retryInterval</name>
+			<alias>retryIntervall</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>when type task, this attribute define a execution plan for additional tries of execution.
@@ -12632,14 +12786,6 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
 
 			in this case Railo replay the thread for maximum of 10 times, when the execution fails, 5 times every 5 seconds, then 5 times every 10 seconds.
 			</description>
-		</attribute>
-		<attribute>
-			<type>any</type>
-			<name>retryIntervall</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<status>deprecated</status>
-			<description>deprecated, alias for retryInterval</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -13232,22 +13378,13 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
 		<attribute>
 			<type>string</type>
 			<name>var</name>
+			<alias>variable</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The name of a simple or complex variable to display.
 
             Useful for displaying a temporary value, or a value that
             does not display on any CFM page.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>variable</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>The name of a simple or complex variable to display.
-
-            Useful for displaying a temporary value, or a value that
-            does not display on any CFM page (alias for attribute "var").</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -13415,23 +13552,10 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
 		<attribute>
 			<type>boolean</type>
 			<name>playlistThumbnails</name>
+			<alias>thumbs,thumbnails</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>using Thumbnails in playlist or not</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>thumbnails</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>using Thumbnails in playlist or not (alias for playlistThumbnails)</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>thumbs</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>using Thumbnails in playlist or not (alias for playlistThumbnails)</description>
 		</attribute>
 
 
@@ -14208,13 +14332,22 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             </description>
     </attribute>
 		<attribute>
-			<type>string</type>
-			<name>filter</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		<description>File filter applied to the action. The action
-            applies to all files in the pathname specified that match the filter. </description>
-    </attribute>
+            <type>any</type>
+            <name>filter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional filter. Can be either a wildcard filter,
+            e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
+            whether that item should be included in the result or not.</description>
+        </attribute>
+        <attribute>
+            <type>string</type>
+            <name>filterDelimiters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+            Default is the pipe "|" character.</description>
+        </attribute>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -14356,13 +14489,22 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
             ZIP or JAR file. </description>
     </attribute>
 		<attribute>
-			<type>string</type>
-			<name>filter</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		<description>File filter applied to the action. For example, for the zip action,
-            all the files in the source directory matching the filter are zipped. </description>
-    </attribute>
+            <type>any</type>
+            <name>filter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional filter. Can be either a wildcard filter,
+            e.g. "m*", or a UDF/Closure which accepts the file/directory name and returns a boolean value to indicate
+            whether that item should be included in the result or not.</description>
+        </attribute>
+        <attribute>
+            <type>string</type>
+            <name>filterDelimiters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Optional when passing a filter pattern. This value is used as a delimiter for the patterns.
+            Default is the pipe "|" character.</description>
+        </attribute>
 		<attribute>
 			<type>string</type>
 			<name>prefix</name>

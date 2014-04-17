@@ -12,15 +12,9 @@ import javax.servlet.ServletContext;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
-import railo.commons.io.log.LogResource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.ApplicationListener;
@@ -314,45 +308,6 @@ public final class ConfigWebUtil {
         return has;
     }
 
-    /**
-     * loads log
-     * @param configServer 
-     * @param config 
-     * @param strLogger
-     * @param hasAccess 
-     * @param logLevel 
-     * @return log
-     * @throws IOException
-    */
-    public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String strLogger, boolean hasAccess, int logLevel) throws IOException {
-        if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
-    	//boolean isCS=config instanceof ConfigServer;
-        if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
-        	return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
-        }
-        return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
-    }
-    private static LogAndSource getLogAndSource(Config config, String strLogger, int logLevel)  {
-        if(strLogger==null) return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),"");
-        
-        // File
-        strLogger=translateOldPath(strLogger);
-        Resource file=ConfigWebUtil.getFile(config, config.getConfigDir(),strLogger, ResourceUtil.TYPE_FILE);
-        if(file!=null && ResourceUtil.canRW(file)) {
-            try {
-				return new LogAndSourceImpl(new LogResource(file,logLevel,config.getResourceCharset()),strLogger);
-			} catch (IOException e) {
-				SystemOut.printDate(config.getErrWriter(),e.getMessage());
-			}
-        }
-        
-        if(file==null)SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], invalid path");
-        else SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], no write access");
-    
-        return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
-    
-    }
-
     public static String translateOldPath(String path) {
         if(path==null) return path;
         if(path.startsWith("/WEB-INF/railo/")) {
@@ -363,7 +318,7 @@ public final class ConfigWebUtil {
     }
 
 	public static Object getIdMapping(Mapping m) {
-		StringBuffer id=new StringBuffer(m.getVirtualLowerCase());
+		StringBuilder id=new StringBuilder(m.getVirtualLowerCase());
         if(m.hasPhysical())id.append(m.getStrPhysical());
         if(m.hasArchive())id.append(m.getStrPhysical());
         return m.toString().toLowerCase();
@@ -473,5 +428,22 @@ public final class ConfigWebUtil {
     		default: return defaultValue;
     	}
 	}
-    
+
+	public static short toScopeCascading(String type, short defaultValue) {
+		if(StringUtil.isEmpty(type)) return defaultValue;
+        if(type.equalsIgnoreCase("strict")) return Config.SCOPE_STRICT;
+        else if(type.equalsIgnoreCase("small")) return Config.SCOPE_SMALL;
+        else if(type.equalsIgnoreCase("standard"))return Config.SCOPE_STANDARD;
+        else if(type.equalsIgnoreCase("standart"))return Config.SCOPE_STANDARD;
+        return defaultValue;
+	}
+
+	public static String toScopeCascading(short type, String defaultValue) {
+		switch(type){
+			case Config.SCOPE_STRICT: return "strict";
+			case Config.SCOPE_SMALL: return "small";
+			case Config.SCOPE_STANDARD: return "standard";
+			default: return defaultValue;
+		}
+	}
 }

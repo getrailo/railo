@@ -13,19 +13,19 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.query.QueryPlanCache;
 
+import railo.commons.io.log.Log;
 import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMSession;
-import railo.runtime.orm.naming.CFCNamingStrategy;
-import railo.runtime.orm.naming.DefaultNamingStrategy;
+import railo.runtime.orm.hibernate.naming.CFCNamingStrategy;
+import railo.runtime.orm.hibernate.naming.DefaultNamingStrategy;
+import railo.runtime.orm.hibernate.naming.SmartNamingStrategy;
 import railo.runtime.orm.naming.NamingStrategy;
-import railo.runtime.orm.naming.SmartNamingStrategy;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
@@ -93,8 +93,8 @@ public class SessionFactoryData {
 		factory=configuration.buildSessionFactory();
 	}
 
-	public void setConfiguration(String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
-		this.configuration=HibernateSessionFactory.createConfiguration(mappings,dc,this);
+	public void setConfiguration(Log log,String mappings, DatasourceConnection dc) throws PageException, SQLException, IOException {
+		this.configuration=HibernateSessionFactory.createConfiguration(log,mappings,dc,this);
 	}
 	
 	public NamingStrategy getNamingStrategy() throws PageException {
@@ -152,14 +152,14 @@ public class SessionFactoryData {
 		CFCInfo info = cfcs!=null? cfcs.get(entityName.toLowerCase()):null;
 		if(info!=null) {
 			cfc=info.getCFC();
-			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
+			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		if(tmpList!=null){
 			Iterator<Component> it = tmpList.iterator();
 			while(it.hasNext()){
 				cfc=it.next();
 				if(HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
-					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
+					return unique?(Component)cfc.duplicate(false):cfc;
 			}
 		}
 		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+entityName+"] does not exist","");
@@ -190,7 +190,7 @@ public class SessionFactoryData {
 				cfc=it2.next();
 				names[index++]=cfc.getName();
 				if(HibernateUtil.isEntity(ormConf,cfc,cfcName,name)) //if(cfc.equalTo(name))
-					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
+					return unique?(Component)cfc.duplicate(false):cfc;
 			}
 		}
 		else {
@@ -201,7 +201,7 @@ public class SessionFactoryData {
 				entry=it.next();
 				cfc=entry.getValue().getCFC();
 				if(HibernateUtil.isEntity(ormConf,cfc,cfcName,name)) //if(cfc.instanceOf(name))
-					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
+					return unique?(Component)cfc.duplicate(false):cfc;
 				
 				//if(name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
 				//	return cfc;
@@ -213,7 +213,7 @@ public class SessionFactoryData {
 		CFCInfo info = cfcs.get(name.toLowerCase());
 		if(info!=null) {
 			cfc=info.getCFC();
-			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
+			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
 		throw ExceptionUtil.createException((ORMSession)null,null,"entity ["+name+"] "+(Util.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+CommonUtil.toList(names, ", ")+"]","");

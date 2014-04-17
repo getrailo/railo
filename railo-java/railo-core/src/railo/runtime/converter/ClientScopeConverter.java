@@ -18,7 +18,7 @@ public class ClientScopeConverter {
 		Struct sct=new StructImpl();
 		ParserString ps=new ParserString(str);
 		
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		String key=null;
 		while(!ps.isAfterLast()) {
 			if(ps.isCurrent('#')) {
@@ -32,12 +32,12 @@ public class ClientScopeConverter {
 				}
 				else {
 					sct.setEL(key, sb.toString());
-					sb=new StringBuffer();
+					sb=new StringBuilder();
 				}
 			}
 			else if(ps.isCurrent('=')) {
 				key=sb.toString();
-				sb=new StringBuffer();
+				sb=new StringBuilder();
 			}
 			else sb.append(ps.getCurrent());
 			ps.next();
@@ -75,7 +75,7 @@ public class ClientScopeConverter {
 	}
 	
 	public static String serialize(Struct sct, Set ignoreSet) throws ConverterException {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Iterator it=sct.keyIterator();
         boolean doIt=false;
         Object oKey;
@@ -94,7 +94,7 @@ public class ClientScopeConverter {
 
 	private static String escape(String str) {
 		int len=str.length();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		char c;
 		for(int i=0;i<len;i++) {
 			c=str.charAt(i);

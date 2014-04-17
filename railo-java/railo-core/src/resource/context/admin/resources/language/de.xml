@@ -12,7 +12,7 @@
 	<data key="services.update.type_auto">Automatisch</data>
 	<data key="services.update.removerun">Patches entfernen</data>
 	<data key="services.update.exedesc">Spielen Sie die aktuellsten Pacthes für Ihre Version ein. Nach einem erfolgten Update, müssen Sie sich neu in den Administrator einloggen.</data>
-	<data key="services.update.update">Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {avaiable}</data>
+	<data key="services.update.update">Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {available}</data>
 	<data key="services.update.infotitle">Info</data>
 	<data key="services.update.restartdesc">Hier können Sie Railo neu starten. Nach erfolgtem Restart werden bestehende Sitzungen entfernt. Sie müssen sich in den Administrator erneut einloggen.</data>
 	<data key="services.update.exe">Update ausführen</data>
@@ -78,7 +78,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="customtags.archive">Archiv</data>
 	<data key="customtags.primary">Primär</data>
 	<data key="customtags.customtagdeepsearch">Untergeordnete Verzeichnisse einbeziehen</data>
-	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach Customtags durchsuchen (für Archive nicht unterstützt)</data>
+	<data key="customtags.customtagdeepsearchdesc">Untergeordnete Verzeichnisse nach custom tags durchsuchen.</data>
 	<data key="customtags.archivemissing">Bitte geben Sie einen Wert für den Archivnamen an. (Zeile </data>
 	<data key="customtags.customtaglocalsearchdesc">Lokales Verzeichnisse aus welchen der Customtag aufgerufen wird, nach dem Customtag durchsuchen</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -115,6 +115,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.language">Sprache</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
+	<data key="menu.server.logging">Logging</data>
+	<data key="menu.server.export">Export</data>
 	<data key="menu.services.label">Dienste</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -412,6 +414,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="general.seconds">Sekunden</data>
 	<data key="general.days">Tage</data>
 	<data key="general.no">Nein</data>
+	<data key="general.elements">Element(e)</data>
+
 	<data key="search.directorypath">Verzeichnispfad</data>
 	<data key="search.mapped">Mapped</data>
 	<data key="search.searchthecollection">Collection durchsuchen</data>
@@ -462,7 +466,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
 	<data key="components.componentmappingsearch">Mappings einbeziehen</data>
 	<data key="components.componentDeepSearch">Unterverzeichnisse durchsuchen</data>
-	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden. Dies funktioniert nicht für Archive!</data>
+	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden.</data>
 	<data key="components.useshadowdescription">Definiert, ob eine Komponente einen eigenständigen &quot;Variables&quot; Scope parallel zum &quot;this&quot; Scope hat (CFML Standard) oder nicht. Wenn nicht, dann werden alle nicht spezifizierten Variablen in den &quot;this&quot; scope geschrieben.</data>
 	<data key="components.server">Definert Komponenteneinstellungen, die als Standartwert für alle Webs gelten.</data>
 	<data key="components.useshadow">Allow Variable Scope</data>
@@ -563,6 +567,8 @@ Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template
 	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
 	<data key="debug.settings.tracing"> Tracing </data>
 	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.dump"> Dump </data>
+	<data key="debug.settings.dumpDesc">Select this option to enable output produced with help of the tag cfdump and send to debugging.</data>
 	<data key="debug.settings.timer"> Timer </data>
 	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
 	<data key="debug.settings.timer"> Timer </data>
@@ -598,14 +604,14 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 
 	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
 	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
-	<data key="setting.supressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
-	<data key="setting.supressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
+	<data key="setting.suppressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
+	<data key="setting.suppressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
 	Dieses Setting wird ignoriert wenn es zwischen den Tags ein andere Ausgabe als White-Spaces hat.</data>
-	<data key="setting.templatecache">Template Cache</data>
-	<data key="setting.templatecacheclear">Template Cache leeren</data>
+	<data key="setting.templatecache">Page Pool Cache</data>
 	<data key="setting.querycache">Query Cache</data>
 	<data key="setting.web">Kontrolle der Ausgabe von Railo</data>
-	<data key="setting.templatecachecleardesc">Drücken Sie den Button oberhalb um den Template Cache zu leeren.</data>
+	<data key="setting.templatecacheclear">Page Pool Cache leeren</data>
+	<data key="setting.templatecachecleardesc">Drücken Sie den Button oberhalb um den Page Pool Cache zu leeren. Dieser Cache wird verwendet um template Objekte (Source Code) zu cachen.</data>
 	<data key="setting.inspecttemplate">Templates inspizieren (CFM/CFC)</data>
 	<data key="setting.componentcachecleardesc">Drücken Sie den Button oberhalb um den Komponentenpfad Cache zu leeren.</data>
 	<data key="setting.ctcachecleardesc">Drücken Sie den Button oberhalb um den Customtag Pfad Cache zu leeren.</data>
@@ -634,7 +640,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.inspecttemplatealwaysdesc">
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
 </data>
-	<data key="setting.querycacheclearcount">Query Cache leeren ( {count} Element(e) )</data>
+	<data key="setting.querycacheclearcount">Query Cache leeren</data>
 	<data key="setting.inspecttemplateneverdesc">
 When checked, any requested found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.
 </data>
@@ -645,9 +651,9 @@ When checked, any requested files will be inspected only once for potential upda
 </data>
 	<data key="setting.whitespace">Whitespace management</data>
 	<data key="setting.whitespacedescription">Unterdrückt alle Whitespace (Leerzeichen, Tabs und Zeilenumbrüche), die in der Ausgabe einem Whitespace folgen</data>
-	<data key="setting.templatecacheclearcount">Template Cache leeren ( {count} Element(e) )</data>
-	<data key="setting.componentcacheclear">Komponentenpfad Cache leeren ( {count} Element(e) )</data>
-	<data key="setting.ctcacheclear">Customtag Pfad Cache leeren ( {count} Element(e) )</data>
+	<data key="setting.templatecacheclearcount">Page Pool Cache leeren</data>
+	<data key="setting.componentcacheclear">Komponentenpfad Cache leeren</data>
+	<data key="setting.ctcacheclear">Customtag Pfad Cache leeren</data>
 	<data key="scopes.sessiontimeoutdescription">Legt die Zeit fest, wie lange Railo für inaktive Sessions den Session-Scope erhält. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client Cookies</data>
@@ -657,7 +663,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.applicationtimeoutdescription">Legt fest wielange Client Scope Daten behalten werden bevor sie gelöscht werden.</data>
 	<data key="scopes.clienttimeout">Client Timeout</data>
 	<data key="scopes.cascadetoresultsetdescription">Wenn eine Variable keinen vorangestellten Scope hat (Beispiel: #myVar# anstelle von #variables.myVar#), kann Railo (nach dem CFML Standard) auch verfügbare Query-Resultsets durchsuchen.</data>
-	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Cgi, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
+	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions erlauben es Railo Sessions über einen J2EE Server-Cluster zu verteilen. Wenn Sie diese Einstellung ändern verlieren Sie die aktuelle Session und müssen sich erneut einloggen.</data>
 	<data key="scopes.web">Hier können Sie festlegen, wie Railo Scopes abarbeitet.</data>
 	
@@ -761,6 +767,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.delete">löschen</data>
 	<data key="buttons.reset">zurücksetzen</data>
 	<data key="buttons.repair">reparieren</data>
+	<data key="buttons.export">export</data>
 	<data key="schedule.executiontimedescmonthly">Definert die Zeit bei welcher der Task monatlich ausgeführt werden soll.</data>
 	<data key="schedule.username">Username</data>
 	<data key="schedule.passworddescription">Passwort, um auf eine geschützte URL zuzugreifen.</data>
@@ -835,6 +842,11 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.executiondesconce">Dieser Task wird nur einmal zu einer bestimmten Zeit ausgeführt.</data>
 	<data key="schedule.usernamedescription">Username, um auf eine geschützte URL zuzugreifen.</data>
 	<data key="schedule.startdatedesc">Definert den Tag an welchem der Task zu ersten mal ausgeführt werden soll.</data>
+	
+	<data key="settings.exportAppCFC">Export Application.cfc</data>
+	<data key="settings.exportAppCFCDesc">Einstellungen dieses Web Context als Application.cfc Template exportieren, natürlich beinhaltet dies nur Einstellungen welche im Application.cfc möglich sind.</data>
+	
+
 	<data key="settings.datasourcesettings">Einstellungen</data>
 	<data key="settings.datasource.databaseName">Datenbank (Name/Version)</data>
 	<data key="settings.datasource.driverName">Treiber (Name/Version)</data>
@@ -883,6 +895,9 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
 	<data key="settings.cache.defaulttypeFunction">Function</data>
 	<data key="settings.cache.defaulttypeFunctionDesc">Diese Cache Connection wird für für das cachen von cffunction/function Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">Diese Cache Connection wird für für das cachen von cfinclude verwendet.</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>
@@ -891,7 +906,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
-	<data key="settings.cache.Buttons.default">set as default</data>
+	<data key="settings.cache.Buttons.default">als default Wert</data>
+	
 	
 	
 	<data key="settings.dbValidate">Validate</data>

@@ -4,6 +4,7 @@
 package railo.runtime.functions.dateTime;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.JREDateTimeUtil;
@@ -28,7 +29,7 @@ public final class DateCompare extends BIF {
 		Calendar cLeft=JREDateTimeUtil.getThreadCalendar(tz);
 		cLeft.setTime(left);
 		
-		Calendar cRight=JREDateTimeUtil.newInstance(tz);
+		Calendar cRight=JREDateTimeUtil.newInstance(tz,Locale.US);
 		cRight.setTime(right);
 		
 		// TODO WEEEK

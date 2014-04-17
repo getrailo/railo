@@ -8,7 +8,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Struct;
 
 
-
+// FUTURE extend interface task
 public interface SpoolerTask extends Serializable {
 	
 	public String getId();

@@ -10,7 +10,7 @@ public class RemoteException extends PageExceptionImpl {
 		
 	}
 	private static String createMessage(Throwable t) {
-		StringBuffer message=new StringBuffer(t.getMessage());
+		StringBuilder message=new StringBuilder(t.getMessage());
 		if(t instanceof IPageException) {
 			IPageException pe=(IPageException) t;
 			String detail=pe.getDetail();

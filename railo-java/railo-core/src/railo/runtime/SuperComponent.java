@@ -361,7 +361,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 
 	@Override
 	public Set keySet() {
-		return StructUtil.keySet(this);
+		return StructUtil.keySet(this,false);
 	}
 
 
@@ -465,5 +465,108 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     }
-	
+
+	@Override
+	public boolean isPersistent() {
+		return comp.isPersistent();
+	}
+
+	@Override
+	public boolean isAccessors() {
+		return comp.isAccessors();
+	}
+
+	@Override
+	public void setEntity(boolean entity) {
+		comp.setEntity(entity);
+	}
+
+	@Override
+	public boolean isEntity() {
+		return comp.isEntity();
+	}
+
+	@Override
+	public Component getBaseComponent() {
+		return comp.getBaseComponent();
+	}
+
+
+	@Override
+	public Set<Key> keySet(int access) {
+		return comp.keySet(access);
+	}
+
+	@Override
+	public Object getMetaStructItem(Key name) {
+		return comp.getMetaStructItem(name);
+	}
+
+
+	@Override
+	public Object call(PageContext pc, int access, Key name, Object[] args) throws PageException {
+		return comp.call(pc, access, name, args);
+	}
+
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, int access, Key name, Struct args) throws PageException {
+		return comp.callWithNamedValues(pc, access, name, args);
+	}
+
+	@Override
+	public int size(int access) {
+		return comp.size();
+	}
+
+	@Override
+	public Key[] keys(int access) {
+		return comp.keys(access);
+	}
+
+
+	@Override
+	public Iterator<Key> keyIterator(int access) {
+		return comp.keyIterator(access);
+	}
+
+	@Override
+	public Iterator<String> keysAsStringIterator(int access) {
+		return comp.keysAsStringIterator(access);
+	}
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator(int access) {
+		return comp.entryIterator(access);
+	}
+
+	@Override
+	public Iterator<Object> valueIterator(int access) {
+		return comp.valueIterator(access);
+	}
+
+	@Override
+	public Object get(int access, Key key) throws PageException {
+		return comp.get(access, key);
+	}
+
+	@Override
+	public Object get(int access, Key key, Object defaultValue) {
+		return comp.get(access, key, defaultValue);
+	}
+
+	@Override
+	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
+		return toDumpData(pageContext, maxlevel, dp, access);
+	}
+
+	@Override
+	public boolean contains(int access, Key name) {
+		return comp.contains(access, name);
+	}
+
+	@Override
+	public Member getMember(int access, Key key, boolean dataMember, boolean superAccess) {
+		return comp.getMember(access, key, dataMember, superAccess);
+	}
 }

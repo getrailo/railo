@@ -197,6 +197,9 @@ public class aprint {
 			IOUtil.closeEL(os);
 		}
 	}
+	public static void _(Object o, boolean d) {
+		_(System.out, o);
+	}
 	public static void o(Object o) {
 		_(System.out, o);
 	}

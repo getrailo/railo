@@ -2,12 +2,13 @@ package railo.transformer.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.ClassUtil;
-import railo.runtime.SourceFile;
+import railo.runtime.PageSource;
 import railo.transformer.bytecode.Position;
 
 /**
@@ -44,9 +45,9 @@ public final class CFMLString {
 	/**
 	 * Field <code>file</code>
 	 */
-	protected SourceFile sf;
+	protected PageSource ps;
 
-	private String charset;
+	private Charset charset;
 
 	private boolean writeLog;
 
@@ -56,16 +57,16 @@ public final class CFMLString {
 
 	
 	
-	public CFMLString(SourceFile sf,String charset,boolean writeLog) throws IOException {
+	public CFMLString(PageSource ps,Charset charset,boolean writeLog) throws IOException {
 		this.writeLog=writeLog;
 		this.charset=charset;
-		this.sf=sf;
-		this.source=sf.getPhyscalFile().getAbsolutePath();
+		this.ps=ps;
+		this.source=ps.getPhyscalFile().getAbsolutePath();
 		String content;
 		InputStream is=null;
 		try {
-			is = IOUtil.toBufferedInputStream(sf.getPhyscalFile().getInputStream());
-			if(ClassUtil.isBytecode(is))throw new AlreadyClassException(sf.getPhyscalFile());
+			is = IOUtil.toBufferedInputStream(ps.getPhyscalFile().getInputStream());
+			if(ClassUtil.isBytecode(is))throw new AlreadyClassException(ps.getPhyscalFile());
 			content=IOUtil.toString(is,charset);
 			
 		}
@@ -81,13 +82,13 @@ public final class CFMLString {
 	 * @param text
 	 * @param charset
 	 * @param writeLog
-	 * @param sf
+	 * @param ps
 	 */
-	public CFMLString(String text,String charset,boolean writeLog,SourceFile sf) {
+	public CFMLString(String text,Charset charset,boolean writeLog,PageSource ps) {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=writeLog;
-		this.sf=sf;
+		this.ps=ps;
 	}
 
 	/**
@@ -95,7 +96,7 @@ public final class CFMLString {
 	 * @param text
 	 * @param charset
 	 */
-	public CFMLString(String text,String charset) {
+	public CFMLString(String text,Charset charset) {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=false;
@@ -717,7 +718,7 @@ public final class CFMLString {
 	* @return Untermenge als CFMLString
 	*/
    public CFMLString subCFMLString(int start, int count) {
-   		return new CFMLString(String.valueOf(text,start,count),charset,writeLog,sf);
+   		return new CFMLString(String.valueOf(text,start,count),charset,writeLog,ps);
    		
    }
 	
@@ -754,6 +755,10 @@ public final class CFMLString {
 	
 
 	public Position getPosition() {
+		return getPosition(pos);
+	}
+	
+	public Position getPosition(int pos) {
 		int line=0;
 		int posAtStart=0;
 		for(int i=0;i<lines.length;i++) {
@@ -765,8 +770,6 @@ public final class CFMLString {
 		}
 		if(line==0)
 			throw new RuntimeException("syntax error");
-		
-		
 		
 		int column=pos-posAtStart;
 		
@@ -903,8 +906,8 @@ public final class CFMLString {
 	 * falls dies nicht aud einem File stammt wird null zurueck gegeben.
 	 * @return source Quelle des CFML Code.
 	 */
-	public SourceFile getSourceFile() {
-		return sf;
+	public PageSource getPageSource() {
+		return ps;
 	}
 
 	/**
@@ -918,7 +921,7 @@ public final class CFMLString {
 	}
 
 	public String getCharset() {
-		return charset;
+		return charset.name(); // FUTURE return Charset
 	}
 
 

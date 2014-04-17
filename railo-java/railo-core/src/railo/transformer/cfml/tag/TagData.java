@@ -13,15 +13,12 @@ import railo.transformer.util.CFMLString;
 public class TagData extends Data {
 	
 	private SimpleExprTransformer set;
-	public final TagLib[][] tlibs;//=new TagLib[][]{null,new TagLib[0]};
 	
-    public TagData(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings,Page page) {
-		super(page,cfml,new EvaluatorPool(),settings,flibs,scriptTags);
-		this.tlibs = tlibs;
+	public TagData(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings,Page page) {
+		super(page,cfml,new EvaluatorPool(),settings,tlibs,flibs,scriptTags);
 	}
-    public TagData(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,Boolean dotNotationUpperCase,Page page) {
-		super(page,cfml,new EvaluatorPool(),TransfomerSettings.toSetting(page.getConfig(),dotNotationUpperCase),flibs,scriptTags);
-		this.tlibs = tlibs;
+	public TagData(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,Boolean dotNotationUpperCase,Page page) {
+		super(page,cfml,new EvaluatorPool(),TransfomerSettings.toSetting(page.getPageSource().getMapping(),dotNotationUpperCase),tlibs,flibs,scriptTags);
 	}
 	
 	public SimpleExprTransformer getSimpleExprTransformer() {

@@ -7,15 +7,14 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.op.Caster;
 
 public class ImageFlip {
 	public static String call(PageContext pc, Object name) throws PageException {
 		return call(pc,name,"vertical");
 	}
 	public static String call(PageContext pc, Object name, String strTranspose) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		
 		strTranspose=strTranspose.toLowerCase().trim();
 		TransposeType transpose = TransposeDescriptor.FLIP_VERTICAL;

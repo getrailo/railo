@@ -42,11 +42,6 @@ public final class DateImpl extends  Date implements SimpleValue {
 	
 	public DateImpl(java.util.Date date) {
 		super(date.getTime());
-		/*if(date instanceof Localized) {
-			Localized l=(Localized) date;
-			this.timezone=l.getTimezone();
-		}
-		else timezone=ThreadLocalPageContext.getTimeZone();*/
 	}
 
 	@Override
@@ -55,6 +50,11 @@ public final class DateImpl extends  Date implements SimpleValue {
         	railoFormatter.setTimeZone(ThreadLocalPageContext.getTimeZone());
             return "{d '"+railoFormatter.format(this)+"'}";
         }
+	}
+	
+	@Override
+	public String toString() {
+		return castToString();
 	}
 
     @Override

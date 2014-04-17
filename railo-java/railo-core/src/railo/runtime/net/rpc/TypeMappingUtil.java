@@ -4,8 +4,11 @@ import javax.xml.namespace.QName;
 import javax.xml.rpc.encoding.TypeMapping;
 import javax.xml.rpc.encoding.TypeMappingRegistry;
 
+import org.apache.axis.encoding.ser.ArrayDeserializerFactory;
+import org.apache.axis.encoding.ser.ArraySerializerFactory;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import org.apache.axis.server.AxisServer;
 
 import railo.runtime.net.rpc.server.StringDeserializerFactory;
 import railo.runtime.net.rpc.server.StringSerializerFactory;
@@ -26,16 +29,42 @@ public class TypeMappingUtil {
 				RPCConstants.STRING_QNAME,
 				new StringSerializerFactory(String.class, RPCConstants.STRING_QNAME),
 				new StringDeserializerFactory(String.class, RPCConstants.STRING_QNAME));
+		
+		
 	}
 	
 	public static void registerBeanTypeMapping(javax.xml.rpc.encoding.TypeMapping tm, Class clazz, QName qName) {
 		if(tm.isRegistered(clazz, qName)) return;
-		tm.register(
+		
+		if(clazz.isArray()) {
+			QName ct=AxisCaster.toComponentType(qName,null);
+			if(ct!=null) {
+				tm.register(
+	    			clazz, 
+	        		qName, 
+	    			new ArraySerializerFactory(clazz, ct), 
+	    			new ArrayDeserializerFactory(ct));
+				return;
+			}
+		}
+		
+			tm.register(
     			clazz, 
         		qName, 
     			new BeanSerializerFactory(clazz, qName), 
     			new BeanDeserializerFactory(clazz, qName));
 		
+		
+	}
+
+	public static org.apache.axis.encoding.TypeMapping getServerTypeMapping(AxisServer axisServer) {
+		org.apache.axis.encoding.TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
+		return reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
+		
+	}
+	public static org.apache.axis.encoding.TypeMapping getServerTypeMapping(TypeMappingRegistry reg) {
+		//org.apache.axis.encoding.TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
+		return ((org.apache.axis.encoding.TypeMappingRegistry)reg).getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
 		
 	}
 	

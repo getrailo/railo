@@ -123,17 +123,17 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
     
     @Override
     public double castToDoubleValue(double defaultValue) {
-        return Caster.toDoubleValue(value,defaultValue);
+        return Caster.toDoubleValue(value,true,defaultValue);
     }
     
 	@Override
 	public DateTime castToDateTime() throws PageException {
-		return DateCaster.toDateSimple(value,true,true,null);
+		return DateCaster.toDateSimple(value,DateCaster.CONVERTING_TYPE_OFFSET,true,null);
 	}
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateSimple(value,true,true,null,defaultValue);
+        return DateCaster.toDateSimple(value,DateCaster.CONVERTING_TYPE_OFFSET,true,null,defaultValue);
     }
 
 	@Override

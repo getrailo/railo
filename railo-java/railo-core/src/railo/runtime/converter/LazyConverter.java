@@ -10,7 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
-import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.SimpleValue;
 import railo.runtime.type.Struct;
 
@@ -54,19 +54,16 @@ public class LazyConverter extends ConverterSupport {
 
 
 	private static String serializeStruct(Struct struct, Set<Object> done) {
-		StringBuffer sb=new StringBuffer("{");
-		Iterator it = struct.keyIterator();
-		Object key;
+		StringBuilder sb=new StringBuilder("{");
+		Iterator<Key> it = struct.keyIterator();
+		Key key;
 		boolean notFirst=false;
 		while(it.hasNext()) {
 			if(notFirst)sb.append(", ");
 			key=it.next();
 			sb.append(key);
 			sb.append("={");
-			if(key instanceof String)
-				sb.append(serialize(struct.get((String)key,null),done));
-			else
-				sb.append(serialize(struct.get((Collection.Key)key,null),done));
+			sb.append(serialize(struct.get(key,null),done));
 			sb.append("}");
 			notFirst=true;
 		}
@@ -75,7 +72,7 @@ public class LazyConverter extends ConverterSupport {
 	}
 
 	private static String serializeArray(Array array, Set<Object> done) {
-		StringBuffer sb=new StringBuffer("[");
+		StringBuilder sb=new StringBuilder("[");
 		int len=array.size();
 		for(int i=1;i<=len;i++){
 			if(i>1)sb.append(", ");

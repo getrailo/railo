@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
@@ -43,7 +44,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 
 	@Override
 	public void initialize(PageContext pc) {
-        if(encoding==null)encoding=pc.getConfig().getWebCharset();
+        if(encoding==null)encoding=((PageContextImpl)pc).getWebCharset().name();
         if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_URL)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
@@ -61,7 +62,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
             		long timeout = Caster.toLongValue(o,-1);
             		if(timeout!=-1)pc.setRequestTimeout(timeout*1000);
             	}
-            	Caster.toDoubleValue(o,-1);
+            	Caster.toDoubleValue(o,false,-1);
             }
 		}
         catch (Exception e) {}

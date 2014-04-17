@@ -16,6 +16,8 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
+import railo.runtime.op.Caster;
+import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.UDFUtil;
 
 public final class UDFPropertiesImpl implements UDFProperties {
@@ -41,7 +43,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	public int returnFormat;
 	public Set<Collection.Key> argumentsSet;
 	public int access;
-	public long cachedWithin; 
+	public Object cachedWithin; 
 	public Integer localMode;
 
 	/**
@@ -67,46 +69,12 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
-	        long cachedWithin,
+	        Object cachedWithin,
 	        Integer localMode,
 	        StructImpl meta) {
+		this(pageSource,arguments,index,functionName,CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW),strReturnType,strReturnFormat,output,access
+				,bufferOutput,displayName,description,hint,secureJson,verifyClient,cachedWithin,localMode,meta);
 		
-		// this happens when a arcive is based on older source code
-		if(pageSource==null){
-			pageSource = ThreadLocalPageSource.get();
-		}
-		
-		
-		if(arguments.length>0){
-			this.argumentsSet=new HashSet<Collection.Key>();
-			for(int i=0;i<arguments.length;i++){
-				argumentsSet.add(arguments[i].getName());
-			}
-		}
-		else this.argumentsSet=null;
-		this.arguments = arguments;
-		this.description = description;
-		this.displayName = displayName;
-		this.functionName = functionName;
-		this.hint = hint;
-		this.index = index;
-		this.meta = meta;
-		this.output = output;
-		this.bufferOutput = bufferOutput;
-		//this.page = PageProxy.toProxy(page);
-		this.pageSource=pageSource;
-		
-		
-		this.strReturnType=strReturnType;
-		this.returnType=CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW);
-		this.strReturnFormat=strReturnFormat;
-		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,-1);
-		
-		this.secureJson = secureJson;
-		this.verifyClient = verifyClient;
-		this.access = access;
-		this.cachedWithin=cachedWithin;
-		this.localMode=localMode;
 	}
 	
 	public UDFPropertiesImpl(
@@ -124,7 +92,44 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
-	        long cachedWithin,
+	        Object cachedWithin,
+	        Integer localMode,
+	        StructImpl meta) {
+		this(pageSource,arguments,index,functionName,returnType,CFTypes.toString(returnType,"any"),strReturnFormat,output,access
+				,bufferOutput,displayName,description,hint,secureJson,verifyClient,cachedWithin,localMode,meta);
+	}
+
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        short returnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        int access) {
+		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, null,
+				"","", "", null, null, null, null, null);
+	}
+	
+
+	private UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        short returnType, 
+	        String strReturnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        int access, 
+	        Boolean bufferOutput,
+	        String displayName, 
+	        String description, 
+	        String hint, 
+	        Boolean secureJson,
+	        Boolean verifyClient,
+	        Object cachedWithin,
 	        Integer localMode,
 	        StructImpl meta) {
 		
@@ -153,16 +158,67 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.bufferOutput = bufferOutput;
 		this.pageSource = pageSource;
 		
-		this.strReturnType=CFTypes.toString(returnType,"any");
+		this.strReturnType=strReturnType;
 		this.returnType=returnType;
+		
 		this.strReturnFormat=strReturnFormat;
 		this.returnFormat=UDFUtil.toReturnFormat(strReturnFormat,-1);
 		
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
 		this.access = access;
-		this.cachedWithin=cachedWithin;
+		this.cachedWithin=cachedWithin instanceof Long?TimeSpanImpl.fromMillis(((Long)cachedWithin).longValue()):cachedWithin; 
 		this.localMode=localMode;
+	}
+	
+	
+	/**
+	 * @deprecated only supported for old compile templates in .ra archives
+	 * */
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        String strReturnType, 
+	        String strReturnFormat, 
+	        boolean output,
+	        int access, 
+	        Boolean bufferOutput,
+	        String displayName, 
+	        String description, 
+	        String hint, 
+	        Boolean secureJson,
+	        Boolean verifyClient,
+	        long cachedWithin,
+	        Integer localMode,
+	        StructImpl meta) {
+		this(pageSource, arguments, index, functionName, strReturnType, strReturnFormat, output, access, bufferOutput, displayName, description, hint, secureJson, verifyClient, cachedWithin==0?null:TimeSpanImpl.fromMillis(cachedWithin), localMode, meta);
+	}
+	
+	/**
+	 * @deprecated only supported for old compile templates in .ra archives
+	 * */
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        short returnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        int access, 
+	        Boolean bufferOutput,
+	        String displayName, 
+	        String description, 
+	        String hint, 
+	        Boolean secureJson,
+	        Boolean verifyClient,
+	        long cachedWithin,
+	        Integer localMode,
+	        StructImpl meta) {
+		
+		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, output, access, bufferOutput, displayName, description, hint, secureJson, verifyClient,cachedWithin==0?null:TimeSpanImpl.fromMillis(cachedWithin), localMode, meta); 
 	}
 	
 	/**
@@ -209,22 +265,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        StructImpl meta) {
 		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, 
 				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, null, meta);
-	}
-		
-	/**
-	 * @deprecated only supported for very old compile templates in .ra archives
-	 * */
-	public UDFPropertiesImpl(
-	        PageSource pageSource,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        short returnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        int access) {
-		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, null,
-				"","", "", null, null, 0L, null, null);
 	}
 
 	@Override
@@ -285,7 +325,9 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		strReturnFormat = ExternalizableUtil.readString(in);
 		strReturnType = ExternalizableUtil.readString(in);
 		verifyClient = ExternalizableUtil.readBoolean(in);
-		cachedWithin = in.readLong();
+		cachedWithin = ExternalizableUtil.readString(in);
+		int tmp=in.readInt();
+		localMode=tmp==-1?null:tmp;
 		
 		if(arguments!=null && arguments.length>0){
 			this.argumentsSet=new HashSet<Collection.Key>();
@@ -316,9 +358,8 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		ExternalizableUtil.writeString(out,strReturnFormat);
 		ExternalizableUtil.writeString(out,strReturnType);
 		ExternalizableUtil.writeBoolean(out,verifyClient);
-		out.writeLong(cachedWithin);
-		
-		
+		ExternalizableUtil.writeString(out,Caster.toString(cachedWithin,null));
+		out.writeInt(localMode==null?-1:localMode.intValue());
 	}
 
 

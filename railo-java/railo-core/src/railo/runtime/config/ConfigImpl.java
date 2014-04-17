@@ -1,8 +1,11 @@
 package railo.runtime.config;
 
+import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,13 +19,22 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import railo.commons.digest.Hash;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.LegacyLogger;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
+import railo.commons.io.log.LoggerAndSourceData;
+import railo.commons.io.log.log4j.LogAdapter;
+import railo.commons.io.log.log4j.layout.ClassicLayout;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -74,6 +86,7 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.functions.system.ContractPath;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
@@ -84,6 +97,7 @@ import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.rest.RestSettingImpl;
@@ -93,6 +107,7 @@ import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -115,7 +130,6 @@ import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import flex.messaging.config.ConfigMap;
-import static railo.runtime.db.DatasourceManagerImpl.QOQ_DATASOURCE_NAME;
 
 
 /**
@@ -137,6 +151,7 @@ public abstract class ConfigImpl implements Config {
 	public static final int DEBUG_TIMER = 8;
 	public static final int DEBUG_IMPLICIT_ACCESS = 16;
 	public static final int DEBUG_QUERY_USAGE = 32;
+	public static final int DEBUG_DUMP = 64;
 	
 	
 	
@@ -174,12 +189,14 @@ public abstract class ConfigImpl implements Config {
 	private CacheConnection defaultCacheTemplate=null;
 	private CacheConnection defaultCacheQuery=null;
 	private CacheConnection defaultCacheResource=null;
+	private CacheConnection defaultCacheInclude=null;
 
 	private String cacheDefaultConnectionNameFunction=null;
 	private String cacheDefaultConnectionNameObject=null;
 	private String cacheDefaultConnectionNameTemplate=null;
 	private String cacheDefaultConnectionNameQuery=null;
 	private String cacheDefaultConnectionNameResource=null;
+	private String cacheDefaultConnectionNameInclude=null;
 	
     private TagLib[] tlds=new TagLib[1];
     private FunctionLib[] flds=new FunctionLib[1];
@@ -190,9 +207,13 @@ public abstract class ConfigImpl implements Config {
     private boolean _allowImplicidQueryCall=true;
     private boolean _mergeFormAndURL=false;
 
+	private Map<String,LoggerAndSourceData> loggers=new HashMap<String, LoggerAndSourceData>();
+	
     private int _debug;
     private int debugLogOutput=SERVER_BOOLEAN_FALSE;
     private int debugOptions=0;
+    //private DebugFilter[] debugFilters=new DebugFilter[]{new IPDebugFiler()};
+    
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -247,9 +268,6 @@ public abstract class ConfigImpl implements Config {
     private Mapping[] mappings=new Mapping[0];
     private Mapping[] customTagMappings=new Mapping[0];
     private Mapping[] componentMappings=new Mapping[0];
-    
-    
-	private Map<String,Mapping> customTagAppMappings=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 
     private SchedulerImpl scheduler;
     
@@ -261,16 +279,6 @@ public abstract class ConfigImpl implements Config {
     private boolean restList=false;
     //private boolean restAllowChanges=false;
     
-    private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
-    
-    private LogAndSource requestTimeoutLogger=null;
-    private LogAndSource applicationLogger=null;
-    private LogAndSource deployLogger=null;
-    private LogAndSource exceptionLogger=null;
-	private LogAndSource traceLogger=null;
-
     
     private short clientType=CLIENT_SCOPE_TYPE_COOKIE;
     
@@ -288,9 +296,9 @@ public abstract class ConfigImpl implements Config {
 
     private short compileType=RECOMPILE_NEVER;
     
-    private String resourceCharset=SystemUtil.getCharset().name();
-    private String templateCharset=SystemUtil.getCharset().name();
-    private String webCharset="UTF-8";
+    private Charset resourceCharset=SystemUtil.getCharset();
+    private Charset templateCharset=SystemUtil.getCharset();
+    private Charset webCharset=CharsetUtil.UTF8;
 
 	private String mailDefaultEncoding = "UTF-8";
 	
@@ -344,8 +352,6 @@ public abstract class ConfigImpl implements Config {
 
 	private Resource remoteClientDirectory;
 
-	private LogAndSource remoteClientLog;
-    
 	private boolean allowURLRequestTimeout=false;
 	private CFMLFactory factory;
 	private boolean errorStatusCode=true;
@@ -377,6 +383,7 @@ public abstract class ConfigImpl implements Config {
 	private AMFCaster amfCaster;
 	//private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
+	private boolean typeChecking=true;
 	private String serial="";
 	private String cacheMD5;
 	private boolean executionLogEnabled;
@@ -391,18 +398,22 @@ public abstract class ConfigImpl implements Config {
 	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
 	private boolean componentLocalSearch=true;
 	private boolean componentRootSearch=true;
-	private LogAndSource mappingLogger;
-	private LogAndSource ormLogger;
 	private boolean useComponentPathCache=true;
 	private boolean useCTPathCache=true;
 	private int amfConfigType=AMF_CONFIG_TYPE_XML;
-	private LogAndSource scopeLogger;
 	private railo.runtime.rest.Mapping[] restMappings;
 	
 	protected int writerType=CFML_WRITER_REFULAR;
 	private long configFileLastModified;
 	private boolean checkForChangesInConfigFile;
 	private String apiKey=null;
+	
+	private List<Layout> consoleLayouts=new ArrayList<Layout>();
+	private List<Layout> resourceLayouts=new ArrayList<Layout>();
+
+	private Map<Key, Map<Key, Object>> tagDefaultAttributeValues;
+
+
 	
 	
 	/**
@@ -674,20 +685,29 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public boolean debug() {
-    	return _debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE;
+    	if(!(_debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE)) return false;
+    	
+    	/*if(!ArrayUtil.isEmpty(debugFilters)) {
+    		for(int i=0;i<debugFilters.length;i++){
+    			
+    		}
+    	}*/
+    	
+    	
+    	return true;
     }
     
     public boolean debugLogOutput() {
     	return debug() && debugLogOutput==CLIENT_BOOLEAN_TRUE || debugLogOutput==SERVER_BOOLEAN_TRUE;
     }
 
-    public int intDebug() {
+    /*public int intDebug() {
         return _debug;
     }
 
     public int intDebugLogOutput() {
         return debugLogOutput;
-    }
+    }*/
     
     @Override
     public Resource getTempDirectory() {
@@ -702,30 +722,20 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getMailLogger() {
-    	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return mailLogger;
-    }
-    
-
-    public LogAndSource getRestLogger() {
-    	if(restLogger==null)restLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return restLogger;
-    }
-
-    public LogAndSource getThreadLogger() {
-    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return threadLogger;
-    }
-
-
-    public void setThreadLogger(LogAndSource threadLogger) {
-    	this.threadLogger=threadLogger;
+    	return new LegacyLogger( getLog("mail", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getRequestTimeoutLogger() {
-    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return requestTimeoutLogger;
+    	return new LegacyLogger( getLog("requesttimeout", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
+    }
+    
+    @Override
+    public LogAndSource getTraceLogger() {
+    	return new LegacyLogger( getLog("trace", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
 
     @Override
@@ -902,9 +912,11 @@ public abstract class ConfigImpl implements Config {
         return null;
     }
     
-
-    
     public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+    	return getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping, false);
+    }
+    
+    public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean useComponentMappings) {
         realPath=realPath.replace('\\','/');
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
@@ -946,7 +958,7 @@ public abstract class ConfigImpl implements Config {
         }
         
         // component mappings (only used for gateway)
-        if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
+        if(useComponentMappings || (pc!=null && ((PageContextImpl)pc).isGatewayContext())) {
         	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
@@ -1075,7 +1087,7 @@ public abstract class ConfigImpl implements Config {
         if(this instanceof ConfigWebImpl) {
         	Resource parent = res.getParentResource();
         	if(parent!=null && !parent.equals(res)) {
-        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("/", parent.getAbsolutePath());
+        		Mapping m = ((ConfigWebImpl)this).getApplicationMapping("application","/", parent.getAbsolutePath(),null,true,false);
         		return m.getPageSource(res.getName());
         	}
         }
@@ -1098,47 +1110,24 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public LogAndSource getScheduleLogger() {
-    	return scheduler.getLogger();
+    	return new LegacyLogger( getLog("scheduler", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getApplicationLogger() {
-    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return applicationLogger;
+    	return new LegacyLogger( getLog("application", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
-    public LogAndSource getDeployLogger() {
-    	if(deployLogger==null){
-    		deployLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_INFO),"");
-    	}
-		return deployLogger;
-    }
     
-    public LogAndSource getScopeLogger() {
-    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return scopeLogger;
-    }
-
+    
     /**
      * sets the password
      * @param password
      */
     protected void setPassword(String password) {
         this.password=password;
-    }
-    
-    
-    /**
-     * set how railo cascade scopes
-     * @param type cascading type
-     */
-    protected void setScopeCascadingType(String type) {
-        
-        if(type.equalsIgnoreCase("strict")) setScopeCascadingType(SCOPE_STRICT);
-        else if(type.equalsIgnoreCase("small")) setScopeCascadingType(SCOPE_SMALL);
-        else if(type.equalsIgnoreCase("standard"))setScopeCascadingType(SCOPE_STANDARD);
-        else if(type.equalsIgnoreCase("standart"))setScopeCascadingType(SCOPE_STANDARD);
-        else setScopeCascadingType(SCOPE_STANDARD);
     }
 
     /**
@@ -1578,32 +1567,6 @@ public abstract class ConfigImpl implements Config {
     protected void setMailTimeout(int mailTimeout) {
         this.mailTimeout = mailTimeout;
     }
-
-    /**
-     * sets the mail logger
-     * @param mailLogger
-     */
-    protected void setMailLogger(LogAndSource mailLogger) {
-        this.mailLogger = mailLogger;
-    }
-    
-
-    protected void setORMLogger(LogAndSource ormLogger) {
-        this.ormLogger = ormLogger;
-    }
-    public LogAndSource getORMLogger() {
-    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		
-        return ormLogger;
-    }
-
-    /**
-     * sets the request timeout logger
-     * @param requestTimeoutLogger
-     */
-    protected void setRequestTimeoutLogger(LogAndSource requestTimeoutLogger) {
-        this.requestTimeoutLogger=requestTimeoutLogger;
-    }
     
     /**
      * @param psq (preserve single quote) 
@@ -1657,9 +1620,9 @@ public abstract class ConfigImpl implements Config {
      * @param logger
      * @throws PageException
      */
-    protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory, LogAndSource logger) throws PageException {
+    protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory) throws PageException {
         if(scheduleDirectory==null) {
-        	if(this.scheduler==null) this.scheduler=new SchedulerImpl(engine,"<?xml version=\"1.0\"?>\n<schedule></schedule>",this,logger);
+        	if(this.scheduler==null) this.scheduler=new SchedulerImpl(engine,"<?xml version=\"1.0\"?>\n<schedule></schedule>",this);
         	return;
         }
     	
@@ -1667,7 +1630,7 @@ public abstract class ConfigImpl implements Config {
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
-        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset().name());
+        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,SystemUtil.getCharset().name());
         	//else
         		//this.scheduler.reinit(scheduleDirectory,logger);
         } 
@@ -1845,6 +1808,15 @@ public abstract class ConfigImpl implements Config {
     public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
         	baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,getBaseComponentTemplate(),false,false,true));
+        	if(!baseComponentPageSource.exists()) {
+        		String baseTemplate = getBaseComponentTemplate();
+        		String mod = ContractPath.call(pc, getBaseComponentTemplate(), false);
+        		if(!mod.equals(baseTemplate)) {
+        			baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,mod,false,false,true));
+                	
+        		}
+        	}
+
         }
         return baseComponentPageSource;
     }
@@ -1856,31 +1828,6 @@ public abstract class ConfigImpl implements Config {
         this.baseComponentPageSource=null;
         this.baseComponentTemplate = template;
     }
-    
-    /**
-     * sets the application logger
-     * @param applicationLogger
-     */
-    protected void setApplicationLogger(LogAndSource applicationLogger) {
-        this.applicationLogger=applicationLogger;
-    }
-
-    protected void setDeployLogger(LogAndSource deployLogger) {
-        this.deployLogger=deployLogger;
-    }
-
-    protected void setScopeLogger(LogAndSource scopeLogger) {
-        this.scopeLogger=scopeLogger;
-    }
-
-    protected void setMappingLogger(LogAndSource mappingLogger) {
-        this.mappingLogger=mappingLogger;
-    }
-    
-    protected void setRestLogger(LogAndSource restLogger) {
-        this.restLogger=restLogger;
-    }
-
 
     protected void setRestList(boolean restList) {
         this.restList=restList;
@@ -1888,20 +1835,6 @@ public abstract class ConfigImpl implements Config {
 
     public boolean getRestList() {
         return restList;
-    }
-
-    /*protected void setRestAllowChanges(boolean restAllowChanges) {
-        this.restAllowChanges=restAllowChanges;
-    }
-
-    public boolean getRestAllowChanges() {
-        return restAllowChanges;
-    }*/
-
-    public LogAndSource getMappingLogger() {
-    	if(mappingLogger==null)
-    		mappingLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return mappingLogger;
     }
     
     /**
@@ -2108,11 +2041,14 @@ public abstract class ConfigImpl implements Config {
 
 	@Override
 	public String getDefaultEncoding() {
-		return webCharset;
+		return webCharset.name();
 	}
 	
 	@Override
 	public String getTemplateCharset() {
+		return templateCharset.name();
+	}
+	public Charset _getTemplateCharset() {
 		return templateCharset;
 	}
 	
@@ -2121,11 +2057,14 @@ public abstract class ConfigImpl implements Config {
 	 * @param templateCharset
 	 */
 	protected void setTemplateCharset(String templateCharset) {
-		this.templateCharset = templateCharset;
+		this.templateCharset = CharsetUtil.toCharset(templateCharset, this.templateCharset);
 	}
 
 	@Override
 	public String getWebCharset() {
+		return webCharset.name();
+	}
+	public Charset _getWebCharset() {
 		return webCharset;
 	}
 	
@@ -2134,11 +2073,14 @@ public abstract class ConfigImpl implements Config {
 	 * @param resourceCharset
 	 */
 	protected void setResourceCharset(String resourceCharset) {
-		this.resourceCharset = resourceCharset;
+		this.resourceCharset = CharsetUtil.toCharset(resourceCharset, this.resourceCharset);
 	}
 
 	@Override
 	public String getResourceCharset() {
+		return resourceCharset.name();
+	}
+	public Charset _getResourceCharset() {
 		return resourceCharset;
 	}
 	
@@ -2147,7 +2089,7 @@ public abstract class ConfigImpl implements Config {
 	 * @param webCharset
 	 */
 	protected void setWebCharset(String webCharset) {
-		this.webCharset = webCharset;
+		this.webCharset = CharsetUtil.toCharset(webCharset, this.webCharset);;
 	}
 
 	public SecurityManager getSecurityManager() {
@@ -2313,32 +2255,10 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
-		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return exceptionLogger;
+		return new LegacyLogger( getLog("exception", true));
+    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
-
-	/**
-	 * @return the exceptionLogger
-	 */
-	public LogAndSource getTraceLogger() {
-		if(traceLogger==null)traceLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return traceLogger;
-	}
-
-	/**
-	 * @param exceptionLogger the exceptionLogger to set
-	 */
-	protected void setExceptionLogger(LogAndSource exceptionLogger) {
-		this.exceptionLogger = exceptionLogger;
-	}
-
-	/**
-	 * @param traceLogger the traceLogger to set
-	 */
-	protected void setTraceLogger(LogAndSource traceLogger) {
-		this.traceLogger = traceLogger;
-	}
-
+	
 	/**
 	 * @return the scriptProtect
 	 */
@@ -2500,7 +2420,7 @@ public abstract class ConfigImpl implements Config {
 		}
 		
 		// error
-		StringBuffer sb=new StringBuffer(); 
+		StringBuilder sb=new StringBuilder(); 
 		for(int i=0;i<entries.length;i++){
 			if(i>0)sb.append(", ");
 			sb.append(entries[i].getName());
@@ -2637,6 +2557,14 @@ public abstract class ConfigImpl implements Config {
 		this.version=version;
 	}
 
+	protected double setVersion(Document doc) {
+		Element railoConfiguration = doc.getDocumentElement();
+		String strVersion = railoConfiguration.getAttribute("version");
+		return this.version=Caster.toDoubleValue(strVersion, 1.0d);
+	}
+	
+	
+
 	/**
 	 * @return the version
 	 */
@@ -2717,10 +2645,6 @@ public abstract class ConfigImpl implements Config {
 		return remoteClientSpoolerEngine;
 	}
 
-	protected void setRemoteClientLog(LogAndSource remoteClientLog) {
-		this.remoteClientLog=remoteClientLog;
-	}
-
 	protected void setRemoteClientDirectory(Resource remoteClientDirectory) {
 		this.remoteClientDirectory=remoteClientDirectory;
 	}
@@ -2736,7 +2660,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the remoteClientLog
 	 */
 	public LogAndSource getRemoteClientLog() {
-		return remoteClientLog;
+		throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
 	}
 
 	protected void setSpoolerEngine(SpoolerEngine spoolerEngine) {
@@ -3016,6 +2940,15 @@ public abstract class ConfigImpl implements Config {
 	public short getInspectTemplate() {
 		return inspectTemplate;
 	}
+	
+
+	public boolean getTypeChecking() {
+		return typeChecking;
+	}
+	protected void setTypeChecking(boolean typeChecking) {
+		this.typeChecking=typeChecking;
+	}
+	
 
 	/**
 	 * @param inspectTemplate the inspectTemplate to set
@@ -3055,6 +2988,9 @@ public abstract class ConfigImpl implements Config {
 			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameObject)){
 				defaultCacheObject=cc;
 			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameInclude)){
+				defaultCacheInclude=cc;
+			}
 		}
 	}
 	
@@ -3070,6 +3006,7 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return defaultCacheQuery;
 		if(type==CACHE_DEFAULT_RESOURCE)	return defaultCacheResource;
+		if(type==CACHE_DEFAULT_INCLUDE)		return defaultCacheInclude;
 		return null;
 	}
 
@@ -3079,6 +3016,7 @@ public abstract class ConfigImpl implements Config {
 		else if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_RESOURCE)	cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_INCLUDE)	cacheDefaultConnectionNameInclude=cacheDefaultConnectionName;
 	}
 	
 	@Override
@@ -3088,6 +3026,7 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
 		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
 		if(type==CACHE_DEFAULT_RESOURCE)	return cacheDefaultConnectionNameResource;
+		if(type==CACHE_DEFAULT_INCLUDE)	return cacheDefaultConnectionNameInclude;
 		return null;
 	}
 
@@ -3192,21 +3131,6 @@ public abstract class ConfigImpl implements Config {
 
 	public ORMConfiguration getORMConfig() {
 		return ormConfig;
-	}
-
-	public Mapping createCustomTagAppMappings(String virtual, String physical) {
-		Mapping m=customTagAppMappings.get(physical.toLowerCase());
-		
-		if(m==null){
-			m=new MappingImpl(
-				this,virtual,
-				physical,
-				null,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,true,null
-				);
-			customTagAppMappings.put(physical.toLowerCase(),m);
-		}
-		
-		return m;
 	}
 
 
@@ -3439,13 +3363,13 @@ public abstract class ConfigImpl implements Config {
 		return dotNotationUpperCase;
 	}
 
-	private boolean getSupressWSBeforeArg=true;
-	protected void setSupressWSBeforeArg(boolean getSupressWSBeforeArg) {
-		this.getSupressWSBeforeArg=getSupressWSBeforeArg;
+	private boolean getSuppressWSBeforeArg=true;
+	protected void setSuppressWSBeforeArg(boolean getSuppressWSBeforeArg) {
+		this.getSuppressWSBeforeArg=getSuppressWSBeforeArg;
 	}
 
-	public boolean getSupressWSBeforeArg() {
-		return getSupressWSBeforeArg;
+	public boolean getSuppressWSBeforeArg() {
+		return getSuppressWSBeforeArg;
 	}
 
 	private RestSettings restSetting=new RestSettingImpl(false,UDF.RETURN_FORMAT_JSON);
@@ -3480,6 +3404,12 @@ public abstract class ConfigImpl implements Config {
 
 
 	private int externalizeStringGTE=-1;
+
+
+	
+
+
+
 	public boolean getBufferOutput() {
 		return bufferOutput;
 	}
@@ -3554,5 +3484,109 @@ public abstract class ConfigImpl implements Config {
 	public int getExternalizeStringGTE() {
 		return externalizeStringGTE;
 	}
+
+	protected void addConsoleLayout(Layout layout) {
+		consoleLayouts.add(layout);
+		
+	}
+	protected void addResourceLayout(Layout layout) {
+		resourceLayouts.add(layout);
+	}
+
+	public Layout[] getConsoleLayouts() {
+		if(consoleLayouts.isEmpty())
+			consoleLayouts.add(new PatternLayout("%d{dd.MM.yyyy HH:mm:ss,SSS} %-5p [%c] %m%n"));
+		return consoleLayouts.toArray(new Layout[consoleLayouts.size()]);
+		
+	}
+	public Layout[] getResourceLayouts() {
+		if(resourceLayouts.isEmpty())
+			resourceLayouts.add(new ClassicLayout());
+		return resourceLayouts.toArray(new Layout[resourceLayouts.size()]);
+	}
+
+
+	protected void clearLoggers() {
+		if(loggers.size()==0) return;
+		try{
+			Iterator<LoggerAndSourceData> it = loggers.values().iterator();
+			while(it.hasNext()){
+				it.next().close();
+			}
+		}
+		catch(Throwable t){}
+		loggers.clear();
+	}
+	
+	protected LoggerAndSourceData addLogger(String name, Level level,
+			String strAppender, Map<String, String> appenderArgs, 
+			String strLayout, Map<String, String> layoutArgs, boolean readOnly) {
+		LoggerAndSourceData existing = loggers.get(name.toLowerCase());
+		String id=LoggerAndSourceData.id(name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
+		
+		if(existing!=null) {
+			if(existing.id().equals(id)) {
+				return existing;
+			}
+			existing.close();
+		}
+		
+		
+		LoggerAndSourceData las = new LoggerAndSourceData(this,id,name.toLowerCase(), strAppender,appenderArgs,strLayout,layoutArgs,level,readOnly);
+		loggers.put(name.toLowerCase(),las);
+		return las;
+	}
+	
+	public Map<String,LoggerAndSourceData> getLoggers(){
+		return loggers;
+	}
+	public Log getLog(String name){
+		return getLog(name, true);
+	}
+	
+	public Log getLog(String name, boolean createIfNecessary){
+		LoggerAndSourceData lsd = getLoggerAndSourceData(name,createIfNecessary);
+		if(lsd==null) return null;
+		return lsd.getLog();
+	}
+	
+	public Logger getLogger(String name, boolean createIfNecessary){
+		LoggerAndSourceData lsd = getLoggerAndSourceData(name,createIfNecessary);
+		if(lsd==null) return null;
+		return ((LogAdapter)lsd.getLog()).getLogger();
+	}
+
+	public LoggerAndSourceData getLoggerAndSourceData(String name, boolean createIfNecessary){
+		LoggerAndSourceData las = loggers.get(name.toLowerCase());
+		if(las==null) {
+			
+			if(!createIfNecessary) return null;
+			return addLogger(name, Level.ERROR, "console", null, "pattern", null,true);
+		}
+		return las;
+	}
+
+	public Map<Key, Map<Key, Object>> getTagDefaultAttributeValues() {
+		return tagDefaultAttributeValues==null?null:Duplicator.duplicateMap(tagDefaultAttributeValues,new HashMap<Key, Map<Key, Object>>(),true);
+		
+		/*Map<Key, Map<Key, Object>> map=new HashMap<Key, Map<Key, Object>>();
+		Map<Key, Object> func=new HashMap<Key, Object>();
+		Map<Key, Object> qry=new HashMap<Key, Object>();
+		Map<Key, Object> inc=new HashMap<Key, Object>();
+		map.put(KeyImpl.init("function"), func);
+		map.put(KeyImpl.init("include"), inc);
+		map.put(KeyImpl.init("query"), qry);
+
+		func.put(KeyImpl.init("cachedWithin"), "smart");
+		inc.put(KeyImpl.init("cachedWithin"), "smart");
+		qry.put(KeyImpl.init("cachedWithin"), "smart");
+		
+		return  map;*/
+	}
+	
+	protected void setTagDefaultAttributeValues(Map<Key, Map<Key, Object>> values) {
+		this.tagDefaultAttributeValues=values;
+	}
+
 	
 }

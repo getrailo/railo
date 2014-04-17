@@ -24,8 +24,8 @@ Defaults --->
 			<cfif isDefined('form.dotNotation') and form.dotNotation EQ "oc">
             	<cfset dotNotUpper=false>
             </cfif>
-            <cfif not isDefined('form.supressWSBeforeArg')>
-            	<cfset form.supressWSBeforeArg=false>
+            <cfif not isDefined('form.suppressWSBeforeArg')>
+            	<cfset form.suppressWSBeforeArg=false>
             </cfif>
             <cfif not isDefined('form.nullSupport')>
             	<cfset form.nullSupport=false>
@@ -39,7 +39,8 @@ Defaults --->
 				
 				nullSupport="#form.nullSupport#"
 				dotNotationUpperCase="#dotNotUpper#"
-                supressWSBeforeArg="#form.supressWSBeforeArg#"
+                suppressWSBeforeArg="#form.suppressWSBeforeArg#"
+				templateCharset="#form.templateCharset#"
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -53,8 +54,9 @@ Defaults --->
 				
 				nullSupport=""
 				dotNotationUpperCase=""
-				supressWSBeforeArg=""
-				
+				suppressWSBeforeArg=""
+				templateCharset=""
+					
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -127,6 +129,25 @@ Redirtect to entry --->
 					</td>
 				</tr>
 				
+				<!--- Template --->
+				<tr>
+					<th scope="row">#stText.charset.templateCharset#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="text" class="small" name="templateCharset" value="#setting.templateCharset#" />
+						<cfelse>
+							<input type="hidden" name="templateCharset" value="#setting.templateCharset#">
+							<b>#charset.templateCharset#</b>
+						</cfif>
+						<div class="comment">#stText.charset.templateCharsetDescription#</div>
+						<cfsavecontent variable="codeSample">
+&lt;cfprocessingdirective pageEncoding="#setting.templateCharset#">
+&lt;!--- or --->
+&lt;cfscript>processingdirective pageEncoding="#setting.templateCharset#";&lt;/cfscript>
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample ,stText.settings.codetip)>
+					</td>
+				</tr>
 				
 				<!--- Dot Notation --->
 				<tr>
@@ -158,19 +179,25 @@ Redirtect to entry --->
 							<b>#stText.setting["dotNotation"& strDotNotationID &"Case"]#</b><br />
 							<div class="comment">#replace(stText.setting["dotNotation"& strDotNotationID &"CaseDesc"], server.separator.line, '<br />', 'all')#</div>
 						</cfif>
+						<cfsavecontent variable="codeSample">
+&lt;cfprocessingdirective preserveCase="#!setting.DotNotationUpperCase#">
+&lt;!--- or --->
+&lt;cfscript>processingdirective preserveCase="#!setting.DotNotationUpperCase#";&lt;/cfscript>
+						</cfsavecontent>
+						<cfset renderCodingTip( codeSample ,stText.settings.codetip)>
 					</td>
 				</tr>
 				
-				<!--- Supress Whitespace in front of cfargument --->
+				<!--- Suppress Whitespace in front of cfargument --->
 				<tr>
-					<th scope="row">#stText.setting.supressWSBeforeArg#</th>
+					<th scope="row">#stText.setting.suppressWSBeforeArg#</th>
 					<td>
 						<cfif hasAccess>
-        					<input type="checkbox" name="supressWSBeforeArg" value="true" <cfif setting.supressWSBeforeArg>checked="checked"</cfif> />
+        					<input type="checkbox" name="suppressWSBeforeArg" value="true" <cfif setting.suppressWSBeforeArg>checked="checked"</cfif> />
 						<cfelse>
-							<b>#yesNoFormat(setting.supressWSBeforeArg)#</b><br /><input type="hidden" name="supressWSBeforeArg" value="#setting.supressWSBeforeArg#">
+							<b>#yesNoFormat(setting.suppressWSBeforeArg)#</b><br /><input type="hidden" name="suppressWSBeforeArg" value="#setting.suppressWSBeforeArg#">
 						</cfif>
-						<div class="comment">#stText.setting.supressWSBeforeArgDesc#</div>
+						<div class="comment">#stText.setting.suppressWSBeforeArgDesc#</div>
 					</td>
 				</tr>
 

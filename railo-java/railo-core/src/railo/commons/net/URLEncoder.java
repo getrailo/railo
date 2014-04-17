@@ -1,6 +1,7 @@
 package railo.commons.net;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import railo.commons.lang.StringUtil;
 
@@ -69,8 +70,21 @@ public class URLEncoder {
     	return s;
     }
 
+    /**
+     * @deprecated use instead <code>encode(String s, Charset cs)</code>
+     * @param s
+     * @param enc
+     * @return
+     * @throws UnsupportedEncodingException
+     */
     public static String encode(String s, String enc) throws UnsupportedEncodingException {
     	s= java.net.URLEncoder.encode(s, enc);
+    	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);
+    	return s;
+    }
+    
+    public static String encode(String s, Charset cs) throws UnsupportedEncodingException {
+    	s= java.net.URLEncoder.encode(s, cs.name());
     	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);
     	return s;
     }

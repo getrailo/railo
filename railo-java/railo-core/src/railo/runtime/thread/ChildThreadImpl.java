@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.io.DevNullOutputStream;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.lang.ExceptionUtil;
+import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
@@ -63,7 +63,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	ByteArrayOutputStream output;
 	
 	
-	// only used for type deamon
+	// only used for type daemon
 	private Page page;
 	
 	// only used for type task, demon attrs are not Serializable
@@ -111,7 +111,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			HttpServletRequest req = parent.getHttpServletRequest();
 			serverName=req.getServerName();
 			queryString=ReqRspUtil.getQueryString(req);
-			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(ThreadLocalPageContext.getConfig(parent),req));
+			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(req,parent.getWebCharset()));
 			parameters=HttpUtil.cloneParameters(req);
 			requestURI=req.getRequestURI();
 			headers=HttpUtil.cloneHeaders(req);
@@ -185,8 +185,8 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 				ConfigWeb c = pc.getConfig();
 				if(c instanceof ConfigImpl) {
 					ConfigImpl ci=(ConfigImpl) c;
-					LogAndSource log = ci.getThreadLogger();
-					if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+					Log log = ci.getLog("thread");
+					if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,this.getName(), t);
 				}
 				PageException pe = Caster.toPageException(t);
 				if(!serializable)catchBlock=pe.getCatchBlock(pc);

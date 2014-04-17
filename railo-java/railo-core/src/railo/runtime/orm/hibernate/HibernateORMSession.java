@@ -31,6 +31,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMTransaction;
@@ -317,8 +318,14 @@ public class HibernateORMSession implements ORMSession{
 						if(name==null) continue; // param not needed will be ignored
 						type = meta.getNamedParameterExpectedType(name);
 						obj=HibernateCaster.toSQL(type, obj,isArray);
-						if(isArray.toBooleanValue())
-							query.setParameterList(name, (Object[])obj,type);
+						if(isArray.toBooleanValue()) {
+							if(obj instanceof Object[])
+								query.setParameterList(name, (Object[])obj,type);
+							else if(obj instanceof List)
+								query.setParameterList(name, (List)obj,type);
+							else
+								query.setParameterList(name, Caster.toList(obj),type);
+						}
 						else
 							query.setParameter(name, obj,type);
 						
@@ -555,7 +562,10 @@ public class HibernateORMSession implements ORMSession{
 					entry = it.next();
 					colName=HibernateUtil.validateColumnName(metaData, CommonUtil.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData,colName,null);
-					value=HibernateCaster.toSQL(type,entry.getValue(),null);
+					value=entry.getValue();
+					if(!(value instanceof Component)) 
+						value=HibernateCaster.toSQL(type,value,null);
+					
 					if(value!=null)	criteria.add(Restrictions.eq(colName, value));
 					else 			criteria.add(Restrictions.isNull(colName));
 				}

@@ -13,6 +13,7 @@ import java.util.Set;
 import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
@@ -182,7 +183,7 @@ public final class ArrayUtil {
 	private static double _toDoubleValue(Array array, int i) throws ExpressionException {
 		Object obj = array.get(i,null);
 		if(obj==null)throw new ExpressionException("there is no element at position ["+i+"] or the element is null");
-		double tmp = Caster.toDoubleValue(obj,Double.NaN);
+		double tmp = Caster.toDoubleValue(obj,true,Double.NaN);
 		if(Double.isNaN(tmp))
 			throw new CasterException(obj,Double.class);
 		return tmp;
@@ -442,7 +443,7 @@ public final class ArrayUtil {
 	    else if(o instanceof byte[])	{
 	        byte[] arr=((byte[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Byte(arr[index]=(byte)v);
 	            }
@@ -452,7 +453,7 @@ public final class ArrayUtil {
 	    else if(o instanceof short[])	{
 	        short[] arr=((short[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Short.valueOf(arr[index]=(short)v);
 	            }
@@ -462,7 +463,7 @@ public final class ArrayUtil {
 	    else if(o instanceof int[])	{
 	        int[] arr=((int[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Integer.valueOf(arr[index]=(int)v);
 	            }
@@ -472,7 +473,7 @@ public final class ArrayUtil {
 	    else if(o instanceof long[])	{
 	        long[] arr=((long[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return Long.valueOf(arr[index]=(long)v);
 	            }
@@ -482,7 +483,7 @@ public final class ArrayUtil {
 	    else if(o instanceof float[])	{
 	        float[] arr=((float[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Float(arr[index]=(float)v);
 	            }
@@ -492,7 +493,7 @@ public final class ArrayUtil {
 	    else if(o instanceof double[])	{
 	        double[] arr=((double[])o);
 	        if(arr.length>index) {
-	            double v=Caster.toDoubleValue(value,Double.NaN);
+	            double v=Caster.toDoubleValue(value,true,Double.NaN);
 	            if(Decision.isValid(v)) {
 	                return new Double(arr[index]=v);
 	            }
@@ -848,4 +849,51 @@ public final class ArrayUtil {
 		}
 		return list;
 	}
+
+
+	/**
+	 * this method efficiently copy the contents of one native array into another by using System.arraycopy()
+	 *
+	 * @param dst - the array that will be modified
+	 * @param src - the data to be copied
+	 * @param dstPosition - pass -1 to append to the end of the dst array, or a valid position to add it elsewhere
+	 * @param doPowerOf2 - if true, and the array needs to be resized, it will be resized to the next power of 2 size
+	 * @return - either the original dst array if it had enough capacity, or a new array.
+	 */
+	public static Object[] mergeNativeArrays(Object[] dst, Object[] src, int dstPosition, boolean doPowerOf2) {
+
+		if (dstPosition < 0)
+			dstPosition = dst.length;
+
+		Object[] result = resizeIfNeeded(dst, dstPosition + src.length, doPowerOf2);
+
+		System.arraycopy(src, 0, result, dstPosition, src.length);
+
+		return result;
+	}
+
+
+	/**
+	 * this method returns the original array if its length is equal or greater than the minSize, or create a new array
+	 * and copies the data from the original array into the new one.
+	 *
+	 * @param arr - the array to check
+	 * @param minSize - the required minimum size
+	 * @param doPowerOf2 - if true, and a resize is required, the new size will be a power of 2
+	 * @return - either the original arr array if it had enough capacity, or a new array.
+	 */
+	public static Object[] resizeIfNeeded(Object[] arr, int minSize, boolean doPowerOf2) {
+
+		if (arr.length >= minSize)
+			return arr;
+
+		if (doPowerOf2)
+			minSize = MathUtil.nextPowerOf2(minSize);
+
+		Object[] result = new Object[minSize];
+		System.arraycopy(arr, 0, result, 0, arr.length);
+
+		return result;
+	}
+
 }

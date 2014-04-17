@@ -10,8 +10,8 @@ import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
+import railo.commons.lang.MappingUtil;
 import railo.commons.lang.PCLCollection;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
@@ -384,26 +384,6 @@ public final class MappingImpl implements Mapping {
 	public boolean isTopLevel() {
 		return topLevel;
 	}
-
-	/*public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
-		String lcName=name.toLowerCase().trim();
-		Object o = customTagPath.get(lcName);
-
-		if(o==null){
-			PageSource ps=searchFor(name, lcName, doCustomTagDeepSearch);
-			if(ps!=null){
-				customTagPath.put(lcName,ps);
-				return ps;
-			}
-			
-			customTagPath.put(lcName,NULL);
-			return null;
-			
-		}
-		else if(o==NULL) return null;
-		
-		return (PageSource) o;
-	}*/
 	
 	public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
 		return searchFor(name, name.toLowerCase().trim(), doCustomTagDeepSearch);
@@ -415,29 +395,20 @@ public final class MappingImpl implements Mapping {
 	
 	
 	private PageSource searchFor(String filename, String lcName, boolean doCustomTagDeepSearch) {
-		if(!hasPhysical()) return null;
-
-		
 		PageSource source=getPageSource(filename);
 		if(isOK(source)) {
     		return source;
     	}
     	customTagPath.remove(lcName);
-    	
     	if(doCustomTagDeepSearch){
-    		String path = _getRecursive(getPhysical(),null, filename);
-        	if(path!=null ) {
-        		source=getPageSource(path);
-        		if(isOK(source)) {
-            		return source;
-            	}
-        		customTagPath.remove(lcName);
-        	}
+    		source = MappingUtil.searchMappingRecursive(this, filename, false);
+    		if(isOK(source)) return source;
     	}
     	return null;
 	}
 
 	public static boolean isOK(PageSource ps) {
+		if(ps==null) return false;
 		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
 	}
 
@@ -447,23 +418,6 @@ public final class MappingImpl implements Mapping {
 			if(isOK(arr[i])) return arr[i];
 		}
 		return null;
-	}
-	
-	private static String _getRecursive(Resource res, String path, String filename) {
-    	if(res.isDirectory()) {
-    		Resource[] children = res.listResources(new ExtensionResourceFilter(new String[]{".cfm",".cfc"},true,true));
-    		if(path!=null)path+=res.getName()+"/";
-    		else path="";
-    		String tmp;
-    		for(int i=0;i<children.length;i++){
-    			tmp= _getRecursive(children[i], path, filename);
-    			if(tmp!=null) return tmp;
-    		}
-    	}
-    	else if(res.isFile()) {
-    		if(res.getName().equalsIgnoreCase(filename)) return path+res.getName();
-    	}
-    	return null;    	
 	}
 	
 	@Override
@@ -488,5 +442,9 @@ public final class MappingImpl implements Mapping {
 	public ApplicationListener getApplicationListener() {
 		if(appListener!=null) return appListener;
 		return config.getApplicationListener();
+	}
+	
+	public boolean getDotNotationUpperCase(){
+		return ((ConfigImpl)config).getDotNotationUpperCase();
 	}
 }

@@ -18,7 +18,6 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.IFunction;
@@ -64,7 +63,7 @@ public final class TagFunction extends TagBase implements IFunction {
 		Statement stat;
 		Tag tag;
 		
-		// supress WS between cffunction and the last cfargument
+		// suppress WS between cffunction and the last cfargument
 		Tag last=null;
 		if(bc.getSupressWSbeforeArg()){
 			// check if there is a cfargument at all
@@ -248,14 +247,13 @@ public final class TagFunction extends TagBase implements IFunction {
 		
 		
 		// cachedWithin
-		long cachedWithin=0;
+		Literal cachedWithin=null;
 		attr = removeAttribute("cachedwithin");
 		if(attr!=null) {
 			Expression val = attr.getValue();
-			if(val instanceof LitLong)
-				cachedWithin=((LitLong)val).getLongValue();
+			if(val instanceof Literal)
+				cachedWithin=((Literal)val);
 		}
-		
 		String strAccess = ((LitString)access).getString();
 		int acc = ComponentUtil.toIntAccess(strAccess,-1);
 		if(acc==-1)

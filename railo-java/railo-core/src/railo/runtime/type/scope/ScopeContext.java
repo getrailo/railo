@@ -10,7 +10,6 @@ import org.safehaus.uuid.UUIDGenerator;
 
 import railo.commons.collection.MapFactory;
 import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -78,7 +77,7 @@ public final class ScopeContext {
 	private StorageScopeEngine client;
 	private StorageScopeEngine session;
 	private CFMLFactoryImpl factory;
-	private LogAndSource log;
+	private Log log;
 	
 	
 	
@@ -91,7 +90,7 @@ public final class ScopeContext {
 	 */
 	private Log getLog() {
 		if(log==null) {
-			this.log=((ConfigImpl)factory.getConfig()).getScopeLogger();
+			this.log=((ConfigImpl)factory.getConfig()).getLog("scope");
 			
 		}
 		return log;
@@ -102,16 +101,16 @@ public final class ScopeContext {
 	public void error(Throwable t) {error(getLog(), t);}
 	
 	public static void info(Log log,String msg) {
-		if(log!=null)log.info("scope-context", msg);
+		if(log!=null)log.log(Log.LEVEL_INFO,"scope-context", msg);
 	}
 	
 
 	public static void error(Log log,String msg) {
-		if(log!=null)log.error("scope-context", msg);
+		if(log!=null)log.log(Log.LEVEL_ERROR,"scope-context", msg);
 	}
 	
 	public static void error(Log log,Throwable t) {
-		if(log!=null)log.error("scope-context",ExceptionUtil.getStacktrace(t, true));
+		if(log!=null)log.log(Log.LEVEL_ERROR,"scope-context",ExceptionUtil.getStacktrace(t, true));
 	}
 	
 
@@ -233,7 +232,7 @@ public final class ScopeContext {
 				if(doMemory)context.put(pc.getCFID(),client);
 			}
 			else
-				getLog().info("scope-context", "use existing client scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
+				getLog().log(Log.LEVEL_INFO,"scope-context", "use existing client scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
 			
 			client.touchBeforeRequest(pc);
 			return client;
@@ -422,7 +421,7 @@ public final class ScopeContext {
 		return hasExistingJSessionScope(pc);
 	}
 	
-	private synchronized boolean hasExistingJSessionScope(PageContext pc) {
+	private boolean hasExistingJSessionScope(PageContext pc) {
 		HttpSession httpSession=pc.getSession();
         if(httpSession==null) return false;
         
@@ -475,7 +474,7 @@ public final class ScopeContext {
 	 * @return cf session matching the context
 	 * @throws PageException 
 	 */
-	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
 		
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
@@ -536,13 +535,13 @@ public final class ScopeContext {
 				isNew.setValue(true);
 			}
 			else {
-				getLog().info("scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
+				getLog().log(Log.LEVEL_INFO,"scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
 			}
 			session.touchBeforeRequest(pc);
 			return session;
 	}
 	
-	public synchronized void removeSessionScope(PageContext pc) throws PageException {
+	public void removeSessionScope(PageContext pc) throws PageException {
 		
 		//CFSession
 		Session sess = getCFSessionScope(pc, new RefBooleanImpl());
@@ -560,7 +559,7 @@ public final class ScopeContext {
         }
 	}
 	
-	public synchronized void removeClientScope(PageContext pc) throws PageException {
+	public void removeClientScope(PageContext pc) throws PageException {
 		Client cli = getClientScope(pc);
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		Map<String, Scope> context = getSubMap(cfClientContextes,appContext.getName());
@@ -575,7 +574,7 @@ public final class ScopeContext {
 		Map<String, Map<String, Scope>> contextes = type==Scope.SCOPE_CLIENT?cfClientContextes:cfSessionContextes;
 		Map<String, Scope> context = getSubMap(contextes,appName);
 		Object res = context.remove(cfid);
-		getLog().info("scope-context", "remove "+VariableInterpreter.scopeInt2String(type)+" scope "+appName+"/"+cfid+" from memory");
+		getLog().log(Log.LEVEL_INFO,"scope-context", "remove "+VariableInterpreter.scopeInt2String(type)+" scope "+appName+"/"+cfid+" from memory");
 		
 		return res!=null;
 	}
@@ -587,7 +586,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private Session getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart
@@ -647,7 +646,7 @@ public final class ScopeContext {
 	 * @return session matching the context
 	 * @throws PageException 
 	 */
-	public synchronized Application getApplicationScope(PageContext pc, RefBoolean isNew) {
+	public Application getApplicationScope(PageContext pc, RefBoolean isNew) {
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// getApplication Scope from Context
 			ApplicationImpl application;
@@ -790,7 +789,7 @@ public final class ScopeContext {
                 	if(!(o instanceof StorageScope)) continue;
     				StorageScope scope=(StorageScope)o;
     				if(scope.lastVisit()+timespan<now && !(scope instanceof MemoryScope)) {
-    					getLog().info("scope-context", "remove from memory "+strType+" scope for "+applicationName+"/"+cfid+" from storage "+scope.getStorage());
+    					getLog().log(Log.LEVEL_INFO,"scope-context", "remove from memory "+strType+" scope for "+applicationName+"/"+cfid+" from storage "+scope.getStorage());
     					
         				//if(scope instanceof StorageScope)((StorageScope)scope).store(cfmlFactory.getConfig());
     					fhm.remove(arrClients[y]);
@@ -850,7 +849,7 @@ public final class ScopeContext {
     						if(application!=null)application.setLastAccess(appLastAccess);
     						fhm.remove(cfids[y]);
         					scope.release();
-        					getLog().info("scope-context", "remove memory based "+VariableInterpreter.scopeInt2String(type)+" scope for "+applicationName+"/"+cfid);
+        					getLog().log(Log.LEVEL_INFO,"scope-context", "remove memory based "+VariableInterpreter.scopeInt2String(type)+" scope for "+applicationName+"/"+cfid);
         					count--;
     					}
     				}
@@ -923,7 +922,7 @@ public final class ScopeContext {
 		return "0";
 	}
 
-	public synchronized void invalidateUserScope(PageContextImpl pc,boolean migrateSessionData,boolean migrateClientData) throws PageException {
+	public void invalidateUserScope(PageContextImpl pc,boolean migrateSessionData,boolean migrateClientData) throws PageException {
 		ApplicationContext appContext = pc.getApplicationContext();
 
 		// get in memory scopes

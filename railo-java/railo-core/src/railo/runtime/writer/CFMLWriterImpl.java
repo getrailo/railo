@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
+import railo.runtime.op.Caster;
 
 /**
  * Implementation of a JSpWriter
@@ -32,7 +35,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     private boolean contentLength;
     private CacheItem cacheItem;
 	private HttpServletRequest request;
-	private boolean allowCompression; 
+	private Boolean _allowCompression;
+	private PageContext pc; 
     
     /**
      * constructor of the class
@@ -40,8 +44,9 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @param bufferSize buffer Size
      * @param autoFlush do auto flush Content
      */
-    public CFMLWriterImpl(HttpServletRequest request, HttpServletResponse response, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength,boolean allowCompression) {
+    public CFMLWriterImpl(PageContext pc,HttpServletRequest request, HttpServletResponse response, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength) {
         super(bufferSize, autoFlush);
+        this.pc=pc;
         this.request=request;
         this.response=response;
         this.autoFlush=autoFlush;
@@ -49,7 +54,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         this.closeConn=closeConn;
         this.showVersion=showVersion;
         this.contentLength=contentLength;
-        this.allowCompression=allowCompression;
+        //this.allowCompression=allowCompression;
     }
 
     /* *
@@ -274,8 +279,13 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         	if(closeConn)response.setHeader("connection", "close");
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
-            if(barr.length<=512) allowCompression=false;
-            
+        	boolean allowCompression;
+            if(barr.length<=512) 
+            	allowCompression=false;
+            else if(_allowCompression!=null) 
+            	allowCompression=_allowCompression.booleanValue();
+            else
+            	allowCompression=((PageContextImpl)pc).getAllowCompression();
             out = getOutputStream(allowCompression);
 	        
         	
@@ -552,7 +562,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 
 	@Override
 	public void setAllowCompression(boolean allowCompression) {
-		this.allowCompression=allowCompression;
+		this._allowCompression=Caster.toBoolean(allowCompression);
 	}
 	
 	

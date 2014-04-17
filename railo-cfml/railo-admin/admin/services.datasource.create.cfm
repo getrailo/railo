@@ -397,6 +397,12 @@
 				<tr>
 					<th scope="row">#stText.Settings.dbAllowed#</th>
 					<td>
+
+						<div class="warning">
+							This functionality is deprecated and will be removed in future versions, 
+							restrict operations by using roles and permissions in your DBMS!
+						</div>
+
 						<ul class="radiolist float">
 							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" checked="#datasource.select#"> <b>Select</b></label></li>
 							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" checked="#datasource.insert#"> <b>Insert</b></label></li>
@@ -526,7 +532,7 @@ if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // defau
 
 
 <cfsavecontent variable="codeSample">
-	this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif> = {
+	this.datasources["#datasource.name#"] = {
 	  class: '#datasource.classname#'
 	, connectionString: '#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
 	, username: '#replace(datasource.username,"'","''","all")#'

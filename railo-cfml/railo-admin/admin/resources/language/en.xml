@@ -77,7 +77,7 @@
 	<data key="customtags.archive">Archive</data>
 	<data key="customtags.primary">Primary</data>
 	<data key="customtags.customtagdeepsearch">Search subdirectories</data>
-	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories (not supported for archives)</data>
+	<data key="customtags.customtagdeepsearchdesc">Search for custom tags in subdirectories.</data>
 	<data key="customtags.archivemissing">Please enter a value for the archive name (row </data>
 	<data key="customtags.customtaglocalsearchdesc">Search in the caller directory for the custom tag</data>
 	<data key="customtags.trusted">Trusted</data>
@@ -178,6 +178,8 @@
 	<data key="menu.server.language">Language</data>
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
+	<data key="menu.server.logging">Logging</data>
+	<data key="menu.server.export">Export</data>
 	<data key="menu.services.label">Services</data>
 	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
@@ -214,7 +216,7 @@
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
 	<data key="menu.documentation.objRef">Object Reference</data>
-	<data key="charset.templatecharsetdescription">Default character set for templates (*.cfm and *.cfc files)</data>
+	<data key="charset.templatecharsetdescription">Default character used to read templates (*.cfm and *.cfc files)</data>
 	<data key="charset.webcharsetdescription">Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header</data>
 	<data key="charset.webcharset">Web charset</data>
 	<data key="charset.missingresourcecharset">Please specify a resource charset</data>
@@ -427,6 +429,8 @@
 	<data key="general.seconds">Seconds</data>
 	<data key="general.no">No</data>
 	<data key="general.days">Days</data>
+	<data key="general.elements">Element(s)</data>
+
 	<data key="search.directorypath">Directory path</data>
 	<data key="search.mapped">Mapped</data>
 	<data key="search.searchthecollection">Search the collection</data>
@@ -484,7 +488,7 @@
 	<data key="components.trusted">Trusted</data>
 	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
-	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
+	Search for CFCs in the subdirectories of the "Additional Resources" below.</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: {url})</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
@@ -580,6 +584,8 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
 	<data key="debug.settings.tracing"> Tracing </data>
 	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.dump"> Dump </data>
+	<data key="debug.settings.dumpDesc">Select this option to enable output produced with help of the tag cfdump and send to debugging.</data>
 	<data key="debug.settings.timer"> Timer </data>
 	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
 	<data key="debug.settings.timer"> Timer </data>
@@ -596,7 +602,7 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="scopes.applicationtimeoutdescription">Sets the amount of time Railo will keep the application scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.clienttimeout">Client timeout</data>
 	<data key="scopes.cascadetoresultsetdescription">When a variable has no scope defined (Example: #myVar# instead of #variables.myVar#), Railo will also search available resultsets (CFML&amp;nbsp;Standard) or not</data>
-	<data key="scopes.cascadingdescription">Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#)&lt;br/&gt;- strict: scans only the variables scope&lt;br/&gt;- small: scans the scopes variables,cgi,url,form&lt;br/&gt;- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie</data>
+	<data key="scopes.cascadingdescription">Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#)&lt;br/&gt;- strict: scans only the variables scope&lt;br/&gt;- small: scans the scopes variables,url,form&lt;br/&gt;- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions allow to make sessions over a cluster. when you change this setting you will lose your current session and you must make a new login</data>
 	<data key="scopes.web">Here you can define the settings for how Railo handles scopes.</data>
 	<data key="scopes.localmodeClassic">Classic</data>
@@ -659,15 +665,15 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
 	<data key="setting.dotNotationOriginalCase">Keep original case</data>
 	
-	<data key="setting.supressWSBeforeArg">Supress whitespace before cfargument</data>
+	<data key="setting.suppressWSBeforeArg">Suppress whitespace before cfargument</data>
 
-	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
+	<data key="setting.suppressWSBeforeArgDesc">if set, Railo suppress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
-	<data key="setting.templatecache">Template Cache</data>
-	<data key="setting.templatecacheclear">Clear template cache</data>
+	<data key="setting.templatecache">Page Pool Cache</data>
 	<data key="setting.querycache">Query Cache</data>
 	<data key="setting.web">Railo output control</data>
-	<data key="setting.templatecachecleardesc">Press the button above to clear the template cache.</data>
+	<data key="setting.templatecacheclear">Clear Page Pool Cache</data>
+	<data key="setting.templatecachecleardesc">Press the button above to clear the Page Pool cache. This cache is used to cache the template object classes (loaded source code).</data>
 	<data key="setting.inspecttemplate">Inspect Templates (CFM/CFC)</data>
 	<data key="setting.componentcachecleardesc">Press the button above to clear the component path cache.</data>
 	<data key="setting.ctcachecleardesc">Press the button above to clear the custom tag path cache.</data>
@@ -692,7 +698,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.cfmlWriterWSPref">Smart whitespace management - every whitespace character that follows a whitespace is removed, but whitespace inside the tags: &amp;lt;code&amp;gt;, &amp;lt;pre&amp;gt; and &amp;lt;textarea&amp;gt; is kept</data>
 	<data key="setting.server">Railo output control</data>
 
-	<data key="setting.suppressContent">Supress Content for CFC Remoting</data>
+	<data key="setting.suppressContent">Suppress Content for CFC Remoting</data>
 	<data key="setting.suppressContentDescription">Suppress content written to response stream when a Component is invoked remotely. Only works if the content was not flushed before.</data>
 	<data key="setting.bufferOutput">Buffer Tag Body Output</data>
 	<data key="setting.bufferOutputDescription">If true - the output written to the body of the tag is buffered and is also outputted in case of an exception. Otherwise the content to body is ignored and not displayed when a failure occurs in the body of the tag.</data>
@@ -700,17 +706,17 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
 	<data key="setting.inspecttemplateInherit">Inherit</data>
 	<data key="setting.inspecttemplateInheritDesc">Inherit setting defined in "Performance/Caching"</data>
-	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
+	<data key="setting.querycacheclearcount">Clear Query Cache</data>
 	<data key="setting.inspecttemplateoncedesc">When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead.</data>
 	<data key="setting.inspecttemplateonceShort">Once</data>
 	<data key="setting.inspecttemplateonce">Once ( Good )</data>
 	<data key="setting.inspecttemplateneverdesc">When checked, any requested files found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.</data>
 	<data key="setting.whitespacedescription">Removes all white spaces in the output that follow a white space</data>
 	<data key="setting.whitespace">Whitespace management</data>
-	<data key="setting.templatecacheclearcount">Clear template cache ( {count} element(s) )</data>
+	<data key="setting.templatecacheclearcount">Clear Page Pool Cache</data>
 	
-	<data key="setting.componentcacheclear">Clear component path cache ( {count} element(s) )</data>
-	<data key="setting.ctcacheclear">Clear custom tag path cache ( {count} element(s) )</data>
+	<data key="setting.componentcacheclear">Clear Component Paths Cache</data>
+	<data key="setting.ctcacheclear">Clear Custom Tag Paths Cache</data>
 	
 	<data key="locale">english (united kingdom)</data>
 	<data key="proxy.portdescription">Port for the proxy server (default:80)</data>
@@ -760,6 +766,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="buttons.delete">delete</data>
 	<data key="buttons.reset">reset</data>
 	<data key="buttons.repair">repair</data>
+	<data key="buttons.export">export</data>
 	<data key="video.web.installed">The video components are installed on your system.</data>
 	<data key="video.web.installedbut">The video components are installed but they can not be executed properly.Just switch to the Railo Server Administrator, in order to repair it:</data>
 	<data key="video.upload">Upload</data>
@@ -879,7 +886,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.gateway.buttons.default">set as default</data>
 	<data key="settings.gateway.default">Default</data>
 	<data key="settings.gateway.namemissing">Cancel</data>
-	<data key="settings.gateway.descexisting">List of all existing gateways for ths enviroment</data>
+	<data key="settings.gateway.descexisting">List of all existing gateways for this enviroment</data>
 	<data key="settings.gateway.title">Gateway</data>
 	<data key="settings.dbdatabase">Database</data>
 	<data key="settings.dbhostdesc">Host name where the database server is located</data>
@@ -932,6 +939,10 @@ If the timezone of your Railo instance and your database is different, this can 
 	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
+	<data key="settings.exportAppCFC">Export Application.cfc</data>
+	<data key="settings.exportAppCFCDesc">Export the settings of this Web Context as Application.cfc Template, of course this includes only settings possible in Application.cfc.</data>
+	
+
 	<data key="settings.dbpass">Password</data>
 	<data key="settings.listdatasourcesdescweb"></data>
 	<data key="settings.dbhost">Host/Server</data>
@@ -1106,7 +1117,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.gateway.class">Class</data>
 	<data key="settings.gateway.titleCreate">Create a new Gateway instance</data>
 	<data key="settings.gateway.titleExisting">List of existing gateway instances</data>
-	<data key="settings.gateway.descExisting">List of all existing gateways for ths enviroment</data>
+	<data key="settings.gateway.descExisting">List of all existing gateways for this enviroment</data>
 	<data key="settings.gateway.nameMissing">Cancel</data>
 	<data key="settings.gateway.type">Type</data>
 	<data key="settings.gateway.state">State</data>
@@ -1127,7 +1138,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.class">Class</data>
 	<data key="settings.cache.titleCreate">Create a new cache connection</data>
 	<data key="settings.cache.titleExisting">List of existing cache connections</data>
-	<data key="settings.cache.descExisting">List of all existing connection for ths enviroment</data>
+	<data key="settings.cache.descExisting">List of all existing connection for this enviroment</data>
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>
 	<data key="settings.cache.defaulttypeObject">Object</data>
@@ -1140,6 +1151,9 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaulttypeFunctionDesc">This cache connection is used for caching the results of the tag cffunction/function</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">This cache connection is used for the Ram Resource (ram://...)</data>
+	<data key="settings.cache.defaulttypeInclude">Include</data>
+	<data key="settings.cache.defaulttypeIncludeDesc">This cache connection is used for caching the results of the tag cfinclude</data>
+	
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>
@@ -1148,6 +1162,20 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
+
+
+	<data key="settings.logging.name">Name</data>
+	<data key="settings.logging.layout">Layout</data>
+	<data key="settings.logging.level">Level</data>
+	<data key="settings.logging.appender">Appender</data>
+	<data key="settings.logging.titleCreate">Create new Log</data>
+	<data key="settings.logging.readOnlyTitle">Readonly Logs</data>
+	<data key="settings.logging.readOnlyDesc">Readonly Logs are generated within the "server administrator" for all web instances and can not be modified by the "web administrator.</data>
+	<data key="settings.logging.title">Logs</data>
+	<data key="settings.logging.desc">List of existing Logs for this enviroment</data>
+	<data key="settings.logging.detailDesc">Log settings for a specific Log</data>
+	<data key="settings.logging.noDriver">There are no Appender/Layout drivers in that system</data>
+
 	<data key="settings.cache.Buttons.default">set as default</data>
 	<data key="settings.orm.title">Settings</data>
 	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>

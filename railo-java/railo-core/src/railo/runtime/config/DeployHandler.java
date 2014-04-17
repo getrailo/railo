@@ -15,7 +15,8 @@ import java.util.zip.ZipInputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.compress.ZipUtil;
-import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.Log;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -81,7 +82,7 @@ public class DeployHandler {
 	}
 
 	private static void deployArchive(Config config,Resource archive) throws ZipException, IOException {
-		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
+		Log logger = ((ConfigImpl)config).getLog("deploy");
 		String type=null,virtual=null,name=null;
 		boolean readOnly,topLevel,hidden,physicalFirst;
 		short inspect;
@@ -93,7 +94,7 @@ public class DeployHandler {
 		
 		// no manifest
 		if(entry==null) {
-			log.error("archive","cannot deploy Railo Archive ["+archive+"], file is to old, the file does not have a MANIFEST.");
+			logger.log(Log.LEVEL_ERROR,"archive","cannot deploy Railo Archive ["+archive+"], file is to old, the file does not have a MANIFEST.");
 			moveToFailedFolder(archive);
 			return;
 		}
@@ -133,7 +134,7 @@ public class DeployHandler {
 			ResourceUtil.deleteContent(trgDir, null);
 			ResourceUtil.moveTo(archive, trgFile,true);
 			
-			log.info("archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
+			logger.log(Log.LEVEL_INFO,"archive","add "+type+" mapping ["+virtual+"] with archive ["+trgFile.getAbsolutePath()+"]");
 			if("regular".equalsIgnoreCase(type))
 				ConfigWebAdmin.updateMapping((ConfigImpl)config,virtual, null, trgFile.getAbsolutePath(), "archive", inspect, topLevel);
 			else if("cfc".equalsIgnoreCase(type))
@@ -145,7 +146,7 @@ public class DeployHandler {
 		}
 		catch (Throwable t) {
 			moveToFailedFolder(archive);
-			log.error("archive",ExceptionUtil.getStacktrace(t, true));
+			LogUtil.log(logger, Log.LEVEL_ERROR,"archive",t);
 		}
 	}
 	
@@ -154,7 +155,7 @@ public class DeployHandler {
 		ConfigImpl ci = (ConfigImpl)config;
 		boolean isWeb=config instanceof ConfigWeb;
 		String type=isWeb?"web":"server";
-		LogAndSource log = ((ConfigImpl)config).getDeployLogger();
+		Log logger = ((ConfigImpl)config).getLog("deploy");
 		
 		// Manifest
 		Manifest manifest = null;
@@ -172,7 +173,7 @@ public class DeployHandler {
 	        }
         }
         catch(Throwable t){
-        	log.error("extension", ExceptionUtil.getStacktrace(t, true));
+        	LogUtil.log(logger, Log.LEVEL_ERROR,"extension", t);
 			moveToFailedFolder(ext);
 			return;
         }
@@ -215,20 +216,20 @@ public class DeployHandler {
         
         // check core version
 		if(minCoreVersion>Info.getVersionAsInt()) {
-			log.error("extension", "cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
+			logger.log(Log.LEVEL_ERROR,"extension", "cannot deploy Railo Extension ["+ext+"], Railo Version must be at least ["+strMinCoreVersion+"].");
 			moveToFailedFolder(ext);
 			return;
 		}
 
 		// check loader version
 		if(minLoaderVersion>SystemUtil.getLoaderVersion()) {
-			log.error("extension", "cannot deploy Railo Extension ["+ext+"], Railo Loader Version must be at least ["+strMinLoaderVersion+"], update the railo.jar first.");
+			logger.log(Log.LEVEL_ERROR,"extension", "cannot deploy Railo Extension ["+ext+"], Railo Loader Version must be at least ["+strMinLoaderVersion+"], update the railo.jar first.");
 			moveToFailedFolder(ext);
 			return;
 		}
 		// check id
 		if(!Decision.isUUId(id)) {
-			log.error("extension", "cannot deploy Railo Extension ["+ext+"], this Extension has no valid id ["+id+"],id must be a valid UUID.");
+			logger.log(Log.LEVEL_ERROR,"extension", "cannot deploy Railo Extension ["+ext+"], this Extension has no valid id ["+id+"],id must be a valid UUID.");
 			moveToFailedFolder(ext);
 			return;
 		}
@@ -246,7 +247,7 @@ public class DeployHandler {
 			ResourceUtil.moveTo(ext, trgFile,true);
 		}
 	    catch(Throwable t){
-	    	log.error("extension", ExceptionUtil.getStacktrace(t, true));
+	    	LogUtil.log(logger, Log.LEVEL_ERROR,"extension", t);
 			moveToFailedFolder(ext);
 			return;
 	    }
@@ -262,21 +263,21 @@ public class DeployHandler {
 	        	fileName=fileName(entry);
 	        	// jars
 	        	if(!entry.isDirectory() && (startsWith(path,type,"jars") || startsWith(path,type,"jar") || startsWith(path,type,"lib") || startsWith(path,type,"libs")) && StringUtil.endsWithIgnoreCase(path, ".jar")) {
-	        		log.info("extension","deploy jar "+fileName);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy jar "+fileName);
 	        		ConfigWebAdmin.updateJar(config,zis,fileName,false);
 	        		jars.add(fileName);
 	        	}
 	        	
 	        	// flds
 	        	if(!entry.isDirectory() && startsWith(path,type,"flds") && StringUtil.endsWithIgnoreCase(path, ".fld")) {
-	        		log.info("extension","deploy fld "+fileName);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy fld "+fileName);
 	        		ConfigWebAdmin.updateFLD(config, zis, fileName,false);
 	        		flds.add(fileName);
 	        	}
 	        	
 	        	// tlds
 	        	if(!entry.isDirectory() && startsWith(path,type,"tlds") && StringUtil.endsWithIgnoreCase(path, ".tld")) {
-	        		log.info("extension","deploy tld "+fileName);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy tld "+fileName);
 	        		ConfigWebAdmin.updateTLD(config, zis, fileName,false); 
 	        		tlds.add(fileName);
 	        	}
@@ -286,7 +287,7 @@ public class DeployHandler {
 	        	if(!entry.isDirectory() && startsWith(path,type,"context") && !StringUtil.startsWith(fileName(entry), '.')) {
 	        		realpath=path.substring(8);
 	        		//log.info("extension","deploy context "+realpath);
-	        		log.info("extension","deploy context "+realpath);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy context "+realpath);
 	        		ConfigWebAdmin.updateContext(ci, zis, realpath,false);
 	        		contexts.add(realpath);
 	        	}
@@ -295,7 +296,7 @@ public class DeployHandler {
 	        	if(!entry.isDirectory() && startsWith(path,type,"applications") && !StringUtil.startsWith(fileName(entry), '.')) {
 	        		realpath=path.substring(13);
 	        		//log.info("extension","deploy context "+realpath);
-	        		log.info("extension","deploy application "+realpath);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy application "+realpath);
 	        		ConfigWebAdmin.updateApplication(ci, zis, realpath,false);
 	        		applications.add(realpath);
 	        	}
@@ -318,7 +319,7 @@ public class DeployHandler {
 	    catch(Throwable t){
 	    	// installation failed
 	    	
-	    	log.error("extension",ExceptionUtil.getStacktrace(t, true));
+	    	LogUtil.log(logger, Log.LEVEL_ERROR,"extension",t);
 			moveToFailedFolder(trgFile);
 			return;
 	    }

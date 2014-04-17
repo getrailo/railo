@@ -1,6 +1,10 @@
 <cfparam name="url.func" default="">
+<cfparam name="url.keyword" default="">
+
+<cfset stText.doc.filterByKeyword="Filter by Keyword">
 
 <cfset funcList=getFunctionList()>
+<cfset keywords=getFunctionKeywords()>
 
 <cfscript>
 	NL="
@@ -16,9 +20,14 @@
 
 <cfoutput>
 	<script type="text/javascript">
+		function goToKeyword(field){
+			var value=field.options[field.selectedIndex].value;
+			var path="#request.self#?action=#url.action#&keyword="+value;
+			window.location=(path);
+		}
 		function detail(field){
 			var value=field.options[field.selectedIndex].value;
-			var path="#request.self#?action=#url.action#&func="+value;
+			var path="#request.self#?action=#url.action#&keyword=#url.keyword#&func="+value;
 			window.location=(path);
 		}
 	</script>
@@ -28,6 +37,19 @@
 		<table class="maintbl">
 			<tbody>
 				<tr>
+					<th scope="row">#stText.doc.filterByKeyword#</th>
+					<td>
+						<select name="keyword" onchange="goToKeyword(this)" class="large">
+							<option value=""> -------------- </option>
+							<cfloop array="#keywords#" index="key">
+								<option value="#key#" <cfif url.keyword EQ key>selected="selected"</cfif>>#key#</option>
+							</cfloop>
+						</select>
+					</td>
+				</tr>
+
+
+				<tr>
 					<th scope="row">#stText.doc.choosefunction#</th>
 					<td>
 						<select name="func" onchange="detail(this)" class="large">
@@ -36,6 +58,12 @@
 							<cfset ArraySort(arr,'textnocase')>
 							<cfloop array="#arr#" index="key">
 								<cfif left(key,1) NEQ "_">
+									<cfif len(url.keyword)>
+										<cfset _data=getFunctionData(key)>
+										<cfif !structKeyExists(_data,"keywords") || !ArrayFindNoCase(_data.keywords,url.keyword)>
+											<cfcontinue>
+										</cfif>
+									</cfif>
 									<option value="#key#" <cfif url.func EQ key>selected="selected"</cfif>>#key#</option>
 								</cfif>
 							</cfloop>

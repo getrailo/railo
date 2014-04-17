@@ -629,6 +629,16 @@ public final class XMLCaster {
 			return table;
 			
 		}
+		// Text
+		if(node instanceof Text) {
+			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
+			table.setTitle("XML Text");
+			Text txt=(Text) node;
+			
+			table.appendRow(1,new SimpleDumpData("XmlText"),new SimpleDumpData(txt.getData()));
+			return table;
+			
+		}
 		// Attr
 		if(node instanceof Attr) {
 			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");

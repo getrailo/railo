@@ -116,7 +116,7 @@ public final class Throw extends TagImpl {
 		this.level=(int)level;
 	}
 
-	private PageException toPageException(Object object, PageException defaultValue) throws PageException {
+	public static PageException toPageException(Object object, PageException defaultValue) throws PageException {
 		if((object instanceof ObjectWrap))
 			return toPageException(((ObjectWrap)object).getEmbededObject(),defaultValue);
 		

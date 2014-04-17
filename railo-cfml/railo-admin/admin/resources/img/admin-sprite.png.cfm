@@ -23,5 +23,5 @@
 		<cfcontent reset='#true#' type='#mimetype#' variable='#toBinary( data )#'><cfabort>
 	<cfelse>
 
-		<cfcontent reset='#true#'><cfoutput>data:image/image/png;base64,#data#</cfoutput><cfabort>
+		<cfcontent reset='#true#'><cfoutput>data:image/png;base64,#data#</cfoutput><cfabort>
 	</cfif>

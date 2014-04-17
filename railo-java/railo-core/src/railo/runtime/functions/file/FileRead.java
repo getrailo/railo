@@ -7,6 +7,7 @@ import java.io.InputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -14,7 +15,7 @@ import railo.runtime.op.Decision;
 public class FileRead {
 
 	public static Object call(PageContext pc, Object path) throws PageException {
-		return _call(pc,Caster.toResource(pc,path,true),pc.getConfig().getResourceCharset());
+		return _call(pc,Caster.toResource(pc,path,true),((PageContextImpl)pc).getResourceCharset().name());
 	}
 	
 	public static Object call(PageContext pc, Object obj, Object charsetOrSize) throws PageException {
@@ -26,7 +27,7 @@ public class FileRead {
 		Resource res = Caster.toResource(pc,obj,true);
 		String charset=Caster.toString(charsetOrSize);
 		if(Decision.isInteger(charset)){
-			charset=pc.getConfig().getResourceCharset();
+			charset=((PageContextImpl)pc).getResourceCharset().name();
 			return _call(pc,res,charset,Caster.toIntValue(charset));
 		}
 		

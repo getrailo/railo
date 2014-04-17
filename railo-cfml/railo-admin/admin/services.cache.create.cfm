@@ -69,7 +69,6 @@ Redirtect to entry --->
 	<cfset connection.custom=struct()>
 	<cfset driver=drivers[form.class]>
 </cfif>
-
 <cfoutput>
 	<!--- 
 	Error Output --->
@@ -237,7 +236,7 @@ Redirtect to entry --->
 					<td>
 						<select name="default">
 							<option value="">------</option>
-							<cfloop index="type" list="function,object,template,query,resource">
+							<cfloop index="type" list="function,object,template,query,resource,include">
 								<option <cfif connection.default EQ type>selected="selected"</cfif> value="#type#">#stText.Settings.cache['defaultType'& type]#</option>
 							</cfloop>
 						</select>

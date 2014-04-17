@@ -345,7 +345,7 @@ public class JavaObject implements Objects,ObjectWrap {
     @Override
     public double castToDoubleValue(double defaultValue) {
         try {
-			return Caster.toDoubleValue(getEmbededObject(),defaultValue);
+			return Caster.toDoubleValue(getEmbededObject(),true,defaultValue);
 		} catch (PageException e) {
 			return defaultValue;
 		}
@@ -359,7 +359,7 @@ public class JavaObject implements Objects,ObjectWrap {
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         try {
-			return DateCaster.toDateAdvanced(getEmbededObject(),true,null,defaultValue);
+			return DateCaster.toDateAdvanced(getEmbededObject(),DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
 		} catch (PageException e) {
 			return defaultValue;
 		}

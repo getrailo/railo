@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
+import railo.runtime.ComponentSpecificAccess;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -20,7 +20,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.UDF;
-import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import flex.messaging.io.amf.ASObject;
@@ -62,8 +61,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
 	protected ASObject toAMFObject(Component cfc) throws PageException {
 		// add properties
 		ASObject aso = doProperties?super.toAMFObject(cfc):new ASObject();
-		ComponentWrap cw=null;
-		if(cfc instanceof ComponentAccess)cw=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,cfc);
+		ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_REMOTE,cfc);
 		
 		Iterator it = cfc.entrySet().iterator();
         Map.Entry entry;

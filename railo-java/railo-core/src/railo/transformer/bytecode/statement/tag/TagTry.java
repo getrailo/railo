@@ -113,33 +113,29 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 		// has no try body, if there is no try body, no catches are executed, only finally 
 		if(!tryBody.hasStatements()) {
 			
-			if(_finally!=null && _finally.getBody()!=null)_finally.getBody().writeOut(bc);
+			if(_finally!=null && _finally.getBody()!=null){
+				BodyBase.writeOut(bc, _finally.getBody());
+				//ExpressionUtil.writeOut(_finally.getBody(), bc);
+			}
 			return;
 		}
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
-				/*GeneratorAdapter ga = bc.getAdapter();
-				if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)
-					ASMUtil.visitLabel(ga,fcf.getFinalEntryLabel());
-				*/
 				if(_finally!=null) {
 					
 					ExpressionUtil.visitLine(bc, _finally.getStart());
-					_finally.getBody().writeOut(bc);
-					
+					BodyBase.writeOut(bc, _finally.getBody());
+					//ExpressionUtil.writeOut(_finally.getBody(), bc);
 				}
-				/*if(fcf!=null){
-					Label l=fcf.getAfterFinalGOTOLabel();
-					if(l!=null)ga.visitJumpInsn(Opcodes.GOTO, l);
-				}*/
 			}
 		},getFlowControlFinal());
 		
 		
 		// Try
 		tcfv.visitTryBegin(bc);
-			tryBody.writeOut(bc);
+			BodyBase.writeOut(bc, tryBody);
+			//ExpressionUtil.writeOut(tryBody, bc);
 		int e=tcfv.visitTryEndCatchBeging(bc);
 			// if(e instanceof railo.runtime.exp.Abort) throw e;
 			Label abortEnd=new Label();
@@ -236,7 +232,8 @@ public final class TagTry extends TagBase implements FlowControlRetry {
         adapter.push(caugth);
         adapter.push(store);
         adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
-		tag.getBody().writeOut(bc);
+        BodyBase.writeOut(bc, tag.getBody());
+		//ExpressionUtil.writeOut(tag.getBody(), bc);
     	
 	}
 	

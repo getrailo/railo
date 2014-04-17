@@ -13,11 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
 
+import railo.commons.digest.HashUtil;
 import railo.commons.io.SystemUtil;
-import railo.commons.io.log.Log;
-import railo.commons.io.log.LogAndSource;
-import railo.commons.io.log.LogAndSourceImpl;
-import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -72,7 +69,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverFunctionMapping;
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
     
     
@@ -261,23 +257,33 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    	}
 			return serverFunctionMapping;
 		}
-	    private Map<String,Mapping> applicationMappings=new ReferenceMap();
+	    private Map<String,Mapping> applicationMappings=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+
+	    
+	    
 		private TagHandlerPool tagHandlerPool=new TagHandlerPool(this);
-		public Mapping getApplicationMapping(String virtual, String physical) {
-			return getApplicationMapping(virtual, physical, null);
-		}
 		
-		public Mapping getApplicationMapping(String virtual, String physical, String archive) {
-			String key=virtual.toLowerCase()+physical.toLowerCase();
-			Mapping m= applicationMappings.get(key);
+
+		public Mapping getApplicationMapping(String type,String virtual, String physical,String archive,boolean physicalFirst, boolean ignoreVirtual) {
+			String key=type+":"+
+				virtual.toLowerCase()
+				+":"+(physical==null?"":physical.toLowerCase())
+				+":"+(archive==null?"":archive.toLowerCase())
+				+":"+physicalFirst;
+			key=Long.toString(HashUtil.create64BitHash(key),Character.MAX_RADIX);
+			
+			
+			Mapping m=applicationMappings.get(key);
+			
 			if(m==null){
-				m=new MappingImpl(this,
-					virtual,
+				m=new MappingImpl(
+					this,virtual,
 					physical,
-					archive,ConfigImpl.INSPECT_UNDEFINED,true,false,false,false,true,false,null
+					archive,ConfigImpl.INSPECT_UNDEFINED,physicalFirst,false,false,false,true,ignoreVirtual,null
 					);
-				applicationMappings.put(key, m);
+				applicationMappings.put(key,m);
 			}
+			
 			return m;
 		}
 
@@ -322,16 +328,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public void setGatewayEngine(GatewayEngineImpl gatewayEngine) {
 			this.gatewayEngine=gatewayEngine;
 		}
-
-	    public LogAndSource getGatewayLogger() {
-	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-			return gatewayLogger;
-	    }
-
-
-	    public void setGatewayLogger(LogAndSource gatewayLogger) {
-	    	this.gatewayLogger=gatewayLogger;
-	    }
 
 		public TagHandlerPool getTagHandlerPool() {
 			return tagHandlerPool;
@@ -439,14 +435,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.allowRequestTimeout();
 		}
 		
-		public CFMLWriter getCFMLWriter(HttpServletRequest req, HttpServletResponse rsp) {
+		public CFMLWriter getCFMLWriter(PageContext pc, HttpServletRequest req, HttpServletResponse rsp) {
 			// FUTURE  move interface CFMLWriter to Loader and load dynaicly from railo-web.xml
 	        if(writerType==CFML_WRITER_WS)
-	            return new CFMLWriterWS		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWS		(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	        else if(writerType==CFML_WRITER_REFULAR) 
-	            return new CFMLWriterImpl			(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterImpl			(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	        else
-	            return new CFMLWriterWSPref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWSPref	(pc,req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength());
 	    }
 
 		

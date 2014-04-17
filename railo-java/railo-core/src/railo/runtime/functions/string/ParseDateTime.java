@@ -25,7 +25,6 @@ public final class ParseDateTime implements Function {
 		return _call(oDate,strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	private static railo.runtime.type.dt.DateTime _call( Object oDate,TimeZone tz) throws PageException {
-		// MUSt implement popConversion
-		return DateCaster.toDateAdvanced(oDate,tz);
+		return DateCaster.toDateAdvanced(oDate,DateCaster.CONVERTING_TYPE_YEAR,tz);
 	}
 }

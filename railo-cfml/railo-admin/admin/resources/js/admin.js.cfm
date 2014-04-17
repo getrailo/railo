@@ -3,7 +3,7 @@
 	
 	<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
 	
-	<cfset mimetype = "text/js" />
+	<cfset mimetype = "text/javascript" />
 	<cfset etag = hash( getCurrentTemplatePath() & '-' & Server.Railo.Version ) />
 
 	<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>

@@ -3,7 +3,7 @@ Railo-Tests
 
 Unit Tests for Railo Server.
 
-This Test Suite needs [MXUnit](http://mxunit.org/) to be installed (copy of the folder MXUnit in webroot) and they need at least Railo 4.1.1.000.
+This Test Suite needs no addional installation.
 To write your own testcases, check out the folder "/testcase-templates", there you can find various testcase templates with readme to all of them.
 
 

@@ -163,7 +163,7 @@ public class ComponentListPackage implements Function {
 		if(archive!=null) {
 			// TODO nor working with pathes with none ascci characters, eith none ascci characters, the java class path is renamed, so make sure you rename the path as well
 			String strDir="zip://"+archive+"!"+File.separator+path;
-			Resource dir = ResourceUtil.toResourceNotExisting(pc, strDir,true);
+			Resource dir = ResourceUtil.toResourceNotExisting(pc, strDir,true,false);
 			
 			if(dir.isDirectory()) {
 				java.util.List<String> list=new ArrayList<String>();
@@ -177,7 +177,7 @@ public class ComponentListPackage implements Function {
 					
 					try {
 						Class<?> clazz = mapping.getClassLoaderForArchive().loadClass(className);
-						sourceName=ASMUtil.getSourceName(clazz);
+						sourceName=ASMUtil.getSourceName(pc.getConfig(),clazz,true);
 					}
 					catch (Throwable t) {}
 					

@@ -7,7 +7,9 @@ import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -140,6 +142,8 @@ public class CFMLExpressionInterpreter {
 	
     protected static final short STATIC=0;
     private static final short DYNAMIC=1;
+	private static FunctionLibFunction LITERAL_ARRAY = null;
+	private static FunctionLibFunction LITERAL_STRUCT = null;
 	private static FunctionLibFunction JSON_ARRAY = null;
 	private static FunctionLibFunction JSON_STRUCT = null;
 	
@@ -178,9 +182,12 @@ public class CFMLExpressionInterpreter {
     	this.pc=ThreadLocalPageContext.get(pc);
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
+        if(LITERAL_ARRAY==null)LITERAL_ARRAY=fld.getFunction("_literalArray");
+        if(LITERAL_STRUCT==null)LITERAL_STRUCT=fld.getFunction("_literalStruct");
         if(JSON_ARRAY==null)JSON_ARRAY=fld.getFunction("_jsonArray");
-		if(JSON_STRUCT==null)JSON_STRUCT=fld.getFunction("_jsonStruct");
+        if(JSON_STRUCT==null)JSON_STRUCT=fld.getFunction("_jsonStruct");
         isJson=this instanceof JSONExpressionInterpreter;
+		
         
 		
         cfml.removeSpace();
@@ -226,7 +233,7 @@ public class CFMLExpressionInterpreter {
     private Ref functionArgDeclarationVarString() throws PageException {
         
             cfml.removeSpace();
-            StringBuffer str=new StringBuffer();
+            StringBuilder str=new StringBuilder();
             String id=null;
             while((id=identifier(false))!=null) {
                 if(str.length()>0)str.append('.');
@@ -297,7 +304,7 @@ public class CFMLExpressionInterpreter {
             	
             }
             else {
-	            Ref left = assignOp();            
+	            Ref left = assignOp();
 	            if(!cfml.forwardIfCurrent(':'))
 	            	throw new InterpreterException("Syntax Error, invalid conditional operator ["+cfml.toString()+"]");
 	            cfml.removeSpace();
@@ -974,11 +981,11 @@ public class CFMLExpressionInterpreter {
                 return ref;
             }  
         // JSON
-            if((ref=json(JSON_ARRAY,'[',']'))!=null) {
+            if((ref=json(isJson?JSON_ARRAY:LITERAL_ARRAY,'[',']'))!=null) {
 				mode=DYNAMIC;
 				return ref;
 			} 
-			if((ref=json(JSON_STRUCT,'{','}'))!=null) {
+			if((ref=json(isJson?JSON_STRUCT:LITERAL_STRUCT,'{','}'))!=null) {
 				mode=DYNAMIC;
 				return ref;
 			} 
@@ -1386,8 +1393,10 @@ public class CFMLExpressionInterpreter {
             if(!firstCanBeNumber)return null;
             else if(!cfml.isCurrentDigit())return null;
         }
-        
-        boolean doUpper = !isJson && ((ConfigWebImpl)pc.getConfig()).getDotNotationUpperCase();
+        boolean doUpper;
+        PageSource ps = pc.getCurrentPageSource();
+        if(ps!=null) doUpper= !isJson && ((MappingImpl)ps.getMapping()).getDotNotationUpperCase();
+        else doUpper = !isJson && ((ConfigWebImpl)pc.getConfig()).getDotNotationUpperCase();
         StringBuilder sb=new StringBuilder();
         sb.append(doUpper?cfml.getCurrentUpper():cfml.getCurrent());
         do {

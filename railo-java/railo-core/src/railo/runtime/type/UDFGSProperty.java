@@ -187,7 +187,7 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return UDFUtil.toDumpData(pageContext, maxlevel, properties, this,false);
+		return UDFUtil.toDumpData(pageContext, maxlevel, properties, this,UDFUtil.TYPE_UDF);
 	}
 	
 	@Override
@@ -197,8 +197,8 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 	
 	
 
-	final Object cast(FunctionArgument arg,Object value, int index) throws PageException {
-		if(value==null || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+	final Object cast(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
+		if(value==null || Decision.isCastableTo(pc,arg.getType(),arg.getTypeAsString(),value)) 
 			return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}
@@ -215,8 +215,8 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 		if(validateParams==null) return;
 
 		if(validate.equals("integer") || validate.equals("numeric") || validate.equals("number")){
-			double min=Caster.toDoubleValue(validateParams.get(KeyConstants._min,null),Double.NaN);
-			double max=Caster.toDoubleValue(validateParams.get(KeyConstants._max,null),Double.NaN);
+			double min=Caster.toDoubleValue(validateParams.get(KeyConstants._min,null),false,Double.NaN);
+			double max=Caster.toDoubleValue(validateParams.get(KeyConstants._max,null),false,Double.NaN);
 			double d=Caster.toDoubleValue(obj);
 			if(!Double.isNaN(min) && d<min)
 				throw new ExpressionException(validate+" ["+Caster.toString(d)+"] is out of range, value must be more than or equal to ["+min+"]");
@@ -224,8 +224,8 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 				throw new ExpressionException(validate+" ["+Caster.toString(d)+"] is out of range, value must be less than or equal to ["+max+"]");
 		}
 		else if(validate.equals("string")){
-			double min=Caster.toDoubleValue(validateParams.get(MIN_LENGTH,null),Double.NaN);
-			double max=Caster.toDoubleValue(validateParams.get(MAX_LENGTH,null),Double.NaN);
+			double min=Caster.toDoubleValue(validateParams.get(MIN_LENGTH,null),false,Double.NaN);
+			double max=Caster.toDoubleValue(validateParams.get(MAX_LENGTH,null),false,Double.NaN);
 			String str=Caster.toString(obj);
 			int l=str.length();
 			if(!Double.isNaN(min) && l<((int)min))

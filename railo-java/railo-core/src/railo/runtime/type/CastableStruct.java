@@ -65,7 +65,7 @@ public final class CastableStruct extends StructImpl  {
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
     	if(value==null) return super.castToDateTime(defaultValue);
-		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
+		return DateCaster.toDateAdvanced(value,DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 
 	@Override
@@ -77,7 +77,7 @@ public final class CastableStruct extends StructImpl  {
     @Override
     public double castToDoubleValue(double defaultValue) {
     	if(value==null) return super.castToDoubleValue(defaultValue);
-		return Caster.toDoubleValue(value,defaultValue);
+		return Caster.toDoubleValue(value,true,defaultValue);
     }
 
 	@Override

@@ -17,6 +17,10 @@ import javax.servlet.jsp.JspException;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.cache.tag.CacheHandler;
+import railo.runtime.cache.tag.CacheHandlerFactory;
+import railo.runtime.cache.tag.CacheItem;
+import railo.runtime.cache.tag.query.StoredProcCacheItem;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
@@ -44,7 +48,6 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.KeyConstants;
 
@@ -93,10 +96,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private String result="cfstoredproc";
 	
 	private boolean clearCache;
-	private DateTimeImpl cachedbefore;
+	//private DateTimeImpl cachedbefore;
 	//private String cachename="";
 	private DateTime cachedafter;
 	private ProcParamBean returnValue=null;
+	private Object cachedWithin;
 	//private Map<String,ProcMetaCollection> procedureColumnCache;
 	
 	public void release() {
@@ -115,7 +119,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		
 
 		clearCache=false;
-		cachedbefore=null;
+		cachedWithin=null;
 		cachedafter=null;
 		//cachename="";
 		
@@ -145,12 +149,36 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	/** set the value cachedwithin
 	*  
 	* @param cachedwithin value to set
-	**/
+	*
 	public void setCachedwithin(TimeSpan cachedwithin)	{
 		if(cachedwithin.getMillis()>0)
 			this.cachedbefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedwithin.getMillis(),false);
 		else clearCache=true;
+	}*/
+	
+	/** set the value cachedwithin
+	*  
+	* @param cachedwithin value to set
+	**/
+	public void setCachedwithin(TimeSpan cachedwithin)	{
+		if(cachedwithin.getMillis()>0)
+			this.cachedWithin=cachedwithin;
+		else clearCache=true;
 	}
+	
+	public void setCachedwithin(Object cachedwithin) throws PageException	{
+		if(cachedwithin instanceof String) {
+			String str=((String)cachedwithin).trim();
+			if("request".equalsIgnoreCase(str)) {
+				this.cachedWithin="request";
+				return;
+			}
+		}
+		setCachedwithin(Caster.toTimespan(cachedwithin));
+	}
+	
+	
+	
 
 	/**
 	 * @param blockfactor The blockfactor to set.
@@ -459,17 +487,27 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    
 	// cache
 		    boolean isFromCache=false;
-		    boolean hasCached=cachedbefore!=null || cachedafter!=null;
+		    boolean hasCached=cachedWithin!=null || cachedafter!=null;
 		    Object cacheValue=null;
 		    String dsn = ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
 			if(clearCache) {
 				hasCached=false;
-				pageContext.getQueryCache().remove(pageContext,_sql,dsn,username,password);
+				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
+				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+				ch.remove(pageContext, id);
+				//pageContext.getQueryCache().remove(pageContext,_sql,dsn,username,password);
 			}
 			else if(hasCached) {
-				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
+				hasCached=false;
+				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
+				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+				
+				CacheItem ci = ch.get(pageContext, id);
+				cacheValue=((StoredProcCacheItem)ci).getStruct();
+				//cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
 			}
 			int count=0;
+			long start=System.currentTimeMillis();
 			if(cacheValue==null){
 				// execute
 				boolean isResult=callStat.execute();
@@ -522,7 +560,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				}
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
-			    	pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
+			    	String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
+					CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+					ch.set(pageContext, id, cachedWithin, new StoredProcCacheItem(cache,procedure, System.currentTimeMillis()-start));
+			    	//pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
 			    }
 			    
 			}

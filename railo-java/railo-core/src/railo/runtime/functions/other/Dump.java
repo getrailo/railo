@@ -11,6 +11,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -130,7 +131,7 @@ public final class Dump implements Function {
 						outputRes, 
 						writer.toString(pc,dd,expand)+
 						"\n************************************************************************************\n", 
-						pc.getConfig().getResourceCharset(), true);
+						((PageContextImpl)pc).getResourceCharset(), true);
 			
 		} 
 		catch (IOException e) {
@@ -139,9 +140,9 @@ public final class Dump implements Function {
 		
 		return "";
 	}
-	public static String getContext() {
+	/*public static String getContext() {
 		//Throwable cause = t.getCause();
-		StackTraceElement[] traces = new Exception("Stack trace").getStackTrace();
+		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 		
 		int line=0;
 		String template;
@@ -153,5 +154,5 @@ public final class Dump implements Function {
 			return template+":"+line;
 		}
 		return null;
-	}
+	}*/
 }

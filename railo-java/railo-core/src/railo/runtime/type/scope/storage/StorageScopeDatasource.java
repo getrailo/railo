@@ -97,12 +97,12 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			throw Caster.toPageException(se);
 		}
 	    finally {
-	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
+	    	if(dc!=null) pool.releaseDatasourceConnection(config,dc,true);
 	    }
 	    
 	    if(query!=null && pc.getConfig().debug()) {
 	    	boolean debugUsage=DebuggerUtil.debugQueryUsage(pc,query);
-	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),pc.getCurrentPageSource(),query.getExecutionTime());
+	    	((DebuggerPro)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",query.getSql(),query.getRecordcount(),((PageContextImpl)pc).getCurrentPageSource(null),query.getExecutionTime());
 	    }
 	    boolean _isNew = query.getRecordcount()==0;
 	    
@@ -132,7 +132,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		DatasourceConnection dc = null;
 		ConfigImpl ci = (ConfigImpl)config;
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
-		Log log=((ConfigImpl)config).getScopeLogger();
+		Log log=((ConfigImpl)config).getLog("scope");
 		try {
 			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
 			DataSource ds;
@@ -146,7 +146,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			ScopeContext.error(log, t);
 		}
 		finally {
-			if(dc!=null) pool.releaseDatasourceConnection(dc);
+			if(dc!=null) pool.releaseDatasourceConnection(config,dc,true);
 		}
 	}
 	
@@ -156,7 +156,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		
 		
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
-		Log log=((ConfigImpl)config).getScopeLogger();
+		Log log=((ConfigImpl)config).getLog("scope");
 		try {
 			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
 			DataSource ds;
@@ -170,7 +170,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			ScopeContext.error(log, t);
 		}
 		finally {
-			if(dc!=null) pool.releaseDatasourceConnection(dc);
+			if(dc!=null) pool.releaseDatasourceConnection(ci,dc,true);
 		}
 	}
 	

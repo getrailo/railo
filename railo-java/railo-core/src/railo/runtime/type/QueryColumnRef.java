@@ -246,7 +246,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     public double castToDoubleValue(double defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
 		if(value==NullSupportHelper.NULL())return defaultValue;
-		return Caster.toDoubleValue(value,defaultValue);
+		return Caster.toDoubleValue(value,true,defaultValue);
     }
 
     @Override
@@ -258,7 +258,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     public DateTime castToDateTime(DateTime defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
 		if(value==NullSupportHelper.NULL())return defaultValue;
-		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
+		return DateCaster.toDateAdvanced(value,DateCaster.CONVERTING_TYPE_OFFSET,null,defaultValue);
     }
 
 	@Override

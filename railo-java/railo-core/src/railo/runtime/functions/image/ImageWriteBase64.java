@@ -15,9 +15,8 @@ public class ImageWriteBase64 {
 	}
 	
 	public static String call(PageContext pc, Object name, String destination, String format, boolean inHTMLFormat) throws PageException {
-		if(name instanceof String)
-			name=pc.getVariable(Caster.toString(name));
-		Image image=Image.toImage(name);
+		//if(name instanceof String)name=pc.getVariable(Caster.toString(name));
+		Image image=Image.toImage(pc,name);
 		try {
 			return image.writeBase64(ResourceUtil.toResourceNotExisting(pc, destination), format, inHTMLFormat);
 		} catch (IOException e) {

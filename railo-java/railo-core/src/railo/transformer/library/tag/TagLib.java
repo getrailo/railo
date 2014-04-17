@@ -121,6 +121,18 @@ public class TagLib implements Cloneable {
 		return tags.get(name);
 	}
 	
+	public TagLibTag getTag(Class clazz)	{
+		Iterator<TagLibTag> _tags = tags.values().iterator();
+		TagLibTag tlt;
+		while(_tags.hasNext()){
+			tlt = _tags.next();
+			if(tlt.getTagClassName().equalsIgnoreCase(clazz.getName())) {
+				return tlt;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Gibt einen Tag (TagLibTag)zurueck, welches definiert hat, dass es einen Appendix besitzt.
 	 * D.h. dass der Name des Tag mit weiteren Buchstaben erweitert sein kann, 
@@ -393,5 +405,6 @@ public class TagLib implements Cloneable {
 		}
 		return scriptTags;
 	}
+	
 	
 }

@@ -74,7 +74,7 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
     @Override
     public String toString() {
         if(items.length==0) return strSQL;
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         int pos;
         int last=0;
         for(int i=0;i<items.length;i++) {
@@ -95,7 +95,7 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
     @Override
     public String toHashString() {
         if(items.length==0) return strSQL;
-        StringBuffer sb=new StringBuffer(strSQL);
+        StringBuilder sb=new StringBuilder(strSQL);
         for(int i=0;i<items.length;i++) {
             sb.append(';').append(items[i].toString());
         }

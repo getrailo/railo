@@ -117,7 +117,7 @@ public class QueryImpl implements Query,Objects {
 	private int recordcount=0;
 	private int columncount;
 	private long exeTime=0;
-    private boolean isCached=false;
+    private String cacheType=null;
     private String name;
 	private int updateCount;
     private QueryImpl generatedKeys;
@@ -509,7 +509,7 @@ public class QueryImpl implements Query,Objects {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toSQLType(strTypes[i]),recordcount);
 		}
 	}
 	
@@ -529,7 +529,7 @@ public class QueryImpl implements Query,Objects {
 		recordcount=rowNumber;
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columnNames.length;i++) {
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toSQLType(strTypes[i]),recordcount);
 		}
 		validateColumnNames(columnNames);
 	}
@@ -571,7 +571,7 @@ public class QueryImpl implements Query,Objects {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toSQLType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
 		}
 		validateColumnNames(columnNames);
 	}
@@ -585,7 +585,7 @@ public class QueryImpl implements Query,Objects {
 	 */
 
 	public QueryImpl(String[] strColumnNames, Array[] arrColumns, String name) throws DatabaseException {
-		this(_toKeys(strColumnNames),arrColumns,name);		
+		this(CollectionUtil.toKeys(strColumnNames,true),arrColumns,name);		
 	}	
 	
 	private static void validateColumnNames(Key[] columnNames) throws DatabaseException {
@@ -603,13 +603,7 @@ public class QueryImpl implements Query,Objects {
 	}
 	
 
-	private static Collection.Key[] _toKeys(String[] strColumnNames) {
-		Collection.Key[] columnNames=new Collection.Key[strColumnNames.length];
-		for(int i=0	;i<columnNames.length;i++) {
-			columnNames[i]=KeyImpl.init(strColumnNames[i].trim());
-		}
-		return columnNames;
-	}
+	
 	private static String[] _toStringKeys(Collection.Key[] columnNames) {
 		String[] strColumnNames=new String[columnNames.length];
 		for(int i=0	;i<strColumnNames.length;i++) {
@@ -1146,7 +1140,7 @@ public class QueryImpl implements Query,Objects {
 	        newResult.template=template;
 	        newResult.recordcount=recordcount;
 	        newResult.columncount=columncount;
-	        newResult.isCached=isCached;
+	        newResult.cacheType=cacheType;
 	        newResult.name=name;
 	        newResult.exeTime=exeTime;
 	        newResult.updateCount=updateCount;
@@ -1379,14 +1373,22 @@ public class QueryImpl implements Query,Objects {
         return false;
     }
 
+    public void setCacheType(String cacheType) {
+    	this.cacheType=cacheType; 
+    }
+
+    public String getCacheType() {
+    	return cacheType; 
+    }
+
     @Override
     public void setCached(boolean isCached) {
-        this.isCached=isCached; 
+    	throw new RuntimeException("method no longer supported"); 
     }
 
     @Override
     public boolean isCached() {
-        return isCached;
+        return cacheType!=null;
     }
 
 
@@ -2625,7 +2627,7 @@ public class QueryImpl implements Query,Objects {
 			this.columns=other.columns;
 			this.exeTime=other.exeTime;
 			this.generatedKeys=other.generatedKeys;
-			this.isCached=other.isCached;
+			this.cacheType=other.cacheType;
 			this.name=other.name;
 			this.recordcount=other.recordcount;
 			this.sql=other.sql;
@@ -2886,7 +2888,7 @@ public class QueryImpl implements Query,Objects {
 	        newResult.template=qry.getTemplate();
 	        newResult.recordcount=qry.getRecordcount();
 	        newResult.columncount=newResult.columnNames.length;
-	        newResult.isCached=qry.isCached();
+	        newResult.cacheType=qry instanceof QueryImpl?((QueryImpl)qry).getCacheType():null;
 	        newResult.name=qry.getName();
 	        newResult.exeTime=qry.getExecutionTime();
 	        newResult.updateCount=qry.getUpdateCount();

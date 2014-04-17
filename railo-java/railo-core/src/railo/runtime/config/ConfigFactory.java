@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.Info;
 
@@ -156,7 +157,9 @@ public abstract class ConfigFactory {
 	static void createFileFromResource(String resource, Resource file, String password) throws IOException {
 		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT), "write file:" + file);
 		file.createNewFile();
-		IOUtil.copy(new Info().getClass().getResourceAsStream(resource), file, true);
+		InputStream is = new Info().getClass().getResourceAsStream(resource);
+		if(is==null) throw new IOException("file ["+resource+"] does not exist.");
+		IOUtil.copy(is, file, true);
 	}
 	
 
@@ -176,7 +179,7 @@ public abstract class ConfigFactory {
 			createFileFromResource(resource, file, null);
 		}
 		catch (Throwable e) {
-			SystemOut.printDate(e.toString(), SystemUtil.ERR);
+			SystemOut.printDate(ExceptionUtil.getStacktrace(e, true), SystemUtil.ERR);
 		}
 	}
 
@@ -204,7 +207,11 @@ public abstract class ConfigFactory {
 
 	static void delete(Resource dbDir, String name) {
 		Resource f = dbDir.getRealResource(name);
-		if (f.exists()) f.delete();
+		if (f.exists()) {
+			SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT), "delete file:" + f);
+			
+			f.delete();
+		}
 		
 	}
 	

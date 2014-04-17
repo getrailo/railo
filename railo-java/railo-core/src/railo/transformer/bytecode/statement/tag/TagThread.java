@@ -46,13 +46,7 @@ public final class TagThread extends TagBaseNoFinal {
 			super._writeOut(bc);
 			return;
 		}
-		/*if("run".equalsIgnoreCase(action)
-				super.getBody()==null || 
-				super.getBody().getStatements()==null || 
-				super.getBody().getStatements().size()==0) {
-			super._writeOut(bc);
-			return;
-		}*/
+		
 		Attribute name = getAttribute("name");
 		if(name==null){
 			addAttribute(new Attribute(false, "name",LitString.toExprString("thread"+RandomUtil.createRandomStringLC(20)), "string"));

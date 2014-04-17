@@ -18,6 +18,7 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.PageSourcePool;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
@@ -171,7 +172,9 @@ public final class GetUsageData implements Function {
 		// Datasource
 		Struct ds=new StructImpl();
 		sct.setEL(KeyConstants._datasources, ds);
-		ds.setEL(CACHED_QUERIES, Caster.toDouble(pc.getQueryCache().size(pc))); // there is only one cache for all contexts
+		
+		ds.setEL(CACHED_QUERIES, Caster.toDouble(CacheHandlerFactory.query.size(pc))); // there is only one cache for all contexts
+		//ds.setEL(CACHED_QUERIES, Caster.toDouble(pc.getQueryCache().size(pc))); // there is only one cache for all contexts
 		ds.setEL(OPEN_CONNECTIONS, Caster.toDouble(openConnections));
 		
 		// Memory

@@ -30,7 +30,7 @@ public class NativeException extends PageExceptionImpl {
         StackTraceElement[] st = t.getStackTrace();
         if(hasRailoRuntime(st))setStackTrace(st);
         else {
-        	StackTraceElement[] cst = new Exception("Stack trace").getStackTrace();
+        	StackTraceElement[] cst = Thread.currentThread().getStackTrace();
         	if(hasRailoRuntime(cst)){
         		StackTraceElement[] mst=new StackTraceElement[st.length+cst.length-1];
         		System.arraycopy(st, 0, mst, 0, st.length);

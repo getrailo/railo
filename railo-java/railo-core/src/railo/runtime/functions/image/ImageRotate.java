@@ -27,8 +27,8 @@ public class ImageRotate implements Function {
 	}
 
 	private static String _call(PageContext pc, Object name, float x, float y, float angle, String strInterpolation) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
+		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
+		Image img = Image.toImage(pc,name);
 		strInterpolation=strInterpolation.trim().toLowerCase();
 		int interpolation;
 		if("nearest".equals(strInterpolation)) interpolation=railo.runtime.img.Image.INTERPOLATION_NEAREST;

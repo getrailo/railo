@@ -653,7 +653,7 @@ public final class Blowfish {
 	}
 
 	private static String bytesToBinHex(byte data[], int nStartPos, int nNumOfBytes) {
-		StringBuffer sbuf = new StringBuffer();
+		StringBuilder sbuf = new StringBuilder();
 		sbuf.setLength(nNumOfBytes << 1);
 		int nPos = 0;
 		for(int nI = 0; nI < nNumOfBytes; nI++) {

@@ -1,4 +1,5 @@
 <!--- TODO: cleanup! !--->
+<!--- language files are deployed to {railo-web}/context/admin/resources/language by ConfigWebFactory.java and are read from there !--->
 
 <cfset sHelpURL = "http://www.getrailo.com/help/stHelp.json">
 <cfparam name="request.stLocalHelp" default="#structNew()#">
@@ -9,20 +10,39 @@
 <cfset structDelete(application, "stText")>
 <cfset structDelete(application, "stWebHelp")>
 --->
-<cfif not structKeyExists(application.stText, session.railo_admin_lang) or  not structKeyExists(application, "languages") or structKeyExists(url, "reinit")>
+
+<cfif !structKeyExists(application, "languages") || !structKeyExists(application.stText, session.railo_admin_lang) || structKeyExists(url, "reinit")>
+
 	<cfinclude template="menu.cfm">
-	<cfset languages = readLanguages()>
-    <cfset application.languages=languages>
-	<!--- This makes sure that the texts are there at least in English --->
-	<cffile action="READ" file="language/en.xml" variable="sXML">
-	<cfset StructDelete(application,"notTranslated")>
-	<cfset application.stText[session.railo_admin_lang] = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren)>
-	<cfset stText=application.stText[session.railo_admin_lang]>
+	<cfset langData  = getAvailableLanguages()>
+
+	<cfset languages = {}>
+	<cfloop collection="#langData#" item="value" index="key">
+		
+		<cfset languages[key] = value.name>
+	</cfloop>
+    <cfset application.languages = languages>
+
+    <cfif !application.languages.keyExists( session.railo_admin_lang )>
+    	
+    	<cfset systemOutput("Admin language file for [#session.railo_admin_lang#] was not found, defaulting to English", true)>
+    	<cfset session.railo_admin_lang = "en">
+    </cfif>
+
+	<cfset application.stText.en = GetFromXMLNode( langData.en.xml.XMLRoot.XMLChildren )>
+
+	<cfset StructDelete(application, "notTranslated")>
+	
 	<!--- now read the actual file when not english--->
-    <cfif session.railo_admin_lang NEQ "en">
-        <cffile action="READ" file="language/#session.railo_admin_lang#.xml" variable="sXML" charset="UTF-8">
-        <cfset application.stText[session.railo_admin_lang] = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren,stText)>
+    <cfif session.railo_admin_lang != "en">
+
+    	<cfset langXml = langData[ session.railo_admin_lang ].xml>
+
+        <cfset application.stText[ session.railo_admin_lang ] = GetFromXMLNode( langXml.XMLRoot.XMLChildren, application.stText.en )>
 	</cfif>
+
+	<cfset stText = application.stText[ session.railo_admin_lang ]>
+
     <cftry>
         <cfadmin 
         action="hasRemoteClientUsage"
@@ -173,14 +193,24 @@ You can use this code in order to write the structs into an XML file correspondi
 	<cfreturn arguments.st>
 </cffunction>
 
-<cffunction name="readLanguages" output="No" returntype="struct">
-	<cfdirectory name="local.getLangs" directory="language" action="list" mode="listnames" filter="*.xml">
+<cffunction name="getAvailableLanguages" output="No" returntype="struct" 
+	hint="Returns a struct where the key is the language code and the value is the language's name.">
+
+	<cfdirectory name="local.qDir" directory="language" action="list" mode="listnames" filter="*.xml">
     
-	<cfset var stRet = {}>
-	<cfloop query="getLangs">
-		<cffile action="read" file="language/#getLangs.name#" variable="local.sContent">
-		<cfset local.sXML = XMLParse(sContent)>
-		<cfset stRet[sXML.language.XMLAttributes.Key] = sXML.language.XMLAttributes.label>
+	<cfset var result = {}>
+	<cfloop query="qDir">
+
+		<cffile action="read" file="language/#qDir.name#" variable="local.sContent">
+		
+		<cfset var xml  = XMLParse(sContent)>
+		<cfset var lang = xml.language.XMLAttributes.Key>
+
+		<cfset result[lang] = {
+
+			name: xml.language.XMLAttributes.label
+			,xml: xml
+		}>
 	</cfloop>
-	<cfreturn stRet>
+	<cfreturn result>
 </cffunction>

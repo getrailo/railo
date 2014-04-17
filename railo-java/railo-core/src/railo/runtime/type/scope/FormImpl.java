@@ -26,6 +26,7 @@ import railo.commons.lang.ByteNameValuePair;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -88,7 +89,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
 	@Override
 	public void initialize(PageContext pc) {
-		if(encoding==null)encoding=pc.getConfig().getWebCharset();
+		if(encoding==null)encoding=((PageContextImpl)pc).getWebCharset().name();
 		
 		if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_FORM)>0)?

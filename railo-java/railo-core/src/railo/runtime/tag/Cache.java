@@ -269,6 +269,7 @@ public final class Cache extends BodyTagImpl {
     @Override
 	public int doStartTag() throws PageException	{
 		now = new DateTimeImpl(pageContext.getConfig());
+		if(action==CACHE && hasBody) action=CONTENT;
 		try {
 	        if(action==CACHE) {
 	            doClientCache();
@@ -340,7 +341,7 @@ public final class Cache extends BodyTagImpl {
         	
         	OutputStream os=null;
         	try {
-                ci.writeTo(os=getOutputStream(),ReqRspUtil.getCharacterEncoding(pageContext,rsp));
+                ci.writeTo(os=getOutputStream(),ReqRspUtil.getCharacterEncoding(pageContext,rsp).name());
         		//IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
             } 
             finally {
