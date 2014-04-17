@@ -97,7 +97,7 @@ public final class GetUsageData implements Function {
 
 		// Loop webs
 		ConfigWebImpl web;
-		Struct pcs;
+		Map<Integer, PageContextImpl> pcs;
 		PageContextImpl _pc;
 		int row,openConnections=0;
 		CFMLFactoryImpl factory;
@@ -111,9 +111,9 @@ public final class GetUsageData implements Function {
 			web=(ConfigWebImpl) webs[i];
 			factory=(CFMLFactoryImpl)web.getFactory();
 			pcs = factory.getRunningPageContexts();
-			Iterator<Object> it = pcs.valueIterator();
+			Iterator<PageContextImpl> it = pcs.values().iterator();
 			while(it.hasNext()){
-				_pc = (PageContextImpl) it.next();
+				_pc = it.next();
 				if(_pc.isGatewayContext()) continue;
 				
 				// Request

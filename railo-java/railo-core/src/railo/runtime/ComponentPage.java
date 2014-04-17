@@ -472,7 +472,7 @@ public abstract class ComponentPage extends PagePlus  {
         	Charset cs = getCharset(pc);
         	if(result.hasFormatExtension()){
         		//setFormat(pc.getHttpServletResponse(), props.format,cs);
-    			_writeOut(pc, props, null, rtn,cs);
+    			_writeOut(pc, props, null, rtn,cs,true);
         	}
         	else {
         		if(best!=null && !MimeType.ALL.same(best)) {
@@ -480,14 +480,14 @@ public abstract class ComponentPage extends PagePlus  {
             		if(f!=-1) {
             			props.format=f;
             			//setFormat(pc.getHttpServletResponse(), f,cs);
-            			_writeOut(pc, props, null, rtn,cs);
+            			_writeOut(pc, props, null, rtn,cs,true);
             		}
             		else {
             			writeOut(pc,props,rtn,best);
             		}
             	}
         		else {
-        			_writeOut(pc, props, null, rtn,cs);
+        			_writeOut(pc, props, null, rtn,cs,true);
         		}
         	}
         	
@@ -527,7 +527,7 @@ public abstract class ComponentPage extends PagePlus  {
 		//if("application".equalsIgnoreCase(mt.getType()))
 		
 		
-		else _writeOut(pc, props, null, obj,null);
+		else _writeOut(pc, props, null, obj,null,true);
 	}
 
 	private static void writeOut(PageContext pc, Object obj, MimeType mt,BinaryConverter converter) throws ConverterException, IOException {
@@ -668,14 +668,14 @@ public abstract class ComponentPage extends PagePlus  {
         		pc.variablesScope().setEL("AMF-Forward", rtn);
         	}
         	else {
-        		_writeOut(pc, props, queryFormat, rtn,cs);
+        		_writeOut(pc, props, queryFormat, rtn,cs,false);
         	}
         }
         
     }
     
 	private static void setFormat(HttpServletResponse rsp, int format, Charset charset) {
-    	String strCS;
+		String strCS;
 		if(charset==null) strCS="";
     	else strCS="; charset="+charset.displayName();
 		
@@ -746,10 +746,10 @@ public abstract class ComponentPage extends PagePlus  {
 	public static void writeToResponseStream(PageContext pc,Component component, String methodName,int urlReturnFormat,int headerReturnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException, IOException {
     	Object o = component.get(KeyImpl.init(methodName),null);
     	Props p = getProps(pc, o, urlReturnFormat,headerReturnFormat);
-    	_writeOut(pc, p, queryFormat, rtn,null);
+    	_writeOut(pc, p, queryFormat, rtn,null,true);
     }
     
-    private static void _writeOut(PageContext pc,Props props,Object queryFormat,Object rtn,Charset cs) throws ConverterException, PageException, IOException {
+    private static void _writeOut(PageContext pc,Props props,Object queryFormat,Object rtn,Charset cs, boolean setFormat) throws ConverterException, PageException, IOException {
     	// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {
 			//if(UDF.RETURN_FORMAT_WDDX==format) format=UDF.RETURN_FORMAT_PLAIN;
@@ -758,7 +758,7 @@ public abstract class ComponentPage extends PagePlus  {
 		// function does no real cast, only check it
 		else rtn=Caster.castTo(pc, (short)props.type, props.strType, rtn);
     	
-		setFormat(pc.getHttpServletResponse(), props.format, cs);
+		if(setFormat)setFormat(pc.getHttpServletResponse(), props.format, cs);
 		
     	// WDDX
 		if(UDF.RETURN_FORMAT_WDDX==props.format) {

@@ -100,7 +100,7 @@ public class Reduce extends BIF {
 		Entry<Key, Object> e;
 		while(it.hasNext()){
 			e = it.next();
-			initalValue=udf.call(pc, new Object[]{initalValue,e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list}, true);
+			initalValue=udf.call(pc, new Object[]{initalValue,e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list,sld.delimiter}, true);
 		}
 		return initalValue;
 	}

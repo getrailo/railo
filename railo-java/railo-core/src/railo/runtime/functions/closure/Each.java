@@ -176,7 +176,7 @@ public final class Each extends BIF {
 		Entry<Key, Object> e;
 		while(it.hasNext()){
 			e=it.next();
-			_call(pc,udf,new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list},execute,futures);
+			_call(pc,udf,new Object[]{e.getValue(),Caster.toDoubleValue(e.getKey().getString()),sld.list,sld.delimiter},execute,futures);
 		}
 		
 	}
