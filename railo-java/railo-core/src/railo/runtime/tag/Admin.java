@@ -2440,14 +2440,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private static void fillGetRunningThreads(railo.runtime.type.Query qry, ConfigWeb configWeb) throws PageException {
     	CFMLFactoryImpl factory = ((CFMLFactoryImpl)configWeb.getFactory());
-    	Struct pcs =factory.getRunningPageContexts();
-    	Iterator it = pcs.keyIterator();
+    	Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+    	Iterator<PageContextImpl> it = pcs.values().iterator();
         PageContextImpl pc;
         Collection.Key key;
         int row=0;
         while(it.hasNext()) {
-        	key=KeyImpl.toKey(it.next(),null);
-            pc=(PageContextImpl) pcs.get(key,null);
+        	pc=it.next();
             qry.addRow();
             row++;
             StackTraceElement[] st = pc.getThread().getStackTrace();
@@ -3017,14 +3016,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private static boolean terminateRunningThread(ConfigWeb configWeb,int id) {
 
-    	Struct pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getRunningPageContexts();
-        
-        Iterator it = pcs.keyIterator();
+    	Map<Integer, PageContextImpl> pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getRunningPageContexts();
+        Iterator<PageContextImpl> it = pcs.values().iterator();
         PageContextImpl pc;
         Collection.Key key;
         while(it.hasNext()) {
-        	key=KeyImpl.toKey(it.next(),null);
-            pc=(PageContextImpl) pcs.get(key,null);
+        	pc=it.next();
             if(pc.getId()==id){
             	CFMLFactoryImpl.terminate(pc);
             	return true;
