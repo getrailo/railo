@@ -2981,9 +2981,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<!-- dateConvert -->
 	<function>
 		<name>dateConvert</name>
+		<status>hidden</status>
 		<class>railo.runtime.functions.dateTime.DateConvert</class>
-		<description>Converts a date to the given locale; 
-		this function only exists for compatiblity reasion and should no be used, the timezone is not part of the datetime object. the function simple add/subtract the time between the local time and the UTC from the date Object.</description>
+		<description>this function is no longer supported!</description>
 		<argument>
 			<name>conversion_type</name>
 			<type>string</type>
@@ -3147,6 +3147,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Formats a date/time string to a given output</description>
 		<argument>
 			<name>datetime</name>
+			<alias>date</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description>Datetime object</description>
