@@ -15,7 +15,9 @@ import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -716,14 +718,18 @@ public final class SystemUtil {
 	}
 	
 
-	public static long getFreePermGenSpaceSize() {
+	public static long getFreePermGenSpaceSizeInKb() {
 		MemoryUsage mu = getPermGenSpaceSize(null);
 		if(mu==null) return -1;
 		
 		long max = mu.getMax();
 		long used = mu.getUsed();
-		if(max<0 || used<0) return -1;
-		return max-used;
+		if(max<0 || used<0) {
+			return -1;
+		}
+		
+		Long freeSpace = new Long(max-used);
+		return freeSpace.longValue()/1024;
 	}
 	
 	public static int getFreePermGenSpacePromille() {
@@ -735,6 +741,22 @@ public final class SystemUtil {
 		if(max<0 || used<0) return -1;
 		return (int)(1000L-(1000L*used/max));
 	}
+	
+    public static int getPermGenFreeSpaceAsAPercentageOfAvailable() { 	
+    	MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu == null) {
+			return -1;
+		}
+		
+		Long max = new Long(mu.getMax());
+		Long used = new Long(mu.getUsed());
+		if( max.longValue() < 0 || used.longValue() < 0) {
+			return -1;
+		}
+		
+		//return a value that equates to a percentage of available free memory
+		return 100 - ((int)(100 * (used.doubleValue() / max.doubleValue())));
+    }
 	
 	public static Query getMemoryUsageAsQuery(int type) throws DatabaseException {
 		

@@ -56,7 +56,7 @@ import railo.runtime.type.wrap.MapAsStruct;
 import railo.runtime.util.PageContextUtil;
 
 /**
- * Scope Context handle Apllication and Session Scopes
+ * Scope Context handle Application and Session Scopes
  */
 public final class ScopeContext {
 
@@ -882,6 +882,8 @@ public final class ScopeContext {
 				finally {
 					applicationContextes.remove(arrContextes[i]);
 					application.release();
+					//null the application to ensure it is eligible for garbage collection
+					application=null;
 				}
 				
 			}

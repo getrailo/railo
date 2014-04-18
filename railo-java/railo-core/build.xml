@@ -54,7 +54,7 @@
          ================================= -->
     <target name="compile" depends="init" description="Compiles the src classes.">
         <echo>Compile Railo src.</echo>
-        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" compiler="javac1.5" encoding="ISO-8859-1" fork="true" memorymaximumsize="512m">
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" compiler="javac1.5" includeantruntime="false" encoding="ISO-8859-1" fork="true" memorymaximumsize="512m" debug="true">
         	<classpath refid="classpath"/>
         </javac>
     </target>
