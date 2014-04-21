@@ -2,6 +2,8 @@ package railo.runtime.net.rpc;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,6 +55,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
@@ -349,7 +352,11 @@ public final class AxisCaster {
 					pair=it.next();
 					p=propMap.get(pair.getName());
 					if(p==null) return defaultValue;
-					Object val = Caster.castTo(pc, p.getType(), pair.getValue(), false);
+					Object val = null;
+					try {
+						val = Caster.castTo(pc, p.getType(), pair.getValue(), false);
+					} catch (PageException e) { throw e;	}
+					
 					// store in variables and this scope
 					scope.setEL(pair.getName(), val);
 					cfc.setEL(pair.getName(), val);
@@ -580,7 +587,7 @@ public final class AxisCaster {
         		Object pojo= toPojo(null,tm,null,null,(Component)value,done);
         		try	{
         			if(type==null || type.getLocalPart().equals("anyType")) {
-        				type= new QName("http://rpc.xml.cfml",pojo.getClass().getName());
+        				type= new QName(getRequestNameSpace(),pojo.getClass().getName());
         				//print.ds("missing type for "+pojo.getClass().getName());
         			}
         			TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), type);
@@ -922,5 +929,15 @@ public final class AxisCaster {
 		return defaultValue;
 	}
 
-
+	public static String getRequestNameSpace() {
+		String rawURL = ReqRspUtil.getRequestURL(ThreadLocalPageContext.get().getHttpServletRequest(),false);
+		String urlPath ="";
+		try {
+			urlPath = new java.net.URL(rawURL).getPath();
+		}
+		catch (MalformedURLException e) {}
+		String pathWithoutContext = urlPath.replaceFirst("/[^/]*", "");
+		return "http://rpc.xml.cfml" + pathWithoutContext;
+	}
+	
 }
