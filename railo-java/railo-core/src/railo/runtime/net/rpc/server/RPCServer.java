@@ -266,7 +266,7 @@ public final class RPCServer{
                 /**********************************************************/
             }
             msgContext.setRequestMessage(requestMsg);
-            String url = HttpUtils.getRequestURL(req).toString();
+            String url = HttpUtils.getRequestURL(req).toString().toLowerCase();
             msgContext.setProperty(MessageContext.TRANS_URL, url);
             // put character encoding of request to message context
             // in order to reuse it during the whole process.
@@ -723,7 +723,7 @@ public final class RPCServer{
                         Class plugin=ClassUtil.loadClass((String)this.transport.getOption(queryHandler));
                         Method pluginMethod = plugin.getDeclaredMethod("invoke", new Class[] {msgContext.getClass()});
 
-                        msgContext.setProperty(MessageContext.TRANS_URL, HttpUtils.getRequestURL(request).toString());
+                        msgContext.setProperty(MessageContext.TRANS_URL, HttpUtils.getRequestURL(request).toString().toLowerCase());
                         //msgContext.setProperty(MessageContext.TRANS_URL, "http://DefaultNamespace");
                         msgContext.setProperty(HTTPConstants.PLUGIN_SERVICE_NAME, serviceName);
                         msgContext.setProperty(HTTPConstants.PLUGIN_NAME,handlerName);

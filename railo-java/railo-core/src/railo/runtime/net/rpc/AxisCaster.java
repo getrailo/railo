@@ -355,7 +355,7 @@ public final class AxisCaster {
 					Object val = null;
 					try {
 						val = Caster.castTo(pc, p.getType(), pair.getValue(), false);
-					} catch (PageException e) { throw e;	}
+					} catch (PageException e) { 	}
 					
 					// store in variables and this scope
 					scope.setEL(pair.getName(), val);
@@ -937,7 +937,7 @@ public final class AxisCaster {
 		}
 		catch (MalformedURLException e) {}
 		String pathWithoutContext = urlPath.replaceFirst("/[^/]*", "");
-		return "http://rpc.xml.cfml" + pathWithoutContext;
+		return "http://rpc.xml.cfml" + pathWithoutContext.toLowerCase();
 	}
 	
 }
