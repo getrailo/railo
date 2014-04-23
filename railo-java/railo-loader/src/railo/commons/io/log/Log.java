@@ -41,6 +41,14 @@ public interface Log {
     public void log(int level, String application,Throwable t);
     
     /**
+     * log level trace
+     * @param application application name
+     * @param message message to log
+     */
+    public void trace(String application, String message);
+
+    
+    /**
      * log level info
      * @param application application name
      * @param message message to log

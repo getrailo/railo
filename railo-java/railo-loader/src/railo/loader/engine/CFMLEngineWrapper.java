@@ -25,6 +25,7 @@ import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtil;
 import railo.runtime.util.IO;
+import railo.runtime.util.ClassUtil;
 import railo.runtime.util.Operation;
 import railo.runtime.util.ResourceUtil;
 import railo.runtime.util.Strings;
@@ -279,5 +280,10 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	@Override
 	public BundleContext getBundleContext() {
 		return engine.getBundleContext();
+	}
+
+	@Override
+	public ClassUtil getClassUtil() {
+		return engine.getClassUtil();
 	}
 }

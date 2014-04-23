@@ -25,6 +25,7 @@ import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtil;
 import railo.runtime.util.IO;
+import railo.runtime.util.ClassUtil;
 import railo.runtime.util.Operation;
 import railo.runtime.util.ResourceUtil;
 import railo.runtime.util.Strings;
@@ -200,6 +201,9 @@ public interface CFMLEngine {
      * @return decision util 
      */ 
     public Strings getStringUtil();
+    
+
+    public ClassUtil getClassUtil(); 
 
 	/**
 	 * returns the FusionDebug Engine

@@ -2,6 +2,8 @@ package railo.commons.lang;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.UnmodifiableClassException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -10,7 +12,7 @@ import railo.print;
 import railo.commons.io.res.Resource;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
-import railo.runtime.instrumentation.InstrumentationUtil;
+import railo.runtime.instrumentation.InstrumentationFactory;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -75,38 +77,18 @@ public final class PCLCollection {
     
     
 
-    public synchronized Class<?> loadClass(String name, byte[] barr, boolean isCFC)   {
+    public synchronized Class<?> loadClass(String name, byte[] barr, boolean isCFC) throws ClassNotFoundException, UnmodifiableClassException   {
     	// if class is already loaded flush the classloader and do new classloader
     	PCLBlock cl = index.get(name);
+    	// update
     	if(cl!=null) {
-    		// if can upate class
-    		if(InstrumentationUtil.isSupported()){
-    			
-    			try{
-    				Class<?> old = cl.loadClass(name);
-            		InstrumentationUtil.redefineClass(old, barr);
-            		print.e("redefined:"+old.getName());
-            		return old;
-    			}
-    			catch(Throwable t){
-    				t.printStackTrace();
-    			}
-    		}
-    		
-    		// flush classloader when update is not possible
-    		mapping.clearPages(cl);
-    		StructUtil.removeValue(index,cl);
-    		if(isCFC){
-            	cfcs.remove(cl);
-    			if(cl==cfc) cfc=new PCLBlock(directory, resourceCL);
-    		}
-    		else {
-            	cfms.remove(cl);
-    			if(cl==cfm) cfm=new PCLBlock(directory, resourceCL);
-    		}
+    		Class<?> old = cl.loadClass(name);
+    		InstrumentationFactory.getInstrumentation(mapping.getConfig()).redefineClasses(new ClassDefinition(old,barr));
+            print.e("redefined::s:"+old.getName());
+            return old;
     	}
     	
-    	// load class from byte array
+    	// insert
     	PCLBlock c = current(isCFC);
     	index.put(name, c);
     	return c.loadClass(name, barr);

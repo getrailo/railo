@@ -81,8 +81,11 @@ public final class SystemUtil {
 	private static PrintWriter[] printWriter=new PrintWriter[2];
     
     
-	private static final boolean isWindows=System.getProperty("os.name").toLowerCase().startsWith("windows");
-    private static final boolean isUnix=!isWindows &&  File.separatorChar == '/';
+	private static final boolean isWindows;
+	private static final boolean isSolaris;
+	private static final boolean isLinux;
+	private static final boolean isMacOSX;
+	private static final boolean isUnix;
 	
     private static Resource tempFile;
     private static Resource homeFile;
@@ -95,6 +98,14 @@ public final class SystemUtil {
 	public static int jreArch=-1;
 	
 	static {
+		// OS
+		String os = System.getProperty("os.name").toLowerCase();
+		isWindows=os.startsWith("windows");
+		isSolaris=os.startsWith("solaris");
+		isLinux=os.startsWith("linux");
+		isMacOSX=os.startsWith("mac os x");
+		isUnix=!isWindows && File.separatorChar == '/'; // deprecated
+		
 		String strCharset=System.getProperty("file.encoding");
 		if(strCharset==null || strCharset.equalsIgnoreCase("MacRoman"))
 			strCharset="cp1252";
@@ -210,6 +221,27 @@ public final class SystemUtil {
      */
     public static boolean isWindows() {
         return isWindows;
+    }
+
+    /**
+     * @return is local machine a Linux Machine
+     */
+    public static boolean isLinux() {
+        return isLinux;
+    }
+
+    /**
+     * @return is local machine a Solaris Machine
+     */
+    public static boolean isSolaris() {
+        return isSolaris;
+    }
+
+    /**
+     * @return is local machine a Solaris Machine
+     */
+    public static boolean isMacOSX() {
+        return isMacOSX;
     }
 
     /**

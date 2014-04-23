@@ -1,5 +1,6 @@
-Main-Class: railo.runtime.instrumentation.Agent
-Premain-Class: railo.runtime.instrumentation.Agent
-Agent-Class: railo.runtime.instrumentation.Agent
+Manifest-Version: 1.0
+Main-Class: railo.runtime.instrumentation.ExternalAgent
+Premain-Class: railo.runtime.instrumentation.ExternalAgent
+Agent-Class: railo.runtime.instrumentation.ExternalAgent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true

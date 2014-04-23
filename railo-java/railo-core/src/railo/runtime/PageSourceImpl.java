@@ -307,8 +307,8 @@ public final class PageSourceImpl implements PageSource {
         byte[] barr = cwi.getCompiler().
         	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
         //Class<?> clazz = mapping.getPhysicalClass(getClazz(),barr);
-        Class<?> clazz = mapping.touchPCLCollection().loadClass(getClazz(), barr,isComponent());
         try{
+        	Class<?> clazz = mapping.touchPCLCollection().loadClass(getClazz(), barr,isComponent());
         	return  newInstance(clazz);
         }
         catch(Throwable t){

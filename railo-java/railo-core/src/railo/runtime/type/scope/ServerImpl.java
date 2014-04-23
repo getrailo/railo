@@ -11,7 +11,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
-import railo.runtime.instrumentation.InstrumentationUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -163,7 +162,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			java.setEL(FREE_MEMORY,new Double(rt.freeMemory()));
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
-			java.setEL(JAVA_AGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
+			java.setEL(JAVA_AGENT_SUPPORTED,Boolean.TRUE);
 			
 			//if(jap==null) jap=JavaUtil.getSourcePathForClass("railo.runtime.instrumentation.Agent");
 			//java.setEL(JAVA_AGENT_PATH, jap);

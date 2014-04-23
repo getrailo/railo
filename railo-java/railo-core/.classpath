@@ -109,5 +109,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/xmlparserv2-1-2-2.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/org-apache-sanselan-0-97-0-incubator.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Downloads/apache-openjpa-2.2.2/openjpa-2.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

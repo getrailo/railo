@@ -3,6 +3,7 @@ package railo.runtime.engine;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.instrument.Instrumentation;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -85,6 +86,7 @@ import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtilImpl;
 import railo.runtime.util.IO;
+import railo.runtime.util.ClassUtil;
 import railo.runtime.util.Operation;
 import railo.runtime.util.Strings;
 import railo.runtime.util.ZipUtil;
@@ -115,7 +117,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	private InfoImpl info;
 	
 	private final Bundle bundle;
-	private BundleContext bundleContext; 
+	private BundleContext bundleContext;
+	private Instrumentation inst; 
 	
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
@@ -720,6 +723,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	@Override
 	public BundleContext getBundleContext() {
 		return bundleContext;
+	}
+
+	@Override
+	public ClassUtil getClassUtil() {
+		return null;
 	}
 
 }

@@ -1,5 +1,7 @@
 package railo.commons.io.log.log4j;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.log4j.Logger;
 
 import railo.commons.io.log.Log;
@@ -28,7 +30,12 @@ public class LogAdapter implements Log {
 
 	@Override
 	public void log(int level, String application, Throwable t) {
-		logger.log(Log4jUtil.toLevel(level), application,t);
+		logger.log(Log4jUtil.toLevel(level), application,toThrowable(t));
+	}
+
+	@Override
+	public void trace(String application, String message) {
+		log(Log.LEVEL_TRACE,application,message);
 	}
 
 	@Override
@@ -68,5 +75,10 @@ public class LogAdapter implements Log {
 
 	public Logger getLogger() {
 		return logger;
+	}
+
+	private Throwable toThrowable(Throwable t) {
+		if(t instanceof InvocationTargetException) return ((InvocationTargetException)t).getTargetException();
+		return t;
 	}
 }

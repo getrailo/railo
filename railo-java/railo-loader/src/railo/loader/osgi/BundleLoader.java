@@ -89,8 +89,11 @@ public class BundleLoader {
 		if(old!=null) {
 			bc=old.getBundleContext();
 			removeBundles(bc);
+			//clearCacheDirectory(felix-cache);
 		}
-		else bc = engFac.getFelix(cacheRootDir,storageClean,bootDelegation,parentClassLoader,logLevel,null).getBundleContext();
+		else {
+			bc = engFac.getFelix(cacheRootDir,storageClean,bootDelegation,parentClassLoader,logLevel,null).getBundleContext();
+		}
 		
 		// get bundle needed for that core
 		String rb = attrs.getValue("Require-Bundle");
