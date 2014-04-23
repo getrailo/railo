@@ -82,8 +82,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	
 	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
 	
-	//Initially set the threshold free at 80% of the available PermGenFreeSpace
-	private int permGenCleanUpThreshold=80;
+	//Initially set the threshold free at 60% of the available PermGenFreeSpace
+	private int permGenCleanUpThreshold=60;
 	
 	
 	/**
@@ -436,9 +436,13 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     			//adjust the threshold allowed down so the amount of permgen can slowly grow to its allocated space up to 100%
     			setPermGenCleanUpThreshold(permGenCleanUpThreshold - 5);
     		}
+    		else
+    		{
+    			SystemOut.printDate(getErrWriter()," Free Perm Gen Space is less than 5% free: shrinking all template classloaders : consider increasing allocated Perm Gen Space");
+    		}
     	}
     	else if(check && kbFreePermSpace < 2048) {
-			SystemOut.printDate(getErrWriter(),"+Free Perm Gen Space is less than 2Mb (free:"+((SystemUtil.getFreePermGenSpaceSizeInKb()))+"kb), shrinking all template classloaders");
+			SystemOut.printDate(getErrWriter()," Free Perm Gen Space is less than 2Mb (free:"+((SystemUtil.getFreePermGenSpaceSizeInKb()))+"kb), shrinking all template classloaders");
 			// first request a GC and then check if it helps
 			System.gc();
 			if(SystemUtil.getFreePermGenSpaceSizeInKb() < 2048) {
@@ -456,7 +460,6 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		if(count==0) {
 			for(int i=0;i<webs.length;i++){
 				int numberOfPagesShrunk = shrink((ConfigWebImpl) webs[i],true);
-				SystemOut.printDate(getErrWriter(),"ConfigServerImpl : shrink() : numberOfPagesShrunk: " + numberOfPagesShrunk);
 			}
 		}
 	}
