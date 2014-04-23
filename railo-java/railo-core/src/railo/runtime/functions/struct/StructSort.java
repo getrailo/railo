@@ -62,7 +62,7 @@ public final class StructSort extends BIF {
 		else if(sortType.equalsIgnoreCase("textnocase")) comp=new SortRegisterComparator(isAsc,true);			
 		
 		// numeric
-		else if(sortType.equalsIgnoreCase("numeric")) comp=new NumberSortRegisterComparator(isAsc);
+		else if(sortType.equalsIgnoreCase("numeric")) comp=new NumberSortRegisterComparator(isAsc,pc.getTimeZone());
 			
 		else {
 			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");

@@ -1,8 +1,11 @@
 package railo.runtime.type.comparator;
 
+import java.util.TimeZone;
+
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.op.date.DateCaster;
 
 
 /**
@@ -11,15 +14,17 @@ import railo.runtime.op.Operator;
 public final class NumberSortRegisterComparator implements ExceptionComparator {
 	
 	private boolean isAsc;
+	private TimeZone tz;
 	private PageException pageException=null;
 
 	/**
 	 * constructor of the class 
 	 * @param isAsc is ascendinf or descending
 	 */
-	public NumberSortRegisterComparator(boolean isAsc) {
+	public NumberSortRegisterComparator(boolean isAsc,TimeZone tz) {
         
 		this.isAsc=isAsc;
+		this.tz = tz;
 	}
 	
 	/**
@@ -47,12 +52,23 @@ public final class NumberSortRegisterComparator implements ExceptionComparator {
                 ((SortRegister)oRight).getValue()
         );
         */
+		Object left = ((SortRegister)oLeft).getValue();
+		Object right = ((SortRegister)oRight).getValue();
+		// elevate a raw java.util.date object to railo date time.
+		
         return Operator.compare(
-                Caster.toDoubleValue(((SortRegister)oLeft).getValue())
+                Caster.toDoubleValue(_fixIfDate(left))
                 ,
-                Caster.toDoubleValue(((SortRegister)oRight).getValue())
+                Caster.toDoubleValue(_fixIfDate(right))
         );
         
+	}
+	
+	private Object _fixIfDate(Object o) throws PageException {
+		if(o instanceof java.util.GregorianCalendar || o instanceof java.util.Date) {
+			return DateCaster.toDateAdvanced(o, tz);
+		}
+		return o;
 	}
 
 }
