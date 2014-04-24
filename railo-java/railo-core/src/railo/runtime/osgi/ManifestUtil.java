@@ -83,19 +83,34 @@ public class ManifestUtil {
 	private static void printSection(StringBuilder sb, Attributes attrs, int maxLineSize, Set<String> ignore) {
 		Iterator<Entry<Object, Object>> it = attrs.entrySet().iterator();
 		Entry<Object, Object> e;
-		Name name;
+		String name;
 		String value;
 		while(it.hasNext()){
 			e = it.next();
-			name=(Name)e.getKey();
+			name=((Name)e.getKey()).toString();
 			value=(String)e.getValue();
-			if(value.length()>maxLineSize) value=split(value,maxLineSize);
-			if(ignore!=null && ignore.contains(name.toString())) continue;
+			print.e("Export-Package:"+name+":"+("Export-Package".equals(name)));
+			if("Import-Package".equals(name) || "Export-Package".equals(name) || "Require-Bundle".equals(name)) {
+				value=splitByComma(value);
+				
+			}
+			else if(value.length()>maxLineSize) value=split(value,maxLineSize);
 			
-			add(sb,name.toString(),value,null);
+			if(ignore!=null && ignore.contains(name)) continue;
+			add(sb,name,value,null);
 		}
 	}
 	
+	private static String splitByComma(String value) {
+		StringTokenizer st=new StringTokenizer(value.trim(),",");
+		StringBuilder sb=new StringBuilder();
+		while(st.hasMoreTokens()){
+			if(sb.length()>0) sb.append(",\n ");
+			sb.append(st.nextToken().trim());
+		}
+		return sb.toString();
+	}
+
 	private static String split(String value, int max) {
 		StringTokenizer st=new StringTokenizer(value,"\n");
 		StringBuilder sb=new StringBuilder();

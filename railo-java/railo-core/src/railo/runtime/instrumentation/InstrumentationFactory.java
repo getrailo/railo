@@ -328,7 +328,7 @@ public class InstrumentationFactory {
         }
         
         // if Railo could not find the tools.jar it is using it's own version
-        if (!toolsJarFile.exists()) {
+        if (true || !toolsJarFile.exists()) {
         	try {
 				toolsJarFile=createToolsJar(config);
 			}

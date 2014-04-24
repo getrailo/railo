@@ -19,7 +19,6 @@ import railo.transformer.expression.literal.LitDouble;
  */
 public final class LitDoubleImpl extends ExpressionBase implements LitDouble,ExprDouble {
 
-	private static final Type CONSTANTS_DOUBLE = Type.getType(ConstantsDouble.class);
 	//public static final LitDouble ZERO=new LitDouble(0,null,null);
 	
     private double d;
@@ -76,7 +75,7 @@ public final class LitDoubleImpl extends ExpressionBase implements LitDouble,Exp
         if(mode==MODE_REF) {
         	String str=ConstantsDouble.getFieldName(d);
         	if(str!=null) {
-				bc.getAdapter().getStatic(CONSTANTS_DOUBLE, str, Types.DOUBLE);
+				bc.getAdapter().getStatic(Types.CONSTANTS_DOUBLE, str, Types.DOUBLE);
 			}
 			else {
 				adapter.push(d);

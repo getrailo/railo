@@ -12,13 +12,10 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.op.Constants;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.UDFUtil;
-import railo.runtime.util.CallerUtil;
-import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.Context;
 import railo.transformer.Factory;
 import railo.transformer.Position;
@@ -44,7 +41,6 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 public class VariableImpl extends ExpressionBase implements Variable {
 	 
 
-	private static final Type CALLER_UTIL = Type.getType(CallerUtil.class);
 
 	// java.lang.Object get(java.lang.String)
 	final static Method METHOD_SCOPE_GET_KEY = new Method("get",
@@ -117,7 +113,6 @@ public class VariableImpl extends ExpressionBase implements Variable {
 			Types.OBJECT,
 			new Type[]{Types.OBJECT,Types.COLLECTION_KEY,Types.OBJECT_ARRAY});
 	
-	private static final Type VARIABLE_UTIL_IMPL = Type.getType(VariableUtilImpl.class);
 	
     private static final Method RECORDCOUNT = new Method("recordcount",
 			Types.OBJECT,
@@ -142,10 +137,7 @@ public class VariableImpl extends ExpressionBase implements Variable {
 	private static final Method THIS_TOUCH_EL = new Method("thisTouch",
 			Types.OBJECT,
 			new Type[]{Types.OBJECT});
-	
-	private static final Type CONSTANTS = Type.getType(Constants.class);
-    
-    
+
 	private int scope=Scope.SCOPE_UNDEFINED;
 	List<Member> members=new ArrayList<Member>();
 	int countDM=0;
@@ -247,13 +239,13 @@ public class VariableImpl extends ExpressionBase implements Variable {
 				if(last && ASMUtil.isDotKey(name)){
 					LitString ls = (LitString)name;
 					if(ls.getString().equalsIgnoreCase("RECORDCOUNT")){
-						adapter.invokeStatic(VARIABLE_UTIL_IMPL, RECORDCOUNT);
+						adapter.invokeStatic(Types.VARIABLE_UTIL_IMPL, RECORDCOUNT);
 					}
 					else if(ls.getString().equalsIgnoreCase("CURRENTROW")){
-						adapter.invokeStatic(VARIABLE_UTIL_IMPL, CURRENTROW);
+						adapter.invokeStatic(Types.VARIABLE_UTIL_IMPL, CURRENTROW);
 					}
 					else if(ls.getString().equalsIgnoreCase("COLUMNLIST")){
-						adapter.invokeStatic(VARIABLE_UTIL_IMPL, COLUMNLIST);
+						adapter.invokeStatic(Types.VARIABLE_UTIL_IMPL, COLUMNLIST);
 					}
 					else {
 						
@@ -316,9 +308,7 @@ public class VariableImpl extends ExpressionBase implements Variable {
         
         // defaultValue
         defaultValue.writeOut(bc, MODE_REF);
-        
-        bc.getAdapter().invokeStatic(CALLER_UTIL, CALLER_UTIL_GET);
-        
+        bc.getAdapter().invokeStatic(Types.CALLER_UTIL, CALLER_UTIL_GET);
     	return Types.OBJECT;
 	}
 	
@@ -541,7 +531,7 @@ public class VariableImpl extends ExpressionBase implements Variable {
 		
 		// no arguments
 		if(args.length==0) {
-			bc.getAdapter().getStatic(CONSTANTS, "EMPTY_OBJECT_ARRAY", Types.OBJECT_ARRAY);
+			bc.getAdapter().getStatic(Types.CONSTANTS, "EMPTY_OBJECT_ARRAY", Types.OBJECT_ARRAY);
 		}
 		else ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, args);
 		bc.getAdapter().invokeVirtual(Types.PAGE_CONTEXT,udf.hasNamedArgs()?GET_FUNCTION_WITH_NAMED_ARGS_KEY:GET_FUNCTION_KEY);

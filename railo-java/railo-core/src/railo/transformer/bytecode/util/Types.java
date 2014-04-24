@@ -12,6 +12,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.objectweb.asm.Type;
 
+import railo.commons.color.ConstantsDouble;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
@@ -32,7 +33,9 @@ import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
 import railo.runtime.interpreter.VariableInterpreter;
+import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Constants;
 import railo.runtime.op.Operator;
 import railo.runtime.poi.Excel;
 import railo.runtime.poi.ExcelUtil;
@@ -41,6 +44,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
+import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
@@ -55,7 +59,9 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ListUtil;
+import railo.runtime.util.CallerUtil;
 import railo.runtime.util.NumberRange;
+import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.BodyContentUtil;
 import railo.transformer.TransformerException;
 
@@ -216,6 +222,14 @@ public final class Types {
 	public static final Type CLASS_ARRAY = Type.getType(Class[].class);
 	public static final Type CLASS_LOADER = Type.getType(ClassLoader.class);
 	public static final Type BIG_DECIMAL = Type.getType(BigDecimal.class);
+	
+	public static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
+	public static final Type FUNCTION_VALUE_IMPL=Type.getType(FunctionValueImpl.class);
+	public static final Type CALLER_UTIL = Type.getType(CallerUtil.class);
+	public static final Type VARIABLE_UTIL_IMPL = Type.getType(VariableUtilImpl.class);
+	public static final Type CONSTANTS = Type.getType(Constants.class);
+	public static final Type CONSTANTS_DOUBLE = Type.getType(ConstantsDouble.class);
+	
 	 
 
 	/**

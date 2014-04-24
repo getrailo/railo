@@ -41,7 +41,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.Pojo;
-import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -66,7 +65,6 @@ public final class ComponentUtil {
 	
 
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
-	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
@@ -489,7 +487,7 @@ public final class ComponentUtil {
     		FunctionArgument[] args = udf.getFunctionArguments();
     		Type[] types=new Type[max<0?args.length:max];
     		for(int y=0;y<types.length;y++){
-    			types[y]=toType(args[y].getTypeAsString(),true);//Type.getType(Caster.cfTypeToClass(args[y].getTypeAsString()));
+    			types[y]=toType(args[y].getTypeAsString(),true);
     			if(!args[y].isRequired())hasOptionalArgs=true;
     		}
     		Type rtnType=toType(udf.getReturnTypeAsString(),true);
@@ -516,7 +514,7 @@ public final class ComponentUtil {
     			av.visitEndItem(bc.getAdapter());
             }
             av.visitEnd();
-            adapter.invokeStatic(COMPONENT_CONTROLLER, INVOKE);
+            adapter.invokeStatic(Types.COMPONENT_CONTROLLER, INVOKE);
             adapter.checkCast(rtnType);
             
             //ASMConstants.NULL(adapter);

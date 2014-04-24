@@ -4,7 +4,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.type.FunctionValueImpl;
 import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.literal.Null;
@@ -14,10 +13,7 @@ import railo.transformer.expression.Expression;
 import railo.transformer.expression.var.Variable;
 
 public final class NamedArgument extends Argument {
-	
 
-
-	private static final Type TYPE_FUNCTION_VALUE=Type.getType(FunctionValueImpl.class);
     private static final int VALUE=0;
     private static final int ARRAY=1;
     private static final int KEY=0;
@@ -76,7 +72,7 @@ public final class NamedArgument extends Argument {
 		//name.writeOut(bc, MODE_REF);
 		super._writeOut(bc, MODE_REF);
 		//bc.getAdapter().push(variableString);
-		bc.getAdapter().invokeStatic(TYPE_FUNCTION_VALUE,NEW_INSTANCE[type][form]);
+		bc.getAdapter().invokeStatic(Types.FUNCTION_VALUE_IMPL,NEW_INSTANCE[type][form]);
 		return Types.FUNCTION_VALUE;
 	}
 
