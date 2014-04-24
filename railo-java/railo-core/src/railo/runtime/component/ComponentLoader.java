@@ -59,6 +59,8 @@ public class ComponentLoader {
     	rawPath=rawPath.trim().replace('\\','/');
     	String path=(rawPath.indexOf("./")==-1)?rawPath.replace('.','/'):rawPath;
     	String pathWithCFC=path.concat(".cfc");
+    	
+    	
     	boolean isRealPath=!StringUtil.startsWith(pathWithCFC,'/');
     	PageSource currPS = pc.getCurrentPageSource();
     	Page currP=((PageSourceImpl)currPS).loadPage(pc,(Page)null);
@@ -78,19 +80,12 @@ public class ComponentLoader {
 	        	}
         	}
     	}
-    	
-    	
-    	
-    	
-    	
-    	
-    	
+
 	    if(searchLocal==null)
-	    	searchLocal=Caster.toBoolean(config.getComponentLocalSearch());
+	    	searchLocal=Caster.toBoolean(rawPath.indexOf('.')==-1?true:config.getComponentLocalSearch());
 	    if(searchRoot==null)
 	    	searchRoot=Caster.toBoolean(config.getComponentRootSearch());
 	    
-	    //boolean searchLocal=config.getComponentLocalSearch();
     // CACHE
     	// check local in cache
 	    String localCacheName=null;
