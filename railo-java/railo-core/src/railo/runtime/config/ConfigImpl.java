@@ -1140,7 +1140,7 @@ public abstract class ConfigImpl implements Config {
     
     public TagLib getCoreTagLib(){
     	for(int i=0;i<tlds.length;i++) {
-        	if(tlds[i].getNameSpaceAndSeparator().equals("cf"))return tlds[i];	
+        	if(tlds[i].isCore())return tlds[i];	
         }
     	throw new RuntimeException("no core taglib found"); // this should never happen
     }
