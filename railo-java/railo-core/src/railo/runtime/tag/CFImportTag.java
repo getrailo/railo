@@ -38,7 +38,7 @@ public final class CFImportTag extends CFTag {
 		    for(int fn=0;fn<filenames.length;fn++){
 	            ps=((PageContextImpl)pageContext).getRelativePageSourceExisting(realPathes[rp]+filenames[fn]);
 	            if(ps!=null){
-	            	source=new InitFile(ps,filenames[fn],filenames[fn].endsWith('.'+config.getCFCExtension()));
+	            	source=new InitFile(ps,filenames[fn],filenames[fn].endsWith('.'+config.getComponentExtension()));
 	            	return;
 	            }
 			} 

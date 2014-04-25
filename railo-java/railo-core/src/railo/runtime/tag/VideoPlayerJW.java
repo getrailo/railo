@@ -17,6 +17,7 @@ import railo.commons.io.res.type.file.FileResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -295,7 +296,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		
 		StringBuffer sb=new StringBuffer();
 		
-		write(sb,"<script type=\"text/javascript\" src=\"/railo-context/swfobject.js.cfm\"></script>");
+		write(sb,"<script type=\"text/javascript\" src=\"/railo-context/swfobject.js."+Constants.TEMPLATE_EXTENSION+"\"></script>");
 		write(sb,"<div ");			
 		
 		
@@ -315,7 +316,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		
 		
 		write(sb,"<script type=\"text/javascript\">\n");			
-		write(sb,"var so = new SWFObject(\"/railo-context/mediaplayer.swf.cfm\", \""+flashId+"\", \""+width+"\", \""+(height)+"\", \"8\", \""+format("#",bgcolor)+"\");\n");			
+		write(sb,"var so = new SWFObject(\"/railo-context/mediaplayer.swf."+Constants.TEMPLATE_EXTENSION+"\", \""+flashId+"\", \""+width+"\", \""+(height)+"\", \"8\", \""+format("#",bgcolor)+"\");\n");			
 		
 		// script
 		addParam(sb,"allowscriptaccess","always");
@@ -384,18 +385,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		addVariable(sb,"width",Caster.toString(width));
 		addVariable(sb,"height",Caster.toString(height));
 		if(playlistThumbnails && hasImages())addVariable(sb,"thumbsinplaylist","true");
-		
-		//if(preview!=null) addVariable(sb,"image",toPath(preview));
-		//Iterator it = params.iterator();
-		//addVariable("file","/rvp/videos/David.flv");
-		//addVariable("captions","http://localhost:8080/caption.cfm");
-		//while(it.hasNext()) {
-			//param=(VideoPlayerParamBean) it.next();
-			//addVariable(sb,"file",toPath(param.getResource()));
-			//break;	
-		//}
-		//addVariable("image","video.jpg");
-		
+
 		write(sb,"so.write(\""+placeholderId+"\");\n");
 		//if(params.size()>1) {
 		Iterator it = params.iterator();

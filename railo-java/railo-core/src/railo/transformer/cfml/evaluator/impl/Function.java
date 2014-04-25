@@ -32,10 +32,7 @@ import railo.transformer.library.tag.TagLibTag;
  */
 public final class Function extends EvaluatorSupport {
 
-	//�
-	/**
-	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag)
-	 */
+	@Override
 	public void evaluate(Tag tag, TagLibTag libTag, FunctionLib[] flibs) throws EvaluatorException {
 		//Body p=(Body) tag.getParent();
 		//Statement pp = p.getParent();
@@ -92,14 +89,11 @@ public final class Function extends EvaluatorSupport {
 		
 		
 		// Attribute Output
-		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" geh�ndelt
 		Attribute attrOutput = tag.getAttribute("output");
 		if(attrOutput!=null) {
 			Expression expr = tag.getFactory().toExprBoolean(attrOutput.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute output of the Tag Function, must be a literal boolean value (true or false, yes or no)");
-			//boolean output = ((LitBoolean)expr).getBooleanValue();
-			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
 		}
 		
 		Attribute attrBufferOutput = tag.getAttribute("bufferoutput");
@@ -107,8 +101,6 @@ public final class Function extends EvaluatorSupport {
 			Expression expr = tag.getFactory().toExprBoolean(attrBufferOutput.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute bufferOutput of the Tag Function, must be a literal boolean value (true or false, yes or no)");
-			//boolean output = ((LitBoolean)expr).getBooleanValue();
-			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
 		}
 		
 		

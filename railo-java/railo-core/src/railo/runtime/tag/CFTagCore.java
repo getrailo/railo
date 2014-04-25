@@ -48,7 +48,7 @@ public class CFTagCore extends CFTag {
     	return new InitFile(
     			mapping.getPageSource(filename),
     			filename,
-    			filename.endsWith('.'+config.getCFCExtension()));
+    			filename.endsWith('.'+config.getComponentExtension()));
      
     }
 }

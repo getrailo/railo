@@ -580,7 +580,6 @@ public final class AxisCaster {
         		try	{
         			if(type==null || type.getLocalPart().equals("anyType")) {
         				type= new QName("http://rpc.xml.cfml",pojo.getClass().getName());
-        				//print.ds("missing type for "+pojo.getClass().getName());
         			}
         			TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), type);
 	        		

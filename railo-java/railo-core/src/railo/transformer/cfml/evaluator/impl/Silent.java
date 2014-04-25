@@ -13,9 +13,7 @@ import railo.transformer.cfml.evaluator.EvaluatorSupport;
  */
 public final class Silent extends EvaluatorSupport {
 	
-	/**
-	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(Element)
-	 */
+	@Override
 	public void evaluate(Tag tag) throws EvaluatorException {
 		ASMUtil.removeLiterlChildren(tag,true);
 	}

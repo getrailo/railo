@@ -15,7 +15,7 @@ public final class CFMLFilter implements Filter {
 	
 	/**
 	 * Konstruktor von CFMLFilter, dem Konstruktor wird ein String Array uebergeben mit Extensions die geprueft werden sollen,
-	 * wie z.B. {"cfml","cfm"}.
+	 * wie z.B. {"html","htm"}.
 	 * @param extensions Extensions die geprueft werden sollen.
 	 */
 	public CFMLFilter(String[] extensions) {

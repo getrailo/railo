@@ -10,9 +10,7 @@ import railo.transformer.cfml.evaluator.ChildEvaluator;
  */
 public final class Case extends ChildEvaluator {
 
-	/**
-	 * @see railo.transformer.cfml.evaluator.ChildEvaluator#getParentName()
-	 */
+	@Override
 	protected String getParentName() {
 		return "switch";
 	}

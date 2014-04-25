@@ -13,10 +13,8 @@ import railo.transformer.library.tag.TagLibTag;
  */
 public final class Component implements AttributeEvaluator {
 
-    /**
-     * @see railo.transformer.cfml.attributes.AttributeEvaluator#evaluate(railo.transformer.library.tag.TagLibTag, org.w3c.dom.Element)
-     */
-    public TagLibTag evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
+	@Override
+	public TagLibTag evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
 		tagLibTag.setParseBody(false);
 		Attribute attr = tag.getAttribute("output");
 		if(attr!=null) {

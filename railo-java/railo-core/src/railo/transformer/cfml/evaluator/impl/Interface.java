@@ -16,9 +16,8 @@ import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.tag.TagLibTag;
 
 public class Interface extends Component {
-	/**
-	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag)
-	 */
+	
+	@Override
 	public void evaluate(Tag tag,TagLibTag libTag) throws EvaluatorException { 
 		super.evaluate(tag,libTag);
 		Body body = tag.getBody();

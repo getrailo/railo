@@ -9,6 +9,7 @@ import railo.commons.color.ColorCaster;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -397,7 +398,7 @@ public final class Image extends TagImpl {
 			// create path
 			String cp = pageContext.getHttpServletRequest().getContextPath();
 			if(StringUtil.isEmpty(cp)) cp="";
-			return cp+"/railo-context/graph.cfm?img="+name+"&type="+(ListUtil.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
+			return cp+"/railo-context/graph."+Constants.TEMPLATE_EXTENSION+"?img="+name+"&type="+(ListUtil.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
 		}
 		return ContractPath.call(pageContext, destination.getAbsolutePath());
 	}

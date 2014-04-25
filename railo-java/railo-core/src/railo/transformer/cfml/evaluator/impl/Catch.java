@@ -8,9 +8,7 @@ import railo.transformer.cfml.evaluator.ChildEvaluator;
  */
 public final class Catch extends ChildEvaluator {
 	
-	/**
-	 * @see railo.transformer.cfml.evaluator.ChildEvaluator#getParentName()
-	 */
+	@Override
 	protected String getParentName() {
 		return "try";
 	}

@@ -81,9 +81,6 @@ public class ClassicHTMLDumpWriter implements DumpWriter {
 				if(contextPath==null)contextPath="";
 			}
 			
-			
-			//writer.write("<img src=\""+contextPath+"/railo-context/admin/resources/img/debug_minus.gif.cfm\" name=\"__btn"+id+"\"/>");
-			
 			writer.write("<span style=\"font-weight:bold;\">"+
 					(!StringUtil.isEmpty(table.getTitle())?table.getTitle():"")+"</span>"+(!StringUtil.isEmpty(table.getComment())?"<br>"+table.getComment():"")+
                 "</td></tr>");

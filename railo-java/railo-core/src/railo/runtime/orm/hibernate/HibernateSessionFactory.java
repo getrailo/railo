@@ -310,7 +310,7 @@ public class HibernateSessionFactory {
 	}
 
 	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
-		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
+		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getComponentExtension(),true);
 		List<Component> components=new ArrayList<Component>();
 		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter,ormConf);
 		return components;

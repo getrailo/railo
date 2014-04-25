@@ -88,7 +88,7 @@ public final class GetTagData implements Function {
 		boolean isWeb = Caster.toBooleanValue(attrIsWeb.getDefaultValue());
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		
-		Component cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
+		Component cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getComponentExtension().length()+1)), false,true);
         ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE, cfc);
 		Struct metadata=Caster.toStruct(cw.get("metadata",null),null,false);
 		

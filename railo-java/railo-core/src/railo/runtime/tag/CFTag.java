@@ -323,7 +323,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	callerScope.initialize(pageContext);
         try {
-			cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+			cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getComponentExtension().length()+1)), false,true);
 		}
 		catch (PageException e) {
 			Mapping m = source.getPageSource().getMapping();
@@ -336,7 +336,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 			if(m!=null){
 				PageSource ps = m.getPageSource(source.getFilename());
 				try {
-					cfc = ComponentLoader.loadComponent(pageContext,null,ps, source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+					cfc = ComponentLoader.loadComponent(pageContext,null,ps, source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getComponentExtension().length()+1)), false,true);
 				}
 				catch (PageException e1) {
 					throw e;

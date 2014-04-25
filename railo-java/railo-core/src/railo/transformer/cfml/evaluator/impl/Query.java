@@ -30,9 +30,7 @@ import railo.transformer.expression.var.Variable;
 */
 public final class Query extends EvaluatorSupport {
 
-	/**
-	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element)
-	 */
+	@Override
 	public void evaluate(Tag tag) throws EvaluatorException { 
 		translateChildren(tag.getBody().getStatements().iterator());
 	}

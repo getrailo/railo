@@ -388,7 +388,7 @@ public final class PageContextImpl extends PageContext {
         startTime=System.currentTimeMillis();
         thread=Thread.currentThread();
         
-        isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),"."+config.getCFCExtension());
+        isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),"."+config.getComponentExtension());
         
         this.req=new HTTPServletRequestWrap(req);
         this.rsp=rsp;

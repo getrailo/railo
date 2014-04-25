@@ -64,8 +64,7 @@ public class CLI {
 		
 
 	}
-// java railo-cli.jar -config=.../railo-web.xml.cfm -uri=/susi/index.cfm?test=1 -form=name=susi -cgi=user_agent=urs -output=.../test.txt ...
-
+	
 	private static Map<String, String> toMap(String[] args) {
 		int index;
 		Map<String, String> config=new HashMap<String, String>();

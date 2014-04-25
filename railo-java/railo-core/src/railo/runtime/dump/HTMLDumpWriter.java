@@ -69,11 +69,7 @@ public class HTMLDumpWriter implements DumpWriter {
 				contextPath=pc. getHttpServletRequest().getContextPath();
 				if(contextPath==null)contextPath="";
 			}
-			
-			
-			//writer.write("<img src=\""+contextPath+"/railo-context/admin/resources/img/debug_minus.gif.cfm\" style=\"margin:2px 2px 0px 0px;\" name=\"__btn"+id+"\"/>");
-			
-			
+
 			writer.write("<span style=\"font-weight:bold;\">"+
 					(!StringUtil.isEmpty(table.getTitle())?table.getTitle():"")+"</span>"+(!StringUtil.isEmpty(table.getComment())?"<br>"+table.getComment():"")+
                 "</td></tr>");

@@ -60,7 +60,7 @@ import railo.transformer.expression.literal.LitString;
 import railo.transformer.expression.literal.Literal;
 
 /**
- * represent a single Page like "index.cfm"
+ * represent a single Page
  */
 public final class Page extends BodyBase {
 

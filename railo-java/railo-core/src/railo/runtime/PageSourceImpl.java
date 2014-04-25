@@ -368,7 +368,7 @@ public final class PageSourceImpl implements PageSource {
     }
     
     public boolean isComponent() {
-        return ResourceUtil.getExtension(getRealpath(), "").equalsIgnoreCase(mapping.getConfig().getCFCExtension());
+        return ResourceUtil.getExtension(getRealpath(), "").equalsIgnoreCase(mapping.getConfig().getComponentExtension());
     }
     
     /**

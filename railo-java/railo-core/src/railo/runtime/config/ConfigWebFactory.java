@@ -1012,9 +1012,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else
 			createFileFromResourceCheckSizeDiffEL("/resource/context/railo-context.ra", f);
 
-		f = contextDir.getRealResource("component-dump.cfm");
+		f = contextDir.getRealResource("component-dump."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/component-dump.cfm", f);
+			createFileFromResourceEL("/resource/context/component-dump."+Constants.TEMPLATE_EXTENSION, f);
 
 		// Component.cfc
 		String badContent = "<cfcomponent displayname=\"Component\" hint=\"This is the Base Component\">\n</cfcomponent>";
@@ -1022,33 +1022,33 @@ public final class ConfigWebFactory extends ConfigFactory {
 		f = contextDir.getRealResource("Component.cfc");
 
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/Component.cfc", f);
+			createFileFromResourceEL("/resource/context/Component."+Constants.COMPONENT_EXTENSION, f);
 		else if (doNew && badVersion.equals(ConfigWebUtil.createMD5FromResource(f))) {
-			createFileFromResourceEL("/resource/context/Component.cfc", f);
+			createFileFromResourceEL("/resource/context/Component."+Constants.COMPONENT_EXTENSION, f);
 		}
 		else if (doNew && badContent.equals(createContentFromResource(f).trim())) {
-			createFileFromResourceEL("/resource/context/Component.cfc", f);
+			createFileFromResourceEL("/resource/context/Component."+Constants.COMPONENT_EXTENSION, f);
 		}
 
 		f = contextDir.getRealResource(Constants.APP_CFM);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/application.cfm", f);
+			createFileFromResourceEL("/resource/context/application."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = contextDir.getRealResource("form.cfm");
+		f = contextDir.getRealResource("form."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/form.cfm", f);
+			createFileFromResourceEL("/resource/context/form."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = contextDir.getRealResource("graph.cfm");
+		f = contextDir.getRealResource("graph."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/graph.cfm", f);
+			createFileFromResourceEL("/resource/context/graph."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = contextDir.getRealResource("wddx.cfm");
+		f = contextDir.getRealResource("wddx."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/wddx.cfm", f);
+			createFileFromResourceEL("/resource/context/wddx."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = contextDir.getRealResource("railo-applet.cfm");
+		f = contextDir.getRealResource("railo-applet."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/railo-applet.cfm", f);
+			createFileFromResourceEL("/resource/context/railo-applet."+Constants.TEMPLATE_EXTENSION, f);
 
 		f = contextDir.getRealResource("railo-applet.jar");
 		if (!f.exists() || doNew)
@@ -1057,24 +1057,24 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// f=new BinaryFile(contextDir,"railo_context.ra");
 		// if(!f.exists())createFileFromResource("/resource/context/railo_context.ra",f);
 
-		f = contextDir.getRealResource("admin.cfm");
+		f = contextDir.getRealResource("admin."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin.cfm", f);
+			createFileFromResourceEL("/resource/context/admin."+Constants.TEMPLATE_EXTENSION, f);
 
 		// Video
 		f = contextDir.getRealResource("swfobject.js");
 		if (!f.exists() || doNew)
 			createFileFromResourceEL("/resource/video/swfobject.js", f);
-		f = contextDir.getRealResource("swfobject.js.cfm");
+		f = contextDir.getRealResource("swfobject.js."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/video/swfobject.js.cfm", f);
+			createFileFromResourceEL("/resource/video/swfobject.js."+Constants.TEMPLATE_EXTENSION, f);
 
 		f = contextDir.getRealResource("mediaplayer.swf");
 		if (!f.exists() || doNew)
 			createFileFromResourceEL("/resource/video/mediaplayer.swf", f);
-		f = contextDir.getRealResource("mediaplayer.swf.cfm");
+		f = contextDir.getRealResource("mediaplayer.swf."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/video/mediaplayer.swf.cfm", f);
+			createFileFromResourceEL("/resource/video/mediaplayer.swf."+Constants.TEMPLATE_EXTENSION, f);
 
 		Resource adminDir = contextDir.getRealResource("admin");
 		if (!adminDir.exists())
@@ -1085,9 +1085,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!pluginDir.exists())
 			pluginDir.mkdirs();
 
-		f = pluginDir.getRealResource("Plugin.cfc");
+		f = pluginDir.getRealResource("Plugin."+Constants.COMPONENT_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin/plugin/Plugin.cfc", f);
+			createFileFromResourceEL("/resource/context/admin/plugin/Plugin."+Constants.COMPONENT_EXTENSION, f);
 
 		// Plugin DDNS
 		/*
@@ -1115,17 +1115,17 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!f.exists())
 			createFileFromResourceEL("/resource/context/admin/plugin/Simon/language.xml", f);
 
-		f = simon.getRealResource("overview.cfm");
+		f = simon.getRealResource("overview."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin/plugin/Simon/overview.cfm", f);
+			createFileFromResourceEL("/resource/context/admin/plugin/Simon/overview."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = simon.getRealResource("simon.swf.cfm");
+		f = simon.getRealResource("simon.swf."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin/plugin/Simon/simon.swf.cfm", f);
+			createFileFromResourceEL("/resource/context/admin/plugin/Simon/simon.swf."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = simon.getRealResource("Action.cfc");
+		f = simon.getRealResource("Action."+Constants.COMPONENT_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin/plugin/Simon/Action.cfc", f);
+			createFileFromResourceEL("/resource/context/admin/plugin/Simon/Action."+Constants.COMPONENT_EXTENSION, f);
 
 		// Plugin Note
 		Resource note = pluginDir.getRealResource("Note");
@@ -1136,13 +1136,13 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!f.exists())
 			createFileFromResourceEL("/resource/context/admin/plugin/Note/language.xml", f);
 
-		f = note.getRealResource("overview.cfm");
+		f = note.getRealResource("overview."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin/plugin/Note/overview.cfm", f);
+			createFileFromResourceEL("/resource/context/admin/plugin/Note/overview."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = note.getRealResource("Action.cfc");
+		f = note.getRealResource("Action."+Constants.COMPONENT_EXTENSION);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/admin/plugin/Note/Action.cfc", f);
+			createFileFromResourceEL("/resource/context/admin/plugin/Note/Action."+Constants.COMPONENT_EXTENSION, f);
 
 		// gateway
 		Resource componentsDir = configDir.getRealResource("components");
@@ -1151,7 +1151,12 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		Resource gwDir = componentsDir.getRealResource("railo/extension/gateway/");
 		create("/resource/context/gateway/",new String[]{
-		"TaskGateway.cfc","DummyGateway.cfc","DirectoryWatcher.cfc","DirectoryWatcherListener.cfc","MailWatcher.cfc","MailWatcherListener.cfc"
+		"TaskGateway."+Constants.COMPONENT_EXTENSION
+		,"DummyGateway."+Constants.COMPONENT_EXTENSION
+		,"DirectoryWatcher."+Constants.COMPONENT_EXTENSION
+		,"DirectoryWatcherListener."+Constants.COMPONENT_EXTENSION
+		,"MailWatcher."+Constants.COMPONENT_EXTENSION
+		,"MailWatcherListener."+Constants.COMPONENT_EXTENSION
 				},gwDir,doNew);
 
 		// resources/language
@@ -1165,18 +1170,24 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// delete Debug
 		Resource debug = adminDir.getRealResource("debug");
 		delete(debug,new String[]{
-				"Classic.cfc","Modern.cfc","Comment.cfc"
+				"Classic."+Constants.COMPONENT_EXTENSION
+				,"Modern."+Constants.COMPONENT_EXTENSION
+				,"Comment."+Constants.COMPONENT_EXTENSION
 				});
 		
 		// add Debug
 		create("/resource/context/admin/debug/",new String[]{
-				"Debug.cfc","Field.cfc","Group.cfc"
+				"Debug."+Constants.COMPONENT_EXTENSION
+				,"Field."+Constants.COMPONENT_EXTENSION
+				,"Group."+Constants.COMPONENT_EXTENSION
 				},debug,doNew);
 		
 		// delete Cache Driver
 		Resource cDir = adminDir.getRealResource("cdriver");
 		delete(cDir,new String[]{
-		"RamCache.cfc","EHCacheLite.cfc","EHCache.cfc"
+		"RamCache."+Constants.COMPONENT_EXTENSION
+		,"EHCacheLite."+Constants.COMPONENT_EXTENSION
+		,"EHCache."+Constants.COMPONENT_EXTENSION
 		});
 		
 		// add Cache Drivers
@@ -1187,38 +1198,57 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// delete DB Drivers
 		Resource dbDir = adminDir.getRealResource("dbdriver");
 		delete(dbDir,new String[]{
-		"HSQLDB.cfc","H2.cfc","MSSQL.cfc","MSSQL2.cfc","DB2.cfc","Oracle.cfc","MySQL.cfc","ODBC.cfc","Sybase.cfc"
-		,"PostgreSql.cfc","Other.cfc","Firebird.cfc","Driver.cfc"
+		"HSQLDB."+Constants.COMPONENT_EXTENSION
+		,"H2."+Constants.COMPONENT_EXTENSION
+		,"MSSQL."+Constants.COMPONENT_EXTENSION
+		,"MSSQL2."+Constants.COMPONENT_EXTENSION
+		,"DB2."+Constants.COMPONENT_EXTENSION
+		,"Oracle."+Constants.COMPONENT_EXTENSION
+		,"MySQL."+Constants.COMPONENT_EXTENSION
+		,"ODBC."+Constants.COMPONENT_EXTENSION
+		,"Sybase."+Constants.COMPONENT_EXTENSION
+		,"PostgreSql."+Constants.COMPONENT_EXTENSION
+		,"Other."+Constants.COMPONENT_EXTENSION
+		,"Firebird."+Constants.COMPONENT_EXTENSION
+		,"Driver."+Constants.COMPONENT_EXTENSION
 		});
 		
 		// add DB Drivers types
 		Resource typesDir = dbDir.getRealResource("types");
 		create("/resource/context/admin/dbdriver/types/",new String[]{
-		"IDriver.cfc","Driver.cfc","IDatasource.cfc","IDriverSelector.cfc","Field.cfc"
+		"IDriver."+Constants.COMPONENT_EXTENSION
+		,"Driver."+Constants.COMPONENT_EXTENSION
+		,"IDatasource."+Constants.COMPONENT_EXTENSION
+		,"IDriverSelector."+Constants.COMPONENT_EXTENSION
+		,"Field."+Constants.COMPONENT_EXTENSION
 		},typesDir,doNew);
 		
 		// delete Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");
 		delete(gDir,new String[]{
-		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc"
+		"TaskGatewayDriver."+Constants.COMPONENT_EXTENSION
+		,"DirectoryWatcher."+Constants.COMPONENT_EXTENSION
+		,"MailWatcher."+Constants.COMPONENT_EXTENSION
 		});
 		
 		// add Gateway Drivers
 		create("/resource/context/admin/gdriver/",new String[]{
-		"Gateway.cfc","Field.cfc","Group.cfc"}
+		"Gateway."+Constants.COMPONENT_EXTENSION
+		,"Field."+Constants.COMPONENT_EXTENSION
+		,"Group."+Constants.COMPONENT_EXTENSION}
 		,gDir,doNew);
 		
 
 		// add Logging/appender
 		Resource app = adminDir.getRealResource("logging/appender");
 		create("/resource/context/admin/logging/appender/",new String[]{
-		"Appender.cfc","Field.cfc","Group.cfc"}
+		"Appender."+Constants.COMPONENT_EXTENSION,"Field."+Constants.COMPONENT_EXTENSION,"Group."+Constants.COMPONENT_EXTENSION}
 		,app,doNew);
 		
 		// Logging/layout
 		Resource lay = adminDir.getRealResource("logging/layout");
 		create("/resource/context/admin/logging/layout/",new String[]{
-		"Layout.cfc","Field.cfc","Group.cfc"}
+		"Layout."+Constants.COMPONENT_EXTENSION,"Field."+Constants.COMPONENT_EXTENSION,"Group."+Constants.COMPONENT_EXTENSION}
 		,lay,doNew);
 		
 		
@@ -1233,17 +1263,17 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!errorDir.exists())
 			errorDir.mkdirs();
 
-		f = errorDir.getRealResource("error.cfm");
+		f = errorDir.getRealResource("error."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/templates/error/error.cfm", f);
+			createFileFromResourceEL("/resource/context/templates/error/error."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = errorDir.getRealResource("error-neo.cfm");
+		f = errorDir.getRealResource("error-neo."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/templates/error/error-neo.cfm", f);
+			createFileFromResourceEL("/resource/context/templates/error/error-neo."+Constants.TEMPLATE_EXTENSION, f);
 
-		f = errorDir.getRealResource("error-public.cfm");
+		f = errorDir.getRealResource("error-public."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/templates/error/error-public.cfm", f);
+			createFileFromResourceEL("/resource/context/templates/error/error-public."+Constants.TEMPLATE_EXTENSION, f);
 
 		Resource displayDir = templatesDir.getRealResource("display");
 		if (!displayDir.exists())
@@ -1251,11 +1281,11 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		//f = displayDir.getRealResource(Constants.APP_CFM);
 		//if (!f.exists() || doNew)
-		//	createFileFromResourceEL("/resource/context/templates/display/Application.cfm", f);
+		//	createFileFromResourceEL("/resource/context/templates/display/Application."+Constants.TEMPLATE_EXTENSION, f);
 
 		//f = displayDir.getRealResource(Constants.APP_CFC);
 		//if (!f.exists() || doNew)
-		//	createFileFromResourceEL("/resource/context/templates/display/Application.cfc", f);
+		//	createFileFromResourceEL("/resource/context/templates/display/Application."+Constants.COMPONENT_EXTENSION, f);
 
 		Resource lib = ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
 		f = lib.getRealResource("jfreechart-patch.jar");
@@ -2319,7 +2349,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		// extensions
 		if (mode == ConfigImpl.MODE_STRICT) {
-			config.setCustomTagExtensions(new String[] { "cfc" });
+			config.setCustomTagExtensions(new String[] { Constants.COMPONENT_EXTENSION});
 		}
 		else {
 			String strExtensions = customTag.getAttribute("extensions");
@@ -2724,24 +2754,36 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 			// Dump
 			create("/resource/library/tag/",new String[]{
-					"Dump.cfc"
+					"Dump."+Constants.COMPONENT_EXTENSION
 					},dir,doNew);
 			
 			Resource sub = dir.getRealResource("railo/dump/skins/");
 			create("/resource/library/tag/railo/dump/skins/",new String[]{
-					"text.cfm","simple.cfm","modern.cfm","classic.cfm","pastel.cfm"
+					"text."+Constants.TEMPLATE_EXTENSION
+					,"simple."+Constants.TEMPLATE_EXTENSION
+					,"modern."+Constants.TEMPLATE_EXTENSION
+					,"classic."+Constants.TEMPLATE_EXTENSION
+					,"pastel."+Constants.TEMPLATE_EXTENSION
 					},sub,doNew);
 
 			// MediaPlayer
-			Resource f = dir.getRealResource("MediaPlayer.cfc");
+			Resource f = dir.getRealResource("MediaPlayer."+Constants.COMPONENT_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/tag/MediaPlayer.cfc", f);
+				createFileFromResourceEL("/resource/library/tag/MediaPlayer."+Constants.COMPONENT_EXTENSION, f);
 			Resource build = dir.getRealResource("build");
 			if (!build.exists())
 				build.mkdirs();
-			String[] names = new String[] { "_background.png", "_bigplay.png", "_controls.png", "_loading.gif", "_player.swf", "_player.xap", "background_png.cfm",
-					"bigplay_png.cfm", "controls_png.cfm", "jquery.js.cfm", "loading_gif.cfm", "mediaelement-and-player.min.js.cfm", "mediaelementplayer.min.css.cfm",
-					"player.swf.cfm", "player.xap.cfm" };
+			String[] names = new String[] { "_background.png", "_bigplay.png", "_controls.png"
+					, "_loading.gif", "_player.swf", "_player.xap"
+					, "background_png."+Constants.TEMPLATE_EXTENSION,
+					"bigplay_png."+Constants.TEMPLATE_EXTENSION
+					, "controls_png."+Constants.TEMPLATE_EXTENSION
+					, "jquery.js."+Constants.TEMPLATE_EXTENSION
+					, "loading_gif."+Constants.TEMPLATE_EXTENSION
+					, "mediaelement-and-player.min.js."+Constants.TEMPLATE_EXTENSION
+					, "mediaelementplayer.min.css."+Constants.TEMPLATE_EXTENSION
+					, "player.swf."+Constants.TEMPLATE_EXTENSION
+					, "player.xap."+Constants.TEMPLATE_EXTENSION };
 			for (int i = 0; i < names.length; i++) {
 				f = build.getRealResource(names[i]);
 				if (!f.exists() || doNew)
@@ -2758,54 +2800,54 @@ public final class ConfigWebFactory extends ConfigFactory {
 	private static void createFunctionFiles(Config config, Resource configDir, Resource dir, boolean doNew) {
 
 		if (config instanceof ConfigServer) {
-			Resource f = dir.getRealResource("writeDump.cfm");
+			Resource f = dir.getRealResource("writeDump."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/writeDump.cfm", f);
+				createFileFromResourceEL("/resource/library/function/writeDump."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("dump.cfm");
+			f = dir.getRealResource("dump."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/dump.cfm", f);
+				createFileFromResourceEL("/resource/library/function/dump."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("location.cfm");
+			f = dir.getRealResource("location."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/location.cfm", f);
+				createFileFromResourceEL("/resource/library/function/location."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("threadJoin.cfm");
+			f = dir.getRealResource("threadJoin."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/threadJoin.cfm", f);
+				createFileFromResourceEL("/resource/library/function/threadJoin."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("threadTerminate.cfm");
+			f = dir.getRealResource("threadTerminate."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/threadTerminate.cfm", f);
+				createFileFromResourceEL("/resource/library/function/threadTerminate."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("throw.cfm");
+			f = dir.getRealResource("throw."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/throw.cfm", f);
+				createFileFromResourceEL("/resource/library/function/throw."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("trace.cfm");
+			f = dir.getRealResource("trace."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/trace.cfm", f);
+				createFileFromResourceEL("/resource/library/function/trace."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("queryExecute.cfm");
+			f = dir.getRealResource("queryExecute."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/queryExecute.cfm", f);
+				createFileFromResourceEL("/resource/library/function/queryExecute."+Constants.TEMPLATE_EXTENSION, f);
 
 			
-			f = dir.getRealResource("transactionCommit.cfm");
+			f = dir.getRealResource("transactionCommit."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/transactionCommit.cfm", f);
+				createFileFromResourceEL("/resource/library/function/transactionCommit."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("transactionRollback.cfm");
+			f = dir.getRealResource("transactionRollback."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/transactionRollback.cfm", f);
+				createFileFromResourceEL("/resource/library/function/transactionRollback."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("transactionSetsavepoint.cfm");
+			f = dir.getRealResource("transactionSetsavepoint."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/transactionSetsavepoint.cfm", f);
+				createFileFromResourceEL("/resource/library/function/transactionSetsavepoint."+Constants.TEMPLATE_EXTENSION, f);
 
-			f = dir.getRealResource("writeLog.cfm");
+			f = dir.getRealResource("writeLog."+Constants.TEMPLATE_EXTENSION);
 			if (!f.exists() || doNew)
-				createFileFromResourceEL("/resource/library/function/writeLog.cfm", f);
+				createFileFromResourceEL("/resource/library/function/writeLog."+Constants.TEMPLATE_EXTENSION, f);
 
 			AjaxFactory.deployFunctions(dir, doNew);
 
@@ -4322,7 +4364,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else if (hasCS)
 			config.setErrorTemplate(500, configServer.getErrorTemplate(500));
 		else
-			config.setErrorTemplate(500, "/railo-context/templates/error/error.cfm");
+			config.setErrorTemplate(500, "/railo-context/templates/error/error."+Constants.TEMPLATE_EXTENSION);
 
 		// 404
 		String template404 = error.getAttribute("template-404");
@@ -4338,7 +4380,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		else if (hasCS)
 			config.setErrorTemplate(404, configServer.getErrorTemplate(404));
 		else
-			config.setErrorTemplate(404, "/railo-context/templates/error/error.cfm");
+			config.setErrorTemplate(404, "/railo-context/templates/error/error."+Constants.TEMPLATE_EXTENSION);
 
 		// status code
 		String strStausCode = error.getAttribute("status-code");

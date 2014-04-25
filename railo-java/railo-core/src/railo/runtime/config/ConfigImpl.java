@@ -366,7 +366,7 @@ public abstract class ConfigImpl implements Config {
 	private Struct remoteClientUsage;
 	private Class adminSyncClass=AdminSyncNotSupported.class;
 	private AdminSync adminSync;
-	private String[] customTagExtensions=new String[]{"cfm","cfc"};
+	private String[] customTagExtensions=new String[]{Constants.TEMPLATE_EXTENSION,Constants.COMPONENT_EXTENSION};
 	private Class videoExecuterClass=VideoExecuterNotSupported.class;
 	
 	protected MappingImpl tagMapping;
@@ -526,14 +526,30 @@ public abstract class ConfigImpl implements Config {
     public short getScopeCascadingType() {
         return type;
     }
-    
+
     @Override
     public String[] getCFMLExtensions() {
-        return Constants.CFML_EXTENSION;
+        return getAllExtensions();
     }
+    
     @Override
     public String getCFCExtension() {
-        return Constants.CFC_EXTENSION;
+        return getComponentExtension();
+    }
+    
+    @Override
+    public String[] getAllExtensions() {
+        return Constants.ALL_EXTENSION;
+    }
+    
+    @Override
+    public String getComponentExtension() {
+        return Constants.COMPONENT_EXTENSION;
+    }
+    
+    @Override
+    public String getTemplateExtension() {
+        return Constants.TEMPLATE_EXTENSION;
     }
 
     
@@ -824,7 +840,7 @@ public abstract class ConfigImpl implements Config {
         
         // component mappings (only used for gateway)
         if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
-        	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
+        	boolean isCFC=getComponentExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
 	        	for(int i=0;i<cmappings.length;i++) {
@@ -906,7 +922,7 @@ public abstract class ConfigImpl implements Config {
         
         // component mappings (only used for gateway)
         if(useComponentMappings || (pc!=null && ((PageContextImpl)pc).isGatewayContext())) {
-        	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
+        	boolean isCFC=getComponentExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
 	        	for(int i=0;i<cmappings.length;i++) {
@@ -1154,7 +1170,10 @@ public abstract class ConfigImpl implements Config {
     	
         // now overwrite with new data
         if(tagDirectory.isDirectory()) {
-        	String[] files=tagDirectory.list(new ExtensionResourceFilter(new String[]{"cfm","cfc"}));
+        	String[] files=tagDirectory.list(new ExtensionResourceFilter(
+        			getMode() == ConfigImpl.MODE_STRICT?
+                	new String[]{Constants.COMPONENT_EXTENSION}:
+        			new String[]{Constants.TEMPLATE_EXTENSION,Constants.COMPONENT_EXTENSION}));
             for(int i=0;i<files.length;i++) {
             	if(tl!=null)createTag(tl, files[i]);
                     

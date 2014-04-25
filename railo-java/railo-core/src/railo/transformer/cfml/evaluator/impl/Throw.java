@@ -10,9 +10,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 public final class Throw extends EvaluatorSupport {
 
-	/**
-	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(railo.transformer.bytecode.statement.tag.Tag, railo.transformer.library.tag.TagLibTag, railo.transformer.library.function.FunctionLib[])
-	 */
+	@Override
 	public void evaluate(Tag tag,TagLibTag tagLibTag,FunctionLib[] flibs) throws EvaluatorException {
         
 		// file loop      

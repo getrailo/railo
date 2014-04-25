@@ -131,7 +131,7 @@ public final class CFMLTransformer {
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
+		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getComponentExtension())){
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 

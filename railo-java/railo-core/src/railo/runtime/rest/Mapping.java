@@ -30,7 +30,7 @@ import railo.runtime.type.util.KeyConstants;
 public class Mapping {
 
 	private static final ResourceFilter FILTER = new AndResourceFilter(new ResourceFilter[]{
-			new ExtensionResourceFilter(Constants.CFC_EXTENSION),
+			new ExtensionResourceFilter(Constants.COMPONENT_EXTENSION),
 			new ResourceFilter() {
 				
 				public boolean accept(Resource res) {

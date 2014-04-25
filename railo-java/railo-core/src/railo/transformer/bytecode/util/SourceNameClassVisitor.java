@@ -21,11 +21,11 @@ public class SourceNameClassVisitor extends ClassVisitor {
 	public SourceNameClassVisitor(Config config, int arg0, boolean onlyCFC) {
 		super(arg0);
 		if(onlyCFC) {
-			filter = new ExtensionResourceFilter(new String[]{config.getCFCExtension()},true,true);
+			filter = new ExtensionResourceFilter(new String[]{config.getComponentExtension()},true,true);
 		}
 		else {
-			filter = new ExtensionResourceFilter(config.getCFMLExtensions(),true,true);
-			filter.addExtension(config.getCFCExtension());
+			filter = new ExtensionResourceFilter(config.getAllExtensions(),true,true);
+			filter.addExtension(config.getComponentExtension());
 		}
 		
 	}

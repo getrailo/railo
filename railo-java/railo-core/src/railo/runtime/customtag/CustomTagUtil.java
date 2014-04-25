@@ -123,7 +123,7 @@ public class CustomTagUtil {
 		    	//ps=pc.getRelativePageSource(filenames[i]);
 	            ps=MappingImpl.isOK(arr);
 				if(ps !=null) {
-					initFile= new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
+					initFile= new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getComponentExtension()));
 					if(doCache)config.putCTInitFile(localCacheName, initFile);
 	        		return initFile;
 				}
@@ -135,7 +135,7 @@ public class CustomTagUtil {
         	for(int i=0;i<filenames.length;i++){
             	ps=getMapping(actms, filenames[i],doCustomTagDeepSearch);
             	if(ps!=null) {
-            		initFile=new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
+            		initFile=new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getComponentExtension()));
             		if(doCache)config.putCTInitFile("application:"+ps.getMapping().hashCode()+"/"+name, initFile);
             		return initFile;
             	}
@@ -146,7 +146,7 @@ public class CustomTagUtil {
         for(int i=0;i<filenames.length;i++){
         	ps=getMapping(cctms, filenames[i], doCustomTagDeepSearch);
         	if(ps!=null) {
-        		initFile=new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
+        		initFile=new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getComponentExtension()));
         		if(doCache)config.putCTInitFile("config:"+ps.getMapping().hashCode()+"/"+name, initFile);
         		return initFile;
         	}
@@ -188,7 +188,7 @@ public class CustomTagUtil {
     	
     	String[] extensions=config.getCustomTagExtensions();
         for(int i =0;i<extensions.length;i++){
-    		if(extensions[i].equalsIgnoreCase(config.getCFCExtension())) hasCFC=true;
+    		if(extensions[i].equalsIgnoreCase(config.getComponentExtension())) hasCFC=true;
     		else hasCFML=true;
     	}
         StringBuilder sb=new StringBuilder();

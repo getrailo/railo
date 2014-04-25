@@ -27,6 +27,7 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.util.ArrayUtil;
@@ -147,6 +148,7 @@ public final class ResourceUtil {
     	EXT_MT.put("xlsx","application/vnd.ms-excel");
     	EXT_MT.put("xpm","image/x-xpixmap");
     	EXT_MT.put("zip","application/zip");
+    	EXT_MT.put(Constants.TEMPLATE_EXTENSION,"text/html");
     	
     }
 	

@@ -130,12 +130,23 @@ public interface Config {
 
     /**
      * return cfml extesnion
+     * @deprecated combine instead <code>getComponentExtension()</code> and <code>getTemplateExtension()</code>
      * @return cfml extension
      */
     public abstract String[] getCFMLExtensions();
     
+    /**
+     * @deprecated use instead <code>getComponentExtension()</code>
+     * @return
+     */
     public abstract String getCFCExtension();
+    
+    public abstract String getComponentExtension();
+    public abstract String getTemplateExtension();
+    public abstract String[] getAllExtensions();
 
+    
+    
     /**
      * return the mapping to custom tag directory
      * @return custom tag directory

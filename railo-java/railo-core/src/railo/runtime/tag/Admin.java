@@ -70,6 +70,7 @@ import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.config.DebugEntry;
 import railo.runtime.config.DeployHandler;
 import railo.runtime.config.RemoteClient;
@@ -231,9 +232,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private static final ResourceFilter FILTER_CFML_TEMPLATES=new LogResourceFilter(
         new OrResourceFilter(new ResourceFilter[]{
                 new DirectoryResourceFilter(),
-                new ExtensionResourceFilter("cfm"),
-                new ExtensionResourceFilter("cfc"),
-                new ExtensionResourceFilter("cfml")
+                new ExtensionResourceFilter(Constants.TEMPLATE_EXTENSION),
+                new ExtensionResourceFilter(Constants.COMPONENT_EXTENSION)
         }));
 	private AdminSync adminSync;
 	
@@ -853,12 +853,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		if(addCFMLFiles && addNonCFMLFiles)filter=null;
     		// CFML Files but no other files
     		else if(addCFMLFiles) {
-    			if(mappingType==MAPPING_CFC)filter=new ExtensionResourceFilter(new String[]{"class","cfc","MF"},true,true);
-	    		else filter=new ExtensionResourceFilter(new String[]{"class","cfm","cfml","cfc","MF"},true,true);
+    			if(mappingType==MAPPING_CFC)filter=new ExtensionResourceFilter(new String[]{"class",Constants.COMPONENT_EXTENSION,"MF"},true,true);
+	    		else filter=new ExtensionResourceFilter(new String[]{"class",Constants.TEMPLATE_EXTENSION,Constants.COMPONENT_EXTENSION,"MF"},true,true);
     		}
     		// No CFML Files, but all other files
     		else if(addNonCFMLFiles) {
-    			filter=new NotResourceFilter(new ExtensionResourceFilter(new String[]{"cfm","cfml","cfc"},false,true));
+    			filter=new NotResourceFilter(new ExtensionResourceFilter(new String[]{Constants.COMPONENT_EXTENSION,Constants.TEMPLATE_EXTENSION},false,true));
     		}
     		// no files at all
     		else  {
@@ -3256,7 +3256,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 	private void doGetDebuggingList() throws PageException {
     	Resource railoContext = ResourceUtil.toResourceExisting(pageContext ,"/railo-context/templates/debugging/");
-    	Resource[] children = railoContext.listResources(new ExtensionResourceFilter("cfm"));
+    	Resource[] children = railoContext.listResources(new ExtensionResourceFilter(Constants.TEMPLATE_EXTENSION));
     	String rtnVar=getString("admin",action,"returnVariable");
     	
     	railo.runtime.type.Query qry=new QueryImpl(new String[]{"name"},children.length,rtnVar);

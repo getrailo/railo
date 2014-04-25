@@ -74,6 +74,7 @@ import railo.runtime.chart.PieSectionLabelGeneratorImpl;
 import railo.runtime.chart.PieSectionLegendLabelGeneratorImpl;
 import railo.runtime.chart.PieToolTipGeneratorImpl;
 import railo.runtime.chart.TickUnitsImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -732,7 +733,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		
 		String contextPath = pageContext.getHttpServletRequest().getContextPath();
 		contextPath = StringUtil.isEmpty(contextPath) ? "/" : contextPath+"/";
-		String src=contextPath+"railo-context/graph.cfm?img="+id+"&type="+formatToString(format);
+		String src=contextPath+"railo-context/graph."+Constants.TEMPLATE_EXTENSION+"?img="+id+"&type="+formatToString(format);
 		
 		if(!StringUtil.isEmpty(source)) {
 			pageContext.setVariable(source, src);

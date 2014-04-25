@@ -7,6 +7,7 @@ import java.net.URL;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -32,7 +33,7 @@ public final class Index extends TagImpl {
     private static final String[] EMPTY = new String[0];
 
 
-	public static String[] EXTENSIONS=new String[]{"htm","html","cfm","cfml","dbm","dbml"};
+	public static String[] EXTENSIONS=new String[]{"htm","html",Constants.TEMPLATE_EXTENSION,"dbm","dbml"};
     
 
 	/** Specifies the index action. */

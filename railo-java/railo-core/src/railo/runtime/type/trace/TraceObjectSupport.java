@@ -2,6 +2,7 @@ package railo.runtime.type.trace;
 
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
 import railo.runtime.debug.Debugger;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
@@ -70,7 +71,7 @@ public class TraceObjectSupport implements TraceObject {
 			trace=traces[i];
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java") ||
-					template.endsWith("Dump.cfc") || template.endsWith("dump.cfm"))// MUST bad impl 
+					template.endsWith("Dump."+Constants.COMPONENT_EXTENSION) || template.endsWith("dump."+Constants.TEMPLATE_EXTENSION))// MUST bad impl 
 				continue;
 			line=trace.getLineNumber();
 			break;

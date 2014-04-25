@@ -15,6 +15,7 @@ import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.net.http.HTTPResponse;
+import railo.runtime.config.Constants;
 import railo.runtime.op.Caster;
 import railo.runtime.search.lucene2.docs.FieldUtil;
 import railo.runtime.search.lucene2.docs.FileDocument;
@@ -121,7 +122,7 @@ public final class DocumentUtil {
             ext=ext.toLowerCase();
             //String mimeType=new MimetypesFileTypeMap().getContentType(f);
             // HTML
-            if(ext.equals("htm") || ext.equals("html") || ext.equals("cfm") || ext.equals("cfml") || ext.equals("php") || ext.equals("asp") || ext.equals("aspx")) {
+            if(ext.equals(Constants.TEMPLATE_EXTENSION) || ext.equals("htm") || ext.equals("html") || ext.equals("cfm") || ext.equals("cfml") || ext.equals("php") || ext.equals("asp") || ext.equals("aspx")) {
                 doc= HTMLDocument.getDocument(file,charset);
             }
             // PDF

@@ -37,10 +37,10 @@ public final class Module extends CFTag {
             	
             	if(ps==null)
 					throw new MissingIncludeException(sources[0],"could not find template ["+template+"], file ["+sources[0].getDisplayPath()+"] doesn't exist");
-            	source=new InitFile(ps,template,template.endsWith('.'+pageContext.getConfig().getCFCExtension()));
+            	source=new InitFile(ps,template,template.endsWith('.'+pageContext.getConfig().getComponentExtension()));
             }
             else {
-            	source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getCFCExtension()));
+            	source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getComponentExtension()));
             	if(!MappingImpl.isOK(source.getPageSource())){
 					throw new MissingIncludeException(source.getPageSource(),"could not find template ["+template+"], file ["+source.getPageSource().getDisplayPath()+"] doesn't exist");
             	}
@@ -59,7 +59,7 @@ public final class Module extends CFTag {
 	        if(ctms!=null) {
 	        	outer:for(int f=0;f<filenames.length;f++){
 		        	for(int i=0;i<ctms.length;i++){
-		            	source=new InitFile(ctms[i].getPageSource(filenames[f]),filenames[f],filenames[f].endsWith('.'+config.getCFCExtension()));
+		            	source=new InitFile(ctms[i].getPageSource(filenames[f]),filenames[f],filenames[f].endsWith('.'+config.getComponentExtension()));
 		            	if(MappingImpl.isOK(source.getPageSource())) {
 		            		exist=true;
 		            		break outer;
@@ -73,7 +73,7 @@ public final class Module extends CFTag {
 		        ctms = config.getCustomTagMappings();
 	        	outer:for(int f=0;f<filenames.length;f++){ 
 		            for(int i=0;i<ctms.length;i++){// TODO optimieren siehe CFTag
-		            	source=new InitFile(ctms[i].getPageSource(filenames[f]),filenames[f],filenames[f].endsWith('.'+config.getCFCExtension()));
+		            	source=new InitFile(ctms[i].getPageSource(filenames[f]),filenames[f],filenames[f].endsWith('.'+config.getComponentExtension()));
 		            	if(MappingImpl.isOK(source.getPageSource())) {
 		            		exist=true;
 		            		break outer;
@@ -116,7 +116,6 @@ public final class Module extends CFTag {
         while((len=dotPath.length())>0 && dotPath.lastIndexOf('.')==len-1) {
             dotPath=dotPath.substring(0,len-2);
         }
-        //dotPath.replace('.','/')+".cfm";
         return CustomTagUtil.getFileNames(config, dotPath.replace('.','/'));
     }
 }

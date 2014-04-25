@@ -24,6 +24,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletRequestDummy;
@@ -105,7 +106,7 @@ public class CFMLProxy {
      // CFML Files
         String cfml;
         try {
-            cfml="/"+(serviceName.replace('.','/')+'/'+serviceMethodName.replace('.','/'))+".cfm";
+            cfml="/"+(serviceName.replace('.','/')+'/'+serviceMethodName.replace('.','/'))+"."+Constants.TEMPLATE_EXTENSION;
             pc=createPageContext(factory,cfml,"",null,req);
             PageSource source = ((PageContextImpl)pc).getPageSourceExisting(cfml);
             

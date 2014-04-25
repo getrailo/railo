@@ -57,10 +57,7 @@ public class SimpleHTMLDumpWriter implements DumpWriter {
 				contextPath=pc. getHttpServletRequest().getContextPath();
 				if(contextPath==null)contextPath="";
 			}
-			
-			
-			//writer.write("<img src=\""+contextPath+"/railo-context/admin/resources/img/debug_minus.gif.cfm\" name=\"__btn"+id+"\"/>");
-			
+
 			writer.write("<b>"+
 					(!StringUtil.isEmpty(table.getTitle())?table.getTitle():"")+"</b>"+(!StringUtil.isEmpty(table.getComment())?"<br>"+table.getComment():"")+
                 "</td></tr>");

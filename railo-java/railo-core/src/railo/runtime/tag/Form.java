@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -31,7 +32,7 @@ public final class Form extends BodyTagImpl {
 	public static final int FORMAT_HTML = 0;
     public static final int FORMAT_FLASH = 1;
     public static final int FORMAT_XML = 2;
-	private static final String DEFAULT_ARCHIVE = "/railo-context/railo-applet.cfm";
+	private static final String DEFAULT_ARCHIVE = "/railo-context/railo-applet."+Constants.TEMPLATE_EXTENSION;
 	
 	private static final int WMODE_WINDOW = 0;
 	private static final int WMODE_TRANSPARENT = 1;
@@ -58,7 +59,7 @@ public final class Form extends BodyTagImpl {
     private Map inputs=new LinkedHashMap();
 	private String strSkin;
 	private String archive=null;
-	private String codebase=null; // TODO muss einen wert haben -> /railo - context/classes/cf-j2re-win.cab.cfm
+	private String codebase=null;
 	private String height="100%";
 	private String width="100%";
 	private boolean preloader=true;
@@ -438,7 +439,7 @@ public final class Form extends BodyTagImpl {
             //hasListener=true;
         }
         
-        if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/form.cfm";
+        if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/form."+Constants.TEMPLATE_EXTENSION;
         attributes.setEL("method",method);
         
         pageContext.forceWrite("<script language = \"JavaScript\" type=\"text/javascript\" src=\""+scriptSrc+"\"></script>");

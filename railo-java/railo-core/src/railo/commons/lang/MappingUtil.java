@@ -23,10 +23,10 @@ public class MappingUtil {
 		if(name.indexOf('/')==-1) { // TODO handle this as well?
 			Config config = mapping.getConfig();
 			ExtensionResourceFilter ext =null;
-			if(onlyCFC) ext=new ExtensionResourceFilter(new String[]{config.getCFCExtension()},true,true);
+			if(onlyCFC) ext=new ExtensionResourceFilter(new String[]{config.getComponentExtension()},true,true);
 			else {
-				ext=new ExtensionResourceFilter(config.getCFMLExtensions(),true,true);
-				ext.addExtension(config.getCFCExtension());
+				ext=new ExtensionResourceFilter(config.getAllExtensions(),true,true);
+				ext.addExtension(config.getComponentExtension());
 			}
 			
 			if(mapping.isPhysicalFirst()) {
