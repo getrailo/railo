@@ -9,6 +9,7 @@ import railo.runtime.op.Caster;
 
 public class BigIntCast implements Cast {
 
+	@Override
 	public Object toCFType(TimeZone tz, int type, ResultSet rst, int columnIndex) throws SQLException, IOException {
 		String str=rst.getString(columnIndex);
 		if(str!=null && str.length()>9) return str;

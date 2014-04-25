@@ -212,7 +212,8 @@ private final RetireListener listener;
   /**
      Close any previously opened file and call the parent's
      <code>reset</code>.  */
-  protected void reset() {
+  @Override
+protected void reset() {
     closeFile();
     super.reset();
   }

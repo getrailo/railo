@@ -28,6 +28,7 @@ public final class SortRegisterComparator implements ExceptionComparator {
 	/**
 	 * @return Returns the expressionException.
 	 */
+	@Override
 	public PageException getPageException() {
 		return pageException;
 	}

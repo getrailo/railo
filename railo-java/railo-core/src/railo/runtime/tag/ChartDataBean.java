@@ -51,6 +51,7 @@ public class ChartDataBean implements Serializable,Comparable {
 	public String toString() {
 		return "item:"+item+";"+"value;"+value+";";
 	}
+	@Override
 	public int compareTo(Object o) {
 		if(!(o instanceof ChartDataBean)) return 0;
 		ChartDataBean other=(ChartDataBean) o;

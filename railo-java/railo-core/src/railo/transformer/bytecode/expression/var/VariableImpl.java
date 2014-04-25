@@ -13,7 +13,6 @@ import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.UDFUtil;
 import railo.transformer.Context;
@@ -159,18 +158,22 @@ public class VariableImpl extends ExpressionBase implements Variable {
 	
 
 	
+	@Override
 	public Expression getDefaultValue() {
 		return defaultValue;
 	}
 
+	@Override
 	public void setDefaultValue(Expression defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 	
+	@Override
 	public Boolean getAsCollection() {
 		return asCollection;
 	}
 
+	@Override
 	public void setAsCollection(Boolean asCollection) {
 		this.asCollection = asCollection;
 	}
@@ -325,7 +328,7 @@ public class VariableImpl extends ExpressionBase implements Variable {
 	 * @throws TemplateException
 	 */
 	private Type _writeOutEmpty(BytecodeContext bc) throws TransformerException {
-		if(ignoredFirstMember && (scope==Scope.SCOPE_LOCAL || scope==ScopeSupport.SCOPE_VAR)) 
+		if(ignoredFirstMember && (scope==Scope.SCOPE_LOCAL || scope==Scope.SCOPE_VAR)) 
 			return Types.VOID;
 		
 		
@@ -342,7 +345,7 @@ public class VariableImpl extends ExpressionBase implements Variable {
 			getFactory().TRUE().writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_LOCAL_BIND;
 		}
-		else if(scope==ScopeSupport.SCOPE_VAR) {
+		else if(scope==Scope.SCOPE_VAR) {
 			t=Types.PAGE_CONTEXT;
 			getFactory().TRUE().writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_VAR_BIND;

@@ -53,11 +53,13 @@ public class MapColorsFilter extends PointFilter  implements DynFiltering {
 		this.newColor = newColor;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		if (rgb == oldColor)
 			return newColor;
 		return rgb;
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){

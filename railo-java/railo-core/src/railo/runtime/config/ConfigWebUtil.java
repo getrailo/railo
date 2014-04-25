@@ -419,18 +419,18 @@ public final class ConfigWebUtil {
 	public static short inspectTemplate(String str, short defaultValue) { 
 		if(str==null) return defaultValue;
 		str = str.trim().toLowerCase();
-		if (str.equals("always")) return ConfigImpl.INSPECT_ALWAYS;
-		else if (str.equals("never"))return ConfigImpl.INSPECT_NEVER;
-		else if (str.equals("once"))return ConfigImpl.INSPECT_ONCE;
+		if (str.equals("always")) return Config.INSPECT_ALWAYS;
+		else if (str.equals("never"))return Config.INSPECT_NEVER;
+		else if (str.equals("once"))return Config.INSPECT_ONCE;
 		return defaultValue;
 	}
 
 
     public static String inspectTemplate(short s,String defaultValue) {
     	switch(s){
-    		case ConfigImpl.INSPECT_ALWAYS: return "always";
-    		case ConfigImpl.INSPECT_NEVER: return "never";
-    		case ConfigImpl.INSPECT_ONCE: return "once";
+    		case Config.INSPECT_ALWAYS: return "always";
+    		case Config.INSPECT_NEVER: return "never";
+    		case Config.INSPECT_ONCE: return "once";
     		default: return defaultValue;
     	}
 	}

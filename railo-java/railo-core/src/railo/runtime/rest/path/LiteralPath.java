@@ -16,6 +16,7 @@ public class LiteralPath extends Path {
 		return this.path.equals(path);
 	}
 	
+	@Override
 	public String toString(){
 		return "literal:"+path;
 	}

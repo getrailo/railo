@@ -141,6 +141,7 @@ public class CurvesFilter extends TransferFilter  implements DynFiltering {
         curves[2] = new Curve();
     }
     
+	@Override
 	protected void initialize() {
 		initialized = true;
 		if ( curves.length == 1 )
@@ -168,10 +169,12 @@ public class CurvesFilter extends TransferFilter  implements DynFiltering {
 		return curves;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Curves...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Curves")))!=null)setCurves(ImageFilterUtil.toACurvesFilter$Curve(o,"Curves"));

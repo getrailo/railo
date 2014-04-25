@@ -31,7 +31,8 @@ public final class SMTPAuthenticator extends Authenticator {
      *         login information.
      *
      */
-    protected PasswordAuthentication getPasswordAuthentication() {
+    @Override
+	protected PasswordAuthentication getPasswordAuthentication() {
         return this.authentication;
     }
 }

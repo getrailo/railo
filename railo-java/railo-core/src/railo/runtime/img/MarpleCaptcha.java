@@ -16,6 +16,7 @@ public class MarpleCaptcha extends AbstractCaptcha {
 	public static final int DIFFICULTY_MEDIUM=1;
 	public static final int DIFFICULTY_HIGH=2;
 
+	@Override
 	public BufferedImage generate(String text,int width, int height, String[] fonts, boolean useAntiAlias, Color fontColor,int fontSize, int difficulty) throws CaptchaException {
 		MarbleFilter mf = new MarbleFilter();
 		try {
@@ -37,6 +38,7 @@ public class MarpleCaptcha extends AbstractCaptcha {
 		return dst;
 	}
 	
+	@Override
 	public Font getFont(String font, Font defaultValue) {
 		return FontUtil.getFont(font,defaultValue);
 	}

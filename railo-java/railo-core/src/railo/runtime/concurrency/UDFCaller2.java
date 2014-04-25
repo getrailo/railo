@@ -52,6 +52,7 @@ public class UDFCaller2<P> implements Callable<Data<P>> {
 	
 	
 	
+	@Override
 	public final Data<P> call() throws PageException {
 		ThreadLocalPageContext.register(pc);
 		pc.getRootOut().setAllowCompression(false); // make sure content is not compressed

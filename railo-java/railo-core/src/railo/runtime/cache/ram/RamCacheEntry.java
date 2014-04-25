@@ -71,6 +71,7 @@ public class RamCacheEntry implements CacheEntry {
 		return until;
 	}
 
+	@Override
 	public long size() {
 		// TODO Auto-generated method stub
 		return 0;

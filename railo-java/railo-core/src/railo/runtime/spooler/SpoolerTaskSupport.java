@@ -40,9 +40,11 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 		this(plans, 0);
 	}
 	
+	@Override
 	public final String getId() {
 		return id;
 	}
+	@Override
 	public final void setId(String id) {
 		this.id= id;
 	}
@@ -51,14 +53,17 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	 * return last execution of this task
 	 * @return last execution
 	 */
+	@Override
 	public final long lastExecution() {
 		return lastExecution;
 	}
 
+	@Override
 	public final void setNextExecution(long nextExecution) {
 		this.nextExecution=nextExecution;
 	}
 
+	@Override
 	public final long nextExecution() {
 		return nextExecution;
 	}
@@ -67,6 +72,7 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	 * returns how many tries to send are already done
 	 * @return tries
 	 */
+	@Override
 	public final int tries() {
 		return tries;
 	}
@@ -100,14 +106,17 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	/**
 	 * @return the exceptions
 	 */
+	@Override
 	public final Array getExceptions() {
 		return exceptions;
 	}
 
+	@Override
 	public final void setClosed(boolean closed) {
 		this.closed=closed;
 	}
 	
+	@Override
 	public final boolean closed() {
 		return closed;
 	}
@@ -116,6 +125,7 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	/**
 	 * @return the plans
 	 */
+	@Override
 	public ExecutionPlan[] getPlans() {
 		return plans;
 	}
@@ -124,11 +134,13 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	/**
 	 * @return the creation
 	 */
+	@Override
 	public long getCreation() {
 		return creation;
 	}
 
 
+	@Override
 	public void setLastExecution(long lastExecution) {
 		this.lastExecution=lastExecution;
 	}

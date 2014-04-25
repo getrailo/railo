@@ -15,10 +15,12 @@ public class PieSectionLabelGeneratorImpl implements PieSectionLabelGenerator {
 		this.labelFormat=labelFormat;
 	}
 
+	@Override
 	public AttributedString generateAttributedSectionLabel(PieDataset arg0, Comparable arg1) {
 		return null;
 	}
 
+	@Override
 	public String generateSectionLabel(PieDataset pd, Comparable c) {
 		double value = Caster.toDoubleValue(pd.getValue(c),true,0.0);
 		return LabelFormatUtil.format(labelFormat, value);

@@ -130,6 +130,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 	 *
 	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
 	 */
+	@Override
 	public Label getBreakLabel() {
 		return ns.getBreakLabel();
 	}
@@ -146,6 +147,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 	/**
 	 * @see railo.transformer.bytecode.statement.HasBodies#getBodies()
 	 */
+	@Override
 	public Body[] getBodies() {
 		if(cases==null) {
 			if(defaultCase!=null) return new Body[]{defaultCase};

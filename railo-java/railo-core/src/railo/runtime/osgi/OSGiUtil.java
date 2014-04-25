@@ -18,7 +18,7 @@ import org.osgi.framework.launch.FrameworkFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
-import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.engine.CFMLEngineFactorySupport;
 import railo.runtime.op.Caster;
 
 public class OSGiUtil {
@@ -58,7 +58,7 @@ public class OSGiUtil {
         	return b;
         }
         finally {
-        	CFMLEngineFactory.closeEL(is);
+        	CFMLEngineFactorySupport.closeEL(is);
         }
 	}
 	

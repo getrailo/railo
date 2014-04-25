@@ -46,7 +46,8 @@ public final class CastDouble extends ExpressionBase implements ExprDouble,Cast 
     /**
      * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 
     	GeneratorAdapter adapter = bc.getAdapter();
         if(expr instanceof ExprBoolean) {

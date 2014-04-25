@@ -33,6 +33,7 @@ public class MathFunction1D implements Function1D {
 		this.operation = operation;
 	}
 	
+	@Override
 	public float evaluate(float v) {
 		switch (operation) {
 		case SIN:

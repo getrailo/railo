@@ -69,6 +69,7 @@ public class Task implements SpoolerTask {
 		}
 	}
 	
+	@Override
 	public Struct detail() {
 		return detail;
 	}

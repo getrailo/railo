@@ -14,6 +14,7 @@ public final class PropertiesImpl implements Properties {
 	
 	
 
+	@Override
 	public Struct toStruct() {
 		Struct sct=new StructImpl();
 
@@ -29,12 +30,14 @@ public final class PropertiesImpl implements Properties {
 	/**
 	 * @return the accessKeyId
 	 */
+	@Override
 	public String getAccessKeyId() {
 		return accessKeyId;
 	}
 	/**
 	 * @return the host
 	 */
+	@Override
 	public String getHost() {
 		return host;
 	}
@@ -47,6 +50,7 @@ public final class PropertiesImpl implements Properties {
 	/**
 	 * @return the defaultLocation
 	 */
+	@Override
 	public int getDefaultLocation() {
 		return defaultLocation;
 	}
@@ -65,6 +69,7 @@ public final class PropertiesImpl implements Properties {
 	/**
 	 * @return the secretAccessKey
 	 */
+	@Override
 	public String getSecretAccessKey() {
 		return secretAccessKey;
 	}

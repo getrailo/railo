@@ -50,7 +50,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope {
      * @param type scope type (SCOPE_APPLICATION,SCOPE_COOKIE use)
      */
     public ScopeSupport(boolean sync,String name, int type) {
-        super(sync?StructImpl.TYPE_SYNC:StructImpl.TYPE_UNDEFINED);
+        super(sync?Struct.TYPE_SYNC:StructImpl.TYPE_UNDEFINED);
         this.name=name;
         this.type=type;
         

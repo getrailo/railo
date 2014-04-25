@@ -93,7 +93,8 @@ public class LitStringImpl extends ExpressionBase implements LitString,ExprStrin
         }
         return Types.STRING;
     }
-    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
         return _writeOut(bc, mode, str);
     }
     
@@ -149,9 +150,11 @@ public class LitStringImpl extends ExpressionBase implements LitString,ExprStrin
 		return new LitStringImpl(getFactory(),str,getStart(),getEnd());
 	}
 
+	@Override
 	public void fromBracket(boolean fromBracket) {
 		this.fromBracket=fromBracket;
 	}
+	@Override
 	public boolean fromBracket() {
 		return fromBracket;
 	}

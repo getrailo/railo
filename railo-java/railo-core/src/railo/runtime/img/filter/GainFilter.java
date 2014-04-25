@@ -34,6 +34,7 @@ public class GainFilter extends TransferFilter  implements DynFiltering {
 	private float gain = 0.5f;
 	private float bias = 0.5f;
 	
+	@Override
 	protected float transferFunction( float f ) {
 		f = ImageMath.gain(f, gain);
 		f = ImageMath.bias(f, bias);
@@ -82,10 +83,12 @@ public class GainFilter extends TransferFilter  implements DynFiltering {
 		return bias;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Gain...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Gain")))!=null)setGain(ImageFilterUtil.toFloatValue(o,"Gain"));

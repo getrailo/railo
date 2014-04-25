@@ -116,6 +116,7 @@ public class Closure extends UDFImpl {
 		return meta;
 	}
 
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		// access
 		setAccess(in.readInt());
@@ -125,6 +126,7 @@ public class Closure extends UDFImpl {
 	}
 
 
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		// access
 		out.writeInt(getAccess());

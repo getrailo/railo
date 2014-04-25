@@ -10,6 +10,7 @@ import railo.commons.io.IOUtil;
 
 public class BlobCast implements Cast {
 
+	@Override
 	public Object toCFType(TimeZone tz, int type, ResultSet rst, int columnIndex) throws SQLException, IOException {
 		InputStream is = null;
 		try{

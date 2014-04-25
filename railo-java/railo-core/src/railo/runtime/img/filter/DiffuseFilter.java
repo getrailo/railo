@@ -55,6 +55,7 @@ public class DiffuseFilter extends TransformFilter  implements DynFiltering {
 		return scale;
 	}
 
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		int angle = (int)(Math.random() * 255);
 		float distance = (float)Math.random();
@@ -62,7 +63,8 @@ public class DiffuseFilter extends TransformFilter  implements DynFiltering {
 		out[1] = y + distance * cosTable[angle];
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		sinTable = new float[256];
 		cosTable = new float[256];
 		for (int i = 0; i < 256; i++) {
@@ -73,9 +75,11 @@ public class DiffuseFilter extends TransformFilter  implements DynFiltering {
 		return super.filter( src, dst );
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Diffuse...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));

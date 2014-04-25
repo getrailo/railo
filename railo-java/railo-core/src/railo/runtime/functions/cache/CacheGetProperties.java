@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -27,12 +27,12 @@ public final class CacheGetProperties implements Function {
 		Array arr = new ArrayImpl();
 		try {
 			if(StringUtil.isEmpty(cacheName)){
-				addDefault(pc,ConfigImpl.CACHE_DEFAULT_OBJECT,arr);
-				addDefault(pc,ConfigImpl.CACHE_DEFAULT_TEMPLATE,arr);
-				addDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY,arr);
-				addDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE,arr);
-				addDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION,arr);
-				addDefault(pc,ConfigImpl.CACHE_DEFAULT_INCLUDE,arr);
+				addDefault(pc,Config.CACHE_DEFAULT_OBJECT,arr);
+				addDefault(pc,Config.CACHE_DEFAULT_TEMPLATE,arr);
+				addDefault(pc,Config.CACHE_DEFAULT_QUERY,arr);
+				addDefault(pc,Config.CACHE_DEFAULT_RESOURCE,arr);
+				addDefault(pc,Config.CACHE_DEFAULT_FUNCTION,arr);
+				addDefault(pc,Config.CACHE_DEFAULT_INCLUDE,arr);
 				//arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_TEMPLATE).getCustomInfo());
 				//arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY).getCustomInfo());
 				//arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE).getCustomInfo());
@@ -44,17 +44,17 @@ public final class CacheGetProperties implements Function {
 				for(int i=0;i<names.length;i++){
 					name=names[i].trim();
 					if(name.equalsIgnoreCase("template"))
-						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_TEMPLATE).getCustomInfo());
+						arr.appendEL(Util.getDefault(pc,Config.CACHE_DEFAULT_TEMPLATE).getCustomInfo());
 					else if(name.equalsIgnoreCase("object"))
-						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_OBJECT).getCustomInfo());
+						arr.appendEL(Util.getDefault(pc,Config.CACHE_DEFAULT_OBJECT).getCustomInfo());
 					else if(name.equalsIgnoreCase("query"))
-						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY).getCustomInfo());
+						arr.appendEL(Util.getDefault(pc,Config.CACHE_DEFAULT_QUERY).getCustomInfo());
 					else if(name.equalsIgnoreCase("resource"))
-						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE).getCustomInfo());
+						arr.appendEL(Util.getDefault(pc,Config.CACHE_DEFAULT_RESOURCE).getCustomInfo());
 					else if(name.equalsIgnoreCase("function"))
-						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION).getCustomInfo());
+						arr.appendEL(Util.getDefault(pc,Config.CACHE_DEFAULT_FUNCTION).getCustomInfo());
 					else if(name.equalsIgnoreCase("include"))
-						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_INCLUDE).getCustomInfo());
+						arr.appendEL(Util.getDefault(pc,Config.CACHE_DEFAULT_INCLUDE).getCustomInfo());
 					else
 						arr.appendEL(Util.getCache(pc.getConfig(),name).getCustomInfo());
 				}

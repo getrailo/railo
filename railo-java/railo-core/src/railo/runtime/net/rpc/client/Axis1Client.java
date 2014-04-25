@@ -161,6 +161,7 @@ final class Axis1Client extends WSClient {
         }
     }
 	
+	@Override
 	public Object callWithNamedValues(Config config, Collection.Key methodName, Struct arguments) throws PageException {
         try {
             return (_callMethod(null,config,methodName.getString(),arguments,null));
@@ -917,10 +918,12 @@ final class Axis1Client extends WSClient {
 	}
 	
 
+	@Override
 	public Call getLastCall() {
 		return last;
 	}
 
+	@Override
 	public void addHeader(SOAPHeaderElement header) {
 		if(headers==null)headers=new ArrayList<SOAPHeaderElement>();
 		headers.add(header);

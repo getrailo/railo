@@ -200,7 +200,8 @@ public class SuperComponent extends MemberSupport implements Component, Member {
         return comp.getBaseAbsName();
     }
     
-    public boolean isBasePeristent() {
+    @Override
+	public boolean isBasePeristent() {
 		return comp.isPersistent();
 	}
 
@@ -390,6 +391,7 @@ public class SuperComponent extends MemberSupport implements Component, Member {
 	}
 
 
+	@Override
 	public Iterator<Object> valueIterator() {
 		return comp.valueIterator();
 	}
@@ -424,6 +426,7 @@ public class SuperComponent extends MemberSupport implements Component, Member {
 		comp.setProperty(property);
 	}
 
+	@Override
 	public boolean equalTo(String type) {
 		return comp.top.equalTo(type);
 	}
@@ -463,6 +466,7 @@ public class SuperComponent extends MemberSupport implements Component, Member {
 		return comp.getJavaAccessClass(pc, isNew, writeLog, takeTop, create, supressWSbeforeArg);
 	}
 	
+	@Override
 	public boolean isPersistent() {
 		return comp.isPersistent();
 	}

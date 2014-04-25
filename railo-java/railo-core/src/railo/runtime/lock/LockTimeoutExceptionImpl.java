@@ -76,6 +76,7 @@ public final class LockTimeoutExceptionImpl extends Exception {
 		return createMessage(type, name,scopeName, timeout, readLocked, writeLocked);
 	}
 
+	@Override
 	public String getMessage() {
 		return createMessage(type, name,null, timeout, readLocked, writeLocked);
 	}

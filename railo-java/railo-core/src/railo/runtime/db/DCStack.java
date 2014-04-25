@@ -79,6 +79,7 @@ class DCStack {
 			if(prev!=null)count=prev.count+1;
 		}
 
+		@Override
 		public String toString(){
 			return "("+prev+")<-"+count;
 		}

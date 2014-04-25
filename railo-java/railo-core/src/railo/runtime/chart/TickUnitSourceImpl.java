@@ -11,14 +11,17 @@ public class TickUnitSourceImpl implements TickUnitSource {
 		this.labelFormat=labelFormat;
 	}
 	
+	@Override
 	public TickUnit getCeilingTickUnit(TickUnit unit) {
 		return new TicketUnitImpl(labelFormat,unit);
 	}
 
+	@Override
 	public TickUnit getCeilingTickUnit(double size) {
 		return new TicketUnitImpl(labelFormat,size);
 	}
 
+	@Override
 	public TickUnit getLargerTickUnit(TickUnit unit) {
 		return new TicketUnitImpl(labelFormat,unit);
 	}

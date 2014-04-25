@@ -494,21 +494,24 @@ public class CommonUtil {
 	    /**
 	     * @param value
 	     */
-	    public void setValue(boolean value) {
+	    @Override
+		public void setValue(boolean value) {
 	        this.value = value;
 	    }
 	    
 	    /**
 	     * @return returns value as Boolean Object
 	     */
-	    public Boolean toBoolean() {
+	    @Override
+		public Boolean toBoolean() {
 	        return value?Boolean.TRUE:Boolean.FALSE;
 	    }
 	    
 	    /**
 	     * @return returns value as boolean value
 	     */
-	    public boolean toBooleanValue() {
+	    @Override
+		public boolean toBooleanValue() {
 	        return value;
 	    }
 	    

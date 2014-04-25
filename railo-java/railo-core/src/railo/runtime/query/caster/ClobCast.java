@@ -10,6 +10,7 @@ import railo.commons.io.IOUtil;
 
 public class ClobCast implements Cast {
 
+	@Override
 	public Object toCFType(TimeZone tz, int type, ResultSet rst, int columnIndex) throws SQLException, IOException {
 		//IOUtil.toString(rst.getClob(columnIndex).getCharacterStream())
 		

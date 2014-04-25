@@ -32,7 +32,8 @@ public final class ASMClass implements java.io.Serializable {
      *
      * @return a string representation of this class object.
      */
-    public String toString() {
+    @Override
+	public String toString() {
         return (isInterface() ? "interface " : (isPrimitive() ? "" : "class "))
             + getName();
     }

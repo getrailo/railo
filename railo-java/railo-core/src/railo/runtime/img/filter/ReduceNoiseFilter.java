@@ -55,6 +55,7 @@ public class ReduceNoiseFilter extends WholeImageFilter  implements DynFiltering
 		return v[4];
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int index = 0;
 		int[] r = new int[9];
@@ -103,10 +104,12 @@ public class ReduceNoiseFilter extends WholeImageFilter  implements DynFiltering
 		return outPixels;
 	}
 
+	@Override
 	public String toString() {
 		return "Blur/Smooth";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		//Object o;
 

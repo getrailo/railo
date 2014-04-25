@@ -57,6 +57,7 @@ public final class Content implements S3Info {
 	/**
 	 * @return the lastModified
 	 */
+	@Override
 	public long getLastModified() {
 		return lastModified;
 	}
@@ -81,6 +82,7 @@ public final class Content implements S3Info {
 	/**
 	 * @return the size
 	 */
+	@Override
 	public long getSize() {
 		return size;
 	}

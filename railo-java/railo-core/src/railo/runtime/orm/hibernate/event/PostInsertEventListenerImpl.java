@@ -14,6 +14,7 @@ public class PostInsertEventListenerImpl extends EventListener implements PostIn
 	    super(component, CommonUtil.POST_INSERT, false);
 	}
 
+	@Override
 	public void onPostInsert(PostInsertEvent event) {
 		invoke(CommonUtil.POST_INSERT, event.getEntity());
     }

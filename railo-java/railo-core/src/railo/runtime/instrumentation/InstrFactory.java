@@ -10,8 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-
-import railo.print;
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -45,7 +44,7 @@ class InstrFactory {
 			
 			//Log null;
 			inst=InstrumentationFactory.getInstrumentation(config);
-			print.e("INST?:"+(inst!=null));
+			aprint.e("INST?:"+(inst!=null));
 			if(inst!=null) return inst;
 			
 			
@@ -56,11 +55,11 @@ class InstrFactory {
 
 			String javaSpecVersion = System.getProperty("java.specification.version");
 			//   static final boolean jdk6OrLater = "1.6".equals(javaSpecVersion) || "1.7".equals(javaSpecVersion);
-			print.e(javaSpecVersion);
-			print.e("VirtualMachine?:"+(vmClass!=null));
+			aprint.e(javaSpecVersion);
+			aprint.e("VirtualMachine?:"+(vmClass!=null));
 			
 			try {
-				print.e(providers());
+				aprint.e(providers());
 			}
 			catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -92,7 +91,7 @@ class InstrFactory {
 			
 			String id=getPid();
 			String path=getResourcFromLib(ThreadLocalPageContext.getConfig()).getAbsolutePath();
-			print.e("agent:"+path);
+			aprint.e("agent:"+path);
 			
 			Object vmObj=attach(vmClass,id);
 			loadAgent(vmClass,vmObj,path);
@@ -100,9 +99,9 @@ class InstrFactory {
 		} 
 		catch (Throwable t) {
 			if(t instanceof InvocationTargetException)
-				print.e(((InvocationTargetException)t).getTargetException());
+				aprint.e(((InvocationTargetException)t).getTargetException());
 			else 
-				print.e(t);
+				aprint.e(t);
 		}
 		
 	}

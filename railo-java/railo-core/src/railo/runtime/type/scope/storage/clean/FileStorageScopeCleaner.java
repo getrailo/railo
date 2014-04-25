@@ -14,7 +14,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.storage.StorageScopeEngine;
-import railo.runtime.type.scope.storage.StorageScopeFile;
+import railo.runtime.type.scope.storage.StorageScopeImpl;
 import railo.runtime.type.scope.storage.StorageScopeListener;
 
 public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
@@ -51,7 +51,7 @@ public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
 			Resource[] apps = dir.listResources(DIR_FILTER),cfidDir,files;
 			
 			if(apps!=null)for(int a=0;a<apps.length;a++){
-				appName=StorageScopeFile.decode(apps[a].getName());
+				appName=StorageScopeImpl.decode(apps[a].getName());
 				cfidDir=apps[a].listResources(DIR_FILTER);
 				if(cfidDir!=null)for(int b=0;b<cfidDir.length;b++){
 					cfid2=cfidDir[b].getName();
@@ -93,6 +93,7 @@ public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
 			this.time=time;
 		}
 
+		@Override
 		public boolean accept(Resource res) {
 
 			if(res.isDirectory()) return allowDir;

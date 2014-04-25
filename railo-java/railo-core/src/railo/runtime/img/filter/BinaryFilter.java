@@ -88,6 +88,7 @@ public abstract class BinaryFilter extends WholeImageFilter  implements DynFilte
 		return blackFunction;
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));

@@ -43,9 +43,11 @@ public class BlurFilter extends ConvolveFilter  implements DynFiltering {
 		super( blurMatrix );
 	}
 
+	@Override
 	public String toString() {
 		return "Blur/Simple Blur";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));

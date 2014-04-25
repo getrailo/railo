@@ -55,7 +55,8 @@ public final class ZInsert
      return (ZQuery)valueSpec_;
  }
 
- public String toString()
+ @Override
+public String toString()
  {
      StringBuffer stringbuffer = new StringBuffer("insert into " + table_);
      if(columns_ != null && columns_.size() > 0)

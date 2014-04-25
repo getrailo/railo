@@ -34,6 +34,7 @@ public class ContrastFilter extends TransferFilter  implements DynFiltering {
 	private float brightness = 1.0f;
 	private float contrast = 1.0f;
 	
+	@Override
 	protected float transferFunction( float f ) {
 		f = f*brightness;
 		f = (f-0.5f)*contrast+0.5f;
@@ -82,10 +83,12 @@ public class ContrastFilter extends TransferFilter  implements DynFiltering {
 		return contrast;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Contrast...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Brightness")))!=null)setBrightness(ImageFilterUtil.toFloatValue(o,"Brightness"));

@@ -77,6 +77,7 @@ public class LinearColormap implements Colormap {
 	 * @param v a value in the range 0..1
 	 * @return an RGB color
 	 */
+	@Override
 	public int getColor(float v) {
 		return ImageMath.mixColors(ImageMath.clamp(v, 0, 1.0f), color1, color2);
 	}

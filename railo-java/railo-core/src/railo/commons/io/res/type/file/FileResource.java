@@ -336,6 +336,7 @@ public final class FileResource extends File implements Resource {
 		return mode;
 	}
 
+	@Override
 	public void setMode(int mode) throws IOException {
 		// TODO unter windows mit setReadable usw.
 		if(!SystemUtil.isUnix()) return;
@@ -382,6 +383,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
+	@Override
 	public boolean setWritable(boolean value) {
 		// setReadonly
 		if(!value){
@@ -624,6 +626,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
+	@Override
 	public boolean getAttribute(short attribute) {
 		if(!SystemUtil.isWindows()) return false;
 		if(attribute==ATTRIBUTE_HIDDEN)	return isHidden();
@@ -647,6 +650,7 @@ public final class FileResource extends File implements Resource {
 		return false;
 	}
 
+	@Override
 	public void setAttribute(short attribute, boolean value) throws IOException {
 		String attr=null;
 		if(attribute==ATTRIBUTE_ARCHIVE)		attr="A";
@@ -663,6 +667,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 	
+	@Override
 	public boolean equals(Object other){
 		if(provider.isCaseSensitive()) return super.equals(other);
 		if(!(other instanceof File)) return false;

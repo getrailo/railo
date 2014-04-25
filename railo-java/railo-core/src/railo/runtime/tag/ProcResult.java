@@ -10,6 +10,7 @@ public class ProcResult extends TagSupport {
 	
 	private ProcResultBean result=new ProcResultBean();
 
+	@Override
 	public void release() {
 		result=new ProcResultBean();
 		super.release();
@@ -37,6 +38,7 @@ public class ProcResult extends TagSupport {
 		if(resultset<1)throw new ApplicationException("value of attribute resultset must be a numeric value greater or equal to 1");
 		result.setResultset((int) resultset);
 	}	
+	@Override
 	public int doStartTag() throws ApplicationException {
 		
 		// provide to parent

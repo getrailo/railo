@@ -26,6 +26,7 @@ public class ValueDate extends ValueSupport implements Literal {
 		return getString()+" as "+getAlias();
 	}
 	
+	@Override
 	public Object getValue() {
 		return value;
 	}

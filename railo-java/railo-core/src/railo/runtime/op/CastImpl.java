@@ -51,7 +51,8 @@ public final class CastImpl implements Cast {
     public Object castTo(PageContext pc, String type, Object o) throws PageException {
         return Caster.castTo(pc,type,o,false);
     }
-    public Object castTo(PageContext pc, String type, Object o, boolean alsoPattern) throws PageException {
+    @Override
+	public Object castTo(PageContext pc, String type, Object o, boolean alsoPattern) throws PageException {
         return Caster.castTo(pc,type,o,alsoPattern);
     }
 
@@ -629,11 +630,13 @@ public final class CastImpl implements Cast {
         return Caster.toNull(value);
     }
 
-    public Collection.Key toKey(Object o) throws PageException{
+    @Override
+	public Collection.Key toKey(Object o) throws PageException{
     	return Caster.toKey(o);
     }
     
-    public Collection.Key toKey(Object o, Collection.Key defaultValue){
+    @Override
+	public Collection.Key toKey(Object o, Collection.Key defaultValue){
     	return Caster.toKey(o,defaultValue);
     }
     

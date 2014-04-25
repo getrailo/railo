@@ -19,7 +19,8 @@ public class RefIntegerImpl implements RefInteger {
     /**
      * @param value
      */
-    public void setValue(int value) {
+    @Override
+	public void setValue(int value) {
         this.value = value;
     }
     
@@ -27,7 +28,8 @@ public class RefIntegerImpl implements RefInteger {
      * operation plus
      * @param value
      */
-    public void plus(int value) {
+    @Override
+	public void plus(int value) {
         this.value+=value;
     }
     
@@ -35,20 +37,23 @@ public class RefIntegerImpl implements RefInteger {
      * operation minus
      * @param value
      */
-    public void minus(int value) {
+    @Override
+	public void minus(int value) {
         this.value-=value;
     }
 
     /**
      * @return returns value as integer
      */
-    public Integer toInteger() {
+    @Override
+	public Integer toInteger() {
         return Integer.valueOf(value);
     }
     /**
      * @return returns value as integer
      */
-    public Double toDouble() {
+    @Override
+	public Double toDouble() {
         return new Double(value);
     }
     

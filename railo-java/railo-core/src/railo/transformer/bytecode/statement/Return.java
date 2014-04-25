@@ -44,6 +44,7 @@ public final class Return extends StatementBaseNoFinal {
 		//if(expr==null)expr=LitString.toExprString("", line);
 	}
 
+	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
@@ -75,6 +76,7 @@ public final class Return extends StatementBaseNoFinal {
 	 *
 	 * @see railo.transformer.bytecode.statement.StatementBase#setParent(railo.transformer.bytecode.Statement)
 	 */
+	@Override
 	public void setParent(Statement parent) {
 		super.setParent(parent);
 		parent.setHasFlowController(true);

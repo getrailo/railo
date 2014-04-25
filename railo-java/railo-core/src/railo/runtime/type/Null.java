@@ -65,16 +65,20 @@ public final class Null implements Castable,Dumpable {
     public String toString() {
         return null;
     }
+	@Override
 	public int compareTo(String str) throws PageException {
 		return "".compareTo(str);
         //throw new ExpressionException("can't compare null with a string value");
 	}
+	@Override
 	public int compareTo(boolean b) throws PageException {
         throw new ExpressionException("can't compare null with a boolean value");
 	}
+	@Override
 	public int compareTo(double d) throws PageException {
         throw new ExpressionException("can't compare null with a numeric value");
 	}
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
         throw new ExpressionException("can't compare null with a date object");
 	}

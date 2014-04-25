@@ -8,6 +8,7 @@ import railo.runtime.ext.function.Function;
  * Implements the CFML Function fileexists
  * @deprecated replace with <code>railo.runtime.functions.file.FileExists</code>
  */
+@Deprecated
 public final class FileExists implements Function {
 
 	public static boolean call(PageContext pc , String string) throws PageException {

@@ -19,6 +19,7 @@ public class CollectionIterator implements Iterator<Object> {
 		this.coll=coll;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return keys.hasNext();
 	}
@@ -28,6 +29,7 @@ public class CollectionIterator implements Iterator<Object> {
 		return coll.get(keys.next(),null);
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("this operation is not suppored");
 	}

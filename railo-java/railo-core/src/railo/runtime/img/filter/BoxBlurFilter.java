@@ -70,6 +70,7 @@ public class BoxBlurFilter extends AbstractBufferedImageOp  implements DynFilter
 		return premultiplyAlpha;
 	}
 
+	@Override
 	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
@@ -269,9 +270,11 @@ public class BoxBlurFilter extends AbstractBufferedImageOp  implements DynFilter
 		return iterations;
 	}
 	
+	@Override
 	public String toString() {
 		return "Blur/Box Blur...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));

@@ -390,10 +390,12 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return sct.values();
 	}
 
+	@Override
 	public final int getType() {
 		return type;
 	}
 
+	@Override
 	public final String getTypeAsString() {
 		return strType;
 	}
@@ -406,15 +408,19 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 
+	@Override
 	public long getLastAccess() { return lastvisit;}
+	@Override
 	public long getTimeSpan() { return timeSpan;}
 	
 	
+	@Override
 	public void touch() {
 		lastvisit=System.currentTimeMillis();
 		_lastvisit=new DateTimeImpl(ThreadLocalPageContext.getConfig());
 	}
 	
+	@Override
 	public boolean isExpired() {
 	    return (getLastAccess()+getTimeSpan())<System.currentTimeMillis();
     }
@@ -475,6 +481,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
     
 
 	
+	@Override
 	public long getCreated() {
 		return timecreated==null?0:timecreated.getTime();
 	}

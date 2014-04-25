@@ -95,7 +95,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the length of the
    *              <code>CLOB</code>
    */
-  public long length() throws SQLException {
+  @Override
+public long length() throws SQLException {
 	  return stringData.length();
   }
 
@@ -107,7 +108,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code> value
    */
-  public java.io.InputStream getAsciiStream() throws SQLException	{
+  @Override
+public java.io.InputStream getAsciiStream() throws SQLException	{
 	  return new ByteArrayInputStream(stringData.getBytes());
   }
 
@@ -120,11 +122,13 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code> value
    */
-  public java.io.Reader getCharacterStream() throws SQLException {
+  @Override
+public java.io.Reader getCharacterStream() throws SQLException {
 	  return new StringReader(stringData);
   }
   
-  public Reader getCharacterStream(long pos, long len) {
+  @Override
+public Reader getCharacterStream(long pos, long len) {
 	  return new StringReader(stringData.substring((int)pos, (int)len));
   }
 
@@ -139,7 +143,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code>
    */
-  public String getSubString(long pos, int length) throws SQLException {
+  @Override
+public String getSubString(long pos, int length) throws SQLException {
     if (length > stringData.length())
       throw new SQLException("Clob contains only " + stringData.length()
           + " characters (asking for " + length + ").");
@@ -159,7 +164,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code>
    */
-  public long position(String searchstr, long start) throws SQLException {
+  @Override
+public long position(String searchstr, long start) throws SQLException {
 	  return stringData.indexOf(searchstr, (int) start);
   }
 
@@ -176,7 +182,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code>
    */
-  public long position(java.sql.Clob searchstr, long start) throws SQLException {
+  @Override
+public long position(java.sql.Clob searchstr, long start) throws SQLException {
 	  return position(searchstr.getSubString(0, (int) searchstr.length()),
         (int) start);
   }
@@ -191,7 +198,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @return the ascii outputstream to this <code>clob</code> object
    * @throws SQLException if there is an error accessing the <code>clob</code>
    */
-  public OutputStream setAsciiStream(long pos) throws SQLException {
+  @Override
+public OutputStream setAsciiStream(long pos) throws SQLException {
       // TODO impl.
       throw new SQLException("JDBC 3.0 Method setAsciiStream not implemented");
   }
@@ -204,7 +212,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @return the writer to this <code>clob</code> object
    * @throws SQLException if there is an error accessing the <code>clob</code>
    */
-  public Writer setCharacterStream(long pos) throws SQLException {
+  @Override
+public Writer setCharacterStream(long pos) throws SQLException {
       // TODO impl.
       throw new SQLException("JDBC 3.0 Method setCharacterStream not implemented");
   }
@@ -218,7 +227,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @return return value
    * @throws SQLException if there is an error accessing the <code>clob</code>
    */
-  public int setString(long pos, String str) throws SQLException {
+  @Override
+public int setString(long pos, String str) throws SQLException {
       // TODO impl.
       throw new SQLException("JDBC 3.0 Method setString not implemented");
   }
@@ -234,7 +244,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @return return value
    * @throws SQLException if there is an error accessing the <code>clob</code>
    */
-  public int setString(long pos, String str, int offset, int len) throws SQLException{
+  @Override
+public int setString(long pos, String str, int offset, int len) throws SQLException{
       // TODO impl.
       throw new SQLException("JDBC 3.0 Method setString not implemented");
   }
@@ -246,7 +257,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @param len the length
    * @throws SQLException if there is an error accessing the <code>clob</code>
    */
-  public void truncate(long len) throws SQLException
+  @Override
+public void truncate(long len) throws SQLException
   {
       // TODO impl.
       throw new SQLException("JDBC 3.0 Method truncate not implemented");
@@ -258,6 +270,7 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
       return stringData;
   }
 
+	@Override
 	public void free() {
 		stringData="";
 	}

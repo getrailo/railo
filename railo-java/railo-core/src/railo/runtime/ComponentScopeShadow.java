@@ -167,6 +167,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 
 
+	@Override
 	public Object removeEL(Key key) {
 		if(key.equalsIgnoreCase(KeyConstants._this) || key.equalsIgnoreCase(KeyConstants._super))return null;
 		return shadow.remove(key);
@@ -262,6 +263,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		return call(pc, KeyImpl.init(key), arguments);
 	}*/
 
+	@Override
 	public Object call(PageContext pc, Collection.Key key, Object[] arguments) throws PageException {
 		// first check variables
 		Object o=shadow.get(key);
@@ -281,6 +283,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		return callWithNamedValues(pc, KeyImpl.init(key), args);
 	}*/
 
+	@Override
 	public Object callWithNamedValues(PageContext pc, Key key, Struct args) throws PageException {
 		// first check variables
 		Object o=shadow.get(key);

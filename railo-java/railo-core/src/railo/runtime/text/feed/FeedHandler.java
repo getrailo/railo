@@ -107,6 +107,7 @@ public final class FeedHandler extends DefaultHandler {
 	public boolean hasDC() {
 		return hasDC;
 	}
+	@Override
 	public void setDocumentLocator(Locator locator) { 
 		if (locator instanceof Locator2) {
 			Locator2 locator2 = (Locator2) locator;
@@ -198,6 +199,7 @@ public final class FeedHandler extends DefaultHandler {
 	}
 	
 
+	@Override
 	public void endElement(String uri, String name, String qName) {
 		if("entry".equals(name))inEntry=false;
 		else if("author".equals(name))inAuthor=false;
@@ -259,6 +261,7 @@ public final class FeedHandler extends DefaultHandler {
 		inside=data.getInside();	
 	}
 	
+	@Override
 	public void characters (char ch[], int start, int length)	{
 		data.append(new String(ch,start,length));
 		//content.append(new String(ch,start,length));

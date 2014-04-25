@@ -121,6 +121,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return keys.length;
 	}
 
+	@Override
 	public Collection.Key[] keys() {
 		return keys;
 	}
@@ -332,6 +333,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
         return "cgi";
     }
     
+	@Override
 	public boolean isScriptProtected() {
 		return scriptProtected==ScriptProtected.YES;
 	}

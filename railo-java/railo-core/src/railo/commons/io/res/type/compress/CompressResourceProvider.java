@@ -92,6 +92,7 @@ public abstract class CompressResourceProvider implements ResourceProvider {
 
 
 
+	@Override
 	public void setResources(Resources resources) {
 		this.resources=resources;
 	}

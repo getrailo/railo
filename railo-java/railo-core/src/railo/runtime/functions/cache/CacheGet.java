@@ -5,7 +5,7 @@ import java.io.IOException;
 import railo.commons.io.cache.Cache;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -20,7 +20,7 @@ public final class CacheGet implements Function {
 
 	public static Object call(PageContext pc, String key) throws PageException {
 		try {
-			return _call(pc, key, false, Util.getDefault(pc, ConfigImpl.CACHE_DEFAULT_OBJECT));
+			return _call(pc, key, false, Util.getDefault(pc, Config.CACHE_DEFAULT_OBJECT));
 		} 
 		catch (IOException e) {
 			throw Caster.toPageException(e);
@@ -32,7 +32,7 @@ public final class CacheGet implements Function {
 		Boolean throwWhenNotExist=Caster.toBoolean(objThrowWhenNotExist,null);
 		if(throwWhenNotExist!=null) {
 			try {
-				return _call(pc, key, throwWhenNotExist.booleanValue(), Util.getDefault(pc, ConfigImpl.CACHE_DEFAULT_OBJECT));
+				return _call(pc, key, throwWhenNotExist.booleanValue(), Util.getDefault(pc, Config.CACHE_DEFAULT_OBJECT));
 			} 
 			catch (IOException e) {
 				throw Caster.toPageException(e);
@@ -66,7 +66,7 @@ public final class CacheGet implements Function {
 		if(throwWhenNotExist==null)throw new FunctionException(pc, "cacheGet", 2, "ThrowWhenNotExist", "arguments needs to be a boolean value");
 		
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT);
 			return _call(pc, key, throwWhenNotExist.booleanValue(), cache);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);

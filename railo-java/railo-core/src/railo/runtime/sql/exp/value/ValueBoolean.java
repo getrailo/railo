@@ -21,6 +21,7 @@ public class ValueBoolean extends ValueSupport implements Literal {
 		return getString()+" as "+getAlias();
 	}
 
+	@Override
 	public Object getValue() {
 		return value?Boolean.TRUE:Boolean.FALSE;
 	}

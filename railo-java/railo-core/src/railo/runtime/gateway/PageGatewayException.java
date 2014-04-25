@@ -13,6 +13,7 @@ public class PageGatewayException extends GatewayException implements PageExcept
 		
 	}
 
+	@Override
 	public PageException getPageException() {
 		return pe;
 	}

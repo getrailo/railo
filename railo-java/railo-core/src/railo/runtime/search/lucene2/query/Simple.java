@@ -26,6 +26,7 @@ import railo.commons.lang.ParserString;
  * with optional wildcard characters. 
  * Verity treats each comma as a logical OR. If you omit the commas, Verity treats the expression as a phrase.
  */
+@Deprecated
 public final class Simple {
     private String OR="or";
     private String AND="and";

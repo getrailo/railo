@@ -32,6 +32,7 @@ public class RamCache extends CacheSupport {
 		
 	}
 	
+	@Override
 	public void init(Config config,String cacheName, Struct arguments) throws IOException {
 		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
@@ -50,6 +51,7 @@ public class RamCache extends CacheSupport {
 	
 	
 
+	@Override
 	public CacheEntry getQuiet(String key, CacheEntry defaultValue) {
 		RamCacheEntry entry = entries.get(key);
 		if(entry==null) {
@@ -96,6 +98,7 @@ public class RamCache extends CacheSupport {
 		return list;
 	}
 
+	@Override
 	public void put(String key, Object value, Long idleTime, Long until) {
 		
 		RamCacheEntry entry= entries.get(key);
@@ -108,6 +111,7 @@ public class RamCache extends CacheSupport {
 			entry.update(value);
 	}
 
+	@Override
 	public boolean remove(String key) {
 		RamCacheEntry entry = entries.remove(key);
 		if(entry==null) {
@@ -125,6 +129,7 @@ public class RamCache extends CacheSupport {
 			this.ramCache=ramCache;
 		}
 		
+		@Override
 		public void run(){
 			while(true){
 				try{

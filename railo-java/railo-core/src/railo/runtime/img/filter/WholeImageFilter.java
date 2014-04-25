@@ -48,7 +48,8 @@ public abstract class WholeImageFilter extends AbstractBufferedImageOp  implemen
 	public WholeImageFilter() {
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 		//int type = src.getType();
@@ -89,6 +90,7 @@ public abstract class WholeImageFilter extends AbstractBufferedImageOp  implemen
      * @return the output pixels
      */
 	protected abstract int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace );
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		//Object o;
 

@@ -11,6 +11,7 @@ import railo.runtime.tag.util.DeprecatedUtil;
 /**
  * @deprecated use instead EvaluateJava
  */
+@Deprecated
 public final class UnserializeJava implements Function {
 	public static Object call(PageContext pc , String string) throws PageException {
 		DeprecatedUtil.function(pc,"UnserializeJava","EvaluateJava");

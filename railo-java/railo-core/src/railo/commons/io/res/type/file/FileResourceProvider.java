@@ -87,6 +87,7 @@ public final class FileResourceProvider implements ResourceProvider {
 		return false;//SystemUtil.isUnix(); FUTURE add again
 	}
 
+	@Override
 	public Map getArguments() {
 		return arguments;
 	}

@@ -94,90 +94,108 @@ public class ExtensionImpl implements Extension {
 	
 	
 	
+	@Override
 	public String getAuthor() {
 		return author;
 	}
 
 
 
+	@Override
 	public String getCodename() {
 		return codename;
 	}
 
 
 
+	@Override
 	public String getVideo() {
 		return video;
 	}
 
 
 
+	@Override
 	public String getSupport() {
 		return support;
 	}
 
 
 
+	@Override
 	public String getDocumentation() {
 		return documentation;
 	}
 
 
 
+	@Override
 	public String getForum() {
 		return forum;
 	}
 
 
 
+	@Override
 	public String getMailinglist() {
 		return mailinglist;
 	}
 
 
 
+	@Override
 	public String getNetwork() {
 		return network;
 	}
 
 
 
+	@Override
 	public DateTime getCreated() {
 		return created;
 	}
 
 
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public String getCategory() {
 		return category;
 	}
 
+	@Override
 	public String getImage() {
 		return image;
 	}
 
+	@Override
 	public String getVersion() {
 		return version;
 	}
 
+	@Override
 	public String getProvider() {
 		return provider;
 	}
+	@Override
 	public String getId() {
 		return id;
 	}
+	@Override
 	public Struct getConfig(PageContext pc) {
 		if(config==null) {
 			if(StringUtil.isEmpty(strConfig)) config= new StructImpl();
@@ -192,6 +210,7 @@ public class ExtensionImpl implements Extension {
 		return config;
 	}
 	
+	@Override
 	public String getStrConfig()  {
 		if(config!=null && strConfig==null) {
 			try {
@@ -203,6 +222,7 @@ public class ExtensionImpl implements Extension {
 		return strConfig;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}

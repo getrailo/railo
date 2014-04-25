@@ -24,10 +24,12 @@ public class TestTask extends SpoolerTaskSupport {
 		return "test";
 	}
 
+	@Override
 	public Struct detail() {
 		return new StructImpl();
 	}
 
+	@Override
 	public Object execute(Config config) throws PageException {
 		//print.out("execute:"+label+":"+fail+":"+new Date());
 		if(fail-->0)throw new ExpressionException("no idea");
@@ -35,6 +37,7 @@ public class TestTask extends SpoolerTaskSupport {
 		return null;
 	}
 
+	@Override
 	public String subject() {
 		return label;
 	}

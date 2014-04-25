@@ -102,6 +102,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private Object cachedWithin;
 	//private Map<String,ProcMetaCollection> procedureColumnCache;
 	
+	@Override
 	public void release() {
 		params.clear();
 		results.clear();
@@ -190,6 +191,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	 * @param blockfactor
 	 * @deprecated replaced with setBlockfactor(double)
 	 */
+	@Deprecated
 	public void setBlockfactor(int blockfactor) {
 		DeprecatedUtil.tagAttribute(pageContext,"storedproc","blockfactor");
 		this.blockfactor = blockfactor;

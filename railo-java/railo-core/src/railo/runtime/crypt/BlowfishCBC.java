@@ -182,7 +182,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void cleanUp() {
+  @Override
+public void cleanUp() {
 
 
 
@@ -198,7 +199,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
   // internal routine to encrypt a block in CBC mode
 
-  protected long encryptBlock(long lPlainblock) {
+  @Override
+protected long encryptBlock(long lPlainblock) {
 
 
 
@@ -222,7 +224,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
   // internal routine to decrypt a block in CBC mode
 
-  protected long decryptBlock(long lCipherblock) {
+  @Override
+protected long decryptBlock(long lCipherblock) {
 
 
 
@@ -266,7 +269,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void encrypt(byte[] inbuffer,
+  @Override
+public void encrypt(byte[] inbuffer,
 
                       byte[] outbuffer) {
 
@@ -306,7 +310,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void encrypt(byte[] buffer) {
+  @Override
+public void encrypt(byte[] buffer) {
 
 
 
@@ -352,7 +357,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void encrypt(int[] inbuffer,
+  @Override
+public void encrypt(int[] inbuffer,
 
                       int[] outbuffer) {
 
@@ -390,7 +396,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void encrypt(int[] buffer) {
+  @Override
+public void encrypt(int[] buffer) {
 
 
 
@@ -430,7 +437,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void encrypt(long[] inbuffer,
+  @Override
+public void encrypt(long[] inbuffer,
 
                       long[] outbuffer) {
 
@@ -458,7 +466,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void encrypt(long[] buffer) {
+  @Override
+public void encrypt(long[] buffer) {
 
 
 
@@ -490,7 +499,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void decrypt(byte[] inbuffer,
+  @Override
+public void decrypt(byte[] inbuffer,
 
                       byte[] outbuffer) {
 
@@ -530,7 +540,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void  decrypt(byte[] buffer) {
+  @Override
+public void  decrypt(byte[] buffer) {
 
 
 
@@ -574,7 +585,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void decrypt(int[] inbuffer,
+  @Override
+public void decrypt(int[] inbuffer,
 
                       int[] outbuffer) {
 
@@ -614,7 +626,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void decrypt(int[] buffer) {
+  @Override
+public void decrypt(int[] buffer) {
 
 
 
@@ -654,7 +667,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void decrypt(long[] inbuffer,
+  @Override
+public void decrypt(long[] inbuffer,
 
                       long[] outbuffer) {
 
@@ -682,7 +696,8 @@ public final class BlowfishCBC extends BlowfishECB {
 
     */
 
-  public void decrypt(long[] buffer) {
+  @Override
+public void decrypt(long[] buffer) {
 
 
 

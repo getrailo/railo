@@ -54,6 +54,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 		return coll.valueIterator();
 	}
 
+	@Override
 	public String castToString() throws PageException {
 		log();
 		return coll.castToString();
@@ -226,6 +227,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	}
 
 
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
 		log();
 		return coll.toDumpData(pageContext, maxlevel, properties);

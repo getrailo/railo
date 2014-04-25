@@ -128,7 +128,8 @@ public class InterfaceImpl implements Interface {
     	print.out("instanceOf("+type+"):"+page+":"+b);
     	return b;
     }*/
-    public boolean instanceOf(String type) {
+    @Override
+	public boolean instanceOf(String type) {
 		if(realPath) {
         	if(type.equalsIgnoreCase(callPath)) return true;
             if(type.equalsIgnoreCase(pageSource.getComponentName())) return true;
@@ -155,6 +156,7 @@ public class InterfaceImpl implements Interface {
     /**
 	 * @return the callPath
 	 */
+	@Override
 	public String getCallPath() {
 		return callPath;
 	}
@@ -166,21 +168,25 @@ public class InterfaceImpl implements Interface {
 	    return railo.runtime.type.util.ListUtil.last(callPath,"./",true);
 	}
     
-    public void registerUDF(String key, UDF udf) {
+    @Override
+	public void registerUDF(String key, UDF udf) {
     	udfs.put(KeyImpl.init(key),udf);
     	interfacesUDFs.put(KeyImpl.init(key), udf);
     }
     
-    public void registerUDF(Collection.Key key, UDF udf) {
+    @Override
+	public void registerUDF(Collection.Key key, UDF udf) {
     	udfs.put(key,udf);
     	interfacesUDFs.put(key, udf);
     }
     
-    public void registerUDF(String key, UDFProperties props) {
+    @Override
+	public void registerUDF(String key, UDFProperties props) {
     	registerUDF(key, new UDFImpl(props));
     }
     
-    public void registerUDF(Collection.Key key, UDFProperties props) {
+    @Override
+	public void registerUDF(Collection.Key key, UDFProperties props) {
     	registerUDF(key, new UDFImpl(props));
     }
     
@@ -210,6 +216,7 @@ public class InterfaceImpl implements Interface {
 		return page;
 	}*/
 
+	@Override
 	public PageSource getPageSource() {
 		return pageSource;
 	}
@@ -218,6 +225,7 @@ public class InterfaceImpl implements Interface {
 	}
 
 
+	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		return _getMetaData(pc,this,false);
 	}

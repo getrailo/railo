@@ -28,6 +28,7 @@ import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
 public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Objects{
@@ -166,6 +167,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	/**
 	 * @return the pe
 	 */
+	@Override
 	public PageException getPageException() {
 		return exception;
 	}
@@ -201,6 +203,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return StructUtil.entrySet(this);
 	}
 	
+	@Override
 	public void print(PageContext pc){
 		((PageContextImpl)pc).handlePageException(exception);
 		
@@ -358,6 +361,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 			this(throwable, KeyImpl.init(name), method,doEmptyStringWhenNull);
 		}
 		
+		@Override
 		public String toString(){
 			try {
 				return Caster.toString(getter.invoke(throwable, new Object[]{}));
@@ -390,6 +394,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		throw new ApplicationException("named arguments not supported");
 	}
 
+	@Override
 	public Object callWithNamedValues(PageContext pc, Key methodName,Struct args) throws PageException {
 		throw new ApplicationException("named arguments not supported");
 	}
@@ -401,6 +406,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return set(propertyName, value);
 	}
 
+	@Override
 	public Object set(PageContext pc, Key propertyName, Object value)throws PageException {
 		return set(propertyName, value);
 	}
@@ -409,18 +415,21 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return setEL(propertyName, value);
 	}
 
+	@Override
 	public Object setEL(PageContext pc, Key propertyName, Object value) {
 		return setEL(propertyName, value);
 	}
+	@Override
 	public Object get(Key key) throws PageException {
 		Object res = get(key,NULL);
 		if(res!=NULL) return res;
-		throw StructImpl.invalidKey(null,this, key);
+		throw StructSupport.invalidKey(null,this, key);
 	}
 	public Object get(PageContext pc, String key, Object defaultValue) {
 		return get(key,defaultValue);
 	}
 
+	@Override
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		return get(key,defaultValue);
 	}
@@ -429,15 +438,18 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return get(key);
 	}
 
+	@Override
 	public Object get(PageContext pc, Key key) throws PageException {
 		return get(key);
 	}
+	@Override
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
 		return call(pc, methodName.getString(), arguments);
 	}
 	/*public Object remove (String key) throws PageException {
 		return remove(KeyImpl.init(key));
 	}*/
+	@Override
 	public Object removeEL(Key key) {
 		try {
 			return remove(key);

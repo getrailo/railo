@@ -171,6 +171,7 @@ public class RippleFilter extends TransformFilter  implements DynFiltering {
 		return waveType;
 	}
 
+	@Override
 	protected void transformSpace(Rectangle r) {
 		if (edgeAction == ConvolveFilter.ZERO_EDGES) {
 			r.x -= (int)xAmplitude;
@@ -180,6 +181,7 @@ public class RippleFilter extends TransformFilter  implements DynFiltering {
 		}
 	}
 
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		float nx = y / xWavelength;
 		float ny = x / yWavelength;
@@ -207,10 +209,12 @@ public class RippleFilter extends TransformFilter  implements DynFiltering {
 		out[1] = y + yAmplitude * fy;
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Ripple...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
 		//BufferedImage dst=ImageUtil.createBufferedImage(src,src.getWidth()+400,src.getHeight()+400);
 		Object o;

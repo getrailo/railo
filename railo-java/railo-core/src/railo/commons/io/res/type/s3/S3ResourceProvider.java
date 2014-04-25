@@ -34,6 +34,7 @@ public final class S3ResourceProvider implements ResourceProvider {
 	 * @param arguments
 	 * @return RamResource
 	 */
+	@Override
 	public ResourceProvider init(String scheme,Map arguments) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		
@@ -74,10 +75,11 @@ public final class S3ResourceProvider implements ResourceProvider {
 		return scheme;
 	}
 	
+	@Override
 	public Resource getResource(String path) {
 		path=railo.commons.io.res.util.ResourceUtil.removeScheme(scheme, path);
 		S3 s3 = new S3();
-		RefInteger storage=new RefIntegerImpl(S3.STORAGE_UNKNOW);
+		RefInteger storage=new RefIntegerImpl(S3Constants.STORAGE_UNKNOW);
 		
 		
 		//path=loadWithOldPattern(s3,storage,path);
@@ -226,7 +228,7 @@ public final class S3ResourceProvider implements ResourceProvider {
 					String strStorage=secretAccessKey.substring(index+1).trim().toLowerCase();
 					secretAccessKey=secretAccessKey.substring(0,index);
 					//print.out("storage:"+strStorage);
-					storage.setValue(S3.toIntStorage(strStorage, S3.STORAGE_UNKNOW));
+					storage.setValue(S3.toIntStorage(strStorage, S3Constants.STORAGE_UNKNOW));
 				}
 			}
 			else accessKeyId=path.substring(0,atIndex);
@@ -273,6 +275,7 @@ public final class S3ResourceProvider implements ResourceProvider {
 		lock.read(res);
 	}
 
+	@Override
 	public void setResources(Resources res) {
 		lock=res.createResourceLock(lockTimeout,true);
 	}

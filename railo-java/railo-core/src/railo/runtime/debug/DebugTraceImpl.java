@@ -31,6 +31,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the category
 	 */
+	@Override
 	public String getCategory() {
 		return category;
 	}
@@ -38,6 +39,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the line
 	 */
+	@Override
 	public int getLine() {
 		return line;
 	}
@@ -45,6 +47,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the template
 	 */
+	@Override
 	public String getTemplate() {
 		return template;
 	}
@@ -52,6 +55,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the text
 	 */
+	@Override
 	public String getText() {
 		return text;
 	}
@@ -59,6 +63,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the time
 	 */
+	@Override
 	public long getTime() {
 		return time;
 	}
@@ -66,6 +71,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the type
 	 */
+	@Override
 	public int getType() {
 		return type;
 	}
@@ -73,12 +79,15 @@ public final class DebugTraceImpl implements DebugTrace {
 	/**
 	 * @return the var value
 	 */
+	@Override
 	public String getVarValue() {
 		return varValue;
 	}
+	@Override
 	public String getVarName() {
 		return varName;
 	}
+	@Override
 	public String getAction() {
 		return action;
 	}

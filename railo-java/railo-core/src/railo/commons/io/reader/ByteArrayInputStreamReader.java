@@ -39,6 +39,7 @@ public final class ByteArrayInputStreamReader extends InputStreamReader {
 	 * @param charsetName
 	 * @throws IOException
 	 */
+	@Deprecated
 	public ByteArrayInputStreamReader(ByteArrayInputStream bais, String charsetName) throws IOException {
 		this(bais, CharsetUtil.toCharset(charsetName));
 	}
@@ -49,6 +50,7 @@ public final class ByteArrayInputStreamReader extends InputStreamReader {
 	 * @param charsetName
 	 * @throws IOException
 	 */
+	@Deprecated
 	public ByteArrayInputStreamReader(byte[] barr, String charsetName) throws IOException {
 		this(new ByteArrayInputStream(barr), CharsetUtil.toCharset(charsetName));
 	}
@@ -59,6 +61,7 @@ public final class ByteArrayInputStreamReader extends InputStreamReader {
 	 * @param charsetName
 	 * @throws IOException
 	 */
+	@Deprecated
 	public ByteArrayInputStreamReader(String str, String charsetName) throws IOException {
 		this(str, CharsetUtil.toCharset(charsetName));
 	}

@@ -69,6 +69,7 @@ public class ShearFilter extends TransformFilter  implements DynFiltering {
 		shy = (float)Math.sin(yangle);
 	}
 	
+	@Override
 	protected void transformSpace(Rectangle r) {
 		float tangent = (float)Math.tan(xangle);
 		xoffset = -r.height * tangent;
@@ -132,15 +133,18 @@ catch (Exception e) {
 	}
 */
 	
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		out[0] = x + xoffset + (y * shx);
 		out[1] = y + yoffset + (x * shy);
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Shear...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Resize")))!=null)setResize(ImageFilterUtil.toBooleanValue(o,"Resize"));

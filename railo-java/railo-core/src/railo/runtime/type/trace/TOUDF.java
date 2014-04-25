@@ -181,6 +181,7 @@ public class TOUDF extends TOObjects implements UDF {
 		return udf.getPageSource();
 	}
 	
+	@Override
 	public int getIndex(){
 		log(null);
 		return udf.getIndex();

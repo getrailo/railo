@@ -20,6 +20,7 @@ public class ArrayOfStructComparator implements Comparator<Struct> {
 		this.key=key;
 	}
 
+	@Override
 	public int compare(Struct s1, Struct s2) {
 		return compareObjects(s1.get(key,""), s2.get(key,"")) ;
 	}

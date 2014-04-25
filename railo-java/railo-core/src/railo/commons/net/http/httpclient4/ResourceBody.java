@@ -33,6 +33,7 @@ public class ResourceBody extends AbstractContentBody {
         
 	}
 	
+	@Override
 	public String getFilename() {
     	return (fileName == null) ? "noname" : fileName;
     }

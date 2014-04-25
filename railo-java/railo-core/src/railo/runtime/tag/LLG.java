@@ -7,6 +7,7 @@ import org.jfree.data.general.PieDataset;
 
 public class LLG implements PieSectionLabelGenerator {
 
+	@Override
 	public AttributedString generateAttributedSectionLabel(PieDataset arg0,
 			Comparable arg1) {
 		//print.out("11111111");
@@ -14,6 +15,7 @@ public class LLG implements PieSectionLabelGenerator {
 		return null;
 	}
 
+	@Override
 	public String generateSectionLabel(PieDataset arg0, Comparable arg1) {
 		//print.out("222222222");
 		return "33333";

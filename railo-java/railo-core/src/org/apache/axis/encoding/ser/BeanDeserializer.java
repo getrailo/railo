@@ -124,7 +124,8 @@ public class BeanDeserializer extends DeserializerImpl implements Serializable
      *                   type
      * @param context is the DeserializationContext
      */
-    public void startElement(String namespace, String localName,
+    @Override
+	public void startElement(String namespace, String localName,
                              String prefix, Attributes attributes,
                              DeserializationContext context)
         throws SAXException
@@ -168,7 +169,8 @@ public class BeanDeserializer extends DeserializerImpl implements Serializable
      * a derived class of SOAPHandler) or null if no deserialization should
      * be performed.
      */
-    public SOAPHandler onStartChild(String namespace,
+    @Override
+	public SOAPHandler onStartChild(String namespace,
                                     String localName,
                                     String prefix,
                                     Attributes attributes,
@@ -390,7 +392,8 @@ public class BeanDeserializer extends DeserializerImpl implements Serializable
      *                   type
      * @param context is the DeserializationContext
      */
-    public void onStartElement(String namespace, String localName,
+    @Override
+	public void onStartElement(String namespace, String localName,
                                String prefix, Attributes attributes,
                                DeserializationContext context)
             throws SAXException {
@@ -548,11 +551,13 @@ public class BeanDeserializer extends DeserializerImpl implements Serializable
         return dSer;
     }
 
-    public void characters(char[] chars, int start, int end) throws SAXException {
+    @Override
+	public void characters(char[] chars, int start, int end) throws SAXException {
         val.write(chars, start, end);
     }
 
-    public void onEndElement(String namespace, String localName,
+    @Override
+	public void onEndElement(String namespace, String localName,
                              DeserializationContext context) throws SAXException {
         handleMixedContent();
     }

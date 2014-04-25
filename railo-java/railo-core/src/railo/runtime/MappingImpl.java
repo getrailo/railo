@@ -310,8 +310,9 @@ public final class MappingImpl implements Mapping {
      * inspect template setting (Config.INSPECT_*), if not defined with the mapping the config setting is returned
      * @return
      */
-    public short getInspectTemplate() {
-		if(inspect==ConfigImpl.INSPECT_UNDEFINED) return config.getInspectTemplate();
+    @Override
+	public short getInspectTemplate() {
+		if(inspect==Config.INSPECT_UNDEFINED) return config.getInspectTemplate();
 		return inspect;
 	}
     
@@ -420,7 +421,7 @@ public final class MappingImpl implements Mapping {
     @Override
     @Deprecated
     public boolean isTrusted() {
-        return getInspectTemplate()==ConfigImpl.INSPECT_NEVER;
+        return getInspectTemplate()==Config.INSPECT_NEVER;
     }
 
     @Override
@@ -433,6 +434,7 @@ public final class MappingImpl implements Mapping {
 	}
 
 
+	@Override
 	public boolean isTopLevel() {
 		return topLevel;
 	}

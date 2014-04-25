@@ -200,7 +200,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param applicationTimeout The applicationTimeout to set.
      */
-    public void setApplicationTimeout(TimeSpan applicationTimeout) {
+    @Override
+	public void setApplicationTimeout(TimeSpan applicationTimeout) {
         this.applicationTimeout = applicationTimeout;
     }
     @Override
@@ -210,7 +211,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param loginStorage The loginStorage to set.
      */
-    public void setLoginStorage(int loginStorage) {
+    @Override
+	public void setLoginStorage(int loginStorage) {
         this.loginStorage = loginStorage;
     }
     
@@ -238,19 +240,22 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param sessionTimeout The sessionTimeout to set.
      */
-    public void setSessionTimeout(TimeSpan sessionTimeout) {
+    @Override
+	public void setSessionTimeout(TimeSpan sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
     }
 
 
-    public TimeSpan getClientTimeout() {
+    @Override
+	public TimeSpan getClientTimeout() {
         return clientTimeout;
     }
     
     /**
      * @param sessionTimeout The sessionTimeout to set.
      */
-    public void setClientTimeout(TimeSpan clientTimeout) {
+    @Override
+	public void setClientTimeout(TimeSpan clientTimeout) {
         this.clientTimeout = clientTimeout;
     }
     
@@ -261,7 +266,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param setClientCookies The setClientCookies to set.
      */
-    public void setSetClientCookies(boolean setClientCookies) {
+    @Override
+	public void setSetClientCookies(boolean setClientCookies) {
         this.setClientCookies = setClientCookies;
     }
     @Override
@@ -271,7 +277,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param setClientManagement The setClientManagement to set.
      */
-    public void setSetClientManagement(boolean setClientManagement) {
+    @Override
+	public void setSetClientManagement(boolean setClientManagement) {
         this.setClientManagement = setClientManagement;
     }
     @Override
@@ -281,7 +288,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param setDomainCookies The setDomainCookies to set.
      */
-    public void setSetDomainCookies(boolean setDomainCookies) {
+    @Override
+	public void setSetDomainCookies(boolean setDomainCookies) {
         this.setDomainCookies = setDomainCookies;
     }
     @Override
@@ -291,24 +299,28 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param setSessionManagement The setSessionManagement to set.
      */
-    public void setSetSessionManagement(boolean setSessionManagement) {
+    @Override
+	public void setSetSessionManagement(boolean setSessionManagement) {
         this.setSessionManagement = setSessionManagement;
     }
     @Override
     public String getClientstorage() {
         return clientstorage;
     }
-    public String getSessionstorage() {
+    @Override
+	public String getSessionstorage() {
         return sessionstorage;
     }
     /**
      * @param clientstorage The clientstorage to set.
      */
-    public void setClientstorage(String clientstorage) {
+    @Override
+	public void setClientstorage(String clientstorage) {
     	if(StringUtil.isEmpty(clientstorage,true)) return;
         this.clientstorage = clientstorage;
     }
-    public void setSessionstorage(String sessionstorage) {
+    @Override
+	public void setSessionstorage(String sessionstorage) {
     	if(StringUtil.isEmpty(sessionstorage,true)) return;
         this.sessionstorage = sessionstorage;
     }
@@ -321,7 +333,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param scriptProtect The scriptProtect to set.
      */
-    public void setScriptProtect(int scriptProtect) {
+    @Override
+	public void setScriptProtect(int scriptProtect) {
 		this.scriptProtect=scriptProtect;
 	}
 
@@ -334,7 +347,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
      * @param scriptProtect The scriptProtect to set.
      */
-    public void setTypeChecking(boolean typeChecking) {
+    @Override
+	public void setTypeChecking(boolean typeChecking) {
 		this.typeChecking=typeChecking;
 	}
 
@@ -346,6 +360,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	
 
 
+	@Override
 	public void setMappings(Mapping[] mappings) {
 		if(mappings.length>0)this.mappings=mappings;
 	}
@@ -353,26 +368,32 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @return the mappings
 	 */
+	@Override
 	public Mapping[] getMappings() {
 		return mappings;
 	}
 
+	@Override
 	public void setCustomTagMappings(Mapping[] ctmappings) {
 		this.ctmappings=ctmappings;
 	}
 
+	@Override
 	public Mapping[] getCustomTagMappings() {
 		return ctmappings;
 	}
 
+	@Override
 	public void setComponentMappings(Mapping[] cmappings) {
 		this.cmappings=cmappings;
 	}
 
+	@Override
 	public Mapping[] getComponentMappings() {
 		return cmappings;
 	}
 
+	@Override
 	public void setSecureJson(boolean secureJson) {
 		this.secureJson=secureJson;
 	}
@@ -380,18 +401,22 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @return the secureJson
 	 */
+	@Override
 	public boolean getSecureJson() {
 		return secureJson;
 	}
 	
+	@Override
 	public boolean getBufferOutput(){
 		return bufferOutput;
 	}
 	
+	@Override
 	public void setBufferOutput(boolean bufferOutput){
 		this.bufferOutput= bufferOutput;
 	}
 	
+	@Override
 	public void setSecureJsonPrefix(String secureJsonPrefix) {
 		this.secureJsonPrefix=secureJsonPrefix;
 	}
@@ -399,6 +424,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @return the secureJsonPrefix
 	 */
+	@Override
 	public String getSecureJsonPrefix() {
 		return secureJsonPrefix;
 	}
@@ -423,25 +449,31 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		this.defaultDataSource = defaultDataSource;
 	}
 
+	@Override
 	public boolean isORMEnabled() {
 		return ormEnabled;
 	}
 
+	@Override
 	public String getORMDatasource() {
 		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
 	}
 
+	@Override
 	public Object getORMDataSource() {
 		return ormdatasource;
 	}
 
+	@Override
 	public ORMConfiguration getORMConfiguration() {
 		return ormConfig;
 	}
+	@Override
 	public void setORMConfiguration(ORMConfiguration config) {
 		this.ormConfig= config;
 	}
 
+	@Override
 	public void setORMEnabled(boolean ormEnabled) {
 		this.ormEnabled=ormEnabled;
 	}
@@ -449,6 +481,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @return the s3
 	 */
+	@Override
 	public Properties getS3() {
 		if(s3==null) s3=new PropertiesImpl();
 		return s3;
@@ -482,6 +515,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @param localMode the localMode to set
 	 */
+	@Override
 	public void setLocalMode(int localMode) {
 		this.localMode = localMode;
 	}
@@ -511,6 +545,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
 	 * @return the sessionType
 	 */
+	@Override
 	public short getSessionType() {
 		return sessionType;
 	}
@@ -518,6 +553,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     /**
 	 * @return the sessionType
 	 */
+	@Override
 	public void setSessionType(short sessionType) {
 		this.sessionType= sessionType;
 	}
@@ -526,6 +562,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @return the sessionCluster
 	 */
+	@Override
 	public boolean getSessionCluster() {
 		return sessionCluster;
 	}
@@ -534,6 +571,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @param sessionCluster the sessionCluster to set
 	 */
+	@Override
 	public void setSessionCluster(boolean sessionCluster) {
 		this.sessionCluster = sessionCluster;
 	}
@@ -542,6 +580,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @return the clientCluster
 	 */
+	@Override
 	public boolean getClientCluster() {
 		return clientCluster;
 	}
@@ -550,11 +589,13 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	/**
 	 * @param clientCluster the clientCluster to set
 	 */
+	@Override
 	public void setClientCluster(boolean clientCluster) {
 		this.clientCluster = clientCluster;
 	}
 
 
+	@Override
 	public void setS3(Properties s3) {
 		this.s3=s3;
 	}

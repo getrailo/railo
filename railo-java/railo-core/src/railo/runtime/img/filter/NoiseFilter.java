@@ -132,6 +132,7 @@ public class NoiseFilter extends PointFilter  implements DynFiltering {
 		return x;
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		if ( randomNumbers.nextFloat() <= density ) {
 			int a = rgb & 0xff000000;
@@ -153,9 +154,11 @@ public class NoiseFilter extends PointFilter  implements DynFiltering {
 		return rgb;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Add Noise...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toIntValue(o,"Amount"));

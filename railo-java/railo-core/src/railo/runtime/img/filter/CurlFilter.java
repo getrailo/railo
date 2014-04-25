@@ -129,7 +129,8 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
 		}
 	}
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 		this.width = src.getWidth();
@@ -223,6 +224,7 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
 		return pixels[ y*width+x ];
 	}
 
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 /*Fisheye
 		float mirrorDistance = width*centreX;
@@ -292,10 +294,12 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
 		out[3] = !offpage && oncurl ? 1 : 0;
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Curl...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

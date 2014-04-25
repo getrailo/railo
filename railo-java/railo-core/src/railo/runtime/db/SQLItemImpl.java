@@ -111,7 +111,8 @@ public class SQLItemImpl implements SQLItem,Serializable {
         return isValueSet;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
     	try {
 			return Caster.toString(getValueForCF(),"");
 		} catch (PageException e) {

@@ -153,6 +153,7 @@ public class RenderTextFilter extends AbstractBufferedImageOp  implements DynFil
         return transform;
     }
 	
+	@Override
 	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
@@ -172,6 +173,7 @@ public class RenderTextFilter extends AbstractBufferedImageOp  implements DynFil
         g.dispose();
 		return dst;
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Font")))!=null)setFont(ImageFilterUtil.toFont(o,"Font"));

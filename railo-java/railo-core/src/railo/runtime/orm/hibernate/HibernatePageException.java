@@ -58,6 +58,7 @@ public class HibernatePageException extends HibernateException implements IPageE
 	}
 	
 
+	@Override
 	public CatchBlock getCatchBlock(Config config) {
 		return pe.getCatchBlock(config);
 	}
@@ -125,11 +126,13 @@ public class HibernatePageException extends HibernateException implements IPageE
     public Struct getAdditional() {
         return pe.getAddional();
     }
-    public Struct getAddional() {
+    @Override
+	public Struct getAddional() {
         return pe.getAddional();
     }
 
-    public String getStackTraceAsString() {
+    @Override
+	public String getStackTraceAsString() {
         return pe.getStackTraceAsString();
     }
 }

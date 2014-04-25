@@ -158,6 +158,7 @@ public abstract class CacheSupport implements Cache {
 		return count;
 	}
 	
+	@Override
 	public Struct getCustomInfo() {
 		return CacheUtil.getInfo(this);
 	}

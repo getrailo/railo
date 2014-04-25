@@ -12,7 +12,6 @@ import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
@@ -78,7 +77,7 @@ public class GetApplicationSettings {
 		sct.setEL("charset", cs);
 		
 		
-		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
+		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==Config.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 
 		sct.setEL("clientCluster", Caster.toBoolean(ac.getClientCluster()));

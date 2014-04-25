@@ -46,7 +46,8 @@ public final class OpElvis extends ExpressionBase {
      *
      * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	if(ASMUtil.hasOnlyDataMembers(left))return _writeOutPureDataMember(bc, mode);
     	
     	

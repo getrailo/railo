@@ -21,6 +21,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 		this.newName = newName;
 	}
 
+	@Override
 	public void visit(int version, int access, String name, String signature,String superName, String[] interfaces) {
 		oldName=name;
 		doNothing=oldName.equals(newName);
@@ -28,6 +29,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 		cv.visit(version, ACC_PUBLIC, newName, signature, superName, interfaces);
 	}
 
+	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		MethodVisitor mv = cv.visitMethod(access, name, fixDesc(desc),fixSignature(signature), exceptions);
 		if (mv != null && (access & ACC_ABSTRACT) == 0) {
@@ -42,6 +44,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 			super(ASM4, mv);
 		}
 
+		@Override
 		public void visitTypeInsn(int i, String s) {
 			if (!doNothing && oldName.equals(s)) {
 				s = newName;
@@ -49,6 +52,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 			mv.visitTypeInsn(i, s);
 		}
 
+		@Override
 		public void visitFieldInsn(int opcode, String owner, String name,
 				String desc) {
 			if (!doNothing && oldName.equals(owner)) {
@@ -58,6 +62,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 			}
 		}
 
+		@Override
 		public void visitMethodInsn(int opcode, String owner, String name,
 				String desc) {
 			if (!doNothing && oldName.equals(owner)) {

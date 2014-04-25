@@ -29,24 +29,28 @@ public final class ClusterEntryImpl  implements ClusterEntry {
 	/**
 	 * @param key the key to set
 	 */
+	@Override
 	public void setKey(Collection.Key key) {
 		this.key = key;
 	}
 	/**
 	 * @param time the time to set
 	 */
+	@Override
 	public void setTime(long time) {
 		this.time = time;
 	}
 	/**
 	 * @param value the value to set
 	 */
+	@Override
 	public void setValue(Serializable value) {
 		this.value = value;
 	}
 	/**
 	 * @return the key
 	 */
+	@Override
 	public Collection.Key getKey() {
 		return key;
 	}
@@ -54,10 +58,12 @@ public final class ClusterEntryImpl  implements ClusterEntry {
 	/**
 	 * @return the time
 	 */
+	@Override
 	public Long getTimeRef() {
 		return Long.valueOf(time);
 	}
 	
+	@Override
 	public long getTime() {
 		return time;
 	}
@@ -65,6 +71,7 @@ public final class ClusterEntryImpl  implements ClusterEntry {
 	/**
 	 * @return the value
 	 */
+	@Override
 	public Serializable getValue() {
 		return value;
 	}

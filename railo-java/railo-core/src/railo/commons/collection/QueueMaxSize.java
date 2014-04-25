@@ -22,42 +22,52 @@ public class QueueMaxSize<E> implements Queue<E> {
         return true;
 	}
 
+	@Override
 	public int size() {
 		return list.size();
 	}
 
+	@Override
 	public boolean contains(Object o) {
 		return list.contains(o);
 	}
 
+	@Override
 	public Iterator<E> iterator() {
 		return list.iterator();
 	}
 
+	@Override
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);
 	}
 
+	@Override
 	public boolean remove(Object o) {
 		return list.remove(o);
 	}
 
+	@Override
 	public void clear() {
 		list.clear();
 	}
 	
+	@Override
 	public E remove() {
 		return list.remove();
 	}
 
+	@Override
 	public E poll() {
 		return list.poll();
 	}
 
+	@Override
 	public E element() {
 		return list.element();
 	}
 
+	@Override
 	public E peek() {
 		throw new UnsupportedOperationException();
 	}

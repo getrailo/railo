@@ -8,7 +8,8 @@ public final class Token
     {
     }
 
-    public final String toString()
+    @Override
+	public final String toString()
     {
         return image;
     }

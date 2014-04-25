@@ -16,6 +16,7 @@ public class CFCHibernateProxyFactory implements ProxyFactory {
 	private String entityName;
 	private String nodeName;
 
+	@Override
 	public void postInstantiate(
 		final String entityName, 
 		final Class persistentClass,
@@ -33,6 +34,7 @@ public class CFCHibernateProxyFactory implements ProxyFactory {
 		this.entityName =pc.getEntityName();
 	}
 
+	@Override
 	public HibernateProxy getProxy(final Serializable id,  final SessionImplementor session) {
 		try {
 			return new CFCHibernateProxy(new CFCLazyInitializer(entityName, id, session));

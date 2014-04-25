@@ -55,6 +55,7 @@ public class SkeletonFilter extends BinaryFilter  implements DynFiltering {
 		newColor = 0xffffffff;
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int[] outPixels = new int[width * height];
 
@@ -120,10 +121,12 @@ public class SkeletonFilter extends BinaryFilter  implements DynFiltering {
 		return outPixels;
 	}
 
+	@Override
 	public String toString() {
 		return "Binary/Skeletonize...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));

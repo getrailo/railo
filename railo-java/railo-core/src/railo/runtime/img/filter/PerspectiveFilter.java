@@ -182,6 +182,7 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
 	}
 
 
+	@Override
 	protected void transformSpace(Rectangle rect) {
 		rect.x = (int)Math.min( Math.min( xlt, xrt ), Math.min( xrb, xlb ) );
 		rect.y = (int)Math.min( Math.min( ylt, yrt ), Math.min( yrb, ylb ) );
@@ -247,14 +248,17 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
     }
 */
 
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		out[0] = originalSpace.width * (A*x+B*y+C)/(G*x+H*y+I);
 		out[1] = originalSpace.height * (D*x+E*y+F)/(G*x+H*y+I);
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Perspective...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("xlt")))!=null)setXLT(ImageFilterUtil.toFloatValue(o,"xlt"));
@@ -280,6 +284,7 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
 		return filter(src, (BufferedImage)null);
 	}
 	
+	@Override
 	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         
 		int width = src.getWidth();

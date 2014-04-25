@@ -65,6 +65,7 @@ public final class ForDoubleVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#visitContinue(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void visitContinue(BytecodeContext bc) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, beforeUpdate);
 	}
@@ -73,6 +74,7 @@ public final class ForDoubleVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#visitBreak(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void visitBreak(BytecodeContext bc) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, afterBody);
 	}
@@ -81,6 +83,7 @@ public final class ForDoubleVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#getContinueLabel()
 	 */
+	@Override
 	public Label getContinueLabel() {
 		return beforeUpdate;
 	}
@@ -89,6 +92,7 @@ public final class ForDoubleVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#getBreakLabel()
 	 */
+	@Override
 	public Label getBreakLabel() {
 		return afterBody;
 	}

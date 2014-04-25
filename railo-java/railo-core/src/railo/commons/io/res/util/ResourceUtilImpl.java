@@ -186,6 +186,7 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 		return ResourceUtil.translatePathName(path);
 	}
 
+	@Override
 	public String toString(Resource r, String charset) throws IOException {
 		return IOUtil.toString(r, charset);
 	}

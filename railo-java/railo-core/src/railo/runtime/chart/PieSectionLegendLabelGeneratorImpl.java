@@ -24,11 +24,13 @@ public class PieSectionLegendLabelGeneratorImpl implements
 		this.with=with-20;
 	}
 
+	@Override
 	public AttributedString generateAttributedSectionLabel(PieDataset dataset,
 			Comparable key) {
 		return null;
 	}
 
+	@Override
 	public String generateSectionLabel(PieDataset pd, Comparable c) {
 		String value=Caster.toString(pd.getKey(pd.getIndex(c)),"");
 		

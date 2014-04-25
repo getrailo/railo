@@ -11,6 +11,7 @@ public class ConsoleExecutionLog extends ExecutionLogSupport {
 	private PrintWriter pw;
 	private PageContext pc;
 	
+	@Override
 	protected void _init(PageContext pc,Map<String,String> arguments) {
 		this.pc=pc;
 		
@@ -32,6 +33,7 @@ public class ConsoleExecutionLog extends ExecutionLogSupport {
 		SystemOut.print(pw, pc.getId()+":"+pc.getCurrentPageSource().getDisplayPath()+":"+positons(startPos,endPos)+" > "+timeLongToString(diff));	
 	}
 	
+	@Override
 	protected void _release() {}
 	
 	private static String positons(int startPos, int endPos) {

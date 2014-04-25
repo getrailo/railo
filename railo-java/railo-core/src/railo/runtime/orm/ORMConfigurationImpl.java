@@ -343,6 +343,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		return other;
 	}
 
+	@Override
 	public String hash() {
 		
 		String data=autogenmap+":"+catalog+":"+isDefaultCfcLocation
@@ -384,6 +385,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the autogenmap
 	 */
+	@Override
 	public boolean autogenmap() {
 		return autogenmap;
 	}
@@ -391,6 +393,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the catalog
 	 */
+	@Override
 	public String getCatalog() {
 		return catalog;
 	}
@@ -398,9 +401,11 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the cfcLocation
 	 */
+	@Override
 	public Resource[] getCfcLocations() {
 		return cfcLocations;
 	}
+	@Override
 	public boolean isDefaultCfcLocation() {
 		return isDefaultCfcLocation;
 	}
@@ -408,6 +413,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the dbCreate
 	 */
+	@Override
 	public int getDbCreate() {
 		return dbCreate;
 	}
@@ -415,6 +421,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the dialect
 	 */
+	@Override
 	public String getDialect() {
 		return dialect;
 	}
@@ -422,14 +429,17 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the eventHandling
 	 */
+	@Override
 	public boolean eventHandling() {
 		return eventHandling==null?false:eventHandling.booleanValue();
 	}
 
+	@Override
 	public String eventHandler() {
 		return eventHandler;
 	}
 
+	@Override
 	public String namingStrategy() {
 		return namingStrategy;
 	}
@@ -439,6 +449,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the flushAtRequestEnd
 	 */
+	@Override
 	public boolean flushAtRequestEnd() {
 		return flushAtRequestEnd;
 	}
@@ -446,6 +457,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the logSQL
 	 */
+	@Override
 	public boolean logSQL() {
 		return logSQL;
 	}
@@ -453,6 +465,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the saveMapping
 	 */
+	@Override
 	public boolean saveMapping() {
 		return saveMapping;
 	}
@@ -460,6 +473,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the schema
 	 */
+	@Override
 	public String getSchema() {
 		return schema;
 	}
@@ -467,6 +481,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the secondaryCacheEnabled
 	 */
+	@Override
 	public boolean secondaryCacheEnabled() {
 		return secondaryCacheEnabled;
 	}
@@ -474,6 +489,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the sqlScript
 	 */
+	@Override
 	public Resource getSqlScript() {
 		return sqlScript;
 	}
@@ -481,6 +497,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the useDBForMapping
 	 */
+	@Override
 	public boolean useDBForMapping() {
 		return useDBForMapping;
 	}
@@ -488,6 +505,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the cacheConfig
 	 */
+	@Override
 	public Resource getCacheConfig() {
 		return cacheConfig;
 	}
@@ -495,6 +513,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the cacheProvider
 	 */
+	@Override
 	public String getCacheProvider() {
 		return cacheProvider;
 	}
@@ -502,13 +521,16 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the ormConfig
 	 */
+	@Override
 	public Resource getOrmConfig() {
 		return ormConfig;
 	}
 
+	@Override
 	public boolean skipCFCWithError() {
 		return skipCFCWithError;
 	}
+	@Override
 	public boolean autoManageSession() {
 		return autoManageSession;
 	}
@@ -516,6 +538,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 
 
 
+	@Override
 	public Object toStruct() {
 		
 		Resource[] locs = getCfcLocations();
@@ -612,10 +635,12 @@ class _GetStruct implements _Get {
 		this.sct=sct;
 	}
 	
+	@Override
 	public Object get(Collection.Key name,Object defaultValue){
 		return sct.get(name,defaultValue);
 	}
 	
+	@Override
 	public String toString(){
 		return "_GetStruct:"+sct.toString();
 	}
@@ -627,6 +652,7 @@ class _GetElement implements _Get {
 	public _GetElement(Element el){
 		this.el=el;
 	}
+	@Override
 	public Object get(Collection.Key name,Object defaultValue){
 		String value=_get(name.getString());
 		if(value==null)value = _get(StringUtil.camelToHypenNotation(name.getString()));

@@ -45,6 +45,7 @@ public final class FunctionArgumentLight implements FunctionArgument,Externaliza
 	/**
 	 * @return the defaultType
 	 */
+	@Override
 	public int getDefaultType() {
 		return DEFAULT_TYPE_NULL;
 	}
@@ -86,11 +87,13 @@ public final class FunctionArgumentLight implements FunctionArgument,Externaliza
 		return null;
 	}
 	
+	@Override
 	public boolean isPassByReference() {
 		return true;
 	}
 
 
+	@Override
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
 		name=KeyImpl.init(ExternalizableUtil.readString(in));
 		type=in.readShort();
@@ -98,12 +101,14 @@ public final class FunctionArgumentLight implements FunctionArgument,Externaliza
 	}
 
 
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		ExternalizableUtil.writeString(out, name.getString());
 		out.writeShort(type);
 		ExternalizableUtil.writeString(out, strType);
 	}
 	
+	@Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof FunctionArgument)) return false;
 		return FunctionArgumentImpl.equals(this,(FunctionArgument)obj);

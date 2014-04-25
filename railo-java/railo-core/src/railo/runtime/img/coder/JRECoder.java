@@ -33,6 +33,7 @@ class JRECoder extends Coder {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public final BufferedImage toBufferedImage(Resource res,String format) throws IOException {
 		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(res);
 		if("psd".equalsIgnoreCase(format)) {
@@ -71,6 +72,7 @@ class JRECoder extends Coder {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public final BufferedImage toBufferedImage(byte[] bytes,String format) throws IOException {
 		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(bytes,null);
 		if("psd".equalsIgnoreCase(format)) {
@@ -87,6 +89,7 @@ class JRECoder extends Coder {
 		return img;
 	}
 	
+	@Override
 	public final String[] getWriterFormatNames() {
 		if(writerFormatNames==null)	{
 			String[] iio = ImageIO.getWriterFormatNames();
@@ -95,6 +98,7 @@ class JRECoder extends Coder {
 		}
 		return writerFormatNames;
 	}
+	@Override
 	public final String[] getReaderFormatNames() {
 		if(readerFormatNames==null){
 			String[] iio = ImageIO.getReaderFormatNames();

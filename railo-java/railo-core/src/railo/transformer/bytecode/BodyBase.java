@@ -44,7 +44,8 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	 *
 	 * @see railo.transformer.bytecode.Body#addStatement(railo.transformer.bytecode.Statement)
 	 */
-    public void addStatement(Statement statement) {
+    @Override
+	public void addStatement(Statement statement) {
         
         if(statement instanceof PrintOut) {
         	Expression expr = ((PrintOut)statement).getExpr();
@@ -55,12 +56,14 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
         last=statement;
     }
     
-    public void addFirst(Statement statement) {
+    @Override
+	public void addFirst(Statement statement) {
         statement.setParent(this);
         this.statements.add(0,statement);
     }
     
-    public void remove(Statement statement) {
+    @Override
+	public void remove(Statement statement) {
         statement.setParent(null);
         this.statements.remove(statement);
     }
@@ -69,10 +72,12 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	 *
 	 * @see railo.transformer.bytecode.Body#getStatements()
 	 */
+	@Override
 	public List<Statement> getStatements() {
 		return statements;
 	}
 	
+	@Override
 	public boolean hasStatements() {
 		return !statements.isEmpty();
 	}
@@ -81,6 +86,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	 *
 	 * @see railo.transformer.bytecode.Body#moveStatmentsTo(railo.transformer.bytecode.Body)
 	 */
+	@Override
 	public void moveStatmentsTo(Body trg) {
 		Iterator<Statement> it = statements.iterator();
 		while(it.hasNext()) {
@@ -115,6 +121,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 		return false;
 	}
 
+	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		writeOut(bc,this);
     }
@@ -277,6 +284,7 @@ public class BodyBase extends StatementBaseNoFinal implements Body {
 	 *
 	 * @see railo.transformer.bytecode.Body#isEmpty()
 	 */
+	@Override
 	public boolean isEmpty() {
 		return statements.isEmpty();
 	}

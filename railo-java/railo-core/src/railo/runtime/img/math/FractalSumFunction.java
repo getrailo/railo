@@ -24,6 +24,7 @@ public class FractalSumFunction extends CompoundFunction2D {
 		super(basis);
 	}
 	
+	@Override
 	public float evaluate(float x, float y) {
 		float t = 0.0f;
 

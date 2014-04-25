@@ -22,6 +22,7 @@ public class ProxyDataImpl implements ProxyData,Serializable {
 	}
 	public ProxyDataImpl() {}
 	
+	@Override
 	public void release() {
 		server=null;
 		port=-1;
@@ -32,52 +33,61 @@ public class ProxyDataImpl implements ProxyData,Serializable {
 	/**
 	 * @return the password
 	 */
+	@Override
 	public String getPassword() {
 		return password;
 	}
 	/**
 	 * @param password the password to set
 	 */
+	@Override
 	public void setPassword(String password) {
 		this.password = password;
 	}
 	/**
 	 * @return the port
 	 */
+	@Override
 	public int getPort() {
 		return port;
 	}
 	/**
 	 * @param port the port to set
 	 */
+	@Override
 	public void setPort(int port) {
 		this.port = port;
 	}
 	/**
 	 * @return the server
 	 */
+	@Override
 	public String getServer() {
 		return server;
 	}
 	/**
 	 * @param server the server to set
 	 */
+	@Override
 	public void setServer(String server) {
 		this.server = server;
 	}
 	/**
 	 * @return the username
 	 */
+	@Override
 	public String getUsername() {
 		return username;
 	}
 	/**
 	 * @param username the username to set
 	 */
+	@Override
 	public void setUsername(String username) {
 		this.username = username;
 	}
 	
+	@Override
 	public boolean equals(Object obj){
 		if(obj==this) return true;
 		if(!(obj instanceof ProxyData)) return false;
@@ -105,6 +115,7 @@ public class ProxyDataImpl implements ProxyData,Serializable {
 		return new ProxyDataImpl(proxyserver,proxyport,proxyuser,proxypassword);
 	}
 	
+	@Override
 	public String toString(){
 		return "server:"+server+";port:"+port+";user:"+username+";pass:"+password;
 	}

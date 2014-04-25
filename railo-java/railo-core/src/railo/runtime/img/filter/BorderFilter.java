@@ -152,6 +152,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 		return borderPaint;
 	}
 
+	@Override
 	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		int width = src.getWidth();
 		int height = src.getHeight();
@@ -175,9 +176,11 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 		return dst;
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Border...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
 		
 		Object o;

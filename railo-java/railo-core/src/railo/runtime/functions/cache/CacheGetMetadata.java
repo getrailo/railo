@@ -5,7 +5,7 @@ import java.io.IOException;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -36,7 +36,7 @@ public final class CacheGetMetadata implements Function {
 	
 	public static Struct call(PageContext pc, String id, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT);
 			CacheEntry entry = cache.getCacheEntry(Util.key(id));
 			
 			Struct info=new StructImpl();

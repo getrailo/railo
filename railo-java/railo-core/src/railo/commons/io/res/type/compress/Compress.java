@@ -196,6 +196,7 @@ public final class Compress {
 			this.interval=interval; 
 		}
 		
+		@Override
 		public void run() {
 			if(FORMAT_TAR==format) runTar(ffile);
 			if(FORMAT_TGZ==format) runTGZ(ffile);

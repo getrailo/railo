@@ -78,7 +78,8 @@ public final class CFXTag extends TagImpl implements DynamicAttributes,AppendixT
 		return SKIP_BODY;
 	}
 
-    public String getAppendix() {
+    @Override
+	public String getAppendix() {
         return appendix;
     }
 }

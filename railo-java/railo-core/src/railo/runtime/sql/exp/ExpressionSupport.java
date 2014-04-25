@@ -46,6 +46,7 @@ public abstract class ExpressionSupport implements Expression {
 	/**
 	 * @return the directionBackward
 	 */
+	@Override
 	public boolean isDirectionBackward() {
 		return directionBackward;
 	}

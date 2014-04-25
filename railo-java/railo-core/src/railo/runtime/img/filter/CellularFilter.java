@@ -433,6 +433,7 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return results[2].distance;
 	}
 	
+	@Override
 	public float evaluate(float x, float y) {
 		for (int j = 0; j < results.length; j++)
 			results[j].distance = Float.POSITIVE_INFINITY;
@@ -520,6 +521,7 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return a|r|g|b;
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int index = 0;
 		int[] outPixels = new int[width * height];
@@ -532,6 +534,7 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return outPixels;
 	}
 
+	@Override
 	public Object clone() {
 		CellularFilter f = (CellularFilter)super.clone();
 		f.coefficients = coefficients.clone();
@@ -542,10 +545,12 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return f;
 	}
 	
+	@Override
 	public String toString() {
 		return "Texture/Cellular...";
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));

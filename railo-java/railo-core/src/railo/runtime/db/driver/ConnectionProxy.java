@@ -286,6 +286,7 @@ public class ConnectionProxy implements Connection {
 
 
 
+	@Override
 	public void setSchema(String schema) throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {
@@ -298,6 +299,7 @@ public class ConnectionProxy implements Connection {
 		}
 	}
 
+	@Override
 	public String getSchema() throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {
@@ -310,6 +312,7 @@ public class ConnectionProxy implements Connection {
 		}
 	}
 
+	@Override
 	public void abort(Executor executor) throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {
@@ -322,6 +325,7 @@ public class ConnectionProxy implements Connection {
 		}
 	}
 
+	@Override
 	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {
@@ -334,6 +338,7 @@ public class ConnectionProxy implements Connection {
 		}
 	}
 
+	@Override
 	public int getNetworkTimeout() throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {

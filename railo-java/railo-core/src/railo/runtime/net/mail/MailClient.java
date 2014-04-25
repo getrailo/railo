@@ -59,6 +59,7 @@ public abstract class MailClient {
 		private String _fldif = null;
 		private String a = null;
 
+		@Override
 		protected PasswordAuthentication getPasswordAuthentication() {
 			return new PasswordAuthentication(_fldif, a);
 		}

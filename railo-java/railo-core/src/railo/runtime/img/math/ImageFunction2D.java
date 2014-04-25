@@ -88,6 +88,7 @@ public class ImageFunction2D implements Function2D {
 		this.alpha = alpha;
 	}
 	
+	@Override
 	public float evaluate(float x, float y) {
 		int ix = (int)x;
 		int iy = (int)y;

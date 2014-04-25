@@ -72,7 +72,8 @@ public class WildcardPattern {
     }
     
     
-    public String toString() {
+    @Override
+	public String toString() {
         
         return "WildcardPattern: " + pattern;
     }

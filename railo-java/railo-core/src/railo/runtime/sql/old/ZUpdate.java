@@ -82,7 +82,8 @@ public final class ZUpdate implements ZStatement	{
         return where_;
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         StringBuffer stringbuffer = new StringBuffer("update " + table_);
         stringbuffer.append(" set ");

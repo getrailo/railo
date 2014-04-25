@@ -443,10 +443,12 @@ public final class FileWrapper extends File implements Resource {
 		return res.setWritable(value);
 	}
 
+	@Override
 	public void copyFrom(Resource res, boolean append) throws IOException {
 		res.copyFrom(res, append);
 	}
 
+	@Override
 	public void copyTo(Resource res, boolean append) throws IOException {
 		res.copyTo(res, append);
 	}

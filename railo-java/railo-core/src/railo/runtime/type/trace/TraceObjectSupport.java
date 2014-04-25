@@ -42,6 +42,7 @@ public class TraceObjectSupport implements TraceObject {
 		return o.toString();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		
 		return o.equals(obj);

@@ -17,6 +17,7 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 	JodaDateTimeUtil() {	
 	}
 	
+	@Override
 	long _toTime(TimeZone tz, int year, int month, int day, int hour,int minute, int second, int milliSecond) {
 		try{
 			return new DateTime(year, month, day, hour, minute, second, milliSecond, getDateTimeZone(tz)).getMillis();
@@ -118,17 +119,17 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 		StringBuilder sb=new StringBuilder();
 		DateTime dt = new DateTime(date.getTime(),getDateTimeZone(tz));
     	sb.append("{ts '");
-    	jreUtil.toString(sb,dt.getYear(),4);
+    	JREDateTimeUtil.toString(sb,dt.getYear(),4);
     	sb.append("-");
-    	jreUtil.toString(sb,dt.getMonthOfYear(),2);
+    	JREDateTimeUtil.toString(sb,dt.getMonthOfYear(),2);
     	sb.append("-");
-    	jreUtil.toString(sb,dt.getDayOfMonth(),2);
+    	JREDateTimeUtil.toString(sb,dt.getDayOfMonth(),2);
     	sb.append(" ");
-    	jreUtil.toString(sb,dt.getHourOfDay(),2);
+    	JREDateTimeUtil.toString(sb,dt.getHourOfDay(),2);
     	sb.append(":");
-    	jreUtil.toString(sb,dt.getMinuteOfHour(),2);
+    	JREDateTimeUtil.toString(sb,dt.getMinuteOfHour(),2);
     	sb.append(":");
-    	jreUtil.toString(sb,dt.getSecondOfMinute(),2);
+    	JREDateTimeUtil.toString(sb,dt.getSecondOfMinute(),2);
     	sb.append("'}");
     	 
     	return sb.toString();

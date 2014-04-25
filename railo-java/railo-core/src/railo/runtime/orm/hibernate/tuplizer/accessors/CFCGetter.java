@@ -93,10 +93,12 @@ public class CFCGetter implements Getter {
 		return null;
 	}
 
+	@Override
 	public String getMethodName() {
 		return null;// MUST macht es sinn den namen zurück zu geben?
 	}
 
+	@Override
 	public Class getReturnType() {
 		return Object.class;// MUST more concrete?
 	}

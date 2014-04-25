@@ -15,6 +15,7 @@ public class ImplicitAccessImpl implements ImplicitAccess {
 		this.line=line;
 	}
 
+	@Override
 	public void inc() {
 		count++;
 	}
@@ -22,6 +23,7 @@ public class ImplicitAccessImpl implements ImplicitAccess {
 	/**
 	 * @return the used
 	 */
+	@Override
 	public int getCount() {
 		return count;
 	}
@@ -29,6 +31,7 @@ public class ImplicitAccessImpl implements ImplicitAccess {
 	/**
 	 * @return the scope
 	 */
+	@Override
 	public String getScope() {
 		return scope;
 	}
@@ -36,6 +39,7 @@ public class ImplicitAccessImpl implements ImplicitAccess {
 	/**
 	 * @return the template
 	 */
+	@Override
 	public String getTemplate() {
 		return template;
 	}
@@ -43,6 +47,7 @@ public class ImplicitAccessImpl implements ImplicitAccess {
 	/**
 	 * @return the line
 	 */
+	@Override
 	public int getLine() {
 		return line;
 	}
@@ -50,6 +55,7 @@ public class ImplicitAccessImpl implements ImplicitAccess {
 	/**
 	 * @return the name
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}

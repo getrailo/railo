@@ -157,7 +157,8 @@ public final class HTMLParser extends Parser {
     	
 	}
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    public void endElement(String uri, String name, String qName) {
+    @Override
+	public void endElement(String uri, String name, String qName) {
         if(name.equalsIgnoreCase("script")) {
             silent=silent.parent;
         }

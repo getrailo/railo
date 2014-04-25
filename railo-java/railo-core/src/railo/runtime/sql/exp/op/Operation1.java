@@ -28,6 +28,7 @@ public class Operation1 extends ExpressionSupport implements Operation {
 		this.operator=operator;
 	}
 
+	@Override
 	public String toString(boolean noAlias) {
 		if(!hasAlias() || noAlias) {
 			if(operator==OPERATION1_IS_NULL || operator==OPERATION1_IS_NOT_NULL) {

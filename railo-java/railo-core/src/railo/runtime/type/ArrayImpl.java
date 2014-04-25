@@ -79,6 +79,7 @@ public class ArrayImpl extends ArraySupport {
 	 * return dimension of the array
 	 * @return dimension of the array
 	 */
+	@Override
 	public int getDimension() {
 		return dimension;
 	}
@@ -206,6 +207,7 @@ public class ArrayImpl extends ArraySupport {
 	 * @return defined value
 	 * @throws ExpressionException
 	 */
+	@Override
 	public synchronized Object setE(int key, Object value) throws ExpressionException {
 		if(key<1)throw new ExpressionException("Invalid index ["+key+"] for array. Index must be a positive integer (1, 2, 3, ...)");
 		if(offset+key>arr.length)enlargeCapacity(key);
@@ -333,6 +335,7 @@ public class ArrayImpl extends ArraySupport {
 		return removeE(Caster.toIntValue(key.getString()));
 	}
 	
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return removeEL(Caster.toIntValue(key.getString(),-1));
 	}
@@ -411,7 +414,8 @@ public class ArrayImpl extends ArraySupport {
 	 * @param o value to insert
 	 * @return inserted value
 	 */
-    public synchronized Object appendEL(Object o) {
+    @Override
+	public synchronized Object appendEL(Object o) {
         
         if(offset+size+1>arr.length)enlargeCapacity(size+1);
         arr[offset+size]=o;
@@ -437,6 +441,7 @@ public class ArrayImpl extends ArraySupport {
 	 * @return inserted value
 	 * @throws ExpressionException
 	 */
+	@Override
 	public Object prepend(Object o) throws ExpressionException {
 		insert(1,o);
 		return o;
@@ -446,6 +451,7 @@ public class ArrayImpl extends ArraySupport {
 	 * resize array to defined size
 	 * @param to new minimum size of the array
 	 */
+	@Override
 	public synchronized void resize(int to) {
 		if(to>size) {
 			enlargeCapacity(to);
@@ -453,6 +459,7 @@ public class ArrayImpl extends ArraySupport {
 		}
 	}
 
+	@Override
 	public synchronized void sort(Comparator comp) throws PageException {
 		if(getDimension()>1)
 			throw new ExpressionException("only 1 dimensional arrays can be sorted");
@@ -462,6 +469,7 @@ public class ArrayImpl extends ArraySupport {
 	/**
 	 * @return return arra as native (Java) Object Array
 	 */
+	@Override
 	public synchronized Object[] toArray() {
 		Object[] rtn=new Object[size];
 		int count=0;

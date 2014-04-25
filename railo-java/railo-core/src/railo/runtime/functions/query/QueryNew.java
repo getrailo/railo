@@ -27,16 +27,19 @@ public final class QueryNew extends BIF {
 	private static final long serialVersionUID = -4313766961671090938L;
 	
 	/** @deprecated used by old railo archives */
+	@Deprecated
 	public static railo.runtime.type.Query call(PageContext pc , String columnNames) throws PageException {
 		return call(pc, (Object)columnNames);
 	}
 	
 	/** @deprecated used by old railo archives */
+	@Deprecated
 	public static railo.runtime.type.Query call(PageContext pc , String columnNames, String columnTypes) throws PageException {
 		return call(pc, (Object)columnNames, (Object)columnTypes);
 	}
 	
 	/** @deprecated used by old railo archives */
+	@Deprecated
 	public static railo.runtime.type.Query call(PageContext pc , String columnNames, String columnTypes, Object data) throws PageException {
 		return call(pc, (Object)columnNames, (Object)columnTypes,data);
 	}

@@ -23,16 +23,19 @@ public class ChildSpoolerTask extends SpoolerTaskSupport {
 		return detail;
 	}
 
+	@Override
 	public Object execute(Config config) throws PageException {
 		PageException pe = ct.execute(config);
 		if(pe!=null) throw pe;
 		return null;
 	}
 
+	@Override
 	public String getType() {
 		return "cfthread";
 	}
 
+	@Override
 	public String subject() {
 		return ct.getTagName();
 	}

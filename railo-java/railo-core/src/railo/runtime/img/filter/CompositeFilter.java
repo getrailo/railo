@@ -95,6 +95,7 @@ public class CompositeFilter extends AbstractBufferedImageOp  implements DynFilt
         return transform;
     }
 	
+	@Override
 	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
@@ -108,9 +109,11 @@ public class CompositeFilter extends AbstractBufferedImageOp  implements DynFilt
 		return dst;
 	}
 
+	@Override
 	public String toString() {
 		return "Composite";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Transform")))!=null)setTransform(ImageFilterUtil.toAffineTransform(o,"Transform"));

@@ -7,7 +7,7 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.PageContext;
 import railo.runtime.cache.util.WildCardFilter;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -31,7 +31,7 @@ public final class CacheGetAll implements Function {
 	
 	public static Struct call(PageContext pc,String filter, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT);
 			List<CacheEntry> entries = CacheGetAllIds.isFilter(filter)?cache.entries(new WildCardFilter(filter,true)):cache.entries();
 			Iterator<CacheEntry> it=entries.iterator();
 			Struct sct = new StructImpl();

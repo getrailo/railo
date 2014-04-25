@@ -82,6 +82,7 @@ public class ContourFilter extends WholeImageFilter  implements DynFiltering {
 		return contourColor;
 	}
 	
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int index = 0;
 		short[][] r = new short[3][width];
@@ -146,10 +147,12 @@ public class ContourFilter extends WholeImageFilter  implements DynFiltering {
 		return outPixels;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Contour...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Levels")))!=null)setLevels(ImageFilterUtil.toFloatValue(o,"Levels"));

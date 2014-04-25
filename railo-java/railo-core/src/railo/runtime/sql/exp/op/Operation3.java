@@ -18,6 +18,7 @@ public class Operation3 extends ExpressionSupport implements Operation {
 		this.operator=operator;
 	}
 
+	@Override
 	public String toString(boolean noAlias) {
 		// like escape
 		if(Operation.OPERATION3_LIKE==operator){

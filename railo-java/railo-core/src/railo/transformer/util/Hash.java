@@ -27,6 +27,7 @@ public final class Hash {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		String hashText = null;
 

@@ -291,7 +291,8 @@ public class HashMapPro<K,V>
      *
      * @return the number of key-value mappings in this map
      */
-    public int size() {
+    @Override
+	public int size() {
         return size;
     }
 
@@ -300,7 +301,8 @@ public class HashMapPro<K,V>
      *
      * @return <tt>true</tt> if this map contains no key-value mappings
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         return size == 0;
     }
 
@@ -313,7 +315,8 @@ public class HashMapPro<K,V>
         return null == entry ? null : entry.getValue();
     }
     
-    public V g(K key, V defaultValue) {
+    @Override
+	public V g(K key, V defaultValue) {
         if (key == null) return getForNullKey();
 
         int hash = hash(key);
@@ -478,7 +481,8 @@ public class HashMapPro<K,V>
 		aprint.e("SM.put:"+(System.currentTimeMillis()-start));
 	}
     
-    public V g(K key) throws PageException {
+    @Override
+	public V g(K key) throws PageException {
         if (key == null) return getForNullKey();
 
         int hash = hash(key);
@@ -515,7 +519,8 @@ public class HashMapPro<K,V>
      * @return <tt>true</tt> if this map contains a mapping for the specified
      * key.
      */
-    public boolean containsKey(Object key) {
+    @Override
+	public boolean containsKey(Object key) {
         return getEntry(key) != null;
     }
 
@@ -549,7 +554,8 @@ public class HashMapPro<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    public V put(K key, V value) {
+    @Override
+	public V put(K key, V value) {
         if (key == null)
             return putForNullKey(value);
         int hash = hash(key);
@@ -676,7 +682,8 @@ public class HashMapPro<K,V>
      * @param m mappings to be stored in this map
      * @throws NullPointerException if the specified map is null
      */
-    public void putAll(Map<? extends K, ? extends V> m) {
+    @Override
+	public void putAll(Map<? extends K, ? extends V> m) {
         int numKeysToBeAdded = m.size();
         if (numKeysToBeAdded == 0)
             return;
@@ -714,17 +721,20 @@ public class HashMapPro<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    public V remove(Object key) {
+    @Override
+	public V remove(Object key) {
         Entry<K,V> e = removeEntryForKey(key);
         return (e == null ? null : e.value);
     }
 
-    public V r(K key,V defaultValue) {
+    @Override
+	public V r(K key,V defaultValue) {
         Entry<K,V> e = removeEntryForKey(key);
         return (e == null ? defaultValue : e.value);
     }
     
-    public V r(K key) throws PageException {
+    @Override
+	public V r(K key) throws PageException {
         Entry<K,V> e = removeEntryForKey(key);
         if(e==null) throw invalidKey(this, key,true);
         return e.value;
@@ -804,7 +814,8 @@ public class HashMapPro<K,V>
      * Removes all of the mappings from this map.
      * The map will be empty after this call returns.
      */
-    public void clear() {
+    @Override
+	public void clear() {
         modCount++;
         Entry[] tab = table;
         for (int i = 0; i < tab.length; i++)
@@ -820,7 +831,8 @@ public class HashMapPro<K,V>
      * @return <tt>true</tt> if this map maps one or more keys to the
      *         specified value
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
         if (value == null)
             return containsNullValue();
 
@@ -850,7 +862,8 @@ public class HashMapPro<K,V>
      *
      * @return a shallow copy of this map
      */
-    public Object clone() {
+    @Override
+	public Object clone() {
         HashMapPro<K,V> result = null;
         try {
             result = (HashMapPro<K,V>)super.clone();
@@ -883,21 +896,25 @@ public class HashMapPro<K,V>
             hash = h;
         }
 
-        public final K getKey() {
+        @Override
+		public final K getKey() {
             return key;
         }
 
-        public final V getValue() {
+        @Override
+		public final V getValue() {
             return value;
         }
 
-        public final V setValue(V newValue) {
+        @Override
+		public final V setValue(V newValue) {
             V oldValue = value;
             value = newValue;
             return oldValue;
         }
 
-        public final boolean equals(Object o) {
+        @Override
+		public final boolean equals(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry e = (Map.Entry)o;
@@ -912,12 +929,14 @@ public class HashMapPro<K,V>
             return false;
         }
 
-        public final int hashCode() {
+        @Override
+		public final int hashCode() {
             return (key==null   ? 0 : key.hashCode()) ^
                    (value==null ? 0 : value.hashCode());
         }
 
-        public final String toString() {
+        @Override
+		public final String toString() {
             return getKey() + "=" + getValue();
         }
 
@@ -983,7 +1002,8 @@ public class HashMapPro<K,V>
             }
         }
 
-        public final boolean hasNext() {
+        @Override
+		public final boolean hasNext() {
             return next != null;
         }
 
@@ -1003,7 +1023,8 @@ public class HashMapPro<K,V>
             return e;
         }
 
-        public void remove() {
+        @Override
+		public void remove() {
             if (current == null)
                 throw new IllegalStateException();
             if (modCount != expectedModCount)
@@ -1016,19 +1037,22 @@ public class HashMapPro<K,V>
     }
 
     private final class ValueIterator extends HashIterator<V> {
-        public V next() {
+        @Override
+		public V next() {
             return nextEntry().value;
         }
     }
 
     private final class KeyIterator extends HashIterator<K> {
-        public K next() {
+        @Override
+		public K next() {
             return nextEntry().getKey();
         }
     }
 
     private final class EntryIterator extends HashIterator<Map.Entry<K,V>> {
-        public Map.Entry<K,V> next() {
+        @Override
+		public Map.Entry<K,V> next() {
             return nextEntry();
         }
     }
@@ -1062,25 +1086,31 @@ public class HashMapPro<K,V>
      * operations.  It does not support the <tt>add</tt> or <tt>addAll</tt>
      * operations.
      */
-    public Set<K> keySet() {
+    @Override
+	public Set<K> keySet() {
         Set<K> ks = keySet;
         return (ks != null ? ks : (keySet = new KeySet()));
     }
 
     private final class KeySet extends AbstractSet<K> {
-        public Iterator<K> iterator() {
+        @Override
+		public Iterator<K> iterator() {
             return newKeyIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return size;
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return containsKey(o);
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             return HashMapPro.this.removeEntryForKey(o) != null;
         }
-        public void clear() {
+        @Override
+		public void clear() {
             HashMapPro.this.clear();
         }
     }
@@ -1098,22 +1128,27 @@ public class HashMapPro<K,V>
      * <tt>retainAll</tt> and <tt>clear</tt> operations.  It does not
      * support the <tt>add</tt> or <tt>addAll</tt> operations.
      */
-    public Collection<V> values() {
+    @Override
+	public Collection<V> values() {
         Collection<V> vs = values;
         return (vs != null ? vs : (values = new Values()));
     }
 
     private final class Values extends AbstractCollection<V> {
-        public Iterator<V> iterator() {
+        @Override
+		public Iterator<V> iterator() {
             return newValueIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return size;
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return containsValue(o);
         }
-        public void clear() {
+        @Override
+		public void clear() {
             HashMapPro.this.clear();
         }
     }
@@ -1134,7 +1169,8 @@ public class HashMapPro<K,V>
      *
      * @return a set view of the mappings contained in this map
      */
-    public Set<Map.Entry<K,V>> entrySet() {
+    @Override
+	public Set<Map.Entry<K,V>> entrySet() {
         return entrySet0();
     }
 
@@ -1144,23 +1180,28 @@ public class HashMapPro<K,V>
     }
 
     private final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
-        public Iterator<Map.Entry<K,V>> iterator() {
+        @Override
+		public Iterator<Map.Entry<K,V>> iterator() {
             return newEntryIterator();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<K,V> e = (Map.Entry<K,V>) o;
             Entry<K,V> candidate = getEntry(e.getKey());
             return candidate != null && candidate.equals(e);
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             return removeMapping(o) != null;
         }
-        public int size() {
+        @Override
+		public int size() {
             return size;
         }
-        public void clear() {
+        @Override
+		public void clear() {
             HashMapPro.this.clear();
         }
     }

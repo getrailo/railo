@@ -38,9 +38,11 @@ public abstract class MonitorWrap implements Monitor {
 	public String getName() {
 		return name;
 	}
+	@Override
 	public boolean isLogEnabled() {
 		return logEnabled;
 	}
+	@Override
 	public Class getClazz() {
 		return monitor.getClass();
 	}

@@ -156,7 +156,8 @@ public final class SimpleCharStream
      * @deprecated Method getColumn is deprecated
      */
 
-    public final int getColumn()
+    @Deprecated
+	public final int getColumn()
     {
         return bufcolumn[bufpos];
     }
@@ -165,7 +166,8 @@ public final class SimpleCharStream
      * @deprecated Method getLine is deprecated
      */
 
-    public final int getLine()
+    @Deprecated
+	public final int getLine()
     {
         return bufline[bufpos];
     }

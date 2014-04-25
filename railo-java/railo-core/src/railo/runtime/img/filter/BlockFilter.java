@@ -53,14 +53,17 @@ public class BlockFilter extends TransformFilter  implements DynFiltering {
 	public BlockFilter() {
 	}
 
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		out[0] = (x / blockSize) * blockSize;
 		out[1] = (y / blockSize) * blockSize;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Mosaic...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("BlockSize")))!=null)setBlockSize(ImageFilterUtil.toIntValue(o,"BlockSize"));

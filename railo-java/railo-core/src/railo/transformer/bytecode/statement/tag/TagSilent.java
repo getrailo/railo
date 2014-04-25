@@ -43,6 +43,7 @@ public final class TagSilent extends TagBase {
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		final GeneratorAdapter adapter = bc.getAdapter();
 		
@@ -55,6 +56,7 @@ public final class TagSilent extends TagBase {
 		
 		// call must be 
 		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+			@Override
 			public void writeOut(BytecodeContext bc) {
 				//if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(adapter,fcf.getFinalEntryLabel());
 				// if(!silentMode)pc.unsetSilent();

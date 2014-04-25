@@ -36,6 +36,7 @@ public class CFTagCore extends CFTag {
 	public void set__isweb(boolean isweb){
 		this.isweb=isweb;
 	}
+	@Override
 	public InitFile initFile(PageContext pageContext) throws PageException {
     	return createInitFile(pageContext,isweb,filename);
      

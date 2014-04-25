@@ -17,7 +17,6 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
-import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
@@ -81,22 +80,22 @@ public final class Dump implements Function {
 		try { 
 			
 			// output
-			int defType=HTMLDumpWriter.DEFAULT_RICH;
+			int defType=DumpWriter.DEFAULT_RICH;
 			int outputType=OUTPUT_TYPE_NONE;
 			Resource outputRes=null;
 			if(!StringUtil.isEmpty(output,true)){
 				output=output.trim();
 				if("browser".equalsIgnoreCase(output)){
 					outputType=OUTPUT_TYPE_BROWSER;
-					defType=HTMLDumpWriter.DEFAULT_RICH;
+					defType=DumpWriter.DEFAULT_RICH;
 				}
 				else if("console".equalsIgnoreCase(output)){
 					outputType=OUTPUT_TYPE_CONSOLE;
-					defType=HTMLDumpWriter.DEFAULT_PLAIN;
+					defType=DumpWriter.DEFAULT_PLAIN;
 				}
 				else {
 					outputType=OUTPUT_TYPE_RESOURCE;
-					defType=HTMLDumpWriter.DEFAULT_RICH;
+					defType=DumpWriter.DEFAULT_RICH;
 					outputRes=ResourceUtil.toResourceNotExisting(pc, output);
 				}
 			}

@@ -35,13 +35,16 @@ public class InvertAlphaFilter extends PointFilter  implements DynFiltering {
 		canFilterIndexColorModel = true;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		return rgb ^ 0xff000000;
 	}
 
+	@Override
 	public String toString() {
 		return "Alpha/Invert";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){

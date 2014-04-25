@@ -24,7 +24,9 @@ public interface DebuggerPro extends Debugger {
      * @param time 
      * @deprecated use instead <code>addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time)</code>
      */
-    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
+    @Deprecated
+	@Override
+	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
     
     /**
      * add new query execution time
@@ -36,9 +38,11 @@ public interface DebuggerPro extends Debugger {
      * @param src
      * @param time 
      */
-    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
+    @Override
+	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
     
-    public DebugTrace[] getTraces(PageContext pc);
+    @Override
+	public DebugTrace[] getTraces(PageContext pc);
     
     public DebugDump addDump(PageSource ps,String dump);
 	

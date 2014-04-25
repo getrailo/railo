@@ -43,7 +43,8 @@ public final class Setting extends BodyTagImpl {
      * @deprecated this method is replaced by the method <code>setEnablecfoutputonly(Object enablecfoutputonly)</code>
      * @param enablecfoutputonly
      */
-    public void setEnablecfoutputonly(boolean enablecfoutputonly)   {
+    @Deprecated
+	public void setEnablecfoutputonly(boolean enablecfoutputonly)   {
         pageContext.setCFOutputOnly(enablecfoutputonly);
     }
 

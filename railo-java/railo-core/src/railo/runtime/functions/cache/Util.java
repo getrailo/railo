@@ -136,12 +136,12 @@ public class Util {
 	}
 
 	private static String toStringType(int type, String defaultValue) {
-		if(type==ConfigImpl.CACHE_DEFAULT_OBJECT) return "object";
-		if(type==ConfigImpl.CACHE_DEFAULT_TEMPLATE) return "template";
-		if(type==ConfigImpl.CACHE_DEFAULT_QUERY) return "query";
-		if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE) return "resource";
-		if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION) return "function";
-		if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE) return "include";
+		if(type==Config.CACHE_DEFAULT_OBJECT) return "object";
+		if(type==Config.CACHE_DEFAULT_TEMPLATE) return "template";
+		if(type==Config.CACHE_DEFAULT_QUERY) return "query";
+		if(type==Config.CACHE_DEFAULT_RESOURCE) return "resource";
+		if(type==Config.CACHE_DEFAULT_FUNCTION) return "function";
+		if(type==Config.CACHE_DEFAULT_INCLUDE) return "include";
 		return defaultValue;
 	}
 
@@ -183,22 +183,22 @@ public class Util {
 
 	public static int toType(String type, int defaultValue) {
 		type=type.trim().toLowerCase();
-		if("object".equals(type)) return ConfigImpl.CACHE_DEFAULT_OBJECT;
-		if("query".equals(type)) return ConfigImpl.CACHE_DEFAULT_QUERY;
-		if("resource".equals(type)) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
-		if("template".equals(type)) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
-		if("function".equals(type)) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
-		if("include".equals(type)) return ConfigImpl.CACHE_DEFAULT_INCLUDE;
+		if("object".equals(type)) return Config.CACHE_DEFAULT_OBJECT;
+		if("query".equals(type)) return Config.CACHE_DEFAULT_QUERY;
+		if("resource".equals(type)) return Config.CACHE_DEFAULT_RESOURCE;
+		if("template".equals(type)) return Config.CACHE_DEFAULT_TEMPLATE;
+		if("function".equals(type)) return Config.CACHE_DEFAULT_FUNCTION;
+		if("include".equals(type)) return Config.CACHE_DEFAULT_INCLUDE;
 		return defaultValue;
 	}
 
 	public static String toType(int type, String defaultValue) {
-		if(ConfigImpl.CACHE_DEFAULT_OBJECT==type) return "object";
-		if(ConfigImpl.CACHE_DEFAULT_QUERY==type) return "query";
-		if(ConfigImpl.CACHE_DEFAULT_RESOURCE==type) return "resource";
-		if(ConfigImpl.CACHE_DEFAULT_TEMPLATE==type) return "template";
-		if(ConfigImpl.CACHE_DEFAULT_FUNCTION==type) return "function";
-		if(ConfigImpl.CACHE_DEFAULT_INCLUDE==type) return "include";
+		if(Config.CACHE_DEFAULT_OBJECT==type) return "object";
+		if(Config.CACHE_DEFAULT_QUERY==type) return "query";
+		if(Config.CACHE_DEFAULT_RESOURCE==type) return "resource";
+		if(Config.CACHE_DEFAULT_TEMPLATE==type) return "template";
+		if(Config.CACHE_DEFAULT_FUNCTION==type) return "function";
+		if(Config.CACHE_DEFAULT_INCLUDE==type) return "include";
 		return defaultValue;
 	}
 

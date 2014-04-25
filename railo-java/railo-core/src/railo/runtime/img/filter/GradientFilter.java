@@ -150,7 +150,8 @@ public class GradientFilter extends AbstractBufferedImageOp  implements DynFilte
 		return paintMode;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -349,9 +350,11 @@ public class GradientFilter extends AbstractBufferedImageOp  implements DynFilte
 		return (float)Math.sqrt(a*a+b*b);
 	}
 	
+	@Override
 	public String toString() {
 		return "Other/Gradient Fill...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));

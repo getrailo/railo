@@ -354,6 +354,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	/**
 	 * @see railo.transformer.bytecode.statement.IFunction#writeOut(railo.transformer.bytecode.BytecodeContext, int)
 	 */
+	@Override
 	public final void writeOut(BytecodeContext bc, int type) throws TransformerException {
     	ExpressionUtil.visitLine(bc, getStart());
         _writeOut(bc,type);
@@ -363,6 +364,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	/**
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
+	@Override
 	public final void _writeOut(BytecodeContext bc) throws TransformerException {
 		_writeOut(bc,PAGE_TYPE_REGULAR);
 	}
@@ -669,6 +671,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	/**
 	 * @return the body
 	 */
+	@Override
 	public final Body getBody() {
 		return body;
 	}

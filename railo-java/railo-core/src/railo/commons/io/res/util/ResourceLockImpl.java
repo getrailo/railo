@@ -106,6 +106,7 @@ public final class ResourceLockImpl implements ResourceLock {
 	/**
 	 * @param lockTimeout the lockTimeout to set
 	 */
+	@Override
 	public void setLockTimeout(long lockTimeout) {
 		this.lockTimeout = lockTimeout;
 	}

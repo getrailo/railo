@@ -1176,6 +1176,7 @@ public final class ListUtil {
 	 * @return returns the first element of the list
 	 * @deprecated use instead  first(String list, String delimiter, boolean ignoreEmpty)
 	 */
+	@Deprecated
 	public static String first(String list, String delimiter) {
 		return first(list, delimiter,true, 1);
 	}
@@ -1187,6 +1188,7 @@ public final class ListUtil {
 	 * @return returns the last Element of a list
 	 * @deprecated use instead last(String list, String delimiter, boolean ignoreEmpty)
 	 */
+	@Deprecated
 	public static String last(String list, String delimiter) {
 		return last(list, delimiter, true);
 	}

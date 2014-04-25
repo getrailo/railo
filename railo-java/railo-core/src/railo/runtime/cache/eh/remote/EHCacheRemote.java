@@ -35,6 +35,7 @@ public class EHCacheRemote extends CacheSupport {
 		
 	}
 
+	@Override
 	public void init(Config config,String name, Struct arguments) throws IOException {
 		Cast caster = CFMLEngineFactory.getInstance().getCastUtil();
 		String strUrl=null;
@@ -77,6 +78,7 @@ public class EHCacheRemote extends CacheSupport {
 		}
 	}
 
+	@Override
 	public CacheEntry getQuiet(String key) throws IOException {
 		try {
 			return soap.getQuiet(name, key);
@@ -87,6 +89,7 @@ public class EHCacheRemote extends CacheSupport {
 	}
 	
 
+	@Override
 	public CacheEntry getQuiet(String key,CacheEntry defaultValue) {
 		try {
 			return soap.getQuiet(name, key);
@@ -96,6 +99,7 @@ public class EHCacheRemote extends CacheSupport {
 		}
 	}
 
+	@Override
 	public CacheEntry getCacheEntry(String key) throws IOException {
 		try {
 			return soap.get(name, key);
@@ -105,6 +109,7 @@ public class EHCacheRemote extends CacheSupport {
 		}
 	}
 
+	@Override
 	public CacheEntry getCacheEntry(String key,CacheEntry defaultValue) {
 		try {
 			return soap.get(name, key);
@@ -116,6 +121,7 @@ public class EHCacheRemote extends CacheSupport {
 
 	
 
+	@Override
 	public Struct getCustomInfo() {
 		Struct info=super.getCustomInfo();
 		try	{
@@ -137,17 +143,20 @@ public class EHCacheRemote extends CacheSupport {
 	}
 
 
+	@Override
 	public long hitCount() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 
+	@Override
 	public long missCount() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public void put(String key, Object value, Long idleTime, Long liveTime) {
 		Boolean eternal = idleTime==null && liveTime==null?Boolean.TRUE:Boolean.FALSE;
 		Integer idle = idleTime==null?null:new Integer((int)idleTime.longValue()/1000);

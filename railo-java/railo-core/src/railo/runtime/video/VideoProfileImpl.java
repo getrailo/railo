@@ -42,6 +42,7 @@ public class VideoProfileImpl implements VideoProfile {
 	}
 	public VideoProfileImpl() {}
 
+	@Override
 	public VideoProfile duplicate() {
 		
 		
@@ -54,6 +55,7 @@ public class VideoProfileImpl implements VideoProfile {
 	 * set the type of the output format (see constants "TYPE_xxx" of this class)
 	 * @param type 
 	 */
+	@Override
 	public void setType(String type){
 		this.type=type;
 	}
@@ -61,6 +63,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the type
 	 */
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -68,10 +71,12 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the dimension
 	 */
+	@Override
 	public String getDimension() {
 		return dimension;
 	}
 
+	@Override
 	public void setDimension(int width, int height)  {
 		checkDimension(width,"width");
 		checkDimension(height,"height");
@@ -86,6 +91,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the bitrate
 	 */
+	@Override
 	public double getVideoBitrate() {
 		return videoBitrate;
 	}
@@ -94,6 +100,7 @@ public class VideoProfileImpl implements VideoProfile {
 	 * set video bitrate in kbit/s (default 200)
 	 * @param bitrate the bitrate to set
 	 */
+	@Override
 	public void setVideoBitrate(long bitrate) {
 		this.videoBitrate = bitrate;
 	}
@@ -101,6 +108,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the framerate
 	 */
+	@Override
 	public double getFramerate() {
 		return framerate;
 	}
@@ -109,6 +117,7 @@ public class VideoProfileImpl implements VideoProfile {
 	 * sets the framerate (default 25)
 	 * @param framerate the framerate to set
 	 */
+	@Override
 	public void setFramerate(double framerate) {
 		this.framerate = framerate;
 	}
@@ -116,6 +125,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the aspectRatio
 	 */
+	@Override
 	public int getAspectRatio() {
 		return aspectRatio;
 	}
@@ -124,11 +134,13 @@ public class VideoProfileImpl implements VideoProfile {
 	 * sets the aspectRatio (VideoOutput.ASPECT_RATIO_xxx)
 	 * @param aspectRatio the aspectRatio to set
 	 */
+	@Override
 	public void setAspectRatio(int aspectRatio) {
 		this.aspectRatio = aspectRatio;
 	}
 	
 
+	@Override
 	public void setAspectRatio(String strAspectRatio) {
 		strAspectRatio=strAspectRatio.trim().toLowerCase();
 		if("16:9".equals(strAspectRatio))this.aspectRatio=ASPECT_RATIO_16_9;
@@ -138,6 +150,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the bitrateMin
 	 */
+	@Override
 	public double getVideoBitrateMin() {
 		return videoBitrateMin;
 	}
@@ -146,6 +159,7 @@ public class VideoProfileImpl implements VideoProfile {
 	 * set min video bitrate tolerance (in kbit/s)
 	 * @param bitrateMin the bitrateMin to set
 	 */
+	@Override
 	public void setVideoBitrateMin(long bitrateMin) {
 		this.videoBitrateMin = bitrateMin;
 	}
@@ -153,6 +167,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the bitrateMax
 	 */
+	@Override
 	public double getVideoBitrateMax() {
 		return videoBitrateMax;
 	}
@@ -161,6 +176,7 @@ public class VideoProfileImpl implements VideoProfile {
 	 * set max video bitrate tolerance (in kbit/s)
 	 * @param bitrateMax the bitrateMax to set
 	 */
+	@Override
 	public void setVideoBitrateMax(long bitrateMax) {
 		this.videoBitrateMax = bitrateMax;
 	}
@@ -168,6 +184,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the bitrateTolerance
 	 */
+	@Override
 	public double getVideoBitrateTolerance() {
 		return videoBitrateTolerance;
 	}
@@ -176,6 +193,7 @@ public class VideoProfileImpl implements VideoProfile {
 	 * set video bitrate tolerance (in kbit/s)
 	 * @param bitrateTolerance the bitrateTolerance to set
 	 */
+	@Override
 	public void setVideoBitrateTolerance(long bitrateTolerance) {
 		this.videoBitrateTolerance = bitrateTolerance;
 	}
@@ -183,6 +201,7 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the audioBitrate
 	 */
+	@Override
 	public double getAudioBitrate() {
 		return audioBitrate;
 	}
@@ -190,72 +209,85 @@ public class VideoProfileImpl implements VideoProfile {
 	/**
 	 * @return the scanMode
 	 */
+	@Override
 	public int getScanMode() {
 		return scanMode;
 	}
 	/**
 	 * @param scanMode the scanMode to set
 	 */
+	@Override
 	public void setScanMode(int scanMode) {
 		this.scanMode = scanMode;
 	}
 	/**
 	 * @param audioBitrate the audioBitrate to set
 	 */
+	@Override
 	public void setAudioBitrate(long audioBitrate) {
 		this.audioBitrate = audioBitrate;
 	}
+	@Override
 	public void setAudioCodec(String codec) {
 		this.audioCodec=codec;
 	}
+	@Override
 	public void setVideoCodec(String codec) {
 		this.videoCodec=codec;
 	}
 	/**
 	 * @return the videoCodec
 	 */
+	@Override
 	public String getVideoCodec() {
 		return videoCodec;
 	}
 	/**
 	 * @return the audioCodec
 	 */
+	@Override
 	public String getAudioCodec() {
 		return audioCodec;
 	}
 	/**
 	 * @return the audioSamplerate
 	 */
+	@Override
 	public double getAudioSamplerate() {
 		return audioSamplerate;
 	}
 	/**
 	 * @param audioSamplerate the audioSamplerate to set
 	 */
+	@Override
 	public void setAudioSamplerate(double audioSamplerate) {
 		this.audioSamplerate = audioSamplerate;
 	}
 	/**
 	 * @return the bufferSize
 	 */
+	@Override
 	public long getBufferSize() {
 		return bufferSize;
 	}
 	/**
 	 * @param bufferSize the bufferSize to set
 	 */
+	@Override
 	public void setBufferSize(long bufferSize) {
 		this.bufferSize = bufferSize;
 	}
 	/**
 	 * @return the pass
 	 */
+	@Override
 	public int getPass() {
 		return pass;
 	}
 	/**
 	 * @param pass the pass to set
 	 */
+	@Override
 	public void setPass(int pass) {
 		this.pass = pass;
 	}

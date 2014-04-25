@@ -84,7 +84,8 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
         return setEL(key,new StructImpl());
     }
 
-    public Object getParent() {
+    @Override
+	public Object getParent() {
         return parent;
     }
 

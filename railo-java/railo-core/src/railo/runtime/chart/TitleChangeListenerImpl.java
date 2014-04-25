@@ -5,6 +5,7 @@ import org.jfree.chart.event.TitleChangeListener;
 
 public class TitleChangeListenerImpl implements TitleChangeListener {
 
+	@Override
 	public void titleChanged(TitleChangeEvent tce) {
 		/*try {
 			print.out(tce.getChart().getLegend().getItemContainer().getBlocks().size());

@@ -35,6 +35,7 @@ public abstract class StorageScopeCleanerSupport implements StorageScopeCleaner 
 		this.engine=engine;
 	}
 	
+	@Override
 	public final void clean() {
 		if(lastClean+intervall<System.currentTimeMillis()) {
 			//info("cleaning "+application);
@@ -49,14 +50,17 @@ public abstract class StorageScopeCleanerSupport implements StorageScopeCleaner 
 	/**
 	 * @return the log
 	 */
+	@Override
 	public void info(String msg) {
 		 engine.getFactory().getScopeContext().info(msg);
 	}
+	@Override
 	public void error(String msg) {
 		engine.getFactory().getScopeContext().error(msg);
 		engine._getLog().error(application, msg);
 	}
 	
+	@Override
 	public void error(Throwable t) {
 		engine.getFactory().getScopeContext().error(t);
 		engine._getLog().error(application,ExceptionUtil.getStacktrace(t, true));

@@ -156,6 +156,7 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 		return Operator.compare(value, str);
 	}
 
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
 		return DumpUtil.toDumpData(value, pageContext, maxlevel, properties);
 	}
@@ -166,25 +167,25 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	}
 
 	public static Struct toStruct(FunctionValueImpl fv1){
-		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		StructImpl sct = new StructImpl(Struct.TYPE_LINKED);
 		sct.setEL(fv1.getNameAsKey(), fv1);
 		return sct;
 	}
 	public static Struct toStruct(FunctionValueImpl fv1,FunctionValueImpl fv2){
-		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		StructImpl sct = new StructImpl(Struct.TYPE_LINKED);
 		sct.setEL(fv1.getNameAsKey(), fv1);
 		sct.setEL(fv2.getNameAsKey(), fv2);
 		return sct;
 	}
 	public static Struct toStruct(FunctionValueImpl fv1,FunctionValueImpl fv2,FunctionValueImpl fv3){
-		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		StructImpl sct = new StructImpl(Struct.TYPE_LINKED);
 		sct.setEL(fv1.getNameAsKey(), fv1);
 		sct.setEL(fv2.getNameAsKey(), fv2);
 		sct.setEL(fv3.getNameAsKey(), fv3);
 		return sct;
 	}
 	public static Struct toStruct(FunctionValueImpl fv1,FunctionValueImpl fv2,FunctionValueImpl fv3,FunctionValueImpl fv4){
-		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		StructImpl sct = new StructImpl(Struct.TYPE_LINKED);
 		sct.setEL(fv1.getNameAsKey(), fv1);
 		sct.setEL(fv2.getNameAsKey(), fv2);
 		sct.setEL(fv3.getNameAsKey(), fv3);

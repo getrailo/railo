@@ -6,6 +6,7 @@ import railo.commons.io.cache.exp.CacheException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -45,8 +46,8 @@ public class CacheSetProperties {
 		if(StringUtil.isEmpty(cacheName)){
 			
 			return new CacheConnection[]{
-					config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT),
-					config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE)
+					config.getCacheDefaultConnection(Config.CACHE_DEFAULT_OBJECT),
+					config.getCacheDefaultConnection(Config.CACHE_DEFAULT_TEMPLATE)
 			}
 			;
 			// MUST which one is first
@@ -58,9 +59,9 @@ public class CacheSetProperties {
 		for(int i=0;i<names.length;i++){
 			name=names[i].trim().toLowerCase();
 			if(name.equalsIgnoreCase("template"))
-				list.add(config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE));
+				list.add(config.getCacheDefaultConnection(Config.CACHE_DEFAULT_TEMPLATE));
 			else if(name.equalsIgnoreCase("object"))
-				list.add(config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT));
+				list.add(config.getCacheDefaultConnection(Config.CACHE_DEFAULT_OBJECT));
 			else{
 				CacheConnection cc= config.getCacheConnections().get(name);
 				if(cc==null) throw new CacheException("there is no cache defined with name ["+name+"]");

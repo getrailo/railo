@@ -177,12 +177,14 @@ public class KaleidoscopeFilter extends TransformFilter  implements DynFiltering
 		return radius;
 	}
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		icentreX = src.getWidth() * centreX;
 		icentreY = src.getHeight() * centreY;
 		return super.filter( src, dst );
 	}
 	
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		double dx = x-icentreX;
 		double dy = y-icentreY;
@@ -200,10 +202,12 @@ public class KaleidoscopeFilter extends TransformFilter  implements DynFiltering
 		out[1] = (float)(icentreY + r*Math.sin(theta));
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Kaleidoscope...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

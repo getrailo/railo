@@ -118,6 +118,7 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 		}
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
+			@Override
 			public void writeOut(BytecodeContext bc) throws TransformerException {
 				if(_finally!=null) {
 					

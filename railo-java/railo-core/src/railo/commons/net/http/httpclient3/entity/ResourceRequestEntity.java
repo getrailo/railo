@@ -20,19 +20,23 @@ public class ResourceRequestEntity implements RequestEntity, Entity3 {
         this.res = res;
         this.contentType = contentType;
     }
-    public long getContentLength() {
+    @Override
+	public long getContentLength() {
         return this.res.length();
     }
 
-    public String getContentType() {
+    @Override
+	public String getContentType() {
         return this.contentType;
     }
 
-    public boolean isRepeatable() {
+    @Override
+	public boolean isRepeatable() {
         return true;
     }
 
-    public void writeRequest(final OutputStream out) throws IOException {
+    @Override
+	public void writeRequest(final OutputStream out) throws IOException {
        IOUtil.copy(res.getInputStream(), out,true,false);
     }  
 	@Override

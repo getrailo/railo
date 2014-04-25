@@ -725,6 +725,7 @@ public final class SourceCode {
 	/** Gibt den CFMLString als String zurueck.
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return new String(this.text);
 	}
@@ -915,6 +916,7 @@ public final class SourceCode {
 	 * @param o Object zum vergleichen.
 	 * @return Ist das uebergebene Objekt das selbe wie dieses.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof SourceCode))return false;
 		return o.toString().equals(this.toString());

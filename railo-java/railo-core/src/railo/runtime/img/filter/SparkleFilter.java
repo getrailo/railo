@@ -104,6 +104,7 @@ public class SparkleFilter extends PointFilter  implements DynFiltering {
 		return radius;
 	}
 
+	@Override
 	public void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -116,6 +117,7 @@ public class SparkleFilter extends PointFilter  implements DynFiltering {
 			rayLengths[i] = radius + randomness / 100.0f * radius * (float)randomNumbers.nextGaussian();
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		float dx = x-centreX;
 		float dy = y-centreY;
@@ -138,9 +140,11 @@ public class SparkleFilter extends PointFilter  implements DynFiltering {
 		return ImageMath.mixColors(f, rgb, color);
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Sparkle...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toIntValue(o,"Radius"));

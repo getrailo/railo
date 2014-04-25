@@ -90,6 +90,7 @@ public final class S3Resource extends ResourceSupport {
     }
 
 
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateDirectoryOK(this, createParentWhenNotExists);
 		try {
@@ -112,6 +113,7 @@ public final class S3Resource extends ResourceSupport {
 		s3.releaseCache(getInnerPath());
 	}
 
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateFileOK(this, createParentWhenNotExists);
 		if(isBucket()) throw new IOException("can't create file ["+getPath()+"], on this level (Bucket Level) you can only create directories");
@@ -128,12 +130,14 @@ public final class S3Resource extends ResourceSupport {
 		s3.releaseCache(getInnerPath());
 	}
 
+	@Override
 	public boolean exists() {
 		
 		return getInfo()
 			.exists();
 	}
 
+	@Override
 	public InputStream getInputStream() throws IOException {
 		ResourceUtil.checkGetInputStreamOK(this);
 		provider.read(this);
@@ -145,6 +149,7 @@ public final class S3Resource extends ResourceSupport {
 		}
 	}
 
+	@Override
 	public int getMode() {
 		return 777;
 	}
@@ -178,7 +183,7 @@ public final class S3Resource extends ResourceSupport {
 			sb.append(aki);
 			if(!StringUtil.isEmpty(sak)){
 				sb.append(":").append(sak);
-				if(storage!=S3.STORAGE_UNKNOW){
+				if(storage!=S3Constants.STORAGE_UNKNOW){
 					sb.append(":").append(S3.toStringStorage(storage,"us"));
 				}
 			}
@@ -213,7 +218,7 @@ public final class S3Resource extends ResourceSupport {
 	@Override
 	public Resource getParentResource() {
 		if(isRoot()) return null;
-		return new S3Resource(s3,isBucket()?S3.STORAGE_UNKNOW:storage,provider,getInnerParent(),newPattern);// MUST direkter machen
+		return new S3Resource(s3,isBucket()?S3Constants.STORAGE_UNKNOW:storage,provider,getInnerParent(),newPattern);// MUST direkter machen
 	}
 
 	private boolean isRoot() {
@@ -229,6 +234,7 @@ public final class S3Resource extends ResourceSupport {
 		return getPath();
 	}
 	
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 
 		ResourceUtil.checkGetOutputStreamOK(this);
@@ -273,7 +279,7 @@ public final class S3Resource extends ResourceSupport {
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
-		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath,newPattern);
+		return new S3Resource(s3,S3Constants.STORAGE_UNKNOW,provider,realpath,newPattern);
 	}
 
 	@Override
@@ -291,10 +297,12 @@ public final class S3Resource extends ResourceSupport {
 		return getInfo().isFile();
 	}
 
+	@Override
 	public boolean isReadable() {
 		return exists();
 	}
 
+	@Override
 	public boolean isWriteable() {
 		return exists();
 	}
@@ -398,6 +406,7 @@ public final class S3Resource extends ResourceSupport {
 		return getInfo().getSize();
 	}
 
+	@Override
 	public Resource[] listResources() {
 		S3Resource[] children=null;
 		try {
@@ -502,24 +511,28 @@ public final class S3Resource extends ResourceSupport {
 		
 	}
 
+	@Override
 	public boolean setLastModified(long time) {
 		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public void setMode(int mode) throws IOException {
 		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		
 	}
 
+	@Override
 	public boolean setReadable(boolean readable) {
 		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public boolean setWritable(boolean writable) {
 		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub

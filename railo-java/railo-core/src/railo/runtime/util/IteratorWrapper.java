@@ -21,20 +21,23 @@ public final class IteratorWrapper implements Iterator {
     /**
      * @see java.util.Iterator#remove()
      */
-    public void remove() {
+    @Override
+	public void remove() {
     }
 
     /**
      * @see java.util.Iterator#hasNext()
      */
-    public boolean hasNext() {
+    @Override
+	public boolean hasNext() {
         return e.hasMoreElements();
     }
 
     /**
      * @see java.util.Iterator#next()
      */
-    public Object next() {
+    @Override
+	public Object next() {
         return e.nextElement();
     }
 }

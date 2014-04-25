@@ -18,7 +18,8 @@ public final class Md5 {
      * @return md5 from string
      * @throws IOException
      */
-    public static String getDigestAsString(String str) throws IOException {
+    @Deprecated
+	public static String getDigestAsString(String str) throws IOException {
     	try {
 			return Hash.md5(str);
 		}

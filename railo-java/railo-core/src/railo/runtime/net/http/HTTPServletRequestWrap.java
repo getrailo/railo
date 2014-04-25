@@ -194,6 +194,7 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 		return req.getAttribute(name);
 	}
 
+	@Override
 	public Enumeration getAttributeNames() {
 		if(disconnected) {
 			return new EnumerationWrapper(disconnectData.attributes);

@@ -25,14 +25,17 @@ public class Noise implements Function1D, Function2D, Function3D {
 
 	private static Random randomGenerator = new Random();
 	
+	@Override
 	public float evaluate(float x) {
 		return noise1(x);
 	}
 	
+	@Override
 	public float evaluate(float x, float y) {
 		return noise2(x, y);
 	}
 	
+	@Override
 	public float evaluate(float x, float y, float z) {
 		return noise3(x, y, z);
 	}

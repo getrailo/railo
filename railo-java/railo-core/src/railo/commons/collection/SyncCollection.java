@@ -23,49 +23,63 @@ public class SyncCollection<E> implements Collection<E>, Serializable {
             this.mutex = mutex;
         }
 
-        public int size() {
+        @Override
+		public int size() {
             synchronized (mutex) {return c.size();}
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             synchronized (mutex) {return c.isEmpty();}
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             synchronized (mutex) {return c.contains(o);}
         }
-        public Object[] toArray() {
+        @Override
+		public Object[] toArray() {
             synchronized (mutex) {return c.toArray();}
         }
-        public <T> T[] toArray(T[] a) {
+        @Override
+		public <T> T[] toArray(T[] a) {
             synchronized (mutex) {return c.toArray(a);}
         }
 
-        public Iterator<E> iterator() {
+        @Override
+		public Iterator<E> iterator() {
             return c.iterator(); // Must be manually synched by user!
         }
 
-        public boolean add(E e) {
+        @Override
+		public boolean add(E e) {
             synchronized (mutex) {return c.add(e);}
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             synchronized (mutex) {return c.remove(o);}
         }
 
-        public boolean containsAll(Collection<?> coll) {
+        @Override
+		public boolean containsAll(Collection<?> coll) {
             synchronized (mutex) {return c.containsAll(coll);}
         }
-        public boolean addAll(Collection<? extends E> coll) {
+        @Override
+		public boolean addAll(Collection<? extends E> coll) {
             synchronized (mutex) {return c.addAll(coll);}
         }
-        public boolean removeAll(Collection<?> coll) {
+        @Override
+		public boolean removeAll(Collection<?> coll) {
             synchronized (mutex) {return c.removeAll(coll);}
         }
-        public boolean retainAll(Collection<?> coll) {
+        @Override
+		public boolean retainAll(Collection<?> coll) {
             synchronized (mutex) {return c.retainAll(coll);}
         }
-        public void clear() {
+        @Override
+		public void clear() {
             synchronized (mutex) {c.clear();}
         }
-        public String toString() {
+        @Override
+		public String toString() {
             synchronized (mutex) {return c.toString();}
         }
         private void writeObject(ObjectOutputStream s) throws IOException {

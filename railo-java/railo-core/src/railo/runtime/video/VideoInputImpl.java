@@ -23,6 +23,7 @@ public class VideoInputImpl implements VideoInput {
 	/**
 	 * @see railo.runtime.video.VideoInput#getResource()
 	 */
+	@Override
 	public Resource getResource() {
 		return resource;
 	}
@@ -30,6 +31,7 @@ public class VideoInputImpl implements VideoInput {
 	/**
 	 * @see railo.runtime.video.VideoInput#setCommand(java.lang.String, java.util.List)
 	 */
+	@Override
 	public void setCommand(String path,java.util.List args) {
 		this.path=path;
 		try {
@@ -39,6 +41,7 @@ public class VideoInputImpl implements VideoInput {
 		}
 	}
 	
+	@Override
 	public void setCommand(String path,String[] args) {
 		this.path=path;
 		addArgs(ListUtil.arrayToList(args, " "));
@@ -47,6 +50,7 @@ public class VideoInputImpl implements VideoInput {
 	/**
 	 * @see railo.runtime.video.VideoInput#getCommandAsString()
 	 */
+	@Override
 	public String getCommandAsString() {
 		return path+" "+args;
 	}

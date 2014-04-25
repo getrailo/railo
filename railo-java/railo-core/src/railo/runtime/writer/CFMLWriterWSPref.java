@@ -189,6 +189,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
 	 */
+	@Override
 	public void writeRaw(String str) throws IOException {
 		printBuffer();
 		super.write(str);
@@ -198,7 +199,8 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
      * just a wrapper function for ACF
      * @throws IOException 
      */
-    public void initHeaderBuffer() throws IOException{
+    @Override
+	public void initHeaderBuffer() throws IOException{
     	resetHTMLHead();
     }
     
@@ -216,6 +218,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#clear()
 	 */
+	@Override
 	public final void clear() throws IOException {
 		printBuffer();
 		super.clear();
@@ -224,6 +227,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#clearBuffer()
 	 */
+	@Override
 	public final void clearBuffer() {
 		printBufferEL();
 		super.clearBuffer();
@@ -232,6 +236,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#close()
 	 */
+	@Override
 	public final void close() throws IOException {
 		printBuffer();
 		super.close();
@@ -240,6 +245,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#flush()
 	 */
+	@Override
 	public final void flush() throws IOException {
 		printBuffer();
 		super.flush();
@@ -248,6 +254,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#getRemaining()
 	 */
+	@Override
 	public final int getRemaining() {
 		printBufferEL();
 		return super.getRemaining();
@@ -256,6 +263,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#newLine()
 	 */
+	@Override
 	public final void newLine() throws IOException {
 		print(CHAR_NL);
 	}
@@ -263,6 +271,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(boolean)
 	 */
+	@Override
 	public final void print(boolean b) throws IOException {
 		printBuffer();
 		super.print(b);
@@ -271,6 +280,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(char[])
 	 */
+	@Override
 	public final void print(char[] chars) throws IOException {
 		write(chars,0,chars.length);
 	}
@@ -278,6 +288,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(double)
 	 */
+	@Override
 	public final void print(double d) throws IOException {
 		printBuffer();
 		super.print(d);
@@ -286,6 +297,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(float)
 	 */
+	@Override
 	public final void print(float f) throws IOException {
 		printBuffer();
 		super.print(f);
@@ -294,6 +306,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(int)
 	 */
+	@Override
 	public final void print(int i) throws IOException {
 		printBuffer();
 		super.print(i);
@@ -302,6 +315,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(long)
 	 */
+	@Override
 	public final void print(long l) throws IOException {
 		printBuffer();
 		super.print(l);
@@ -310,6 +324,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(java.lang.Object)
 	 */
+	@Override
 	public final void print(Object obj) throws IOException {
 		print(obj.toString());
 	}
@@ -317,6 +332,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#print(java.lang.String)
 	 */
+	@Override
 	public final void print(String str) throws IOException {
 		write(str.toCharArray(),0,str.length());
 	}
@@ -324,6 +340,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println()
 	 */
+	@Override
 	public final void println() throws IOException {
 		print(CHAR_NL);
 	}
@@ -331,6 +348,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(boolean)
 	 */
+	@Override
 	public final void println(boolean b) throws IOException {
 		printBuffer();
 		super.print(b);
@@ -340,6 +358,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(char)
 	 */
+	@Override
 	public final void println(char c) throws IOException {
 		print(c);
 		print(CHAR_NL);
@@ -348,6 +367,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(char[])
 	 */
+	@Override
 	public final void println(char[] chars) throws IOException {
 		write(chars,0,chars.length);
 		print(CHAR_NL);
@@ -356,6 +376,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(double)
 	 */
+	@Override
 	public final void println(double d) throws IOException {
 		printBuffer();
 		super.print(d);
@@ -365,6 +386,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(float)
 	 */
+	@Override
 	public final void println(float f) throws IOException {
 		printBuffer();
 		super.print(f);
@@ -374,6 +396,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(int)
 	 */
+	@Override
 	public final void println(int i) throws IOException {
 		printBuffer();
 		super.print(i);
@@ -383,6 +406,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(long)
 	 */
+	@Override
 	public final void println(long l) throws IOException {
 		printBuffer();
 		super.print(l);
@@ -392,6 +416,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(java.lang.Object)
 	 */
+	@Override
 	public final void println(Object obj) throws IOException {
 		println(obj.toString());
 	}
@@ -399,6 +424,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#println(java.lang.String)
 	 */
+	@Override
 	public final void println(String str) throws IOException {
 		print(str);
 		print(CHAR_NL);
@@ -408,6 +434,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#write(char[], int, int)
 	 */
+	@Override
 	public final void write(char[] chars, int off, int len) throws IOException {
 		for(int i=off;i<len;i++) {
 			print(chars[i]);
@@ -417,6 +444,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#write(java.lang.String, int, int)
 	 */
+	@Override
 	public final void write(String str, int off, int len) throws IOException {
 		write(str.toCharArray(),off,len);
 	}
@@ -425,6 +453,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#write(char[])
 	 */
+	@Override
 	public final void write(char[] chars) throws IOException {
 		write(chars,0,chars.length);
 	}
@@ -432,6 +461,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#write(int)
 	 */
+	@Override
 	public final void write(int i) throws IOException {
 		print(i);
 	}
@@ -439,6 +469,7 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 	/**
 	 * @see railo.runtime.writer.CFMLWriterImpl#write(java.lang.String)
 	 */
+	@Override
 	public final void write(String str) throws IOException {
         write(str.toCharArray(),0,str.length());
 	}

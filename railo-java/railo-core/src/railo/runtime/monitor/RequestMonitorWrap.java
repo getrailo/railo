@@ -38,6 +38,7 @@ public class RequestMonitorWrap extends MonitorWrap implements RequestMonitor {
 		} 
 	}
 
+	@Override
 	public Query getData(ConfigWeb config,Map<String,Object> arguments) throws PageException{
 		try {
 			if(getData==null) {

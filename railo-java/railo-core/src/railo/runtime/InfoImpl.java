@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.osgi.framework.Bundle;
 
 import railo.Info;
-import railo.print;
+import railo.aprint;
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
@@ -100,7 +100,7 @@ public final class InfoImpl implements Info  {
 	    		}
     		}
 
-    		print.o("-->"+prop.getProperty("railo.core.name"));
+    		aprint.o("-->"+prop.getProperty("railo.core.name"));
     		
     		//IniFile ini=new IniFile(is);
     		//Map verIni=ini.getSection("version");
@@ -140,6 +140,7 @@ public final class InfoImpl implements Info  {
 	/**
 	 * @return the level
 	 */
+	@Override
 	public String getLevel() {
 		return level;
 	}
@@ -170,35 +171,40 @@ public final class InfoImpl implements Info  {
     /**
      * @return Returns the releaseTime.
      */
-    public long getRealeaseTime() {
+    @Override
+	public long getRealeaseTime() {
         return releaseTime;
     }
     
     /**
      * @return Returns the version.
      */
-    public String getVersionAsString() {
+    @Override
+	public String getVersionAsString() {
         return version;
     }
 
     /**
      * @return Returns the intVersion.
      */
-    public int getVersionAsInt() {
+    @Override
+	public int getVersionAsInt() {
         return intVersion;
     }
 
     /**
      * @return returns the state
      */
-    public int getStateAsInt() {
+    @Override
+	public int getStateAsInt() {
         return state;
     }
 
     /**
      * @return returns the state
      */
-    public String getStateAsString() {
+    @Override
+	public String getStateAsString() {
         return strState;
     }
     
@@ -225,20 +231,25 @@ public final class InfoImpl implements Info  {
     }
     
 
+	@Override
 	public int getFullVersionInfo() {
 		return fullVersion;
 	}
 
+	@Override
 	public String getVersionName() {
 		return versionName;
 	}
+	@Override
 	public int getMajorVersion() {
 		return major;
 	}
+	@Override
 	public int getMinorVersion() {
 		return minor;
 	}
 	
+	@Override
 	public String getVersionNameExplanation() {
 		return versionNameExplanation;
 	}

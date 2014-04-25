@@ -798,6 +798,7 @@ public final class ParserString {
 	 * @param o Object zum vergleichen.
 	 * @return Ist das uebergebene Objekt das selbe wie dieses.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof ParserString))return false;
 		return o.toString().equals(this.toString());

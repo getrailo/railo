@@ -1,7 +1,8 @@
 package railo.runtime.img.interpolation;
 
 public class Hermite implements Interpolation {
-    public double f(double x) {
+    @Override
+	public double f(double x) {
 	if (x < 0.0)
 	    x = -x;
 	if (x < 1.0)
@@ -9,7 +10,8 @@ public class Hermite implements Interpolation {
 	return 0.0;
     }
     
-    public double getSupport() {
+    @Override
+	public double getSupport() {
 	return 1.0;
     }
 }

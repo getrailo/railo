@@ -273,7 +273,8 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	//timeout=ThreadLocalPageContext.getConfig().getRequestTimeout().getMillis();
     	return _indexURL(id, title, url, extensions, recurse, language,50000L);
     }
-    public IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language, long timeout)throws SearchException {
+    @Override
+	public IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language, long timeout)throws SearchException {
         _checkLanguage(language);
         info(url.toExternalForm());
         int before=getDocumentCount(id);
@@ -312,7 +313,8 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @return 
      * @throws SearchException
      */
-    protected IndexResult _deleteCustom(String id,QueryColumn keyColumn) throws SearchException {
+    @Override
+	protected IndexResult _deleteCustom(String id,QueryColumn keyColumn) throws SearchException {
 
         int countBefore=0;
         int countAfter=0; 
@@ -386,7 +388,8 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @return 
      * @throws SearchException
      */
-    protected IndexResult _indexCustom(String id, Object title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language,
+    @Override
+	protected IndexResult _indexCustom(String id, Object title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language,
     		Object urlpath,Object custom1,Object custom2,Object custom3,Object custom4) throws SearchException {
         _checkLanguage(language);
         String t;
@@ -849,7 +852,8 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @return returns language matching Analyzer
      * @throws SearchException
      */
-    public static Analyzer _getAnalyzer(String language) throws SearchException {
+    @Deprecated
+	public static Analyzer _getAnalyzer(String language) throws SearchException {
         return SearchUtil.getAnalyzer(language);
     }
 
@@ -900,6 +904,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		return ResourceUtil.getRealSize(collectionDir)/1024;
 	}
 
+	@Override
 	public Object getCategoryInfo() {
 		Struct categories=new StructImpl();
 		Struct categorytrees=new StructImpl();

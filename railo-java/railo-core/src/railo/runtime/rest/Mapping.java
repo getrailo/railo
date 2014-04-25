@@ -33,6 +33,7 @@ public class Mapping {
 			new ExtensionResourceFilter(Constants.COMPONENT_EXTENSION),
 			new ResourceFilter() {
 				
+				@Override
 				public boolean accept(Resource res) {
 					return !Constants.APP_CFC.equalsIgnoreCase(res.getName());
 				}

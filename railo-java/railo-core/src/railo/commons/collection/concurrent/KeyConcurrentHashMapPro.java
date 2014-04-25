@@ -16,7 +16,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import railo.commons.collection.AbstractCollection;
 import railo.commons.collection.AbstractMapPro;
 import railo.commons.collection.AbstractSet;
-import railo.commons.collection.HashMapPro;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
@@ -371,7 +370,7 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
                     e = e.next;
                 }
             }
-            throw HashMapPro.invalidKey(map, key,false);
+            throw AbstractMapPro.invalidKey(map, key,false);
         }
 
         boolean containsKey(Object key, int hash) {
@@ -628,7 +627,7 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
                 while (e != null && (e.hash != hash || !key.equals(e.key)))
                     e = e.next;
                 
-                if (e == null) throw HashMapPro.invalidKey(map, key,false);
+                if (e == null) throw AbstractMapPro.invalidKey(map, key,false);
                 V v = e.value;
                 V oldValue = v;
                 ++modCount;
@@ -772,7 +771,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *
      * @return <tt>true</tt> if this map contains no key-value mappings
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         final Segment<V>[] segments = this.segments;
         /*
          * We keep track of per-segment modCounts to avoid ABA
@@ -810,7 +810,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *
      * @return the number of key-value mappings in this map
      */
-    public int size() {
+    @Override
+	public int size() {
         final Segment<V>[] segments = this.segments;
         long sum = 0;
         long check = 0;
@@ -862,7 +863,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *
      * @throws NullPointerException if the specified key is null
      */
-    public V get(Object key) {
+    @Override
+	public V get(Object key) {
     	int hash = hash(key);
     	return segmentFor(hash).get(key, hash);
     }
@@ -895,7 +897,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *         <tt>equals</tt> method; <tt>false</tt> otherwise.
      * @throws NullPointerException if the specified key is null
      */
-    public boolean containsKey(Object key) {
+    @Override
+	public boolean containsKey(Object key) {
         int hash = hash(key);
         return segmentFor(hash).containsKey(key, hash);
     }
@@ -911,7 +914,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *         specified value
      * @throws NullPointerException if the specified value is null
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
         
         final Segment<V>[] segments = this.segments;
         int[] mc = new int[segments.length];
@@ -989,7 +993,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *         <tt>null</tt> if there was no mapping for <tt>key</tt>
      * @throws NullPointerException if the specified key or value is null
      */
-    public V put(railo.runtime.type.Collection.Key key, V value) {
+    @Override
+	public V put(railo.runtime.type.Collection.Key key, V value) {
         int hash = hash(key);
         return segmentFor(hash).put(key, hash, value, false);
     }
@@ -1001,7 +1006,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *
      * @param m mappings to be stored in this map
      */
-    public void putAll(Map<? extends railo.runtime.type.Collection.Key, ? extends V> m) {
+    @Override
+	public void putAll(Map<? extends railo.runtime.type.Collection.Key, ? extends V> m) {
         for (Map.Entry<? extends railo.runtime.type.Collection.Key, ? extends V> e : m.entrySet())
             put(e.getKey(), e.getValue());
     }
@@ -1015,7 +1021,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      *         <tt>null</tt> if there was no mapping for <tt>key</tt>
      * @throws NullPointerException if the specified key is null
      */
-    public V remove(Object key) {
+    @Override
+	public V remove(Object key) {
         int hash = hash(key);
         return segmentFor(hash).r(key, hash, null);
     }
@@ -1048,7 +1055,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
     /**
      * Removes all of the mappings from this map.
      */
-    public void clear() {
+    @Override
+	public void clear() {
         for (int i = 0; i < segments.length; ++i)
             segments[i].clear();
     }
@@ -1069,7 +1077,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
-    public Set<railo.runtime.type.Collection.Key> keySet() {
+    @Override
+	public Set<railo.runtime.type.Collection.Key> keySet() {
         Set<railo.runtime.type.Collection.Key> ks = keySet;
         return (ks != null) ? ks : (keySet = new KeySet());
     }
@@ -1090,7 +1099,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
-    public Collection<V> values() {
+    @Override
+	public Collection<V> values() {
         Collection<V> vs = values;
         return (vs != null) ? vs : (values = new Values());
     }
@@ -1111,7 +1121,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
-    public Set<Map.Entry<railo.runtime.type.Collection.Key,V>> entrySet() {
+    @Override
+	public Set<Map.Entry<railo.runtime.type.Collection.Key,V>> entrySet() {
         Set<Map.Entry<railo.runtime.type.Collection.Key,V>> es = entrySet;
         return (es != null) ? es : (entrySet = new EntrySet());
     }
@@ -1198,16 +1209,20 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
         extends HashIterator
         implements Iterator<railo.runtime.type.Collection.Key>, Enumeration<railo.runtime.type.Collection.Key>
     {
-        public railo.runtime.type.Collection.Key next()        { return super.nextEntry().key; }
-        public railo.runtime.type.Collection.Key nextElement() { return super.nextEntry().key; }
+        @Override
+		public railo.runtime.type.Collection.Key next()        { return super.nextEntry().key; }
+        @Override
+		public railo.runtime.type.Collection.Key nextElement() { return super.nextEntry().key; }
     }
 
     final class ValueIterator
         extends HashIterator
         implements Iterator<V>, Enumeration<V>
     {
-        public V next()        { return super.nextEntry().value; }
-        public V nextElement() { return super.nextEntry().value; }
+        @Override
+		public V next()        { return super.nextEntry().value; }
+        @Override
+		public V nextElement() { return super.nextEntry().value; }
     }
 
     /**
@@ -1230,7 +1245,8 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
          * removed in which case the put will re-establish). We do not
          * and cannot guarantee more.
          */
-        public V setValue(V value) {
+        @Override
+		public V setValue(V value) {
             V v = super.setValue(value);
             KeyConcurrentHashMapPro.this.put(getKey(), value);
             return v;
@@ -1241,26 +1257,32 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
         extends HashIterator
         implements Iterator<Entry<railo.runtime.type.Collection.Key,V>>
     {
-        public Map.Entry<railo.runtime.type.Collection.Key,V> next() {
+        @Override
+		public Map.Entry<railo.runtime.type.Collection.Key,V> next() {
             HashEntry<V> e = super.nextEntry();
             return new WriteThroughEntry(e.key, e.value);
         }
     }
 
     final class KeySet extends AbstractSet<railo.runtime.type.Collection.Key> {
-        public Iterator<railo.runtime.type.Collection.Key> iterator() {
+        @Override
+		public Iterator<railo.runtime.type.Collection.Key> iterator() {
             return new KeyIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return KeyConcurrentHashMapPro.this.size();
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             return KeyConcurrentHashMapPro.this.isEmpty();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return KeyConcurrentHashMapPro.this.containsKey(o);
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             try{
             	KeyConcurrentHashMapPro.this.rem(o);
             	return true;
@@ -1269,34 +1291,42 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
             	return false;
             }
         }
-        public void clear() {
+        @Override
+		public void clear() {
             KeyConcurrentHashMapPro.this.clear();
         }
     }
 
     final class Values extends AbstractCollection<V> {
-        public Iterator<V> iterator() {
+        @Override
+		public Iterator<V> iterator() {
             return new ValueIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return KeyConcurrentHashMapPro.this.size();
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             return KeyConcurrentHashMapPro.this.isEmpty();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return KeyConcurrentHashMapPro.this.containsValue(o);
         }
-        public void clear() {
+        @Override
+		public void clear() {
             KeyConcurrentHashMapPro.this.clear();
         }
     }
 
     final class EntrySet extends AbstractSet<Map.Entry<railo.runtime.type.Collection.Key,V>> {
-        public Iterator<Map.Entry<railo.runtime.type.Collection.Key,V>> iterator() {
+        @Override
+		public Iterator<Map.Entry<railo.runtime.type.Collection.Key,V>> iterator() {
             return new EntryIterator();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
@@ -1311,19 +1341,23 @@ public class KeyConcurrentHashMapPro<V> extends AbstractMapPro<railo.runtime.typ
             	return false;
             }
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
             return KeyConcurrentHashMapPro.this.remove(e);
         }
-        public int size() {
+        @Override
+		public int size() {
             return KeyConcurrentHashMapPro.this.size();
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             return KeyConcurrentHashMapPro.this.isEmpty();
         }
-        public void clear() {
+        @Override
+		public void clear() {
             KeyConcurrentHashMapPro.this.clear();
         }
     }

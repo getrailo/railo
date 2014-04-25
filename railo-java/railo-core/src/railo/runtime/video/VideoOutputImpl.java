@@ -23,6 +23,7 @@ public class VideoOutputImpl implements VideoOutput {
 	 * set time offset of the output file based on input file in seconds
 	 * @param offset
 	 */
+	@Override
 	public void setOffset(double offset){
 		this.offset=offset;
 	}
@@ -31,6 +32,7 @@ public class VideoOutputImpl implements VideoOutput {
 	 * sets a comment to the output video
 	 * @param comment
 	 */
+	@Override
 	public void setComment(String comment){
 		this.comment=comment;
 	}
@@ -39,6 +41,7 @@ public class VideoOutputImpl implements VideoOutput {
 	 * sets a title to the output video
 	 * @param title
 	 */
+	@Override
 	public void setTitle(String title){
 		this.title=title;
 	}
@@ -47,6 +50,7 @@ public class VideoOutputImpl implements VideoOutput {
 	 * sets a author to the output video
 	 * @param author
 	 */
+	@Override
 	public void setAuthor(String author){
 		this.author=author;
 	}
@@ -55,6 +59,7 @@ public class VideoOutputImpl implements VideoOutput {
 	 * sets a copyright to the output video
 	 * @param copyright
 	 */
+	@Override
 	public void setCopyright(String copyright) {
 		this.copyright=copyright;
 	}
@@ -63,6 +68,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the res
 	 */
+	@Override
 	public Resource getResource() {
 		return resource;
 	}
@@ -71,6 +77,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the offset
 	 */
+	@Override
 	public double getOffset() {
 		return offset;
 	}
@@ -78,6 +85,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the comment
 	 */
+	@Override
 	public String getComment() {
 		return comment;
 	}
@@ -86,6 +94,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the title
 	 */
+	@Override
 	public String getTitle() {
 		return title;
 	}
@@ -94,6 +103,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the author
 	 */
+	@Override
 	public String getAuthor() {
 		return author;
 	}
@@ -102,6 +112,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the copyright
 	 */
+	@Override
 	public String getCopyright() {
 		return copyright;
 	}
@@ -109,6 +120,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the fileLimitation
 	 */
+	@Override
 	public int getFileLimitation() {
 		return fileLimitation;
 	}
@@ -117,6 +129,7 @@ public class VideoOutputImpl implements VideoOutput {
 	 * limit size of the output file
 	 * @param size the size to set
 	 */
+	@Override
 	public void limitFileSizeTo(int size) {
 		this.fileLimitation = size;
 	}
@@ -124,6 +137,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the maxFrames
 	 */
+	@Override
 	public long getMaxFrames() {
 		return maxFrames;
 	}
@@ -131,6 +145,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @param maxFrames the maxFrames to set
 	 */
+	@Override
 	public void setMaxFrames(long maxFrames) {
 		this.maxFrames = maxFrames;
 	}
@@ -287,6 +302,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @param resource the resource to set
 	 */
+	@Override
 	public void setResource(Resource resource) {
 		this.resource = resource;
 	}
@@ -294,6 +310,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @return the format
 	 */
+	@Override
 	public String getFormat() {
 		return format;
 	}
@@ -301,6 +318,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @param format the format to set
 	 */
+	@Override
 	public void setFormat(String format) {
 		this.format = format;
 	}
@@ -308,6 +326,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @param fileLimitation the fileLimitation to set
 	 */
+	@Override
 	public void setFileLimitation(int fileLimitation) {
 		this.fileLimitation = fileLimitation;
 	}
@@ -315,6 +334,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @see railo.runtime.video.VideoOutput#getFrameRate()
 	 */
+	@Override
 	public int getFrameRate() {
 		return frameRate;
 	}
@@ -322,6 +342,7 @@ public class VideoOutputImpl implements VideoOutput {
 	/**
 	 * @see railo.runtime.video.VideoOutput#setFrameRate(int)
 	 */
+	@Override
 	public void setFrameRate(int frameRate) {
 		this.frameRate=frameRate;
 	}

@@ -18,7 +18,8 @@ public class NTAuthenticate extends TagImpl	{
     private boolean listGroups;
     private boolean throwOnError;
     
-    public void release()	{
+    @Override
+	public void release()	{
     	super.release();
         username = null;
         password = null;
@@ -90,6 +91,7 @@ public class NTAuthenticate extends TagImpl	{
 	}
 
 
+	@Override
 	public int doStartTag() throws PageException {
 		if(true)throw new TagNotSupported("ntauthenticate");
         String os = System.getProperty("os.name");

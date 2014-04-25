@@ -249,6 +249,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		return count;
 	}
 
+	@Override
 	public Collection.Key[] keys() {
 		NodeList elements=XMLUtil.getChildNodes(node,Node.ELEMENT_NODE,false,null);// TODO ist das false hie ok
 		Collection.Key[] arr=new Collection.Key[elements.getLength()];
@@ -310,6 +311,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 	/**
 	 * @return Returns the caseSensitive.
 	 */
+	@Override
 	public boolean getCaseSensitive() {
 		return caseSensitive;
 	}
@@ -386,51 +388,61 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		return Operator.compare(castToString(), str);
 	}
 
-    public String getBaseURI() {
+    @Override
+	public String getBaseURI() {
         // not supported
         return null;
     }
 
-    public short compareDocumentPosition(Node other) throws DOMException {
+    @Override
+	public short compareDocumentPosition(Node other) throws DOMException {
         // not supported
         return -1;
     }
 
-    public void setTextContent(String textContent) throws DOMException {
+    @Override
+	public void setTextContent(String textContent) throws DOMException {
         //TODO  not supported
         throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR,"this method is not supported");
     }
 
-    public boolean isSameNode(Node other) {
+    @Override
+	public boolean isSameNode(Node other) {
         return this==other;
     }
 
-    public String lookupPrefix(String namespaceURI) {
+    @Override
+	public String lookupPrefix(String namespaceURI) {
 //      TODO not supported
         return null;
     }
 
-    public boolean isDefaultNamespace(String namespaceURI) {
+    @Override
+	public boolean isDefaultNamespace(String namespaceURI) {
 //      TODO not supported
         return false;
     }
 
-    public String lookupNamespaceURI(String prefix) {
+    @Override
+	public String lookupNamespaceURI(String prefix) {
 //      TODO not supported
         return null;
     }
 
-    public boolean isEqualNode(Node node) {
+    @Override
+	public boolean isEqualNode(Node node) {
 //      TODO not supported
         return this==node;
     }
 
-    public Object getFeature(String feature, String version) {
+    @Override
+	public Object getFeature(String feature, String version) {
         // TODO not supported
         return null;
     }
 
-    public Object getUserData(String key) {
+    @Override
+	public Object getUserData(String key) {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = node.getClass().getMethod("getUserData", new Class[]{key.getClass()});
@@ -441,6 +453,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		}
     }
 
+	@Override
 	public String getTextContent() throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -452,6 +465,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		}
 	}
 
+	@Override
 	public Object setUserData(String key, Object data, UserDataHandler handler) {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -463,10 +477,12 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		}
 	}
 
+	@Override
 	public boolean isCaseSensitive() {
 		return caseSensitive;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof XMLNodeStruct)) 
 			return super.equals(obj);

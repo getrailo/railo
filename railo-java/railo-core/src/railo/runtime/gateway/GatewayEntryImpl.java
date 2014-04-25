@@ -48,6 +48,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	 * @throws ClassException 
 	 * @throws PageException 
 	 */
+	@Override
 	public void createGateway(Config config) throws ClassException, PageException {
 		if(gateway==null){
 			if(!StringUtil.isEmpty(className)){
@@ -102,6 +103,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	/**
 	 * @return the cfcPath
 	 */
+	@Override
 	public String getListenerCfcPath() {
 		return listenerCfcPath;
 	}
@@ -115,6 +117,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	/**
 	 * @return the className
 	 */
+	@Override
 	public String getClassName() {
 		return className;
 	}
@@ -122,6 +125,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	/**
 	 * @return the startupMode
 	 */
+	@Override
 	public int getStartupMode() {
 		return startupMode;
 	}

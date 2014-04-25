@@ -58,7 +58,8 @@ public class ZAliasedName
         }
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         if(alias_ == null)
             return strform_;

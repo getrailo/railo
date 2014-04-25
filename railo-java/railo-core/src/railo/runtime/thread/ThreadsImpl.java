@@ -57,6 +57,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	}
 	
 
+	@Override
 	public ChildThread getChildThread() {
 		return ct;
 	}
@@ -69,6 +70,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	/////////////////////////////////////////////////////////////
 	
 	
+	@Override
 	public int getType() {
 		return -1;
 	}

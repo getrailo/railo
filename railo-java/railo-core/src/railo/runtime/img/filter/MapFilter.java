@@ -49,6 +49,7 @@ public class MapFilter extends TransformFilter  implements DynFiltering {
 		return yMapFunction;
 	}
 	
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		float xMap, yMap;
 		xMap = xMapFunction.evaluate(x, y);
@@ -57,9 +58,11 @@ public class MapFilter extends TransformFilter  implements DynFiltering {
 		out[1] = yMap * transformedSpace.height;
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Map Coordinates...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("XMapFunction")))!=null)setXMapFunction(ImageFilterUtil.toFunction2D(o,"XMapFunction"));

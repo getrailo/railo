@@ -27,7 +27,8 @@ public final class ParseException extends Exception
      specialConstructor = false;
  }
 
- public String getMessage()
+ @Override
+public String getMessage()
  {
      if(!specialConstructor)
          return super.getMessage();

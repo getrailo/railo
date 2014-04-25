@@ -41,10 +41,12 @@ public final class KeyIterator implements Iterator<Collection.Key>,Enumeration<C
 		return key;
 	}
 
+	@Override
 	public boolean hasMoreElements() {
 		return hasNext();
 	}
 
+	@Override
 	public Collection.Key nextElement() {
 		return next();
 	}

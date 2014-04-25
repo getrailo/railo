@@ -69,6 +69,7 @@ public final class FTPResource extends ResourceSupport {
 		return rtn.booleanValue();
 	}
 
+	@Override
 	public boolean isWriteable() {
 		Boolean rtn = hasPermission(FTPFile.WRITE_PERMISSION);
 		if(rtn==null) return false;
@@ -378,6 +379,7 @@ public final class FTPResource extends ResourceSupport {
 		return false;
 	}
 
+	@Override
 	public boolean setReadOnly() {
 		try {
 			setMode(ModeUtil.setWritable(getMode(), false));
@@ -530,6 +532,7 @@ public final class FTPResource extends ResourceSupport {
 		return StringUtil.isEmpty(name);
 	}
 
+	@Override
 	public int getMode() {
 		//if(isRoot()) return 0;
 		
@@ -568,6 +571,7 @@ public final class FTPResource extends ResourceSupport {
 		return 0;
 	}
 
+	@Override
 	public void setMode(int mode) throws IOException {
 		//if(isRoot()) throw new IOException("can't change mode of root");
 	
@@ -604,6 +608,7 @@ public final class FTPResource extends ResourceSupport {
 
 	}
 
+	@Override
 	public boolean setReadable(boolean value) {
 		try {
 			setMode(ModeUtil.setReadable(getMode(), value));
@@ -613,6 +618,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
+	@Override
 	public boolean setWritable(boolean value) {
 		try {
 			setMode(ModeUtil.setWritable(getMode(), value));

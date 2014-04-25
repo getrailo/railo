@@ -25,6 +25,7 @@ public class CompositeFunction1D implements Function1D {
 		this.f2 = f2;
 	}
 	
+	@Override
 	public float evaluate(float v) {
 		return f1.evaluate(f2.evaluate(v));
 	}

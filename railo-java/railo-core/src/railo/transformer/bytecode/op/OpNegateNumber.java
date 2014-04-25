@@ -56,6 +56,7 @@ public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
 	 *
 	 * @see railo.transformer.bytecode.expression.ExpressionBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
 	 */
+	@Override
 	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
     	if(mode==MODE_REF) {

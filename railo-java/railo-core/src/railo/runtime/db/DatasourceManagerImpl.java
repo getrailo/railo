@@ -235,15 +235,18 @@ public final class DatasourceManagerImpl implements DataSourceManager {
         }
     }
 
+	@Override
 	public void remove(DataSource datasource) {
 		config.getDatasourceConnectionPool().remove(datasource);
 	}
 
+	@Override
 	public void remove(String datasource) {
 		throw new PageRuntimeException(new DeprecatedException("method no longer supported!"));
 		//config.getDatasourceConnectionPool().remove(datasource);
 	}
 
+	@Override
 	public void release() {
 		transConns.clear();
 		this.isolation=Connection.TRANSACTION_NONE;

@@ -14,7 +14,10 @@ public final class ErrorFactory extends S3Factory {
 		if(in==null) return;
 		init(in);
 	}
+	@Override
 	public void doStartElement(String uri, String name, String qName, Attributes atts) {}
+	@Override
 	public void doEndElement(String uri, String name, String qName) throws SAXException {}
+	@Override
 	protected void setContent(String value) throws SAXException 	{}	
 }

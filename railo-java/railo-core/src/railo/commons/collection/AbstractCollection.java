@@ -44,16 +44,19 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      *
      * @return an iterator over the elements contained in this collection
      */
-    public abstract Iterator<E> iterator();
+    @Override
+	public abstract Iterator<E> iterator();
 
-    public abstract int size();
+    @Override
+	public abstract int size();
 
     /**
      * {@inheritDoc}
      *
      * <p>This implementation returns <tt>size() == 0</tt>.
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         return size() == 0;
     }
 
@@ -66,7 +69,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    public boolean contains(Object o) {
+    @Override
+	public boolean contains(Object o) {
         Iterator<E> it = iterator();
         if (o==null) {
             while (it.hasNext())
@@ -102,7 +106,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * return list.toArray();
      * }</pre>
      */
-    public Object[] toArray() {
+    @Override
+	public Object[] toArray() {
         // Estimate size of array; be prepared to see more or fewer elements
         Object[] r = new Object[size()];
         Iterator<E> it = iterator();
@@ -141,7 +146,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws ArrayStoreException  {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    public <T> T[] toArray(T[] a) {
+    @Override
+	public <T> T[] toArray(T[] a) {
         // Estimate size of array; be prepared to see more or fewer elements
         int size = size();
         T[] r = a.length >= size ? a :
@@ -219,7 +225,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IllegalStateException         {@inheritDoc}
      */
-    public boolean add(E e) {
+    @Override
+	public boolean add(E e) {
         throw new UnsupportedOperationException();
     }
 
@@ -239,7 +246,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public boolean remove(Object o) {
+    @Override
+	public boolean remove(Object o) {
         Iterator<E> it = iterator();
         if (o==null) {
             while (it.hasNext()) {
@@ -320,7 +328,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      */
-    public void clear() {
+    @Override
+	public void clear() {
         Iterator<E> it = iterator();
         while (it.hasNext()) {
             it.next();
@@ -341,7 +350,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      *
      * @return a string representation of this collection
      */
-    public String toString() {
+    @Override
+	public String toString() {
         Iterator<E> it = iterator();
         if (! it.hasNext())
             return "[]";

@@ -34,6 +34,7 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 		connection=new ORMConnection(pc,session,datasource);
 	}
 
+	@Override
 	public Connection getConnection() {
 		// TODO Auto-generated method stub
 		return connection;
@@ -68,6 +69,7 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 		return DatasourceConnectionImpl.equals(this, (DatasourceConnection) obj);
 	}
 
+	@Override
 	public boolean supportsGetGeneratedKeys() {
 		if(supportsGetGeneratedKeys==null){
 			try {
@@ -79,6 +81,7 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 		return supportsGetGeneratedKeys.booleanValue();
 	}
 
+	@Override
 	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys, boolean allowCaching) throws SQLException {
 		if(createGeneratedKeys)	return getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
 		return getConnection().prepareStatement(sql.getSQLString());

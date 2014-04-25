@@ -14,6 +14,7 @@ public class SimpleLock<L> implements Lock {
 	}
 
 	
+	@Override
 	public void lock(long timeout) throws LockException, LockInterruptedException {
 		if(timeout<=0) throw new LockException("timeout must be a postive number");
 		
@@ -29,6 +30,7 @@ public class SimpleLock<L> implements Lock {
 	}
 
 
+	@Override
 	public void unlock()	{
 		lock.unlock();
 	}
@@ -43,7 +45,8 @@ public class SimpleLock<L> implements Lock {
      *
      * @return the estimated number of threads waiting for this lock
      */
-    public int getQueueLength()	{
+    @Override
+	public int getQueueLength()	{
 		return lock.getQueueLength();
 	}
     

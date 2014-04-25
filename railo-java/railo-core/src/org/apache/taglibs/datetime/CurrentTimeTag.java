@@ -10,6 +10,7 @@ public final class CurrentTimeTag extends TagSupport {
 	public CurrentTimeTag() {
 	}
 
+	@Override
 	public final int doEndTag() throws JspException {
 		Date date = new Date();
 		try {

@@ -25,6 +25,7 @@ public final class CFMLFilter implements Filter {
 		}
 	}
 	
+	@Override
 	public boolean isValid(Resource file) {
 		String[] arr;
 		try {

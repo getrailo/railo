@@ -22,6 +22,7 @@ public class ObjectsEntryIterator implements Iterator<Entry<Key, Object>> {
 		this.objs=objs;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return keys.hasNext();
 	}
@@ -32,6 +33,7 @@ public class ObjectsEntryIterator implements Iterator<Entry<Key, Object>> {
 		return new EntryImpl(objs,key);
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("this operation is not suppored");
 	}

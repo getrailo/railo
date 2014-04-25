@@ -64,7 +64,8 @@ public class URLEncoder {
      *             method to specify the encoding.
      * @return  the translated <code>String</code>.
      */
-    public static String encode(String s) {
+    @Deprecated
+	public static String encode(String s) {
     	s= java.net.URLEncoder.encode(s);
     	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);
     	return s;
@@ -77,7 +78,8 @@ public class URLEncoder {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public static String encode(String s, String enc) throws UnsupportedEncodingException {
+    @Deprecated
+	public static String encode(String s, String enc) throws UnsupportedEncodingException {
     	s= java.net.URLEncoder.encode(s, enc);
     	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);
     	return s;

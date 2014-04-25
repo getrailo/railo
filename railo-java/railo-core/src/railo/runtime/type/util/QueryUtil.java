@@ -277,6 +277,7 @@ public class QueryUtil {
 	 * @return
 	 * @deprecated use instead QueryColumn.get(int,Object)
 	 */
+	@Deprecated
 	public static Object getValue(QueryColumn column, int row) {//print.ds();
 		if(NullSupportHelper.full()) return column.get(row, null);
 		Object v = column.get(row, "");

@@ -71,13 +71,15 @@ public class Bessel implements Interpolation
 	return q;
     }
     
-    public double f(double x) {
+    @Override
+	public double f(double x) {
 	if (x == 0.0)
 	    return 0.7853981633974483;
 	return BesselOrderOne(3.141592653589793 * x) / (2.0 * x);
     }
     
-    public double getSupport() {
+    @Override
+	public double getSupport() {
 	return 3.2383;
     }
 }

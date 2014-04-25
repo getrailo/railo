@@ -16,6 +16,7 @@ public final class DataMember extends MemberSupport {
 		return value;
 	}
 
+	@Override
 	public Object duplicate(boolean deepCopy) {
 		return new DataMember(getAccess(),Duplicator.duplicate(value, deepCopy));
 	}

@@ -146,13 +146,15 @@ public class StampFilter extends PointFilter  implements DynFiltering {
 		return black;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         dst = new GaussianFilter( (int)radius ).filter( src, (BufferedImage)null );
         lowerThreshold3 = 255*3*(threshold - softness*0.5f);
         upperThreshold3 = 255*3*(threshold + softness*0.5f);
 		return super.filter(dst, dst);
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		//int a = rgb & 0xff000000;
 		int r = (rgb >> 16) & 0xff;
@@ -163,9 +165,11 @@ public class StampFilter extends PointFilter  implements DynFiltering {
         return ImageMath.mixColors(f, black, white);
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Stamp...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

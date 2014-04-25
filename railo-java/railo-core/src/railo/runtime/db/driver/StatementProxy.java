@@ -281,6 +281,7 @@ public class StatementProxy implements StatementPro {
 		stat.setQueryTimeout(seconds);
 	}
 
+	@Override
 	public void closeOnCompletion() throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {
@@ -293,6 +294,7 @@ public class StatementProxy implements StatementPro {
 		}
 	}
 
+	@Override
 	public boolean isCloseOnCompletion() throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {

@@ -37,6 +37,7 @@ public class ArrayAsList implements List {
 		return true;
 	}
 
+	@Override
 	public void add(int index, Object element) {
 		try {
 			array.insert(index+1, element);
@@ -91,6 +92,7 @@ public class ArrayAsList implements List {
 		}
 	}
 
+	@Override
 	public int indexOf(Object o) {
 		Iterator<Object> it=array.valueIterator();
 		int index=0;
@@ -111,6 +113,7 @@ public class ArrayAsList implements List {
 		return array.valueIterator();
 	}
 
+	@Override
 	public int lastIndexOf(Object o) {
 		Iterator<Object> it=array.valueIterator();
 		int index=0;
@@ -147,6 +150,7 @@ public class ArrayAsList implements List {
 		return true;
 	}
 
+	@Override
 	public Object remove(int index) {
 		try {
 			return array.removeE(index+1);
@@ -155,6 +159,7 @@ public class ArrayAsList implements List {
 		}
 	}
 
+	@Override
 	public boolean removeAll(Collection c) {
 		Iterator it = c.iterator();
 		boolean rtn=false;
@@ -164,6 +169,7 @@ public class ArrayAsList implements List {
 		return rtn;
 	}
 
+	@Override
 	public boolean retainAll(Collection c) {new ArrayList().retainAll(c);
 		boolean modified = false;
 		Iterator it = iterator();
@@ -176,6 +182,7 @@ public class ArrayAsList implements List {
 		return modified;
 	}
 
+	@Override
 	public Object set(int index, Object element) {
 		try {
 			if(!array.containsKey(index+1)) throw new IndexOutOfBoundsException("Index: "+(index+1)+", Size: "+size());

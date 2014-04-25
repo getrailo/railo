@@ -50,14 +50,17 @@ public class MaskFilter extends PointFilter  implements DynFiltering {
 		return mask;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		return rgb & mask;
 	}
 
+	@Override
 	public String toString() {
 		return "Mask";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Mask")))!=null)setMask(ImageFilterUtil.toIntValue(o,"Mask"));

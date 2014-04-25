@@ -54,6 +54,7 @@ public final class ErrorPageImpl implements ErrorPage {
 	public String getTypeAsString() {
 		return getException();
 	}
+	@Override
 	public String getException() {
 		return exception;
 	}

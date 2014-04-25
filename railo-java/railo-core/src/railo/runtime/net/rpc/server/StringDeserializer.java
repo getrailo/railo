@@ -22,6 +22,7 @@ public class StringDeserializer extends SimpleDeserializer {
 		super(javaType, xmlType);
 	}
 
+	@Override
 	public Object makeValue(String source) throws Exception {
 		String val = source; 
 

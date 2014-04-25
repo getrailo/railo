@@ -597,7 +597,8 @@ public abstract class PageExceptionImpl extends PageException {
     @Override
 	public Struct getAdditional() {
         return additional;
-    }public Struct getAddional() {
+    }@Override
+	public Struct getAddional() {
         return additional;
     }
     

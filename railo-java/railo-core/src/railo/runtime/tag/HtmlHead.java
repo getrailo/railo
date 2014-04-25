@@ -14,31 +14,37 @@ import railo.runtime.exp.PageException;
 */
 public final class HtmlHead extends HtmlHeadBodyBase {
 
+	@Override
 	public String getTagName() {
 		return "htmlhead";
 	}
 
+	@Override
 	public void actionAppend() throws IOException, ApplicationException {
 
 		((PageContextImpl) pageContext).getRootOut().appendHTMLHead(text);
 	}
 
+	@Override
 	public void actionWrite() throws IOException, ApplicationException {
 
 		((PageContextImpl) pageContext).getRootOut().writeHTMLHead(text);
 	}
 
+	@Override
 	public void actionReset() throws IOException {
 
 		((PageContextImpl) pageContext).getRootOut().resetHTMLHead();
 	}
 
+	@Override
 	public void actionRead() throws PageException, IOException {
 
 		String str = ((PageContextImpl) pageContext).getRootOut().getHTMLHead();
 		pageContext.setVariable(variable != null ? variable : "cfhtmlhead", str);
 	}
 
+	@Override
 	public void actionFlush() throws IOException {
 
 		((PageContextImpl) pageContext).getRootOut().flushHTMLHead();

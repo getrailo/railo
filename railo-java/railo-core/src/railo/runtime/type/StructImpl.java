@@ -3,6 +3,7 @@ package railo.runtime.type;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collection.HashMapPro;
@@ -60,7 +61,7 @@ public class StructImpl extends StructSupport {
      */
     public StructImpl(int type, int initialCapacity) {
     	if(type==TYPE_WEAKED)	map=new SyncMap<Collection.Key, Object>(new WeakHashMapPro<Collection.Key,Object>(initialCapacity));
-    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(ReferenceMap.HARD,ReferenceMap.SOFT,initialCapacity,0.75f),new SerializableObject()));
+    	else if(type==TYPE_SOFT)	map=new SyncMap<Collection.Key, Object>(new MapProWrapper<Collection.Key, Object>(new ReferenceMap(AbstractReferenceMap.HARD,AbstractReferenceMap.SOFT,initialCapacity,0.75f),new SerializableObject()));
     	else if(type==TYPE_LINKED)		map=new SyncMap<Collection.Key, Object>(new LinkedHashMapPro<Collection.Key,Object>(initialCapacity));
     	else 						map=MapFactory.getConcurrentMap(initialCapacity);
     }
@@ -119,6 +120,7 @@ public class StructImpl extends StructSupport {
 		return map.size();
 	}
 	
+	@Override
 	public Collection.Key[] keys() {
 		try	{
 			return map.keySet().toArray(new Key[map.size()]);
@@ -199,6 +201,7 @@ public class StructImpl extends StructSupport {
 	}
 	
 
+	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return this.map.entrySet().iterator();
 	}

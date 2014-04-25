@@ -43,6 +43,7 @@ public abstract class TagBase extends StatementBase implements Tag {
 	/**
 	 * @see railo.transformer.bytecode.statement.tag.Tag#getAppendix()
 	 */
+	@Override
 	public String getAppendix() {
 		return appendix;
 	}

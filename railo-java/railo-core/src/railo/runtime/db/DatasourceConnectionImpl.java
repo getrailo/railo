@@ -73,6 +73,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection,Task
 	/**
 	 * @return the password
 	 */
+	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -80,6 +81,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection,Task
 	/**
 	 * @return the username
 	 */
+	@Override
 	public String getUsername() {
 		return username;
 	}

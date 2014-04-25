@@ -90,7 +90,8 @@ public final class ZExpression
         return stringbuffer.toString();
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         if(op_.equals("?"))
             return op_;

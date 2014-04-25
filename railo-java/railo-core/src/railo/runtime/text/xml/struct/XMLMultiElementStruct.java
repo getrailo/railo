@@ -167,7 +167,8 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	}
 	
 
-    public Collection duplicate(boolean deepCopy) {
+    @Override
+	public Collection duplicate(boolean deepCopy) {
         try {
             return new XMLMultiElementStruct((Array) Duplicator.duplicate(array,deepCopy),getCaseSensitive());
         } catch (PageException e) {

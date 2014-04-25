@@ -58,6 +58,7 @@ public class FileStreamWrapperReadWrite extends FileStreamWrapper {
 		
 	}
 
+	@Override
 	public void close() throws IOException {
 		if(raf!=null)raf.close();
 	}
@@ -102,6 +103,7 @@ public class FileStreamWrapperReadWrite extends FileStreamWrapper {
 			throw Caster.toPageException(e);
 		}
 	}
+	@Override
 	public void seek(long pos) throws PageException {
 		try {
 			getRAF().seek(pos);

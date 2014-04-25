@@ -12,6 +12,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * @deprecated replaced with ForIntVisitor
  */
+@Deprecated
 public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 
 	private Label l0;
@@ -78,6 +79,7 @@ public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#visitContinue(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void visitContinue(BytecodeContext bc) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, lbegin);
 	}
@@ -86,6 +88,7 @@ public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#visitBreak(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void visitBreak(BytecodeContext bc) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, lend);
 	}
@@ -94,6 +97,7 @@ public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#getContinueLabel()
 	 */
+	@Override
 	public Label getContinueLabel() {
 		return lbegin;
 	}
@@ -102,6 +106,7 @@ public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#getBreakLabel()
 	 */
+	@Override
 	public Label getBreakLabel() {
 		return lend;
 	}

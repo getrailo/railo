@@ -254,6 +254,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 	
 	
+	@Override
 	public short getScopeCascading() {
 		if(scopeCascading==-1) return config.getScopeCascadingType();
 		return scopeCascading;
@@ -265,6 +266,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	
+	@Override
 	public void reinitORM(PageContext pc) throws PageException {
 
 		// datasource
@@ -756,6 +758,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 
+	@Override
 	public boolean getBufferOutput() {
 		boolean bo = _getBufferOutput();
 		return bo;
@@ -770,6 +773,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return bufferOutput;
 	}
 	
+	@Override
 	public boolean getSuppressContent() {
 		if(!initSuppressContent) {
 			Object o = get(component,SUPPRESS_CONTENT,null);
@@ -779,6 +783,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return suppressContent;
 	}
 	
+	@Override
 	public void setSuppressContent(boolean suppressContent) {
 		this.suppressContent=suppressContent;
 		initSuppressContent=true; 
@@ -918,6 +923,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		initMappings=true;
 		this.mappings=mappings;
 	}
+	@Override
 	public void setDataSources(DataSource[] dataSources) {
 		initDataSources=true;
 		this.dataSources=dataSources;
@@ -1006,11 +1012,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		this.timeZone=timeZone;
 	}
 	
+	@Override
 	public void setWebCharset(Charset webCharset) {
 		initWebCharset=true;
 		this.webCharset=webCharset;
 	}
 	
+	@Override
 	public void setResourceCharset(Charset resourceCharset) {
 		initResourceCharset=true;
 		this.resourceCharset=resourceCharset;
@@ -1018,6 +1026,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 	
+	@Override
 	public void setBufferOutput(boolean bufferOutput) {
 		initBufferOutput=true;
 		this.bufferOutput=bufferOutput;

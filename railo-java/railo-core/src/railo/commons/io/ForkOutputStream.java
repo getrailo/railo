@@ -45,6 +45,7 @@ public final class ForkOutputStream extends OutputStream {
 		os2.write(b);
 	}
 
+	@Override
 	public void write(int b) throws IOException {
 		os1.write(b);
 		os2.write(b);

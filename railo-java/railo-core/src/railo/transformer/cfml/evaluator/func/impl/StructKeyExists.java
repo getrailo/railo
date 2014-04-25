@@ -12,6 +12,7 @@ import railo.transformer.library.function.FunctionLibFunction;
 
 public class StructKeyExists implements FunctionEvaluator{
 
+	@Override
 	public void evaluate(BIF bif, FunctionLibFunction flf) throws TemplateException {
 		Argument arg = bif.getArguments()[1];
 		Expression value = arg.getValue();

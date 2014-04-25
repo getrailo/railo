@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import railo.commons.io.cache.Cache;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -26,7 +26,7 @@ public final class CacheDelete implements Function {
 	
 	public static String call(PageContext pc, String id, boolean throwOnError, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT);
 			if(!cache.remove(Util.key(id)) && throwOnError){
 				throw new ApplicationException("can not remove the element with the following id ["+id+"]");
 			}	

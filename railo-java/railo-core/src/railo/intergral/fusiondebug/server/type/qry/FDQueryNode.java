@@ -21,6 +21,7 @@ public class FDQueryNode extends FDNodeValueSupport {
 		this.column=column;
 	}
 
+	@Override
 	public String getName() {
 		return column;
 	}
@@ -30,10 +31,12 @@ public class FDQueryNode extends FDNodeValueSupport {
 		return qry.getAt(column, row,null);
 	}
 
+	@Override
 	public boolean isMutable() {
 		return true;
 	}
 
+	@Override
 	public void set(String value) throws FDMutabilityException,FDLanguageException {
 		qry.setAtEL(column,row, FDCaster.unserialize(value));
 	}

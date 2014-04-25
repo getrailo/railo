@@ -70,10 +70,12 @@ public class ChromeFilter extends LightFilter  implements DynFiltering {
 		return exposure;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		setColorSource( LightFilter.COLORS_CONSTANT );
 		dst = super.filter( src, dst );
 		TransferFilter tf = new TransferFilter() {
+			@Override
 			protected float transferFunction( float v ) {
 				v += amount * (float)Math.sin( v * 2 * Math.PI );
 				return 1 - (float)Math.exp(-v * exposure);
@@ -82,9 +84,11 @@ public class ChromeFilter extends LightFilter  implements DynFiltering {
         return tf.filter( dst, dst );
     }
 
+	@Override
 	public String toString() {
 		return "Effects/Chrome...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

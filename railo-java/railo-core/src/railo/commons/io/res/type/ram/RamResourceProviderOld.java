@@ -33,6 +33,7 @@ public final class RamResourceProviderOld implements ResourceProvider {
 	 * @param arguments
 	 * @return RamResource
 	 */
+	@Override
 	public ResourceProvider init(String scheme,Map arguments) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		

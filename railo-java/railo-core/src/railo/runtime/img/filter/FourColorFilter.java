@@ -93,12 +93,14 @@ public class FourColorFilter extends PointFilter  implements DynFiltering {
 		return colorSE;
 	}
 
+	@Override
 	public void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;
 		super.setDimensions(width, height);
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		float fx = (float)x / width;
 		float fy = (float)y / height;
@@ -119,9 +121,11 @@ public class FourColorFilter extends PointFilter  implements DynFiltering {
 		return 0xff000000 | (r << 16) | (g << 8) | b;
 	}
 	
+	@Override
 	public String toString() {
 		return "Texture/Four Color Fill...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("ColorNW")))!=null)setColorNW(ImageFilterUtil.toIntValue(o,"ColorNW"));

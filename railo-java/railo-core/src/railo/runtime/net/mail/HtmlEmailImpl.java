@@ -107,7 +107,8 @@ public final class HtmlEmailImpl extends MultiPartEmail
      *  for definitions
      *
      */
-    public Email setMsg(String msg) throws EmailException {
+    @Override
+	public Email setMsg(String msg) throws EmailException {
         if (StringUtil.isEmpty(msg)) {
             throw new EmailException("Invalid message supplied");
         }
@@ -179,7 +180,8 @@ public final class HtmlEmailImpl extends MultiPartEmail
      * @exception EmailException if there was an error.
      *
      */
-    public void buildMimeMessage() throws EmailException {
+    @Override
+	public void buildMimeMessage() throws EmailException {
         try {
             // if the email has attachments then the base type is mixed,
             // otherwise it should be related

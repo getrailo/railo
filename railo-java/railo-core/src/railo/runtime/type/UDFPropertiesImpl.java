@@ -174,6 +174,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	/**
 	 * @deprecated only supported for old compile templates in .ra archives
 	 * */
+	@Deprecated
 	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
@@ -198,6 +199,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	/**
 	 * @deprecated only supported for old compile templates in .ra archives
 	 * */
+	@Deprecated
 	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
@@ -223,6 +225,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	/**
 	 * @deprecated only supported for old compile templates in .ra archives
 	 * */
+	@Deprecated
 	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
@@ -246,6 +249,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	/**
 	 * @deprecated only supported for old compile templates in .ra archives
 	 * */
+	@Deprecated
 	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
@@ -269,10 +273,12 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	 /**
 	 * @return the access
 	 */
+	@Override
 	public int getAccess() {
 		return access;
 	}
 
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		try {
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
@@ -316,6 +322,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	}
 
 
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 
 		out.writeObject(pageSource.getFullRealpath());

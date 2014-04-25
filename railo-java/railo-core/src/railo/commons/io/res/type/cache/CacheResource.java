@@ -138,6 +138,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		return new CacheResource(provider,parent);
 	}
 
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
@@ -254,6 +255,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		return new ByteArrayInputStream(data);
 	}
 
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		ResourceUtil.checkGetOutputStreamOK(this);
 		provider.lock(this);
@@ -334,11 +336,13 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		return parent==null;
 	}
 	
+	@Override
 	public int getMode() {
 		if(!exists())return 0;
 		return getCore().getMode();
 	}
 	
+	@Override
 	public void setMode(int mode) throws IOException {
 		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exist");
 		getCore().setMode(mode);
@@ -361,6 +365,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		getCore().setAttributes(attr);
 	}
 
+	@Override
 	public Struct getMetaData() {
 		return provider.getMeta(parent,name);
 	}

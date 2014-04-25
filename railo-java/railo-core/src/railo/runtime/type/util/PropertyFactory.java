@@ -74,7 +74,7 @@ public class PropertyFactory {
 	}
 
 	public static void addAdd(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.getInstance("add"+getSingularName(prop)),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.getInstance("add"+getSingularName(prop)),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFAddProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);

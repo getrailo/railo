@@ -12,7 +12,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -140,6 +140,7 @@ public final class PageSourceImpl implements PageSource {
 		return loadPage(pc);
 	}
 	
+	@Override
 	public Page loadPage(PageContext pc) throws PageException {
 		Page page=this.page;
 		if(mapping.isPhysicalFirst()) {
@@ -199,7 +200,7 @@ public final class PageSourceImpl implements PageSource {
     	
     	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
-    	if((mapping.getInspectTemplate()==ConfigImpl.INSPECT_NEVER || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
+    	if((mapping.getInspectTemplate()==Config.INSPECT_NEVER || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
     	/*{
@@ -342,7 +343,8 @@ public final class PageSourceImpl implements PageSource {
      * return source path as String 
      * @return source path as String
      */
-    public String getDisplayPath() {
+    @Override
+	public String getDisplayPath() {
         if(!mapping.hasArchive())  	{
         	return StringUtil.toString(getPhyscalFile(), null);
         }
@@ -383,7 +385,8 @@ public final class PageSourceImpl implements PageSource {
 	 * return file object, based on physical path and realpath
 	 * @return file Object
 	 */
-    public Resource getPhyscalFile() {
+    @Override
+	public Resource getPhyscalFile() {
         if(physcalSource==null) {
             if(!mapping.hasPhysical()) {
             	return null;
@@ -504,6 +507,7 @@ public final class PageSourceImpl implements PageSource {
 	/**
 	 * @return returns a variable string based on realpath and return it
 	 */
+	@Override
 	public String getRealPathAsVariableString() {
 		return StringUtil.toIdentityVariableName(realPath);
 	}
@@ -519,6 +523,7 @@ public final class PageSourceImpl implements PageSource {
 	/**
 	 * @return returns the a classname matching to filename (Example: test_cfm)
 	 */
+	@Override
 	public String getClassName() {
 		if(className==null) createClassAndPackage();
 		return className;
@@ -539,6 +544,7 @@ public final class PageSourceImpl implements PageSource {
 	/**
 	 * @return returns the a package matching to file (Example: railo.web)
 	 */
+	@Override
 	public String getPackageName() {
 		if(packageName==null) createClassAndPackage();
 		return packageName;

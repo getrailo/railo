@@ -27,12 +27,14 @@ public class ListIteratorImpl implements ListIterator {
 		list.add(++index,o);
 	}
 
+	@Override
 	public void remove() {
 		if(current==UNDEFINED)throw new IllegalStateException();
 		list.remove(current);
 		current=UNDEFINED;
 	}
 
+	@Override
 	public void set(Object o) {
 		if(current==UNDEFINED) throw new IllegalStateException();
 		list.set(current, o);
@@ -41,22 +43,27 @@ public class ListIteratorImpl implements ListIterator {
 /////////////	
 	
 
+	@Override
 	public boolean hasNext() {
 		return list.size()>index+1;
 	}
 
+	@Override
 	public boolean hasPrevious() {
 		return index>-1;
 	}
 
+	@Override
 	public int previousIndex() {
 		return index;
 	}
 
+	@Override
 	public int nextIndex() {
 		return index+1;
 	}
 
+	@Override
 	public Object previous() {
 		if(!hasPrevious())
 			throw new NoSuchElementException();
@@ -64,6 +71,7 @@ public class ListIteratorImpl implements ListIterator {
 		return list.get(index--);
 	}
 
+	@Override
 	public Object next() {
 		if(!hasNext())
 			throw new NoSuchElementException();

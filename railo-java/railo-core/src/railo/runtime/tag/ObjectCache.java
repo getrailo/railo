@@ -15,7 +15,7 @@ import railo.runtime.cache.tag.query.QueryCacheHandlerFilter;
 import railo.runtime.cache.tag.query.QueryCacheHandlerFilterUDF;
 import railo.runtime.cache.tag.timespan.TimespanCacheHandler;
 import railo.runtime.cache.util.CacheKeyFilterAll;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -124,7 +124,7 @@ public final class ObjectCache extends TagImpl {
 		else if(type==TYPE_INCLUDE) factory=CacheHandlerFactory.include;
 		else if(type==TYPE_QUERY) factory=CacheHandlerFactory.query;
 		else if(type==TYPE_RESOURCE) {
-			cache=Util.getDefault(pageContext,ConfigImpl.CACHE_DEFAULT_RESOURCE,null);
+			cache=Util.getDefault(pageContext,Config.CACHE_DEFAULT_RESOURCE,null);
 			
 			// no specific cache is defined, get default default cache
 			if(cache==null) {
@@ -144,11 +144,11 @@ public final class ObjectCache extends TagImpl {
 		}
 		else if(type==TYPE_OBJECT) {
 			// throws a exception if not explicitly defined
-			cache=Util.getDefault(pageContext,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			cache=Util.getDefault(pageContext,Config.CACHE_DEFAULT_OBJECT);
 		}
 		else if(type==TYPE_TEMPLATE) {
 			// throws a exception if not explicitly defined
-			cache=Util.getDefault(pageContext,ConfigImpl.CACHE_DEFAULT_TEMPLATE);
+			cache=Util.getDefault(pageContext,Config.CACHE_DEFAULT_TEMPLATE);
 		}
 		
 		// Clear

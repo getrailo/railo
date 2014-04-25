@@ -14,7 +14,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
@@ -89,7 +89,7 @@ public class ManifestUtil {
 			e = it.next();
 			name=((Name)e.getKey()).toString();
 			value=(String)e.getValue();
-			print.e("Export-Package:"+name+":"+("Export-Package".equals(name)));
+			aprint.e("Export-Package:"+name+":"+("Export-Package".equals(name)));
 			if("Import-Package".equals(name) || "Export-Package".equals(name) || "Require-Bundle".equals(name)) {
 				value=splitByComma(value);
 				
@@ -164,7 +164,7 @@ public class ManifestUtil {
 				//print.e("=="+str);
 				
 				if(wildcard?str.startsWith(valueToRemove):(str.equals(valueToRemove) || ListUtil.first(str, ";").trim().equals(valueToRemove))) {
-					print.e("=>"+str);
+					aprint.e("=>"+str);
 					removed=true;
 					continue;
 				}
@@ -201,7 +201,7 @@ public class ManifestUtil {
 				
 				if(str.indexOf("resolution:=optional")!=-1) {
 					removed=true;
-					print.e("+"+str);
+					aprint.e("+"+str);
 					continue;
 				}
 				
@@ -278,7 +278,7 @@ public class ManifestUtil {
 			ManifestUtil.removeFromList(m.getMainAttributes(),"Import-Package","org.apache.*");
 			
 			String str = toString(m,100,null,null);
-			print.e(str);
+			aprint.e(str);
 		}
 		finally{
 			IOUtil.closeEL(is);

@@ -196,6 +196,7 @@ public final class Grid extends BodyTagImpl {
 	private boolean visible;
 	
 	
+	@Override
 	public void release()	{
 		super.release();
 		width=0d;

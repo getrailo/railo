@@ -58,6 +58,7 @@ public final class ContentTypeImpl implements ContentType {
 	/**
 	 * @return the mime type
 	 */
+	@Override
 	public String getMimeType() {
 		if(type==null)return APPLICATION_UNKNOW.toString();
 		return type+"/"+subtype;
@@ -66,6 +67,7 @@ public final class ContentTypeImpl implements ContentType {
 	/**
 	 * @return the charset
 	 */
+	@Override
 	public String getCharset() {
 		if(StringUtil.isEmpty(charset,true)) return null;
 		return charset;

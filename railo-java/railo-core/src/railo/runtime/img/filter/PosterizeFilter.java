@@ -68,6 +68,7 @@ public class PosterizeFilter extends PointFilter  implements DynFiltering {
 				levels[i] = 255 * (numLevels*i / 256) / (numLevels-1);
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		if (!initialized) {
 			initialized = true;
@@ -83,10 +84,12 @@ public class PosterizeFilter extends PointFilter  implements DynFiltering {
 		return a | (r << 16) | (g << 8) | b;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Posterize...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("NumLevels")))!=null)setNumLevels(ImageFilterUtil.toIntValue(o,"NumLevels"));

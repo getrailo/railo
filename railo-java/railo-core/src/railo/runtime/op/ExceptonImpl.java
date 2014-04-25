@@ -85,7 +85,8 @@ public final class ExceptonImpl implements Excepton {
         return createCustomTypeException(message, detail, errorcode, customType, null);
     }
     
-    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType,String extendedInfo) {
+    @Override
+	public PageException createCustomTypeException(String message, String detail, String errorcode, String customType,String extendedInfo) {
         return new CustomTypeException(message,detail,errorcode,customType,extendedInfo);
     }
     

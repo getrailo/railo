@@ -30,6 +30,7 @@ public class ImportDefintionImpl implements ImportDefintion {
 	/**
 	 * @return the wildcard
 	 */
+	@Override
 	public boolean isWildcard() {
 		return wildcard;
 	}
@@ -37,6 +38,7 @@ public class ImportDefintionImpl implements ImportDefintion {
 	/**
 	 * @return the pack
 	 */
+	@Override
 	public String getPackage() {
 		return pack;
 	}
@@ -44,10 +46,12 @@ public class ImportDefintionImpl implements ImportDefintion {
 	/**
 	 * @return the name
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getPackageAsPath() {
 		if(packAsPath==null) {
 			packAsPath=pack.replace('.','/')+"/";
@@ -55,6 +59,7 @@ public class ImportDefintionImpl implements ImportDefintion {
 		return packAsPath;
 	}
 	
+	@Override
 	public String toString(){
 		return pack+"."+name;
 	}

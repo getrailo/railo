@@ -141,6 +141,7 @@ public class XMLMultiElementArray extends ArraySupport {
 		}// MUST testen
 	}
 
+	@Override
 	public void sort(Comparator comp) throws PageException {
 		if(size()<=1) return;
 		
@@ -331,6 +332,7 @@ public class XMLMultiElementArray extends ArraySupport {
 		return duplicate(true);
 	}
 
+	@Override
 	public boolean add(Object o) {
 		// TODO Auto-generated method stub
 		return false;

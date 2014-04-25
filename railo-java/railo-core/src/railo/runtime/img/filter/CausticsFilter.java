@@ -200,6 +200,7 @@ public class CausticsFilter extends WholeImageFilter  implements DynFiltering {
 		return bgColor;
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		Random random = new Random(0);
 
@@ -362,10 +363,12 @@ public class CausticsFilter extends WholeImageFilter  implements DynFiltering {
 		return f;
 	}
 	
+	@Override
 	public String toString() {
 		return "Texture/Caustics...";
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

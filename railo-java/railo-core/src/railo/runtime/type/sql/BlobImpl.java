@@ -107,6 +107,7 @@ public final class BlobImpl implements java.sql.Blob, Serializable {
     }*/
     
 
+	@Override
 	public void free() {
 		binaryData=new byte[0];
 	}

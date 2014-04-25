@@ -2,7 +2,8 @@ package railo.runtime.img.interpolation;
 
 public class Lanczos implements Interpolation
 {
-    public double f(double x) {
+    @Override
+	public double f(double x) {
 	if (x < -3.0)
 	    return 0.0;
 	if (x < 0.0)
@@ -19,7 +20,8 @@ public class Lanczos implements Interpolation
 	return 1.0;
     }
     
-    public double getSupport() {
+    @Override
+	public double getSupport() {
 	return 3.0;
     }
 }

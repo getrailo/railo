@@ -177,12 +177,12 @@ public class CacheHandlerFactory {
 	
 	public static String toStringCacheName(int type, String defaultValue) {
 		switch(type){
-		case ConfigImpl.CACHE_DEFAULT_FUNCTION:	return "function";
-		case ConfigImpl.CACHE_DEFAULT_INCLUDE: 	return "include";
-		case ConfigImpl.CACHE_DEFAULT_OBJECT: 	return "object";
-		case ConfigImpl.CACHE_DEFAULT_QUERY: 	return "query";
-		case ConfigImpl.CACHE_DEFAULT_RESOURCE: 	return "resource";
-		case ConfigImpl.CACHE_DEFAULT_TEMPLATE: 	return "template";
+		case Config.CACHE_DEFAULT_FUNCTION:	return "function";
+		case Config.CACHE_DEFAULT_INCLUDE: 	return "include";
+		case Config.CACHE_DEFAULT_OBJECT: 	return "object";
+		case Config.CACHE_DEFAULT_QUERY: 	return "query";
+		case Config.CACHE_DEFAULT_RESOURCE: 	return "resource";
+		case Config.CACHE_DEFAULT_TEMPLATE: 	return "template";
 		}
 		return defaultValue;
 	}

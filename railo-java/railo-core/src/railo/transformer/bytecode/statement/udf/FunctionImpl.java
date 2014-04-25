@@ -25,6 +25,7 @@ public final class FunctionImpl extends Function {
 		super(page,name, access, returnType, body, start, end);
 	}
 
+	@Override
 	public final void _writeOut(BytecodeContext bc, int pageType) throws TransformerException{
 		GeneratorAdapter adapter = bc.getAdapter();
 		////Page page = ASMUtil.getAncestorPage(this);

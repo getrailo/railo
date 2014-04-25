@@ -55,7 +55,8 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
      * @return new row or existing
      * @throws DatabaseException
      */
-    public Object touch(int row) {
+    @Override
+	public Object touch(int row) {
     	used=true;
     	return super.touch(row);
     }
@@ -66,7 +67,8 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
      * @return new row or existing
      * @throws DatabaseException
      */
-    public Object touchEL(int row) {
+    @Override
+	public Object touchEL(int row) {
     	used=true;
     	return super.touchEL(row);
     }
@@ -119,6 +121,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 		return super.toArray(trg);
 	}
 	
+	@Override
 	public QueryColumnPro toDebugColumn() {
 		return this;
 	}

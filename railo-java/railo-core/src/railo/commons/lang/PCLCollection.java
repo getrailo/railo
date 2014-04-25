@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.io.res.Resource;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
@@ -84,7 +84,7 @@ public final class PCLCollection {
     	if(cl!=null) {
     		Class<?> old = cl.loadClass(name);
     		InstrumentationFactory.getInstrumentation(mapping.getConfig()).redefineClasses(new ClassDefinition(old,barr));
-            print.e("redefined::s:"+old.getName());
+            aprint.e("redefined::s:"+old.getName());
             return old;
     	}
     	

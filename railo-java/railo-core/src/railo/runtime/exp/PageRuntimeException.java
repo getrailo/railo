@@ -141,11 +141,13 @@ public class PageRuntimeException extends RuntimeException implements IPageExcep
     public Struct getAdditional() {
         return pe.getAddional();
     }
-    public Struct getAddional() {
+    @Override
+	public Struct getAddional() {
         return pe.getAddional();
     }
 
-    public String getStackTraceAsString() {
+    @Override
+	public String getStackTraceAsString() {
         return pe.getStackTraceAsString();
     }
 }

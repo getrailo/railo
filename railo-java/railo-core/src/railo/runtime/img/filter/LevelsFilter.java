@@ -71,6 +71,7 @@ public class LevelsFilter extends WholeImageFilter  implements DynFiltering {
         return highOutputLevel;
     }
     
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		Histogram histogram = new Histogram(inPixels, width, height, 0, width);
 
@@ -114,9 +115,11 @@ public class LevelsFilter extends WholeImageFilter  implements DynFiltering {
 		return rgb;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Levels...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("LowLevel")))!=null)setLowLevel(ImageFilterUtil.toFloatValue(o,"LowLevel"));

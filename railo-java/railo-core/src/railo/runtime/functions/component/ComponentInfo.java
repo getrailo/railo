@@ -15,6 +15,7 @@ import railo.runtime.type.util.KeyConstants;
  * @deprecated use function GetMetaData instead
  *
  */
+@Deprecated
 public final class ComponentInfo implements Function {
 	public static Struct call(PageContext pc , Component component) {
 		DeprecatedUtil.function(pc, "ComponentInfo", "GetMetaData");

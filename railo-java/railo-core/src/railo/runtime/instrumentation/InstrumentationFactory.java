@@ -30,8 +30,7 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-
-import railo.print;
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -76,9 +75,10 @@ public class InstrumentationFactory {
         
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            public Object run() {
+            @Override
+			public Object run() {
             	ClassLoader ccl = CFMLEngineFactory.class.getClassLoader();//Thread.currentThread().getContextClassLoader();
-            	print.e("ccl:"+ccl.getClass().getName());
+            	aprint.e("ccl:"+ccl.getClass().getName());
             	Thread.currentThread().setContextClassLoader(CFMLEngineFactory.class.getClassLoader());
                 try{
 	                
@@ -400,9 +400,9 @@ public class InstrumentationFactory {
     private static Class<?> loadVMClass(Resource toolsJar, Log log, JavaVendor vendor) {
         try {
             ClassLoader loader = CFMLEngineFactory.class.getClassLoader();
-            print.e(loader.getClass().getName());
+            aprint.e(loader.getClass().getName());
             loader = ClassLoader.getSystemClassLoader();
-            print.e(loader.getClass().getName());
+            aprint.e(loader.getClass().getName());
             String cls = vendor.getVirtualMachineClassName();
             if (vendor.isIBM() == false) {
                 loader = new URLClassLoader(new URL[] { ((FileResource)toolsJar).toURI().toURL() }, loader);

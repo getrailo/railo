@@ -32,6 +32,7 @@ public class IntervallMonitorWrap extends MonitorWrap implements IntervallMonito
 		} 
 	}
 
+	@Override
 	public Query getData(Map<String,Object> arguments) throws PageException{
 		try {
 			if(getData==null) {

@@ -62,7 +62,8 @@ public final class RCL extends ClassLoader implements Closeable {
      * @return    the resulting <code>Class</code> object
      * @exception ClassNotFoundException if the class was not found
      */
-   public Class loadClass(String name) throws ClassNotFoundException   {
+   @Override
+public Class loadClass(String name) throws ClassNotFoundException   {
        return loadClass(name, false);
    }
 
@@ -92,7 +93,8 @@ public final class RCL extends ClassLoader implements Closeable {
      * @return   the resulting <code>Class</code> object
      * @exception ClassNotFoundException if the class could not be found
      */
-    protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    @Override
+	protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
         if (c == null) {
@@ -175,6 +177,7 @@ public final class RCL extends ClassLoader implements Closeable {
         return null;
     }
 
+	@Override
 	public void close() throws IOException {
 		for(int i=0;i<zips.length;i++){
 			closeEL(zips[i]);

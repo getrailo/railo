@@ -184,6 +184,7 @@ public final class ZipParam extends TagImpl {
 		if(value!=null)
 			throw new ApplicationException("attribute ["+name+"] is not allowed in combination with attribute(s) ["+combi+"]");	
 	}
+	@Override
 	public void required(String combi, String name, Object value) throws ApplicationException {
 		if(value==null)
 			throw new ApplicationException("attribute ["+name+"] is required in combination with attribute(s) ["+combi+"]");	

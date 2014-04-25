@@ -114,7 +114,7 @@ public final class ScopeFactory {
         case Scope.SCOPE_CLIENT:        return "client";
         case Scope.SCOPE_COOKIE:        return "cookie";
         case Scope.SCOPE_FORM:          return "form";
-        case ScopeSupport.SCOPE_VAR:         
+        case Scope.SCOPE_VAR:         
         case Scope.SCOPE_LOCAL:         return "local";
         case Scope.SCOPE_REQUEST:       return "request";
         case Scope.SCOPE_SERVER:        return "server";
@@ -122,7 +122,7 @@ public final class ScopeFactory {
         case Scope.SCOPE_UNDEFINED:     return "undefined";
         case Scope.SCOPE_URL:           return "url";
         case Scope.SCOPE_VARIABLES:     return "variables";
-        case ScopeSupport.SCOPE_CLUSTER:     return "cluster";
+        case Scope.SCOPE_CLUSTER:     return "cluster";
         }
         
         

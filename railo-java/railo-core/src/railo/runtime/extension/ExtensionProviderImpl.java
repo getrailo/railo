@@ -27,16 +27,19 @@ public class ExtensionProviderImpl implements ExtensionProvider {
 	 * @return the url
 	 * @throws MalformedURLException 
 	 */
+	@Override
 	public URL getUrl() throws MalformedURLException {
 		if(url==null)url=new URL(strUrl);
 		return url;
 	}
 
+	@Override
 	public String getUrlAsString() {
 		if(strUrl!=null) return strUrl;
 		return url.toExternalForm();
 	}
 
+	@Override
 	public boolean isReadOnly() {
 		return readOnly;
 	}
@@ -46,10 +49,12 @@ public class ExtensionProviderImpl implements ExtensionProvider {
 		return "url:"+getUrlAsString()+";";
 	}
 
+	@Override
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		//if(!(obj instanceof ExtensionProvider))return false;
 		

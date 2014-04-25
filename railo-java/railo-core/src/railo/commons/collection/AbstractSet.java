@@ -56,7 +56,8 @@ public abstract class AbstractSet<E> extends AbstractCollection<E> implements Se
      * @param o object to be compared for equality with this set
      * @return <tt>true</tt> if the specified object is equal to this set
      */
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
         if (o == this)
             return true;
 

@@ -16,6 +16,7 @@ import railo.runtime.op.Caster;
 public class PDF2ImageJPedal extends PDF2Image {
 	
 	
+	@Override
 	public void writeImages(byte[] input,Set pages,Resource outputDirectory, String prefix,String format, int scale,
 			 boolean overwrite, boolean goodQuality,boolean transparent) throws  PageException, IOException {
 		 PdfDecoder dec = createPdfDecoder(input);
@@ -51,6 +52,7 @@ public class PDF2ImageJPedal extends PDF2Image {
 	}
 
 
+	@Override
 	public Image toImage(byte[] input,int page) throws IOException, PageException {
 		 try {
 			return new Image(createPdfDecoder(input).getPageAsImage(page));

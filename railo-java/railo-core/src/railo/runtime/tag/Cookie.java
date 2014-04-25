@@ -102,6 +102,7 @@ public final class Cookie extends TagImpl {
 	* @param expires value to set
 	* @deprecated replaced with setExpires(Object expires):void
 	**/
+	@Deprecated
 	public void setExpires(String expires)	{
 		this.expires=expires;
 	}

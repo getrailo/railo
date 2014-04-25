@@ -655,7 +655,7 @@ public final class SMTPClient implements Serializable  {
         	ServerImpl[] nServers = new ServerImpl[host.length];
         	for(int i=0;i<host.length;i++) {
         		usr=null;pwd=null;
-        		prt=ServerImpl.DEFAULT_PORT;
+        		prt=Server.DEFAULT_PORT;
         		
         		if(port>0)prt=port;
         		if(!StringUtil.isEmpty(username))	{

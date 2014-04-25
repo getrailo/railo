@@ -110,7 +110,8 @@ public class SearchResulItemImpl implements SearchResulItem {
         return custom4;
     }
     
-    public String getCustom(int index) throws SearchException {
+    @Override
+	public String getCustom(int index) throws SearchException {
     	if(index==1) return custom1;
     	if(index==2) return custom2;
     	if(index==3) return custom3;
@@ -122,30 +123,35 @@ public class SearchResulItemImpl implements SearchResulItem {
 	/**
 	 * @return the category
 	 */
+	@Override
 	public String getCategory() {
 		return category;
 	}
 	/**
 	 * @return the categoryTree
 	 */
+	@Override
 	public String getCategoryTree() {
 		return categoryTree;
 	}
 	/**
 	 * @return the mimeType
 	 */
+	@Override
 	public String getMimeType() {
 		return mimeType;
 	}
 	/**
 	 * @return the author
 	 */
+	@Override
 	public String getAuthor() {
 		return author;
 	}
 	/**
 	 * @return the size
 	 */
+	@Override
 	public String getSize() {
 		return size;
 	}
@@ -154,6 +160,7 @@ public class SearchResulItemImpl implements SearchResulItem {
     /**
 	 * @return the contextSummary
 	 */
+	@Override
 	public String getContextSummary() {
 		return contextSummary;
 	}

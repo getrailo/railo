@@ -21,6 +21,7 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 		this.req=req;
 	}
 
+	@Override
 	public void forward(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
 		req=HTTPUtil.removeWrap(req);
@@ -59,6 +60,7 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 	
 	
 
+	@Override
 	public void include(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc==null){

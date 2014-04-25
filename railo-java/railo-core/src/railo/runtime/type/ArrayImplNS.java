@@ -71,6 +71,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 	 * return dimension of the array
 	 * @return dimension of the array
 	 */
+	@Override
 	public int getDimension() {
 		return dimension;
 	}
@@ -193,6 +194,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 	 * @return defined value
 	 * @throws ExpressionException
 	 */
+	@Override
 	public Object setE(int key, Object value) throws ExpressionException {
 		if(offset+key>arr.length)enlargeCapacity(key);
 		if(key>size)size=key;
@@ -319,6 +321,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 		return removeE(Caster.toIntValue(key.getString()));
 	}
 
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return removeEL(Caster.toIntValue(key.getString(),-1));
 	}
@@ -397,7 +400,8 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 	 * @param o value to insert
 	 * @return inserted value
 	 */
-    public Object appendEL(Object o) {
+    @Override
+	public Object appendEL(Object o) {
         
         if(offset+size+1>arr.length)enlargeCapacity(size+1);
         arr[offset+size]=o;
@@ -410,7 +414,8 @@ public final class ArrayImplNS extends ArraySupport implements Array {
      * @param o
      * @return this Array
      */
-    public boolean add(Object o) {
+    @Override
+	public boolean add(Object o) {
         if(offset+size+1>arr.length)enlargeCapacity(size+1);
         arr[offset+size]=o;
         size++;
@@ -435,6 +440,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 	 * @return inserted value
 	 * @throws ExpressionException
 	 */
+	@Override
 	public Object prepend(Object o) throws ExpressionException {
 		insert(1,o);
 		return o;
@@ -444,6 +450,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 	 * resize array to defined size
 	 * @param to new minimum size of the array
 	 */
+	@Override
 	public void resize(int to) {
 		if(to>size) {
 			enlargeCapacity(to);
@@ -466,6 +473,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 	/**
 	 * @return return arra as native (Java) Object Array
 	 */
+	@Override
 	public Object[] toArray() {
 		Object[] rtn=new Object[size];
 		int count=0;
@@ -564,6 +572,7 @@ public final class ArrayImplNS extends ArraySupport implements Array {
 		return new EntryIterator(this, keys());
 	}
 	
+	@Override
 	public Iterator iterator() {
 		ArrayList lst=new ArrayList();
 		//int count=0;

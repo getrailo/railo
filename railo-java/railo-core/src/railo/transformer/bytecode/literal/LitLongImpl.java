@@ -61,7 +61,8 @@ public final class LitLongImpl extends ExpressionBase implements LitLong {
     /**
      * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.push(l);
         if(mode==MODE_REF) {

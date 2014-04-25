@@ -15,7 +15,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.cache.legacy.CacheItem;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -145,6 +145,7 @@ public final class Cache extends BodyTagImpl {
 	 * @param obj
 	 * @throws DeprecatedException
 	 */
+	@Deprecated
 	public void setTimeout(Object obj) throws DeprecatedException {
 		DeprecatedUtil.tagAttribute(pageContext,"Cache","timeout");
 	}
@@ -387,7 +388,7 @@ public final class Cache extends BodyTagImpl {
 		}
 		else {
 			railo.commons.io.cache.Cache cache = 
-				Util.getCache(pageContext,cachename,ConfigImpl.CACHE_DEFAULT_OBJECT);
+				Util.getCache(pageContext,cachename,Config.CACHE_DEFAULT_OBJECT);
 			CacheEntry entry = throwOnError?cache.getCacheEntry(Util.key(id)):cache.getCacheEntry(Util.key(id),null);
 			if(entry!=null){
 				pageContext.setVariable(name,entry.getValue());

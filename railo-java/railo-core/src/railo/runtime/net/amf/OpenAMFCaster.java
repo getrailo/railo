@@ -46,7 +46,8 @@ public final class OpenAMFCaster implements AMFCaster {
      * @return
      * @throws PageException
      */
-    public Object toAMFObject(Object o) throws PageException {
+    @Override
+	public Object toAMFObject(Object o) throws PageException {
     	if(o instanceof ASObject) return o;
         if(Decision.isBinary(o))    return o;
         if(Decision.isArray(o))     return toAMFObject(Caster.toList(o,true));
@@ -130,7 +131,8 @@ public final class OpenAMFCaster implements AMFCaster {
         throw new ApplicationException("can't send a User Defined Function ("+udf.getFunctionName()+") via flash remoting");
     }
     
-    public Object toCFMLObject(Object amf) throws PageException {
+    @Override
+	public Object toCFMLObject(Object amf) throws PageException {
         if(amf instanceof List) return toCFMLObject((List)amf);
         if(amf instanceof Map) return toCFMLObject((Map)amf);
         if(amf instanceof ASRecordSet) return toCFMLObject((ASRecordSet)amf);
@@ -204,6 +206,7 @@ public final class OpenAMFCaster implements AMFCaster {
         return "";
     }
 
+	@Override
 	public void init(Map arguments) {
 		// TODO Auto-generated method stub
 		

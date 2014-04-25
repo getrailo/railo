@@ -17,6 +17,7 @@ public final class DebugTimerImpl implements DebugTimer {
 	/**
 	 * @return the label
 	 */
+	@Override
 	public String getLabel() {
 		return label;
 	}
@@ -24,6 +25,7 @@ public final class DebugTimerImpl implements DebugTimer {
 	/**
 	 * @return the template
 	 */
+	@Override
 	public String getTemplate() {
 		return template;
 	}
@@ -31,6 +33,7 @@ public final class DebugTimerImpl implements DebugTimer {
 	/**
 	 * @return the time
 	 */
+	@Override
 	public long getTime() {
 		return time;
 	}

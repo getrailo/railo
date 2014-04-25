@@ -89,6 +89,7 @@ public abstract class HtmlHeadBodyBase extends BodyTagTryCatchFinallyImpl {
 		return SKIP_BODY;
 	}
 
+	@Override
 	public int doAfterBody() throws PageException {
 
 		if (bodyContent != null) {

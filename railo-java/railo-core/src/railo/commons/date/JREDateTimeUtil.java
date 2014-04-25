@@ -23,7 +23,8 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		
 	}
 
-	 long _toTime(TimeZone tz, int year, int month, int day, int hour,int minute, int second, int milliSecond) {
+	 @Override
+	long _toTime(TimeZone tz, int year, int month, int day, int hour,int minute, int second, int milliSecond) {
 		if(tz==null)tz=ThreadLocalPageContext.getTimeZone(tz);
 		Calendar time = _getThreadCalendar(tz);
 		time.set(year,month-1,day,hour,minute,second);
@@ -113,6 +114,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		return week;
 	}
 
+	@Override
 	public synchronized long getMilliSecondsInDay(TimeZone tz,long time) {
 		Calendar c = _getThreadCalendar(tz);
 		c.setTimeInMillis(time);
@@ -122,6 +124,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 				(c.get(Calendar.MILLISECOND));
 	}
 
+	@Override
 	public synchronized int getDaysInMonth(TimeZone tz, DateTime dt) {
 		Calendar c = _getThreadCalendar(tz);
 		c.setTimeInMillis(dt.getTime());
@@ -129,6 +132,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 	}
 
 
+	@Override
 	public String toString(DateTime dt, TimeZone tz) {
 		Calendar c = _getThreadCalendar(tz);
 		c.setTimeInMillis(dt.getTime());
@@ -235,6 +239,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 
 
 class CalendarThreadLocal extends ThreadLocal<Calendar> {
+	@Override
 	protected synchronized Calendar initialValue() {
         return Calendar.getInstance();
     }
@@ -242,6 +247,7 @@ class CalendarThreadLocal extends ThreadLocal<Calendar> {
 
 
 class LocaleCalendarThreadLocal extends ThreadLocal<Map<String,Calendar>> {
+	@Override
 	protected synchronized Map<String,Calendar> initialValue() {
         return new HashMap<String, Calendar>();
     }

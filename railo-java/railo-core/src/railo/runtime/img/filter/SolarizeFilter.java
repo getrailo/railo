@@ -31,13 +31,16 @@ import railo.runtime.type.util.CollectionUtil;
  */
 public class SolarizeFilter extends TransferFilter  implements DynFiltering {
 
+	@Override
 	protected float transferFunction( float v ) {
 		return v > 0.5f ? 2*(v-0.5f) : 2*(0.5f-v);
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Solarize";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){

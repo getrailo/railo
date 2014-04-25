@@ -53,6 +53,7 @@ public final class QueryCacheEntry implements Serializable,Dumpable {
         	return Duplicator.duplicate(value,false);
         }
 
+		@Override
 		public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
 			DumpTable table = new DumpTable("#669999","#ccffff","#000000");
 			table.setTitle("QueryCacheEntry");

@@ -28,6 +28,7 @@ public final class ASMPropertyImpl implements ASMProperty {
 	/**
 	 * @return the name
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -35,6 +36,7 @@ public final class ASMPropertyImpl implements ASMProperty {
 	/**
 	 * @return the type
 	 */
+	@Override
 	public Type getASMType() {
 		return type;
 	}
@@ -43,6 +45,7 @@ public final class ASMPropertyImpl implements ASMProperty {
 	 *
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "class:"+(clazz==null?null:clazz.getName())+"name:"+name+";type:"+type.getClassName();
 	}
@@ -52,6 +55,7 @@ public final class ASMPropertyImpl implements ASMProperty {
 	/**
 	 * @return the clazz
 	 */
+	@Override
 	public Class getClazz() {
 		return clazz;
 	}

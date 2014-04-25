@@ -168,16 +168,19 @@ public abstract class AbstrCFMLExprTransformer {
 	protected short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
 	
 	protected static EndCondition SEMI_BLOCK=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent('{') || data.srcCode.isCurrent(';');
 		}
 	};
 	protected static EndCondition SEMI=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent(';');
 		}
 	};
 	protected static EndCondition COMMA_ENDBRACKED=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent(',') || data.srcCode.isCurrent(')');
 		}

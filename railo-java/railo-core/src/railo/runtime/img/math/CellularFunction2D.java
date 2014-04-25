@@ -89,6 +89,7 @@ public class CellularFunction2D implements Function2D {
 		return results[1].distance;
 	}
 	
+	@Override
 	public float evaluate(float x, float y) {
 		for (int j = 0; j < results.length; j++)
 			results[j].distance = Float.POSITIVE_INFINITY;

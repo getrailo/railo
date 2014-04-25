@@ -128,6 +128,7 @@ public class ThresholdFilter extends PointFilter  implements DynFiltering {
 		return black;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		int a = rgb & 0xff000000;
 		int r = (rgb >> 16) & 0xff;
@@ -141,9 +142,11 @@ public class ThresholdFilter extends PointFilter  implements DynFiltering {
 		return rgb;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Threshold...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("White")))!=null)setWhite(ImageFilterUtil.toColorRGB(o,"White"));

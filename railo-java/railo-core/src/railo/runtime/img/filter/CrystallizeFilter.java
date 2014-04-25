@@ -64,6 +64,7 @@ public class CrystallizeFilter extends CellularFilter  implements DynFiltering {
 		return edgeColor;
 	}
 
+	@Override
 	public int getPixel(int x, int y, int[] inPixels, int width, int height) {
 		float nx = m00*x + m01*y;
 		float ny = m10*x + m11*y;
@@ -91,10 +92,12 @@ public class CrystallizeFilter extends CellularFilter  implements DynFiltering {
 		return v;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Crystallize...";
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("EdgeThickness")))!=null)setEdgeThickness(ImageFilterUtil.toFloatValue(o,"EdgeThickness"));

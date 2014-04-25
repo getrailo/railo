@@ -17,6 +17,7 @@ import railo.transformer.library.function.FunctionLibFunction;
 
 public class IsDefined implements FunctionEvaluator{
 
+	@Override
 	public void evaluate(BIF bif, FunctionLibFunction flf) throws TemplateException {
 		Argument arg = bif.getArguments()[0];
 		Expression value = arg.getValue();

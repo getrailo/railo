@@ -30,7 +30,7 @@ public class CFCGateway implements Gateway {
 		this.id=id;
 		
 		//requestURI=engine.toRequestURI(cfcPath);
-		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+		Struct args=new StructImpl(Struct.TYPE_LINKED);
 		args.setEL("id", id);
 		args.setEL("config", Caster.toStruct(config,null,false));
 		if(!StringUtil.isEmpty(cfcPath)){
@@ -107,7 +107,7 @@ public class CFCGateway implements Gateway {
 
 	@Override
 	public Object getHelper() {
-		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+		Struct args=new StructImpl(Struct.TYPE_LINKED);
 		return callEL("getHelper",args,null);
 	}
 
@@ -133,7 +133,7 @@ public class CFCGateway implements Gateway {
 
 	@Override
 	public String sendMessage(Map data) throws GatewayException {
-		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+		Struct args=new StructImpl(Struct.TYPE_LINKED);
 		args.setEL("data", Caster.toStruct(data, null, false));
 		try {
 			return Caster.toString(call("sendMessage",args,""));

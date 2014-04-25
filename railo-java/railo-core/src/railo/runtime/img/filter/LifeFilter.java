@@ -33,6 +33,7 @@ public class LifeFilter extends BinaryFilter  implements DynFiltering {
 	public LifeFilter() {
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int index = 0;
 		int[] outPixels = new int[width * height];
@@ -70,10 +71,12 @@ public class LifeFilter extends BinaryFilter  implements DynFiltering {
 		return outPixels;
 	}
 
+	@Override
 	public String toString() {
 		return "Binary/Life";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));

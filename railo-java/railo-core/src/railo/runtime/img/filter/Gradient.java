@@ -120,6 +120,7 @@ public class Gradient extends ArrayColormap implements Cloneable {
 		setKnots(x, rgb, types);
 	}
 	
+	@Override
 	public Object clone() {
 		Gradient g = (Gradient)super.clone();
 		g.map = map.clone();
@@ -146,6 +147,7 @@ public class Gradient extends ArrayColormap implements Cloneable {
      * @param n the knot index
      * @param color the color
      */
+	@Override
 	public void setColor(int n, int color) {
 		int firstColor = map[0];
 		int lastColor = map[256-1];

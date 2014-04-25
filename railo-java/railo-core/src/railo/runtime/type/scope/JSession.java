@@ -73,6 +73,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
         setEL(KeyConstants._urltoken,"CFID="+pc.getCFID()+"&CFTOKEN="+pc.getCFToken()+"&jsessionid="+id);
 	}
 
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		
 	}
@@ -137,6 +138,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
 		return created;
 	}
 	
+	@Override
 	public Collection.Key[] pureKeys() {
 		List<Collection.Key> keys=new ArrayList<Collection.Key>();
 		Iterator<Key> it = keyIterator();

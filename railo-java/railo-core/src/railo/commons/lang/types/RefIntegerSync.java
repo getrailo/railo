@@ -15,7 +15,8 @@ public final class RefIntegerSync extends RefIntegerImpl {
     /**
      * @param value
      */
-    public synchronized void setValue(int value) {
+    @Override
+	public synchronized void setValue(int value) {
     	super.setValue(value);
     }
     
@@ -23,7 +24,8 @@ public final class RefIntegerSync extends RefIntegerImpl {
      * operation plus
      * @param value
      */
-    public synchronized void plus(int value) {
+    @Override
+	public synchronized void plus(int value) {
     	super.plus(value);
     }
     
@@ -31,7 +33,8 @@ public final class RefIntegerSync extends RefIntegerImpl {
      * operation minus
      * @param value
      */
-    public synchronized void minus(int value) {
+    @Override
+	public synchronized void minus(int value) {
         super.minus(value);
     }
 }

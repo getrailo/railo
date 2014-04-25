@@ -230,6 +230,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 	/**
 	 * @return the hidden
 	 */
+	@Override
 	public boolean isHidden() {
 		return hidden;
 	}
@@ -239,6 +240,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 	/** 
 	 * @param hidden the hidden to set
 	 */
+	@Override
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}

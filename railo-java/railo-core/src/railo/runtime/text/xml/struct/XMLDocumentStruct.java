@@ -126,6 +126,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		return doc.createProcessingInstruction(target,data);
 	}
 
+	@Override
 	public Node adoptNode(Node arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -137,6 +138,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public String getDocumentURI() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -148,6 +150,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public DOMConfiguration getDomConfig() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -159,6 +162,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public String getInputEncoding() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -170,6 +174,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public boolean getStrictErrorChecking() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -181,6 +186,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public String getXmlEncoding() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -192,6 +198,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public boolean getXmlStandalone() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -203,6 +210,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public String getXmlVersion() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -214,6 +222,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public void normalizeDocument() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -225,6 +234,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public Node renameNode(Node arg0, String arg1, String arg2) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -236,6 +246,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
+	@Override
 	public void setDocumentURI(String arg0) {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -248,6 +259,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
+	@Override
 	public void setStrictErrorChecking(boolean arg0) {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -260,6 +272,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
+	@Override
 	public void setXmlStandalone(boolean arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -272,6 +285,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
+	@Override
 	public void setXmlVersion(String arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {

@@ -33,6 +33,7 @@ public class ExposureFilter extends TransferFilter  implements DynFiltering {
 
 	private float exposure = 1.0f;
 
+	@Override
 	protected float transferFunction( float f ) {
 		return 1 - (float)Math.exp(-f * exposure);
 	}
@@ -58,10 +59,12 @@ public class ExposureFilter extends TransferFilter  implements DynFiltering {
 		return exposure;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Exposure...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Exposure")))!=null)setExposure(ImageFilterUtil.toFloatValue(o,"Exposure"));

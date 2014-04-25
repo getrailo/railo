@@ -61,6 +61,7 @@ public final class MissingIncludeException extends PageExceptionImpl {
 		return sct;
 	}
 	
+	@Override
 	public boolean typeEqual(String type) {
     	if(super.typeEqual(type)) return true;
         type=type.toLowerCase().trim();

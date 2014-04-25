@@ -27,6 +27,7 @@ public class ValueNumber extends ValueSupport implements Literal {
 		return getString()+" as "+getAlias();
 	}
 	
+	@Override
 	public Object getValue() {
 		return Caster.toDouble(value);
 	}

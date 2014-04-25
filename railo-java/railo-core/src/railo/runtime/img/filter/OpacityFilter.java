@@ -68,16 +68,19 @@ public class OpacityFilter extends PointFilter  implements DynFiltering {
 		return opacity;
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		if ((rgb & 0xff000000) != 0)
 			return (rgb & 0xffffff) | opacity24;
 		return rgb;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Transparency...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Opacity")))!=null)setOpacity(ImageFilterUtil.toIntValue(o,"Opacity"));

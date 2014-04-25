@@ -31,6 +31,7 @@ public final class PicServlet extends HttpServlet {
 	 * Interpretiert den Script-Name und laedt das entsprechende Bild aus den internen Resourcen.
 	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse rsp)
 		throws ServletException, IOException {
 			// get out Stream

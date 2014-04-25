@@ -57,11 +57,13 @@ public final class CountingReader extends Reader {
 		return super.skip(n);
 	}
 
+	@Override
 	public void close() throws IOException {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		// TODO Auto-generated method stub
 		return 0;

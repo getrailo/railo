@@ -121,10 +121,12 @@ public class WarpFilter extends WholeImageFilter  implements DynFiltering {
 		return time;
 	}
 
+	@Override
 	protected void transformSpace(Rectangle r) {
 		r.width *= frames;
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int[] outPixels = new int[width * height];
 		
@@ -163,10 +165,12 @@ public class WarpFilter extends WholeImageFilter  implements DynFiltering {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		return "Distort/Mesh Warp...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("SourceGrid")))!=null)setSourceGrid(ImageFilterUtil.toWarpGrid(o,"SourceGrid"));

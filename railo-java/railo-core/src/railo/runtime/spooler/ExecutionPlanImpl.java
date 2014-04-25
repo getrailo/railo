@@ -14,6 +14,7 @@ public class ExecutionPlanImpl  implements ExecutionPlan {
 	/**
 	 * @return the tries
 	 */
+	@Override
 	public int getTries() {
 		return tries;
 	}
@@ -21,10 +22,12 @@ public class ExecutionPlanImpl  implements ExecutionPlan {
 	/**
 	 * @return the interval in seconds
 	 */
+	@Override
 	public int getIntervall() {
 		return interval;
 	}
 	
+	@Override
 	public int getInterval() {
 		return interval;
 	}

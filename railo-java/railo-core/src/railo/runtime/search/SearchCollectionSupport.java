@@ -425,7 +425,8 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
     /**
      * @param index
      */
-    public void addIndex(SearchIndex index) {
+    @Override
+	public void addIndex(SearchIndex index) {
         indexes.put(index.getId(),index);
     }
 

@@ -249,6 +249,7 @@ public class MySQL extends CoreSupport {
 		}
 	}
 
+	@Override
 	public void write(DatasourceConnection dc, String prefix, Attr attr, InputStream is, boolean append) throws SQLException {
 		if(attr.getData()==0) writeInsert(dc, prefix, attr, is);
 		else writeUpdate(dc, prefix, attr, is, append);

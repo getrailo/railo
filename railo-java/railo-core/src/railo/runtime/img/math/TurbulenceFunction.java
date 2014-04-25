@@ -33,6 +33,7 @@ public class TurbulenceFunction extends CompoundFunction2D {
 		return octaves;
 	}
 
+	@Override
 	public float evaluate(float x, float y) {
 		float t = 0.0f;
 

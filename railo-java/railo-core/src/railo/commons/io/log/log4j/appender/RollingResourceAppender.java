@@ -167,7 +167,8 @@ public class RollingResourceAppender extends ResourceAppender {
 		}
 	}
 
-  public
+  @Override
+public
   synchronized
   void setFile(boolean append) throws IOException {
 	long len = res.length();// this is done here, because in the location used the file is already locked
@@ -193,7 +194,8 @@ public class RollingResourceAppender extends ResourceAppender {
   }
 
 
-  protected
+  @Override
+protected
   void setQWForFiles(Writer writer) {
      this.qw = new CountingQuietWriter(writer, errorHandler);
   }
@@ -204,7 +206,8 @@ public class RollingResourceAppender extends ResourceAppender {
 
      @since 0.9.0
   */
-  protected void subAppend(LoggingEvent event) {
+  @Override
+protected void subAppend(LoggingEvent event) {
     super.subAppend(event);
     if(res != null && qw != null) {
     	long size = ((CountingQuietWriter) qw).getCount();

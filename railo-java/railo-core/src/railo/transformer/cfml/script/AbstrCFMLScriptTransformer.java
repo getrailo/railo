@@ -82,22 +82,26 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
  
 
 	private static EndCondition SEMI_BLOCK=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent('{') || data.srcCode.isCurrent(';');
 		}
 	};
 	private static EndCondition SEMI=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent(';');
 		}
 	};
 	private static EndCondition COMMA_ENDBRACKED=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent(',') || data.srcCode.isCurrent(')');
 		}
 	};
 	
 	private static EndCondition BRACKED=new EndCondition() {
+		@Override
 		public boolean isEnd(ExprData data) {
 			return data.srcCode.isCurrent(')');
 		}

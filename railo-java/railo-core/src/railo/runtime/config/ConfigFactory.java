@@ -200,7 +200,7 @@ public abstract class ConfigFactory {
 		
 		Resource f = dir.getRealResource(name);
 		if (!f.exists() || doNew)
-			ConfigWebFactory.createFileFromResourceEL(srcPath+name, f);
+			ConfigFactory.createFileFromResourceEL(srcPath+name, f);
 		return f;
 		
 	}

@@ -35,14 +35,17 @@ public final class ContourComposite implements Composite {
 		this.offset = offset;
 	}
 
+	@Override
 	public CompositeContext createContext(ColorModel srcColorModel, ColorModel dstColorModel, RenderingHints hints) {
 		return new ContourCompositeContext( offset, srcColorModel, dstColorModel );
 	}
 
+	@Override
 	public int hashCode() {
 		return 0;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof ContourComposite))
 			return false;
@@ -59,9 +62,11 @@ class ContourCompositeContext implements CompositeContext {
 		this.offset = offset;
 	}
 
+	@Override
 	public void dispose() {
 	}
 	
+	@Override
 	public void compose(Raster src, Raster dstIn, WritableRaster dstOut) {
 		int x = src.getMinX();
 		int y = src.getMinY();

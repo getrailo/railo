@@ -59,6 +59,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		Object rtn=_map.get(key);
 		if(rtn!=null) return rtn;
@@ -69,6 +70,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 *
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
 	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {//print.out("k:"+(kcount++));
 		Object rtn=_map.get(key);
 		if(rtn!=null) return rtn;
@@ -78,6 +80,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		_map.put(key,value);
 		return value;
@@ -86,6 +89,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
         _map.put(key,value);
 		return value;
@@ -94,10 +98,12 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#size()
 	 */
+	@Override
 	public int size() {
 		return _map.size();
 	}
 
+	@Override
 	public Collection.Key[] keys() {//print.out("keys");
 		Iterator<Key> it = keyIterator();
 		Collection.Key[] keys = new Collection.Key[size()];
@@ -111,6 +117,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		Object obj= _map.remove(key);
 		if(obj==null) throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");
@@ -121,6 +128,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 *
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
 	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return _map.remove(key);
 	}
@@ -128,6 +136,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#clear()
 	 */
+	@Override
 	public void clear() {
 		_map.clear();
 	}
@@ -136,6 +145,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 *
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    Iterator it=_map.keySet().iterator();
 		
@@ -166,6 +176,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImplKey();
 		copy(this,sct,deepCopy);
@@ -207,6 +218,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Iteratorable#iterator()
 	 */
+	@Override
 	public Iterator valueIterator() {
 		return _map.values().iterator();
 	}
@@ -214,14 +226,16 @@ public final class StructImplKey extends StructSupport implements Struct {
     /**
      * @see railo.runtime.type.Collection#_contains(java.lang.String)
      */
-    public boolean containsKey(Collection.Key key) {
+    @Override
+	public boolean containsKey(Collection.Key key) {
         return _map.containsKey(key);
     }
 
     /**
      * @see railo.runtime.op.Castable#castToString()
      */
-    public String castToString() throws ExpressionException {
+    @Override
+	public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
           "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
@@ -229,6 +243,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
 	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
@@ -236,14 +251,16 @@ public final class StructImplKey extends StructSupport implements Struct {
     /**
      * @see railo.runtime.op.Castable#castToBooleanValue()
      */
-    public boolean castToBooleanValue() throws ExpressionException {
+    @Override
+	public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("can't cast Complex Object Type Struct to a boolean value");
     }
     
     /**
      * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
      */
-    public Boolean castToBoolean(Boolean defaultValue) {
+    @Override
+	public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
@@ -251,14 +268,16 @@ public final class StructImplKey extends StructSupport implements Struct {
     /**
      * @see railo.runtime.op.Castable#castToDoubleValue()
      */
-    public double castToDoubleValue() throws ExpressionException {
+    @Override
+	public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("can't cast Complex Object Type Struct to a number value");
     }
     
     /**
      * @see railo.runtime.op.Castable#castToDoubleValue(double)
      */
-    public double castToDoubleValue(double defaultValue) {
+    @Override
+	public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
@@ -266,20 +285,23 @@ public final class StructImplKey extends StructSupport implements Struct {
     /**
      * @see railo.runtime.op.Castable#castToDateTime()
      */
-    public DateTime castToDateTime() throws ExpressionException {
+    @Override
+	public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("can't cast Complex Object Type Struct to a Date");
     }
     
     /**
      * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
      */
-    public DateTime castToDateTime(DateTime defaultValue) {
+    @Override
+	public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
 	/**
 	 * @see railo.runtime.op.Castable#compare(boolean)
 	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a boolean value");
 	}
@@ -287,6 +309,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
 	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a DateTime Object");
 	}
@@ -294,6 +317,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(double)
 	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a numeric value");
 	}
@@ -301,14 +325,17 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
 	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a String");
 	}
     
+	@Override
 	public boolean containsValue(Object value) {
 		return _map.containsValue(value);
 	}
 
+	@Override
 	public java.util.Collection values() {
 		return _map.values();
 	}

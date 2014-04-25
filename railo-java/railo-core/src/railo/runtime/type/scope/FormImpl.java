@@ -141,7 +141,8 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     	
     	HttpServletRequest req = pc.getHttpServletRequest();
     	ServletRequestContext context = new ServletRequestContext(req) {
-    		public String getCharacterEncoding() {
+    		@Override
+			public String getCharacterEncoding() {
     			return encoding;
     		}
     	};
@@ -295,6 +296,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		return null;
 	}
 	
+	@Override
 	public FormItem getUploadResource(String key) {
 		key=key.trim();
 		String lcKey = StringUtil.toLowerCase(key);
@@ -391,24 +393,28 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		/**
 		 * @return the resource
 		 */
+		@Override
 		public Resource getResource() {
 			return resource;
 		}
 		/**
 		 * @return the contentType
 		 */
+		@Override
 		public String getContentType() {
 			return contentType;
 		}
 		/**
 		 * @return the name
 		 */
+		@Override
 		public String getName() {
 			return name;
 		}
 		/**
 		 * @return the fieldName
 		 */
+		@Override
 		public String getFieldName() {
 			return fieldName;
 		}
@@ -417,6 +423,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	/**
 	 * @return return content as a http header input stream
 	 */
+	@Override
 	public ServletInputStream getInputStream() {
 		if(headerType==HEADER_APP_URL_ENC) {
 			return new ServletInputStreamDummy(toBarr(raw,AMP));

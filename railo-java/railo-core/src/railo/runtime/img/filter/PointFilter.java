@@ -32,7 +32,8 @@ public abstract class PointFilter extends AbstractBufferedImageOp  implements Dy
 
 	protected boolean canFilterIndexColorModel = false;
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 		int type = src.getType();
@@ -67,6 +68,7 @@ public abstract class PointFilter extends AbstractBufferedImageOp  implements Dy
 	}
 
 	public abstract int filterRGB(int x, int y, int rgb);
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){

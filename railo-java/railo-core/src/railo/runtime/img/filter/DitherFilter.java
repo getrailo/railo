@@ -258,6 +258,7 @@ public class DitherFilter extends PointFilter  implements DynFiltering {
 		}
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		if (!initialized) {
 			initialized = true;
@@ -281,10 +282,12 @@ public class DitherFilter extends PointFilter  implements DynFiltering {
 		return a | (r << 16) | (g << 8) | b;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Dither...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Levels")))!=null)setLevels(ImageFilterUtil.toIntValue(o,"Levels"));

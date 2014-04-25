@@ -40,9 +40,11 @@ public class AverageFilter extends ConvolveFilter  implements DynFiltering {
 		super( theMatrix );
 	}
 
+	@Override
 	public String toString() {
 		return "Blur/Average Blur";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));

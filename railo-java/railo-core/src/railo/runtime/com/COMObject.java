@@ -61,6 +61,7 @@ public final class COMObject implements Objects, Iteratorable {
         return COMUtil.toObject(this,Dispatch.call(dispatch,propertyName),propertyName);
     }*/
 
+	@Override
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		return COMUtil.toObject(this,Dispatch.call(dispatch,key.getString()),key.getString());
 	}
@@ -78,6 +79,7 @@ public final class COMObject implements Objects, Iteratorable {
         return setEL(pc,propertyName,value);
     }*/
 
+	@Override
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
 		Dispatch.put(dispatch,propertyName.getString(),value);
 		return value;

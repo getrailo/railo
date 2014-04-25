@@ -41,6 +41,7 @@ public final class UDFAddProperty extends UDFGSProperty {
 		return new FunctionArgument[]{value};
 	}	
  
+	@Override
 	public UDF duplicate() {
 		return new UDFAddProperty(component,prop);
 	}

@@ -14,7 +14,8 @@ public class PreDeleteEventListenerImpl extends EventListener implements PreDele
 	    super(component, CommonUtil.PRE_DELETE, false);
 	}
 
-    public boolean onPreDelete(PreDeleteEvent event) {
+    @Override
+	public boolean onPreDelete(PreDeleteEvent event) {
     	invoke(CommonUtil.PRE_DELETE, event.getEntity());
 		return false;
     }

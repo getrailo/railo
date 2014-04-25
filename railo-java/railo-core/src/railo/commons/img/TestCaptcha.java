@@ -20,7 +20,7 @@ public class TestCaptcha {
 				true, 					// use anti alias
 				Color.BLACK, 			// font color
 				45, 					// font size
-				Captcha.DIFFICULTY_HIGH	// difficulty
+				AbstractCaptcha.DIFFICULTY_HIGH	// difficulty
 			);
 
 		// write out captcha image as a png file

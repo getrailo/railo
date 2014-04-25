@@ -98,7 +98,8 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 		return element.getElementsByTagNameNS(namespaceURI,localName);
 	}
 	
-    public void setIdAttribute(String name, boolean isId) throws DOMException {
+    @Override
+	public void setIdAttribute(String name, boolean isId) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = element.getClass().getMethod("setIdAttribute", new Class[]{name.getClass(),boolean.class});
@@ -109,7 +110,8 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 		}
     }
     
-    public void setIdAttributeNS(String namespaceURI, String localName, boolean isId) throws DOMException {
+    @Override
+	public void setIdAttributeNS(String namespaceURI, String localName, boolean isId) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = element.getClass().getMethod("setIdAttributeNS", new Class[]{namespaceURI.getClass(),localName.getClass(),boolean.class});
@@ -120,7 +122,8 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 		}
     }
     
-    public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException {
+    @Override
+	public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = element.getClass().getMethod("setIdAttributeNode", new Class[]{idAttr.getClass(),boolean.class});
@@ -131,6 +134,7 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 		}
     }
     
+	@Override
 	public TypeInfo getSchemaTypeInfo() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {

@@ -2,7 +2,8 @@ package railo.runtime.img.interpolation;
 
 public class Mitchell implements Interpolation
 {
-    public double f(double x) {
+    @Override
+	public double f(double x) {
 	double b = 0.3333333333333333;
 	double c = 0.3333333333333333;
 	if (x < 0.0)
@@ -21,7 +22,8 @@ public class Mitchell implements Interpolation
 	return 0.0;
     }
     
-    public double getSupport() {
+    @Override
+	public double getSupport() {
 	return 2.0;
     }
 }

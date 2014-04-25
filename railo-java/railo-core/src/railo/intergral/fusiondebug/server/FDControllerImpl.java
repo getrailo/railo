@@ -68,6 +68,7 @@ public class FDControllerImpl implements IFDController {
 	/**
 	 * @deprecated use instead <code>{@link #getLicenseInformation(String)}</code>
 	 */
+	@Deprecated
 	public String getLicenseInformation() {
 		throw new RuntimeException("please replace your fusiondebug-api-server-1.0.xxx-SNAPSHOT.jar with a newer version");
 	}

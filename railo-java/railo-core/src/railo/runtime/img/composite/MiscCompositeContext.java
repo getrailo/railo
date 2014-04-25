@@ -49,6 +49,7 @@ public class MiscCompositeContext implements CompositeContext {
 //		dstNeedsConverting = !dstColorModel.equals(srgbCM);
 	}
 
+	@Override
 	public void dispose() {
 	}
 	
@@ -62,6 +63,7 @@ public class MiscCompositeContext implements CompositeContext {
 		return a < 0 ? 0 : a > 255 ? 255 : a;
 	}
 	
+	@Override
 	public void compose(Raster src, Raster dstIn, WritableRaster dstOut) {
 		float a=0, ac=0;
 		float alpha = this.alpha;

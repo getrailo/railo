@@ -9,8 +9,10 @@ public final class NullKeyLockListener implements KeyLockListener {
 		return my;
 	}
 
+	@Override
 	public void onEnd(String key, boolean isLast) {}
 
+	@Override
 	public void onStart(String key, boolean isFirst) {}
 	
 

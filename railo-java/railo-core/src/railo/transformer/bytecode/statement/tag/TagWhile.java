@@ -24,6 +24,7 @@ public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,F
 	/**
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		wv = new WhileVisitor();
 		wv.visitBeforeExpression(bc);
@@ -37,6 +38,7 @@ public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,F
 	/**
 	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
 	 */
+	@Override
 	public Label getBreakLabel() {
 		return wv.getBreakLabel();
 	}
@@ -45,6 +47,7 @@ public final class TagWhile extends TagBaseNoFinal implements FlowControlBreak,F
 	/**
 	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
 	 */
+	@Override
 	public Label getContinueLabel() {
 		return wv.getContinueLabel();
 	}

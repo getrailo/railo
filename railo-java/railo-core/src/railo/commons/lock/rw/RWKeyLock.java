@@ -125,13 +125,16 @@ class RWWrap<L> implements Lock {
 		this.readOnly=readOnly;
 	}
 
+	@Override
 	public void lock(long timeout) throws LockException, LockInterruptedException {
 		lock.lock(timeout, readOnly);
 	}
 
+	@Override
 	public void unlock() {
 		lock.unlock(readOnly);
 	}
+	@Override
 	public int getQueueLength() {
 		return lock.getQueueLength();
 	}

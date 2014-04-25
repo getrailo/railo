@@ -13,6 +13,7 @@ public class CategoryToolTipGeneratorImpl implements CategoryToolTipGenerator {
 		this.labelFormat=labelFormat;
 	}
 
+	@Override
 	public String generateToolTip(CategoryDataset dataset, int row, int column) {
 		String r = dataset.getRowKey(row).toString();
 		String c = dataset.getColumnKey(column).toString();

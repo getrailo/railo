@@ -95,6 +95,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return keys;
 	}
 	
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return removeEL(Caster.toIntValue(key.getString(),-1));
 	}
@@ -247,6 +248,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return new EntryIterator(this,keys());
 	}
 	
+	@Override
 	public Iterator<Object> valueIterator() {
 		Object[] values=new Object[getLength()];
 		for(int i=0;i<values.length;i++) {
@@ -273,6 +275,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return parent.appendChild(XMLCaster.toNode(doc,o,true));
 	}
 	
+	@Override
 	public Object appendEL(Object o) {
 		try {
 			return append(o);

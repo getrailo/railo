@@ -65,6 +65,7 @@ public final class TagThread extends TagBaseNoFinal {
 	/**
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#getBody()
 	 */
+	@Override
 	public Body getBody() {
 		return new BodyBase(getFactory());
 	}

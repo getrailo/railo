@@ -284,7 +284,8 @@ public class TagLib implements Cloneable {
     /**
      * @see java.lang.Object#toString()
      */
-    public String toString() {
+    @Override
+	public String toString() {
         return getDisplayName()+":"+getShortName()+":"+super.toString();
     }
     
@@ -316,6 +317,7 @@ public class TagLib implements Cloneable {
 	/**
 	 * @see java.lang.Object#clone()
 	 */
+	@Override
 	public Object clone(){
 		return duplicate(false);
 	}

@@ -80,7 +80,8 @@ public class BeanDeserializerFactory extends BaseDeserializerFactory {
      * Optimize construction of a BeanDeserializer by caching the
      * type descriptor and property map.
      */
-    protected Deserializer getGeneralPurpose(String mechanismType) {
+    @Override
+	protected Deserializer getGeneralPurpose(String mechanismType) {
         if (javaType == null || xmlType == null) {
            return super.getGeneralPurpose(mechanismType);
         }

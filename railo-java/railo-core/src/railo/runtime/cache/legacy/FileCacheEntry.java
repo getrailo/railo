@@ -19,12 +19,14 @@ public class FileCacheEntry implements CacheEntry {
 	private boolean isOK(TimeSpan timeSpan) {
 		return res.exists() && (res.lastModified()+timeSpan.getMillis()>=System.currentTimeMillis());
 	}
+	@Override
 	public String readEntry(TimeSpan timeSpan,String defaultValue) throws IOException {
 		if(isOK(timeSpan))
 			return IOUtil.toString(res,ENC);
 		return defaultValue;
 	}
 
+	@Override
 	public void writeEntry(String entry,boolean append) throws IOException {
 		IOUtil.copy(new ByteArrayInputStream(entry.getBytes(ENC)), res.getOutputStream(append),true,true);
 	}

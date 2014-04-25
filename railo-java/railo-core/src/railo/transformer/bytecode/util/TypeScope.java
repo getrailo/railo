@@ -39,7 +39,7 @@ public final class TypeScope {
     	SCOPES[Scope.SCOPE_URL]=			Type.getType(URL.class);
     	SCOPES[Scope.SCOPE_VARIABLES]=		Types.VARIABLES;
     	SCOPES[Scope.SCOPE_CLUSTER]=		Type.getType(Cluster.class); 
-    	SCOPES[ScopeSupport.SCOPE_VAR]=			SCOPES[Scope.SCOPE_LOCAL]; 
+    	SCOPES[Scope.SCOPE_VAR]=			SCOPES[Scope.SCOPE_LOCAL]; 
     }
     
 	public final static Method[] METHODS = new Method[ScopeSupport.SCOPE_COUNT];
@@ -58,7 +58,7 @@ public final class TypeScope {
     	METHODS[Scope.SCOPE_URL]=			new Method("urlScope",			SCOPES[Scope.SCOPE_URL],new Type[]{});
     	METHODS[Scope.SCOPE_VARIABLES]=		new Method("variablesScope",	SCOPES[Scope.SCOPE_VARIABLES],new Type[]{});
     	METHODS[Scope.SCOPE_CLUSTER]=		new Method("clusterScope",		SCOPES[Scope.SCOPE_CLUSTER],new Type[]{}); 
-    	METHODS[ScopeSupport.SCOPE_VAR]=	new Method("localScope",		SCOPES[ScopeSupport.SCOPE_VAR],new Type[]{}); 
+    	METHODS[Scope.SCOPE_VAR]=	new Method("localScope",		SCOPES[Scope.SCOPE_VAR],new Type[]{}); 
         }
     // Argument argumentsScope (boolean)
     public final static Method METHOD_ARGUMENT_BIND=new Method("argumentsScope",SCOPES[Scope.SCOPE_ARGUMENTS],new Type[]{Types.BOOLEAN_VALUE});

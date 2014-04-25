@@ -10,6 +10,7 @@ public class StringDeserializerFactory extends SimpleDeserializerFactory {
 		super(javaType, xmlType);
 	}
 	
+	@Override
 	public Deserializer getDeserializerAs(String mechanismType) {
 		if (javaType == String.class) {
 			return new StringDeserializer(javaType, xmlType);

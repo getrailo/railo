@@ -745,6 +745,7 @@ public final class DebuggerImpl implements Debugger {
 		return getTraces(ThreadLocalPageContext.get());
 	}
 
+	@Override
 	public DebugTrace[] getTraces(PageContext pc) {
 		if(pc!=null && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_TRACING))
 			return traces.toArray(new DebugTrace[traces.size()]);
@@ -870,6 +871,7 @@ public final class DebuggerImpl implements Debugger {
 
 final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
     
+	@Override
 	public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
 		long result = ((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
         // we do this additional step to try to avoid ticket RAILO-2076

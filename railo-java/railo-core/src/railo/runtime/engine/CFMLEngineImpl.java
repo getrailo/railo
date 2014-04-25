@@ -25,13 +25,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
-import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 
 import railo.Info;
-import railo.print;
+import railo.aprint;
 import railo.cli.servlet.HTTPServletImpl;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.FileUtil;
@@ -51,6 +50,7 @@ import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDControllerImpl;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.engine.CFMLEngineFactorySupport;
 import railo.loader.engine.CFMLEngineWrapper;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
@@ -81,12 +81,12 @@ import railo.runtime.op.StringsImpl;
 import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.StructImpl;
 import railo.runtime.util.Cast;
+import railo.runtime.util.ClassUtil;
 import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
 import railo.runtime.util.HTTPUtilImpl;
 import railo.runtime.util.IO;
-import railo.runtime.util.ClassUtil;
 import railo.runtime.util.Operation;
 import railo.runtime.util.Strings;
 import railo.runtime.util.ZipUtil;
@@ -139,11 +139,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
     			is = getClass().getResourceAsStream("/default.properties");
     			prop.load(is);
     			
-    			String storageClean = CFMLEngineFactory.removeQuotes(prop.getProperty("org.osgi.framework.storage.clean"),true);
-    			String bootDelegation = CFMLEngineFactory.removeQuotes(prop.getProperty("org.osgi.framework.bootdelegation"),true);
+    			String storageClean = CFMLEngineFactorySupport.removeQuotes(prop.getProperty("org.osgi.framework.storage.clean"),true);
+    			String bootDelegation = CFMLEngineFactorySupport.removeQuotes(prop.getProperty("org.osgi.framework.bootdelegation"),true);
     			int logLevel=1; // 1 = error, 2 = warning, 3 = information, and 4 = debug
-    			String strLogLevel = CFMLEngineFactory.removeQuotes(prop.getProperty("felix.log.level"),true);
-    			String parentClassLoader = CFMLEngineFactory.removeQuotes(prop.getProperty("org.osgi.framework.bundle.parent"),true);
+    			String strLogLevel = CFMLEngineFactorySupport.removeQuotes(prop.getProperty("felix.log.level"),true);
+    			String parentClassLoader = CFMLEngineFactorySupport.removeQuotes(prop.getProperty("org.osgi.framework.bundle.parent"),true);
     			if(StringUtil.isEmpty(parentClassLoader)) parentClassLoader=Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK;
     			
     			
@@ -155,13 +155,13 @@ public final class CFMLEngineImpl implements CFMLEngine {
     				else if("debug".equalsIgnoreCase(strLogLevel)) 
     					logLevel=4;
     			}
-    			print.e("factory.getResourceRoot():"+factory.getResourceRoot());
-    			print.e("storageClean:"+storageClean);
-    			print.e("bootDelegation:"+bootDelegation);
-    			print.e("logLevel:"+logLevel);
+    			aprint.e("factory.getResourceRoot():"+factory.getResourceRoot());
+    			aprint.e("storageClean:"+storageClean);
+    			aprint.e("bootDelegation:"+bootDelegation);
+    			aprint.e("logLevel:"+logLevel);
     			
     			Map<String,Object> config=new HashMap<String, Object>();
-    			config.put(FelixConstants.FRAMEWORK_SYSTEMPACKAGES, FelixConstants.FRAMEWORK_SYSTEMPACKAGES_EXTRA);
+    			config.put(Constants.FRAMEWORK_SYSTEMPACKAGES, Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA);
     			
     			
     			bundleContext=factory.getFelix(factory.getResourceRoot(),storageClean, bootDelegation, parentClassLoader, logLevel,config).getBundleContext();
@@ -412,6 +412,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         }
     }
 
+	@Override
 	public void serviceFile(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
 		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
@@ -437,6 +438,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	}
 	
 
+	@Override
 	public void serviceRest(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
 		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
@@ -469,7 +471,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
         return info.getVersionAsString();
     }
     
-    public Info getInfo() {
+    @Override
+	public Info getInfo() {
         return info;
     }
 
@@ -488,11 +491,13 @@ public final class CFMLEngineImpl implements CFMLEngine {
         return getConfigServerImpl().passwordEqual(password);
     }
 
-    public CFMLEngineFactory getCFMLEngineFactory() {
+    @Override
+	public CFMLEngineFactory getCFMLEngineFactory() {
         return factory;
     }
 
-    public void serviceAMF(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
+    @Override
+	public void serviceAMF(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
     	req=new HTTPServletRequestWrap(req);
 		amfEngine.service(servlet,req,rsp);
     }

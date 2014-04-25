@@ -19,23 +19,28 @@ public class ResourceImageOutputStream extends ImageOutputStreamImpl {
     	this.os=os;
     }
 
-    public int read() throws IOException {
+    @Override
+	public int read() throws IOException {
     	throw new IOException("not supported");
     }
 
-    public int read(byte[] b, int off, int len) throws IOException {
+    @Override
+	public int read(byte[] b, int off, int len) throws IOException {
     	throw new IOException("not supported");
     }
 
-    public void write(int b) throws IOException {
+    @Override
+	public void write(int b) throws IOException {
     	os.write(b);
     }
 
-    public void write(byte[] b, int off, int len) throws IOException {
+    @Override
+	public void write(byte[] b, int off, int len) throws IOException {
     	os.write(b,off,len);
     }
 
-    public long length() {
+    @Override
+	public long length() {
     	if(res==null) throw new RuntimeException("not supported");
         return res.length();
     }
@@ -51,7 +56,8 @@ public class ResourceImageOutputStream extends ImageOutputStreamImpl {
      * than the flushed position.
      * @exception IOException if any other I/O error occurs.
      */
-    public void seek(long pos) throws IOException {
+    @Override
+	public void seek(long pos) throws IOException {
     	throw new IOException("not supported");
     }
 

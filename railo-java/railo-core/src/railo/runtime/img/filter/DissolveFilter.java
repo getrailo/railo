@@ -78,7 +78,8 @@ public class DissolveFilter extends PointFilter  implements DynFiltering {
 		return softness;
 	}
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		float d = (1-density) * (1+softness);
 		minDensity = d-softness;
 		maxDensity = d;
@@ -86,6 +87,7 @@ public class DissolveFilter extends PointFilter  implements DynFiltering {
 		return super.filter( src, dst );
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		int a = (rgb >> 24) & 0xff;
 		float v = randomNumbers.nextFloat();
@@ -93,9 +95,11 @@ public class DissolveFilter extends PointFilter  implements DynFiltering {
 		return ((int)(a * f) << 24) | rgb & 0x00ffffff;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Dissolve...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Density")))!=null)setDensity(ImageFilterUtil.toFloatValue(o,"Density"));

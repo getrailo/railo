@@ -53,7 +53,8 @@ public class BicubicScaleFilter extends AbstractBufferedImageOp  implements DynF
 		this.height = height;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         //int w = src.getWidth();
         //int h = src.getHeight();
 
@@ -70,10 +71,12 @@ public class BicubicScaleFilter extends AbstractBufferedImageOp  implements DynF
         return dst;
     }
 
+	@Override
 	public String toString() {
 		return "Distort/Bicubic Scale";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		//Object o;
 

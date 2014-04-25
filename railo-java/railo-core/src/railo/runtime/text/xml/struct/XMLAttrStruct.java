@@ -50,10 +50,12 @@ public final class XMLAttrStruct extends XMLNodeStruct implements Attr {
 		attr.setValue(arg0);
 	}
 
+	@Override
 	public TypeInfo getSchemaTypeInfo() {
 		return null;
 	}
 
+	@Override
 	public boolean isId() {
 		return false;
 	}

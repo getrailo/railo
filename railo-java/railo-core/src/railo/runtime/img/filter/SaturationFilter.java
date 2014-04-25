@@ -66,6 +66,7 @@ public class SaturationFilter extends PointFilter  implements DynFiltering {
 		return amount;
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		if ( amount != 1 ) {
             int a = rgb & 0xff000000;
@@ -81,9 +82,11 @@ public class SaturationFilter extends PointFilter  implements DynFiltering {
         return rgb;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Saturation...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

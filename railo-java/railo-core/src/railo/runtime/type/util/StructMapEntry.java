@@ -22,10 +22,12 @@ public class StructMapEntry implements Map.Entry<String,Object> {
 		return key.getString();
 	}
 
+	@Override
 	public Object getValue() {
 		return value;
 	}
 
+	@Override
 	public Object setValue(Object value) {
 		Object old = value;
 		sct.setEL(key, value);

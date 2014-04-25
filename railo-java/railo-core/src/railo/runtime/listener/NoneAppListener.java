@@ -58,6 +58,7 @@ public final class NoneAppListener  extends AppListenerSupport {
 		pc.handlePageException(pe);
 	}
 
+	@Override
 	public void setMode(int mode) {
 		this.mode=mode;
 	}

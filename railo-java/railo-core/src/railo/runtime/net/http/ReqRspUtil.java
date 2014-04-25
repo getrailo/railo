@@ -43,7 +43,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFPlus;
 
 public final class ReqRspUtil {
 
@@ -505,7 +504,7 @@ public final class ReqRspUtil {
     		}
     		catch(Exception pe){}
     	break;
-    	case UDFPlus.RETURN_FORMAT_JAVA:
+    	case UDF.RETURN_FORMAT_JAVA:
     		try{
     			return JavaConverter.deserialize(new ByteArrayInputStream(data));
     		}

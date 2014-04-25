@@ -374,6 +374,7 @@ public final class ScopeContext {
 	 * @return
 	 * @deprecated use instead getAllSessionScopes(String appName)
 	 */
+	@Deprecated
 	public Struct getAllSessionScopes(PageContext pc, String appName) {
         return getAllSessionScopes(appName);
 	}

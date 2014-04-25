@@ -41,7 +41,7 @@ public final class TagFunction extends TagBase implements IFunction {
 	
 	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
-		_writeOut(bc,Function.PAGE_TYPE_REGULAR);
+		_writeOut(bc,IFunction.PAGE_TYPE_REGULAR);
 	}
 
 	public void _writeOut(BytecodeContext bc, int type) throws TransformerException {

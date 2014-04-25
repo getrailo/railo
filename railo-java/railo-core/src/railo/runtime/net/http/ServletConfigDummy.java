@@ -37,6 +37,7 @@ public class ServletConfigDummy implements ServletConfig {
 		return servletName;
 	}
 
+	@Override
 	public ServletContext getServletContext() {
 		return context;
 	}

@@ -31,6 +31,7 @@ public final class TimeFormat extends BaseFormat implements Format {
 	 * @param date
 	 * @return formated date
 	 */
+	@Override
 	public String format(Date date) {
 		return format(date,"short");
 	}
@@ -41,6 +42,7 @@ public final class TimeFormat extends BaseFormat implements Format {
 	 * @param mask
 	 * @return formated date
 	 */
+	@Override
 	public String format(Date date,String mask) {
 		DateTime dt=(date instanceof DateTime)?(DateTime)date:new DateTimeImpl(date.getTime(),false);
 		return format(dt,mask,null);

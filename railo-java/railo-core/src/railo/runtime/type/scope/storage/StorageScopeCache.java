@@ -108,6 +108,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		return s;
 	}
 
+	@Override
 	public void store(Config config) {
 		try {
 			Cache cache = getCache(config, cacheName);
@@ -121,6 +122,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		catch (Exception pe) {}
 	}
 	
+	@Override
 	public void unstore(Config config) {
 		try {
 			Cache cache = getCache(config, cacheName);

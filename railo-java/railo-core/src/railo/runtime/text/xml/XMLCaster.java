@@ -296,6 +296,7 @@ public final class XMLCaster {
 	 * @throws PageException
 	 * @deprecated replaced with toRawNode
 	 */
+	@Deprecated
 	public static Node toNode(Object o) throws PageException {
 		if(o instanceof XMLStruct)return ((XMLStruct)o).toNode();
 		if(o instanceof Node)return (Node)o;

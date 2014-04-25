@@ -52,6 +52,7 @@ public class CacheItemCache extends CacheItem {
 		IOUtil.copy(new ByteArrayInputStream(barr),os,true,false);
 	}
 
+	@Override
 	public String getValue() throws IOException {
 		try {
 			return Caster.toString(cache.getValue(lcFileName));

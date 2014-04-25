@@ -46,6 +46,7 @@ public final class CFCSetter implements Setter {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void set(Object trg, Object value, SessionFactoryImplementor factory) throws HibernateException {
 		try {
 			Component cfc = CommonUtil.toComponent(trg);

@@ -74,10 +74,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
         return this.bind; 
     } 
     
-    public Object getFunctionArgument(String key, Object defaultValue) {
+    @Override
+	public Object getFunctionArgument(String key, Object defaultValue) {
 		return getFunctionArgument(KeyImpl.getInstance(key), defaultValue);
 	}
 
+	@Override
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
 		return super.get(key,defaultValue);
 	}
@@ -158,6 +160,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	 * @return value matching key
 	 * @throws PageException
 	 */
+	@Override
 	public Object getE(int intKey) throws PageException {
 		Iterator it = valueIterator();//getMap().keySet().iterator();
 		int count=0;
@@ -326,6 +329,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		throw new ExpressionException("can't sort ["+sortType+"-"+sortOrder+"] Argument Scope","not Implemnted Yet");
 	}
 
+	@Override
 	public void sort(Comparator com) throws ExpressionException {
 		// TODO Impl.
 		throw new ExpressionException("can't sort Argument Scope","not Implemnted Yet");
@@ -343,6 +347,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		return arr;
 	}
 	
+	@Override
 	public Object setArgument(Object obj) throws PageException {
 		if(obj==this) return obj;
 		
@@ -426,6 +431,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		return trg;
 	}
 
+	@Override
 	public void setFunctionArgumentNames(Set functionArgumentNames) {// future add to interface
 		this.functionArgumentNames=functionArgumentNames;
 	}

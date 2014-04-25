@@ -90,7 +90,8 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
         return component.getBaseAbsName();
     }
     
-    public boolean isBasePeristent() {
+    @Override
+	public boolean isBasePeristent() {
 		return component.isPersistent();
 	}
 
@@ -321,6 +322,7 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
 		return component.getJavaAccessClass(isNew);
 	}
 
+	@Override
 	public String getWSDLFile() {
 		return component.getWSDLFile();
 	}
@@ -349,6 +351,7 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
 		return component.contains(access,key);
 	}
 
+	@Override
 	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
 		return component.getMember(access, key, dataMember, superAccess);
 	}
@@ -358,6 +361,7 @@ public final class ComponentSpecificAccess extends StructSupport implements Comp
 		component.setProperty(property);
 	}
 
+	@Override
 	public boolean equalTo(String type) {
 		return component.equalTo(type);
 	}

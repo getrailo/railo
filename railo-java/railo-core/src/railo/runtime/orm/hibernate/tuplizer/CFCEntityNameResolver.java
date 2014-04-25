@@ -13,6 +13,7 @@ public  class CFCEntityNameResolver implements EntityNameResolver {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String resolveEntityName(Object entity) {
 		try {
 			Component cfc = HibernateCaster.toComponent(entity);
@@ -26,6 +27,7 @@ public  class CFCEntityNameResolver implements EntityNameResolver {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		return getClass().equals( obj.getClass() );
 	}
@@ -33,6 +35,7 @@ public  class CFCEntityNameResolver implements EntityNameResolver {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}

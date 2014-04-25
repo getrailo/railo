@@ -53,6 +53,7 @@ class ProxyListener implements KeyLockListener {
 		this.password=password;
 	}
 
+	@Override
 	public void onStart(String key,boolean isFirst) {
 		//print.ln(" start:"+key+" _ "+isFirst);	
 		if(!isFirst) return;
@@ -100,6 +101,7 @@ class ProxyListener implements KeyLockListener {
 		}
 	}
 
+	@Override
 	public void onEnd(String key,boolean isLast) {
 		//print.ln(" end:"+key+key+" _ "+isLast);
 		if(!isLast) return;

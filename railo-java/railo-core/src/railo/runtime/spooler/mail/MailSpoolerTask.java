@@ -42,10 +42,12 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 		return "mail";
 	}
 
+	@Override
 	public String subject() {
 		return client.getSubject();
 	}
 	
+	@Override
 	public Struct detail() {
 		StructImpl sct = new StructImpl();
 		sct.setEL("subject", client.getSubject());
@@ -87,6 +89,7 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 		
 		return per+" ("+addr+")";
 	}
+	@Override
 	public Object execute(Config config) throws PageException {
 		try {
 			client._send((ConfigWeb)config);

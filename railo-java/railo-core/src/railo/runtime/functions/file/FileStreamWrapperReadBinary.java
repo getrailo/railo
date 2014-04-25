@@ -60,6 +60,7 @@ public class FileStreamWrapperReadBinary extends FileStreamWrapper {
 		return "readBinary";
 	}
 
+	@Override
 	public boolean isEndOfFile() {
 		return isEOF;
 	}
@@ -88,6 +89,7 @@ public class FileStreamWrapperReadBinary extends FileStreamWrapper {
 			
 		throw Caster.toPageException(new IOException("skip is only supported when you have set argument seekable of function fileOpen to true"));
 	}
+	@Override
 	public void seek(long pos) throws PageException {
 		if(seekable){
 			try {

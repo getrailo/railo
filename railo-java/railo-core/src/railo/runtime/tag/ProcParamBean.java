@@ -25,12 +25,14 @@ public class ProcParamBean implements SQLItem {
 	/**
 	 * @return Returns the cfsqltype.
 	 */
+	@Override
 	public int getType() {
 		return sqlType;
 	}
 	/**
 	 * @param cfsqltype The cfsqltype to set.
 	 */
+	@Override
 	public void setType(int sqlType) {
 		this.sqlType = sqlType;
 	}
@@ -61,12 +63,14 @@ public class ProcParamBean implements SQLItem {
 	/**
 	 * @return Returns the scale.
 	 */
+	@Override
 	public int getScale() {
 		return scale;
 	}
 	/**
 	 * @param scale The scale to set.
 	 */
+	@Override
 	public void setScale(int scale) {
 		this.scale = scale;
 	}
@@ -85,6 +89,7 @@ public class ProcParamBean implements SQLItem {
 	/**
 	 * @return Returns the value.
 	 */
+	@Override
 	public Object getValue() {
 		if(_null) return null;
 		return value;
@@ -92,6 +97,7 @@ public class ProcParamBean implements SQLItem {
 	/**
 	 * @param value The value to set.
 	 */
+	@Override
 	public void setValue(Object value) {
 		this.value = value;
 	}
@@ -119,6 +125,7 @@ public class ProcParamBean implements SQLItem {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	@Override
 	public SQLItem clone(Object object) {
 		ProcParamBean ppb = new ProcParamBean();
 		ppb.direction=direction;
@@ -131,16 +138,20 @@ public class ProcParamBean implements SQLItem {
 		ppb.index=index;
 		return ppb;
 	}
+	@Override
 	public Object getValueForCF() throws PageException {
 		return SQLCaster.toCFTypex(this);
 	}
+	@Override
 	public boolean isNulls() {
 		return getValue()==null || 
 		(sqlType!=Types.VARCHAR && sqlType!=Types.LONGVARCHAR && getValue() instanceof String && StringUtil.isEmpty(getValue()));
 	}
+	@Override
 	public boolean isValueSet() {
 		return value!=null || _null;// TODO impl
 	}
+	@Override
 	public void setNulls(boolean nulls) {
 		// TODO impl
 	}	

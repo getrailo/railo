@@ -24,6 +24,7 @@ public final class CastBoolean extends ExpressionBase implements ExprBoolean,Cas
     /**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "(boolean)"+expr;
 	}
@@ -58,7 +59,8 @@ public final class CastBoolean extends ExpressionBase implements ExprBoolean,Cas
     /**
      * @see railo.transformer.expression.Expression#writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
         if(expr instanceof ExprDouble) {
             expr.writeOut(bc,MODE_VALUE);

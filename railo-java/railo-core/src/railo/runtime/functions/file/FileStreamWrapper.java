@@ -151,6 +151,7 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 		return info().keys();
 	}
 
+	@Override
 	public Object remove(Key key) throws PageException {
 		throw new PageRuntimeException("can't remove key ["+key.getString()+"] from struct, struct is readonly");
 	}

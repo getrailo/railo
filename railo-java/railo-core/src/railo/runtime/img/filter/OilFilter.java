@@ -72,6 +72,7 @@ public class OilFilter extends WholeImageFilter  implements DynFiltering {
 		return levels;
 	}
 	
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int index = 0;
 		int[] rHistogram = new int[levels];
@@ -131,10 +132,12 @@ public class OilFilter extends WholeImageFilter  implements DynFiltering {
 		return outPixels;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Oil...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Levels")))!=null)setLevels(ImageFilterUtil.toIntValue(o,"Levels"));

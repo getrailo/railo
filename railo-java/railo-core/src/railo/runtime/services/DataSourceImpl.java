@@ -20,10 +20,12 @@ public class DataSourceImpl implements DataSource {
 		this.ds=ds;
 	}
 
+	@Override
 	public Connection getConnection() throws SQLException {
 		return getConnection(ds.getUsername(), ds.getPassword());
 	}
 
+	@Override
 	public Connection getConnection(String user, String pass)
 			throws SQLException {
 		try {
@@ -34,55 +36,66 @@ public class DataSourceImpl implements DataSource {
 		}
 	}
 
+	@Override
 	public DataSourceDef getDataSourceDef() {
 		return new DatSourceDefImpl(ds);
 	}
 
+	@Override
 	public PrintWriter getLogWriter() throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public int getLoginTimeout() throws SQLException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public boolean isDisabled() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public void remove() throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void setDataSourceDef(DataSourceDef dsDef) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void setLogWriter(PrintWriter pw) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void setLoginTimeout(int timeout) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}

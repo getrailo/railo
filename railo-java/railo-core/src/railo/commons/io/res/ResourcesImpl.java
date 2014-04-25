@@ -18,6 +18,7 @@ public final class ResourcesImpl implements Resources {
 	 * adds a default factory, this factory is used, when shemecan't be mapped to a other factory
 	 * @param provider
 	 */
+	@Override
 	public void registerDefaultResourceProvider(ResourceProvider provider) {
 		provider.setResources(this);
 		this.defaultResource=provider;
@@ -27,6 +28,7 @@ public final class ResourcesImpl implements Resources {
 	 * adds a additional resource to System
 	 * @param provider
 	 */
+	@Override
 	public void registerResourceProvider(ResourceProvider provider) {
 		
 		provider.setResources(this);
@@ -50,6 +52,7 @@ public final class ResourcesImpl implements Resources {
 	 * @param path
 	 * @return matching resource
 	 */
+	@Override
 	public Resource getResource(String path) {
 		int index=path.indexOf("://");
 		if(index!=-1) {
@@ -90,10 +93,12 @@ public final class ResourcesImpl implements Resources {
 	/**
 	 * @return the defaultResource
 	 */
+	@Override
 	public ResourceProvider getDefaultResourceProvider() {
 		return defaultResource;
 	}
 
+	@Override
 	public ResourceProvider[] getResourceProviders() {
 		ResourceProvider[] tmp = new ResourceProvider[resources.length];
 		for(int i=0;i<tmp.length;i++) {
@@ -111,6 +116,7 @@ public final class ResourcesImpl implements Resources {
 		return new ResourceLockImpl(timeout,caseSensitive);
 	}
 
+	@Override
 	public void reset() {
 		resources=new ResourceProvider[0];
 	}

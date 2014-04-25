@@ -294,12 +294,14 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	}
 	
 	
+	@Override
 	public Object getAt(Key key, int row) throws PageException {
 		Object res = getAt(key,row,getPid(),DEFAULT_VALUE);
 		if(res!=DEFAULT_VALUE) return res;
 		throw new DatabaseException("key ["+key+"] not found",null,null,null);
 	}
 
+	@Override
 	public Object getAt(String key, int row, Object defaultValue) {
 		return getAt(KeyImpl.init(key), row,defaultValue);
 	}
@@ -454,6 +456,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		return go(index,getPid());
 	}
 	
+	@Override
 	public boolean go(int index, int pid) {
 		if(index>0 && index<=recordcount) {
 			arrCurrentRow.set(pid, index);
@@ -1231,11 +1234,13 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
 		return (T) QueryUtil.getObject(this,columnIndex, type);
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
 		return (T) QueryUtil.getObject(this,columnLabel, type);
 	}

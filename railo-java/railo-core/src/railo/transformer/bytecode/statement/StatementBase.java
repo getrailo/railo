@@ -44,6 +44,7 @@ public abstract class StatementBase implements Statement {
 	/**
 	 * @see railo.transformer.bytecode.Statement#setParent(railo.transformer.bytecode.Statement)
 	 */
+	@Override
 	public void setParent(Statement parent) {
 		this.parent=parent;
 		if(hasReturnChild!=-1 && parent!=null)
@@ -56,7 +57,8 @@ public abstract class StatementBase implements Statement {
      * @param adapter
      * @throws TemplateException
      */
-    public final void writeOut(Context c) throws TransformerException {
+    @Override
+	public final void writeOut(Context c) throws TransformerException {
     	BytecodeContext bc=(BytecodeContext) c;
     	ExpressionUtil.visitLine(bc, start);
         _writeOut(bc);
@@ -78,7 +80,8 @@ public abstract class StatementBase implements Statement {
      * sets the line value.
      * @param line The line to set.
      */
-    public void setStart(Position start) {
+    @Override
+	public void setStart(Position start) {
         this.start = start;
     }
 
@@ -86,7 +89,8 @@ public abstract class StatementBase implements Statement {
      * sets the line value.
      * @param line The line to set.
      */
-    public void setEnd(Position end) {
+    @Override
+	public void setEnd(Position end) {
         this.end = end;
     }
     
@@ -111,6 +115,7 @@ public abstract class StatementBase implements Statement {
 	 *
 	 * @see railo.transformer.bytecode.Statement#hasFlowController()
 	 */
+	@Override
 	public boolean hasFlowController() {
 		return hasReturnChild==1;
 	}
@@ -118,6 +123,7 @@ public abstract class StatementBase implements Statement {
 	/**
 	 * @param hasReturnChild the hasReturnChild to set
 	 */
+	@Override
 	public void setHasFlowController(boolean hasReturnChild) {
 		if(parent!=null)parent.setHasFlowController(hasReturnChild);
 		this.hasReturnChild = hasReturnChild?1:0;

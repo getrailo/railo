@@ -92,6 +92,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		return m;
 	}
 	
+	@Override
 	public boolean getLocalAlways(){
 		return localAlways;
 	}
@@ -154,6 +155,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		variable.clear();
 	}
 	
+	@Override
 	public Object get(Collection.Key key) throws PageException {
 		//print.e();
 		Object rtn;
@@ -228,6 +230,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		return getCollection(KeyImpl.init(key));
 	}
 	
+	@Override
 	public Struct getScope(Collection.Key key) {
 		Object rtn=null;
 		Struct sct=new StructImpl(Struct.TYPE_LINKED);
@@ -316,6 +319,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	 * @param key
 	 * @return
 	 */
+	@Override
 	public List<String> getScopeNames() {
 		List<String> scopeNames=new ArrayList<String>();
 		
@@ -337,6 +341,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		return scopeNames;
 	}
 
+	@Override
 	public Object getCollection(Key key) throws PageException {
 		Object rtn=null;
 		
@@ -386,7 +391,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		throw new ExpressionException("variable ["+key.getString()+"] doesn't exist");
 	}
 
-    public Object get(Collection.Key key, Object defaultValue) {
+    @Override
+	public Object get(Collection.Key key, Object defaultValue) {
     	Object rtn=null;
 		if(checkArguments) {
 			rtn=local.get(key,NullSupportHelper.NULL());
@@ -559,6 +565,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 	}
 
+	@Override
 	public void reinitialize(PageContext pc) {
 		if(type!=Config.SCOPE_STANDARD) return;
 		Client cs = pc.clientScopeEL();
@@ -728,6 +735,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
 	 * @param allowImplicidQueryCall the allowImplicidQueryCall to set
 	 */
+	@Override
 	public boolean setAllowImplicidQueryCall(boolean allowImplicidQueryCall) {
 		boolean old=this.allowImplicidQueryCall;
 		this.allowImplicidQueryCall = allowImplicidQueryCall;
@@ -737,6 +745,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
 	 * @return the checkArguments
 	 */
+	@Override
 	public boolean getCheckArguments() {
 		return checkArguments;
 	}

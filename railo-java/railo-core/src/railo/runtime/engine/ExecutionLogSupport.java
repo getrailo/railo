@@ -19,6 +19,7 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 	protected long min=Long.MIN_VALUE;
 	protected short unit=UNIT_UNDEFINED;
 	
+	@Override
 	public void init(PageContext pc,Map<String,String> arguments) {
 		// min
 		if(min==Long.MIN_VALUE) {
@@ -79,16 +80,19 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 	}*/
 	
 
+	@Override
 	public final void release() {
 		map.clear();
 		_release();
 	}
 	
+	@Override
 	public final void start(int pos,String id) {
 		long current = System.nanoTime();
 		map.put(id,new Pair(current,pos));
 	}
 
+	@Override
 	public final void end(int pos,String id) {
 		long current = System.nanoTime();
 		Pair pair=map.remove(id);

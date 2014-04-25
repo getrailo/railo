@@ -35,6 +35,7 @@ public class PremultiplyFilter extends PointFilter  implements DynFiltering {
 	public PremultiplyFilter() {
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		int a = (rgb >> 24) & 0xff;
 		int r = (rgb >> 16) & 0xff;
@@ -47,9 +48,11 @@ public class PremultiplyFilter extends PointFilter  implements DynFiltering {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 
+	@Override
 	public String toString() {
 		return "Alpha/Premultiply";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){

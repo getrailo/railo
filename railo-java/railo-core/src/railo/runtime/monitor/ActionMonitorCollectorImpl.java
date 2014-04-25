@@ -33,6 +33,7 @@ public class ActionMonitorCollectorImpl implements ActionMonitorCollector {
 	 * @param ar
 	 * @throws IOException
 	 */
+	@Override
 	public void log(PageContext pc, String type, String label, long executionTime, Object data) {
 		if(monitors==null) return ;
 		
@@ -45,6 +46,7 @@ public class ActionMonitorCollectorImpl implements ActionMonitorCollector {
 			}
 		}
 	}
+	@Override
 	public void log(ConfigWeb config, String type, String label, long executionTime, Object data) {
 		if(monitors==null) return ;
 		

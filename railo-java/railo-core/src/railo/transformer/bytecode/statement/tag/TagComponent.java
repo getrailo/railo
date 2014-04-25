@@ -3,7 +3,7 @@ package railo.transformer.bytecode.statement.tag;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ExceptionUtil;
@@ -38,7 +38,7 @@ public class TagComponent extends TagBase{
 		PageSource ps = bc.getPage().getPageSource();
 		//Resource res = ps.getPhyscalFile();
 		PageSource rel = ps.getRealPage("Inliner.cfc");
-		print.e(getBody().getParent());
+		aprint.e(getBody().getParent());
 		Resource classFile = rel.getMapping().getClassRootDirectory().getRealResource(rel.getJavaName()+".class");
 		
 		//Resource classFile=classRootDir.getRealResource(className+".class");

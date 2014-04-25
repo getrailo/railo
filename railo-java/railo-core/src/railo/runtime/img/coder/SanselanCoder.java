@@ -28,6 +28,7 @@ class SanselanCoder extends Coder {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public final BufferedImage toBufferedImage(Resource res,String format) throws IOException {
 		InputStream is=null;
 		try {
@@ -47,6 +48,7 @@ class SanselanCoder extends Coder {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public final BufferedImage toBufferedImage(byte[] bytes,String format) throws IOException {
 		try {
 			return Sanselan.getBufferedImage(new ByteArrayInputStream(bytes));

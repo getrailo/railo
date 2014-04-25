@@ -46,6 +46,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the _default
 	 */
+	@Override
 	public String getDefault() {
 		return _default;
 	}
@@ -60,6 +61,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the displayname
 	 */
+	@Override
 	public String getDisplayname() {
 		return displayname;
 	}
@@ -74,6 +76,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the hint
 	 */
+	@Override
 	public String getHint() {
 		return hint;
 	}
@@ -88,6 +91,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the name
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -102,6 +106,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the required
 	 */
+	@Override
 	public boolean isRequired() {
 		return required;
 	}
@@ -116,6 +121,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the type
 	 */
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -140,6 +146,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the setter
 	 */
+	@Override
 	public boolean getSetter() {
 		return setter;
 	}
@@ -154,6 +161,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	/**
 	 * @return the getter
 	 */
+	@Override
 	public boolean getGetter() {
 		return getter;
 	}
@@ -167,6 +175,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	
 	
 
+	@Override
 	public Object getMetaData() {
 		Struct sct=new StructImpl();
 		
@@ -186,9 +195,11 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		return sct;
 	}
 
+	@Override
 	public Struct getDynamicAttributes() {
 		return dynAttrs;
 	}
+	@Override
 	public Struct getMeta() {
 		if(metadata==null) metadata=new StructImpl();
 		return metadata;
@@ -199,6 +210,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		return null;
 	}
 
+	@Override
 	public boolean isPeristent() {
 		return Caster.toBooleanValue(dynAttrs.get(KeyConstants._persistent,Boolean.TRUE),true);
 	}
@@ -206,6 +218,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	public void setOwnerName(String ownerName) {
 		this.ownerName=ownerName;
 	}
+	@Override
 	public String getOwnerName() {
 		return ownerName;
 	}
@@ -224,6 +237,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		";name:"+this.name+";type:"+this.type+";ownerName:"+ownerName+";attrs:"+strDynAttrs+";";
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if(this == obj) return true;
 		if(!(obj instanceof Property)) return false;
@@ -232,6 +246,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		return toString().equals(other.toString());
 	}
 
+	@Override
 	public Object duplicate(boolean deepCopy) {
 		PropertyImpl other = new PropertyImpl();
 		other._default=_default;

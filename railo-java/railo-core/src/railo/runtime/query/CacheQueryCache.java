@@ -11,7 +11,7 @@ import railo.commons.lang.KeyGenerator;
 import railo.runtime.PageContext;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.util.CacheKeyFilterAll;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.db.SQL;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.type.Query;
@@ -86,7 +86,7 @@ import railo.runtime.type.Query;
 	}
 
 	private Cache getCache(PageContext pc) {
-		Cache c = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
+		Cache c = Util.getDefault(pc,Config.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
 		return c;
 	}
 

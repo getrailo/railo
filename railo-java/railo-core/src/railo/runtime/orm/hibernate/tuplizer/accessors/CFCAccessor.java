@@ -10,6 +10,7 @@ public class CFCAccessor implements PropertyAccessor {
 	public CFCAccessor(){
 	}
 	
+	@Override
 	public Getter getGetter(Class clazz, String propertyName) throws PropertyNotFoundException {
 		return new CFCGetter(propertyName);
 	}
@@ -17,6 +18,7 @@ public class CFCAccessor implements PropertyAccessor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Setter getSetter(Class clazz, String propertyName)	throws PropertyNotFoundException {
 		return new CFCSetter(propertyName);
 	}

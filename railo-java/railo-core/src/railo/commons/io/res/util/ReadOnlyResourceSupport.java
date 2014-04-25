@@ -48,6 +48,7 @@ public abstract class ReadOnlyResourceSupport extends ResourceSupport {
 		return false;
 	}
 
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		throw new IOException("this is a read-only resource, can't write to it ["+this+"]");
 	}

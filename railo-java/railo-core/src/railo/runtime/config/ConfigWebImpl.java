@@ -101,7 +101,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         	this.rootDir=this.rootDir.getParentResource();
     }
     
-    public void reset() {
+    @Override
+	public void reset() {
     	super.reset();
     	factory.resetPageContext();
     	tagHandlerPool.reset();
@@ -188,7 +189,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     /**
      * @return Returns the accessor.
      */
-    public SecurityManager getSecurityManager() {
+    @Override
+	public SecurityManager getSecurityManager() {
         return securityManager;
     }
 
@@ -209,7 +211,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     /**
      * @return Returns the rootDir.
      */
-    public Resource getRootDirectory() {
+    @Override
+	public Resource getRootDirectory() {
         return rootDir;
     }
 
@@ -284,7 +287,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				m=new MappingImpl(
 					this,virtual,
 					physical,
-					archive,ConfigImpl.INSPECT_UNDEFINED,physicalFirst,false,false,false,true,ignoreVirtual,null
+					archive,Config.INSPECT_UNDEFINED,physicalFirst,false,false,false,true,ignoreVirtual,null
 					);
 				applicationMappings.put(key,m);
 			}
@@ -292,6 +295,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return m;
 		}
 
+		@Override
 		public String getLabel() {
 			String hash=getHash();
 			String label=hash;
@@ -348,6 +352,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		}
 		
 
+		@Override
 		public ThreadQueueImpl getThreadQueue() {
 			return configServer.getThreadQueue();
 		}
@@ -374,18 +379,22 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		
 
 		
+		@Override
 		public RequestMonitor[] getRequestMonitors(){
 			return configServer.getRequestMonitors();
 		}
 		
+		@Override
 		public RequestMonitor getRequestMonitor(String name) throws PageException{
 			return configServer.getRequestMonitor(name);
 		}
 		
+		@Override
 		public IntervallMonitor[] getIntervallMonitors(){
 			return configServer.getIntervallMonitors();
 		}
 
+		@Override
 		public IntervallMonitor getIntervallMonitor(String name) throws PageException{
 			return configServer.getIntervallMonitor(name);
 		}

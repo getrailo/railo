@@ -241,7 +241,8 @@ public abstract class StructSupport implements Map,Struct {
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_STRUCT, "struct");
 	}
     
-    public java.util.Iterator<String> getIterator() {
+    @Override
+	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     } 
 

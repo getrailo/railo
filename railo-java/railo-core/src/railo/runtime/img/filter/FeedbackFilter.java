@@ -250,7 +250,8 @@ public class FeedbackFilter extends AbstractBufferedImageOp  implements DynFilte
 		return iterations;
 	}
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
         float cx = src.getWidth() * centreX;
@@ -287,9 +288,11 @@ public class FeedbackFilter extends AbstractBufferedImageOp  implements DynFilte
         return dst;
     }
     
+	@Override
 	public String toString() {
 		return "Effects/Feedback...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));

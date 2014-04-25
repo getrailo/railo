@@ -90,7 +90,8 @@ public class GammaFilter extends TransferFilter  implements DynFiltering {
 		return rGamma;
 	}
 	
-    protected void initialize() {
+    @Override
+	protected void initialize() {
 		rTable = makeTable(rGamma);
 
 		if (gGamma == rGamma)
@@ -117,10 +118,12 @@ public class GammaFilter extends TransferFilter  implements DynFiltering {
 		return table;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Gamma...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Gamma")))!=null)setGamma(ImageFilterUtil.toFloatValue(o,"Gamma"));

@@ -17,6 +17,7 @@ limitations under the License.
 package railo.runtime.img.math;
 
 public class BlackFunction implements BinaryFunction {
+	@Override
 	public boolean isBlack(int rgb) {
 		return rgb == 0xff000000;
 	}

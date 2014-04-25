@@ -34,19 +34,24 @@ public class SyncMap<K,V>
         }
         
 
-        public int size() {
+        @Override
+		public int size() {
             synchronized (mutex) {return m.size();}
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             synchronized (mutex) {return m.isEmpty();}
         }
-        public boolean containsKey(Object key) {
+        @Override
+		public boolean containsKey(Object key) {
             synchronized (mutex) {return m.containsKey(key);}
         }
-        public boolean containsValue(Object value) {
+        @Override
+		public boolean containsValue(Object value) {
             synchronized (mutex) {return m.containsValue(value);}
         }
-        public V get(Object key) {
+        @Override
+		public V get(Object key) {
             synchronized (mutex) {return m.get(key);}
         }
 
@@ -73,17 +78,21 @@ public class SyncMap<K,V>
         
         
 
-        public V put(K key, V value) {
+        @Override
+		public V put(K key, V value) {
             synchronized (mutex) {return m.put(key, value);}
         }
-        public V remove(Object key) {
+        @Override
+		public V remove(Object key) {
             synchronized (mutex) {return m.remove(key);}
         }
         
-        public void putAll(Map<? extends K, ? extends V> map) {
+        @Override
+		public void putAll(Map<? extends K, ? extends V> map) {
             synchronized (mutex) {m.putAll(map);}
         }
-        public void clear() {
+        @Override
+		public void clear() {
             synchronized (mutex) {m.clear();}
         }
 
@@ -91,7 +100,8 @@ public class SyncMap<K,V>
         private transient Set<MapPro.Entry<K,V>> entrySet = null;
         private transient Collection<V> values = null;
 
-        public Set<K> keySet() {
+        @Override
+		public Set<K> keySet() {
             synchronized (mutex) {
                 if (keySet==null)
                     keySet = new SyncSet<K>(m.keySet(), mutex);
@@ -99,7 +109,8 @@ public class SyncMap<K,V>
             }
         }
 
-        public Set<Map.Entry<K,V>> entrySet() {
+        @Override
+		public Set<Map.Entry<K,V>> entrySet() {
             synchronized (mutex) {
                 if (entrySet==null)
                     entrySet = new SyncSet<Map.Entry<K,V>>(m.entrySet(), mutex);
@@ -107,7 +118,8 @@ public class SyncMap<K,V>
             }
         }
 
-        public Collection<V> values() {
+        @Override
+		public Collection<V> values() {
             synchronized (mutex) {
                 if (values==null)
                     values = new SyncCollection<V>(m.values(), mutex);
@@ -115,15 +127,18 @@ public class SyncMap<K,V>
             }
         }
 
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (this == o)
                 return true;
             synchronized (mutex) {return m.equals(o);}
         }
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             synchronized (mutex) {return m.hashCode();}
         }
-        public String toString() {
+        @Override
+		public String toString() {
             synchronized (mutex) {return m.toString();}
         }
         private void writeObject(ObjectOutputStream s) throws IOException {

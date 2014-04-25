@@ -141,7 +141,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
      * sets the appendix of the class
      * @param appendix
      */
-    public void setAppendix(String appendix) {
+    @Override
+	public void setAppendix(String appendix) {
         this.appendix=appendix;
         //filename = appendix+'.'+pageContext.getConfig().getCFMLExtension();
     }
@@ -208,7 +209,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		callerScope.initialize(pageContext);
         
 		// thistag
-		if(thistagScope==null)thistagScope=new StructImpl(StructImpl.TYPE_LINKED);
+		if(thistagScope==null)thistagScope=new StructImpl(Struct.TYPE_LINKED);
         thistagScope.set(GENERATED_CONTENT,"");
         thistagScope.set(EXECUTION_MODE,"start");      
         thistagScope.set(EXECUTE_BODY,Boolean.TRUE);
@@ -354,7 +355,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	        	while(parent!=null && !(parent instanceof CFTag && ((CFTag)parent).isCFCBasedCustomTag())) {
 	    			parent=parent.getParent();
 	    		}
-				Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+				Struct args=new StructImpl(Struct.TYPE_LINKED);
 				args.set(KeyConstants._HASENDTAG, Caster.toBoolean(hasBody));
 	    		if(parent instanceof CFTag) {
 	    			args.set(PARENT, ((CFTag)parent).getComponent());
@@ -532,7 +533,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		            bodyContent.clearBody();
 		            //rtn=cfc.call(pageContext, ON_END_TAG, new Object[]{attributesScope,pageContext.variablesScope(),output});
 		            
-		            Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+		            Struct args=new StructImpl(Struct.TYPE_LINKED);
 		        	args.set(KeyConstants._ATTRIBUTES, attributesScope);
 		        	setCaller(pageContext, args);
 		        	args.set(GENERATED_CONTENT, output);
@@ -587,7 +588,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	        	PageException pe = Caster.toPageException(t);
 	        	//Object rtn=cfc.call(pageContext, ON_ERROR, new Object[]{pe.getCatchBlock(pageContext),source});
 	    		
-	        	Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+	        	Struct args=new StructImpl(Struct.TYPE_LINKED);
 	        	args.set(CFCATCH, pe.getCatchBlock(ThreadLocalPageContext.getConfig(pageContext)));
 	        	args.set(SOURCE, source);
 	        	Object rtn=cfc.callWithNamedValues(pageContext, ON_ERROR, args);	
@@ -646,7 +647,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     /**
      * @return Returns the appendix.
      */
-    public String getAppendix() {
+    @Override
+	public String getAppendix() {
         return appendix;
     }
 

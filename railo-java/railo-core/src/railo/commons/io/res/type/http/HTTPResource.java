@@ -78,6 +78,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	
 	
 
+	@Override
 	public boolean exists() {
 		try {
 			provider.read(this);
@@ -98,6 +99,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		}
 	}
 
+	@Override
 	public InputStream getInputStream() throws IOException {
 		//ResourceUtil.checkGetInputStreamOK(this);
 		//provider.lock(this);
@@ -171,6 +173,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		return exists();
 	}
 
+	@Override
 	public long lastModified() {
 		int last=0;
 		try {
@@ -181,6 +184,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		return last;
 	}
 
+	@Override
 	public long length() {
 		try {
 			if(!exists()) return 0;
@@ -191,6 +195,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		}
 	}
 
+	@Override
 	public Resource[] listResources() {
 		return null;
 	}

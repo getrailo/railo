@@ -155,6 +155,7 @@ public final class TagLibFactory extends DefaultHandler {
 	 *  
 	 * @see org.xml.sax.ContentHandler#startElement(String, String, String, Attributes)
 	 */
+	@Override
 	public void startElement(String uri, String name, String qName, Attributes atts) {
 
 		inside=qName;
@@ -172,6 +173,7 @@ public final class TagLibFactory extends DefaultHandler {
 	 *  
 	 * @see org.xml.sax.ContentHandler#endElement(String, String, String)
 	 */
+	@Override
 	public void endElement(String uri, String name, String qName) {
 		setContent(content.toString().trim());
 		content=new StringBuffer();
@@ -194,6 +196,7 @@ public final class TagLibFactory extends DefaultHandler {
 	 * 
 	 * @see org.xml.sax.ContentHandler#characters(char[], int, int)
 	 */
+	@Override
 	public void characters (char ch[], int start, int length)	{
 		content.append(new String(ch,start,length));
 	}

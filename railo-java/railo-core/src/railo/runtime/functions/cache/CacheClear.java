@@ -3,7 +3,7 @@ package railo.runtime.functions.cache;
 import railo.commons.io.cache.CacheKeyFilter;
 import railo.runtime.PageContext;
 import railo.runtime.cache.util.WildCardFilter;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -28,16 +28,18 @@ public final class CacheClear implements Function,CacheKeyFilter {
 			CacheKeyFilter f=filter;
 			if(CacheGetAllIds.isFilter(strFilter))
 				f=new WildCardFilter(strFilter,true);
-			return Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).remove(f);
+			return Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT).remove(f);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
 	}
 
+	@Override
 	public boolean accept(String key) {
 		return true;
 	}
 
+	@Override
 	public String toPattern() {
 		return "*";
 	}

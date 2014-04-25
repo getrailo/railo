@@ -25,7 +25,7 @@ import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.op.Caster;
 import railo.runtime.type.scope.ScopeContext;
-import railo.runtime.type.scope.client.ClientFile;
+import railo.runtime.type.scope.storage.StorageScopeFile;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -215,7 +215,7 @@ public final class Controler extends Thread {
 				src=children[i].getName();
 				index=src.indexOf('-');
 
-				trg=ClientFile.getFolderName(src.substring(0,index), src.substring(index+1),false);
+				trg=StorageScopeFile.getFolderName(src.substring(0,index), src.substring(index+1),false);
 				trgres=dir.getRealResource(trg);
 				if(!trgres.exists()){
 					trgres.createFile(true);
@@ -344,6 +344,7 @@ public final class Controler extends Thread {
 			this.time=time;
 		}
 
+		@Override
 		public boolean accept(Resource res) {
 
 			if(res.isDirectory()) return allowDir;

@@ -113,12 +113,12 @@ public class DeployHandler {
 		    name = ListUtil.trim(virtual, "/");
 		    readOnly = Caster.toBooleanValue(unwrap(attr.getValue("mapping-readonly")),false);
 		    topLevel = Caster.toBooleanValue(unwrap(attr.getValue("mapping-top-level")),false);
-		    inspect = ConfigWebUtil.inspectTemplate(unwrap(attr.getValue("mapping-inspect")), ConfigImpl.INSPECT_UNDEFINED);
-		    if(inspect==ConfigImpl.INSPECT_UNDEFINED) {
+		    inspect = ConfigWebUtil.inspectTemplate(unwrap(attr.getValue("mapping-inspect")), Config.INSPECT_UNDEFINED);
+		    if(inspect==Config.INSPECT_UNDEFINED) {
 		    	Boolean trusted = Caster.toBoolean(unwrap(attr.getValue("mapping-trusted")),null);
 		    	if(trusted!=null) {
-		    		if(trusted.booleanValue()) inspect=ConfigImpl.INSPECT_NEVER;
-		    		else inspect=ConfigImpl.INSPECT_ALWAYS;
+		    		if(trusted.booleanValue()) inspect=Config.INSPECT_NEVER;
+		    		else inspect=Config.INSPECT_ALWAYS;
 		    	}	
 		    }
 		    hidden = Caster.toBooleanValue(unwrap(attr.getValue("mapping-hidden")),false);

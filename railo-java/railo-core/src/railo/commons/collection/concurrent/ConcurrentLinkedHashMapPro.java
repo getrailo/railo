@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import railo.commons.collection.AbstractMapPro;
-import railo.commons.collection.HashMapPro;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
 
@@ -372,36 +371,44 @@ implements ConcurrentMap<K, V>, Serializable {
         	header.cloneAllFlag.getAndDecrement();
         }
 
+		@Override
 		public K getKey() {
 			return key;
 		}
 
+		@Override
 		public V getValue() {
 			return value;
 		}
 
+		@Override
 		public V setValue(V value) {
 			V oldValue = this.value;
 			this.value = value;
 			return oldValue;
 		}
 
+		@Override
 		public Entry<K, V> getAfter() {
 			return after;
 		}
 
+		@Override
 		public Entry<K, V> getBefore() {
 			return before;
 		}
 		
+		@Override
 		public long getAccessCount() {
 			return accessCount;
 		}
 		
+		@Override
 		public long getCreationTime() {
 			return creationTime;
 		}
 		
+		@Override
 		public long getLastAccessTime() {
 			return lastAccessedTime;
 		}
@@ -796,7 +803,7 @@ implements ConcurrentMap<K, V>, Serializable {
                         return e.value;
                     }
                 }
-                throw HashMapPro.invalidKey(m, key, true);
+                throw AbstractMapPro.invalidKey(m, key, true);
             } finally {
                 unlock();
             }
@@ -944,7 +951,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *
      * @return <tt>true</tt> if this map contains no key-value mappings
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         final Segment<K,V>[] segments = this.segments;
         /*
          * We keep track of per-segment modCounts to avoid ABA
@@ -982,7 +990,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *
      * @return the number of key-value mappings in this map
      */
-    public int size() {
+    @Override
+	public int size() {
         final Segment<K,V>[] segments = this.segments;
         long sum = 0;
         long check = 0;
@@ -1034,7 +1043,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *
      * @throws NullPointerException if the specified key is null
      */
-    public V get(Object key) {
+    @Override
+	public V get(Object key) {
         int hash = hash(key);
         return segmentFor(hash).get(key, hash, header,null);
     }
@@ -1060,7 +1070,7 @@ implements ConcurrentMap<K, V>, Serializable {
                 e = e.next;
             }
         }
-		throw HashMapPro.invalidKey(this, key,false); 
+		throw AbstractMapPro.invalidKey(this, key,false); 
 	}
 
 	@Override
@@ -1078,7 +1088,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *         <tt>equals</tt> method; <tt>false</tt> otherwise.
      * @throws NullPointerException if the specified key is null
      */
-    public boolean containsKey(Object key) {
+    @Override
+	public boolean containsKey(Object key) {
         int hash = hash(key);
         return segmentFor(hash).containsKey(key, hash);
     }
@@ -1094,7 +1105,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *         specified value
      * @throws NullPointerException if the specified value is null
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
         if (value == null)
             throw new NullPointerException();
 
@@ -1173,7 +1185,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *         <tt>null</tt> if there was no mapping for <tt>key</tt>
      * @throws NullPointerException if the specified key or value is null
      */
-    public V put(K key, V value) {
+    @Override
+	public V put(K key, V value) {
         
         HashEntry<K, V> evictEntry = (HashEntry<K, V>) evictionPolicy.evictElement(header); 
     	if(evictEntry != null && size() >= maxSize)
@@ -1190,7 +1203,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *         or <tt>null</tt> if there was no mapping for the key
      * @throws NullPointerException if the specified key or value is null
      */
-    public V putIfAbsent(K key, V value) {
+    @Override
+	public V putIfAbsent(K key, V value) {
         if (value == null)
             throw new NullPointerException();
         
@@ -1209,7 +1223,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *
      * @param m mappings to be stored in this map
      */
-    public void putAll(Map<? extends K, ? extends V> m) {
+    @Override
+	public void putAll(Map<? extends K, ? extends V> m) {
         for (Map.Entry<? extends K, ? extends V> e : m.entrySet())
             put(e.getKey(), e.getValue());
     }
@@ -1223,7 +1238,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *         <tt>null</tt> if there was no mapping for <tt>key</tt>
      * @throws NullPointerException if the specified key is null
      */
-    public V remove(Object key) {
+    @Override
+	public V remove(Object key) {
     	int hash = hash(key);
         return segmentFor(hash).remove(key, hash, null, header,null);
     }
@@ -1246,7 +1262,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *
      * @throws NullPointerException if the specified key is null
      */
-    public boolean remove(Object key, Object value) {
+    @Override
+	public boolean remove(Object key, Object value) {
         int hash = hash(key);
         if (value == null)
             return false;
@@ -1258,7 +1275,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *
      * @throws NullPointerException if any of the arguments are null
      */
-    public boolean replace(K key, V oldValue, V newValue) {
+    @Override
+	public boolean replace(K key, V oldValue, V newValue) {
         if (oldValue == null || newValue == null)
             throw new NullPointerException();
         int hash = hash(key);
@@ -1272,7 +1290,8 @@ implements ConcurrentMap<K, V>, Serializable {
      *         or <tt>null</tt> if there was no mapping for the key
      * @throws NullPointerException if the specified key or value is null
      */
-    public V replace(K key, V value) {
+    @Override
+	public V replace(K key, V value) {
         if (value == null)
             throw new NullPointerException();
         int hash = hash(key);
@@ -1282,7 +1301,8 @@ implements ConcurrentMap<K, V>, Serializable {
     /**
      * Removes all of the mappings from this map.
      */
-    public void clear() {
+    @Override
+	public void clear() {
         for (int i = 0; i < segments.length; ++i)
             segments[i].clear(header);
         header.before = header.after = header;
@@ -1349,7 +1369,8 @@ implements ConcurrentMap<K, V>, Serializable {
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
-    public Set<K> keySet() {
+    @Override
+	public Set<K> keySet() {
         Set<K> ks = keySet;
         return (ks != null) ? ks : (keySet = new KeySet());
     }
@@ -1370,7 +1391,8 @@ implements ConcurrentMap<K, V>, Serializable {
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
-    public Collection<V> values() {
+    @Override
+	public Collection<V> values() {
         Collection<V> vs = values;
         return (vs != null) ? vs : (values = new Values());
     }
@@ -1391,7 +1413,8 @@ implements ConcurrentMap<K, V>, Serializable {
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
-    public Set<Map.Entry<K,V>> entrySet() {
+    @Override
+	public Set<Map.Entry<K,V>> entrySet() {
         Set<Map.Entry<K,V>> es = entrySet;
         return (es != null) ? es : (entrySet = new EntrySet());
     }
@@ -1459,16 +1482,20 @@ implements ConcurrentMap<K, V>, Serializable {
         extends HashIterator
         implements Iterator<K>, Enumeration<K>
     {
-        public K next()        { return super.nextEntry().key; }
-        public K nextElement() { return super.nextEntry().key; }
+        @Override
+		public K next()        { return super.nextEntry().key; }
+        @Override
+		public K nextElement() { return super.nextEntry().key; }
     }
 
     final class ValueIterator
         extends HashIterator
         implements Iterator<V>, Enumeration<V>
     {
-        public V next()        { return super.nextEntry().value; }
-        public V nextElement() { return super.nextEntry().value; }
+        @Override
+		public V next()        { return super.nextEntry().value; }
+        @Override
+		public V nextElement() { return super.nextEntry().value; }
     }
 
     /**
@@ -1493,7 +1520,8 @@ implements ConcurrentMap<K, V>, Serializable {
          * removed in which case the put will re-establish). We do not
          * and cannot guarantee more.
          */
-        public V setValue(V value) {
+        @Override
+		public V setValue(V value) {
             if (value == null) throw new NullPointerException();
             V v = super.setValue(value);
             ConcurrentLinkedHashMapPro.this.put(getKey(), value);
@@ -1505,75 +1533,93 @@ implements ConcurrentMap<K, V>, Serializable {
         extends HashIterator
         implements Iterator<Map.Entry<K,V>>
     {
-        public Map.Entry<K,V> next() {
+        @Override
+		public Map.Entry<K,V> next() {
             HashEntry<K,V> e = super.nextEntry();
             return new WriteThroughEntry(e.key, e.value);
         }
     }
 
     final class KeySet extends AbstractSet<K> {
-        public Iterator<K> iterator() {
+        @Override
+		public Iterator<K> iterator() {
             return new KeyIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return ConcurrentLinkedHashMapPro.this.size();
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             return ConcurrentLinkedHashMapPro.this.isEmpty();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return ConcurrentLinkedHashMapPro.this.containsKey(o);
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             return ConcurrentLinkedHashMapPro.this.remove(o) != null;
         }
-        public void clear() {
+        @Override
+		public void clear() {
         	ConcurrentLinkedHashMapPro.this.clear();
         }
     }
 
     final class Values extends AbstractCollection<V> {
-        public Iterator<V> iterator() {
+        @Override
+		public Iterator<V> iterator() {
             return new ValueIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return ConcurrentLinkedHashMapPro.this.size();
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             return ConcurrentLinkedHashMapPro.this.isEmpty();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return ConcurrentLinkedHashMapPro.this.containsValue(o);
         }
-        public void clear() {
+        @Override
+		public void clear() {
         	ConcurrentLinkedHashMapPro.this.clear();
         }
     }
 
     final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
-        public Iterator<Map.Entry<K,V>> iterator() {
+        @Override
+		public Iterator<Map.Entry<K,V>> iterator() {
             return new EntryIterator();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             if (!(o instanceof Map.Entry<?,?>))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
             V v = ConcurrentLinkedHashMapPro.this.get(e.getKey());
             return v != null && v.equals(e.getValue());
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             if (!(o instanceof Map.Entry<?,?>))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
             return ConcurrentLinkedHashMapPro.this.remove(e.getKey(), e.getValue());
         }
-        public int size() {
+        @Override
+		public int size() {
             return ConcurrentLinkedHashMapPro.this.size();
         }
-        public boolean isEmpty() {
+        @Override
+		public boolean isEmpty() {
             return ConcurrentLinkedHashMapPro.this.isEmpty();
         }
-        public void clear() {
+        @Override
+		public void clear() {
         	ConcurrentLinkedHashMapPro.this.clear();
         }
     }

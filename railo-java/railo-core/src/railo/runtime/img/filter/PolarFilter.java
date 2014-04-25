@@ -65,7 +65,8 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
 		this.type=type;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		this.width = src.getWidth();
 		this.height = src.getHeight();
 		centreX = width/2;
@@ -102,6 +103,7 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
 		return x*x;
 	}
 
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		float theta, t;
 		float m, xmax, ymax;
@@ -215,10 +217,12 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Polar Coordinates...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toString(o,"Type"));

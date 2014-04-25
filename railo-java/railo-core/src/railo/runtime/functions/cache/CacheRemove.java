@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import railo.commons.io.cache.Cache;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -35,7 +35,7 @@ public final class CacheRemove implements Function {
 		String id;
 		Cache cache;
 		try {
-			cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			cache = Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}

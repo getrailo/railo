@@ -30,6 +30,7 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 	private Resource dir;
 	
 	
+	@Override
 	protected void _init(PageContext pc, Map<String, String> arguments) {
 		this.pc=pc;
 		
@@ -90,6 +91,7 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 		return dir;
 	}
 
+	@Override
 	protected void _release() {
 		
 		// execution time

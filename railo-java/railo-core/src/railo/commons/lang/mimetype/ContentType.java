@@ -28,6 +28,7 @@ public class ContentType {
 		else this.charset=null;
 	}
 	
+	@Override
 	public String toString(){
 		if(charset==null) return mimeType.toString();
 		return mimeType+"; charset="+charset;

@@ -33,21 +33,24 @@ public final class LitIntegerImpl extends ExpressionBase implements LitInteger,E
 	/**
      * @return return value as int
      */ 
-    public int geIntValue() {
+    @Override
+	public int geIntValue() {
         return i;
     }
     
     /**
      * @return return value as Double Object
      */
-    public Integer getInteger() {
+    @Override
+	public Integer getInteger() {
         return new Integer(i);
     }
     
     /**
      * @see railo.transformer.expression.literal.Literal#getString()
      */
-    public String getString() {
+    @Override
+	public String getString() {
         return Caster.toString(i);
     }
     
@@ -68,7 +71,8 @@ public final class LitIntegerImpl extends ExpressionBase implements LitInteger,E
     /**
      * @see railo.transformer.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
      */
-    public Type _writeOut(BytecodeContext bc, int mode) {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.push(i);
         if(mode==MODE_REF) {
@@ -81,7 +85,8 @@ public final class LitIntegerImpl extends ExpressionBase implements LitInteger,E
     /**
      * @see railo.transformer.expression.literal.Literal#getDouble(java.lang.Double)
      */
-    public Double getDouble(Double defaultValue) {
+    @Override
+	public Double getDouble(Double defaultValue) {
         return getDouble();
     }
 
@@ -92,7 +97,8 @@ public final class LitIntegerImpl extends ExpressionBase implements LitInteger,E
 	/**
      * @see railo.transformer.expression.literal.Literal#getBoolean(java.lang.Boolean)
      */
-    public Boolean getBoolean(Boolean defaultValue) {
+    @Override
+	public Boolean getBoolean(Boolean defaultValue) {
         return getBoolean();
     }
 }

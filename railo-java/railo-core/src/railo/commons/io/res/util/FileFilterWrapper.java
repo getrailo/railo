@@ -13,6 +13,7 @@ public final class FileFilterWrapper implements FileResourceFilter {
 	public FileFilterWrapper(FileFilter fileFilter) {
 		this.filter=fileFilter;
 	}
+	@Override
 	public boolean accept(Resource res) {
 		if(res instanceof File) return accept(((File)res));
 		return accept(FileWrapper.toFile(res));

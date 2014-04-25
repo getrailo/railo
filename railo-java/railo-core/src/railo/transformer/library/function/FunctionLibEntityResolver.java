@@ -21,6 +21,7 @@ public final class FunctionLibEntityResolver implements EntityResolver {
 	 * Laedt die DTD vom lokalen System.
 	 * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public InputSource resolveEntity(String publicId, String systemId) {
 		if ( publicId.equals( "-//Railo//DTD CFML Function Library 1.0//EN" ) ) {
 			return new InputSource( getClass().getResourceAsStream(DTD_1_0) );

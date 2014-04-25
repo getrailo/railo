@@ -29,6 +29,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	/**
 	 * @see railo.runtime.util.HTTPUtil#decode(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public String decode(String str, String charset)throws UnsupportedEncodingException {
 		return URLDecoder.decode(str, charset,false);
 	}
@@ -36,6 +37,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	/**
 	 * @see railo.runtime.util.HTTPUtil#delete(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[])
 	 */
+	@Override
 	public HTTPResponse delete(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
@@ -49,6 +51,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
+	@Override
 	public String encode(String str, String charset)throws UnsupportedEncodingException {
 		return URLEncoder.encode(str, charset);
 	}
@@ -56,6 +59,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	/**
 	 * @see railo.runtime.util.HTTPUtil#head(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[])
 	 */
+	@Override
 	public HTTPResponse head(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
@@ -66,6 +70,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	/**
 	 * @see railo.runtime.util.HTTPUtil#get(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[])
 	 */
+	@Override
 	public HTTPResponse get(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
@@ -76,6 +81,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	/**
 	 * @see railo.runtime.util.HTTPUtil#put(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[], java.lang.Object)
 	 */
+	@Override
 	public HTTPResponse put(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
@@ -105,14 +111,17 @@ public class HTTPUtilImpl implements HTTPUtil {
 	/**
 	 * @see railo.commons.net.HTTPUtil#toURL(java.lang.String)
 	 */
+	@Override
 	public URL toURL(String strUrl) throws MalformedURLException {
 		return railo.commons.net.HTTPUtil.toURL(strUrl,true);
 	}
 	
+	@Override
 	public URI toURI(String strUrl) throws URISyntaxException {
 		return railo.commons.net.HTTPUtil.toURI(strUrl);
 	}
 	
+	@Override
 	public URI toURI(String strUrl, int port) throws URISyntaxException {
 		return railo.commons.net.HTTPUtil.toURI(strUrl,port);
 	}

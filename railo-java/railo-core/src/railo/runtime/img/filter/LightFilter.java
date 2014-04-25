@@ -213,6 +213,7 @@ public class LightFilter extends WholeImageFilter  implements DynFiltering {
 		c.set( ((argb >> 16) & 0xff) * r255, ((argb >> 8) & 0xff) * r255, (argb & 0xff) * r255, ((argb >> 24) & 0xff) * r255 );
 	}
 	
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int index = 0;
 		int[] outPixels = new int[width * height];
@@ -247,14 +248,15 @@ public class LightFilter extends WholeImageFilter  implements DynFiltering {
 				}
 */
 				Kernel kernel = GaussianFilter.makeKernel( bumpSoftness );
-				GaussianFilter.convolveAndTranspose( kernel, bumpPixels, tmpPixels, bumpWidth, bumpHeight, true, false, false, GaussianFilter.WRAP_EDGES );
-				GaussianFilter.convolveAndTranspose( kernel, tmpPixels, softPixels, bumpHeight, bumpWidth, true, false, false, GaussianFilter.WRAP_EDGES );
+				GaussianFilter.convolveAndTranspose( kernel, bumpPixels, tmpPixels, bumpWidth, bumpHeight, true, false, false, ConvolveFilter.WRAP_EDGES );
+				GaussianFilter.convolveAndTranspose( kernel, tmpPixels, softPixels, bumpHeight, bumpWidth, true, false, false, ConvolveFilter.WRAP_EDGES );
 				bump = new ImageFunction2D(softPixels, bumpWidth, bumpHeight, ImageFunction2D.CLAMP, bumpSource == BUMPS_FROM_IMAGE_ALPHA);
 final Function2D bbump = bump;
 if ( bumpShape != 0 ) {
 	bump = new Function2D() {
 		private Function2D original = bbump;
 
+		@Override
 		public float evaluate(float x, float y) {
 			float v = original.evaluate( x, y );
 			switch ( bumpShape ) {
@@ -518,6 +520,7 @@ if ( bumpShape != 0 ) {
 		return 0;
 	}
 	
+	@Override
 	public String toString() {
 		return "Stylize/Light Effects...";
 	}
@@ -713,6 +716,7 @@ if ( bumpShape != 0 ) {
 			cosConeAngle = (float)Math.cos(coneAngle);
 		}
 		
+		@Override
 		public Object clone() {
 			try {
 				Light copy = (Light)super.clone();
@@ -723,6 +727,7 @@ if ( bumpShape != 0 ) {
 			}
 		}
 
+		@Override
 		public String toString() {
 			return "Light";
 		}
@@ -730,6 +735,7 @@ if ( bumpShape != 0 ) {
 	}
 
 	public class AmbientLight extends Light {
+		@Override
 		public String toString() {
 			return "Ambient Light";
 		}
@@ -740,6 +746,7 @@ if ( bumpShape != 0 ) {
 			type = POINT;
 		}
 
+		@Override
 		public String toString() {
 			return "Point Light";
 		}
@@ -750,6 +757,7 @@ if ( bumpShape != 0 ) {
 			type = DISTANT;
 		}
 
+		@Override
 		public String toString() {
 			return "Distant Light";
 		}
@@ -760,10 +768,12 @@ if ( bumpShape != 0 ) {
 			type = SPOT;
 		}
 
+		@Override
 		public String toString() {
 			return "Spotlight";
 		}
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toColorRGB(o,"ColorSource"));

@@ -247,6 +247,7 @@ public class JavaObject implements Objects,ObjectWrap {
         return call(pc,methodName,values.toArray(new Object[values.size()]));
     }
 
+	@Override
 	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
 		return callWithNamedValues(pc, methodName.getString(), args);
 	}

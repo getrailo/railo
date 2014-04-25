@@ -171,6 +171,7 @@ public class QuantizeFilter extends WholeImageFilter  implements DynFiltering {
 		}
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int[] outPixels = new int[width*height];
 		
@@ -179,10 +180,12 @@ public class QuantizeFilter extends WholeImageFilter  implements DynFiltering {
 		return outPixels;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Quantize...";
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Serpentine")))!=null)setSerpentine(ImageFilterUtil.toBooleanValue(o,"Serpentine"));

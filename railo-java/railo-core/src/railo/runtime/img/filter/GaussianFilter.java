@@ -78,7 +78,8 @@ public class GaussianFilter extends ConvolveFilter  implements DynFiltering {
 		return radius;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -199,9 +200,11 @@ public class GaussianFilter extends ConvolveFilter  implements DynFiltering {
 		return new Kernel(rows, 1, matrix);
 	}
 
+	@Override
 	public String toString() {
 		return "Blur/Gaussian Blur...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

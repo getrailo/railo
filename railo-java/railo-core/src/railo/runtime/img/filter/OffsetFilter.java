@@ -65,6 +65,7 @@ public class OffsetFilter extends TransformFilter  implements DynFiltering {
 		return wrap;
 	}
 	
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		if ( wrap ) {
 			out[0] = (x+width-xOffset) % width;
@@ -75,7 +76,8 @@ public class OffsetFilter extends TransformFilter  implements DynFiltering {
 		}
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		this.width = src.getWidth();
 		this.height = src.getHeight();
 		if ( wrap ) {
@@ -89,9 +91,11 @@ public class OffsetFilter extends TransformFilter  implements DynFiltering {
 		return super.filter( src, dst );
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Offset...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("XOffset")))!=null)setXOffset(ImageFilterUtil.toIntValue(o,"XOffset"));

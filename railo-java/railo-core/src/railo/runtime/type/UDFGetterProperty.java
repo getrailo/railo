@@ -21,6 +21,7 @@ public final class UDFGetterProperty extends UDFGSProperty {
 		
 	} 
 
+	@Override
 	public UDF duplicate() {
 		return new UDFGetterProperty(component,prop);
 	}

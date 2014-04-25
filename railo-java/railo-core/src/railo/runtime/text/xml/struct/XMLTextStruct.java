@@ -72,15 +72,18 @@ public final class XMLTextStruct extends XMLNodeStruct implements Text {
         text.setData(data);
     }
 
-    public boolean isElementContentWhitespace() {
+    @Override
+	public boolean isElementContentWhitespace() {
         return text.getNodeValue().trim().length()==0;
     }
 
-    public String getWholeText() {
+    @Override
+	public String getWholeText() {
         return text.getNodeValue();
     }
 
-    public Text replaceWholeText(String content) throws DOMException {
+    @Override
+	public Text replaceWholeText(String content) throws DOMException {
         Text oldText = text;
         Document doc = XMLUtil.getDocument(text);
         Text newText = doc.createTextNode(content);

@@ -73,7 +73,8 @@ public class SearchResulItemHits implements SearchResulItem {
 		return doc("custom4");
 	}
     
-    public String getCustom(int index) throws SearchException {
+    @Override
+	public String getCustom(int index) throws SearchException {
     	if(index==1) return doc("custom1");
     	if(index==2) return doc("custom2");
     	if(index==3) return doc("custom3");
@@ -97,6 +98,7 @@ public class SearchResulItemHits implements SearchResulItem {
 		return doc("mime-type");
 	}
 
+	@Override
 	public int getRecordsSearched() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -135,6 +137,7 @@ public class SearchResulItemHits implements SearchResulItem {
 	/** FUTURE add to interface
 	 * @return the contextSummary
 	 */
+	@Override
 	public String getContextSummary() {
 		String contextSummary="";
 		if(maxNumFragments>0){

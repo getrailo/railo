@@ -490,7 +490,8 @@ public final class SHA1 {
 
       */
 
-    public void finalize() {
+    @Override
+	public void finalize() {
 
 
 
@@ -576,7 +577,8 @@ public final class SHA1 {
 
       */
 
-    public String toString() {  
+    @Override
+	public String toString() {  
 
       
 

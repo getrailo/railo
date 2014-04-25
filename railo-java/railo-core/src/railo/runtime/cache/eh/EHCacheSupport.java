@@ -66,6 +66,7 @@ public abstract class EHCacheSupport extends CacheSupport implements Cache,Cache
 	
 	
 
+	@Override
 	public CacheEntry getQuiet(String key, CacheEntry defaultValue){
 		try {
 			return new EHCacheEntry(getCache().getQuiet(key));
@@ -74,6 +75,7 @@ public abstract class EHCacheSupport extends CacheSupport implements Cache,Cache
 		}
 	}
 	
+	@Override
 	public CacheEntry getQuiet(String key) {
 		return new EHCacheEntry(getCache().getQuiet(key));
 	}

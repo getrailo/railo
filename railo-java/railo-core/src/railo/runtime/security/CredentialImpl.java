@@ -110,11 +110,13 @@ public final class CredentialImpl implements Credential {
         throw new ApplicationException("invalid roles definition for tag loginuser");
     }
 
-    public String serialize() {
+    @Override
+	public String serialize() {
     	return serialize(null);
     }
 
-    public String serialize(Set<Object> done) {
+    @Override
+	public String serialize(Set<Object> done) {
         return "createObject('java','railo.runtime.security.Credential').init('"+username+"','"+password+"','"+ListUtil.arrayToList(roles,",")+"')";
     } 
     

@@ -173,21 +173,27 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
         return defaultValue;
     }
     
-    public int getType() {
+    @Override
+	public int getType() {
         return SCOPE_CLUSTER;
     }
-    public String getTypeAsString() {
+    @Override
+	public String getTypeAsString() {
         return "Cluster";
     }
+	@Override
 	public int compareTo(String str) throws PageException {
         throw new ExpressionException(NOT_SUPPORTED);
 	}
+	@Override
 	public int compareTo(boolean b) throws PageException {
         throw new ExpressionException(NOT_SUPPORTED);
 	}
+	@Override
 	public int compareTo(double d) throws PageException {
         throw new ExpressionException(NOT_SUPPORTED);
 	}
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
         throw new ExpressionException(NOT_SUPPORTED);
 	}

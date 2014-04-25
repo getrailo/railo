@@ -39,10 +39,12 @@ public final class StringIterator implements Iterator<String>,Enumeration<String
 		return key.getString();
 	}
 
+	@Override
 	public boolean hasMoreElements() {
 		return hasNext();
 	}
 
+	@Override
 	public String nextElement() {
 		return next();
 	}

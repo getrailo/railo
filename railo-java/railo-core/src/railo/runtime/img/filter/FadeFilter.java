@@ -96,12 +96,14 @@ public class FadeFilter extends PointFilter  implements DynFiltering {
 		return invert;
 	}
 
+	@Override
 	public void setDimensions(int width, int height) {
 		//this.width = width;
 		//this.height = height;
 		super.setDimensions(width, height);
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		float nx = m00*x + m01*y;
 		float ny = m10*x + m11*y;
@@ -142,10 +144,12 @@ public class FadeFilter extends PointFilter  implements DynFiltering {
 	}
 */
 
+	@Override
 	public String toString() {
 		return "Fade...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));

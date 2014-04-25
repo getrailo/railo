@@ -26,6 +26,7 @@ public abstract class CallerResponseStreamResult implements Callable<String> {
 		this.pc=ThreadUtil.clonePageContext(parent, baos, false, false, true);
 	}
 	
+	@Override
 	public final String call() throws PageException {
 		ThreadLocalPageContext.register(pc);
 		pc.getRootOut().setAllowCompression(false); // make sure content is not compressed

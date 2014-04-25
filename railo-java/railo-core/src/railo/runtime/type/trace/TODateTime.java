@@ -31,71 +31,85 @@ public class TODateTime extends DateTime implements TraceObject {
 		this.text=text;
 	}
 	
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
 		log();
 		return dt.toDumpData(pageContext, maxlevel, properties);
 	}
 
+	@Override
 	public String castToString() throws PageException {
 		log();
 		return dt.castToString();
 	}
 
+	@Override
 	public String castToString(String defaultValue) {
 		log();
 		return dt.castToString(defaultValue);
 	}
 
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		log();
 		return dt.castToBooleanValue();
 	}
 
+	@Override
 	public Boolean castToBoolean(Boolean defaultValue) {
 		log();
 		return dt.castToBoolean(defaultValue);
 	}
 
+	@Override
 	public double castToDoubleValue() throws PageException {
 		log();
 		return dt.castToDoubleValue();
 	}
 
+	@Override
 	public double castToDoubleValue(double defaultValue) {
 		log();
 		return dt.castToDoubleValue(defaultValue);
 	}
 
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		log();
 		return this;
 	}
 
+	@Override
 	public DateTime castToDateTime(DateTime defaultValue) {
 		log();
 		return this;
 	}
 
+	@Override
 	public int compareTo(String str) throws PageException {
 		log();
 		return dt.compareTo(str);
 	}
 
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		log();
 		return dt.compareTo(b);
 	}
 
+	@Override
 	public int compareTo(double d) throws PageException {
 		log();
 		return dt.compareTo(d);
 	}
 
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		log();
 		return dt.compareTo(dt);
 	}
 
+	@Override
 	public double toDoubleValue() {
 		log();
 		return this.dt.toDoubleValue();

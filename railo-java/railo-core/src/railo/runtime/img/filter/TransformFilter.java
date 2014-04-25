@@ -141,7 +141,8 @@ public abstract class TransformFilter extends AbstractBufferedImageOp  implement
 	protected void transformSpace(Rectangle rect) {
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
       	
     	
     	
@@ -278,6 +279,7 @@ public abstract class TransformFilter extends AbstractBufferedImageOp  implement
 		return dst;
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));

@@ -55,7 +55,8 @@ public final class OPDecision extends ExpressionBase implements ExprBoolean {
     }
     
     
-    public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
+    @Override
+	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
         if(mode==MODE_REF) {
             _writeOut(bc,MODE_VALUE);

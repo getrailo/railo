@@ -69,6 +69,7 @@ public interface Tag extends Statement,HasBody {
 	 * returns the body of the tag
 	 * @return body of the tag
 	 */
+	@Override
 	public Body getBody();
 
 	/**

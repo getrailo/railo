@@ -32,7 +32,8 @@ public final class ZGroupBy
         return having_;
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         StringBuffer stringbuffer = new StringBuffer("group by ");
         stringbuffer.append(groupby_.elementAt(0).toString());

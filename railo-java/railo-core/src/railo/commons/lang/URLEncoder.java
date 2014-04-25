@@ -10,6 +10,7 @@ import railo.commons.io.CharsetUtil;
  * @deprecated use instead railo.commons.net.URLEncoder
  * 
  */
+@Deprecated
 public class URLEncoder {
 	
 	private static final BitSet WWW_FORM_URL = new BitSet(256);

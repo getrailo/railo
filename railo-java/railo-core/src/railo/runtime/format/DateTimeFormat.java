@@ -28,6 +28,7 @@ public final class DateTimeFormat extends BaseFormat implements Format {
 	 * @param date
 	 * @return formated date
 	 */
+	@Override
 	public String format(Date date) {
 		return format(date,"medium");
 	}
@@ -38,6 +39,7 @@ public final class DateTimeFormat extends BaseFormat implements Format {
 	 * @param mask
 	 * @return formated date as string
 	 */
+	@Override
 	public String format(Date date,String mask) {
 		return format(date,mask,null);
 	}

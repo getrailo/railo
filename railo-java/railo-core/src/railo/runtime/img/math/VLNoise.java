@@ -28,6 +28,7 @@ public class VLNoise implements Function2D {
 		return distortion;
 	}
 
+	@Override
 	public float evaluate(float x, float y) {
 		float ox = Noise.noise2(x+0.5f, y) * distortion;
 		float oy = Noise.noise2(x, y+0.5f) * distortion;

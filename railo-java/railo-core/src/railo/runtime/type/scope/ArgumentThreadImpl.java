@@ -47,6 +47,7 @@ public final class ArgumentThreadImpl implements Argument {
 		return sct.containsKey(key);
 	}
 
+	@Override
 	public Object setArgument(Object obj) throws PageException {
 		// TODO Auto-generated method stub
 		return null;
@@ -57,6 +58,7 @@ public final class ArgumentThreadImpl implements Argument {
 		
 	}
 
+	@Override
 	public boolean insert(int index, String key, Object value) throws PageException {
 		// TODO Auto-generated method stub
 		return false;
@@ -93,6 +95,7 @@ public final class ArgumentThreadImpl implements Argument {
 
 	@Override
 	public void release() {}
+	@Override
 	public void release(PageContext pc) {}
 
 	@Override
@@ -200,6 +203,7 @@ public final class ArgumentThreadImpl implements Argument {
 		return sct.valueIterator();
 	}
 
+	@Override
 	public Boolean castToBoolean(Boolean defaultValue) {
 		return sct.castToBoolean(defaultValue);
 	}
@@ -376,6 +380,7 @@ public final class ArgumentThreadImpl implements Argument {
 	 * @return
 	 * @throws PageException
 	 */
+	@Override
 	public Object setE(int key, Object value) throws PageException {
 		return sct.set(Caster.toString(key), value);
 	}
@@ -390,6 +395,7 @@ public final class ArgumentThreadImpl implements Argument {
 		throw new CasterException(sct,"Array");
 	}
 
+	@Override
 	public void sort(Comparator com) throws ExpressionException {
 		throw new CasterException(sct,"Array");
 	}

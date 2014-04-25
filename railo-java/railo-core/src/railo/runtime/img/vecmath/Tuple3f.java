@@ -162,6 +162,7 @@ public class Tuple3f {
 		z = s*t1.z + t2.z;
 	}
 	
+	@Override
 	public String toString() {
 		return "["+x+", "+y+", "+z+"]";
 	}

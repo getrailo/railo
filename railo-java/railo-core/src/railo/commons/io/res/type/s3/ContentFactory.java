@@ -35,12 +35,14 @@ public final class ContentFactory extends S3Factory {
 		init(in);
 	}
 
+	@Override
 	public void doStartElement(String uri, String name, String qName, Attributes atts) {
 		if(qName.equals("Contents")) startContents();
 		if(qName.equals("Owner")) insideOwners=true;
 		
 	}
     
+	@Override
 	public void doEndElement(String uri, String name, String qName) throws SAXException {
 		if(qName.equals("Contents")) endContents();
 		if(qName.equals("Owner")) insideOwners=false;
@@ -48,6 +50,7 @@ public final class ContentFactory extends S3Factory {
 	}
 	
 	
+	@Override
 	protected void setContent(String value) throws SAXException 	{
 		if(insideContents)	{
 			if(insideOwners){

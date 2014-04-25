@@ -172,21 +172,27 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
         return defaultValue;
     }
     
-    public int getType() {
+    @Override
+	public int getType() {
         return SCOPE_LOCAL;
     }
-    public String getTypeAsString() {
+    @Override
+	public String getTypeAsString() {
         return "local";
     }
+	@Override
 	public int compareTo(String str) throws PageException {
         throw new ExpressionException("Unsupported Context for Local Scope");
 	}
+	@Override
 	public int compareTo(boolean b) throws PageException {
         throw new ExpressionException("Unsupported Context for Local Scope");
 	}
+	@Override
 	public int compareTo(double d) throws PageException {
         throw new ExpressionException("Unsupported Context for Local Scope");
 	}
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
         throw new ExpressionException("Unsupported Context for Local Scope");
 	}

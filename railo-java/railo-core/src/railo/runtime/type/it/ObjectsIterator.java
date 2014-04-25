@@ -21,6 +21,7 @@ public class ObjectsIterator implements Iterator<Object> {
 		this.objs=objs;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return keys.hasNext();
 	}
@@ -30,6 +31,7 @@ public class ObjectsIterator implements Iterator<Object> {
 		return objs.get(ThreadLocalPageContext.get(),KeyImpl.toKey(keys.next(),null),null);
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("this operation is not suppored");
 	}

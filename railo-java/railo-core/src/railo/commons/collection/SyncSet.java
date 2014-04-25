@@ -14,12 +14,14 @@ public class SyncSet<E>
             super(s, mutex);
         }
 
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (this == o)
                 return true;
             synchronized (mutex) {return c.equals(o);}
         }
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             synchronized (mutex) {return c.hashCode();}
         }
     }

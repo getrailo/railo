@@ -65,7 +65,8 @@ public final class ReferenceReference implements Reference {
         return pc.set(parent,key,new StructImpl());
     }
     
-    public Object touchEL(PageContext pc) {
+    @Override
+	public Object touchEL(PageContext pc) {
         Object parent=reference.touchEL(pc);
         Object o= pc.getCollection(parent,key,null);
         if(o!=null) return o;

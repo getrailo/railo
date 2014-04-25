@@ -42,6 +42,7 @@ public class ServerCacheConnection implements CacheConnection {
 		return cc.getInstance(cs);
 	}
 
+	@Override
 	public String getName() {
 		return cc.getName();
 	}

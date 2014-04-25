@@ -70,6 +70,7 @@ public class FileStreamWrapperRead extends FileStreamWrapper {
 		return "read";
 	}
 
+	@Override
 	public boolean isEndOfFile() {
 		if(seekable){
 			long pos=0;
@@ -119,6 +120,7 @@ public class FileStreamWrapperRead extends FileStreamWrapper {
 			
 		throw Caster.toPageException(new IOException("skip is only supported when you have set argument seekable of function fileOpen to true"));
 	}
+	@Override
 	public void seek(long pos) throws PageException {
 		if(seekable){
 			try {

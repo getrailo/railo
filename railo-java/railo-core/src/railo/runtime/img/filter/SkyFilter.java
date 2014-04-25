@@ -273,7 +273,8 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	}
 
 float mn, mx;
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 long start = System.currentTimeMillis();
 		sunR = ((sunColor >> 16) & 0xff) * r255;
 		sunG = ((sunColor >> 8) & 0xff) * r255;
@@ -341,6 +342,7 @@ System.out.println(mn+" "+mx+" "+(finish-start)*0.001f);
 		return value;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 
 // Curvature
@@ -452,10 +454,12 @@ if (y == 100)System.out.println(fg+" "+gf+gradient);
 		return v;
 	}
 	
+	@Override
 	public String toString() {
 		return "Texture/Sky...";
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

@@ -66,13 +66,15 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 		return softness;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         dst = new GaussianFilter( (int)radius ).filter( src, (BufferedImage)null );
         lowerThreshold = 255*(threshold - softness*0.5f);
         upperThreshold = 255*(threshold + softness*0.5f);
 		return super.filter(dst, dst);
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		int a = (rgb >> 24) & 0xff;
 		//int r = (rgb >> 16) & 0xff;
@@ -89,9 +91,11 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
         return (a << 24) | 0xffffff;
 	}
 
+	@Override
 	public String toString() {
 		return "Alpha/Erode...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

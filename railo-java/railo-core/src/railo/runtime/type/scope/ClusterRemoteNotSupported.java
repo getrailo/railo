@@ -4,6 +4,7 @@ import railo.runtime.config.ConfigServer;
 
 public final class ClusterRemoteNotSupported implements ClusterRemote {
 
+	@Override
 	public void addEntry(ClusterEntry entry) {}
 
 	@Override
@@ -21,6 +22,7 @@ public final class ClusterRemoteNotSupported implements ClusterRemote {
 		return new ClusterRemoteNotSupported();
 	}
 
+	@Override
 	public void init(ConfigServer configServer, Cluster cluster) {}
 
 }

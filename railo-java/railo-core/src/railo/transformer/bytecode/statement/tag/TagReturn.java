@@ -19,6 +19,7 @@ public final class TagReturn extends TagBaseNoFinal {
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		Attribute attr = getAttribute("expr");
 		Expression expr=null;
@@ -30,6 +31,7 @@ public final class TagReturn extends TagBaseNoFinal {
 	 *
 	 * @see railo.transformer.bytecode.statement.StatementBase#setParent(railo.transformer.bytecode.Statement)
 	 */
+	@Override
 	public void setParent(Statement parent) {
 		super.setParent(parent);
 		parent.setHasFlowController(true);

@@ -43,6 +43,7 @@ public abstract class WSClient implements Objects, Iteratorable {
 	public abstract void addHeader(SOAPHeaderElement header) throws PageException;
 	public abstract Call getLastCall()throws PageException;
 	public abstract Object callWithNamedValues(Config config, Collection.Key methodName, Struct arguments) throws PageException;
+	@Override
 	public abstract Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct arguments) throws PageException;
 	    
 }

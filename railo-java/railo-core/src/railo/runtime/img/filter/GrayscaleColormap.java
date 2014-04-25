@@ -28,6 +28,7 @@ public class GrayscaleColormap implements Colormap  {
 	 * @param v a value in the range 0..1
 	 * @return an RGB color
 	 */
+	@Override
 	public int getColor(float v) {
 		int n = (int)(v*255);
 		if (n < 0)

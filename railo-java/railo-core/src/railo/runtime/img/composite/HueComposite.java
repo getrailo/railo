@@ -27,6 +27,7 @@ public final class HueComposite extends RGBComposite {
         super( alpha );
 	}
 
+	@Override
 	public CompositeContext createContext( ColorModel srcColorModel, ColorModel dstColorModel, RenderingHints hints ) {
 		return new Context( extraAlpha, srcColorModel, dstColorModel );
 	}
@@ -39,7 +40,8 @@ public final class HueComposite extends RGBComposite {
             super( alpha, srcColorModel, dstColorModel );
         }
 
-        public void composeRGB( int[] src, int[] dst, float alpha ) {
+        @Override
+		public void composeRGB( int[] src, int[] dst, float alpha ) {
             int w = src.length;
 
             for ( int i = 0; i < w; i += 4 ) {

@@ -46,6 +46,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
 		}
 	}
 
+	@Override
 	public Object toAMFObject(Object cf) throws PageException {
 		if(cf instanceof List) return toAMFObject((List)cf);
 		if(cf instanceof Array) return toAMFObject(ArrayAsList.toList((Array)cf));
@@ -58,6 +59,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
 	}
 	
 
+	@Override
 	protected ASObject toAMFObject(Component cfc) throws PageException {
 		// add properties
 		ASObject aso = doProperties?super.toAMFObject(cfc):new ASObject();
@@ -102,6 +104,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
         return aso;
 	}
     
+	@Override
 	protected Object toAMFObject(List list) throws PageException {
 		list = Duplicator.duplicateList(list, false);
         ListIterator it = list.listIterator();
@@ -111,6 +114,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
         return list;
     }
 	
+	@Override
 	protected Object toAMFObject(Object[] src) throws PageException {
 		ArrayList list=new ArrayList();
 		for(int i=0;i<src.length;i++){

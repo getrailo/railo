@@ -89,7 +89,8 @@ public class TileImageFilter extends AbstractBufferedImageOp  implements DynFilt
 		return height;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int tileWidth = src.getWidth();
         int tileHeight = src.getHeight();
 
@@ -109,9 +110,11 @@ public class TileImageFilter extends AbstractBufferedImageOp  implements DynFilt
         return dst;
     }
 
+	@Override
 	public String toString() {
 		return "Tile";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Width")))!=null)setWidth(ImageFilterUtil.toIntValue(o,"Width"));

@@ -20,6 +20,7 @@ public class StringSerializer extends SimpleSerializer {
 		super(javaType, xmlType);
 	}
 
+	@Override
 	public String getValueAsString(Object value, SerializationContext context) {
         return escapeNonPrintableChars(super.getValueAsString(value, context));
     }

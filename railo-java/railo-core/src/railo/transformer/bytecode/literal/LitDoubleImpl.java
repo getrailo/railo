@@ -37,7 +37,8 @@ public final class LitDoubleImpl extends ExpressionBase implements LitDouble,Exp
 	/**
      * @return return value as double value
      */ 
-    public double getDoubleValue() {
+    @Override
+	public double getDoubleValue() {
         return d;
     }
     
@@ -51,7 +52,8 @@ public final class LitDoubleImpl extends ExpressionBase implements LitDouble,Exp
     /**
      * @see railo.transformer.expression.literal.Literal#getString()
      */
-    public String getString() {
+    @Override
+	public String getString() {
         return Caster.toString(d);
     }
     

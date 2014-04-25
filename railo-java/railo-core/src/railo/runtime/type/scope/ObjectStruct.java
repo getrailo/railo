@@ -75,6 +75,7 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 		//throw new PageRuntimeException(new ExpressionException("can't clear fields from object ["+objects.getClazz().getName()+"]"));
 	}
 
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		throw new PageRuntimeException(new ExpressionException("can't clone object of type ["+jo.getClazz().getName()+"]"));
 		//return null;

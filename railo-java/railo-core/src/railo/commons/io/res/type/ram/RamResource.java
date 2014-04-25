@@ -139,6 +139,7 @@ public final class RamResource extends ResourceSupport {
 		return new RamResource(provider,parent);
 	}
 
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
@@ -262,6 +263,7 @@ public final class RamResource extends ResourceSupport {
 		return new ByteArrayInputStream(data);
 	}
 
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		ResourceUtil.checkGetOutputStreamOK(this);
 		provider.lock(this);
@@ -341,11 +343,13 @@ public final class RamResource extends ResourceSupport {
 		return parent==null;
 	}
 	
+	@Override
 	public int getMode() {
 		if(!exists())return 0;
 		return getCore().getMode();
 	}
 	
+	@Override
 	public void setMode(int mode) throws IOException {
 		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exist");
 		getCore().setMode(mode);

@@ -56,6 +56,7 @@ public final class ClusterWrap extends ScopeSupport implements Cluster {
 		
 	}
 
+	@Override
 	public Object removeEL(Key key) {
 		core.addEntry(new ClusterEntryImpl(key,null,offset));
 		ClusterEntry entry = (ClusterEntry) super.removeEL (key);
@@ -73,6 +74,7 @@ public final class ClusterWrap extends ScopeSupport implements Cluster {
 		return value;
 	}
 
+	@Override
 	public void setEntry(ClusterEntry newEntry) {
 		ClusterEntry existingEntry=(ClusterEntry)super.get(newEntry.getKey(),null);
 		// add

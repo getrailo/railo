@@ -10,6 +10,7 @@ public class DebugExecutionLog extends ExecutionLogSupport {
 	private PageContext pc;
 
 
+	@Override
 	protected void _init(PageContext pc, Map<String, String> arguments) {
 		this.pc=pc;
 	}

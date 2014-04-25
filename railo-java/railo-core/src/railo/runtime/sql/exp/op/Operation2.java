@@ -50,6 +50,7 @@ public class Operation2 extends ExpressionSupport implements Operation {
 	}
 
 
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return left.toString(true)+" "+toString(operator)+" "+right.toString(true);
 		return toString(true)+" as "+getAlias();

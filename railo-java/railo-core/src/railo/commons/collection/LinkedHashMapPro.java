@@ -120,7 +120,8 @@ public class LinkedHashMapPro<K,V>
      * by superclass resize.  It is overridden for performance, as it is
      * faster to iterate using our linked list.
      */
-    void transfer(HashMapPro.Entry[] newTable) {
+    @Override
+	void transfer(HashMapPro.Entry[] newTable) {
         int newCapacity = newTable.length;
         for (Entry<K,V> e = header.after; e != header; e = e.after) {
             //if (rehash)
@@ -140,7 +141,8 @@ public class LinkedHashMapPro<K,V>
      * @return <tt>true</tt> if this map maps one or more keys to the
      *         specified value
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
         // Overridden to take advantage of faster iterator
         if (value==null) {
             for (Entry e = header.after; e != header; e = e.after)
@@ -169,7 +171,8 @@ public class LinkedHashMapPro<K,V>
      * The {@link #containsKey containsKey} operation may be used to
      * distinguish these two cases.
      */
-    public V get(Object key) {
+    @Override
+	public V get(Object key) {
     	HashMapPro.Entry<K,V> e = getEntry(key);
         if (e == null)
             return null;
@@ -177,7 +180,8 @@ public class LinkedHashMapPro<K,V>
         return e.value;
     }
     
-    public V g(K key) throws PageException { 
+    @Override
+	public V g(K key) throws PageException { 
     	
     	int hash = (key == null) ? 0 : hash(key);
         for (HashMapPro.Entry<K,V> e = table[indexFor(hash, table.length)];
@@ -192,7 +196,8 @@ public class LinkedHashMapPro<K,V>
         throw invalidKey(this, key,false);
     }
     
-    public V g(K key, V defaultValue) { 
+    @Override
+	public V g(K key, V defaultValue) { 
     	
     	int hash = (key == null) ? 0 : hash(key);
         for (HashMapPro.Entry<K,V> e = table[indexFor(hash, table.length)];
@@ -215,7 +220,8 @@ public class LinkedHashMapPro<K,V>
      * Removes all of the mappings from this map.
      * The map will be empty after this call returns.
      */
-    public void clear() {
+    @Override
+	public void clear() {
         super.clear();
         header.before = header.after = header;
     }
@@ -255,7 +261,8 @@ public class LinkedHashMapPro<K,V>
          * If the enclosing Map is access-ordered, it moves the entry
          * to the end of the list; otherwise, it does nothing.
          */
-        void recordAccess(HashMapPro<K,V> m) {
+        @Override
+		void recordAccess(HashMapPro<K,V> m) {
             LinkedHashMapPro<K,V> lm = (LinkedHashMapPro<K,V>)m;
             if (lm.accessOrder) {
                 lm.modCount++;
@@ -264,7 +271,8 @@ public class LinkedHashMapPro<K,V>
             }
         }
 
-        void recordRemoval(HashMapPro<K,V> m) {
+        @Override
+		void recordRemoval(HashMapPro<K,V> m) {
             remove();
         }
     }
@@ -280,11 +288,13 @@ public class LinkedHashMapPro<K,V>
          */
         int expectedModCount = modCount;
 
-        public boolean hasNext() {
+        @Override
+		public boolean hasNext() {
             return nextEntry != header;
         }
 
-        public void remove() {
+        @Override
+		public void remove() {
             if (lastReturned == null)
                 throw new IllegalStateException();
             if (modCount != expectedModCount)
@@ -308,28 +318,35 @@ public class LinkedHashMapPro<K,V>
     }
 
     private class KeyIterator extends LinkedHashIterator<K> {
-        public K next() { return nextEntry().getKey(); }
+        @Override
+		public K next() { return nextEntry().getKey(); }
     }
 
     private class ValueIterator extends LinkedHashIterator<V> {
-        public V next() { return nextEntry().value; }
+        @Override
+		public V next() { return nextEntry().value; }
     }
 
     private class EntryIterator extends LinkedHashIterator<Map.Entry<K,V>> {
-        public Map.Entry<K,V> next() { return nextEntry(); }
+        @Override
+		public Map.Entry<K,V> next() { return nextEntry(); }
     }
 
     // These Overrides alter the behavior of superclass view iterator() methods
-    Iterator<K> newKeyIterator()   { return new KeyIterator();   }
-    Iterator<V> newValueIterator() { return new ValueIterator(); }
-    Iterator<Map.Entry<K,V>> newEntryIterator() { return new EntryIterator(); }
+    @Override
+	Iterator<K> newKeyIterator()   { return new KeyIterator();   }
+    @Override
+	Iterator<V> newValueIterator() { return new ValueIterator(); }
+    @Override
+	Iterator<Map.Entry<K,V>> newEntryIterator() { return new EntryIterator(); }
 
     /**
      * This override alters behavior of superclass put method. It causes newly
      * allocated entry to get inserted at the end of the linked list and
      * removes the eldest entry if appropriate.
      */
-    void addEntry(int hash, K key, V value, int bucketIndex) {
+    @Override
+	void addEntry(int hash, K key, V value, int bucketIndex) {
         super.addEntry(hash, key, value, bucketIndex);
 
         // Remove eldest entry if instructed
@@ -343,7 +360,8 @@ public class LinkedHashMapPro<K,V>
      * This override differs from addEntry in that it doesn't resize the
      * table or remove the eldest entry.
      */
-    void createEntry(int hash, K key, V value, int bucketIndex) {
+    @Override
+	void createEntry(int hash, K key, V value, int bucketIndex) {
         HashMapPro.Entry<K,V> old = table[bucketIndex];
         Entry<K,V> e = new Entry<K,V>(hash, key, value, old);
         table[bucketIndex] = e;

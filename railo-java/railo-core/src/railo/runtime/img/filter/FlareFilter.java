@@ -130,6 +130,7 @@ public class FlareFilter extends PointFilter  implements DynFiltering {
 		return radius;
 	}
 
+	@Override
 	public void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -138,6 +139,7 @@ public class FlareFilter extends PointFilter  implements DynFiltering {
 		super.setDimensions(width, height);
 	}
 	
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		float dx = x-icentreX;
 		float dy = y-icentreY;
@@ -172,9 +174,11 @@ public class FlareFilter extends PointFilter  implements DynFiltering {
 		return ImageMath.mixColors(a, rgb, color);
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Flare...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

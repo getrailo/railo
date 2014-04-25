@@ -28,6 +28,7 @@ public class DataWriter extends Thread {
 		this.append=append;
 	}
 
+	@Override
 	public void run(){
 		try {
 			core.write(dc, prefix, attr, is,append);

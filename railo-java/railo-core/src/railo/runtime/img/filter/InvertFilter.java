@@ -34,15 +34,18 @@ public class InvertFilter extends PointFilter implements DynFiltering {
 		canFilterIndexColorModel = true;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		int a = rgb & 0xff000000;
 		return a | (~rgb & 0x00ffffff);
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Invert";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){

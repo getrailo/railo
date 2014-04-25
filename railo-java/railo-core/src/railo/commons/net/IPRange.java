@@ -52,6 +52,7 @@ public class IPRange implements Serializable {
 			return true;
 		}
 		
+		@Override
 		public String toString(){
 			if(equality) return toString(from);
 			return toString(from)+"-"+toString(to);
@@ -173,6 +174,7 @@ public class IPRange implements Serializable {
 	}
 	
 	
+	@Override
 	public String toString(){
 		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<max;i++){

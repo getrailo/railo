@@ -18,18 +18,22 @@ public class SearchDataImpl implements SearchData  {
 		this.suggestionMax=suggestionMax;
 	}
 
+	@Override
 	public Map getSuggestion() {
 		return suggestion;
 	}
+	@Override
 	public int getSuggestionMax() {
 		return suggestionMax;
 	}
+	@Override
 	public void setSuggestionQuery(String suggestionQuery) {
 		this.suggestionQuery=suggestionQuery;
 	}
 	/**
 	 * @return the suggestionQuery
 	 */
+	@Override
 	public String getSuggestionQuery() {
 		return suggestionQuery;
 	}

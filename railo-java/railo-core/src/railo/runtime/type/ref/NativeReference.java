@@ -47,7 +47,8 @@ public final class NativeReference implements Reference {
         return o;
     }
     
-    public Collection.Key getKey() {
+    @Override
+	public Collection.Key getKey() {
         return KeyImpl.init(key);
     }
     
@@ -72,7 +73,8 @@ public final class NativeReference implements Reference {
         if(rtn!=null) return rtn;
         return pc.set(o,key,new StructImpl());
     }
-    public Object touchEL(PageContext pc) {
+    @Override
+	public Object touchEL(PageContext pc) {
         Object rtn=pc.getCollection(o,key,null);
         if(rtn!=null) return rtn;
         try {
@@ -87,7 +89,8 @@ public final class NativeReference implements Reference {
         return pc.set(o,key,value);
     }
     
-    public Object setEL(PageContext pc,Object value) {
+    @Override
+	public Object setEL(PageContext pc,Object value) {
         try {
 			return pc.set(o,key,value);
 		} catch (PageException e) {

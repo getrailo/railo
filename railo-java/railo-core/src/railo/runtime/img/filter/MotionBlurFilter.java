@@ -163,7 +163,8 @@ public class MotionBlurFilter extends AbstractBufferedImageOp  implements DynFil
 		return premultiplyAlpha;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -252,9 +253,11 @@ public class MotionBlurFilter extends AbstractBufferedImageOp  implements DynFil
         return dst;
     }
 
+	@Override
 	public String toString() {
 		return "Blur/Motion Blur...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));

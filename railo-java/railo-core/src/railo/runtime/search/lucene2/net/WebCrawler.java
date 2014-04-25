@@ -326,6 +326,7 @@ class ChildrenIndexer extends Thread {
 		this.log=log;
 	}
 
+	@Override
 	public void run(){
 		try {
 			//WebCrawler._parse(writer, root, url, urlsDone, extensions, recurse, deep);

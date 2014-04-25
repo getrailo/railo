@@ -55,6 +55,7 @@ public class SocketGateway implements Gateway {
 	}
 	
 	
+	@Override
 	public void doStart() {
 		state = STARTING;
 		try	{
@@ -83,6 +84,7 @@ public class SocketGateway implements Gateway {
         }
     }
 	
+	@Override
 	public void doStop()	{
 		state = STOPPING;
 		try{
@@ -154,7 +156,8 @@ public class SocketGateway implements Gateway {
                 this._id=String.valueOf(hashCode());
 	        }
 
-	        public void run()	{
+	        @Override
+			public void run()	{
 	        	BufferedReader in = null;
 	            try	{
 	            	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -192,6 +195,7 @@ public class SocketGateway implements Gateway {
 
 
 
+	@Override
 	public String sendMessage(Map _data) {
 		Struct data=caster.toStruct(_data, null, false);
 		String msg = (String) data.get("message",null);

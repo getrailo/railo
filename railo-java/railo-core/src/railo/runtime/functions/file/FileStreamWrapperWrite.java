@@ -63,6 +63,7 @@ public class FileStreamWrapperWrite extends FileStreamWrapper {
 		
 	}
 
+	@Override
 	public void close() throws IOException {
 		if(bos!=null)bos.close();
 		if(raf!=null)raf.close();
@@ -84,6 +85,7 @@ public class FileStreamWrapperWrite extends FileStreamWrapper {
 		}	
 		else throw Caster.toPageException(new IOException("skip is only supported when you have set argument seekable of function fileOpen to true"));
 	}
+	@Override
 	public void seek(long pos) throws PageException {
 		if(seekable){
 			try {

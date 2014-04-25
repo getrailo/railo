@@ -16,6 +16,7 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	private int columnIndex;
 	private QueryColumn col;
 	
+	@Override
 	public String toString(){
 		return "table:"+table+";column:"+column+";hasBracked:"+hasBracked+";columnIndex:"+columnIndex;
 		
@@ -34,6 +35,7 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 		else column=(column+"."+sub);
 	}
 
+	@Override
 	public String toString(boolean noAlias) {
 		if(hasAlias() && !noAlias) return getFullName()+" as "+getAlias();
 		return getFullName();
@@ -51,18 +53,22 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 		return super.getAlias();
 	}
 
+	@Override
 	public Collection.Key getColumn() {
 		return KeyImpl.init(column);
 	}
 
+	@Override
 	public String getTable() {
 		return table;
 	}
 
+	@Override
 	public boolean hasBracked() {
 		return hasBracked;
 	}
 
+	@Override
 	public void hasBracked(boolean b) {
 		this.hasBracked=b;
 	}
@@ -75,15 +81,18 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	/**
 	 * @return the columnIndex
 	 */
+	@Override
 	public int getColumnIndex() {
 		return columnIndex;
 	}
 	// MUST hanle null correctly
+	@Override
 	public Object getValue(Query qr, int row) throws PageException {
 		if(col==null)col = qr.getColumn(getColumn());
 		return QueryUtil.getValue(col,row);
 	}
 	
+	@Override
 	public Object getValue(Query qr, int row, Object defaultValue) {
 		if(col==null){
 			col = qr.getColumn(getColumn(),null);

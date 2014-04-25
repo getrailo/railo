@@ -126,6 +126,7 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 	 *
 	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
 	 */
+	@Override
 	public Label getBreakLabel() {
 		return end;
 	}
@@ -134,6 +135,7 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 	 *
 	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
 	 */
+	@Override
 	public Label getContinueLabel() {
 		return end;
 	}
@@ -141,6 +143,7 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 	/**
 	 * @see railo.transformer.bytecode.statement.HasBodies#getBodies()
 	 */
+	@Override
 	public Body[] getBodies() {
 		if(cases==null) {
 			if(defaultCase!=null) return new Body[]{(Body) defaultCase};

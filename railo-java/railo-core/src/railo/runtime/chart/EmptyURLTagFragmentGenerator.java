@@ -9,7 +9,8 @@ public class EmptyURLTagFragmentGenerator implements URLTagFragmentGenerator {
      * @param urlText  the URL text (fully escaped).
      * @return The formatted text
      */
-    public String generateURLFragment(String urlText) {
+    @Override
+	public String generateURLFragment(String urlText) {
     	return "";
 		//return " href=\"" + urlText + "\"";
 	}

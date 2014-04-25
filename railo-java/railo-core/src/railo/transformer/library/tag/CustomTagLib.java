@@ -33,7 +33,8 @@ public final class CustomTagLib extends TagLib {
     /**
      * @see railo.transformer.library.tag.TagLib#getAppendixTag(java.lang.String)
      */
-    public TagLibTag getAppendixTag(String name) {
+    @Override
+	public TagLibTag getAppendixTag(String name) {
 
         TagLibTag tlt = new TagLibTag(this);
         tlt.setName("");
@@ -62,7 +63,8 @@ public final class CustomTagLib extends TagLib {
     /**
      * @see railo.transformer.library.tag.TagLib#getTag(java.lang.String)
      */
-    public TagLibTag getTag(String name) {
+    @Override
+	public TagLibTag getTag(String name) {
     	if(taglibs!=null){
     		TagLibTag tag=null;
     		for(int i=0;i<taglibs.length;i++){
@@ -74,14 +76,16 @@ public final class CustomTagLib extends TagLib {
     /**
      * @see railo.transformer.library.tag.TagLib#getTags()
      */
-    public Map getTags() {
+    @Override
+	public Map getTags() {
         return MapFactory.<String,String>getConcurrentMap();
     }
 
     /**
      * @see railo.transformer.library.tag.TagLib#setTag(railo.transformer.library.tag.TagLibTag)
      */
-    public void setTag(TagLibTag tag) {}
+    @Override
+	public void setTag(TagLibTag tag) {}
 
 	public void append(TagLib other) {
 		if(other instanceof CustomTagLib)

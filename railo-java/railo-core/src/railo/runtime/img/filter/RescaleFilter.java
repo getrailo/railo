@@ -40,7 +40,8 @@ public class RescaleFilter extends TransferFilter  implements DynFiltering {
 		this.scale = scale;
     }
     
-    protected float transferFunction( float v ) {
+    @Override
+	protected float transferFunction( float v ) {
 		return v * scale;
 	}
 
@@ -65,10 +66,12 @@ public class RescaleFilter extends TransferFilter  implements DynFiltering {
 		return scale;
 	}
 
+	@Override
 	public String toString() {
 		return "Colors/Rescale...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));

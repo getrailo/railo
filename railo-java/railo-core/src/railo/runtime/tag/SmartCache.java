@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import railo.loader.util.Util;
 import railo.runtime.cache.tag.smart.Analyzer;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -47,13 +48,14 @@ public final class SmartCache extends TagSupport {
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
+	@Override
 	public void release()	{
 		super.release();
 		returnVariable="smart";
 		action=ACTION_ANALYZE;
 		entryHash=null;
 		timespan=null;
-		type=ConfigImpl.CACHE_DEFAULT_NONE;
+		type=Config.CACHE_DEFAULT_NONE;
 	}
 
 	public void setAction(String strAction) throws ApplicationException {
@@ -67,9 +69,9 @@ public final class SmartCache extends TagSupport {
 	public void setType(String strType) throws ApplicationException {
 		if(Util.isEmpty(strType,true)) return;
 		strType=strType.trim().toLowerCase();
-		if(strType.equals("function"))		type=ConfigImpl.CACHE_DEFAULT_FUNCTION;
-		else if(strType.equals("include"))	type=ConfigImpl.CACHE_DEFAULT_INCLUDE;
-		else if(strType.equals("query"))	type=ConfigImpl.CACHE_DEFAULT_QUERY;
+		if(strType.equals("function"))		type=Config.CACHE_DEFAULT_FUNCTION;
+		else if(strType.equals("include"))	type=Config.CACHE_DEFAULT_INCLUDE;
+		else if(strType.equals("query"))	type=Config.CACHE_DEFAULT_QUERY;
 		else
 			throw new ApplicationException("invalid type ["+strType+"], valid types are [function, include, query]"); 
 		
@@ -122,11 +124,11 @@ public final class SmartCache extends TagSupport {
 	}
 
 	private void doClearRules() throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules(pageContext);
+		if(type==Config.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules(pageContext);
 		else SmartCacheHandler.clearRules(pageContext,type);
 	}
 	private void doClearEntries() throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries(pageContext);
+		if(type==Config.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries(pageContext);
 		else SmartCacheHandler.clearEntries(type);
 	}
 
@@ -155,7 +157,7 @@ public final class SmartCache extends TagSupport {
 	
 
 	private void typeRequired() throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)
+		if(type==Config.CACHE_DEFAULT_NONE)
 			required("smartcache", toAction(action,null), "type", null);
 			//throw new ApplicationException("attribute type is required for tag smartcache with this action");
 	}

@@ -73,6 +73,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
         }
     }
 
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		raw.remove(key.getLowerString());
     	
@@ -125,7 +126,8 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
         return obj;
     }
 
-    public Object removeEL(Collection.Key key) {
+    @Override
+	public Object removeEL(Collection.Key key) {
         return removeEL(key, true);
     }
     

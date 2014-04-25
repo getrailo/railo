@@ -154,6 +154,7 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
         return remove(query.getCurrentrow(pc.getId()));
 	}
 
+	@Override
 	public Object removeEL(PageContext pc) {
         return removeEL(query.getCurrentrow(pc.getId()));
 	}
@@ -263,6 +264,7 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
 	    return set(row,value);
 	}
 
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 	    int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 	    if(row==Integer.MIN_VALUE)return query.set(key,value);
@@ -290,6 +292,7 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
 		
 	}
 
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 	    int index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) query.setEL(key,value);
@@ -326,7 +329,8 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
 	    for(int i=0;i<count;i++)size++;
 	}
 
-    public synchronized Object removeRow(int row) throws DatabaseException {
+    @Override
+	public synchronized Object removeRow(int row) throws DatabaseException {
         // query.disconnectCache();
         if(row<1 || row>size) 
             throw new DatabaseException("invalid row number ["+row+"]","valid rows goes from 1 to "+size,null,null);
@@ -384,10 +388,12 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
         QueryColumnUtil.reOrganizeType(this);
     }
 
-    public Collection.Key getKey() {
+    @Override
+	public Collection.Key getKey() {
         return key;
     }
-    public void setKey(Collection.Key key) {
+    @Override
+	public void setKey(Collection.Key key) {
         this.key = key;
     }
 
@@ -411,7 +417,8 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
         return touch(query.getCurrentrow(pc.getId()));
     }
 
-    public Object touchEL(PageContext pc) {
+    @Override
+	public Object touchEL(PageContext pc) {
         return touchEL(query.getCurrentrow(pc.getId()));
     }
 
@@ -504,11 +511,13 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
         return duplicate(true);
     }
 
-    public synchronized Collection duplicate(boolean deepCopy) {
+    @Override
+	public synchronized Collection duplicate(boolean deepCopy) {
         return cloneColumn(query,deepCopy);
     }
     
-    public synchronized QueryColumnPro cloneColumn(Query query, boolean deepCopy) {
+    @Override
+	public synchronized QueryColumnPro cloneColumn(Query query, boolean deepCopy) {
         return cloneColumnImpl(deepCopy);
     }
     
@@ -721,6 +730,7 @@ public class QueryColumnImpl implements QueryColumnPro,Objects {
 		return list;
 	}
 
+	@Override
 	public Object[] toArray() {
 		return toArray(new Object[size()]);
 	}

@@ -15,7 +15,6 @@ import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
@@ -609,7 +608,7 @@ public final class VariableInterpreter {
 	        case Scope.SCOPE_SERVER:        return pc.serverScope();
 	        case Scope.SCOPE_COOKIE:        return pc.cookieScope();
 	        case Scope.SCOPE_CLIENT:        return pc.clientScope();
-	        case ScopeSupport.SCOPE_VAR:         	return pc.localScope();
+	        case Scope.SCOPE_VAR:         	return pc.localScope();
 	        case Scope.SCOPE_CLUSTER:		return pc.clusterScope();
 	        
 	        case Scope.SCOPE_LOCAL:         

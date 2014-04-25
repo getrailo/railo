@@ -60,6 +60,7 @@ public class BundleFile extends JarFile {
 		return version;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

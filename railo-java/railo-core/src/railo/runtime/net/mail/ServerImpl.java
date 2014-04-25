@@ -174,10 +174,12 @@ public final class ServerImpl implements Server {
         return SMTPVerifier.verify(hostName,username,password,port);
     }
 
+	@Override
 	public boolean isTLS() {
 		return tls;
 	}
 
+	@Override
 	public boolean isSSL() {
 		return ssl;
 	}

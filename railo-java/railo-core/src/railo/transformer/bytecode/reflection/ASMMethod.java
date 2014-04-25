@@ -142,7 +142,8 @@ public abstract class ASMMethod  {
      * they were declared by the same class and have the same name
      * and formal parameter types and return type.
      */
-    public boolean equals(Object obj) {
+    @Override
+	public boolean equals(Object obj) {
     	if(this==obj) return true;
     	if(!(obj instanceof ASMMethod)) return false;
     	

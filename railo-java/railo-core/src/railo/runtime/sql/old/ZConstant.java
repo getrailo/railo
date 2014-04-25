@@ -28,7 +28,8 @@ public final class ZConstant
      return type_;
  }
 
- public String toString()
+ @Override
+public String toString()
  {
      if(type_ == 3)
          return '\'' + val_ + '\'';

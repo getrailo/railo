@@ -122,6 +122,7 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 		return component;
 	}
 
+	@Override
 	public void setOwnerComponent(Component component) {
 		this.component = component;
 	}
@@ -135,6 +136,7 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 		return false;
 	}
  
+	@Override
 	public UDF duplicate(boolean deep) {
 		return duplicate(); // deep has no influence here, because a UDF is not a collection
 	}

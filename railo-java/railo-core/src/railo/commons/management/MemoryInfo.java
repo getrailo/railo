@@ -1,12 +1,12 @@
 package railo.commons.management;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Stack;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 public class MemoryInfo {
 	

@@ -41,6 +41,7 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the url
 	 */
+	@Override
 	public String getUrl() {
 		return url;
 	}
@@ -48,6 +49,7 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the serverUsername
 	 */
+	@Override
 	public String getServerUsername() {
 		return serverUsername;
 	}
@@ -55,6 +57,7 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the serverPassword
 	 */
+	@Override
 	public String getServerPassword() {
 		return serverPassword;
 	}
@@ -62,6 +65,7 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the proxyData
 	 */
+	@Override
 	public ProxyData getProxyData() {
 		return proxyData;
 	}
@@ -69,6 +73,7 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the type
 	 */
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -76,6 +81,7 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the adminPassword
 	 */
+	@Override
 	public String getAdminPassword() {
 		return adminPassword;
 	}
@@ -83,10 +89,12 @@ public class RemoteClientImpl implements RemoteClient {
 	/**
 	 * @return the securityKey
 	 */
+	@Override
 	public String getSecurityKey() {
 		return securityKey;
 	}
 
+	@Override
 	public String getAdminPasswordEncrypted() {
 		try {
 			return Encrypt.invoke( getAdminPassword(), getSecurityKey(), CFMXCompat.ALGORITHM_NAME, "uu", null, 0 );
@@ -96,18 +104,22 @@ public class RemoteClientImpl implements RemoteClient {
 		}
 	}
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
 
+	@Override
 	public String getUsage() {
 		return usage;
 	}
 
+	@Override
 	public boolean hasUsage(String usage) {
 		return ListUtil.listFindNoCaseIgnoreEmpty(this.usage,usage,',')!=-1 ;
 	}
 
+	@Override
 	public String getId(Config config) {
 
 		if(id!=null) return id;

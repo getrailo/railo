@@ -88,7 +88,8 @@ public final class ZQuery
         return forupdate_;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuffer stringbuffer = new StringBuffer("select ");
         if(distinct_) stringbuffer.append("distinct ");
         stringbuffer.append(select_.elementAt(0).toString());

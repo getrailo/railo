@@ -25,7 +25,8 @@ public class SoftHashMap extends AbstractMap {
     HARD_SIZE = hardSize; 
   }
 
-  public Object get(Object key) {
+  @Override
+public Object get(Object key) {
     Object result = null;
     // We get the SoftReference represented by that key
     SoftReference soft_ref = (SoftReference)hash.get(key);
@@ -51,29 +52,34 @@ public class SoftHashMap extends AbstractMap {
     }
   }
 
-  public Object put(Object key, Object value) {
+  @Override
+public Object put(Object key, Object value) {
     processQueue(); 
     return hash.put(key, new SoftValue(value, queue, key));
   }
 
-  public Object remove(Object key) {
+  @Override
+public Object remove(Object key) {
     // throw out garbage collected values first
     processQueue(); 
     return hash.remove(key);
   }
 
-  public void clear() {
+  @Override
+public void clear() {
     hardCache.clear();
     processQueue(); 
     hash.clear();
   }
 
-  public int size() {
+  @Override
+public int size() {
     processQueue(); 
     return hash.size();
   }
 
-  public Set entrySet() {
+  @Override
+public Set entrySet() {
     // no, no, you may NOT do that!!! GRRR
     throw new UnsupportedOperationException();
   }

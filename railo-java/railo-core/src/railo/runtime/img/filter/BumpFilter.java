@@ -40,9 +40,11 @@ public class BumpFilter extends ConvolveFilter  implements DynFiltering {
 		super(embossMatrix);
 	}
 
+	@Override
 	public String toString() {
 		return "Blur/Emboss Edges";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));

@@ -430,6 +430,7 @@ public abstract class ComponentProxy implements Component {
 		return getComponent().getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 	
+	@Override
 	public boolean isPersistent() {
 		return getComponent().isPersistent();
 	}
@@ -438,10 +439,12 @@ public abstract class ComponentProxy implements Component {
 		return c.isPersistent();
 	}
 
+	@Override
 	public boolean isAccessors() {
 		return getComponent().isAccessors();
 	}
 
+	@Override
 	public Object getMetaStructItem(Key name) {
 		return getComponent().getMetaStructItem(name);
 	}
@@ -449,62 +452,77 @@ public abstract class ComponentProxy implements Component {
 		return c.getMetaStructItem(name);
 	}
 
+	@Override
 	public Set<Key> keySet(int access) {
 		return getComponent().keySet(access);
 	}
 
+	@Override
 	public Object call(PageContext pc, int access, Key name, Object[] args) throws PageException {
 		return getComponent().call(pc, access, name, args);
 	}
 
+	@Override
 	public Object callWithNamedValues(PageContext pc, int access, Key name, Struct args) throws PageException {
 		return getComponent().callWithNamedValues(pc, access, name, args);
 	}
 
+	@Override
 	public int size(int access) {
 		return getComponent().size(access);
 	}
 
+	@Override
 	public Key[] keys(int access) {
 		return getComponent().keys(access);
 	}
 
+	@Override
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
 		return getComponent().entryIterator(access);
 	}
 
+	@Override
 	public Iterator<Object> valueIterator(int access) {
 		return getComponent().valueIterator(access);
 	}
 
+	@Override
 	public Object get(int access, Key key) throws PageException {
 		return getComponent().get(access, key);
 	}
 
+	@Override
 	public Object get(int access, Key key, Object defaultValue) {
 		return getComponent().get(access, key, defaultValue);
 	}
 
+	@Override
 	public Iterator<Key> keyIterator(int access) {
 		return getComponent().keyIterator(access);
 	}
 	
+	@Override
 	public Iterator<String> keysAsStringIterator(int access) {
 		return getComponent().keysAsStringIterator(access);
 	}
 
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
 		return getComponent().toDumpData(pageContext, maxlevel, dp, access);
 	}
 
+	@Override
 	public boolean contains(int access, Key name) {
 		return getComponent().contains(access, name);
 	}
 
+	@Override
 	public Member getMember(int access, Key key, boolean dataMember, boolean superAccess) {
 		return getComponent().getMember(access, key, dataMember, superAccess);
 	}
 	
+	@Override
 	public void setEntity(boolean entity) {
 		getComponent().setEntity(entity);
 	}
@@ -513,10 +531,12 @@ public abstract class ComponentProxy implements Component {
 		c.setEntity(entity);
 	}
 
+	@Override
 	public boolean isEntity() {
 		return getComponent().isEntity();
 	}
 
+	@Override
 	public Component getBaseComponent() {
 		return getComponent().getBaseComponent();
 	}

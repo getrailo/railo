@@ -17,6 +17,7 @@ public class ClosureAsExpression extends ExpressionBase {
 		this.closure=closure;
 	}
 	
+	@Override
 	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
 		closure._writeOut(bc);
 		return Types.UDF_IMPL;

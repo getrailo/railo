@@ -75,6 +75,7 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
         section.setData(data);
     }
 
+	@Override
 	public String getWholeText() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -86,6 +87,7 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 		}
 	}
 
+	@Override
 	public boolean isElementContentWhitespace() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -97,6 +99,7 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 		}
 	}
 
+	@Override
 	public Text replaceWholeText(String arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {

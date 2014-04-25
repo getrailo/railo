@@ -2,7 +2,7 @@ package railo.transformer.bytecode.statement;
 
 import java.util.Map;
 
-import railo.runtime.type.FunctionArgumentImpl;
+import railo.runtime.type.FunctionArgument;
 import railo.transformer.Factory;
 import railo.transformer.expression.ExprBoolean;
 import railo.transformer.expression.ExprString;
@@ -60,9 +60,9 @@ public final class Argument {
 	}
 	
 	public Expression getDefaultValueType(Factory f){
-		if(defaultValue==null) return f.createLitInteger(FunctionArgumentImpl.DEFAULT_TYPE_NULL);
-		if(defaultValue instanceof Literal) return f.createLitInteger(FunctionArgumentImpl.DEFAULT_TYPE_LITERAL);
-		return f.createLitInteger(FunctionArgumentImpl.DEFAULT_TYPE_RUNTIME_EXPRESSION);
+		if(defaultValue==null) return f.createLitInteger(FunctionArgument.DEFAULT_TYPE_NULL);
+		if(defaultValue instanceof Literal) return f.createLitInteger(FunctionArgument.DEFAULT_TYPE_LITERAL);
+		return f.createLitInteger(FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION);
 	}
 
 	/**

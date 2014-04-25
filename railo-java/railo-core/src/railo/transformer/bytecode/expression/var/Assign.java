@@ -6,7 +6,6 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeFactory;
-import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.Position;
 import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
@@ -101,12 +100,13 @@ public class Assign extends ExpressionBase {
 	}
 	
 
+	@Override
 	public Type _writeOut(BytecodeContext bc, int mode) throws TransformerException {
     	GeneratorAdapter adapter = bc.getAdapter();
 		int count=variable.getCount();
         // count 0
         if(count==0){
-        	if(variable.ignoredFirstMember() && variable.getScope()==ScopeSupport.SCOPE_VAR){
+        	if(variable.ignoredFirstMember() && variable.getScope()==Scope.SCOPE_VAR){
     			//print.dumpStack();
         		return Types.VOID;
     		}

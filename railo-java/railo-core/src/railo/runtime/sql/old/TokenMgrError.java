@@ -69,7 +69,8 @@ public final class TokenMgrError extends Error
         return "Lexical error at line " + j + ", column " + k + ".  Encountered: " + (flag ? "<EOF> " : "\"" + addEscapes(String.valueOf(c)) + "\"" + " (" + (int)c + "), ") + "after : \"" + addEscapes(s) + "\"";
     }
 
-    public String getMessage()
+    @Override
+	public String getMessage()
     {
         return super.getMessage();
     }

@@ -98,7 +98,8 @@ public class ScratchFilter extends AbstractBufferedImageOp  implements DynFilter
 		return seed;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
 
@@ -160,9 +161,11 @@ if ( false ) {
         return dst;
     }
     
+	@Override
 	public String toString() {
 		return "Render/Scratches...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=src;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));

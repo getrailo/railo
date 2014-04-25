@@ -80,6 +80,7 @@ public class OctTreeQuantizer implements Quantizer {
 	 * Initialize the quantizer. This should be called before adding any pixels.
 	 * @param numColors the number of colors we're quantizing to.
 	 */
+	@Override
 	public void setup(int numColors) {
 		maximumColors = numColors;
 		reduceColors = Math.max(512, numColors * 2);
@@ -91,6 +92,7 @@ public class OctTreeQuantizer implements Quantizer {
 	 * @param offset the offset into the array
 	 * @param count the count of pixels
 	 */
+	@Override
 	public void addPixels(int[] pixels, int offset, int count) {
 		for (int i = 0; i < count; i++) {
 			insertColor(pixels[i+offset]);
@@ -104,6 +106,7 @@ public class OctTreeQuantizer implements Quantizer {
      * @param rgb the color
      * @return the index
      */
+	@Override
 	public int getIndexForColor(int rgb) {
 		int red = (rgb >> 16) & 0xff;
 		int green = (rgb >> 8) & 0xff;
@@ -231,6 +234,7 @@ public class OctTreeQuantizer implements Quantizer {
      * Build the color table.
      * @return the color table
      */
+	@Override
 	public int[] buildColorTable() {
 		int[] table = new int[colors];
 		buildColorTable(root, table, 0);

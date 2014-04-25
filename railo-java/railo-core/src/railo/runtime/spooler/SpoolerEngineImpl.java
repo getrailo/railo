@@ -246,14 +246,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return task.lastExecution()+(plan.getIntervall()*1000);
 	}
 	
+	@Override
 	public Query getOpenTasksAsQuery(int startrow, int maxrow) throws PageException {
 		return getTasksAsQuery(createQuery(),openDirectory,startrow, maxrow);
 	}
 
+	@Override
 	public Query getClosedTasksAsQuery(int startrow, int maxrow) throws PageException {
 		return getTasksAsQuery(createQuery(),closedDirectory,startrow, maxrow);
 	}
 
+	@Override
 	public Query getAllTasksAsQuery(int startrow, int maxrow) throws PageException {
 		Query query = createQuery();
 		//print.o(startrow+":"+maxrow);
@@ -273,10 +276,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return query;
 	}
 	
+	@Override
 	public int getOpenTaskCount() {
 		return calculateSize(openDirectory);
 	}
 	
+	@Override
 	public int getClosedTaskCount() {
 		return calculateSize(closedDirectory);
 	}
@@ -358,6 +363,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		}
 		
 		
+		@Override
 		public void run() {
 			Task task;
 			while(tasks.size()>0){
@@ -387,6 +393,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			catch(Throwable t){}
 		}
 		
+		@Override
 		public void run() {
 			String[] taskNames;
 			//SpoolerTask[] tasks;
@@ -486,6 +493,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			return task;
 		}
 
+		@Override
 		public void run() {
 			ThreadLocalConfig.register(engine.config);
 			engine.execute(task);
@@ -499,6 +507,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * remove that task from Spooler
 	 * @param task
 	 */
+	@Override
 	public void remove(SpoolerTask task) {
 		unstore(task);
 		//if(!openTasks.remove(task))closedTasks.remove(task);
@@ -537,6 +546,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * execute task by id and return eror throwd by task
 	 * @param id
 	 */
+	@Override
 	public PageException execute(String id) {
 		SpoolerTask task = getTaskById(openDirectory,id);
 		if(task==null)task=getTaskById(closedDirectory,id);
@@ -546,6 +556,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return null;
 	}
 	
+	@Override
 	public PageException execute(SpoolerTask task) {
 		//task.closed();
 		try {
@@ -602,6 +613,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	
 class TaskFileFilter implements ResourceNameFilter {
 
+	@Override
 	public boolean accept(Resource parent, String name) {
 		return name!=null && name.endsWith(".tsk");
 	}

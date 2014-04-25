@@ -30,7 +30,7 @@ public final class ErrorPagePool {
 		for(int i=pages.size()-1;i>=0;i--) {
 			ErrorPageImpl ep=(ErrorPageImpl) pages.get(i);
 			if(ep.getType()==type) {
-				if(type==ErrorPageImpl.TYPE_EXCEPTION){
+				if(type==ErrorPage.TYPE_EXCEPTION){
 					if(pe.typeEqual(ep.getTypeAsString()))return ep;
 				}
 				else return ep;
@@ -58,19 +58,19 @@ public final class ErrorPagePool {
 	 */
 	public void removeErrorPage(PageException pe) {
 		// exception
-		ErrorPage ep = getErrorPage(pe,ErrorPageImpl.TYPE_EXCEPTION);
+		ErrorPage ep = getErrorPage(pe,ErrorPage.TYPE_EXCEPTION);
 		if(ep!=null){
 			pages.remove(ep);
 			hasChanged=true;
 		}
 		// request
-		ep = getErrorPage(pe,ErrorPageImpl.TYPE_REQUEST);
+		ep = getErrorPage(pe,ErrorPage.TYPE_REQUEST);
 		if(ep!=null){
 			pages.remove(ep);
 			hasChanged=true;
 		}
 		// validation
-		ep = getErrorPage(pe,ErrorPageImpl.TYPE_VALIDATION);
+		ep = getErrorPage(pe,ErrorPage.TYPE_VALIDATION);
 		if(ep!=null){
 			pages.remove(ep);
 			hasChanged=true;

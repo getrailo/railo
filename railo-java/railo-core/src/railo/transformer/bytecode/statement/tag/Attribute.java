@@ -54,6 +54,7 @@ public final class Attribute {
 		return dynamicType;
 	}
 	
+	@Override
 	public String toString(){
 		return "name:"+this.name
 		+";value:"+this.value

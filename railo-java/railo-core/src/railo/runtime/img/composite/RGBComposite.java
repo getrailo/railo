@@ -40,10 +40,12 @@ public abstract class RGBComposite implements Composite {
 		return extraAlpha;
 	}
 
+	@Override
 	public int hashCode() {
 		return Float.floatToIntBits(extraAlpha);
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof RGBComposite))
 			return false;
@@ -66,7 +68,8 @@ public abstract class RGBComposite implements Composite {
             this.dstColorModel = dstColorModel;
         }
 
-        public void dispose() {
+        @Override
+		public void dispose() {
         }
         
         // Multiply two numbers in the range 0..255 such that 255*255=255
@@ -81,7 +84,8 @@ public abstract class RGBComposite implements Composite {
 	
         public abstract void composeRGB( int[] src, int[] dst, float alpha );
 
-        public void compose( Raster src, Raster dstIn, WritableRaster dstOut ) {
+        @Override
+		public void compose( Raster src, Raster dstIn, WritableRaster dstOut ) {
             float alpha = this.alpha;
 
             int[] srcPix = null;

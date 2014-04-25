@@ -114,6 +114,7 @@ public class WeaveFilter extends PointFilter  implements DynFiltering {
 		return shadeCrossings;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		x += xWidth+xGap/2;
 		y += yWidth+yGap/2;
@@ -183,10 +184,12 @@ public class WeaveFilter extends PointFilter  implements DynFiltering {
 		return v;
 	}
 
+	@Override
 	public String toString() {
 		return "Texture/Weave...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("UseImageColors")))!=null)setUseImageColors(ImageFilterUtil.toBooleanValue(o,"UseImageColors"));

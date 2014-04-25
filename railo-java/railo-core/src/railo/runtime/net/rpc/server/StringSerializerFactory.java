@@ -11,6 +11,7 @@ public class StringSerializerFactory extends SimpleSerializerFactory {
 		super(javaType, xmlType);
 	}
 
+	@Override
 	public Serializer getSerializerAs(String mechanismType) throws JAXRPCException {
         if (javaType == String.class) {
             return new StringSerializer(javaType, xmlType);

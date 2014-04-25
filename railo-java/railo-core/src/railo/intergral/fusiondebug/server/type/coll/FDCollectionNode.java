@@ -36,10 +36,12 @@ public class FDCollectionNode extends FDNodeValueSupport {
 		return coll.get(key,null);
 	}
 
+	@Override
 	public boolean isMutable() {
 		return true;
 	}
 	
+	@Override
 	public void set(String value) throws FDMutabilityException {
 		coll.setEL(key, FDCaster.unserialize(value));
 	}

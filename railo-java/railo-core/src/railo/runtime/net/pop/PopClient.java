@@ -14,14 +14,17 @@ public final class PopClient extends MailClient {
 		super(server, port, username, password);
 	}
 
+	@Override
 	protected String getId(Folder folder,Message message) throws MessagingException {
 		return ((POP3Folder)folder).getUID(message);
 	}
 
+	@Override
 	protected String getTypeAsString() {
 		return "pop3";
 	}
 
+	@Override
 	protected int getType() {
 		return TYPE_POP3;
 	}

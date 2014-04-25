@@ -56,7 +56,8 @@ public class GlowFilter extends GaussianFilter  implements DynFiltering {
 		return amount;
 	}
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -102,9 +103,11 @@ public class GlowFilter extends GaussianFilter  implements DynFiltering {
         return dst;
     }
 
+	@Override
 	public String toString() {
 		return "Blur/Glow...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

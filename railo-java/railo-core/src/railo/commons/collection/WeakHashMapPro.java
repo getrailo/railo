@@ -299,7 +299,8 @@ public class WeakHashMapPro<K,V>
      * entries that will be removed before next attempted access
      * because they are no longer referenced.
      */
-    public int size() {
+    @Override
+	public int size() {
         if (size == 0)
             return 0;
         expungeStaleEntries();
@@ -312,7 +313,8 @@ public class WeakHashMapPro<K,V>
      * entries that will be removed before next attempted access
      * because they are no longer referenced.
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         return size() == 0;
     }
 
@@ -331,7 +333,8 @@ public class WeakHashMapPro<K,V>
         return null;
     }
     
-    public V g(K key) throws PageException {
+    @Override
+	public V g(K key) throws PageException {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K,V>[] tab = getTable();
@@ -345,7 +348,8 @@ public class WeakHashMapPro<K,V>
         throw invalidKey(this,key,false);
     }
     
-    public V g(K key, V defaultValue) {
+    @Override
+	public V g(K key, V defaultValue) {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K,V>[] tab = getTable();
@@ -367,7 +371,8 @@ public class WeakHashMapPro<K,V>
      * @return <tt>true</tt> if there is a mapping for <tt>key</tt>;
      *         <tt>false</tt> otherwise
      */
-    public boolean containsKey(Object key) {
+    @Override
+	public boolean containsKey(Object key) {
         return getEntry(key) != null;
     }
 
@@ -398,7 +403,8 @@ public class WeakHashMapPro<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    public V put(K key, V value) {
+    @Override
+	public V put(K key, V value) {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K,V>[] tab = getTable();
@@ -497,7 +503,8 @@ public class WeakHashMapPro<K,V>
      * @param m mappings to be stored in this map.
      * @throws  NullPointerException if the specified map is null.
      */
-    public void putAll(Map<? extends K, ? extends V> m) {
+    @Override
+	public void putAll(Map<? extends K, ? extends V> m) {
         int numKeysToBeAdded = m.size();
         if (numKeysToBeAdded == 0)
             return;
@@ -546,7 +553,8 @@ public class WeakHashMapPro<K,V>
      * @return the previous value associated with <tt>key</tt>, or
      *         <tt>null</tt> if there was no mapping for <tt>key</tt>
      */
-    public V remove(Object key) {
+    @Override
+	public V remove(Object key) {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K,V>[] tab = getTable();
@@ -571,7 +579,8 @@ public class WeakHashMapPro<K,V>
         return null;
     }
     
-    public V r(K key) throws PageException {
+    @Override
+	public V r(K key) throws PageException {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K,V>[] tab = getTable();
@@ -596,7 +605,8 @@ public class WeakHashMapPro<K,V>
         throw invalidKey(this, key, true);
     }
     
-    public V r(K key, V defaultValue) {
+    @Override
+	public V r(K key, V defaultValue) {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K,V>[] tab = getTable();
@@ -655,7 +665,8 @@ public class WeakHashMapPro<K,V>
      * Removes all of the mappings from this map.
      * The map will be empty after this call returns.
      */
-    public void clear() {
+    @Override
+	public void clear() {
         // clear out ref queue. We don't need to expunge entries
         // since table is getting cleared.
         while (queue.poll() != null)
@@ -680,7 +691,8 @@ public class WeakHashMapPro<K,V>
      * @return <tt>true</tt> if this map maps one or more keys to the
      *         specified value
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
         if (value==null)
             return containsNullValue();
 
@@ -725,22 +737,26 @@ public class WeakHashMapPro<K,V>
             this.next  = next;
         }
 
-        @SuppressWarnings("unchecked")
+        @Override
+		@SuppressWarnings("unchecked")
         public K getKey() {
             return (K) WeakHashMapPro.unmaskNull(get());
         }
 
-        public V getValue() {
+        @Override
+		public V getValue() {
             return value;
         }
 
-        public V setValue(V newValue) {
+        @Override
+		public V setValue(V newValue) {
             V oldValue = value;
             value = newValue;
             return oldValue;
         }
 
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
@@ -755,14 +771,16 @@ public class WeakHashMapPro<K,V>
             return false;
         }
 
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             K k = getKey();
             V v = getValue();
             return ((k==null ? 0 : k.hashCode()) ^
                     (v==null ? 0 : v.hashCode()));
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return getKey() + "=" + getValue();
         }
     }
@@ -789,7 +807,8 @@ public class WeakHashMapPro<K,V>
             index = isEmpty() ? 0 : table.length;
         }
 
-        public boolean hasNext() {
+        @Override
+		public boolean hasNext() {
             Entry<K,V>[] t = table;
 
             while (nextKey == null) {
@@ -824,7 +843,8 @@ public class WeakHashMapPro<K,V>
             return lastReturned;
         }
 
-        public void remove() {
+        @Override
+		public void remove() {
             if (lastReturned == null)
                 throw new IllegalStateException();
             if (modCount != expectedModCount)
@@ -839,19 +859,22 @@ public class WeakHashMapPro<K,V>
     }
 
     private class ValueIterator extends HashIterator<V> {
-        public V next() {
+        @Override
+		public V next() {
             return nextEntry().value;
         }
     }
 
     private class KeyIterator extends HashIterator<K> {
-        public K next() {
+        @Override
+		public K next() {
             return nextEntry().getKey();
         }
     }
 
     private class EntryIterator extends HashIterator<Map.Entry<K,V>> {
-        public Map.Entry<K,V> next() {
+        @Override
+		public Map.Entry<K,V> next() {
             return nextEntry();
         }
     }
@@ -873,25 +896,30 @@ public class WeakHashMapPro<K,V>
      * operations.  It does not support the <tt>add</tt> or <tt>addAll</tt>
      * operations.
      */
-    public Set<K> keySet() {
+    @Override
+	public Set<K> keySet() {
         Set<K> ks = keySet;
         return (ks != null ? ks : (keySet = new KeySet()));
     }
 
     private class KeySet extends AbstractSet<K> {
-        public Iterator<K> iterator() {
+        @Override
+		public Iterator<K> iterator() {
             return new KeyIterator();
         }
 
-        public int size() {
+        @Override
+		public int size() {
             return WeakHashMapPro.this.size();
         }
 
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return containsKey(o);
         }
 
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             if (containsKey(o)) {
                 WeakHashMapPro.this.remove(o);
                 return true;
@@ -899,7 +927,8 @@ public class WeakHashMapPro<K,V>
             return false;
         }
 
-        public void clear() {
+        @Override
+		public void clear() {
             WeakHashMapPro.this.clear();
         }
     }
@@ -917,25 +946,30 @@ public class WeakHashMapPro<K,V>
      * <tt>retainAll</tt> and <tt>clear</tt> operations.  It does not
      * support the <tt>add</tt> or <tt>addAll</tt> operations.
      */
-    public Collection<V> values() {
+    @Override
+	public Collection<V> values() {
         Collection<V> vs = values;
         return (vs != null) ? vs : (values = new Values());
     }
 
     private class Values extends AbstractCollection<V> {
-        public Iterator<V> iterator() {
+        @Override
+		public Iterator<V> iterator() {
             return new ValueIterator();
         }
 
-        public int size() {
+        @Override
+		public int size() {
             return WeakHashMapPro.this.size();
         }
 
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return containsValue(o);
         }
 
-        public void clear() {
+        @Override
+		public void clear() {
             WeakHashMapPro.this.clear();
         }
     }
@@ -954,17 +988,20 @@ public class WeakHashMapPro<K,V>
      * <tt>clear</tt> operations.  It does not support the
      * <tt>add</tt> or <tt>addAll</tt> operations.
      */
-    public Set<Map.Entry<K,V>> entrySet() {
+    @Override
+	public Set<Map.Entry<K,V>> entrySet() {
         Set<Map.Entry<K,V>> es = entrySet;
         return es != null ? es : (entrySet = new EntrySet());
     }
 
     private class EntrySet extends AbstractSet<Map.Entry<K,V>> {
-        public Iterator<Map.Entry<K,V>> iterator() {
+        @Override
+		public Iterator<Map.Entry<K,V>> iterator() {
             return new EntryIterator();
         }
 
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
@@ -972,15 +1009,18 @@ public class WeakHashMapPro<K,V>
             return candidate != null && candidate.equals(e);
         }
 
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             return removeMapping(o);
         }
 
-        public int size() {
+        @Override
+		public int size() {
             return WeakHashMapPro.this.size();
         }
 
-        public void clear() {
+        @Override
+		public void clear() {
             WeakHashMapPro.this.clear();
         }
 
@@ -991,11 +1031,13 @@ public class WeakHashMapPro<K,V>
             return list;
         }
 
-        public Object[] toArray() {
+        @Override
+		public Object[] toArray() {
             return deepCopy().toArray();
         }
 
-        public <T> T[] toArray(T[] a) {
+        @Override
+		public <T> T[] toArray(T[] a) {
             return deepCopy().toArray(a);
         }
     }

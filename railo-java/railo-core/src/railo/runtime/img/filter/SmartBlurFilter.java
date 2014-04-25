@@ -34,7 +34,8 @@ public class SmartBlurFilter extends AbstractBufferedImageOp  implements DynFilt
 	private int vRadius = 5;
 	private int threshold = 10;
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -200,9 +201,11 @@ public class SmartBlurFilter extends AbstractBufferedImageOp  implements DynFilt
 		return threshold;
 	}
 	
+	@Override
 	public String toString() {
 		return "Blur/Smart Blur...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("HRadius")))!=null)setHRadius(ImageFilterUtil.toIntValue(o,"HRadius"));

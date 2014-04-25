@@ -70,6 +70,7 @@ public class PointillizeFilter extends CellularFilter  implements DynFiltering {
 		return fuzziness;
 	}
 
+	@Override
 	public int getPixel(int x, int y, int[] inPixels, int width, int height) {
 		float nx = m00*x + m01*y;
 		float ny = m10*x + m11*y;
@@ -97,10 +98,12 @@ public class PointillizeFilter extends CellularFilter  implements DynFiltering {
 		return v;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Pointillize...";
 	}
 	
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Fuzziness")))!=null)setFuzziness(ImageFilterUtil.toFloatValue(o,"Fuzziness"));

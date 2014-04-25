@@ -217,7 +217,8 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * Returns the value of component.
      * @return value component
      */
-    public Component getComponent() {
+    @Override
+	public Component getComponent() {
         return component.top;
     }
 
@@ -261,6 +262,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
     	return call(pc, KeyImpl.init(key), arguments);
     }*/
 
+	@Override
 	public Object call(PageContext pc, Collection.Key key, Object[] arguments) throws PageException {
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
@@ -274,6 +276,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
     	return callWithNamedValues(pc, KeyImpl.init(key), args);
     }*/
 
+	@Override
 	public Object callWithNamedValues(PageContext pc, Collection.Key key, Struct args) throws PageException {
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {

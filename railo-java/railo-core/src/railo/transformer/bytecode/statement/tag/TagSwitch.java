@@ -39,6 +39,7 @@ public final class TagSwitch extends TagBaseNoFinal {
 	 *
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws TransformerException {
 		GeneratorAdapter adapter = bc.getAdapter();
 

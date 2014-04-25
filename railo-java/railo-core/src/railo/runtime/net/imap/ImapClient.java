@@ -15,14 +15,17 @@ public final class ImapClient extends MailClient {
 		super(server, port, username, password);
 	}
 
+	@Override
 	protected String getId(Folder folder,Message message) throws MessagingException {
 		return Caster.toString(((IMAPFolder)folder).getUID(message));
 	}
 
+	@Override
 	protected String getTypeAsString() {
 		return "imap";
 	}
 
+	@Override
 	protected int getType() {
 		return TYPE_IMAP;
 	}

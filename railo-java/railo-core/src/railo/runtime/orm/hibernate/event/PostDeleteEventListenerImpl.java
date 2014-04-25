@@ -14,6 +14,7 @@ public class PostDeleteEventListenerImpl extends EventListener implements PostDe
 	    super(component, CommonUtil.POST_DELETE, false);
 	}
 
+	@Override
 	public void onPostDelete(PostDeleteEvent event) {
     	invoke(CommonUtil.POST_DELETE, event.getEntity());
     }

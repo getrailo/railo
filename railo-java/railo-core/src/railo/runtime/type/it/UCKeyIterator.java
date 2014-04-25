@@ -12,10 +12,12 @@ public class UCKeyIterator implements Iterator {
 		this.it=it;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return it.hasNext();
 	}
 
+	@Override
 	public Object next() {
 		return nextString();
 	}
@@ -24,6 +26,7 @@ public class UCKeyIterator implements Iterator {
 		return it.next().toString().toUpperCase();
 	}
 
+	@Override
 	public void remove() {
 		it.remove();
 	}

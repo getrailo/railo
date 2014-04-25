@@ -72,6 +72,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 		}
 
 		
+		@Override
 		public String toString(){
 			return "name:"+this.name+";class:"+this.clazz.getName()+";custom:"+custom+";";
 		}
@@ -87,6 +88,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 			public boolean isReadOnly() {
 				return readOnly;
 			}
+			@Override
 			public boolean isStorage() {
 				return storage;
 			}

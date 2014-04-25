@@ -89,10 +89,12 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Externalizabl
 		return sfm;
     }
 
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeObject(key);
 	}
 
+	@Override
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
 		key=(String) in.readObject();
 		ucKey=key.toUpperCase();
@@ -136,6 +138,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Externalizabl
 		return getLowerString().charAt(index);
 	}
 	
+	@Override
 	public char upperCharAt(int index) {
 		return ucKey.charAt(index);
 	}
@@ -146,6 +149,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Externalizabl
 		return lcKey;
 	}
 	
+	@Override
 	public String getUpperString() {
 		return ucKey;
 	}
@@ -256,6 +260,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Externalizabl
 	}
 	
 
+	@Override
 	public int compareTo(Object o) {
 		try {
 			return Operator.compare(key, o);

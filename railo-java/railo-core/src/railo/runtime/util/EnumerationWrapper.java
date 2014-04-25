@@ -45,6 +45,7 @@ public final class EnumerationWrapper implements Enumeration {
 		/**
 		 * @see java.util.Enumeration#hasMoreElements()
 		 */
+		@Override
 		public boolean hasMoreElements() {
 			return it.hasNext();
 		}
@@ -52,6 +53,7 @@ public final class EnumerationWrapper implements Enumeration {
 		/**
 		 * @see java.util.Enumeration#nextElement()
 		 */
+		@Override
 		public Object nextElement() {
 			return it.next();
 		}

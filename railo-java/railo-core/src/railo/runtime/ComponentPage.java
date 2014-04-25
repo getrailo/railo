@@ -700,7 +700,7 @@ public abstract class ComponentPage extends PagePlus  {
         	rsp.setContentType("application/cfml"+strCS);
         	rsp.setHeader("Return-Format", "cfml");
         break;
-        case UDFPlus.RETURN_FORMAT_JAVA:
+        case UDF.RETURN_FORMAT_JAVA:
         	rsp.setContentType("application/java"); // no charset this is a binary format
         	rsp.setHeader("Return-Format", "java");
         break;
@@ -800,7 +800,7 @@ public abstract class ComponentPage extends PagePlus  {
 		}
 
 		// JAVA
-		else if(UDFPlus.RETURN_FORMAT_JAVA==props.format) {
+		else if(UDF.RETURN_FORMAT_JAVA==props.format) {
 			writeOut(pc,rtn,MimeType.APPLICATION_JAVA,new JavaConverter());
 		}
 		else throw new IOException("invalid return format defintion:"+props.format);
@@ -910,7 +910,7 @@ public abstract class ComponentPage extends PagePlus  {
             is = new ByteArrayInputStream(str.getBytes(cs));
 		}
 		// Java
-		else if(UDFPlus.RETURN_FORMAT_JAVA==format) {
+		else if(UDF.RETURN_FORMAT_JAVA==format) {
 			byte[] bytes = JavaConverter.serializeAsBinary(rtn);
 			is = new ByteArrayInputStream(bytes);
 			

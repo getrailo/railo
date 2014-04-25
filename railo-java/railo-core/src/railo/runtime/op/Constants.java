@@ -72,7 +72,8 @@ public final class Constants {
      * @return Integer Object
      * @deprecated use Integer.valueOf() instead
      */
-    public static Integer Integer(int i) {
+    @Deprecated
+	public static Integer Integer(int i) {
         //if(i>-1 && i<100) return INTEGER[i];
         return Integer.valueOf(i);
     }
@@ -83,7 +84,8 @@ public final class Constants {
      * @return Boolean Object
      * @deprecated use Boolean.valueOf() instead
      */
-    public static Boolean Boolean(boolean b) {
+    @Deprecated
+	public static Boolean Boolean(boolean b) {
         return b?Boolean.TRUE:Boolean.FALSE;
     }
     

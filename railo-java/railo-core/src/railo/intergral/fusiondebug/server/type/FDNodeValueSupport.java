@@ -16,6 +16,7 @@ public abstract class FDNodeValueSupport extends FDValueSupport {
 		this.frame=frame;
 	}
 	
+	@Override
 	public List getChildren() {
 		return getChildren(frame,getName(),getRawValue());
 	}

@@ -137,6 +137,7 @@ public final class RSSHandler extends DefaultHandler {
 		
     }
 	
+	@Override
 	public void setDocumentLocator(Locator locator) { 
 		  if (locator instanceof Locator2) {
 		    Locator2 locator2 = (Locator2) locator;

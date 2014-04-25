@@ -139,7 +139,8 @@ public class TwirlFilter extends TransformFilter  implements DynFiltering {
 		return radius;
 	}
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
 		icentreX = src.getWidth() * centreX;
 		icentreY = src.getHeight() * centreY;
 		if ( radius == 0 )
@@ -148,6 +149,7 @@ public class TwirlFilter extends TransformFilter  implements DynFiltering {
 		return super.filter( src, dst );
 	}
 	
+	@Override
 	protected void transformInverse(int x, int y, float[] out) {
 		float dx = x-icentreX;
 		float dy = y-icentreY;
@@ -163,10 +165,12 @@ public class TwirlFilter extends TransformFilter  implements DynFiltering {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return "Distort/Twirl...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

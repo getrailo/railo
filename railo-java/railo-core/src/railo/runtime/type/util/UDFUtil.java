@@ -197,7 +197,7 @@ public class UDFUtil {
 		else if(UDF.RETURN_FORMAT_JSON==returnFormat)	return "json";
 		else if(UDF.RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
 		else if(UDF.RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
-		else if(UDFPlus.RETURN_FORMAT_JAVA==returnFormat)	return "java";
+		else if(UDF.RETURN_FORMAT_JAVA==returnFormat)	return "java";
 		// NO XML else if(UDFPlus.RETURN_FORMAT_XML==returnFormat)	return "xml";
 		else return defaultValue;
 	}
@@ -229,7 +229,7 @@ public class UDFUtil {
 		else if("cfml".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
 		else if("cfm".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
 		else if("xml".equals(returnFormat))	return UDF.RETURN_FORMAT_XML;
-		else if("java".equals(returnFormat))	return UDFPlus.RETURN_FORMAT_JAVA;
+		else if("java".equals(returnFormat))	return UDF.RETURN_FORMAT_JAVA;
 		return defaultValue;
 	}
 	
@@ -245,7 +245,7 @@ public class UDFUtil {
 		else if(UDF.RETURN_FORMAT_JSON==returnFormat)	return "json";
 		else if(UDF.RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
 		else if(UDF.RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
-		else if(UDFPlus.RETURN_FORMAT_JAVA==returnFormat)	return "java";
+		else if(UDF.RETURN_FORMAT_JAVA==returnFormat)	return "java";
 		else throw new ExpressionException("invalid returnFormat definition, valid values are [wddx,plain,json,cfml]");
 	}
 	

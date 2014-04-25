@@ -32,6 +32,7 @@ public final class WhileVisitor implements LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#visitContinue(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void visitContinue(BytecodeContext bc) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, begin);
 	}
@@ -40,6 +41,7 @@ public final class WhileVisitor implements LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#visitBreak(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
+	@Override
 	public void visitBreak(BytecodeContext bc) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, end);
 	}
@@ -48,6 +50,7 @@ public final class WhileVisitor implements LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#getContinueLabel()
 	 */
+	@Override
 	public Label getContinueLabel() {
 		return begin;
 	}
@@ -56,6 +59,7 @@ public final class WhileVisitor implements LoopVisitor {
 	 *
 	 * @see railo.transformer.bytecode.visitor.LoopVisitor#getBreakLabel()
 	 */
+	@Override
 	public Label getBreakLabel() {
 		return end;
 	}

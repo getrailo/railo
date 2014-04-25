@@ -49,6 +49,7 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 		lastAccess=System.currentTimeMillis();
 	}
 
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		// do nothing
 	}

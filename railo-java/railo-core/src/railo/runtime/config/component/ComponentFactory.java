@@ -1,7 +1,7 @@
 package railo.runtime.config.component;
 
 import railo.commons.io.res.Resource;
-import railo.runtime.config.ConfigWebFactory;
+import railo.runtime.config.ConfigFactory;
 
 public class ComponentFactory {
 
@@ -53,7 +53,7 @@ public class ComponentFactory {
 
 	private static void deploy(Resource dir, String path,boolean doNew, String name) {
 		Resource f = dir.getRealResource(name+".cfc");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL(path+name+".cfc",f);
+        if(!f.exists() || doNew)ConfigFactory.createFileFromResourceEL(path+name+".cfc",f);
 	}
 }
 

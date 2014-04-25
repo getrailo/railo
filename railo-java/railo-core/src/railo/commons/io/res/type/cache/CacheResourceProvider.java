@@ -16,7 +16,7 @@ import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.ram.RamCache;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
@@ -49,6 +49,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 	 * @param arguments
 	 * @return RamResource
 	 */
+	@Override
 	public ResourceProvider init(String scheme,Map arguments) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		
@@ -204,7 +205,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 	
 
 	public Cache getCache() {
-		Cache c = Util.getDefault(ThreadLocalPageContext.get(),ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
+		Cache c = Util.getDefault(ThreadLocalPageContext.get(),Config.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
 		if(!inits.contains(c.hashCode())){
 			String k = toKey("null","");
 			if(!c.contains(k)) {

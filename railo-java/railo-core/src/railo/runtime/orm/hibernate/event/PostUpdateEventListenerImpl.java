@@ -14,6 +14,7 @@ public class PostUpdateEventListenerImpl extends EventListener implements PostUp
 	    super(component, CommonUtil.POST_UPDATE, false);
 	}
 	
+	@Override
 	public void onPostUpdate(PostUpdateEvent event) {
     	invoke(CommonUtil.POST_UPDATE, event.getEntity());
     }

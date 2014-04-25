@@ -66,38 +66,47 @@ public final class SmartEntryImpl implements SmartEntry {
 		return meta;
 	}
 
+	@Override
 	public final String getId() {
 		return id;
 	}
 
+	@Override
 	public String getType() {
 		return typeId;
 	}
 
+	@Override
 	public final String getEntryHash() {
 		return entryHash;
 	}
 
+	@Override
 	public String getResultHash() {
 		return resultHash;
 	}
 
+	@Override
 	public long getCreateTime() {
 		return createTime;
 	}
 
+	@Override
 	public String getApplicationName() {
 		return applicationName;
 	}
 
+	@Override
 	public String getCfid() {
 		return cfid;
 	}
 	
+	@Override
 	public String getTemplate(){
 		return templateLine.template;
 	}
 	
+	@Override
 	public int getLine(){
 		return templateLine.line;
 	}

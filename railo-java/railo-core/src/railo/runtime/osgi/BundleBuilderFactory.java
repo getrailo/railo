@@ -19,7 +19,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -200,7 +200,7 @@ public class BundleBuilderFactory {
 			addImportPackage("org.osgi.framework");
 		}
 		String str = attrs.getValue("Export-Package");
-		print.e(this.symbolicName+"->"+str);
+		aprint.e(this.symbolicName+"->"+str);
 		// no existing Export-Package
 		if(Util.isEmpty(str,true)) {
 			if(ArrayUtil.isEmpty(exportPackage) || isAsterix(exportPackage)) {

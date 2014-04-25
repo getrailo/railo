@@ -28,7 +28,8 @@ public final class URLDataSource2 implements DataSource {
      * Returns the value of the URL content-type header field
      * 
      */
-    public String getContentType() {
+    @Override
+	public String getContentType() {
         URLConnection connection = null;
         try {
             connection = url.openConnection();
@@ -44,14 +45,16 @@ public final class URLDataSource2 implements DataSource {
     /**
      * Returns the file name of the URL object
      */
-    public String getName() {
+    @Override
+	public String getName() {
         return url.getFile();
     }
 
     /**
      * Returns an InputStream obtained from the data source
      */
-    public InputStream getInputStream() throws IOException {
+    @Override
+	public InputStream getInputStream() throws IOException {
     	if(barr==null) {
     		barr=IOUtil.toBytes(url.openStream());
     	}
@@ -61,7 +64,8 @@ public final class URLDataSource2 implements DataSource {
     /**
      * Returns an OutputStream obtained from the data source
      */
-    public OutputStream getOutputStream() throws IOException {
+    @Override
+	public OutputStream getOutputStream() throws IOException {
 
         URLConnection connection = url.openConnection();
         if (connection == null)

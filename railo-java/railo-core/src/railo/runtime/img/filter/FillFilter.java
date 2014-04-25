@@ -67,9 +67,11 @@ public class FillFilter extends PointFilter  implements DynFiltering {
 		return fillColor;
 	}
 
+	@Override
 	public int filterRGB(int x, int y, int rgb) {
 		return fillColor;
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("FillColor")))!=null)setFillColor(ImageFilterUtil.toColorRGB(o,"FillColor"));

@@ -11,7 +11,7 @@ import java.util.Set;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.cache.tag.CacheHandlerFactory;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -31,16 +31,16 @@ public class Analyzer {
     					"name","entryhash","resulthash","template",
     					"line","type","meta","dependency",
     					"totalExecutionTime","executionTimes","createTimes","timeUnchanged","calls","payload"}, 0/*TODO counter.toInt()*/, "query");
-    	if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+    	if(type==Config.CACHE_DEFAULT_INCLUDE)
     		analyze(qry, type);
-    	else if(type==ConfigImpl.CACHE_DEFAULT_QUERY)
+    	else if(type==Config.CACHE_DEFAULT_QUERY)
     		analyze(qry, type);
-    	else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+    	else if(type==Config.CACHE_DEFAULT_FUNCTION)
     		analyze(qry, type);
     	else {
-    		analyze(qry, ConfigImpl.CACHE_DEFAULT_INCLUDE);
-    		analyze(qry, ConfigImpl.CACHE_DEFAULT_QUERY);
-    		analyze(qry, ConfigImpl.CACHE_DEFAULT_FUNCTION);
+    		analyze(qry, Config.CACHE_DEFAULT_INCLUDE);
+    		analyze(qry, Config.CACHE_DEFAULT_QUERY);
+    		analyze(qry, Config.CACHE_DEFAULT_FUNCTION);
     	}
     	
     	return qry;
@@ -53,11 +53,11 @@ public class Analyzer {
 		// TODO input boundries
     	RefInteger counter=new RefIntegerImpl(0);
     	Map<String, SmartEntry> entries;
-    	if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
+    	if(type==Config.CACHE_DEFAULT_INCLUDE)
     		entries=CacheHandlerFactory.include.getSmartCacheHandler().getEntries();
-    	else if(type==ConfigImpl.CACHE_DEFAULT_QUERY)
+    	else if(type==Config.CACHE_DEFAULT_QUERY)
     		entries=CacheHandlerFactory.query.getSmartCacheHandler().getEntries();
-    	else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
+    	else if(type==Config.CACHE_DEFAULT_FUNCTION)
     		entries=CacheHandlerFactory.function.getSmartCacheHandler().getEntries();
     	else
     		throw new ApplicationException("invalid type defintion");

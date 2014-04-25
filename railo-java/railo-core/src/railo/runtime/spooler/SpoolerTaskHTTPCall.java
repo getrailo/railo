@@ -39,6 +39,7 @@ public abstract class SpoolerTaskHTTPCall extends SpoolerTaskSupport {
 	 * @return 
 	 * @see railo.runtime.spooler.SpoolerTask#execute()
 	 */
+	@Override
 	public final Object execute(Config config) throws PageException {
 		return execute(client, config, getMethodName(), getArguments());
 	}
@@ -83,6 +84,7 @@ public abstract class SpoolerTaskHTTPCall extends SpoolerTaskSupport {
 	/**
 	 * @see railo.runtime.spooler.SpoolerTask#subject()
 	 */
+	@Override
 	public String subject() {
 		return client.getLabel();
 	}
@@ -90,6 +92,7 @@ public abstract class SpoolerTaskHTTPCall extends SpoolerTaskSupport {
 	/**
 	 * @see railo.runtime.spooler.SpoolerTask#detail()
 	 */
+	@Override
 	public Struct detail() {
 		Struct sct=new StructImpl();
 		sct.setEL(KeyConstants._label, client.getLabel());

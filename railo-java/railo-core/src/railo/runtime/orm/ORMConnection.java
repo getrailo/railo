@@ -46,6 +46,7 @@ public class ORMConnection implements Connection {
 	@Override
 	public void clearWarnings() throws SQLException {}
 
+	@Override
 	public void close() throws SQLException {
 		// TODO Auto-generated method stub
 	}
@@ -184,6 +185,7 @@ public class ORMConnection implements Connection {
 		rollback();
 	}
 
+	@Override
 	public void setAutoCommit(boolean autoCommit) throws SQLException {
 		this.autoCommit=autoCommit;
 		if(autoCommit)
@@ -224,42 +226,52 @@ public class ORMConnection implements Connection {
 		return e;
 	}*/
 
+	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public Clob createClob() throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public Blob createBlob() throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public boolean isValid(int timeout) throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public void setClientInfo(String name, String value) {
 		throw notSupportedEL();
 	}
 
+	@Override
 	public void setClientInfo(Properties properties) {
 		throw notSupportedEL();
 	}
 
+	@Override
 	public String getClientInfo(String name) throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public Properties getClientInfo() throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
 		throw notSupported();
 	}
@@ -276,35 +288,42 @@ public class ORMConnection implements Connection {
 		return new RuntimeException(new SQLFeatureNotSupportedException("this feature is not supported"));
 	}
  
+	@Override
 	public NClob createNClob() throws SQLException {
 		throw notSupported();
 	}
 
+	@Override
 	public SQLXML createSQLXML() throws SQLException {
 		throw notSupported();
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public void setSchema(String schema) throws SQLException {
 		throw notSupported();
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public String getSchema() throws SQLException {
 		throw notSupported();
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public void abort(Executor executor) throws SQLException {
 		throw notSupported();
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
 		throw notSupported();
 	}
 	
 	// used only with java 7, do not set @Override
+	@Override
 	public int getNetworkTimeout() throws SQLException {
 		throw notSupported();
 	}

@@ -599,6 +599,7 @@ public class CallableStatementProxy extends PreparedStatementProxy implements Ca
 		return stat.wasNull();
 	}
 
+	@Override
 	public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {
@@ -611,6 +612,7 @@ public class CallableStatementProxy extends PreparedStatementProxy implements Ca
 		}
 	}
 
+	@Override
 	public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
 		// used reflection to make sure this work with Java 5 and 6
 		try {

@@ -85,7 +85,8 @@ public class GradientWipeFilter extends AbstractBufferedImageOp  implements DynF
 		return invert;
 	}
 	
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -126,9 +127,11 @@ public class GradientWipeFilter extends AbstractBufferedImageOp  implements DynF
         return dst;
     }
 
+	@Override
 	public String toString() {
 		return "Transitions/Gradient Wipe...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Density")))!=null)setDensity(ImageFilterUtil.toFloatValue(o,"Density"));

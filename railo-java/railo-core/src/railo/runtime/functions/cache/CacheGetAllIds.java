@@ -6,7 +6,7 @@ import java.util.List;
 import railo.commons.io.cache.Cache;
 import railo.runtime.PageContext;
 import railo.runtime.cache.util.WildCardFilter;
-import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -32,7 +32,7 @@ public final class CacheGetAllIds implements Function {
 	
 	public static Array call(PageContext pc, String filter, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc,cacheName,Config.CACHE_DEFAULT_OBJECT);
 			
 			List<String> keys = isFilter(filter)?cache.keys(new WildCardFilter(filter,true)):cache.keys();
 			Iterator<String> it = keys.iterator();

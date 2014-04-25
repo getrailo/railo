@@ -192,7 +192,8 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
 		return shadowOnly;
 	}
 
-    public Rectangle2D getBounds2D( BufferedImage src ) {
+    @Override
+	public Rectangle2D getBounds2D( BufferedImage src ) {
         Rectangle r = new Rectangle(0, 0, src.getWidth(), src.getHeight());
 		if ( addMargins ) {
 			float xOffset = distance*(float)Math.cos(angle);
@@ -203,7 +204,8 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
         return r;
     }
     
-    public Point2D getPoint2D( Point2D srcPt, Point2D dstPt ) {
+    @Override
+	public Point2D getPoint2D( Point2D srcPt, Point2D dstPt ) {
         if ( dstPt == null )
             dstPt = new Point2D.Double();
 
@@ -219,7 +221,8 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
         return dstPt;
     }
 
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 
@@ -267,9 +270,11 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
         return dst;
 	}
 
+	@Override
 	public String toString() {
 		return "Stylize/Drop Shadow...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));

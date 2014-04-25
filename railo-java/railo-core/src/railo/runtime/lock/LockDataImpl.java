@@ -41,6 +41,7 @@ class LockDataImpl implements LockData {
 	 /**
 	 * @return the lock
 	 */
+	@Override
 	public Lock getLock() {
 		return lock;
 	}

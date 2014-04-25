@@ -73,7 +73,8 @@ public class ChromaKeyFilter extends AbstractBufferedImageOp  implements DynFilt
 		return color;
 	}
 		
-    public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+    @Override
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
 		//int type = src.getType();
@@ -117,9 +118,11 @@ public class ChromaKeyFilter extends AbstractBufferedImageOp  implements DynFilt
         return dst;
     }
 
+	@Override
 	public String toString() {
 		return "Keying/Chroma Key...";
 	}
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("HTolerance")))!=null)setHTolerance(ImageFilterUtil.toFloatValue(o,"HTolerance"));

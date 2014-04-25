@@ -31,6 +31,7 @@ public final class Blowfish {
 			m_lCBCIV = Blowfish.byteArrayToLong(newCBCIV, 0);
 		}
 
+		@Override
 		public void cleanUp() {
 			m_lCBCIV = 0L;
 			super.cleanUp();
@@ -50,6 +51,7 @@ public final class Blowfish {
 			return lCipherblock;
 		}
 
+		@Override
 		public void encrypt(byte inbuffer[], byte outbuffer[]) {
 			int nLen = inbuffer.length;
 			for(int nI = 0; nI < nLen; nI += 8) {
@@ -60,6 +62,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void encrypt(byte buffer[]) {
 			int nLen = buffer.length;
 			for(int nI = 0; nI < nLen; nI += 8) {
@@ -70,6 +73,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void encrypt(int inbuffer[], int outbuffer[]) {
 			int nLen = inbuffer.length;
 			for(int nI = 0; nI < nLen; nI += 2) {
@@ -80,6 +84,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void encrypt(int buffer[]) {
 			int nLen = buffer.length;
 			for(int nI = 0; nI < nLen; nI += 2) {
@@ -90,6 +95,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void encrypt(long inbuffer[], long outbuffer[]) {
 			int nLen = inbuffer.length;
 			for(int nI = 0; nI < nLen; nI++)
@@ -97,6 +103,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void encrypt(long buffer[]) {
 			int nLen = buffer.length;
 			for(int nI = 0; nI < nLen; nI++)
@@ -104,6 +111,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void decrypt(byte inbuffer[], byte outbuffer[]) {
 			int nLen = inbuffer.length;
 			for(int nI = 0; nI < nLen; nI += 8) {
@@ -114,6 +122,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void decrypt(byte buffer[]) {
 			int nLen = buffer.length;
 			for(int nI = 0; nI < nLen; nI += 8) {
@@ -124,6 +133,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void decrypt(int inbuffer[], int outbuffer[]) {
 			int nLen = inbuffer.length;
 			for(int nI = 0; nI < nLen; nI += 2) {
@@ -134,6 +144,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void decrypt(int buffer[]) {
 			int nLen = buffer.length;
 			for(int nI = 0; nI < nLen; nI += 2) {
@@ -144,6 +155,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void decrypt(long inbuffer[], long outbuffer[]) {
 			int nLen = inbuffer.length;
 			for(int nI = 0; nI < nLen; nI++)
@@ -151,6 +163,7 @@ public final class Blowfish {
 
 		}
 
+		@Override
 		public void decrypt(long buffer[]) {
 			int nLen = buffer.length;
 			for(int nI = 0; nI < nLen; nI++)

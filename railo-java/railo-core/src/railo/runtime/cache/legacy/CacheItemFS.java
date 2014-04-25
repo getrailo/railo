@@ -44,25 +44,31 @@ class CacheItemFS extends CacheItem {
 	
 	
 	
+	@Override
 	public boolean isValid() {
 		return res!=null;
 	}
 	
+	@Override
 	public boolean isValid(TimeSpan timespan) {
 		return res!=null && res.exists() && (res.lastModified()+timespan.getMillis()>=System.currentTimeMillis());
 	}
 	
+	@Override
 	public void writeTo(OutputStream os, String charset) throws IOException {
 		IOUtil.copy(res.getInputStream(),os,true,false);
 	}
+	@Override
 	public String getValue() throws IOException {
 		return IOUtil.toString(res,"UTF-8");
 	}
+	@Override
 	public void store(String result) throws IOException {
 		IOUtil.write(res, result,"UTF-8", false); 
 		MetaData.getInstance(directory).add(name, fileName);
 	}
 	
+	@Override
 	public void store(byte[] barr,boolean append) throws IOException {
     	IOUtil.copy(new ByteArrayInputStream(barr), res.getOutputStream(append),true,true);
     	MetaData.getInstance(directory).add(name, fileName);

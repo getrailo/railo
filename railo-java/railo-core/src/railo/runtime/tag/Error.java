@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import railo.runtime.PageSource;
+import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
@@ -47,10 +48,10 @@ public final class Error extends TagImpl {
 	public void setType(String type) throws ExpressionException	{
 		type=type.toLowerCase().trim();
 		if(type.equals("exception")) {
-			errorPage.setType(ErrorPageImpl.TYPE_EXCEPTION);
+			errorPage.setType(ErrorPage.TYPE_EXCEPTION);
 		}
 		else if(type.equals("request")) {
-			errorPage.setType(ErrorPageImpl.TYPE_REQUEST);
+			errorPage.setType(ErrorPage.TYPE_REQUEST);
 		}
 		//else if(type.equals("validation")) this.type=VALIDATION;
 		else throw new ExpressionException("invalid type ["+type+"] for tag error, use one of the following types [exception,request]");
@@ -80,7 +81,7 @@ public final class Error extends TagImpl {
 
 	@Override
 	public int doStartTag()	{
-		if(errorPage.getType()==ErrorPageImpl.TYPE_REQUEST) errorPage.setException("any");
+		if(errorPage.getType()==ErrorPage.TYPE_REQUEST) errorPage.setException("any");
 		pageContext.setErrorPage(errorPage);
 		return SKIP_BODY;
 	}

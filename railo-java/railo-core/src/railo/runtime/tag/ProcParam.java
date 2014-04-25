@@ -13,6 +13,7 @@ public class ProcParam extends TagSupport {
 
 	private ProcParamBean param=new ProcParamBean();
 
+	@Override
 	public void release() {
 		param=new ProcParamBean();
 		super.release();
@@ -85,6 +86,7 @@ public class ProcParam extends TagSupport {
 	}
 	
 	
+	@Override
 	public int doStartTag() throws ApplicationException {
 		// check 
 		if(param.getDirection()!=ProcParamBean.DIRECTION_IN && StringUtil.isEmpty(param.getVariable()))

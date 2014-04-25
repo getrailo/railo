@@ -1727,11 +1727,13 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 
 
 	// used only with java 7, do not set @Override
+	@Override
 	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
 		return (T) QueryUtil.getObject(this,columnIndex, type);
 	}
 
 	// used only with java 7, do not set @Override
+	@Override
 	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
 		return (T) QueryUtil.getObject(this,columnLabel, type);
 	}

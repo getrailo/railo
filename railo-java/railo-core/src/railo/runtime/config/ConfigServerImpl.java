@@ -99,6 +99,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     /**
 	 * @return the configListener
 	 */
+	@Override
 	public ConfigListener getConfigListener() {
 		return configListener;
 	}
@@ -106,6 +107,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	/**
 	 * @param configListener the configListener to set
 	 */
+	@Override
 	public void setConfigListener(ConfigListener configListener) {
 		this.configListener = configListener;
 	}
@@ -257,7 +259,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     /**
      * @return Returns the rootDir.
      */
-    public Resource getRootDirectory() {
+    @Override
+	public Resource getRootDirectory() {
         return rootDir;
     }
 
@@ -324,14 +327,17 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	protected void setThreadQueue(ThreadQueueImpl threadQueue) {
 		this.threadQueue=threadQueue;
 	}
+	@Override
 	public ThreadQueueImpl getThreadQueue() {
 		return threadQueue;
 	}
 	
+	@Override
 	public RequestMonitor[] getRequestMonitors() {
 		return requestMonitors;
 	}
 	
+	@Override
 	public RequestMonitor getRequestMonitor(String name) throws ApplicationException {
 		for(int i=0;i<requestMonitors.length;i++){
 			if(requestMonitors[i].getName().equalsIgnoreCase(name))
@@ -343,10 +349,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	protected void setRequestMonitors(RequestMonitor[] monitors) {
 		this.requestMonitors=monitors;;
 	}
+	@Override
 	public IntervallMonitor[] getIntervallMonitors() {
 		return intervallMonitors;
 	}
 
+	@Override
 	public IntervallMonitor getIntervallMonitor(String name) throws ApplicationException {
 		for(int i=0;i<intervallMonitors.length;i++){
 			if(intervallMonitors[i].getName().equalsIgnoreCase(name))
@@ -401,7 +409,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		return captcha;
 	}
 
-    public void reset() {
+    @Override
+	public void reset() {
     	super.reset();
     	getThreadQueue().clear();
     }
@@ -619,6 +628,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		this.fullNullSupport=fullNullSupport;
 	}
 
+	@Override
 	public boolean getFullNullSupport() {
 		return fullNullSupport;
 	}

@@ -31,7 +31,8 @@ public final class ZOrderBy
         return exp_;
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         return exp_.toString() + " " + (asc_ ? "ASC" : "DESC");
     }

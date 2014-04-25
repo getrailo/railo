@@ -45,7 +45,8 @@ public final class FormatTag extends BodyTagSupport	{
      *
      * @return EVAL_BODY_TAG
      */
-    public final int doStartTag() throws JspException
+    @Override
+	public final int doStartTag() throws JspException
     {
         output_date = date;
         return EVAL_BODY_TAG;
@@ -56,7 +57,8 @@ public final class FormatTag extends BodyTagSupport	{
      *
      * @return SKIP_BODY
      */
-    public final int doAfterBody() throws JspException
+    @Override
+	public final int doAfterBody() throws JspException
     {
         // Use the body of the tag as input for the date
         BodyContent body = getBodyContent();
@@ -80,7 +82,8 @@ public final class FormatTag extends BodyTagSupport	{
      *
      * @return EVAL_PAGE
      */
-    public final int doEndTag() throws JspException
+    @Override
+	public final int doEndTag() throws JspException
     {
         String date_formatted = default_text;
 
@@ -156,7 +159,8 @@ public final class FormatTag extends BodyTagSupport	{
         return EVAL_PAGE;
     }
 
-    public void release()
+    @Override
+	public void release()
     {
         //railo.print.ln("release FormatTag");
         super.release();

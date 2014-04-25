@@ -120,6 +120,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 		return Component.class; // ????
 	}
 
+	@Override
 	public EntityMode getEntityMode() {
 		return EntityMode.MAP;
 	}

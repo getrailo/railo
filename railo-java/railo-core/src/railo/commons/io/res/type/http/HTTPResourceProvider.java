@@ -21,6 +21,7 @@ public class HTTPResourceProvider implements ResourceProvider {
 	private int socketTimeout=20000;
 	private Map arguments;
 
+	@Override
 	public String getScheme() {
 		return scheme;
 	}
@@ -33,6 +34,7 @@ public class HTTPResourceProvider implements ResourceProvider {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 	}
 
+	@Override
 	public ResourceProvider init(String scheme, Map arguments) {
 		setScheme(scheme);
 		
@@ -75,18 +77,22 @@ public class HTTPResourceProvider implements ResourceProvider {
 		return new HTTPResource(this,new HTTPConnectionData(path,getSocketTimeout()));
 	}
 
+	@Override
 	public boolean isAttributesSupported() {
 		return false;
 	}
 
+	@Override
 	public boolean isCaseSensitive() {
 		return false;
 	}
 
+	@Override
 	public boolean isModeSupported() {
 		return false;
 	}
 
+	@Override
 	public void setResources(Resources resources) {
 	}
 

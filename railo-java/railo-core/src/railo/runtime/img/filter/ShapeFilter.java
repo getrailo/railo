@@ -105,6 +105,7 @@ public class ShapeFilter extends WholeImageFilter  implements DynFiltering {
 		return merge;
 	}
 
+	@Override
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int[] map = new int[width * height];
 		makeMap(inPixels, map, width, height);
@@ -392,10 +393,12 @@ public class ShapeFilter extends WholeImageFilter  implements DynFiltering {
 		return map[offset] = min;
 	}
 	
+	@Override
 	public String toString() {
 		return "Stylize/Shapeburst...";
 	}
 
+	@Override
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("UseAlpha")))!=null)setUseAlpha(ImageFilterUtil.toBooleanValue(o,"UseAlpha"));

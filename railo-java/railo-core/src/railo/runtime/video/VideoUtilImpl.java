@@ -33,6 +33,7 @@ public class VideoUtilImpl implements VideoUtil {
 	/**
 	 * @see railo.runtime.video.VideoUtil#createVideoInput(railo.commons.io.res.Resource)
 	 */
+	@Override
 	public VideoInput createVideoInput(Resource input) {
 		return new VideoInputImpl(input);
 	}
@@ -40,6 +41,7 @@ public class VideoUtilImpl implements VideoUtil {
 	/**
 	 * @see railo.runtime.video.VideoUtil#createVideoOutput(railo.commons.io.res.Resource)
 	 */
+	@Override
 	public VideoOutput createVideoOutput(Resource output) {
 		return new VideoOutputImpl(output);
 	}
@@ -47,11 +49,13 @@ public class VideoUtilImpl implements VideoUtil {
 	/**
 	 * @see railo.runtime.video.VideoUtil#createVideoProfile()
 	 */
+	@Override
 	public VideoProfile createVideoProfile() {
 		return new VideoProfileImpl();
 	}
 
 	
+	@Override
 	public long toBytes(String byt) throws PageException {
 		byt=byt.trim().toLowerCase();
 		if(byt.endsWith("kb/s") || byt.endsWith("kbps")) {
@@ -106,6 +110,7 @@ public class VideoUtilImpl implements VideoUtil {
 		return Caster.toLongValue(byt);
 	}
 	
+	@Override
 	public long toHerz(String byt) throws PageException {
 		byt=byt.trim().toLowerCase();
 		if(byt.endsWith("mhz")) {
@@ -120,6 +125,7 @@ public class VideoUtilImpl implements VideoUtil {
 		return Caster.toLongValue(byt);
 	}
 	
+	@Override
 	public long toMillis(String time) throws PageException {
 		int last=0,index=time.indexOf(':');
 		long hour=Caster.toIntValue(time.substring(last,index).trim());
@@ -137,6 +143,7 @@ public class VideoUtilImpl implements VideoUtil {
 		return (VideoExecuter) ClassUtil.loadInstance(clazz);
 	}
 
+	@Override
 	public int[] calculateDimension(PageContext pc,VideoInput[] sources,int width, String strWidth,int height, String strHeight) throws PageException {
 		int[] rtn;
 		

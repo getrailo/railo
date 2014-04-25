@@ -31,11 +31,13 @@ public final class HttpSessionBindingListenerStruct extends StructImpl implement
         this.url=url;
     }
     
-    public void valueBound(HttpSessionBindingEvent event) {
+    @Override
+	public void valueBound(HttpSessionBindingEvent event) {
         //SystemOut.printDate("------------------------------- bound session -------------------------------");
     }
 
-    public void valueUnbound(HttpSessionBindingEvent event) {
+    @Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
         //SystemOut.printDate("------------------------------- unbound session -------------------------------");
         try {
             url.getContent();

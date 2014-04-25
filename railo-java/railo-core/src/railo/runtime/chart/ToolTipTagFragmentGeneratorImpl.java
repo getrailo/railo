@@ -18,7 +18,8 @@ public class ToolTipTagFragmentGeneratorImpl implements
      * @param toolTipText  the tooltip.
      * @return The formatted HTML area tag attribute(s).
      */
-    public String generateToolTipFragment(String toolTipText) {
+    @Override
+	public String generateToolTipFragment(String toolTipText) {
     	toolTipText=HTMLEntities.escapeHTML(toolTipText,HTMLEntities.HTMLV20);
     	
     	String href="";

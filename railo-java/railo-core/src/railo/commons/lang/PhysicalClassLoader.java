@@ -73,7 +73,8 @@ public final class PhysicalClassLoader extends ExtendableClassLoader {
      * @return    the resulting <code>Class</code> object
      * @exception ClassNotFoundException if the class was not found
      */
-   public Class<?> loadClass(String name) throws ClassNotFoundException   {
+   @Override
+public Class<?> loadClass(String name) throws ClassNotFoundException   {
        return loadClass(name, false);
    }//15075171
 
@@ -103,7 +104,8 @@ public final class PhysicalClassLoader extends ExtendableClassLoader {
      * @return   the resulting <code>Class</code> object
      * @exception ClassNotFoundException if the class could not be found
      */
-    protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    @Override
+	protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
     	//if(!name.endsWith("$cf")) return super.loadClass(name, resolve); this break Webervices
     	// First, check if the class has already been loaded
         Class<?> c = findLoadedClass(name);

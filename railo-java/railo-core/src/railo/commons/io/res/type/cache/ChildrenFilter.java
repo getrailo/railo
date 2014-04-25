@@ -11,10 +11,12 @@ public class ChildrenFilter implements CacheKeyFilter {
 		this.path=(StringUtil.endsWith(path, '/'))?path+":":path+"/:";
 	}
 
+	@Override
 	public boolean accept(String key) {
 		return key.startsWith(path);
 	}
 
+	@Override
 	public String toPattern() {
 		return null;
 	}

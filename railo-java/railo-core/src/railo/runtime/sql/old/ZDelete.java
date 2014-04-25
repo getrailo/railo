@@ -30,7 +30,8 @@ public final class ZDelete
         return where_;
     }
 
-    public String toString()
+    @Override
+	public String toString()
     {
         StringBuffer stringbuffer = new StringBuffer("delete ");
         if(where_ != null)

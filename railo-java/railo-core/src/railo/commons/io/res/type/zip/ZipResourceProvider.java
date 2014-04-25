@@ -10,6 +10,7 @@ public final class ZipResourceProvider extends CompressResourceProvider {
 		scheme="zip";
 	}
 	
+	@Override
 	public Compress getCompress(Resource file) {
 		return Compress.getInstance(file,Compress.FORMAT_ZIP,caseSensitive);
 	}

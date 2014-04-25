@@ -58,6 +58,7 @@ public final class BucketFactory extends S3Factory {
 	}
 	
 	
+	@Override
 	protected void setContent(String value) throws SAXException 	{
 		if(insideOwners){
 			if(inside.equals("ID")) 					ownerIdKey=value;

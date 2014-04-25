@@ -32,6 +32,7 @@ public final class ResourceDataSource implements DataSource {
 	 * Get name.
 	 * @returns Name
 	 */
+	@Override
 	public String getName() {
 		return _file.getName();
 	} 
@@ -49,6 +50,7 @@ public final class ResourceDataSource implements DataSource {
 	 * @returns Input stream
 	 * @throws IOException IO exception occurred
 	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		return IOUtil.toBufferedInputStream(_file.getInputStream());
 	} 
@@ -57,6 +59,7 @@ public final class ResourceDataSource implements DataSource {
 	 * Get content type.
 	 * @returns Content type
 	 */
+	@Override
 	public String getContentType() {
 		InputStream is=null;
 		try {
@@ -75,6 +78,7 @@ public final class ResourceDataSource implements DataSource {
 	 * @returns Output stream
 	 * @throws IOException IO exception occurred
 	 */
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		if (!_file.isWriteable()) {
 			throw new IOException("Cannot write");

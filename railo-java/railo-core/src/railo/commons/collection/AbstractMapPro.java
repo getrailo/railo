@@ -62,7 +62,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      *
      * <p>This implementation returns <tt>entrySet().size()</tt>.
      */
-    public int size() {
+    @Override
+	public int size() {
         return entrySet().size();
     }
 
@@ -71,7 +72,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      *
      * <p>This implementation returns <tt>size() == 0</tt>.
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         return size() == 0;
     }
 
@@ -87,7 +89,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         if (value==null) {
             while (i.hasNext()) {
@@ -118,7 +121,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    public boolean containsKey(Object key) {
+    @Override
+	public boolean containsKey(Object key) {
         Iterator<Map.Entry<K,V>> i = entrySet().iterator();
         if (key==null) {
             while (i.hasNext()) {
@@ -149,7 +153,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public V get(Object key) {
+    @Override
+	public V get(Object key) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         if (key==null) {
             while (i.hasNext()) {
@@ -181,7 +186,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public V put(K key, V value) {
+    @Override
+	public V put(K key, V value) {
         throw new UnsupportedOperationException();
     }
 
@@ -206,7 +212,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public V remove(Object key) {
+    @Override
+	public V remove(Object key) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         Entry<K,V> correctEntry = null;
         if (key==null) {
@@ -250,7 +257,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public void putAll(Map<? extends K, ? extends V> m) {
+    @Override
+	public void putAll(Map<? extends K, ? extends V> m) {
         for (Map.Entry<? extends K, ? extends V> e : m.entrySet())
             put(e.getKey(), e.getValue());
     }
@@ -266,7 +274,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      */
-    public void clear() {
+    @Override
+	public void clear() {
         entrySet().clear();
     }
 
@@ -296,40 +305,49 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * is performed, so there is a slight chance that multiple calls to this
      * method will not all return the same set.
      */
-    public Set<K> keySet() {
+    @Override
+	public Set<K> keySet() {
         if (keySet == null) {
             keySet = new AbstractSet<K>() {
-                public Iterator<K> iterator() {
+                @Override
+				public Iterator<K> iterator() {
                     return new Iterator<K>() {
                         private Iterator<Entry<K,V>> i = entrySet().iterator();
 
-                        public boolean hasNext() {
+                        @Override
+						public boolean hasNext() {
                             return i.hasNext();
                         }
 
-                        public K next() {
+                        @Override
+						public K next() {
                             return i.next().getKey();
                         }
 
-                        public void remove() {
+                        @Override
+						public void remove() {
                             i.remove();
                         }
                     };
                 }
 
-                public int size() {
+                @Override
+				public int size() {
                     return AbstractMapPro.this.size();
                 }
 
-                public boolean isEmpty() {
+                @Override
+				public boolean isEmpty() {
                     return AbstractMapPro.this.isEmpty();
                 }
 
-                public void clear() {
+                @Override
+				public void clear() {
                     AbstractMapPro.this.clear();
                 }
 
-                public boolean contains(Object k) {
+                @Override
+				public boolean contains(Object k) {
                     return AbstractMapPro.this.containsKey(k);
                 }
             };
@@ -352,40 +370,49 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * performed, so there is a slight chance that multiple calls to this
      * method will not all return the same collection.
      */
-    public Collection<V> values() {
+    @Override
+	public Collection<V> values() {
         if (values == null) {
             values = new AbstractCollection<V>() {
-                public Iterator<V> iterator() {
+                @Override
+				public Iterator<V> iterator() {
                     return new Iterator<V>() {
                         private Iterator<Entry<K,V>> i = entrySet().iterator();
 
-                        public boolean hasNext() {
+                        @Override
+						public boolean hasNext() {
                             return i.hasNext();
                         }
 
-                        public V next() {
+                        @Override
+						public V next() {
                             return i.next().getValue();
                         }
 
-                        public void remove() {
+                        @Override
+						public void remove() {
                             i.remove();
                         }
                     };
                 }
 
-                public int size() {
+                @Override
+				public int size() {
                     return AbstractMapPro.this.size();
                 }
 
-                public boolean isEmpty() {
+                @Override
+				public boolean isEmpty() {
                     return AbstractMapPro.this.isEmpty();
                 }
 
-                public void clear() {
+                @Override
+				public void clear() {
                     AbstractMapPro.this.clear();
                 }
 
-                public boolean contains(Object v) {
+                @Override
+				public boolean contains(Object v) {
                     return AbstractMapPro.this.containsValue(v);
                 }
             };
@@ -393,7 +420,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
         return values;
     }
 
-    public abstract Set<Entry<K,V>> entrySet();
+    @Override
+	public abstract Set<Entry<K,V>> entrySet();
 
 
     // Comparison and hashing
@@ -419,7 +447,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      * @param o object to be compared for equality with this map
      * @return <tt>true</tt> if the specified object is equal to this map
      */
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
         if (o == this)
             return true;
 
@@ -473,7 +502,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      *
      * @return a string representation of this map
      */
-    public String toString() {
+    @Override
+	public String toString() {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         if (! i.hasNext())
             return "{}";
@@ -499,7 +529,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
      *
      * @return a shallow copy of this map
      */
-    protected Object clone() throws CloneNotSupportedException {
+    @Override
+	protected Object clone() throws CloneNotSupportedException {
         AbstractMapPro<K,V> result = (AbstractMapPro<K,V>)super.clone();
         result.keySet = null;
         result.values = null;
@@ -568,7 +599,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          *
          * @return the key corresponding to this entry
          */
-        public K getKey() {
+        @Override
+		public K getKey() {
             return key;
         }
 
@@ -577,7 +609,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          *
          * @return the value corresponding to this entry
          */
-        public V getValue() {
+        @Override
+		public V getValue() {
             return value;
         }
 
@@ -588,7 +621,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          * @param value new value to be stored in this entry
          * @return the old value corresponding to the entry
          */
-        public V setValue(V value) {
+        @Override
+		public V setValue(V value) {
             V oldValue = this.value;
             this.value = value;
             return oldValue;
@@ -616,7 +650,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          *
          * @return a String representation of this map entry
          */
-        public String toString() {
+        @Override
+		public String toString() {
             return key + "=" + value;
         }
 
@@ -666,7 +701,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          *
          * @return the key corresponding to this entry
          */
-        public K getKey() {
+        @Override
+		public K getKey() {
             return key;
         }
 
@@ -675,7 +711,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          *
          * @return the value corresponding to this entry
          */
-        public V getValue() {
+        @Override
+		public V getValue() {
             return value;
         }
 
@@ -689,7 +726,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          * @return (Does not return)
          * @throws UnsupportedOperationException always
          */
-        public V setValue(V value) {
+        @Override
+		public V setValue(V value) {
             throw new UnsupportedOperationException();
         }
 
@@ -715,7 +753,8 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable 
          *
          * @return a String representation of this map entry
          */
-        public String toString() {
+        @Override
+		public String toString() {
             return key + "=" + value;
         }
 

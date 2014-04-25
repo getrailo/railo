@@ -30,9 +30,9 @@ public final class StructNew extends BIF {
         else if(type.equals("syncronized")) return Struct.TYPE_SYNC;
         else if(type.equals("synchronized")) return Struct.TYPE_SYNC;
         else if(type.equals("sync")) return Struct.TYPE_SYNC;
-        else if(type.equals("soft")) return StructImpl.TYPE_SOFT;
-        else if(type.equals("normal")) return StructImpl.TYPE_REGULAR;
-        else if(type.equals("regular")) return StructImpl.TYPE_REGULAR;
+        else if(type.equals("soft")) return Struct.TYPE_SOFT;
+        else if(type.equals("normal")) return Struct.TYPE_REGULAR;
+        else if(type.equals("regular")) return Struct.TYPE_REGULAR;
         else throw new ApplicationException("valid struct types are [normal, weak, linked, soft, synchronized]");
     }
     

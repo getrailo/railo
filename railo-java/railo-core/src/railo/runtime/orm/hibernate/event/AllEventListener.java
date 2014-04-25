@@ -32,37 +32,45 @@ PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpd
 	}
 	
 
+	@Override
 	public void onPostInsert(PostInsertEvent event) {
 		invoke(CommonUtil.POST_INSERT, event.getEntity());
     }
 
-    public void onPostUpdate(PostUpdateEvent event) {
+    @Override
+	public void onPostUpdate(PostUpdateEvent event) {
     	invoke(CommonUtil.POST_UPDATE, event.getEntity());
     }
 
-    public boolean onPreDelete(PreDeleteEvent event) {
+    @Override
+	public boolean onPreDelete(PreDeleteEvent event) {
     	invoke(CommonUtil.PRE_DELETE, event.getEntity());
 		return false;
     }
 
-    public void onPostDelete(PostDeleteEvent event) {
+    @Override
+	public void onPostDelete(PostDeleteEvent event) {
     	invoke(CommonUtil.POST_DELETE, event.getEntity());
     }
 
-    public void onPreLoad(PreLoadEvent event) {
+    @Override
+	public void onPreLoad(PreLoadEvent event) {
     	invoke(CommonUtil.PRE_LOAD, event.getEntity());
     }
 
-    public void onPostLoad(PostLoadEvent event) {
+    @Override
+	public void onPostLoad(PostLoadEvent event) {
     	invoke(CommonUtil.POST_LOAD, event.getEntity());
     }
 
+	@Override
 	public boolean onPreUpdate(PreUpdateEvent event) {
 		return preUpdate(event);
 	}
 
 
 
+	@Override
 	public boolean onPreInsert(PreInsertEvent event) {
 		invoke(CommonUtil.PRE_INSERT, event.getEntity());
 		return false;

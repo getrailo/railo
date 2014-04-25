@@ -77,6 +77,7 @@ public class Range {
 	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(obj==this) return true;
 		if(!(obj instanceof Range)) return false;
@@ -88,6 +89,7 @@ public class Range {
 	 *
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return ""+from+":"+to+"";
 	}

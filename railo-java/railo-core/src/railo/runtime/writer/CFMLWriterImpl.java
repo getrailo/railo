@@ -87,7 +87,8 @@ public class CFMLWriterImpl extends CFMLWriter {
 	/**
      * @see javax.servlet.jsp.JspWriter#print(char[]) 
      */ 
-    public void print(char[] arg) throws IOException { 
+    @Override
+	public void print(char[] arg) throws IOException { 
         buffer.append(arg);
         _check();
     }
@@ -98,12 +99,14 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @param autoFlush does the buffer autoflush
      * @throws IOException
      */
-    public void setBufferConfig(int bufferSize, boolean autoFlush) throws IOException {
+    @Override
+	public void setBufferConfig(int bufferSize, boolean autoFlush) throws IOException {
         this.bufferSize=bufferSize;
         this.autoFlush=autoFlush;
         _check();
     }
 
+	@Override
 	public void appendHTMLBody(String text) throws IOException {
 
 		if (htmlBody == null)
@@ -112,6 +115,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 		htmlBody.append(text);
 	}
 
+	@Override
 	public void writeHTMLBody(String text) throws IOException {
 
 		if (flushed)    throw new IOException("Page is already flushed");
@@ -119,6 +123,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 		htmlBody = new StringBuilder(text);
 	}
 
+	@Override
 	public String getHTMLBody() throws IOException {
 
 		if (flushed)    throw new IOException("Page is already flushed");
@@ -126,6 +131,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 		return htmlBody == null ? "" : htmlBody.toString();
 	}
 
+	@Override
 	public void flushHTMLBody() throws IOException {
 
 		if (htmlBody != null) {
@@ -138,6 +144,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 	/**
 	 * @see railo.runtime.writer.CFMLWriter#resetHTMLHead()
 	 */
+	@Override
 	public void resetHTMLBody() throws IOException {
 		if(flushed) throw new IOException("Page is already flushed");
 		htmlBody = null;
@@ -148,7 +155,8 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @param text
      * @throws IOException
      */
-    public void appendHTMLHead(String text) throws IOException {
+    @Override
+	public void appendHTMLHead(String text) throws IOException {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
@@ -158,7 +166,8 @@ public class CFMLWriterImpl extends CFMLWriter {
         htmlHead.append(text);
     }
     
-    public void writeHTMLHead(String text) throws IOException {
+    @Override
+	public void writeHTMLHead(String text) throws IOException {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
@@ -168,13 +177,15 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see railo.runtime.writer.CFMLWriter#getHTMLHead()
      */
-    public String getHTMLHead() throws IOException {
+    @Override
+	public String getHTMLHead() throws IOException {
 
 	    if (flushed)    throw new IOException("Page is already flushed");
 
         return htmlHead == null ? "" : htmlHead.toString();
     }
 
+	@Override
 	public void flushHTMLHead() throws IOException {
 
 		if (htmlHead != null) {
@@ -187,7 +198,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see railo.runtime.writer.CFMLWriter#resetHTMLHead()
      */
-    public void resetHTMLHead() throws IOException {
+    @Override
+	public void resetHTMLHead() throws IOException {
     	if(flushed) throw new IOException("Page is already flushed");
         htmlHead =null;
     }
@@ -204,7 +216,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see java.io.Writer#write(char[], int, int) 
      */ 
-    public void write(char[] cbuf, int off, int len) throws IOException { 
+    @Override
+	public void write(char[] cbuf, int off, int len) throws IOException { 
         buffer.append(cbuf,off,len);
         _check();
     }
@@ -212,7 +225,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#clear() 
      */ 
-    public void clear() throws IOException { 
+    @Override
+	public void clear() throws IOException { 
         if (flushed)  throw new IOException("Response buffer is already flushed");
         clearBuffer();
     } 
@@ -220,14 +234,16 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#clearBuffer() 
      */ 
-    public void clearBuffer() { 
+    @Override
+	public void clearBuffer() { 
     	buffer=new StringBuilder(BUFFER_SIZE);
     } 
 
     /** 
      * @see java.io.Writer#flush() 
      */ 
-    public void flush() throws IOException { 
+    @Override
+	public void flush() throws IOException { 
     	flushBuffer(true);
         // weil flushbuffer das out erstellt muss ich nicht mehr checken
         out.flush();
@@ -323,6 +339,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
         return _toString(false);
     }
@@ -334,7 +351,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see java.io.Writer#close() 
      */ 
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
     	if (response == null || closed) return;
     	//boolean closeConn=true;
         if(out==null) { 
@@ -408,28 +426,32 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#getRemaining() 
      */ 
-    public int getRemaining() { 
+    @Override
+	public int getRemaining() { 
         return bufferSize - buffer.length();
     }
 
     /** 
      * @see javax.servlet.jsp.JspWriter#newLine() 
      */ 
-    public void newLine() throws IOException { 
+    @Override
+	public void newLine() throws IOException { 
         println();
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#print(boolean) 
      */ 
-    public void print(boolean arg) throws IOException { 
+    @Override
+	public void print(boolean arg) throws IOException { 
         print(arg?new char[]{'t','r','u','e'}:new char[]{'f','a','l','s','e'}); 
     }
 
     /** 
      * @see javax.servlet.jsp.JspWriter#print(char) 
      */ 
-    public void print(char arg) throws IOException { 
+    @Override
+	public void print(char arg) throws IOException { 
         buffer.append(arg);
         _check();
     } 
@@ -437,14 +459,16 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#print(int) 
      */ 
-    public void print(int arg) throws IOException { 
+    @Override
+	public void print(int arg) throws IOException { 
         _print(String.valueOf(arg)); 
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#print(long) 
      */ 
-    public void print(long arg) throws IOException { 
+    @Override
+	public void print(long arg) throws IOException { 
         _print(String.valueOf(arg)); 
 
     } 
@@ -452,21 +476,24 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#print(float) 
      */ 
-    public void print(float arg) throws IOException { 
+    @Override
+	public void print(float arg) throws IOException { 
         _print(String.valueOf(arg)); 
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#print(double) 
      */ 
-    public void print(double arg) throws IOException { 
+    @Override
+	public void print(double arg) throws IOException { 
         _print(String.valueOf(arg)); 
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#print(java.lang.String) 
      */ 
-    public void print(String arg) throws IOException { 
+    @Override
+	public void print(String arg) throws IOException { 
         buffer.append(arg);
         _check();
     } 
@@ -474,14 +501,16 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#print(java.lang.Object) 
      */ 
-    public void print(Object arg) throws IOException { 
+    @Override
+	public void print(Object arg) throws IOException { 
         _print(String.valueOf(arg)); 
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#println() 
      */ 
-    public void println() throws IOException { 
+    @Override
+	public void println() throws IOException { 
         _print("\n"); 
 
     } 
@@ -489,21 +518,24 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(boolean) 
      */ 
-    public void println(boolean arg) throws IOException { 
+    @Override
+	public void println(boolean arg) throws IOException { 
         print(arg?new char[]{'t','r','u','e','\n'}:new char[]{'f','a','l','s','e','\n'}); 
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#println(char) 
      */ 
-    public void println(char arg) throws IOException { 
+    @Override
+	public void println(char arg) throws IOException { 
         print(new char[]{arg,'\n'}); 
     } 
 
     /** 
      * @see javax.servlet.jsp.JspWriter#println(int) 
      */ 
-    public void println(int arg) throws IOException { 
+    @Override
+	public void println(int arg) throws IOException { 
         print(arg); 
         println(); 
     } 
@@ -511,7 +543,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(long) 
      */ 
-    public void println(long arg) throws IOException { 
+    @Override
+	public void println(long arg) throws IOException { 
         print(arg); 
         println(); 
     } 
@@ -519,7 +552,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(float) 
      */ 
-    public void println(float arg) throws IOException { 
+    @Override
+	public void println(float arg) throws IOException { 
         print(arg); 
         println(); 
     } 
@@ -527,7 +561,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(double) 
      */ 
-    public void println(double arg) throws IOException { 
+    @Override
+	public void println(double arg) throws IOException { 
         print(arg); 
         println(); 
     } 
@@ -535,7 +570,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(char[]) 
      */ 
-    public void println(char[] arg) throws IOException { 
+    @Override
+	public void println(char[] arg) throws IOException { 
         print(arg); 
         println(); 
     } 
@@ -543,7 +579,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(java.lang.String) 
      */ 
-    public void println(String arg) throws IOException { 
+    @Override
+	public void println(String arg) throws IOException { 
         _print(arg); 
         println(); 
     } 
@@ -551,7 +588,8 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see javax.servlet.jsp.JspWriter#println(java.lang.Object) 
      */ 
-    public void println(Object arg) throws IOException { 
+    @Override
+	public void println(Object arg) throws IOException { 
         print(arg); 
         println(); 
     }
@@ -559,28 +597,32 @@ public class CFMLWriterImpl extends CFMLWriter {
     /** 
      * @see java.io.Writer#write(char[]) 
      */ 
-    public void write(char[] cbuf) throws IOException { 
+    @Override
+	public void write(char[] cbuf) throws IOException { 
         print(cbuf); 
     } 
 
     /** 
      * @see java.io.Writer#write(int) 
      */ 
-    public void write(int c) throws IOException { 
+    @Override
+	public void write(int c) throws IOException { 
         print(c); 
     } 
 
     /** 
      * @see java.io.Writer#write(java.lang.String, int, int) 
      */ 
-    public void write(String str, int off, int len) throws IOException { 
+    @Override
+	public void write(String str, int off, int len) throws IOException { 
         write(str.toCharArray(),off,len);
     } 
 
     /** 
      * @see java.io.Writer#write(java.lang.String) 
      */ 
-    public void write(String str) throws IOException { 
+    @Override
+	public void write(String str) throws IOException { 
     	buffer.append(str);
         _check();
     }
@@ -588,6 +630,7 @@ public class CFMLWriterImpl extends CFMLWriter {
     /**
 	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
 	 */
+	@Override
 	public void writeRaw(String str) throws IOException {
 		_print(str);
 	}
@@ -599,7 +642,8 @@ public class CFMLWriterImpl extends CFMLWriter {
         return flushed;
     }
 
-    public void setClosed(boolean closed) {
+    @Override
+	public void setClosed(boolean closed) {
         this.closed=closed;
     }
 
@@ -611,11 +655,13 @@ public class CFMLWriterImpl extends CFMLWriter {
 	/**
 	 * @see railo.runtime.writer.CFMLWriter#getResponseStream()
 	 */
+	@Override
 	public OutputStream getResponseStream() throws IOException {
 		initOut();
 		return out;
 	}
 
+	@Override
 	public void doCache(railo.runtime.cache.legacy.CacheItem ci) {
 		this.cacheItem=ci;
 	}
@@ -623,6 +669,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 	/**
 	 * @return the cacheResource
 	 */
+	@Override
 	public CacheItem getCacheItem() {
 		return cacheItem;
 	}
