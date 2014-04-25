@@ -11,6 +11,8 @@ public class Constants {
 	public static final String APP_CFM = "Application."+TEMPLATE_EXTENSION;
 	public static final String CFAPP_NAME = "cfapplication";
 	
+	public static final String DEFAULT_PACKAGE = "org.railo.cfml";
+	public static final String WEBSERVICE_NAMESPACE_URI="http://rpc.xml.cfml";
 	
 
 }

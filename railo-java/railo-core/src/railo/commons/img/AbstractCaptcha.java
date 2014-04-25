@@ -88,7 +88,7 @@ public abstract class AbstractCaptcha {
 		
 		// font
 		Font f;
-		ArrayList fontList=new ArrayList();
+		ArrayList<Font> fontList=new ArrayList<Font>();
 		for(int i=0;i<fonts.length;i++){
 			f=getFont(fonts[i],null);
 			if(f!=null) fontList.add(f);
@@ -176,10 +176,10 @@ public abstract class AbstractCaptcha {
 		graphics.fill(new Rectangle(dimension));
 	}
 
-	private Font createFont(List fonts, int fontSize, int shear,int index) {
+	private Font createFont(List<Font> fonts, int fontSize, int shear,int index) {
 		AffineTransform trans1 = getRandomTransformation(shear, shear);
 		AffineTransform trans2 = getRandomTransformation(shear, shear);
-		Font font = (Font) fonts.get(index%fonts.size());
+		Font font = fonts.get(index%fonts.size());
 		font = font.deriveFont((float)fontSize).deriveFont(trans1).deriveFont(trans2);
 		return font;
 	}

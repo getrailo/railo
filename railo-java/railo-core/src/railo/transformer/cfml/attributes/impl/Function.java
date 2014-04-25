@@ -14,9 +14,6 @@ import railo.transformer.library.tag.TagLibTag;
  */
 public final class Function implements AttributeEvaluator {
 
-	/**
-	 * @see railo.transformer.cfml.attributes.AttributeEvaluator#evaluate(railo.transformer.library.tag.TagLibTag, org.w3c.dom.Element)
-	 */
 	@Override
 	public TagLibTag evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
 		tagLibTag.setParseBody(false);

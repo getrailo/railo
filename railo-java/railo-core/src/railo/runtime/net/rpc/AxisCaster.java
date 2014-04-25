@@ -579,7 +579,7 @@ public final class AxisCaster {
         		Object pojo= toPojo(null,tm,null,null,(Component)value,done);
         		try	{
         			if(type==null || type.getLocalPart().equals("anyType")) {
-        				type= new QName("http://rpc.xml.cfml",pojo.getClass().getName());
+        				type= new QName(railo.runtime.config.Constants.WEBSERVICE_NAMESPACE_URI,pojo.getClass().getName());
         			}
         			TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), type);
 	        		

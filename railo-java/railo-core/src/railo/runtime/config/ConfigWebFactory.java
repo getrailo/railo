@@ -199,7 +199,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		
 		boolean doNew = doNew(configDir);
 
-		Resource configFile = configDir.getRealResource("railo-web.xml.cfm");
+		Resource configFile = configDir.getRealResource("railo-web.xml."+Constants.TEMPLATE_EXTENSION);
 		Resource configFileOld = configDir.getRealResource("railo-web.xml");
 
 		String strPath = servletConfig.getServletContext().getRealPath("/WEB-INF");
@@ -219,7 +219,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		Resource bugFile;
 		int count = 1;
 		// rename old bugfiles
-		while ((bugFile = configDir.getRealResource("railo-web." + (count++) + ".buggy.cfm")).exists()) {
+		while ((bugFile = configDir.getRealResource("railo-web." + (count++) + ".buggy."+Constants.TEMPLATE_EXTENSION)).exists()) {
 			bugFile.renameTo(configDir.getRealResource("railo-web." + (count) + ".buggy"));
 		}
 
@@ -1089,22 +1089,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!f.exists())
 			createFileFromResourceEL("/resource/context/admin/plugin/Plugin."+Constants.COMPONENT_EXTENSION, f);
 
-		// Plugin DDNS
-		/*
-		 * File ddns = new File(pluginDir,"DDNS");
-		 * if(!ddns.exists())ddns.mkdirs();
-		 * 
-		 * f=new File(ddns,"language.xml");
-		 * if(!f.exists())createFileFromResource
-		 * ("/resource/context/admin/plugin/DDNS/language.xml",f);
-		 * 
-		 * f=new File(ddns,"overview.cfm");
-		 * if(!f.exists())createFileFromResource
-		 * ("/resource/context/admin/plugin/DDNS/overview.cfm",f);
-		 * 
-		 * f=new File(ddns,"Action.cfc"); if(!f.exists())createFileFromResource(
-		 * "/resource/context/admin/plugin/DDNS/Action.cfc",f);
-		 */
 
 		// Plugin Simon
 		Resource simon = pluginDir.getRealResource("Simon");

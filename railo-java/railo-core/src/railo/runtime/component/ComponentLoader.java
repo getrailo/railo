@@ -24,6 +24,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -280,7 +281,7 @@ public class ComponentLoader {
     	
     	// translate cfide. to org.railo.cfml
     	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
-    		String rpm="org.railo.cfml."+rawPath.substring(6);
+    		String rpm=Constants.DEFAULT_PACKAGE+"."+rawPath.substring(6);
     		try{
     			return load(pc,child,rpm, searchLocal, searchRoot, interfaceUDFs,returnPage);
         	}
@@ -513,7 +514,7 @@ public class ComponentLoader {
 	            	if(resOld!=null)detail+=" and "+resOld.getDisplayPath();
 	            	
 	            	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
-	            		String rpm="org.railo.cfml."+rawPath.substring(6);
+	            		String rpm=Constants.DEFAULT_PACKAGE+"."+rawPath.substring(6);
 	            		try{
 	            			return loadInterface(pc,rpm,allowRemovingExt, interfaceUDFs);
 		            	}

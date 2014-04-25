@@ -898,9 +898,6 @@ public abstract class AbstrCFMLExprTransformer {
 				Expression expr = clip(data);
 				
 				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.PLUS,line,data.srcCode.getPosition());
-				
-				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
-				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
 			}
 			comments(data);
 			return data.factory.toExprDouble(clip(data));//OpNegateNumber.toExprDouble(clip(),OpNegateNumber.PLUS,line);
@@ -1209,8 +1206,6 @@ public abstract class AbstrCFMLExprTransformer {
 		}
 		
 		// Extract Scope from the Variable
-		//int c=data.cfml.getColumn();
-		//Position l=data.cfml.getPosition();
 		var = startElement(data,id,line);
 		var.setStart(line);
 		var.setEnd(data.srcCode.getPosition());
@@ -1373,7 +1368,7 @@ public abstract class AbstrCFMLExprTransformer {
 	                name = identifier(data,true);
 					if(name==null) {
 						data.srcCode.setPos(start);
-						return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
+						return expr;
 					}
 					fullName.append('.');
 					fullName.append(name);
@@ -1407,7 +1402,7 @@ public abstract class AbstrCFMLExprTransformer {
 			return v;
 		} 
         data.srcCode.setPos(start);
-        return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
+        return expr;
 		
 	}
 	
@@ -1751,8 +1746,6 @@ public abstract class AbstrCFMLExprTransformer {
 			for(int i=0;i<breakConditions.length;i++){
 				if(data.srcCode.isCurrent(breakConditions[i]))break outer;
 			}
-			
-			//if(data.cfml.isCurrent(' ') || data.cfml.isCurrent('>') || data.cfml.isCurrent("/>")) break;
 			
 			if(data.srcCode.isCurrent('"') || data.srcCode.isCurrent('#') || data.srcCode.isCurrent('\'')) {
 				throw new TemplateException(data.srcCode,"simple attribute value can't contain ["+data.srcCode.getCurrent()+"]");

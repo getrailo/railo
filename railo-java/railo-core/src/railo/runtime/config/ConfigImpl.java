@@ -390,7 +390,7 @@ public abstract class ConfigImpl implements Config {
 	//private ResourceClassLoaderFactory classLoaderFactory;
 	private ResourceClassLoader resourceCL;
 	
-	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
+	private ImportDefintion componentDefaultImport=new ImportDefintionImpl(Constants.DEFAULT_PACKAGE,"*");
 	private boolean componentLocalSearch=true;
 	private boolean componentRootSearch=true;
 	private boolean useComponentPathCache=true;

@@ -800,7 +800,7 @@ public final class RPCServer{
 
 	public void registerTypeMapping(Class clazz) {
 		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://rpc.xml.cfml",fullname);
+		QName qname = new QName(railo.runtime.config.Constants.WEBSERVICE_NAMESPACE_URI,fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
