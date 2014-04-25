@@ -23,7 +23,7 @@ import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 public final class Loop extends EvaluatorSupport {
 	
@@ -140,7 +140,7 @@ public final class Loop extends EvaluatorSupport {
 				
 				transformer = tagLib.getExprTransfomer();
 				Page page = ASMUtil.getAncestorPage(tag);
-				Expression expr=transformer.transform(BytecodeFactory.getInstance(),ASMUtil.getAncestorPage(tag),null,null,flibs,config.getCoreTagLib().getScriptTags(),new CFMLString(text,CharsetUtil.UTF8),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
+				Expression expr=transformer.transform(BytecodeFactory.getInstance(),ASMUtil.getAncestorPage(tag),null,null,flibs,config.getCoreTagLib().getScriptTags(),new SourceCode(text,CharsetUtil.UTF8),TransfomerSettings.toSetting(page.getPageSource().getMapping(),null));
 				tag.addAttribute(new Attribute(false,"condition",page.getFactory().toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

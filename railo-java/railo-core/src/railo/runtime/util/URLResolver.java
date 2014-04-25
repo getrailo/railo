@@ -13,7 +13,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  * Transform a HTML String, set all relative Pathes inside HTML File to absolute
@@ -93,7 +93,7 @@ public final class URLResolver {
 	 */
 	public String transform(String html, URL url, boolean setBaseTag) throws PageException {
 		StringBuffer target=new StringBuffer();
-		CFMLString cfml=new CFMLString(html,CharsetUtil.UTF8);
+		SourceCode cfml=new SourceCode(html,CharsetUtil.UTF8);
 		while(!cfml.isAfterLast()) {
 			if(cfml.forwardIfCurrent('<')) {
 				target.append('<');
@@ -147,7 +147,7 @@ public final class URLResolver {
 	 * @param url absolute URL to Set at tag attribute
 	 * @throws MalformedURLException
 	 */
-	private void transformTag(StringBuffer target, CFMLString cfml, Tag tag,URL url) throws MalformedURLException {
+	private void transformTag(StringBuffer target, SourceCode cfml, Tag tag,URL url) throws MalformedURLException {
 		// TODO attribute inside other attribute
 		
 		char quote=0;

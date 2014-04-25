@@ -3,7 +3,7 @@ package railo.transformer.cfml.tag;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.op.Caster;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  * Die Klasse TemplateException wird durch den CFMLTransformer geworfen, 
@@ -12,7 +12,7 @@ import railo.transformer.util.CFMLString;
  * Definition innerhalb der Tag- bzw. der Funktions- Library abweicht.
  */
 public final class CFMLTransformerException extends Exception {
-	private CFMLString cfml;
+	private SourceCode cfml;
 	//private String htmlMessage;
 	
 	/**
@@ -20,7 +20,7 @@ public final class CFMLTransformerException extends Exception {
 	 * @param cfml
 	 * @param e
 	 */
-	public CFMLTransformerException(CFMLString cfml, Exception e) {
+	public CFMLTransformerException(SourceCode cfml, Exception e) {
 		this(
 				cfml,
 				StringUtil.isEmpty(e.getMessage())?
@@ -41,7 +41,7 @@ public final class CFMLTransformerException extends Exception {
 	 * @param cfml CFMLString
 	 * @param message Fehlermeldung
 	 */
-	public CFMLTransformerException(CFMLString cfml,String message) {
+	public CFMLTransformerException(SourceCode cfml,String message) {
 		super(message);
 		this.cfml=cfml;
 		
@@ -115,7 +115,7 @@ public final class CFMLTransformerException extends Exception {
      * Returns the value of cfml.
      * @return value cfml
      */
-    public CFMLString getCfml() {
+    public SourceCode getCfml() {
         return cfml;
     }
 

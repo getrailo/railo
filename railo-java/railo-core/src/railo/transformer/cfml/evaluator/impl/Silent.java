@@ -1,7 +1,5 @@
 package railo.transformer.cfml.evaluator.impl;
 
-import org.w3c.dom.Element;
-
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;

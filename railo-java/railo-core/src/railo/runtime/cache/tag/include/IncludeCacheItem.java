@@ -22,25 +22,26 @@ public class IncludeCacheItem implements CacheItem, Serializable, Dumpable {
 	private String path;
 	private String name;
 	private final int payload;
-	
+
 	public IncludeCacheItem(String output, PageSource ps, long executionTimeNS) {
-		this.output=output;
-		this.path=ps.getDisplayPath();
-		this.name=ps.getFileName();
-		this.executionTimeNS=executionTimeNS;
-		this.payload=output==null?0:output.length();
+		this.output = output;
+		this.path = ps.getDisplayPath();
+		this.name = ps.getFileName();
+		this.executionTimeNS = executionTimeNS;
+		this.payload = output == null ? 0 : output.length();
 	}
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
-		DumpTable table = new DumpTable("#669999","#ccffff","#000000");
+		DumpTable table = new DumpTable("#669999", "#ccffff", "#000000");
 		table.setTitle("IncludeCacheEntry");
-		table.appendRow(1,new SimpleDumpData("Output"),DumpUtil.toDumpData(new SimpleDumpData(output), pageContext, maxlevel, properties));
-		if(path!=null)table.appendRow(1,new SimpleDumpData("Path"),DumpUtil.toDumpData(new SimpleDumpData(path), pageContext, maxlevel, properties));
+		table.appendRow(1, new SimpleDumpData("Output"), DumpUtil.toDumpData(new SimpleDumpData(output), pageContext, maxlevel, properties));
+		if (path != null)
+			table.appendRow(1, new SimpleDumpData("Path"), DumpUtil.toDumpData(new SimpleDumpData(path), pageContext, maxlevel, properties));
 		return table;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return output;
 	}
 

@@ -14,7 +14,7 @@ import railo.transformer.Position;
 /**
  * this class is a Parser String optimized for the transfomer (CFML Parser)
  */
-public final class CFMLString {
+public final class SourceCode {
 
 	/**
 	 * Mindestens einen Space
@@ -57,7 +57,7 @@ public final class CFMLString {
 
 	
 	
-	public CFMLString(PageSource ps,Charset charset,boolean writeLog) throws IOException {
+	public SourceCode(PageSource ps,Charset charset,boolean writeLog) throws IOException {
 		this.writeLog=writeLog;
 		this.charset=charset;
 		this.ps=ps;
@@ -84,7 +84,7 @@ public final class CFMLString {
 	 * @param writeLog
 	 * @param ps
 	 */
-	public CFMLString(String text,Charset charset,boolean writeLog,PageSource ps) {
+	public SourceCode(String text,Charset charset,boolean writeLog,PageSource ps) {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=writeLog;
@@ -96,7 +96,7 @@ public final class CFMLString {
 	 * @param text
 	 * @param charset
 	 */
-	public CFMLString(String text,Charset charset) {
+	public SourceCode(String text,Charset charset) {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=false;
@@ -706,7 +706,7 @@ public final class CFMLString {
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
 	 * @return Untermenge als CFMLString
 	 */
-	public CFMLString subCFMLString(int start) {
+	public SourceCode subCFMLString(int start) {
 		return subCFMLString(start,text.length-start);
 	}
 	
@@ -717,8 +717,8 @@ public final class CFMLString {
 	* @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	* @return Untermenge als CFMLString
 	*/
-   public CFMLString subCFMLString(int start, int count) {
-   		return new CFMLString(String.valueOf(text,start,count),charset,writeLog,ps);
+   public SourceCode subCFMLString(int start, int count) {
+   		return new SourceCode(String.valueOf(text,start,count),charset,writeLog,ps);
    		
    }
 	
@@ -916,7 +916,7 @@ public final class CFMLString {
 	 * @return Ist das uebergebene Objekt das selbe wie dieses.
 	 */
 	public boolean equals(Object o) {
-		if(!(o instanceof CFMLString))return false;
+		if(!(o instanceof SourceCode))return false;
 		return o.toString().equals(this.toString());
 	}
 

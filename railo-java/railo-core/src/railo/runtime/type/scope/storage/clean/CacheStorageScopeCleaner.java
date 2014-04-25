@@ -25,11 +25,13 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 		filter=new Filter(strType);
 	}
 	
+	@Override
 	public void init(StorageScopeEngine engine) {
 		super.init(engine);
 		
 	}
-
+	
+	@Override
 	protected void _clean() {
 		ConfigWebImpl config = (ConfigWebImpl) engine.getFactory().getConfig();
 		Map<String, CacheConnection> connections = config.getCacheConnections();
@@ -93,11 +95,13 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 			startsWith="railo-storage:"+type+":";
 		}
 		
+		@Override
 		public String toPattern() {
 			// TODO Auto-generated method stub
 			return startsWith+"*";
 		}
 
+		@Override
 		public boolean accept(String key) {
 			return key.startsWith(startsWith);
 		}

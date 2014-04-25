@@ -27,7 +27,7 @@ public final class ProcessingDirective extends EvaluatorSupport {
     	if(tag.containsAttribute("preservecase")) {
     		Boolean preservecase = ASMUtil.getAttributeBoolean(tag, "preservecase",null);
             if(preservecase==null)
-            	throw new TemplateException(data.cfml,"attribute [preserveCase] of the tag [processingdirective] must be a constant boolean value");
+            	throw new TemplateException(data.srcCode,"attribute [preserveCase] of the tag [processingdirective] must be a constant boolean value");
             dotNotationUpperCase=preservecase.booleanValue()?Boolean.FALSE:Boolean.TRUE;
             
             if(dotNotationUpperCase==data.settings.dotNotationUpper)
@@ -40,11 +40,11 @@ public final class ProcessingDirective extends EvaluatorSupport {
     	if(tag.containsAttribute("pageencoding")) {
     		String str=ASMUtil.getAttributeString(tag, "pageencoding",null);
             if(str==null)
-            	throw new TemplateException(data.cfml,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
+            	throw new TemplateException(data.srcCode,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
             
             cs = CharsetUtil.toCharset(str);
             
-            if(cs.equals(data.cfml.getCharset()) || CharsetUtil.UTF8.equals(data.cfml.getCharset())) {
+            if(cs.equals(data.srcCode.getCharset()) || CharsetUtil.UTF8.equals(data.srcCode.getCharset())) {
 	        	cs=null;
 	        }
         }
@@ -55,17 +55,17 @@ public final class ProcessingDirective extends EvaluatorSupport {
     		String strExeLog=ASMUtil.getAttributeString(tag, "executionlog",null);
             exeLog=Caster.toBoolean(strExeLog,null);
             if(exeLog==null)
-            	throw new TemplateException(data.cfml,"attribute [executionlog] of the tag [processingdirective] must be a constant boolean value");
-            if(exeLog.booleanValue()==data.cfml.getWriteLog())
+            	throw new TemplateException(data.srcCode,"attribute [executionlog] of the tag [processingdirective] must be a constant boolean value");
+            if(exeLog.booleanValue()==data.srcCode.getWriteLog())
             	exeLog=null;
         }
     	
     	
     	if(cs!=null || exeLog!=null || dotNotationUpperCase!=null){
-    		if(cs==null)	cs=data.cfml.getCharset();
-    		if(exeLog==null)exeLog=data.cfml.getWriteLog()?Boolean.TRUE:Boolean.FALSE;
+    		if(cs==null)	cs=data.srcCode.getCharset();
+    		if(exeLog==null)exeLog=data.srcCode.getWriteLog()?Boolean.TRUE:Boolean.FALSE;
     		if(dotNotationUpperCase==null)dotNotationUpperCase=data.settings.dotNotationUpper;
-	    	throw new ProcessingDirectiveException(data.cfml,cs,dotNotationUpperCase,exeLog);
+	    	throw new ProcessingDirectiveException(data.srcCode,cs,dotNotationUpperCase,exeLog);
     	}
     	
     	

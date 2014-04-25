@@ -14,7 +14,7 @@ import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 public class CFMLOrJavaScriptTransformer implements TagDependentBodyTransformer {
 
@@ -22,7 +22,7 @@ public class CFMLOrJavaScriptTransformer implements TagDependentBodyTransformer 
 	private CFMLScriptTransformer cst=new CFMLScriptTransformer();
 	
 	@Override
-	public void transform(Factory factory,Page page,CFMLTransformer parent, EvaluatorPool ep,TagLib[][] tlibs, FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings) 
+	public void transform(Factory factory,Page page,CFMLTransformer parent, EvaluatorPool ep,TagLib[][] tlibs, FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, SourceCode cfml,TransfomerSettings settings) 
 
 	throws TemplateException {
 		Attribute attr = tag.getAttribute("language");

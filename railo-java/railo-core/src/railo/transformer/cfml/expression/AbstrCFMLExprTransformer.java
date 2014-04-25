@@ -61,7 +61,7 @@ import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.library.tag.TagLibTagScript;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  * 
@@ -169,17 +169,17 @@ public abstract class AbstrCFMLExprTransformer {
 	
 	protected static EndCondition SEMI_BLOCK=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent('{') || data.cfml.isCurrent(';');
+			return data.srcCode.isCurrent('{') || data.srcCode.isCurrent(';');
 		}
 	};
 	protected static EndCondition SEMI=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent(';');
+			return data.srcCode.isCurrent(';');
 		}
 	};
 	protected static EndCondition COMMA_ENDBRACKED=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent(',') || data.cfml.isCurrent(')');
+			return data.srcCode.isCurrent(',') || data.srcCode.isCurrent(')');
 		}
 	};
 
@@ -205,7 +205,7 @@ public abstract class AbstrCFMLExprTransformer {
 		public short context=CTX_NONE; 
 		public DocComment docComment;
 		
-		public ExprData(Factory factory,Page page, EvaluatorPool ep, CFMLString cfml, TagLib[][] tlibs,FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
+		public ExprData(Factory factory,Page page, EvaluatorPool ep, SourceCode cfml, TagLib[][] tlibs,FunctionLib[] flibs, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
 			super(factory,page,cfml,ep,settings,tlibs,flibs,scriptTags);
 
 			this.allowLowerThan=allowLowerThan;
@@ -240,7 +240,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
 
-	protected ExprData init(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
+	protected ExprData init(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags, SourceCode cfml, TransfomerSettings settings, boolean allowLowerThan) {
 		ExprData data = new ExprData(factory,page,ep,cfml,tld,fld,settings,allowLowerThan,scriptTags);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_literalArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_literalStruct");
@@ -276,7 +276,7 @@ public abstract class AbstrCFMLExprTransformer {
 	private Argument functionArgument(ExprData data,String type, boolean varKeyUpperCase) throws TemplateException {
 		Expression expr = assignOp(data);
 		try{
-			if (data.cfml.forwardIfCurrent(":")) {
+			if (data.srcCode.forwardIfCurrent(":")) {
 				comments(data);
 				return new NamedArgument(expr,assignOp(data),type,varKeyUpperCase);
 			}
@@ -290,7 +290,7 @@ public abstract class AbstrCFMLExprTransformer {
 			}
 		}
 		catch(TransformerException be) {
-			throw new TemplateException(data.cfml,be.getMessage());
+			throw new TemplateException(data.srcCode,be.getMessage());
 		}
 		return new Argument(expr,type);
 	}
@@ -309,22 +309,22 @@ public abstract class AbstrCFMLExprTransformer {
 	protected Expression assignOp(ExprData data) throws TemplateException {
         
 		Expression expr = conditionalOp(data);
-        if (data.cfml.forwardIfCurrent('=')) {
+        if (data.srcCode.forwardIfCurrent('=')) {
         	
             comments(data);
             if(data.mode==STATIC) expr=new DynAssign(expr,assignOp(data));
 			else {
 				if(expr instanceof Variable) {
 					Expression value = assignOp(data);
-					expr=new Assign((Variable)expr,value,data.cfml.getPosition());
+					expr=new Assign((Variable)expr,value,data.srcCode.getPosition());
 				}
 				else if(expr instanceof Null) {
 					Variable var = ((Null)expr).toVariable();
 					Expression value = assignOp(data);
-					expr=new Assign(var,value,data.cfml.getPosition());
+					expr=new Assign(var,value,data.srcCode.getPosition());
 				}
 				else
-					throw new TemplateException(data.cfml,"invalid assignment left-hand side ("+expr.getClass().getName()+")");
+					throw new TemplateException(data.srcCode,"invalid assignment left-hand side ("+expr.getClass().getName()+")");
 			}
 		}
 		return expr;
@@ -333,22 +333,22 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression conditionalOp(ExprData data) throws TemplateException {
         
 		Expression expr = impOp(data);
-        if (data.cfml.forwardIfCurrent('?')) {
+        if (data.srcCode.forwardIfCurrent('?')) {
         	comments(data);
         	// Elvis
-        	if(data.cfml.forwardIfCurrent(':')) {
+        	if(data.srcCode.forwardIfCurrent(':')) {
         		comments(data);
             	Expression right = assignOp(data);
         		
         		if(!(expr instanceof Variable) )
-        			throw new TemplateException(data.cfml,"left operant of the Elvis operator has to be a variable or a function call");
+        			throw new TemplateException(data.srcCode,"left operant of the Elvis operator has to be a variable or a function call");
         		
         		return OpElvis.toExpr((Variable)expr, right);
         	}
         	
         	Expression left = assignOp(data);
         	comments(data);
-        	if(!data.cfml.forwardIfCurrent(':'))throw new TemplateException("invalid conditional operator");
+        	if(!data.srcCode.forwardIfCurrent(':'))throw new TemplateException("invalid conditional operator");
         	comments(data); 
         	Expression right = assignOp(data);
         	
@@ -367,7 +367,7 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression impOp(ExprData data) throws TemplateException {
 		Expression expr = eqvOp(data);
-		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
+		while(data.srcCode.forwardIfCurrentAndNoWordAfter("imp")) { 
 			comments(data);
             expr=data.factory.opBool(expr, eqvOp(data), Factory.OP_BOOL_IMP);
 		}
@@ -384,7 +384,7 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression eqvOp(ExprData data) throws TemplateException {
 		Expression expr = xorOp(data);
-		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
+		while(data.srcCode.forwardIfCurrentAndNoWordAfter("eqv")) {
 			comments(data);
             expr=data.factory.opBool(expr, xorOp(data), Factory.OP_BOOL_EQV);
 		}
@@ -401,7 +401,7 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression xorOp(ExprData data) throws TemplateException {
 		Expression expr = orOp(data);
-		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
+		while(data.srcCode.forwardIfCurrentAndNoWordAfter("xor")) {
 			comments(data);
             expr=data.factory.opBool(expr, orOp(data), Factory.OP_BOOL_XOR);
 		}
@@ -420,7 +420,7 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression orOp(ExprData data) throws TemplateException {
 		Expression expr = andOp(data);
 		
-		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
+		while(data.srcCode.forwardIfCurrent("||") || data.srcCode.forwardIfCurrentAndNoWordAfter("or")) {
 			comments(data);
             expr=data.factory.opBool(expr, andOp(data), Factory.OP_BOOL_OR);
 		}
@@ -439,7 +439,7 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression andOp(ExprData data) throws TemplateException {
 		Expression expr = notOp(data);
 		
-		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
+		while(data.srcCode.forwardIfCurrent("&&") || data.srcCode.forwardIfCurrentAndNoWordAfter("and")) {
 			comments(data);
 	        expr=data.factory.opBool(expr, notOp(data), Factory.OP_BOOL_AND);
 		}
@@ -457,15 +457,15 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression notOp(ExprData data) throws TemplateException {
 		// And Operation
-		Position line = data.cfml.getPosition();
-		if (data.cfml.isCurrent('!') && !data.cfml.isCurrent("!=")) {
-			data.cfml.next();
+		Position line = data.srcCode.getPosition();
+		if (data.srcCode.isCurrent('!') && !data.srcCode.isCurrent("!=")) {
+			data.srcCode.next();
 			comments(data);
-			return OpNegate.toExprBoolean(notOp(data),line,data.cfml.getPosition());
+			return OpNegate.toExprBoolean(notOp(data),line,data.srcCode.getPosition());
 		}
-		else if (data.cfml.forwardIfCurrentAndNoWordAfter("not")) {
+		else if (data.srcCode.forwardIfCurrentAndNoWordAfter("not")) {
 			comments(data);
-			return OpNegate.toExprBoolean(notOp(data),line,data.cfml.getPosition());
+			return OpNegate.toExprBoolean(notOp(data),line,data.srcCode.getPosition());
 		}
 		return decsionOp(data);
 	}
@@ -487,21 +487,21 @@ public abstract class AbstrCFMLExprTransformer {
 		// ct, contains
 		do {
 			hasChanged=false;
-			if(data.cfml.isCurrent('c')) {
-					if (data.cfml.forwardIfCurrent("ct",false,true)) {expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;} 
-					else if (data.cfml.forwardIfCurrent("contains",false,true)){ expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;}
+			if(data.srcCode.isCurrent('c')) {
+					if (data.srcCode.forwardIfCurrent("ct",false,true)) {expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;} 
+					else if (data.srcCode.forwardIfCurrent("contains",false,true)){ expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;}
 			}
 			// does not contain
-			else if (data.cfml.forwardIfCurrent("does","not","contain",false,true)){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}
+			else if (data.srcCode.forwardIfCurrent("does","not","contain",false,true)){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}
 
 			// equal, eq
-			else if (data.cfml.isCurrent("eq") && !data.cfml.isCurrent("eqv")) {
+			else if (data.srcCode.isCurrent("eq") && !data.srcCode.isCurrent("eqv")) {
 				int plus=2;
-				data.cfml.setPos(data.cfml.getPos()+2);
-				if(data.cfml.forwardIfCurrent("ual"))plus=5;
+				data.srcCode.setPos(data.srcCode.getPos()+2);
+				if(data.srcCode.forwardIfCurrent("ual"))plus=5;
 				
-				if(data.cfml.isCurrentVariableCharacter()) {
-					data.cfml.setPos(data.cfml.getPos()-plus);
+				if(data.srcCode.isCurrentVariableCharacter()) {
+					data.srcCode.setPos(data.srcCode.getPos()-plus);
 				}
 				else {
 					expr = decisionOpCreate(data,OPDecision.EQ,expr);
@@ -510,49 +510,49 @@ public abstract class AbstrCFMLExprTransformer {
 				
 			}
 			// ==
-			else if (data.cfml.forwardIfCurrent("==")) {
-				if(data.cfml.forwardIfCurrent('=')) 		expr = decisionOpCreate(data,OPDecision.EEQ,expr);
+			else if (data.srcCode.forwardIfCurrent("==")) {
+				if(data.srcCode.forwardIfCurrent('=')) 		expr = decisionOpCreate(data,OPDecision.EEQ,expr);
 				else expr = decisionOpCreate(data,OPDecision.EQ,expr);
 				hasChanged=true;
 			}
 			// !=
-			else if (data.cfml.forwardIfCurrent("!=")) {
-				if(data.cfml.forwardIfCurrent('=')) 		expr = decisionOpCreate(data,OPDecision.NEEQ,expr);
+			else if (data.srcCode.forwardIfCurrent("!=")) {
+				if(data.srcCode.forwardIfCurrent('=')) 		expr = decisionOpCreate(data,OPDecision.NEEQ,expr);
 				else expr = decisionOpCreate(data,OPDecision.NEQ,expr); 
 				hasChanged=true;
 			}
 			// <=/</<>
-			else if (data.cfml.isCurrent('<')) {
+			else if (data.srcCode.isCurrent('<')) {
 				hasChanged=true;
-				if(data.cfml.isNext('='))	{
-					data.cfml.next();data.cfml.next();
+				if(data.srcCode.isNext('='))	{
+					data.srcCode.next();data.srcCode.next();
 					expr = decisionOpCreate(data,OPDecision.LTE,expr);
 				}
-				else if(data.cfml.isNext('>')) {
-					data.cfml.next();data.cfml.next();
+				else if(data.srcCode.isNext('>')) {
+					data.srcCode.next();data.srcCode.next();
 					expr = decisionOpCreate(data,OPDecision.NEQ,expr);
 				}
-				else if(data.cfml.isNext('/')) {
+				else if(data.srcCode.isNext('/')) {
 					hasChanged=false;
 				}
 				else	{
-					data.cfml.next();
+					data.srcCode.next();
 					expr = decisionOpCreate(data,OPDecision.LT,expr); 
 				}
 			}
 			// >=/>
-			else if (data.allowLowerThan && data.cfml.forwardIfCurrent('>')) {
-				if(data.cfml.forwardIfCurrent('=')) 	expr = decisionOpCreate(data,OPDecision.GTE,expr);
+			else if (data.allowLowerThan && data.srcCode.forwardIfCurrent('>')) {
+				if(data.srcCode.forwardIfCurrent('=')) 	expr = decisionOpCreate(data,OPDecision.GTE,expr);
 				else 							expr = decisionOpCreate(data,OPDecision.GT,expr); 
 				hasChanged=true;
 			}
 			
 			// gt, gte, greater than or equal to, greater than
-			else if (data.cfml.isCurrent('g')) {
-				if (data.cfml.forwardIfCurrent("gt")) {
-					if(data.cfml.forwardIfCurrentAndNoWordAfter("e")) {
-						if(data.cfml.isCurrentVariableCharacter()) {
-							data.cfml.setPos(data.cfml.getPos()-3);
+			else if (data.srcCode.isCurrent('g')) {
+				if (data.srcCode.forwardIfCurrent("gt")) {
+					if(data.srcCode.forwardIfCurrentAndNoWordAfter("e")) {
+						if(data.srcCode.isCurrentVariableCharacter()) {
+							data.srcCode.setPos(data.srcCode.getPos()-3);
 						}
 						else {
 							expr = decisionOpCreate(data,OPDecision.GTE,expr);
@@ -560,8 +560,8 @@ public abstract class AbstrCFMLExprTransformer {
 						}
 					}
 					else {
-						if(data.cfml.isCurrentVariableCharacter()) {
-							data.cfml.setPos(data.cfml.getPos()-2);
+						if(data.srcCode.isCurrentVariableCharacter()) {
+							data.srcCode.setPos(data.srcCode.getPos()-2);
 						}
 						else {
 							expr = decisionOpCreate(data,OPDecision.GT,expr);
@@ -569,30 +569,30 @@ public abstract class AbstrCFMLExprTransformer {
 						}
 					}
 				} 
-				else if (data.cfml.forwardIfCurrent("greater", "than",false,true)) {
-					if(data.cfml.forwardIfCurrent("or","equal", "to",true,true)) expr = decisionOpCreate(data,OPDecision.GTE,expr);
+				else if (data.srcCode.forwardIfCurrent("greater", "than",false,true)) {
+					if(data.srcCode.forwardIfCurrent("or","equal", "to",true,true)) expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.GT,expr);
 					hasChanged=true;
 				}	
-				else if (data.cfml.forwardIfCurrent("ge",false,true)) {
+				else if (data.srcCode.forwardIfCurrent("ge",false,true)) {
 					expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					hasChanged=true;
 				}				
 			}
 			
 			// is, is not
-			else if (data.cfml.forwardIfCurrent("is",false,true)) {
-				if(data.cfml.forwardIfCurrent("not",true,true)) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
+			else if (data.srcCode.forwardIfCurrent("is",false,true)) {
+				if(data.srcCode.forwardIfCurrent("not",true,true)) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
 				else expr = decisionOpCreate(data,OPDecision.EQ,expr);
 				hasChanged=true;
 			}
 			
 			// lt, lte, less than, less than or equal to
-			else if (data.cfml.isCurrent('l')) {
-				if (data.cfml.forwardIfCurrent("lt")) {
-					if(data.cfml.forwardIfCurrentAndNoWordAfter("e")) {
-						if(data.cfml.isCurrentVariableCharacter()) {
-							data.cfml.setPos(data.cfml.getPos()-3);
+			else if (data.srcCode.isCurrent('l')) {
+				if (data.srcCode.forwardIfCurrent("lt")) {
+					if(data.srcCode.forwardIfCurrentAndNoWordAfter("e")) {
+						if(data.srcCode.isCurrentVariableCharacter()) {
+							data.srcCode.setPos(data.srcCode.getPos()-3);
 						}
 						else {
 							expr = decisionOpCreate(data,OPDecision.LTE,expr);
@@ -600,8 +600,8 @@ public abstract class AbstrCFMLExprTransformer {
 						}
 					}
 					else {
-						if(data.cfml.isCurrentVariableCharacter()) {
-							data.cfml.setPos(data.cfml.getPos()-2);
+						if(data.srcCode.isCurrentVariableCharacter()) {
+							data.srcCode.setPos(data.srcCode.getPos()-2);
 						}
 						else {
 							expr = decisionOpCreate(data,OPDecision.LT,expr);
@@ -609,25 +609,25 @@ public abstract class AbstrCFMLExprTransformer {
 						}
 					}
 				} 
-				else if (data.cfml.forwardIfCurrent("less","than",false,true)) {
-					if(data.cfml.forwardIfCurrent("or", "equal", "to",true,true)) expr = decisionOpCreate(data,OPDecision.LTE,expr);
+				else if (data.srcCode.forwardIfCurrent("less","than",false,true)) {
+					if(data.srcCode.forwardIfCurrent("or", "equal", "to",true,true)) expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				}	
-				else if (data.cfml.forwardIfCurrent("le",false,true)) {
+				else if (data.srcCode.forwardIfCurrent("le",false,true)) {
 					expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					hasChanged=true;
 				}				
 			}
 			
 			// neq, not equal, nct
-			else if (data.cfml.isCurrent('n')) {
+			else if (data.srcCode.isCurrent('n')) {
 				// Not Equal
-					if (data.cfml.forwardIfCurrent("neq",false,true)){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
+					if (data.srcCode.forwardIfCurrent("neq",false,true)){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
 				// Not Equal (Alias)
-					else if (data.cfml.forwardIfCurrent("not","equal",false,true)){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
+					else if (data.srcCode.forwardIfCurrent("not","equal",false,true)){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
 				// nct
-					else if (data.cfml.forwardIfCurrent("nct",false,true)){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
+					else if (data.srcCode.forwardIfCurrent("nct",false,true)){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
 			}
 			
 		}
@@ -651,16 +651,16 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression concatOp(ExprData data) throws TemplateException {
 		Expression expr = plusMinusOp(data);
 		
-		while(data.cfml.isCurrent('&') && !data.cfml.isCurrent("&&")) {
-			data.cfml.next();
+		while(data.srcCode.isCurrent('&') && !data.srcCode.isCurrent("&&")) {
+			data.srcCode.next();
 			
 			// &=
-			if (data.cfml.isCurrent('=') && expr instanceof Variable) {
-				data.cfml.next();
+			if (data.srcCode.isCurrent('=') && expr instanceof Variable) {
+				data.srcCode.next();
 				comments(data);
 				Expression value = assignOp(data);
 				
-				expr = new OPUnary((Variable)expr,value,OPUnary.PRE,OPUnary.CONCAT,expr.getStart(),data.cfml.getPosition());
+				expr = new OPUnary((Variable)expr,value,OPUnary.PRE,OPUnary.CONCAT,expr.getStart(),data.srcCode.getPosition());
 				
 				
 				//ExprString res = OpString.toExprString(expr, right);
@@ -686,12 +686,12 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression plusMinusOp(ExprData data) throws TemplateException {
 		Expression expr = modOp(data);
 		
-		while(!data.cfml.isLast()) {
+		while(!data.srcCode.isLast()) {
 			
 			// Plus Operation
-			if (data.cfml.forwardIfCurrent('+'))			expr=_plusMinusOp(data,expr,OpDouble.PLUS);
+			if (data.srcCode.forwardIfCurrent('+'))			expr=_plusMinusOp(data,expr,OpDouble.PLUS);
 			// Minus Operation
-			else if (data.cfml.forwardIfCurrent('-'))	expr=_plusMinusOp(data,expr,OpDouble.MINUS);
+			else if (data.srcCode.forwardIfCurrent('-'))	expr=_plusMinusOp(data,expr,OpDouble.MINUS);
 			else break;
 		}
 		return expr;
@@ -702,13 +702,13 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression _plusMinusOp(ExprData data,Expression expr,int opr) throws TemplateException {
 		// +=
 		// plus|Minus Assignment
-		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
-			data.cfml.next();
+		if (data.srcCode.isCurrent('=') && expr instanceof Variable) {
+			data.srcCode.next();
 			comments(data);
 			Expression value = assignOp(data);
 			//if(opr==OpDouble.MINUS) value=OpNegateNumber.toExprDouble(value, null, null);
 			
-			expr = new OPUnary((Variable)expr,value,OPUnary.PRE,opr,expr.getStart(),data.cfml.getPosition());
+			expr = new OPUnary((Variable)expr,value,OPUnary.PRE,opr,expr.getStart(),data.srcCode.getPosition());
 			
 			//ExprDouble res = OpDouble.toExprDouble(expr, right,opr);
 			//expr=new OpVariable((Variable)expr,res,data.cfml.getPosition());
@@ -735,7 +735,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = divMultiOp(data);
 		
 		// Modulus Operation
-		while(data.cfml.forwardIfCurrent('%') || data.cfml.forwardIfCurrentAndNoWordAfter("mod")) {
+		while(data.srcCode.forwardIfCurrent('%') || data.srcCode.forwardIfCurrentAndNoWordAfter("mod")) {
 			expr=_modOp(data,expr);
 			//comments(data);
             //expr=OpDouble.toExprDouble(expr, divMultiOp(), OpDouble.MODULUS);
@@ -744,12 +744,12 @@ public abstract class AbstrCFMLExprTransformer {
 	}
 	
 	private Expression _modOp(ExprData data,Expression expr) throws TemplateException {
-		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
-			data.cfml.next();
+		if (data.srcCode.isCurrent('=') && expr instanceof Variable) {
+			data.srcCode.next();
 			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,OpDouble.MODULUS);
-			return new OpVariable((Variable)expr,res,data.cfml.getPosition());
+			return new OpVariable((Variable)expr,res,data.srcCode.getPosition());
 		}
         comments(data);
         return OpDouble.toExprDouble(expr, expoOp(data), OpDouble.MODULUS);
@@ -766,24 +766,24 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression divMultiOp(ExprData data) throws TemplateException {
 		Expression expr = expoOp(data);
 
-		while (!data.cfml.isLast()) {
+		while (!data.srcCode.isLast()) {
 			
 				// Multiply Operation
-				if(data.cfml.forwardIfCurrent('*')) {
+				if(data.srcCode.forwardIfCurrent('*')) {
 					expr=_divMultiOp(data,expr,OpDouble.MULTIPLY);
 					//comments(data);
                     //expr=OpDouble.toExprDouble(expr, expoOp(), OpDouble.MULTIPLY);
 				}
 				// Divide Operation
-				else if (data.cfml.isCurrent('/') && (!data.cfml.isCurrent('/','>') )) {
-					data.cfml.next(); 
+				else if (data.srcCode.isCurrent('/') && (!data.srcCode.isCurrent('/','>') )) {
+					data.srcCode.next(); 
 					expr=_divMultiOp(data,expr,OpDouble.DIVIDE);
 					//comments(data);
                     //expr=OpDouble.toExprDouble(expr, expoOp(), OpDouble.DIVIDE);
 				}
 				// Divide Operation
-				else if (data.cfml.isCurrent('\\')) {
-					data.cfml.next(); 
+				else if (data.srcCode.isCurrent('\\')) {
+					data.srcCode.next(); 
 					expr=_divMultiOp(data,expr,OpDouble.INTDIV);
 					//comments(data);
                     //expr=OpDouble.toExprDouble(expr, expoOp(), OpDouble.INTDIV);
@@ -797,12 +797,12 @@ public abstract class AbstrCFMLExprTransformer {
 	}
 
 	private Expression _divMultiOp(ExprData data,Expression expr, int iOp) throws TemplateException {
-		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
-			data.cfml.next();
+		if (data.srcCode.isCurrent('=') && expr instanceof Variable) {
+			data.srcCode.next();
 			comments(data);
 			Expression value = assignOp(data);
 			
-			return new OPUnary((Variable)expr,value,OPUnary.PRE,iOp,expr.getStart(),data.cfml.getPosition());
+			return new OPUnary((Variable)expr,value,OPUnary.PRE,iOp,expr.getStart(),data.srcCode.getPosition());
 			
 			
 			
@@ -827,7 +827,7 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = unaryOp(data);
 
 		// Modulus Operation
-		while(data.cfml.forwardIfCurrent('^') || data.cfml.forwardIfCurrentAndNoWordAfter("exp")) {
+		while(data.srcCode.forwardIfCurrent('^') || data.srcCode.forwardIfCurrentAndNoWordAfter("exp")) {
 			comments(data);
             expr=OpDouble.toExprDouble(expr, unaryOp(data), OpDouble.EXP);
 		}
@@ -838,10 +838,10 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = negatePlusMinusOp(data);
 		
 		// Plus Operation
-		if (data.cfml.forwardIfCurrent("++") && expr instanceof Variable)			
+		if (data.srcCode.forwardIfCurrent("++") && expr instanceof Variable)			
 			expr=_unaryOp(data,expr,OpDouble.PLUS);
 		// Minus Operation
-		else if (data.cfml.forwardIfCurrent("--") && expr instanceof Variable)	
+		else if (data.srcCode.forwardIfCurrent("--") && expr instanceof Variable)	
 			expr=_unaryOp(data,expr,OpDouble.MINUS);
 		return expr;
 	}
@@ -872,13 +872,13 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression negatePlusMinusOp(ExprData data) throws TemplateException {
 		// And Operation
-		Position line=data.cfml.getPosition();
-		if (data.cfml.forwardIfCurrent('-')) {
+		Position line=data.srcCode.getPosition();
+		if (data.srcCode.forwardIfCurrent('-')) {
 			// pre increment
-			if (data.cfml.forwardIfCurrent('-')) {
+			if (data.srcCode.forwardIfCurrent('-')) {
 				comments(data);
 				Expression expr = clip(data);
-				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.MINUS,line,data.cfml.getPosition());
+				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.MINUS,line,data.srcCode.getPosition());
 				
 				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.MINUS);
 				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
@@ -886,15 +886,15 @@ public abstract class AbstrCFMLExprTransformer {
 				
 			}
 			comments(data);
-			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line,data.cfml.getPosition());
+			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line,data.srcCode.getPosition());
 			
 		}
-		else if (data.cfml.forwardIfCurrent('+')) {
-			if (data.cfml.forwardIfCurrent('+')) {
+		else if (data.srcCode.forwardIfCurrent('+')) {
+			if (data.srcCode.forwardIfCurrent('+')) {
 				comments(data);
 				Expression expr = clip(data);
 				
-				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.PLUS,line,data.cfml.getPosition());
+				return new OPUnary((Variable)expr,data.factory.DOUBLE_ONE(),OPUnary.PRE,OpDouble.PLUS,line,data.srcCode.getPosition());
 				
 				//ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
 				//return new OpVariable((Variable)expr,res,data.cfml.getPosition());
@@ -969,7 +969,7 @@ public abstract class AbstrCFMLExprTransformer {
 				return expr;
 			} 
 		// else Error
-			throw new TemplateException(data.cfml,"Syntax Error, Invalid Construct");	
+			throw new TemplateException(data.srcCode,"Syntax Error, Invalid Construct");	
 	}
 	
 	/*private Expression variable(Data data) throws TemplateException {
@@ -997,37 +997,37 @@ public abstract class AbstrCFMLExprTransformer {
 	protected Expression string(ExprData data) throws TemplateException {
 		
 		// check starting character for a string literal
-		if(!data.cfml.isCurrent('"')&& !data.cfml.isCurrent('\''))
+		if(!data.srcCode.isCurrent('"')&& !data.srcCode.isCurrent('\''))
 			return null;
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		// Init Parameter
-		char quoter = data.cfml.getCurrentLower();
+		char quoter = data.srcCode.getCurrentLower();
 		StringBuilder str=new StringBuilder();
 		Expression expr=null;
 		
-		while(data.cfml.hasNext()) {
-			data.cfml.next();
+		while(data.srcCode.hasNext()) {
+			data.srcCode.next();
 			// check sharp
-			if(data.cfml.isCurrent('#')) {
+			if(data.srcCode.isCurrent('#')) {
 				
 				// Ecaped sharp
-				if(data.cfml.isNext('#')){
-					data.cfml.next();
+				if(data.srcCode.isNext('#')){
+					data.srcCode.next();
 					str.append('#');
 				}
 				// get Content of sharp
 				else {
-					data.cfml.next();
+					data.srcCode.next();
                     comments(data);
 					Expression inner=assignOp(data);
                     comments(data);
-					if (!data.cfml.isCurrent('#'))
-						throw new TemplateException(data.cfml,"Invalid Syntax Closing [#] not found");
+					if (!data.srcCode.isCurrent('#'))
+						throw new TemplateException(data.srcCode,"Invalid Syntax Closing [#] not found");
 					
 					ExprString exprStr=null;
 					if(str.length()!=0) {
-						exprStr=data.factory.createLitString(str.toString(),line,data.cfml.getPosition());
+						exprStr=data.factory.createLitString(str.toString(),line,data.srcCode.getPosition());
 						if(expr!=null){
 							expr = data.factory.opString(expr, exprStr);
 						}
@@ -1043,10 +1043,10 @@ public abstract class AbstrCFMLExprTransformer {
 				}
 			}
 			// check quoter
-			else if(data.cfml.isCurrent(quoter)) {
+			else if(data.srcCode.isCurrent(quoter)) {
 				// Ecaped sharp
-				if(data.cfml.isNext(quoter)){
-					data.cfml.next();
+				if(data.srcCode.isNext(quoter)){
+					data.srcCode.next();
 					str.append(quoter);
 				}
 				// finsish
@@ -1056,16 +1056,16 @@ public abstract class AbstrCFMLExprTransformer {
 			}
 			// all other character
 			else {
-				str.append(data.cfml.getCurrent());
+				str.append(data.srcCode.getCurrent());
 			}
 		}
-		if(!data.cfml.forwardIfCurrent(quoter))
-			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+quoter+"] not found");
+		if(!data.srcCode.forwardIfCurrent(quoter))
+			throw new TemplateException(data.srcCode,"Invalid Syntax Closing ["+quoter+"] not found");
 		
 		if(expr==null)
-			expr=data.factory.createLitString(str.toString(),line,data.cfml.getPosition());
+			expr=data.factory.createLitString(str.toString(),line,data.srcCode.getPosition());
 		else if(str.length()!=0) {
-			expr = data.factory.opString(expr, data.factory.createLitString(str.toString(),line,data.cfml.getPosition()));
+			expr = data.factory.opString(expr, data.factory.createLitString(str.toString(),line,data.srcCode.getPosition()));
 		}
         comments(data);
         
@@ -1091,32 +1091,32 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private LitDouble number(ExprData data) throws TemplateException {
 		// check first character is a number literal representation
-		if(!(data.cfml.isCurrentBetween('0','9') || data.cfml.isCurrent('.'))) return null;
+		if(!(data.srcCode.isCurrentBetween('0','9') || data.srcCode.isCurrent('.'))) return null;
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		StringBuffer rtn=new StringBuffer();
 		
 		// get digit on the left site of the dot
-		if(data.cfml.isCurrent('.')) rtn.append('0');
+		if(data.srcCode.isCurrent('.')) rtn.append('0');
 		else rtn.append(digit(data));
 		// read dot if exist
-		if(data.cfml.forwardIfCurrent('.')) {
+		if(data.srcCode.forwardIfCurrent('.')) {
 			rtn.append('.');
 			String rightSite=digit(data);
-			if(rightSite.length()> 0 && data.cfml.forwardIfCurrent('e')) {
+			if(rightSite.length()> 0 && data.srcCode.forwardIfCurrent('e')) {
 				Boolean expOp=null;
-				if(data.cfml.forwardIfCurrent('+')) expOp=Boolean.TRUE;
-				else if(data.cfml.forwardIfCurrent('-')) expOp=Boolean.FALSE;
+				if(data.srcCode.forwardIfCurrent('+')) expOp=Boolean.TRUE;
+				else if(data.srcCode.forwardIfCurrent('-')) expOp=Boolean.FALSE;
 				
-				if(data.cfml.isCurrentBetween('0','9')) {
+				if(data.srcCode.isCurrentBetween('0','9')) {
 					if(expOp==Boolean.FALSE) rightSite+="e-";
 					else if(expOp==Boolean.TRUE) rightSite+="e+";
 					else rightSite+="e";
 			        rightSite+=digit(data);
 			    }
 			    else {
-			    	if(expOp!=null) data.cfml.previous();
-			        data.cfml.previous();
+			    	if(expOp!=null) data.srcCode.previous();
+			        data.srcCode.previous();
 			    }
 			}
 			// read right side of the dot
@@ -1127,9 +1127,9 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
         
 		try {
-			return data.factory.createLitDouble(Caster.toDoubleValue(rtn.toString()),line,data.cfml.getPosition());
+			return data.factory.createLitDouble(Caster.toDoubleValue(rtn.toString()),line,data.srcCode.getPosition());
 		} catch (CasterException e) {
-			throw new TemplateException(data.cfml,e.getMessage());
+			throw new TemplateException(data.srcCode,e.getMessage());
 		}
 		
 	}
@@ -1145,10 +1145,10 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private String digit(ExprData data) {
 		String rtn="";
-		while (data.cfml.isValidIndex()) {
-			if(!data.cfml.isCurrentBetween('0','9'))break;
-			rtn+=data.cfml.getCurrentLower();
-			data.cfml.next();
+		while (data.srcCode.isValidIndex()) {
+			if(!data.srcCode.isCurrentBetween('0','9'))break;
+			rtn+=data.srcCode.getCurrentLower();
+			data.srcCode.next();
 		}
 		return rtn;
 	}
@@ -1171,17 +1171,17 @@ public abstract class AbstrCFMLExprTransformer {
 	    
 	    
 		// get First Element of the Variable
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		Identifier id = identifier(data,false,true);
 		if(id == null) {
-		    if (!data.cfml.forwardIfCurrent('(')) return null;
+		    if (!data.srcCode.forwardIfCurrent('(')) return null;
 		    
             comments(data);
 			Expression expr = assignOp(data);
 
-			if (!data.cfml.forwardIfCurrent(')'))
+			if (!data.srcCode.forwardIfCurrent(')'))
 				throw new TemplateException(
-					data.cfml,
+					data.srcCode,
 					"Invalid Syntax Closing [)] not found");
             comments(data);
             return expr;//subDynamic(expr);
@@ -1194,15 +1194,15 @@ public abstract class AbstrCFMLExprTransformer {
 		// Boolean constant 
 		if(id.getString().equalsIgnoreCase("TRUE"))	{// || name.equals("YES"))	{
 			comments(data);
-			return id.getFactory().createLitBoolean(true,line,data.cfml.getPosition());
+			return id.getFactory().createLitBoolean(true,line,data.srcCode.getPosition());
 		}
 		else if(id.getString().equalsIgnoreCase("FALSE"))	{// || name.equals("NO"))	{
 			comments(data);
-			return id.getFactory().createLitBoolean(false,line,data.cfml.getPosition());
+			return id.getFactory().createLitBoolean(false,line,data.srcCode.getPosition());
 		}
 		else if(NullSupportHelper.full() && id.getString().equalsIgnoreCase("NULL"))	{
 			comments(data);
-			return id.getFactory().createNull(line,data.cfml.getPosition());
+			return id.getFactory().createNull(line,data.srcCode.getPosition());
 		}
 		
 		// Extract Scope from the Variable
@@ -1210,16 +1210,16 @@ public abstract class AbstrCFMLExprTransformer {
 		//Position l=data.cfml.getPosition();
 		var = startElement(data,id,line);
 		var.setStart(line);
-		var.setEnd(data.cfml.getPosition());
+		var.setEnd(data.srcCode.getPosition());
 		return var;
 	}
 	
 
 	
 	private Expression json(ExprData data,FunctionLibFunction flf, char start, char end) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent(start))return null;
+		if(!data.srcCode.forwardIfCurrent(start))return null;
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		BIF bif=new BIF(data.factory,flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
@@ -1228,26 +1228,26 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		do {
 			comments(data);
-			if (data.cfml.isCurrent(end))break;
+			if (data.srcCode.isCurrent(end))break;
 			
 			bif.addArgument(functionArgument(data,data.settings.dotNotationUpper));
 			comments(data);
 		} 
-		while (data.cfml.forwardIfCurrent(','));
+		while (data.srcCode.forwardIfCurrent(','));
 		comments(data);
 			
-		if (!data.cfml.forwardIfCurrent(end))
-			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+end+"] not found");
+		if (!data.srcCode.forwardIfCurrent(end))
+			throw new TemplateException(data.srcCode,"Invalid Syntax Closing ["+end+"] not found");
 		comments(data);
-		Variable var=data.factory.createVariable(line,data.cfml.getPosition());
+		Variable var=data.factory.createVariable(line,data.srcCode.getPosition());
 		var.addMember(bif);
 		return var;
 	}
 	
 	private Expression closure(ExprData data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("function",'('))return null;
-		data.cfml.previous();
-		return new ClosureAsExpression((Closure) closurePart(data, "closure_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.cfml.getPosition(),true));
+		if(!data.srcCode.forwardIfCurrent("function",'('))return null;
+		data.srcCode.previous();
+		return new ClosureAsExpression((Closure) closurePart(data, "closure_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.srcCode.getPosition(),true));
 	}
 	
 	protected  abstract Function closurePart(ExprData data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException;
@@ -1271,30 +1271,30 @@ public abstract class AbstrCFMLExprTransformer {
 	    String name=null;
 	    Invoker invoker=null;
 		// Loop over nested Variables
-		while (data.cfml.isValidIndex()) {
+		while (data.srcCode.isValidIndex()) {
 			ExprString nameProp = null,namePropUC = null;
 			// .
-			if (data.cfml.forwardIfCurrent('.')) {
+			if (data.srcCode.forwardIfCurrent('.')) {
 				// Extract next Var String
                 comments(data);
-                Position line=data.cfml.getPosition();
+                Position line=data.srcCode.getPosition();
                 name = identifier(data,true);
 				if(name==null) 
-					throw new TemplateException(data.cfml, "Invalid identifier");
+					throw new TemplateException(data.srcCode, "Invalid identifier");
                 comments(data);
-				nameProp=Identifier.toIdentifier(data.factory,name,line,data.cfml.getPosition());
-				namePropUC=Identifier.toIdentifier(data.factory,name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line,data.cfml.getPosition());
+				nameProp=Identifier.toIdentifier(data.factory,name,line,data.srcCode.getPosition());
+				namePropUC=Identifier.toIdentifier(data.factory,name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line,data.srcCode.getPosition());
 			}
 			// []
-			else if (data.cfml.forwardIfCurrent('[')) {
+			else if (data.srcCode.forwardIfCurrent('[')) {
 				
 				// get Next Var
 				nameProp = structElement(data);
 				namePropUC=nameProp;
 				// Valid Syntax ???
-				if (!data.cfml.forwardIfCurrent(']'))
+				if (!data.srcCode.forwardIfCurrent(']'))
 					throw new TemplateException(
-						data.cfml,
+						data.srcCode,
 						"Invalid Syntax Closing []] not found");
 			}
 			/* / :
@@ -1324,7 +1324,7 @@ public abstract class AbstrCFMLExprTransformer {
             	expr=invoker;
             }
 			// Method
-			if (data.cfml.isCurrent('(')) {
+			if (data.srcCode.isCurrent('(')) {
 				if(nameProp==null && name!=null)nameProp=Identifier.toIdentifier(data.factory,name, Identifier.CASE_ORIGNAL,null,null);// properly this is never used
 				invoker.addMember(getFunctionMember(data,nameProp, false));
 			}
@@ -1351,7 +1351,7 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		if(!"new".equalsIgnoreCase(ls.getString())) return expr;
 		
-		int start=data.cfml.getPos();
+		int start=data.srcCode.getPos();
 	    String name=null;
 	    
 	    
@@ -1364,12 +1364,12 @@ public abstract class AbstrCFMLExprTransformer {
 			StringBuilder fullName=new StringBuilder();
 			fullName.append(name);
 			// Loop over addional identifier
-			while (data.cfml.isValidIndex()) {
-				if (data.cfml.forwardIfCurrent('.')) {
+			while (data.srcCode.isValidIndex()) {
+				if (data.srcCode.forwardIfCurrent('.')) {
 					comments(data);
 	                name = identifier(data,true);
 					if(name==null) {
-						data.cfml.setPos(start);
+						data.srcCode.setPos(start);
 						return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
 					}
 					fullName.append('.');
@@ -1388,14 +1388,14 @@ public abstract class AbstrCFMLExprTransformer {
 				exprName=data.factory.toExprString(str);
 			}
 			else {
-				data.cfml.setPos(start);
+				data.srcCode.setPos(start);
 				return expr;
 			}
 		}
 
         comments(data);
         
-        if (data.cfml.isCurrent('(')) {
+        if (data.srcCode.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier(data.factory,"_createComponent",Identifier.CASE_ORIGNAL,null,null), true);
 			func.addArgument(new Argument(exprName,"string"));
 			Variable v=expr.getFactory().createVariable(expr.getStart(),expr.getEnd());
@@ -1403,7 +1403,7 @@ public abstract class AbstrCFMLExprTransformer {
             comments(data);
 			return v;
 		} 
-        data.cfml.setPos(start);
+        data.srcCode.setPos(start);
         return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
 		
 	}
@@ -1428,10 +1428,10 @@ public abstract class AbstrCFMLExprTransformer {
 		
 		
 		// check function
-		if (data.cfml.isCurrent('(')) {
+		if (data.srcCode.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,name, true);
 			
-			Variable var=name.getFactory().createVariable(line,data.cfml.getPosition());
+			Variable var=name.getFactory().createVariable(line,data.srcCode.getPosition());
 			var.addMember(func);
             comments(data);
 			return var;
@@ -1442,7 +1442,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if(var!=null) return var;
 		
 		// undefined variable
-		var=name.getFactory().createVariable(line,data.cfml.getPosition());
+		var=name.getFactory().createVariable(line,data.srcCode.getPosition());
 		var.addMember(data.factory.createDataMember(name));
 
         comments(data);
@@ -1465,24 +1465,24 @@ public abstract class AbstrCFMLExprTransformer {
 	private Variable scope(ExprData data,Identifier id, Position line) throws TemplateException {
 		String idStr=id.getUpper();
 		if(data.ignoreScopes)return null;
-		if (idStr.equals("CGI")) 				return data.factory.createVariable(Scope.SCOPE_CGI,line,data.cfml.getPosition());
-		else if (idStr.equals("ARGUMENTS"))  	return data.factory.createVariable(Scope.SCOPE_ARGUMENTS,line,data.cfml.getPosition());
-		else if (idStr.equals("REQUEST"))		return data.factory.createVariable(Scope.SCOPE_REQUEST,line,data.cfml.getPosition());
-		else if (idStr.equals("SESSION"))		return data.factory.createVariable(Scope.SCOPE_SESSION,line,data.cfml.getPosition());
-		else if (idStr.equals("APPLICATION"))	return data.factory.createVariable(Scope.SCOPE_APPLICATION,line,data.cfml.getPosition());
-		else if (idStr.equals("VARIABLES"))		return data.factory.createVariable(Scope.SCOPE_VARIABLES,line,data.cfml.getPosition());
-		else if (idStr.equals("FORM")) 			return data.factory.createVariable(Scope.SCOPE_FORM,line,data.cfml.getPosition());
-		else if (idStr.equals("URL"))			return data.factory.createVariable(Scope.SCOPE_URL,line,data.cfml.getPosition());
-		else if (idStr.equals("SERVER")) 		return data.factory.createVariable(Scope.SCOPE_SERVER,line,data.cfml.getPosition());
-		else if (idStr.equals("CLIENT"))		return data.factory.createVariable(Scope.SCOPE_CLIENT,line,data.cfml.getPosition());
-		else if (idStr.equals("COOKIE"))		return data.factory.createVariable(Scope.SCOPE_COOKIE,line,data.cfml.getPosition());
-		else if (idStr.equals("CLUSTER"))		return data.factory.createVariable(Scope.SCOPE_CLUSTER,line,data.cfml.getPosition());
-		else if (idStr.equals("LOCAL"))			return data.factory.createVariable(Scope.SCOPE_LOCAL,line,data.cfml.getPosition());
+		if (idStr.equals("CGI")) 				return data.factory.createVariable(Scope.SCOPE_CGI,line,data.srcCode.getPosition());
+		else if (idStr.equals("ARGUMENTS"))  	return data.factory.createVariable(Scope.SCOPE_ARGUMENTS,line,data.srcCode.getPosition());
+		else if (idStr.equals("REQUEST"))		return data.factory.createVariable(Scope.SCOPE_REQUEST,line,data.srcCode.getPosition());
+		else if (idStr.equals("SESSION"))		return data.factory.createVariable(Scope.SCOPE_SESSION,line,data.srcCode.getPosition());
+		else if (idStr.equals("APPLICATION"))	return data.factory.createVariable(Scope.SCOPE_APPLICATION,line,data.srcCode.getPosition());
+		else if (idStr.equals("VARIABLES"))		return data.factory.createVariable(Scope.SCOPE_VARIABLES,line,data.srcCode.getPosition());
+		else if (idStr.equals("FORM")) 			return data.factory.createVariable(Scope.SCOPE_FORM,line,data.srcCode.getPosition());
+		else if (idStr.equals("URL"))			return data.factory.createVariable(Scope.SCOPE_URL,line,data.srcCode.getPosition());
+		else if (idStr.equals("SERVER")) 		return data.factory.createVariable(Scope.SCOPE_SERVER,line,data.srcCode.getPosition());
+		else if (idStr.equals("CLIENT"))		return data.factory.createVariable(Scope.SCOPE_CLIENT,line,data.srcCode.getPosition());
+		else if (idStr.equals("COOKIE"))		return data.factory.createVariable(Scope.SCOPE_COOKIE,line,data.srcCode.getPosition());
+		else if (idStr.equals("CLUSTER"))		return data.factory.createVariable(Scope.SCOPE_CLUSTER,line,data.srcCode.getPosition());
+		else if (idStr.equals("LOCAL"))			return data.factory.createVariable(Scope.SCOPE_LOCAL,line,data.srcCode.getPosition());
 		else if (idStr.equals("VAR")) {
 			Identifier _id = identifier(data,false,true);
 			if(_id!=null){
 				comments(data);
-				Variable local = data.factory.createVariable(ScopeSupport.SCOPE_VAR,line,data.cfml.getPosition());
+				Variable local = data.factory.createVariable(ScopeSupport.SCOPE_VAR,line,data.srcCode.getPosition());
 				if(!"LOCAL".equalsIgnoreCase(_id.getString()))local.addMember(data.factory.createDataMember(_id));
 				else {
 					local.ignoredFirstMember(true);
@@ -1503,40 +1503,40 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return Identifier.
 	*/
 	protected Identifier identifier(ExprData data,boolean firstCanBeNumber,boolean upper) {
-		Position start = data.cfml.getPosition();
-		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
+		Position start = data.srcCode.getPosition();
+		if(!data.srcCode.isCurrentLetter() && !data.srcCode.isCurrentSpecial() ) {
 		    if(!firstCanBeNumber) return null;
-            else if(!data.cfml.isCurrentBetween('0','9'))return null;
+            else if(!data.srcCode.isCurrentBetween('0','9'))return null;
         }
 		do {
-			data.cfml.next();
-			if(!(data.cfml.isCurrentLetter()
-				|| data.cfml.isCurrentBetween('0','9')
-				|| data.cfml.isCurrentSpecial())) {
+			data.srcCode.next();
+			if(!(data.srcCode.isCurrentLetter()
+				|| data.srcCode.isCurrentBetween('0','9')
+				|| data.srcCode.isCurrentSpecial())) {
 					break;
 				}
 		}
-		while (data.cfml.isValidIndex());
-		return Identifier.toIdentifier(data.factory,data.cfml.substring(start.pos,data.cfml.getPos()-start.pos), 
-				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start,data.cfml.getPosition());
+		while (data.srcCode.isValidIndex());
+		return Identifier.toIdentifier(data.factory,data.srcCode.substring(start.pos,data.srcCode.getPos()-start.pos), 
+				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start,data.srcCode.getPosition());
 	}
 	
 	protected String identifier(ExprData data,boolean firstCanBeNumber) {
-		int start = data.cfml.getPos();
-		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
+		int start = data.srcCode.getPos();
+		if(!data.srcCode.isCurrentLetter() && !data.srcCode.isCurrentSpecial() ) {
 		    if(!firstCanBeNumber) return null;
-            else if(!data.cfml.isCurrentBetween('0','9'))return null;
+            else if(!data.srcCode.isCurrentBetween('0','9'))return null;
         }
 		do {
-			data.cfml.next();
-			if(!(data.cfml.isCurrentLetter()
-				|| data.cfml.isCurrentBetween('0','9')
-				|| data.cfml.isCurrentSpecial())) {
+			data.srcCode.next();
+			if(!(data.srcCode.isCurrentLetter()
+				|| data.srcCode.isCurrentBetween('0','9')
+				|| data.srcCode.isCurrentSpecial())) {
 					break;
 				}
 		}
-		while (data.cfml.isValidIndex());
-		return data.cfml.substring(start,data.cfml.getPos()-start);
+		while (data.srcCode.isValidIndex());
+		return data.srcCode.substring(start,data.srcCode.getPos()-start);
 	}
 
 	/**
@@ -1578,7 +1578,7 @@ public abstract class AbstrCFMLExprTransformer {
 		FunctionLibFunction flf = null;
 		if (checkLibrary) {
 			if(!(name instanceof Literal))
-				throw new TemplateException(data.cfml,"syntax error"); // should never happen!
+				throw new TemplateException(data.srcCode,"syntax error"); // should never happen!
 			
 			for (int i = 0; i < data.flibs.length; i++) {
 				flf = data.flibs[i].getFunction(((Literal)name).getString());
@@ -1629,11 +1629,11 @@ public abstract class AbstrCFMLExprTransformer {
 		}
 		int count = 0;
 		do {
-			data.cfml.next();
+			data.srcCode.next();
             comments(data);
 
 			// finish
-			if (count==0 && data.cfml.isCurrent(')'))
+			if (count==0 && data.srcCode.isCurrent(')'))
 				break;
 
 			// too many Attributes
@@ -1646,7 +1646,7 @@ public abstract class AbstrCFMLExprTransformer {
 				if(isDynamic) {
 					if(max!=-1 && max <= count)
 						throw new TemplateException(
-							data.cfml,
+							data.srcCode,
 							"too many Attributes in function [" + ASMUtil.display(name) + "]");
 				}
 			// Fix
@@ -1654,7 +1654,7 @@ public abstract class AbstrCFMLExprTransformer {
 					if(libLen <= count){
 						
 						TemplateException te = new TemplateException(
-							data.cfml,
+							data.srcCode,
 							"too many Attributes in function call [" + ASMUtil.display(name) + "]");
 						UDFUtil.addFunctionDoc(te, flf);
 						throw te;
@@ -1675,15 +1675,15 @@ public abstract class AbstrCFMLExprTransformer {
 
             comments(data);
 			count++;
-			if (data.cfml.isCurrent(')'))
+			if (data.srcCode.isCurrent(')'))
 				break;
 		} 
-		while (data.cfml.isCurrent(','));
+		while (data.srcCode.isCurrent(','));
 
 		// end with ) ??		
-		if (!data.cfml.forwardIfCurrent(')'))
+		if (!data.srcCode.forwardIfCurrent(')'))
 			throw new TemplateException(
-				data.cfml,
+				data.srcCode,
 				"Invalid Syntax Closing [)] for function ["
 					+ ASMUtil.display(name)
 					+ "] not found");
@@ -1691,7 +1691,7 @@ public abstract class AbstrCFMLExprTransformer {
 		// check min attributes
 		if (checkLibrary && flf.getArgMin() > count){
 			TemplateException te = new TemplateException(
-				data.cfml,
+				data.srcCode,
 				"too few attributes in function [" + ASMUtil.display(name) + "]");
 			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) UDFUtil.addFunctionDoc(te, flf);
 			throw te;
@@ -1719,7 +1719,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @throws TemplateException 
 	*/
 	private Expression sharp(ExprData data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent('#'))
+		if(!data.srcCode.forwardIfCurrent('#'))
 			return null;
 		Expression expr;
         comments(data);
@@ -1728,10 +1728,10 @@ public abstract class AbstrCFMLExprTransformer {
 		expr = assignOp(data);
 		data.allowLowerThan=old;
         comments(data);
-		if (!data.cfml.forwardIfCurrent('#'))
+		if (!data.srcCode.forwardIfCurrent('#'))
 			throw new TemplateException(
-				data.cfml,
-				"Syntax Error, Invalid Construct "+(data.cfml.length()<30?data.cfml.toString():""));
+				data.srcCode,
+				"Syntax Error, Invalid Construct "+(data.srcCode.length()<30?data.srcCode.toString():""));
         comments(data);
 		return expr;
 	}
@@ -1743,23 +1743,23 @@ public abstract class AbstrCFMLExprTransformer {
 	 */
 	private Expression simple(ExprData data,String[] breakConditions) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
-		Position line = data.cfml.getPosition();
-		outer:while(data.cfml.isValidIndex()) {
+		Position line = data.srcCode.getPosition();
+		outer:while(data.srcCode.isValidIndex()) {
 			for(int i=0;i<breakConditions.length;i++){
-				if(data.cfml.isCurrent(breakConditions[i]))break outer;
+				if(data.srcCode.isCurrent(breakConditions[i]))break outer;
 			}
 			
 			//if(data.cfml.isCurrent(' ') || data.cfml.isCurrent('>') || data.cfml.isCurrent("/>")) break;
 			
-			if(data.cfml.isCurrent('"') || data.cfml.isCurrent('#') || data.cfml.isCurrent('\'')) {
-				throw new TemplateException(data.cfml,"simple attribute value can't contain ["+data.cfml.getCurrent()+"]");
+			if(data.srcCode.isCurrent('"') || data.srcCode.isCurrent('#') || data.srcCode.isCurrent('\'')) {
+				throw new TemplateException(data.srcCode,"simple attribute value can't contain ["+data.srcCode.getCurrent()+"]");
 			}
-			sb.append(data.cfml.getCurrent());
-			data.cfml.next();
+			sb.append(data.srcCode.getCurrent());
+			data.srcCode.next();
 		}
         comments(data);
 		
-		return data.factory.createLitString(sb.toString(),line,data.cfml.getPosition());
+		return data.factory.createLitString(sb.toString(),line,data.srcCode.getPosition());
 	}
     
 
@@ -1772,8 +1772,8 @@ public abstract class AbstrCFMLExprTransformer {
      * @throws TemplateException
      */
     protected void comments(ExprData data) throws TemplateException {
-        data.cfml.removeSpace();
-        while(comment(data)){data.cfml.removeSpace();}
+        data.srcCode.removeSpace();
+        while(comment(data)){data.srcCode.removeSpace();}
     }
     
     /**
@@ -1785,7 +1785,7 @@ public abstract class AbstrCFMLExprTransformer {
      * @throws TemplateException
      */
     private boolean comment(ExprData data) throws TemplateException {
-        if(singleLineComment(data.cfml) || multiLineComment(data) || CFMLTransformer.comment(data.cfml)) return true;
+        if(singleLineComment(data.srcCode) || multiLineComment(data) || CFMLTransformer.comment(data.srcCode)) return true;
         return false;
     }
 
@@ -1798,7 +1798,7 @@ public abstract class AbstrCFMLExprTransformer {
      * @throws TemplateException
      */
     private boolean multiLineComment(ExprData data) throws TemplateException {
-       CFMLString cfml = data.cfml;
+       SourceCode cfml = data.srcCode;
     	if(!cfml.forwardIfCurrent("/*")) return false;
         int pos=cfml.getPos();
         boolean isDocComment=cfml.isCurrent('*');
@@ -1826,7 +1826,7 @@ public abstract class AbstrCFMLExprTransformer {
      * <code>{?-"\n"} "\n";</code>
      * @return bool Wurde ein Kommentar entfernt?
      */
-    private boolean singleLineComment(CFMLString cfml) {
+    private boolean singleLineComment(SourceCode cfml) {
         if(!cfml.forwardIfCurrent("//")) return false;
         return cfml.nextLine();
     }

@@ -20,17 +20,17 @@ public final class PageEncoding extends EvaluatorSupport {
     	// encoding
     	String str=ASMUtil.getAttributeString(tag, "charset",null);
         if(str==null)
-        	throw new TemplateException(data.cfml,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
+        	throw new TemplateException(data.srcCode,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
         
         Charset cs=CharsetUtil.toCharset(str);
-        if(cs.equals(data.cfml.getCharset()) || CharsetUtil.UTF8.equals(data.cfml.getCharset())) {
+        if(cs.equals(data.srcCode.getCharset()) || CharsetUtil.UTF8.equals(data.srcCode.getCharset())) {
         	cs=null;
         }
         
         // 
     	
     	if(cs!=null){
-    		throw new ProcessingDirectiveException(data.cfml,cs,null,data.cfml.getWriteLog());
+    		throw new ProcessingDirectiveException(data.srcCode,cs,null,data.srcCode.getWriteLog());
     	}
     	
     	

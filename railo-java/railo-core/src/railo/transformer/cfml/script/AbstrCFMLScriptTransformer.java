@@ -55,7 +55,7 @@ import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.library.tag.TagLibTagScript;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 
 /**	
@@ -83,23 +83,23 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 
 	private static EndCondition SEMI_BLOCK=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent('{') || data.cfml.isCurrent(';');
+			return data.srcCode.isCurrent('{') || data.srcCode.isCurrent(';');
 		}
 	};
 	private static EndCondition SEMI=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent(';');
+			return data.srcCode.isCurrent(';');
 		}
 	};
 	private static EndCondition COMMA_ENDBRACKED=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent(',') || data.cfml.isCurrent(')');
+			return data.srcCode.isCurrent(',') || data.srcCode.isCurrent(')');
 		}
 	};
 	
 	private static EndCondition BRACKED=new EndCondition() {
 		public boolean isEnd(ExprData data) {
-			return data.cfml.isCurrent(')');
+			return data.srcCode.isCurrent(')');
 		}
 	};
 	
@@ -164,7 +164,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			statement(data,body);
 			comments(data);
 		}
-		while(data.cfml.isValidIndex() && !data.cfml.isCurrent('}'));
+		while(data.srcCode.isValidIndex() && !data.srcCode.isCurrent('}'));
 	}
 	
 	/** 
@@ -185,7 +185,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		data.context=context;
 		comments(data);
 		Statement child=null;
-		if(data.cfml.forwardIfCurrent(';')){return true;}
+		if(data.srcCode.forwardIfCurrent(';')){return true;}
 		else if((child=ifStatement(data))!=null) 				parent.addStatement(child);
 		else if((child=propertyStatement(data,parent))!=null)	parent.addStatement(child);
 		else if((child=paramStatement(data,parent))!=null)	parent.addStatement(child);
@@ -216,15 +216,15 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final Statement ifStatement(ExprData data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("if",'(')) return null;
+		if(!data.srcCode.forwardIfCurrent("if",'(')) return null;
 		
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		Body body=new BodyBase(data.factory);
 		Condition cont=new Condition(data.factory,condition(data),body,line,null);
 		
-		if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"if statement must end with a [)]");
+		if(!data.srcCode.forwardIfCurrent(')')) throw new TemplateException(data.srcCode,"if statement must end with a [)]");
 		// ex block
 		statement(data,body,CTX_IF);
 		// else if
@@ -237,7 +237,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			comments(data);
 		 }
 
-		cont.setEnd(data.cfml.getPosition());
+		cont.setEnd(data.srcCode.getPosition());
 		return cont;
 	}
 	
@@ -250,24 +250,24 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private  final boolean elseifStatement(ExprData data,Condition cont) throws TemplateException {
-		int pos=data.cfml.getPos();
-		if(!data.cfml.forwardIfCurrent("else")) return false;
+		int pos=data.srcCode.getPos();
+		if(!data.srcCode.forwardIfCurrent("else")) return false;
 		
 		comments(data);
-		if(!data.cfml.forwardIfCurrent("if",'(')) {
-			data.cfml.setPos(pos);
+		if(!data.srcCode.forwardIfCurrent("if",'(')) {
+			data.srcCode.setPos(pos);
 			return false;
 		}
 			
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		Body body=new BodyBase(data.factory);
 		Pair pair = cont.addElseIf(condition(data), body, line,null);
 
-		if(!data.cfml.forwardIfCurrent(')'))
-			throw new TemplateException(data.cfml,"else if statement must end with a [)]");
+		if(!data.srcCode.forwardIfCurrent(')'))
+			throw new TemplateException(data.srcCode,"else if statement must end with a [)]");
 		// ex block
 		statement(data,body,CTX_ELSE_IF);
-		pair.end=data.cfml.getPosition();
+		pair.end=data.srcCode.getPosition();
 		return true;
 	}
 	
@@ -281,29 +281,29 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * 
 	 */
 	private final boolean elseStatement(ExprData data,Condition cont) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("else",'{') && !data.cfml.forwardIfCurrent("else ") && !data.cfml.forwardIfCurrent("else",'/')) 
+		if(!data.srcCode.forwardIfCurrent("else",'{') && !data.srcCode.forwardIfCurrent("else ") && !data.srcCode.forwardIfCurrent("else",'/')) 
 			return false;
 
 		// start (
-		data.cfml.previous();
+		data.srcCode.previous();
 		// ex block
 		Body body=new BodyBase(data.factory);
-		Pair p = cont.setElse(body, data.cfml.getPosition(),null);
+		Pair p = cont.setElse(body, data.srcCode.getPosition(),null);
 		statement(data,body,CTX_ELSE);
-		p.end=data.cfml.getPosition();
+		p.end=data.srcCode.getPosition();
 		return true;
 	}
 	
 
 	private final boolean finallyStatement(ExprData data,TryCatchFinally tcf) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("finally",'{') && !data.cfml.forwardIfCurrent("finally ") && !data.cfml.forwardIfCurrent("finally",'/')) 
+		if(!data.srcCode.forwardIfCurrent("finally",'{') && !data.srcCode.forwardIfCurrent("finally ") && !data.srcCode.forwardIfCurrent("finally",'/')) 
 			return false;
 
 		// start (
-		data.cfml.previous();
+		data.srcCode.previous();
 		// ex block
 		Body body=new BodyBase(data.factory);
-		tcf.setFinally(body, data.cfml.getPosition());
+		tcf.setFinally(body, data.srcCode.getPosition());
 		statement(data,body,CTX_FINALLY);
 		
 		return true;
@@ -318,45 +318,45 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final While whileStatement(ExprData data) throws TemplateException {
-		int pos=data.cfml.getPos();
+		int pos=data.srcCode.getPos();
 		
 		// id
 		String id=variableDec(data, false);
 		if(id==null) {
-			data.cfml.setPos(pos);
+			data.srcCode.setPos(pos);
 			return null;
 		}
 		if(id.equalsIgnoreCase("while")){
 			id=null;
-			data.cfml.removeSpace();
-			if(!data.cfml.forwardIfCurrent('(')){
-				data.cfml.setPos(pos);
+			data.srcCode.removeSpace();
+			if(!data.srcCode.forwardIfCurrent('(')){
+				data.srcCode.setPos(pos);
 				return null;
 			}	
 		}
 		else {
-			data.cfml.removeSpace();
-			if(!data.cfml.forwardIfCurrent(':')){
-				data.cfml.setPos(pos);
+			data.srcCode.removeSpace();
+			if(!data.srcCode.forwardIfCurrent(':')){
+				data.srcCode.setPos(pos);
 				return null;
 			}
-			data.cfml.removeSpace();
+			data.srcCode.removeSpace();
 			
-			if(!data.cfml.forwardIfCurrent("while",'(')){
-				data.cfml.setPos(pos);
+			if(!data.srcCode.forwardIfCurrent("while",'(')){
+				data.srcCode.setPos(pos);
 				return null;
 			}
 		}
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		Body body=new BodyBase(data.factory);
 		While whil=new While(condition(data),body,line,null,id);
 		
-		if(!data.cfml.forwardIfCurrent(')'))
-			throw new TemplateException(data.cfml,"while statement must end with a [)]");
+		if(!data.srcCode.forwardIfCurrent(')'))
+			throw new TemplateException(data.srcCode,"while statement must end with a [)]");
 		
 		statement(data,body,CTX_WHILE);
-		whil.setEnd(data.cfml.getPosition());
+		whil.setEnd(data.srcCode.getPosition());
 		return whil;
 	}
 	
@@ -366,21 +366,21 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final Switch switchStatement(ExprData data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("switch",'('))
+		if(!data.srcCode.forwardIfCurrent("switch",'('))
 			return null;
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		comments(data);
 		Expression expr = super.expression(data);
 		comments(data);
 		// end )
-		if(!data.cfml.forwardIfCurrent(')'))
-			throw new TemplateException(data.cfml,"switch statement must end with a [)]");
+		if(!data.srcCode.forwardIfCurrent(')'))
+			throw new TemplateException(data.srcCode,"switch statement must end with a [)]");
 		comments(data);
 
-		if(!data.cfml.forwardIfCurrent('{'))
-			throw new TemplateException(data.cfml,"switch statement must have a starting  [{]");
+		if(!data.srcCode.forwardIfCurrent('{'))
+			throw new TemplateException(data.srcCode,"switch statement must have a starting  [{]");
 
 		Switch swit=new Switch(expr,line,null);
 		
@@ -401,9 +401,9 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		  
 		  
 		// }
-		if(!data.cfml.forwardIfCurrent('}'))
-			throw new TemplateException(data.cfml,"invalid construct in switch statement");
-		swit.setEnd(data.cfml.getPosition());
+		if(!data.srcCode.forwardIfCurrent('}'))
+			throw new TemplateException(data.srcCode,"invalid construct in switch statement");
+		swit.setEnd(data.srcCode.getPosition());
 		return swit;
 	}
 	
@@ -413,7 +413,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final boolean caseStatement(ExprData data,Switch swit) throws TemplateException {
-		if(!data.cfml.forwardIfCurrentAndNoWordAfter("case"))
+		if(!data.srcCode.forwardIfCurrentAndNoWordAfter("case"))
 			return false;
 		
 		//int line=data.cfml.getLine();		
@@ -421,8 +421,8 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		Expression expr = super.expression(data);
 		comments(data);
 		
-		if(!data.cfml.forwardIfCurrent(':'))
-			throw new TemplateException(data.cfml,"case body must start with [:]");
+		if(!data.srcCode.forwardIfCurrent(':'))
+			throw new TemplateException(data.srcCode,"case body must start with [:]");
 		
 		Body body=new BodyBase(data.factory);
 		switchBlock(data,body);
@@ -436,7 +436,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final boolean defaultStatement(ExprData data,Switch swit) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("default",':'))
+		if(!data.srcCode.forwardIfCurrent("default",':'))
 			return false;
 		
 		//int line=data.cfml.getLine();
@@ -453,9 +453,9 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final void switchBlock(ExprData data,Body body) throws TemplateException {
-		while(data.cfml.isValidIndex()) {
+		while(data.srcCode.isValidIndex()) {
 			comments(data);
-			if(data.cfml.isCurrent("case ") || data.cfml.isCurrent("default",':') || data.cfml.isCurrent('}')) 
+			if(data.srcCode.isCurrent("case ") || data.srcCode.isCurrent("default",':') || data.srcCode.isCurrent('}')) 
 				return;
 			statement(data,body,CTX_SWITCH);
 		}
@@ -471,40 +471,40 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final DoWhile doStatement(ExprData data) throws TemplateException {
-		int pos=data.cfml.getPos();
+		int pos=data.srcCode.getPos();
 		
 		// id
 		String id=variableDec(data, false);
 		if(id==null) {
-			data.cfml.setPos(pos);
+			data.srcCode.setPos(pos);
 			return null;
 		}
 		if(id.equalsIgnoreCase("do")){
 			id=null;
-			if(!data.cfml.isCurrent('{') && !data.cfml.isCurrent(' ') && !data.cfml.isCurrent('/')) {
-				data.cfml.setPos(pos);
+			if(!data.srcCode.isCurrent('{') && !data.srcCode.isCurrent(' ') && !data.srcCode.isCurrent('/')) {
+				data.srcCode.setPos(pos);
 				return null;
 			}	
 		}
 		else {
-			data.cfml.removeSpace();
-			if(!data.cfml.forwardIfCurrent(':')){
-				data.cfml.setPos(pos);
+			data.srcCode.removeSpace();
+			if(!data.srcCode.forwardIfCurrent(':')){
+				data.srcCode.setPos(pos);
 				return null;
 			}
-			data.cfml.removeSpace();
+			data.srcCode.removeSpace();
 			
-			if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/')) {
-				data.cfml.setPos(pos);
+			if(!data.srcCode.forwardIfCurrent("do",'{') && !data.srcCode.forwardIfCurrent("do ") && !data.srcCode.forwardIfCurrent("do",'/')) {
+				data.srcCode.setPos(pos);
 				return null;
 			}
-			data.cfml.previous();
+			data.srcCode.previous();
 		}
 		
 		//if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
 		//	return null;
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		Body body=new BodyBase(data.factory);
 		
 		//data.cfml.previous();
@@ -512,13 +512,13 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		comments(data);
-		if(!data.cfml.forwardIfCurrent("while",'('))
-			throw new TemplateException(data.cfml,"do statement must have a while at the end");
+		if(!data.srcCode.forwardIfCurrent("while",'('))
+			throw new TemplateException(data.srcCode,"do statement must have a while at the end");
 		
-		DoWhile doWhile=new DoWhile(condition(data),body,line,data.cfml.getPosition(),id);
+		DoWhile doWhile=new DoWhile(condition(data),body,line,data.srcCode.getPosition(),id);
 		
-		if(!data.cfml.forwardIfCurrent(')'))
-			throw new TemplateException(data.cfml,"do statement must end with a [)]");
+		if(!data.srcCode.forwardIfCurrent(')'))
+			throw new TemplateException(data.srcCode,"do statement must end with a [)]");
 		
 		
 		return doWhile;
@@ -534,32 +534,32 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 */
 	private final Statement forStatement(ExprData data) throws TemplateException {
 		
-int pos=data.cfml.getPos();
+int pos=data.srcCode.getPos();
 		
 		// id
 		String id=variableDec(data, false);
 		if(id==null) {
-			data.cfml.setPos(pos);
+			data.srcCode.setPos(pos);
 			return null;
 		}
 		if(id.equalsIgnoreCase("for")){
 			id=null;
-			data.cfml.removeSpace();
-			if(!data.cfml.forwardIfCurrent('(')){
-				data.cfml.setPos(pos);
+			data.srcCode.removeSpace();
+			if(!data.srcCode.forwardIfCurrent('(')){
+				data.srcCode.setPos(pos);
 				return null;
 			}	
 		}
 		else {
-			data.cfml.removeSpace();
-			if(!data.cfml.forwardIfCurrent(':')){
-				data.cfml.setPos(pos);
+			data.srcCode.removeSpace();
+			if(!data.srcCode.forwardIfCurrent(':')){
+				data.srcCode.setPos(pos);
 				return null;
 			}
-			data.cfml.removeSpace();
+			data.srcCode.removeSpace();
 			
-			if(!data.cfml.forwardIfCurrent("for",'(')){
-				data.cfml.setPos(pos);
+			if(!data.srcCode.forwardIfCurrent("for",'(')){
+				data.srcCode.setPos(pos);
 				return null;
 			}
 		}
@@ -574,61 +574,61 @@ int pos=data.cfml.getPos();
 		
 		Expression left=null;
 		Body body=new BodyBase(data.factory);
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		comments(data);
-		if(!data.cfml.isCurrent(';')) {
+		if(!data.srcCode.isCurrent(';')) {
 			// left
 			left=expression(data);
 			comments(data);
 		}
 		// middle for
-			if(data.cfml.forwardIfCurrent(';')) {
+			if(data.srcCode.forwardIfCurrent(';')) {
 
 				Expression cont=null;
 				Expression update=null;
 				// condition
 					comments(data);
-					if(!data.cfml.isCurrent(';')) {
+					if(!data.srcCode.isCurrent(';')) {
 						cont=condition(data);
 						comments(data);
 					}
 				// middle
-				if(!data.cfml.forwardIfCurrent(';'))
-					throw new TemplateException(data.cfml,"invalid syntax in for statement");
+				if(!data.srcCode.forwardIfCurrent(';'))
+					throw new TemplateException(data.srcCode,"invalid syntax in for statement");
 				// update
 					comments(data);
-					if(!data.cfml.isCurrent(')')) {
+					if(!data.srcCode.isCurrent(')')) {
 						update=expression(data);
 						comments(data);
 					}
 				// start )
-				if(!data.cfml.forwardIfCurrent(')'))
-					throw new TemplateException(data.cfml,"invalid syntax in for statement, for statement must end with a [)]");
+				if(!data.srcCode.forwardIfCurrent(')'))
+					throw new TemplateException(data.srcCode,"invalid syntax in for statement, for statement must end with a [)]");
 				// ex block
 				statement(data,body,CTX_FOR);
 		
-				return new For(data.factory,left,cont,update,body,line,data.cfml.getPosition(),id);					
+				return new For(data.factory,left,cont,update,body,line,data.srcCode.getPosition(),id);					
 			}
 		// middle foreach
-			else if(data.cfml.forwardIfCurrent("in")) {
+			else if(data.srcCode.forwardIfCurrent("in")) {
 				// condition
 					comments(data);
 					Expression value = expression(data);
 					comments(data);
-				if(!data.cfml.forwardIfCurrent(')'))
-					throw new TemplateException(data.cfml,"invalid syntax in for statement, for statement must end with a [)]");
+				if(!data.srcCode.forwardIfCurrent(')'))
+					throw new TemplateException(data.srcCode,"invalid syntax in for statement, for statement must end with a [)]");
 				
 				// ex block
 				statement(data,body,CTX_FOR);
 				if(!(left instanceof Variable))
-					throw new TemplateException(data.cfml,"invalid syntax in for statement, left value is invalid");
+					throw new TemplateException(data.srcCode,"invalid syntax in for statement, left value is invalid");
 				
 				if(!(value instanceof Variable))
-					throw new TemplateException(data.cfml,"invalid syntax in for statement, right value is invalid");
-				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getPosition(),id);	
+					throw new TemplateException(data.srcCode,"invalid syntax in for statement, right value is invalid");
+				return new ForEach((Variable)left,(Variable)value,body,line,data.srcCode.getPosition(),id);	
 			}
 			else 
-				throw new TemplateException(data.cfml,"invalid syntax in for statement");
+				throw new TemplateException(data.srcCode,"invalid syntax in for statement");
 	}
 	
 	/**
@@ -640,12 +640,12 @@ int pos=data.cfml.getPos();
 	 * @throws TemplateException
 	 */
 	private final Function funcStatement(ExprData data,Body parent) throws TemplateException {
-		int pos=data.cfml.getPos();
+		int pos=data.srcCode.getPos();
 		
 		// access modifier
 		String strAccess=variableDec(data, false);
 		if(strAccess==null) {
-			data.cfml.setPos(pos);
+			data.srcCode.setPos(pos);
 			return null;
 		}
 		
@@ -654,7 +654,7 @@ int pos=data.cfml.getPos();
 			strAccess=null;
 			comments(data);
 			// only happens when return type is function
-			if(data.cfml.forwardIfCurrent("function ")){
+			if(data.srcCode.forwardIfCurrent("function ")){
 				rtnType="function";
 				comments(data);
 			}
@@ -663,21 +663,21 @@ int pos=data.cfml.getPos();
 			comments(data);
 			rtnType=variableDec(data, false);
 			if(rtnType==null){
-				data.cfml.setPos(pos);
+				data.srcCode.setPos(pos);
 				return null;
 			}
 			if(rtnType.equalsIgnoreCase("FUNCTION")){
 				comments(data);
 				// only happens when return type is function
-				if(data.cfml.forwardIfCurrent("function ")){
+				if(data.srcCode.forwardIfCurrent("function ")){
 					comments(data);
 				}
 				else rtnType=null;
 			}
 			comments(data);
 			
-			if(rtnType!=null && !data.cfml.forwardIfCurrent("function ") && !rtnType.equalsIgnoreCase("FUNCTION")){
-				data.cfml.setPos(pos);
+			if(rtnType!=null && !data.srcCode.forwardIfCurrent("function ") && !rtnType.equalsIgnoreCase("FUNCTION")){
+				data.srcCode.setPos(pos);
 				return null;
 			}
 			comments(data);
@@ -688,7 +688,7 @@ int pos=data.cfml.getPos();
 		if(strAccess!=null && rtnType!=null){
 			access = ComponentUtil.toIntAccess(strAccess,-1);
 			if(access==-1)
-				throw new TemplateException(data.cfml,"invalid access type ["+strAccess+"], access types are remote, public, package, private");
+				throw new TemplateException(data.srcCode,"invalid access type ["+strAccess+"], access types are remote, public, package, private");
 		}
 		if(strAccess!=null && rtnType==null){
 			access = ComponentUtil.toIntAccess(strAccess,-1);
@@ -701,7 +701,7 @@ int pos=data.cfml.getPos();
 		
 		
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		comments(data);
 		
@@ -710,16 +710,16 @@ int pos=data.cfml.getPos();
 			
 			
 			if(id==null) {
-				if(data.cfml.isCurrent('(')) {
-					data.cfml.setPos(pos);
+				if(data.srcCode.isCurrent('(')) {
+					data.srcCode.setPos(pos);
 					return null;
 				}
-				throw new TemplateException(data.cfml,"invalid name for a function");
+				throw new TemplateException(data.srcCode,"invalid name for a function");
 			}
 			
 			if(!data.isCFC && !data.isInterface){
 				FunctionLibFunction flf = getFLF(data,id);
-				if(flf!=null && flf.getClazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
+				if(flf!=null && flf.getClazz()!=CFFunction.class)throw new TemplateException(data.srcCode,"The name ["+id+"] is already used by a built in Function");
 			}
 			return closurePart(data, id,access,rtnType,line,false);
 	}
@@ -733,8 +733,8 @@ int pos=data.cfml.getPos();
 				:new FunctionImpl(data.page,id,access,rtnType,body,line,null);
 		
 			comments(data);
-			if(!data.cfml.forwardIfCurrent('('))
-				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
+			if(!data.srcCode.forwardIfCurrent('('))
+				throw new TemplateException(data.srcCode,"invalid syntax in function head, missing begin [(]");
 		
 			// arguments
 			LitBoolean passByRef;
@@ -745,7 +745,7 @@ int pos=data.cfml.getPos();
 			do	{
 				comments(data);
 				// finish
-				if(data.cfml.isCurrent(')'))break;
+				if(data.srcCode.isCurrent(')'))break;
 				
 				// attribute
 				
@@ -766,20 +766,20 @@ int pos=data.cfml.getPos();
 				
 				
 				String typeName="any";
-				if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
+				if(idName==null) throw new TemplateException(data.srcCode,"invalid argument definition");
 				comments(data);
-				if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
+				if(!data.srcCode.isCurrent(')') && !data.srcCode.isCurrent('=') && !data.srcCode.isCurrent(':') && !data.srcCode.isCurrent(',')) {
 					typeName=idName.toLowerCase();
 					idName=identifier(data,false); // MUST was upper case before, is this a problem?
 				}
 				else if(idName.indexOf('.')!=-1 || idName.indexOf('[')!=-1) {
-					throw new TemplateException(data.cfml,"invalid argument name ["+idName+"] definition");
+					throw new TemplateException(data.srcCode,"invalid argument name ["+idName+"] definition");
 				}
 				
 				comments(data);
 				Expression defaultValue;
-				if(data.cfml.isCurrent('=') || data.cfml.isCurrent(':')) {
-					data.cfml.next();
+				if(data.srcCode.isCurrent('=') || data.srcCode.isCurrent(':')) {
+					data.srcCode.next();
 					comments(data);
 					defaultValue=expression(data);
 				}
@@ -837,13 +837,13 @@ int pos=data.cfml.getPos();
 				
 				comments(data);
 			}
-			while(data.cfml.forwardIfCurrent(','));
+			while(data.srcCode.forwardIfCurrent(','));
 
 		
 		// end )
 			comments(data);
-			if(!data.cfml.forwardIfCurrent(')'))
-				throw new TemplateException(data.cfml,"invalid syntax in function head, missing ending [)]");
+			if(!data.srcCode.forwardIfCurrent(')'))
+				throw new TemplateException(data.srcCode,"invalid syntax in function head, missing ending [)]");
 		
 		//TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"function");
 		
@@ -873,7 +873,7 @@ int pos=data.cfml.getPos();
 		finally{
 			data.insideFunction=oldInsideFunction;
 		}
-		func.setEnd(data.cfml.getPosition());
+		func.setEnd(data.srcCode.getPosition());
 		
 		if(closure) comments(data);
 
@@ -903,7 +903,7 @@ int pos=data.cfml.getPos();
 	
 	
 	private final Statement _multiAttrStatement(Body parent, ExprData data,TagLibTag tlt) throws TemplateException  {
-		int pos = data.cfml.getPos();
+		int pos = data.srcCode.getPos();
 		try {
 			return __multiAttrStatement(parent,data,tlt);
 		} 
@@ -912,7 +912,7 @@ int pos=data.cfml.getPos();
 		}
 		catch (TemplateException e) {
 			try {
-				data.cfml.setPos(pos);
+				data.srcCode.setPos(pos);
 				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
 				if(tlt.getScript().getContext()==CTX_CFC) throw new ComponentTemplateException(e);
@@ -924,15 +924,15 @@ int pos=data.cfml.getPos();
 	private final Tag __multiAttrStatement(Body parent, ExprData data,TagLibTag tlt) throws TemplateException  {
 		if(data.ep==null) return null;
 		String type=tlt.getName();
-		if(data.cfml.forwardIfCurrent(type)) {
-			boolean isValid=(data.cfml.isCurrent(' ') || (tlt.getHasBody() && data.cfml.isCurrent('{')));
+		if(data.srcCode.forwardIfCurrent(type)) {
+			boolean isValid=(data.srcCode.isCurrent(' ') || (tlt.getHasBody() && data.srcCode.isCurrent('{')));
 			if(!isValid){
-				data.cfml.setPos(data.cfml.getPos()-type.length());
+				data.srcCode.setPos(data.srcCode.getPos()-type.length());
 				return null;
 			}
 		}
 		else return null;
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		TagLibTagScript script = tlt.getScript();
 		//TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,type);
@@ -975,7 +975,7 @@ int pos=data.cfml.getPos();
 		}
 		else checkSemiColonLineFeed(data,true,true,true);
 		
-		tag.setEnd(data.cfml.getPosition());
+		tag.setEnd(data.srcCode.getPosition());
 		eval(tlt,data,tag);
 		return tag;
 	}
@@ -983,7 +983,7 @@ int pos=data.cfml.getPos();
 	private Statement cftagStatement(ExprData data, Body parent) throws TemplateException {
 		if(data.ep==null) return null; // that is because cfloop-contition evaluator does not pass this
 		
-		int start = data.cfml.getPos();
+		int start = data.srcCode.getPos();
 		
 		// namespace and separator
 		TagLib tagLib=CFMLTransformer.nameSpace(data);
@@ -992,12 +992,12 @@ int pos=data.cfml.getPos();
 		//print.e("namespace:"+tagLib.getNameSpaceAndSeparator());
 		
 		// get the name of the tag
-		String id = CFMLTransformer.identifier(data.cfml, false,true);
+		String id = CFMLTransformer.identifier(data.srcCode, false,true);
 		
 		//print.e("name:"+id);
 		
 		if(id==null) {
-			data.cfml.setPos(start);
+			data.srcCode.setPos(start);
 			return null;
 		}
 		
@@ -1015,7 +1015,7 @@ int pos=data.cfml.getPos();
 			
 			 if(tlt==null) {
 				 //if(tagLib.getIgnoreUnknowTags()){ if we do this a expression like the following no longer work cfwhatever=1;
-					 data.cfml.setPos(start);
+					 data.srcCode.setPos(start);
 					 return null;
 				 //} 
 				 //throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+id+"]");
@@ -1026,17 +1026,17 @@ int pos=data.cfml.getPos();
 		// check for opening bracked or closing semicolon
 		comments(data);
 		boolean noAttrs=false;
-		if(!data.cfml.forwardIfCurrent('(')){
+		if(!data.srcCode.forwardIfCurrent('(')){
 			if(checkSemiColonLineFeed(data, false, false, false)){
 				noAttrs=true;
 			}
 			else {
-				data.cfml.setPos(start);
+				data.srcCode.setPos(start);
 				return null;
 			}
 		}
 		
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
 		// script specific behavior
 		short context=CTX_OTHER;
@@ -1076,7 +1076,7 @@ int pos=data.cfml.getPos();
 		
 		// attributes
 		Attribute[] attrs = noAttrs?new Attribute[0] : attributes(tag,tlt,data,BRACKED,data.factory.EMPTY(),allowExpression,null,false,',',true);
-		data.cfml.forwardIfCurrent(')');
+		data.srcCode.forwardIfCurrent(')');
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1097,7 +1097,7 @@ int pos=data.cfml.getPos();
 		else checkSemiColonLineFeed(data,true,true,true);
 		
 		
-		tag.setEnd(data.cfml.getPosition());
+		tag.setEnd(data.srcCode.getPosition());
 		eval(tlt,data,tag);
 		return tag;
 	}
@@ -1127,12 +1127,12 @@ int pos=data.cfml.getPos();
 	}
 	
 	private final Statement propertyStatement(ExprData data,Body parent) throws TemplateException  {
-		int pos = data.cfml.getPos();
+		int pos = data.srcCode.getPos();
 		try {
 			return _propertyStatement(data, parent);
 		} catch (TemplateException e) {
 			try {
-				data.cfml.setPos(pos);
+				data.srcCode.setPos(pos);
 				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
 				throw e;
@@ -1141,11 +1141,11 @@ int pos=data.cfml.getPos();
 	}
 	
 	private final Tag _propertyStatement(ExprData data,Body parent) throws TemplateException  {
-		if(data.context!=CTX_CFC || !data.cfml.forwardIfCurrent("property "))
+		if(data.context!=CTX_CFC || !data.srcCode.forwardIfCurrent("property "))
 			return null;
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
-		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"property");
+		TagLibTag tlt = CFMLTransformer.getTLT(data.srcCode,"property");
 		Tag property=new TagOther(data.factory,line,null);
 		addMetaData(data, property,IGNORE_LIST_PROPERTY);
 		
@@ -1156,7 +1156,7 @@ int pos=data.cfml.getPos();
 		//Expression t = string(data);
 		// print.o("name:"+t.getClass().getName());
 		
-		int pos = data.cfml.getPos();
+		int pos = data.srcCode.getPos();
 		String tmp=variableDec(data, true);
 		if(!StringUtil.isEmpty(tmp)) {
 			if(tmp.indexOf('.')!=-1) {
@@ -1164,10 +1164,10 @@ int pos=data.cfml.getPos();
 				hasType=true;
 			}
 			else {
-				data.cfml.setPos(pos);
+				data.srcCode.setPos(pos);
 			}
 		}
-		else data.cfml.setPos(pos);
+		else data.srcCode.setPos(pos);
 		
 		
 		
@@ -1242,25 +1242,25 @@ int pos=data.cfml.getPos();
 			property.addAttribute(new Attribute(false,"type",data.factory.createLitString("any"),"string"));
 		}
 		if(!hasName)
-			throw new TemplateException(data.cfml,"missing name declaration for property");
+			throw new TemplateException(data.srcCode,"missing name declaration for property");
 
 		/*Tag property=new TagBase(line);
 		property.setTagLibTag(tlt);
 		property.addAttribute(new Attribute(false,"name",LitString.toExprString(name),"string"));
 		property.addAttribute(new Attribute(false,"type",LitString.toExprString(type),"string"));
 		*/
-		property.setEnd(data.cfml.getPosition());
+		property.setEnd(data.srcCode.getPosition());
 		
 		return property;
 	}
 	
 	public Statement paramStatement(ExprData data,Body parent) throws TemplateException  {
-		int pos = data.cfml.getPos();
+		int pos = data.srcCode.getPos();
 		try {
 			return _paramStatement(data, parent);
 		} catch (TemplateException e) {
 			try {
-				data.cfml.setPos(pos);
+				data.srcCode.setPos(pos);
 				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
 				throw e;
@@ -1269,25 +1269,25 @@ int pos=data.cfml.getPos();
 	}
 	
 	private Tag _paramStatement(ExprData data,Body parent) throws TemplateException  {
-		if(!data.cfml.forwardIfCurrent("param "))
+		if(!data.srcCode.forwardIfCurrent("param "))
 			return null;
-		Position line = data.cfml.getPosition();
+		Position line = data.srcCode.getPosition();
 		
-		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"param");
+		TagLibTag tlt = CFMLTransformer.getTLT(data.srcCode,"param");
 		TagParam param=new TagParam(data.factory,line,null);
 		
 		// type
 		boolean hasType=false;
-		int pos = data.cfml.getPos();
+		int pos = data.srcCode.getPos();
 		String tmp=variableDec(data, true);
 		if(!StringUtil.isEmpty(tmp)) {
 			if(tmp.indexOf('.')!=-1) {
 				param.addAttribute(new Attribute(false,"type",data.factory.createLitString(tmp),"string"));
 				hasType=true;
 			}
-			else data.cfml.setPos(pos);
+			else data.srcCode.setPos(pos);
 		}
-		else data.cfml.setPos(pos);
+		else data.srcCode.setPos(pos);
 		
 		
 		
@@ -1318,7 +1318,7 @@ int pos=data.cfml.getPos();
 				}
 				else if(attr.isDynamicType()){
 					hasName=true;
-					if(hasDynamic) throw attrNotSupported(data.cfml,tlt,attr.getName());
+					if(hasDynamic) throw attrNotSupported(data.srcCode,tlt,attr.getName());
 					hasDynamic=true;
 					param.addAttribute(new Attribute(false,"name",data.factory.createLitString(attr.getName()),"string"));
 					param.addAttribute(new Attribute(false,"default",attr.getValue(),"any"));
@@ -1355,7 +1355,7 @@ int pos=data.cfml.getPos();
 			if(second!=null){
 				hasName=true;
 				hasType=true;
-				if(hasDynamic) throw attrNotSupported(data.cfml,tlt,first);
+				if(hasDynamic) throw attrNotSupported(data.srcCode,tlt,first);
 				hasDynamic=true;
 				param.addAttribute(new Attribute(false,"name",data.factory.createLitString(second),"string"));
 				param.addAttribute(new Attribute(false,"type",data.factory.createLitString(first),"string"));
@@ -1370,14 +1370,14 @@ int pos=data.cfml.getPos();
 		//	param.addAttribute(ANY);
 		
 		if(!hasName)
-			throw new TemplateException(data.cfml,"missing name declaration for param");
+			throw new TemplateException(data.srcCode,"missing name declaration for param");
 
-		param.setEnd(data.cfml.getPosition());
+		param.setEnd(data.srcCode.getPosition());
 		return param;
 	}
 
 
-	private TemplateException attrNotSupported(CFMLString cfml, TagLibTag tag, String id) {
+	private TemplateException attrNotSupported(SourceCode cfml, TagLibTag tag, String id) {
 		String names=tag.getAttributeNames();
 		if(StringUtil.isEmpty(names))
 			return new TemplateException(cfml,"Attribute "+id+" is not allowed for tag "+tag.getFullName());
@@ -1395,19 +1395,19 @@ int pos=data.cfml.getPos();
 		if(id==null) return null;
 		
 		StringBuffer rtn=new StringBuffer(id);
-		data.cfml.removeSpace();
+		data.srcCode.removeSpace();
 		
-		while(data.cfml.forwardIfCurrent('.')){
-			data.cfml.removeSpace();
+		while(data.srcCode.forwardIfCurrent('.')){
+			data.srcCode.removeSpace();
 			rtn.append('.');
 			id=identifier(data, firstCanBeNumber);
 			if(id==null)return null;
 			rtn.append(id);
-			data.cfml.removeSpace();
+			data.srcCode.removeSpace();
 		}
 		
-		while(data.cfml.forwardIfCurrent("[]")){
-			data.cfml.removeSpace();
+		while(data.srcCode.forwardIfCurrent("[]")){
+			data.srcCode.removeSpace();
 			rtn.append("[]");
 		}
 		return rtn.toString();
@@ -1422,17 +1422,17 @@ int pos=data.cfml.getPos();
 	 * @throws TemplateException
 	 */
 	private final Return returnStatement(ExprData data) throws TemplateException {
-	    if(!data.cfml.forwardIfCurrentAndNoVarExt("return")) return null;
+	    if(!data.srcCode.forwardIfCurrentAndNoVarExt("return")) return null;
 	    
-	    Position line = data.cfml.getPosition();
+	    Position line = data.srcCode.getPosition();
 	    Return rtn;
 	    
 	    comments(data);
-	    if(checkSemiColonLineFeed(data, false,false,false)) rtn=new Return(data.factory,line,data.cfml.getPosition());
+	    if(checkSemiColonLineFeed(data, false,false,false)) rtn=new Return(data.factory,line,data.srcCode.getPosition());
 	    else {
 	    	Expression expr = expression(data);
 	    	checkSemiColonLineFeed(data, true,true,false);
-	    	rtn=new Return(expr,line,data.cfml.getPosition());
+	    	rtn=new Return(expr,line,data.srcCode.getPosition());
 	    }
 		comments(data);
 
@@ -1441,7 +1441,7 @@ int pos=data.cfml.getPos();
 
 	
 	private final Statement _singleAttrStatement(Body parent, ExprData data, TagLibTag tlt) throws TemplateException   {
-		int pos = data.cfml.getPos();
+		int pos = data.srcCode.getPos();
 		try {
 			return __singleAttrStatement(parent,data,tlt, false);
 		} 
@@ -1449,7 +1449,7 @@ int pos=data.cfml.getPos();
 			throw e;
 		} 
 		catch (TemplateException e) {
-			data.cfml.setPos(pos);
+			data.srcCode.setPos(pos);
 			try {
 				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
@@ -1460,17 +1460,17 @@ int pos=data.cfml.getPos();
 
 	private final Statement __singleAttrStatement(Body parent, ExprData data, TagLibTag tlt, boolean allowTwiceAttr) throws TemplateException {
 		String tagName = tlt.getName();
-		if(data.cfml.forwardIfCurrent(tagName)){
-			if(!data.cfml.isCurrent(' ') && !data.cfml.isCurrent(';')){
-				data.cfml.setPos(data.cfml.getPos()-tagName.length());
+		if(data.srcCode.forwardIfCurrent(tagName)){
+			if(!data.srcCode.isCurrent(' ') && !data.srcCode.isCurrent(';')){
+				data.srcCode.setPos(data.srcCode.getPos()-tagName.length());
 				return null;
 			}
 		}
 		else return null;
 		
 		
-		int pos=data.cfml.getPos()-tagName.length();
-		Position line = data.cfml.getPosition();
+		int pos=data.srcCode.getPos()-tagName.length();
+		Position line = data.srcCode.getPosition();
 		//TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,tagName.equals("pageencoding")?"processingdirective":tagName);
 		
 		Tag tag=getTag(data,parent,tlt,line,null);
@@ -1486,11 +1486,11 @@ int pos=data.cfml.getPos();
 		short attrType=ATTR_TYPE_NONE;
 		if(attr!=null){
 			attrType = attr.getScriptSupport();
-			char c = data.cfml.getCurrent();
-			if(ATTR_TYPE_REQUIRED==attrType || (!data.cfml.isCurrent(';') && ATTR_TYPE_OPTIONAL==attrType)) {
+			char c = data.srcCode.getCurrent();
+			if(ATTR_TYPE_REQUIRED==attrType || (!data.srcCode.isCurrent(';') && ATTR_TYPE_OPTIONAL==attrType)) {
 				attrValue =attributeValue(data, tlt.getScript().getRtexpr());
 				if(attrValue!=null && isOperator(c)) {
-					data.cfml.setPos(pos);
+					data.srcCode.setPos(pos);
 					return null;
 				}
 			}
@@ -1502,15 +1502,15 @@ int pos=data.cfml.getPos();
 			tag.addAttribute(new Attribute(false,attrName,CastOther.toExpression(attrValue,tlta.getType()),tlta.getType()));
 		}
 		else if(ATTR_TYPE_REQUIRED==attrType){
-			data.cfml.setPos(pos);
+			data.srcCode.setPos(pos);
 			return null;
 		}
 		
 		checkSemiColonLineFeed(data,true,true,true);
-		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.flibs, data.cfml);
+		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.flibs, data.srcCode);
 		
-		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
-		tag.setEnd(data.cfml.getPosition());
+		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.srcCode, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
+		tag.setEnd(data.srcCode.getPosition());
 		eval(tlt,data,tag);
 		return tag;
 	}
@@ -1573,7 +1573,7 @@ int pos=data.cfml.getPos();
 			} catch (EvaluatorException e) {
 				throw new TemplateException(e.getMessage());
 			}
-			data.ep.add(tlt, tag, data.flibs, data.cfml);
+			data.ep.add(tlt, tag, data.flibs, data.srcCode);
 		}
 	}
 
@@ -1583,7 +1583,7 @@ int pos=data.cfml.getPos();
 			tag.setParent(parent);
 			return tag;
 		} catch (TagLibException e) {
-			throw new TemplateException(data.cfml,e);
+			throw new TemplateException(data.srcCode,e);
 		}
 		/*if(StringUtil.isEmpty(tlt.getTttClassName()))tag= new TagBase(line);
 		else {
@@ -1623,22 +1623,22 @@ int pos=data.cfml.getPos();
 	
 	private final boolean checkSemiColonLineFeed(ExprData data,boolean throwError, boolean checkNLBefore,boolean allowEmptyCurlyBracked) throws TemplateException {
 		comments(data);
-		if(!data.cfml.forwardIfCurrent(';')){
+		if(!data.srcCode.forwardIfCurrent(';')){
 			
 			// curly brackets?
 			if(allowEmptyCurlyBracked) {
-				int pos = data.cfml.getPos();
-				if(data.cfml.forwardIfCurrent('{')) {
+				int pos = data.srcCode.getPos();
+				if(data.srcCode.forwardIfCurrent('{')) {
 					comments(data);
-					if(data.cfml.forwardIfCurrent('}')) return true;
-					data.cfml.setPos(pos);
+					if(data.srcCode.forwardIfCurrent('}')) return true;
+					data.srcCode.setPos(pos);
 				}
 			}
 			
 			
-			if((!checkNLBefore || !data.cfml.hasNLBefore()) && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
+			if((!checkNLBefore || !data.srcCode.hasNLBefore()) && !data.srcCode.isCurrent("</",data.tagName) && !data.srcCode.isCurrent('}')){
 				if(!throwError) return false;
-				throw new TemplateException(data.cfml,"Missing [;] or [line feed] after expression");
+				throw new TemplateException(data.srcCode,"Missing [;] or [line feed] after expression");
 			}
 		}
 		return true;
@@ -1671,25 +1671,25 @@ int pos=data.cfml.getPos();
 	 * @throws TemplateException
 	*/
 	private final TryCatchFinally tryStatement(ExprData data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("try",'{') && !data.cfml.forwardIfCurrent("try ") && !data.cfml.forwardIfCurrent("try",'/'))
+		if(!data.srcCode.forwardIfCurrent("try",'{') && !data.srcCode.forwardIfCurrent("try ") && !data.srcCode.forwardIfCurrent("try",'/'))
 			return null;
-		data.cfml.previous();
+		data.srcCode.previous();
 
 		Body body=new BodyBase(data.factory);
-		TryCatchFinally tryCatchFinally=new TryCatchFinally(data.factory,body,data.cfml.getPosition(),null);
+		TryCatchFinally tryCatchFinally=new TryCatchFinally(data.factory,body,data.srcCode.getPosition(),null);
 		
 		statement(data,body,CTX_TRY);
 		comments(data);
 		
 		// catches
 		short catchCount=0;
-		while(data.cfml.forwardIfCurrent("catch",'(')) {
+		while(data.srcCode.forwardIfCurrent("catch",'(')) {
 			catchCount++;
 			comments(data);
 			
 			// type
-			int pos=data.cfml.getPos();
-			Position line=data.cfml.getPosition();
+			int pos=data.srcCode.getPos();
+			Position line=data.srcCode.getPosition();
 			Expression name = null,type = null;
 			
 			StringBuffer sbType=new StringBuffer();
@@ -1698,17 +1698,17 @@ int pos=data.cfml.getPos();
             	id=identifier(data,false);
                 if(id==null)break;
                 sbType.append(id);
-                data.cfml.removeSpace();
-                if(!data.cfml.forwardIfCurrent('.'))break;
+                data.srcCode.removeSpace();
+                if(!data.srcCode.forwardIfCurrent('.'))break;
                 sbType.append('.');
-                data.cfml.removeSpace();
+                data.srcCode.removeSpace();
             }
 				
             
 			if(sbType.length()==0) {
 			    type=string(data);
 			    if(type==null)			    
-			        throw new TemplateException(data.cfml,"a catch statement must begin with the throwing type (query, application ...).");
+			        throw new TemplateException(data.srcCode,"a catch statement must begin with the throwing type (query, application ...).");
 			}
 			else {
 				type=data.factory.createLitString(sbType.toString());
@@ -1719,11 +1719,11 @@ int pos=data.cfml.getPos();
 			comments(data);
 			
 			// name
-			if(!data.cfml.isCurrent(')')) {
+			if(!data.srcCode.isCurrent(')')) {
 				name=expression(data);
 			}
 			else {
-				data.cfml.setPos(pos);
+				data.srcCode.setPos(pos);
 				name=expression(data);
 				type = data.factory.createLitString( "any" );
 			}
@@ -1734,11 +1734,11 @@ int pos=data.cfml.getPos();
 				tryCatchFinally.addCatch(type,name,b,line);
 			} 
 			catch (TransformerException e) {
-				throw new TemplateException(data.cfml,e.getMessage());
+				throw new TemplateException(data.srcCode,e.getMessage());
 			}
 			comments(data);
 			
-			if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"invalid catch statement, missing closing )");
+			if(!data.srcCode.forwardIfCurrent(')')) throw new TemplateException(data.srcCode,"invalid catch statement, missing closing )");
 			
             statement(data,b,CTX_CATCH);
 			comments(data);	
@@ -1750,10 +1750,10 @@ int pos=data.cfml.getPos();
 			comments(data);
 		 }
 		 else if(catchCount==0)
-			throw new TemplateException(data.cfml,"a try statement must have at least one catch statement");
+			throw new TemplateException(data.srcCode,"a try statement must have at least one catch statement");
 		
         //if(body.isEmpty()) return null;
-		tryCatchFinally.setEnd(data.cfml.getPosition());
+		tryCatchFinally.setEnd(data.srcCode.getPosition());
 		return tryCatchFinally;
 	}
 	
@@ -1764,7 +1764,7 @@ int pos=data.cfml.getPos();
 	 */
 	private final boolean isFinish(ExprData data) throws TemplateException {
 		comments(data);
-		return data.cfml.isCurrent("</",data.tagName);		
+		return data.srcCode.isCurrent("</",data.tagName);		
 	}
 	
 	
@@ -1778,17 +1778,17 @@ int pos=data.cfml.getPos();
 	 * @throws TemplateException
 	 */
 	private final boolean block(ExprData data,Body body) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent('{'))
+		if(!data.srcCode.forwardIfCurrent('{'))
 			return false;
 		comments(data);
-		if(data.cfml.forwardIfCurrent('}')) {
+		if(data.srcCode.forwardIfCurrent('}')) {
 			
 			return true;
 		}
 		statements(data,body,false);
 		
-		if(!data.cfml.forwardIfCurrent('}'))
-			throw new TemplateException(data.cfml,"Missing ending [}]");
+		if(!data.srcCode.forwardIfCurrent('}'))
+			throw new TemplateException(data.srcCode,"Missing ending [}]");
 		return true;
 	}	
 	
@@ -1810,8 +1810,8 @@ int pos=data.cfml.getPos();
 			String ignoreAttrReqFor, boolean allowTwiceAttr, char attributeSeparator,boolean allowColonAsNameValueSeparator) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
-		while(data.cfml.isValidIndex())	{
-			data.cfml.removeSpace();
+		while(data.srcCode.isValidIndex())	{
+			data.srcCode.removeSpace();
 			// if no more attributes break
 			if(endCond.isEnd(data)) break;
 			Attribute attr = attribute(tlt,data,ids,defaultValue,oAllowExpression, allowTwiceAttr,allowColonAsNameValueSeparator);
@@ -1819,8 +1819,8 @@ int pos=data.cfml.getPos();
 			
 			// seperator
 			if(attributeSeparator>0) {
-				data.cfml.removeSpace();
-				data.cfml.forwardIfCurrent(attributeSeparator);
+				data.srcCode.removeSpace();
+				data.srcCode.forwardIfCurrent(attributeSeparator);
 			}
 			
 		}
@@ -1837,7 +1837,7 @@ int pos=data.cfml.getPos();
 					e = it.next();
 					TagLibTagAttr att=e.getValue();
 					if(att.isRequired() && !contains(attrs,att) && att.getDefaultValue()==null && !att.getName().equals(ignoreAttrReqFor))	{
-						if(!hasAttributeCollection)throw new TemplateException(data.cfml,"attribute "+att.getName()+" is required for statement "+tlt.getName());
+						if(!hasAttributeCollection)throw new TemplateException(data.srcCode,"attribute "+att.getName()+" is required for statement "+tlt.getName());
 						if(tag!=null)tag.addMissingAttribute(att);
 					}
 				}
@@ -1872,26 +1872,26 @@ int pos=data.cfml.getPos();
     	RefBoolean dynamic=new RefBooleanImpl(false);
     	
 		// Name
-    	String name=attributeName(data.cfml,args,tlt,dynamic,sbType, allowTwiceAttr,!allowColonSeparator);
+    	String name=attributeName(data.srcCode,args,tlt,dynamic,sbType, allowTwiceAttr,!allowColonSeparator);
     	boolean allowExpression=false;
     	if(oAllowExpression instanceof Boolean)allowExpression=((Boolean)oAllowExpression).booleanValue();
     	else if(oAllowExpression instanceof String)allowExpression=((String)oAllowExpression).equalsIgnoreCase(name);
 
           Expression value=null;
     	
-    	CFMLTransformer.comment(data.cfml,true);
+    	CFMLTransformer.comment(data.srcCode,true);
     	
     	// value
-    	boolean b=data.cfml.forwardIfCurrent('=') || (allowColonSeparator && data.cfml.forwardIfCurrent(':'));
+    	boolean b=data.srcCode.forwardIfCurrent('=') || (allowColonSeparator && data.srcCode.forwardIfCurrent(':'));
     	if(b)	{
-    		CFMLTransformer.comment(data.cfml,true);
+    		CFMLTransformer.comment(data.srcCode,true);
     		value=attributeValue(data,allowExpression);	
     		
     	}
     	else {
     		value=defaultValue;
     	}		
-    	CFMLTransformer.comment(data.cfml,true);
+    	CFMLTransformer.comment(data.srcCode,true);
     	
     	
     	// Type
@@ -1939,14 +1939,14 @@ int pos=data.cfml.getPos();
 		return id;
 	}*/
 	
-	private final String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr, boolean allowColon) throws TemplateException {
+	private final String attributeName(SourceCode cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr, boolean allowColon) throws TemplateException {
 		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true,allowColon));
 		return validateAttributeName(id, cfml, args, tag, dynamic, sbType,allowTwiceAttr);
 	}
 	
 	
 	
-	private final String validateAttributeName(String id,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
+	private final String validateAttributeName(String id,SourceCode cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
 		if(args.contains(id) && !allowTwiceAttr) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
 		args.add(id);
 		

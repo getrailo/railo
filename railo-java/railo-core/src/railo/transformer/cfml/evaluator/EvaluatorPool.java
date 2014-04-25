@@ -6,7 +6,7 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  *
@@ -34,7 +34,7 @@ public final class EvaluatorPool {
 	 * @param flibs Saemtliche Function Library Deskriptoren des aktuellen Tag Libray Deskriptors.
 	 * @param cfml CFMLString des aktuellen Übersetzungsprozess.
 	 */
-	public void add(TagLibTag libTag,Tag tag, FunctionLib[] flibs, CFMLString cfml) {
+	public void add(TagLibTag libTag,Tag tag, FunctionLib[] flibs, SourceCode cfml) {
 		v.add(new EvaluatorData(libTag,tag,flibs,cfml));
 	}
 
@@ -47,7 +47,7 @@ public final class EvaluatorPool {
 		int size=v.size();
 		for(int i=0;i<size;i++) {
 			EvaluatorData ec=(EvaluatorData)v.elementAt(i);
-			CFMLString cfml=ec.getCfml();
+			SourceCode cfml=ec.getCfml();
 			cfml.setPos(ec.getPos());
 			try {
 				if(ec.getLibTag().getEvaluator()!=null)ec.getLibTag().getEvaluator().evaluate(
@@ -76,7 +76,7 @@ public final class EvaluatorPool {
 		TagLibTag libTag;
 		Tag tag; 
 		FunctionLib[] flibs; 
-		CFMLString cfml;
+		SourceCode cfml;
 		int pos;
 		
 		/**
@@ -86,7 +86,7 @@ public final class EvaluatorPool {
 	 	* @param flibs Saemtliche Function Library Deskriptoren des aktuellen Tag Libray Deskriptors.
 	 	* @param cfml CFMLString des aktuellen Übersetzungsprozess.
 	 	*/
-		public EvaluatorData(TagLibTag libTag,Tag tag, FunctionLib[] flibs, CFMLString cfml) {
+		public EvaluatorData(TagLibTag libTag,Tag tag, FunctionLib[] flibs, SourceCode cfml) {
 			this.libTag=libTag;
 			this.tag=tag;
 			this.flibs=flibs;
@@ -98,7 +98,7 @@ public final class EvaluatorPool {
 		 * Gibt den aktuellen CFMLString zurueck.
 		 * @return CFMLString des aktuellen Übersetzungsprozess.
 		 */
-		public CFMLString getCfml() {
+		public SourceCode getCfml() {
 			return cfml;
 		}
 

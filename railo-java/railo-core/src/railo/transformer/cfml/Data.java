@@ -7,11 +7,11 @@ import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 public abstract class Data {
 	
-		public final CFMLString cfml;
+		public final SourceCode srcCode;
 		public final TransfomerSettings settings; 
 		public final TagLib[][] tlibs;
 		public final FunctionLib[] flibs;
@@ -21,11 +21,11 @@ public abstract class Data {
 		public final EvaluatorPool ep;
 		public final Factory factory;
 		
-	    public Data(Factory factory,Page page,CFMLString cfml,EvaluatorPool ep,TransfomerSettings settings,TagLib[][] tlibs,FunctionLib[] flibs,TagLibTag[] scriptTags) {
+	    public Data(Factory factory,Page page,SourceCode cfml,EvaluatorPool ep,TransfomerSettings settings,TagLib[][] tlibs,FunctionLib[] flibs,TagLibTag[] scriptTags) {
 
 	    	this.config = page.getPageSource().getMapping().getConfig();
 	    	this.page = page;
-	    	this.cfml = cfml;
+	    	this.srcCode = cfml;
 	    	this.settings = settings;
 	    	this.tlibs = tlibs;
 	    	this.flibs = flibs;

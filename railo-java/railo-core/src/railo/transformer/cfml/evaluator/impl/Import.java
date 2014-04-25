@@ -30,7 +30,7 @@ import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 
 /**
@@ -50,28 +50,28 @@ public final class Import extends EvaluatorSupport {
 		
 		if(p!=null || t!=null){
 			if(p==null)
-				throw new TemplateException(data.cfml,"Wrong Context, missing attribute [prefix] for tag "+tag.getFullname());
+				throw new TemplateException(data.srcCode,"Wrong Context, missing attribute [prefix] for tag "+tag.getFullname());
 			if(t==null)
-				throw new TemplateException(data.cfml,"Wrong Context, missing attribute [taglib] for tag "+tag.getFullname());
+				throw new TemplateException(data.srcCode,"Wrong Context, missing attribute [taglib] for tag "+tag.getFullname());
 			
 			if(path!=null)
-				throw new TemplateException(data.cfml,"Wrong context, you have an invalid attributes constellation for the tag "+tag.getFullname()+", " +
+				throw new TemplateException(data.srcCode,"Wrong context, you have an invalid attributes constellation for the tag "+tag.getFullname()+", " +
 						"you cannot mix attribute [path] with attributes [taglib] and [prefix]");
 			
-			return executePT(config, tag, libTag, flibs, data.cfml);
+			return executePT(config, tag, libTag, flibs, data.srcCode);
 		}
-		if(path==null) throw new TemplateException(data.cfml,"Wrong context, you have an invalid attributes constellation for the tag "+tag.getFullname()+", " +
+		if(path==null) throw new TemplateException(data.srcCode,"Wrong context, you have an invalid attributes constellation for the tag "+tag.getFullname()+", " +
 				"you need to define the attributes [prefix] and [taglib], the attribute [path] or simply define a attribute value");
 		
 		String strPath=ASMUtil.getAttributeString(tag,"path",null);
-        if(strPath==null) throw new TemplateException(data.cfml,"attribute [path] must be a constant value");
+        if(strPath==null) throw new TemplateException(data.srcCode,"attribute [path] must be a constant value");
         ti.setPath(strPath);
         
 		return null;
 		
 	}
 	
-    private TagLib executePT(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException { 
+    private TagLib executePT(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,SourceCode cfml) throws TemplateException { 
     	
         // Attribute prefix 
         String nameSpace=ASMUtil.getAttributeString(tag,"prefix",null);
@@ -131,7 +131,7 @@ public final class Import extends EvaluatorSupport {
      * @return
      * @throws EvaluatorException
      */
-    private TagLib _executeTLD(Config config, Resource fileTagLib,String nameSpace,String nameSpaceSeparator, CFMLString cfml) throws TemplateException {
+    private TagLib _executeTLD(Config config, Resource fileTagLib,String nameSpace,String nameSpaceSeparator, SourceCode cfml) throws TemplateException {
         // change extesnion
         String ext=ResourceUtil.getExtension(fileTagLib,null);
         if("jar".equalsIgnoreCase(ext)) {

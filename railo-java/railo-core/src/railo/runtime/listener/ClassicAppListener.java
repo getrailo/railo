@@ -54,7 +54,7 @@ public final class ClassicAppListener extends AppListenerSupport {
 		
 		// on Request End
 		if(application!=null){
-			PageSource onReqEnd = application.getRealPage("OnRequestEnd.cfm");
+			PageSource onReqEnd = application.getRealPage("OnRequestEnd."+Constants.TEMPLATE_EXTENSION);
 	        if(onReqEnd.exists())pc.doInclude(new PageSource[]{onReqEnd},false);
 		}
 	}

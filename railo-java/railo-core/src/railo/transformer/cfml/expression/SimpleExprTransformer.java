@@ -12,7 +12,7 @@ import railo.transformer.expression.literal.LitString;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+	import railo.transformer.util.SourceCode;
 
 /**
  * Zum lesen von Attributen bei dem CFML expressions nicht geparst werden sollen (cfloop condition) 
@@ -26,12 +26,12 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	}
 
 	@Override
-	public Expression transformAsString(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
+	public Expression transformAsString(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld,FunctionLib[] fld,TagLibTag[] scriptTags, SourceCode cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
 		return transform(factory,page,ep,tld,fld,scriptTags, cfml,settings);
 	}
 	
 	@Override
-	public Expression transform(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
+	public Expression transform(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld,FunctionLib[] fld,TagLibTag[] scriptTags, SourceCode cfml, TransfomerSettings settings) throws TemplateException {
 			Expression expr=null;
 			// String
 				if((expr=string(factory,cfml))!=null) {
@@ -45,7 +45,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 * @return Element 
 	 * @throws TemplateException
 	 */
-	public Expression string(Factory f,CFMLString cfml)
+	public Expression string(Factory f,SourceCode cfml)
 		throws TemplateException {
 		cfml.removeSpace();
 		char quoter=cfml.getCurrentLower();
@@ -95,7 +95,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 * @return Element
 	 * @throws TemplateException
 	 */
-	public Expression simple(Factory f,CFMLString cfml) throws TemplateException {
+	public Expression simple(Factory f,SourceCode cfml) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
 		Position line = cfml.getPosition();
 		while(cfml.isValidIndex()) {

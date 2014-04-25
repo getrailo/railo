@@ -9,7 +9,7 @@ import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  * Interface zum implementieren von individullen Parsersn fuer einezelne Tags (cfscript)
@@ -24,7 +24,7 @@ public interface TagDependentBodyTransformer {
 	 * @param cfml
 	 * @throws TemplateException
 	 */
-	public void transform(Factory factory,Page page,CFMLTransformer parent, EvaluatorPool ep,TagLib[][] tlibs, FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings setting)
+	public void transform(Factory factory,Page page,CFMLTransformer parent, EvaluatorPool ep,TagLib[][] tlibs, FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, SourceCode cfml,TransfomerSettings setting)
 		throws TemplateException;
 
 }

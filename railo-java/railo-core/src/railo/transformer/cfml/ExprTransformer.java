@@ -8,7 +8,7 @@ import railo.transformer.expression.Expression;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  * Innerhalb einer TLD (Tag Library Descriptor) kann eine Klasse angemeldet werden, 
@@ -37,7 +37,7 @@ public interface ExprTransformer {
 	 * @throws railo.runtime.exp.TemplateException 
 	 * @throws TemplateException
 	 */
-	public Expression transform(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags,CFMLString cfml, TransfomerSettings settings) throws TemplateException;
+	public Expression transform(Factory factory,Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags,SourceCode cfml, TransfomerSettings settings) throws TemplateException;
 
 	
 	/**
@@ -55,6 +55,6 @@ public interface ExprTransformer {
 	 * @return Element CFXD Element
 	 * @throws TemplateException
 	 */
-	public Expression transformAsString(Factory factory, Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags,CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException;
+	public Expression transformAsString(Factory factory, Page page,EvaluatorPool ep,TagLib[][] tld, FunctionLib[] fld,TagLibTag[] scriptTags,SourceCode cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException;
 
 }

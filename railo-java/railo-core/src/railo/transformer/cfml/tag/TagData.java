@@ -9,16 +9,16 @@ import railo.transformer.cfml.expression.SimpleExprTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 public class TagData extends Data {
 	
 	private SimpleExprTransformer set;
 	
-    public TagData(Factory factory,TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings,Page page) {
+    public TagData(Factory factory,TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, SourceCode cfml,TransfomerSettings settings,Page page) {
 		super(factory,page,cfml,new EvaluatorPool(),settings,tlibs,flibs,scriptTags);
 	}
-    public TagData(Factory factory,TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,Boolean dotNotationUpperCase,Page page) {
+    public TagData(Factory factory,TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, SourceCode cfml,Boolean dotNotationUpperCase,Page page) {
 		super(factory,page,cfml,new EvaluatorPool(),TransfomerSettings.toSetting(page.getPageSource().getMapping(),dotNotationUpperCase),tlibs,flibs,scriptTags);
 
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 
 import railo.commons.io.CharsetUtil;
 import railo.commons.net.HTTPUtil;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 /**
  * HTML Util class
@@ -41,7 +41,7 @@ public final class HTMLUtil {
 	public List getURLS(String html, URL url) {
 		
 	    ArrayList urls=new ArrayList();
-		CFMLString cfml=new CFMLString(html,CharsetUtil.UTF8);
+		SourceCode cfml=new SourceCode(html,CharsetUtil.UTF8);
 		while(!cfml.isAfterLast()) {
 			if(cfml.forwardIfCurrent('<')) {
 				for(int i=0;i<tags.length;i++) {
@@ -65,7 +65,7 @@ public final class HTMLUtil {
 	 * @param tag current tag totransform
 	 * @param url absolute URL to Set at tag attribute
 	 */
-	private void getSingleUrl(List urls,CFMLString cfml, Tag tag,URL url) {
+	private void getSingleUrl(List urls,SourceCode cfml, Tag tag,URL url) {
 		char quote=0;
 		boolean inside=false;
 		StringBuilder value=new StringBuilder();

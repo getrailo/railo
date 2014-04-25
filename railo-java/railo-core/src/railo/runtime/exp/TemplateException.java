@@ -3,7 +3,7 @@ package railo.runtime.exp;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.op.Caster;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 
 /**
@@ -48,7 +48,7 @@ public class TemplateException extends PageExceptionImpl {
 
 	/**
 	 * Constructor of the class
-	 * @param cfml
+	 * @param srcCode
 	 * @param message
 	 */
 	public TemplateException(PageSource ps, int line, int column,String message) {
@@ -64,7 +64,7 @@ public class TemplateException extends PageExceptionImpl {
 	 * @param cfml
 	 * @param message
 	 */
-	public TemplateException(CFMLString cfml, String message) {
+	public TemplateException(SourceCode cfml, String message) {
 		this(cfml.getPageSource(),cfml.getLine(),cfml.getColumn(),message);
 	}
 	
@@ -74,7 +74,7 @@ public class TemplateException extends PageExceptionImpl {
 	 * @param message
 	 * @param detail
 	 */
-	public TemplateException(CFMLString cfml, String message, String detail) {
+	public TemplateException(SourceCode cfml, String message, String detail) {
 		this(cfml.getPageSource(),cfml.getLine(),cfml.getColumn(),message);
 		setDetail(detail);
 	}
@@ -84,7 +84,7 @@ public class TemplateException extends PageExceptionImpl {
 	 * @param cfml
 	 * @param e
 	 */
-	public TemplateException(CFMLString cfml, Throwable e) {
+	public TemplateException(SourceCode cfml, Throwable e) {
 		this(
 				cfml,
 				StringUtil.isEmpty(e.getMessage())?

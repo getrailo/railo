@@ -12,11 +12,11 @@ import railo.transformer.expression.Expression;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
+import railo.transformer.util.SourceCode;
 
 public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements TagDependentBodyTransformer {
 	@Override
-	public void transform(Factory factory,Page page,CFMLTransformer parentTransformer,EvaluatorPool ep,TagLib[][] tlibs, FunctionLib[] fld, Tag tag,TagLibTag libTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings) throws TemplateException	{
+	public void transform(Factory factory,Page page,CFMLTransformer parentTransformer,EvaluatorPool ep,TagLib[][] tlibs, FunctionLib[] fld, Tag tag,TagLibTag libTag,TagLibTag[] scriptTags, SourceCode cfml,TransfomerSettings settings) throws TemplateException	{
 		//Page page = ASMUtil.getAncestorPage(tag);
 		boolean isCFC= page.isComponent();
 		boolean isInterface= page.isInterface();

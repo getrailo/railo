@@ -24,10 +24,12 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 		//this.strType=VariableInterpreter.scopeInt2String(type);
 	}
 	
+	@Override
 	public void init(StorageScopeEngine engine) {
 		super.init(engine);
 	}
 
+	@Override
 	protected void _clean() {
 		ConfigWeb config = engine.getFactory().getConfig();
 		DataSource[] datasources = config.getDataSources();
