@@ -10,6 +10,7 @@ import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebAdmin;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -123,7 +124,7 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 		
 		try {
 			Resource railoContext = ResourceUtil.toResourceExisting(pc() ,"/railo-context/admin/dbdriver/");
-			Resource[] children = railoContext.listResources(new ExtensionResourceFilter("cfc"));
+			Resource[] children = railoContext.listResources(new ExtensionResourceFilter(Constants.COMPONENT_EXTENSION));
 	    	 
 	    	String name;
 	    	for(int i=0;i<children.length;i++) {

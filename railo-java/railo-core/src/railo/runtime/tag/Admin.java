@@ -3241,7 +3241,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doGetDatasourceDriverList() throws PageException {
     	Resource railoContext = ResourceUtil.toResourceExisting(pageContext ,"/railo-context/admin/dbdriver/");
-    	Resource[] children = railoContext.listResources(new ExtensionResourceFilter("cfc"));
+    	Resource[] children = railoContext.listResources(new ExtensionResourceFilter(Constants.COMPONENT_EXTENSION));
     	String rtnVar=getString("admin",action,"returnVariable");
     	
     	railo.runtime.type.Query qry=new QueryImpl(new String[]{"name"},children.length,rtnVar);

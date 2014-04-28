@@ -3,6 +3,7 @@ package railo.transformer.cfml.evaluator.impl;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.runtime.config.Constants;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -65,9 +66,9 @@ public class Component extends EvaluatorSupport {
 		
 		String src=page.getPageSource().getDisplayPath();
 		int pos=src.lastIndexOf(".");
-		boolean inline=!(pos!=-1 && pos<src.length() && src.substring(pos+1).equals("cfc"));
+		boolean inline=!(pos!=-1 && pos<src.length() && src.substring(pos+1).equals(Constants.COMPONENT_EXTENSION));
 		if(inline)
-			throw new EvaluatorException("Wrong Context, "+tlt.getFullName()+" tag must be inside a file with extension cfc");
+			throw new EvaluatorException("Wrong Context, "+tlt.getFullName()+" tag must be inside a file with extension "+Constants.COMPONENT_EXTENSION);
 		
 		// check if more than one component in document and remove any other data
 		if(!inline) {

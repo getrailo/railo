@@ -82,7 +82,6 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
-import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
@@ -348,7 +347,7 @@ public abstract class ConfigImpl implements Config {
 	private String id;
 	private String securityToken;
 	private String securityKey;
-	private ExtensionProvider[] extensionProviders=RAILO_EXTENSION_PROVIDERS;
+	private ExtensionProvider[] extensionProviders=Constants.RAILO_EXTENSION_PROVIDERS;
 	private Extension[] extensions=EXTENSIONS_EMPTY;
 	private boolean extensionEnabled;
 	private boolean allowRealPath=true;
