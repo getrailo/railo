@@ -14,6 +14,7 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ModernApplicationContext;
@@ -23,7 +24,7 @@ import railo.runtime.type.util.KeyConstants;
 public class Util {
 	
 	/**
-	 * get the default cache for a certain type, also check definitions in application context (application.cfc/cfapplication)
+	 * get the default cache for a certain type, also check definitions in application context (application . cfc/cfapplication)
 	 * @param pc current PageContext
 	 * @param type default type -> Config.CACHE_DEFAULT_...
 	 * @param defaultValue value returned when there is no default cache for this type
@@ -51,7 +52,7 @@ public class Util {
 	}
 	
 	/**
-	 * get the default cache for a certain type, also check definitions in application context (application.cfc/cfapplication)
+	 * get the default cache for a certain type, also check definitions in application context (application . cfc/cfapplication)
 	 * @param pc current PageContext
 	 * @param type default type -> Config.CACHE_DEFAULT_...
 	 * @return matching cache
@@ -205,7 +206,7 @@ public class Util {
 
     /**
      * returns true if the webAdminPassword matches the passed password if one is passed, or a password defined
-     * in Application.cfc as this.webAdminPassword if null or empty-string is passed for password
+     * in Application . cfc as this.webAdminPassword if null or empty-string is passed for password
      *
      * @param pc
      * @param password
@@ -226,7 +227,7 @@ public class Util {
 
         if ( password.isEmpty() )
             throw new railo.runtime.exp.SecurityException( "A Web Admin Password is required to manipulate Cache connections. " +
-                    "You can either pass the password as an argument to this function, or set it in Application.cfc with the variable [this.webAdminPassword]." );
+                    "You can either pass the password as an argument to this function, or set it in "+Constants.APP_CFC+" with the variable [this.webAdminPassword]." );
 
         return password;
     }

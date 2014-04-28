@@ -161,7 +161,12 @@ public final class ConfigServerFactory extends ConfigFactory{
 		// Debug
 		Resource debug = adminDir.getRealResource("debug");
 		create("/resource/context/admin/debug/",new String[]{
-				"Debug.cfc","Field.cfc","Group.cfc","Classic.cfc","Modern.cfc","Comment.cfc"
+				"Debug."+Constants.COMPONENT_EXTENSION
+				,"Field."+Constants.COMPONENT_EXTENSION
+				,"Group."+Constants.COMPONENT_EXTENSION
+				,"Classic."+Constants.COMPONENT_EXTENSION
+				,"Modern."+Constants.COMPONENT_EXTENSION
+				,"Comment."+Constants.COMPONENT_EXTENSION
 				},debug,doNew);
 		
 		
@@ -169,26 +174,47 @@ public final class ConfigServerFactory extends ConfigFactory{
 		Resource dbDir = adminDir.getRealResource("dbdriver");
 		Resource typesDir = dbDir.getRealResource("types");
 		create("/resource/context/admin/dbdriver/types/",new String[]{
-		"IDriver.cfc","Driver.cfc","IDatasource.cfc","IDriverSelector.cfc","Field.cfc"
+		"IDriver."+Constants.COMPONENT_EXTENSION
+		,"Driver."+Constants.COMPONENT_EXTENSION
+		,"IDatasource."+Constants.COMPONENT_EXTENSION
+		,"IDriverSelector."+Constants.COMPONENT_EXTENSION
+		,"Field."+Constants.COMPONENT_EXTENSION
 		},typesDir,doNew);
 
 		// DB Drivers
 		create("/resource/context/admin/dbdriver/",new String[]{
-		"H2.cfc","H2Selector.cfc","H2Server.cfc","HSQLDB.cfc","MSSQL.cfc","MSSQL2.cfc","MSSQLSelector.cfc","DB2.cfc","Oracle.cfc"
-		,"MySQL.cfc","ODBC.cfc","Sybase.cfc","PostgreSql.cfc","Other.cfc","Firebird.cfc"}
+		"H2."+Constants.COMPONENT_EXTENSION
+		,"H2Selector."+Constants.COMPONENT_EXTENSION
+		,"H2Server."+Constants.COMPONENT_EXTENSION
+		,"HSQLDB."+Constants.COMPONENT_EXTENSION
+		,"MSSQL."+Constants.COMPONENT_EXTENSION
+		,"MSSQL2."+Constants.COMPONENT_EXTENSION
+		,"MSSQLSelector."+Constants.COMPONENT_EXTENSION
+		,"DB2."+Constants.COMPONENT_EXTENSION
+		,"Oracle."+Constants.COMPONENT_EXTENSION
+		,"MySQL."+Constants.COMPONENT_EXTENSION
+		,"ODBC."+Constants.COMPONENT_EXTENSION
+		,"Sybase."+Constants.COMPONENT_EXTENSION
+		,"PostgreSql."+Constants.COMPONENT_EXTENSION
+		,"Other."+Constants.COMPONENT_EXTENSION
+		,"Firebird."+Constants.COMPONENT_EXTENSION}
 		,dbDir,doNew);
 		
 		// Cache Drivers
 		Resource cDir = adminDir.getRealResource("cdriver");
 		create("/resource/context/admin/cdriver/",new String[]{
-		"Cache.cfc","RamCache.cfc","EHCache.cfc","Field.cfc","Group.cfc"}
+		"Cache."+Constants.COMPONENT_EXTENSION
+		,"RamCache."+Constants.COMPONENT_EXTENSION
+		,"EHCache."+Constants.COMPONENT_EXTENSION,"Field."+Constants.COMPONENT_EXTENSION
+		,"Group."+Constants.COMPONENT_EXTENSION}
 		,cDir,doNew);
 		
-		delete(cDir,new String[]{"EHCacheLite.cfc"});
+		delete(cDir,new String[]{"EHCacheLite."+Constants.COMPONENT_EXTENSION});
 		
 		Resource wcdDir = configDir.getRealResource("web-context-deployment/admin");
 		Resource cdDir = wcdDir.getRealResource("cdriver");
-		delete(cdDir,new String[]{"EHCache.cfc","EHCacheLite.cfc"});
+		delete(cdDir,new String[]{"EHCache."+Constants.COMPONENT_EXTENSION
+		,"EHCacheLite."+Constants.COMPONENT_EXTENSION});
 		try {
 			ResourceUtil.deleteEmptyFolders(wcdDir);
 		}
@@ -201,19 +227,19 @@ public final class ConfigServerFactory extends ConfigFactory{
 		// Gateway Drivers
 		Resource gDir = adminDir.getRealResource("gdriver");
 		create("/resource/context/admin/gdriver/",new String[]{
-		"TaskGatewayDriver.cfc","DirectoryWatcher.cfc","MailWatcher.cfc","Gateway.cfc","Field.cfc","Group.cfc"}
+		"TaskGatewayDriver."+Constants.COMPONENT_EXTENSION,"DirectoryWatcher."+Constants.COMPONENT_EXTENSION,"MailWatcher."+Constants.COMPONENT_EXTENSION,"Gateway."+Constants.COMPONENT_EXTENSION,"Field."+Constants.COMPONENT_EXTENSION,"Group."+Constants.COMPONENT_EXTENSION}
 		,gDir,doNew);
 		
 		// Logging/appender
 		Resource app = adminDir.getRealResource("logging/appender");
 		create("/resource/context/admin/logging/appender/",new String[]{
-		"ConsoleAppender.cfc","ResourceAppender.cfc","Appender.cfc","Field.cfc","Group.cfc"}
+		"ConsoleAppender."+Constants.COMPONENT_EXTENSION,"ResourceAppender."+Constants.COMPONENT_EXTENSION,"Appender."+Constants.COMPONENT_EXTENSION,"Field."+Constants.COMPONENT_EXTENSION,"Group."+Constants.COMPONENT_EXTENSION}
 		,app,doNew);
 		
 		// Logging/layout
 		Resource lay = adminDir.getRealResource("logging/layout");
 		create("/resource/context/admin/logging/layout/",new String[]{
-		"ClassicLayout.cfc","HTMLLayout.cfc","PatternLayout.cfc","XMLLayout.cfc","Layout.cfc","Field.cfc","Group.cfc"}
+		"ClassicLayout."+Constants.COMPONENT_EXTENSION,"HTMLLayout."+Constants.COMPONENT_EXTENSION,"PatternLayout."+Constants.COMPONENT_EXTENSION,"XMLLayout."+Constants.COMPONENT_EXTENSION,"Layout."+Constants.COMPONENT_EXTENSION,"Field."+Constants.COMPONENT_EXTENSION,"Group."+Constants.COMPONENT_EXTENSION}
 		,lay,doNew);
 		
 		// Security

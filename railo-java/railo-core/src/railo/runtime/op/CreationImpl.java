@@ -27,6 +27,7 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.Constants;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -283,7 +284,7 @@ public final class CreationImpl implements Creation,Serializable {
 		path=path.trim();
 		String pathContracted=ContractPath.call(pc, path);
     	
-		if(pathContracted.toLowerCase().endsWith(".cfc"))
+		if(pathContracted.toLowerCase().endsWith("."+Constants.COMPONENT_EXTENSION))
 			pathContracted=pathContracted.substring(0,pathContracted.length()-4);
 		
     	pathContracted=pathContracted

@@ -20,6 +20,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExceptionHandler;
@@ -520,7 +521,7 @@ public final class ScopeContext {
 						if(ds!=null)
 							throw new ApplicationException(
 									"datasource ["+storage+"] is not enabled to be used as session/client storage, " +
-									"you have to enable it in the railo administrator or define key \"storage=true\" for datasources defined in Application.cfc .");
+									"you have to enable it in the railo administrator or define key \"storage=true\" for datasources defined in "+Constants.APP_CFC+" .");
 						
 						CacheConnection cc = Util.getCacheConnection(pc.getConfig(),storage,null);
 						if(cc!=null) 

@@ -6,12 +6,14 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.runtime.config.Constants;
+
 public class GatewayUtil {
 
 	
 	public static String toRequestURI(String cfcPath) {
 		String requestURI = cfcPath.replace('.','/');
-		if(!requestURI.startsWith("/"))requestURI="/"+requestURI+".cfc";
+		if(!requestURI.startsWith("/"))requestURI="/"+requestURI+"."+Constants.COMPONENT_EXTENSION;
 		return requestURI;
 	}
 

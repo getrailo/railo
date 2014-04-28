@@ -9,6 +9,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.ExceptionUtil;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageSource;
+import railo.runtime.config.Constants;
 import railo.transformer.Factory;
 import railo.transformer.Position;
 import railo.transformer.TransformerException;
@@ -37,7 +38,7 @@ public class TagComponent extends TagBase{
 		
 		PageSource ps = bc.getPage().getPageSource();
 		//Resource res = ps.getPhyscalFile();
-		PageSource rel = ps.getRealPage("Inliner.cfc");
+		PageSource rel = ps.getRealPage("Inliner."+Constants.COMPONENT_EXTENSION);
 		aprint.e(getBody().getParent());
 		Resource classFile = rel.getMapping().getClassRootDirectory().getRealResource(rel.getJavaName()+".class");
 		

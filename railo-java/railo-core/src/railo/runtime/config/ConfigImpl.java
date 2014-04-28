@@ -149,13 +149,6 @@ public abstract class ConfigImpl implements Config {
 	public static final int DEBUG_QUERY_USAGE = 32;
 	public static final int DEBUG_DUMP = 64;
 	
-	
-	
-	
-	public static final ExtensionProvider[] RAILO_EXTENSION_PROVIDERS = new ExtensionProviderImpl[]{
-		new ExtensionProviderImpl("http://www.getrailo.com/ExtensionProvider.cfc",true),
-		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
-	};
 	private static final Extension[] EXTENSIONS_EMPTY = new Extension[0];
 	
 	public static final int AMF_CONFIG_TYPE_XML = 1;

@@ -203,25 +203,12 @@ public final class PageSourceImpl implements PageSource {
     	if((mapping.getInspectTemplate()==Config.INSPECT_NEVER || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
-    	/*{
-    		String dp = getDisplayPath();
-    		String cn = getClassName();
-    		if(dp.endsWith(".cfc") && cn.startsWith("cfc")) {
-    			print.ds("->"+dp);
-    			print.e("trusted:"+mapping.isTrusted());
-    			print.e(mapping.getVirtual());
-    			print.e("mod:"+srcFile.lastModified());
-    		}
-    	}*/
-    	
-    	
 		long srcLastModified = srcFile.lastModified();
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
 			if(page!=null) {
 			//if(page!=null && !recompileAlways) {
-				// java file is newer !mapping.isTrusted() && 
 				if(srcLastModified!=page.getSourceLastModified()) {
 					this.page=page=compile(config,mapping.getClassRootDirectory(),Boolean.TRUE);
                 	page.setPageSource(this);

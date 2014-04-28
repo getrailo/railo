@@ -4273,7 +4273,7 @@ public final class ConfigWebAdmin {
 	/*private void updatePlugin(Resource src) throws PageException, IOException {
         Resource srcDir = ResourceUtil.toResourceExisting(config, "zip://"+src.getAbsolutePath());
         if(!doAccept(srcDir))
-        	throw new ApplicationException("plugin ["+src+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.util.ListUtil.arrayToList(srcDir.list(), ", ")+"]");
+        	throw new ApplicationException("plugin ["+src+"] is invalid, missing one of the following files [Action."+Constants.COMPONENT_EXTENSION+",language.xml] in root, existing files are ["+railo.runtime.type.util.ListUtil.arrayToList(srcDir.list(), ", ")+"]");
         
         String name=ResourceUtil.getName(src.getName());
         
@@ -4287,7 +4287,7 @@ public final class ConfigWebAdmin {
         store();
     }
 	public static boolean doAccept(Resource res) {
-		return res.isDirectory() && res.getRealResource("/Action.cfc").isFile() && res.getRealResource("/language.xml").isFile();
+		return res.isDirectory() && res.getRealResource("/Action."+Constants.COMPONENT_EXTENSION).isFile() && res.getRealResource("/language.xml").isFile();
     }*/
 
 	

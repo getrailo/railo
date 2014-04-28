@@ -13,7 +13,7 @@ import railo.runtime.type.StructImpl;
 
 /**
  * implements BIF CacheRegionNew.  This function only exists for compatibility with other CFML Engines and should be avoided where possible.
- * The preferred method to manipulate Cache connections is via the Administrator interface or in Application.cfc
+ * The preferred method to manipulate Cache connections is via the Administrator interface or in Application.
  */
 public class CacheRegionNew implements Function {
 

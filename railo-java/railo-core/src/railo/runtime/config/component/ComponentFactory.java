@@ -2,6 +2,7 @@ package railo.runtime.config.component;
 
 import railo.commons.io.res.Resource;
 import railo.runtime.config.ConfigFactory;
+import railo.runtime.config.Constants;
 
 public class ComponentFactory {
 
@@ -52,8 +53,8 @@ public class ComponentFactory {
 	}
 
 	private static void deploy(Resource dir, String path,boolean doNew, String name) {
-		Resource f = dir.getRealResource(name+".cfc");
-        if(!f.exists() || doNew)ConfigFactory.createFileFromResourceEL(path+name+".cfc",f);
+		Resource f = dir.getRealResource(name+"."+Constants.COMPONENT_EXTENSION);
+        if(!f.exists() || doNew)ConfigFactory.createFileFromResourceEL(path+name+"."+Constants.COMPONENT_EXTENSION,f);
 	}
 }
 

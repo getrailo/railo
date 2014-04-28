@@ -36,7 +36,7 @@ import railo.runtime.writer.BodyContentUtil;
 public class ComponentLoader {
 	
 
-    private static final ResourceFilter DIR_OR_EXT=new OrResourceFilter(new ResourceFilter[]{DirectoryResourceFilter.FILTER,new ExtensionResourceFilter(".cfc")});
+    private static final ResourceFilter DIR_OR_EXT=new OrResourceFilter(new ResourceFilter[]{DirectoryResourceFilter.FILTER,new ExtensionResourceFilter("."+Constants.COMPONENT_EXTENSION)});
 
 	public static ComponentImpl loadComponent(PageContext pc,PageSource child,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
     	return (ComponentImpl)load(pc,child, rawPath, searchLocal, searchRoot,null,false);
@@ -59,7 +59,7 @@ public class ComponentLoader {
     	//app-String appName=pc.getApplicationContext().getName();
     	rawPath=rawPath.trim().replace('\\','/');
     	String path=(rawPath.indexOf("./")==-1)?rawPath.replace('.','/'):rawPath;
-    	String pathWithCFC=path.concat(".cfc");
+    	String pathWithCFC=path.concat("."+Constants.COMPONENT_EXTENSION);
     	
     	
     	boolean isRealPath=!StringUtil.startsWith(pathWithCFC,'/');
@@ -494,7 +494,7 @@ public class ComponentLoader {
     	boolean hasRemovedExt=false;
     	
     	fullName=fullName.trim().replace('\\','/').replace('.','/');
-	    String path=fullName.concat(".cfc");
+	    String path=fullName.concat("."+Constants.COMPONENT_EXTENSION);
 	    
 	    
 	    boolean isRealPath=!StringUtil.startsWith(fullName,'/');

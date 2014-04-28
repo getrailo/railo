@@ -4,6 +4,7 @@ import java.util.TimeZone;
 
 import railo.commons.lang.ClassException;
 import railo.runtime.config.ConfigWebFactory;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Struct;
@@ -55,7 +56,7 @@ public class ApplicationDataSource extends DataSourceSupport {
 
 	@Override
 	public String getDatabase() {
-		throw new PageRuntimeException(new ApplicationException("Datasource defined in the Application.cfc has no name."));
+		throw new PageRuntimeException(new ApplicationException("Datasource defined in the "+Constants.APP_CFC+" has no name."));
 	}
 
 	@Override

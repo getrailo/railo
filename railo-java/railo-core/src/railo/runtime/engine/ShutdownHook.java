@@ -13,7 +13,7 @@ public class ShutdownHook extends Thread {
 	@Override
 	public void run() {
 		
-		// TODO Server.cfc->onServerEnd
+		// TODO Server . cfc->onServerEnd
 		
 		// try to update jars, doing this here because on windows the files could be locked
 		/*try {

@@ -132,7 +132,7 @@ public final class CreateObject implements Function {
         	PageContextImpl pci = (PageContextImpl)pc;
         	java.util.List<Resource> resources=new ArrayList<Resource>();
         	
-        	// get java settings from application.cfc
+        	// get java settings from application . cfc
         	//java.util.List<Resource> resources=getJavaSettings(pc);
         	
         	// load resources

@@ -265,9 +265,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Externalizable {
 		try {
 			PageSource ps = getPageSource();
 			if(doIncludePath)psInc = ps;
-			//if(!ps.getDisplayPath().endsWith("Dump.cfc"))print.e(getPageSource().getDisplayPath());
 			if(doIncludePath && getOwnerComponent()!=null) {
-				//if(!ps.getDisplayPath().endsWith("Dump.cfc"))print.ds(ps.getDisplayPath());
 				psInc=ComponentUtil.getPageSource(getOwnerComponent());
 				if(psInc==pci.getCurrentTemplatePageSource()) {
 					psInc=null;

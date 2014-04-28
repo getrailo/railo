@@ -18,6 +18,7 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -32,7 +33,7 @@ public class ComponentListPackage implements Function {
 	
 	private static final long serialVersionUID = 6502632300879457687L;
 	
-	private static final ExtensionResourceFilter FILTER_CFC = new ExtensionResourceFilter(".cfc");
+	private static final ExtensionResourceFilter FILTER_CFC = new ExtensionResourceFilter(Constants.COMPONENT_EXTENSION);
 	private static final ExtensionResourceFilter FILTER_CLASS = new ExtensionResourceFilter(".class");
 	private static final String[] EMPTY = new String[0];
 	
@@ -50,7 +51,7 @@ public class ComponentListPackage implements Function {
 		Iterator<String> it = names.iterator();
 		while(it.hasNext()){
 			name=it.next();
-			if(StringUtil.endsWithIgnoreCase(name, ".cfc")) {
+			if(StringUtil.endsWithIgnoreCase(name, "."+Constants.COMPONENT_EXTENSION)) {
 				name=name.substring(0,name.length()-4);
 			}
 			arr.appendEL(name);
@@ -187,7 +188,7 @@ public class ComponentListPackage implements Function {
 						if(loc !=-1) {
 							c=c.substring(0,loc);
 							c = ListUtil.last(c, "/\\",true).trim();
-							if(StringUtil.endsWithIgnoreCase(c, ".cfc"))
+							if(StringUtil.endsWithIgnoreCase(c, "."+Constants.COMPONENT_EXTENSION))
 								list.add(c);
 						}
 					}

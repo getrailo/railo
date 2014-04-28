@@ -6,6 +6,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -60,7 +61,7 @@ public class RestDeleteApplication {
 		}
 		if(StringUtil.isEmpty(password, true))
 			throw new SecurityException("To manipulate a REST mapping you need to define the password for the current Web Administartor, " +
-					"you can do this as argument with this function or inside the application.cfc with the variable [this.webAdminPassword].");
+					"you can do this as argument with this function or inside the "+Constants.APP_CFC+" with the variable [this.webAdminPassword].");
 
 		return password;
 	}

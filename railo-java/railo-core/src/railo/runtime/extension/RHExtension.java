@@ -2,7 +2,7 @@ package railo.runtime.extension;
 
 
 /**
- * Extension completely handled by Railo and not by the Install.cfc/config.xml 
+ * Extension completely handled by Railo and not by the Install/config.xml 
  */
 public class RHExtension {
 

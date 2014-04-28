@@ -261,7 +261,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		Resource res;
 		PageContext pc = ThreadLocalPageContext.get();
 		
-		// first check relative to application.cfc
+		// first check relative to application . cfc
 		if(pc!=null) {
 			if(ac==null) ac= pc.getApplicationContext();
 			
@@ -287,7 +287,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 					res=src.getParentResource().getRealResource(path);
 					if(res!=null && (!onlyDir || res.isDirectory())) return res;
 				}
-				// happens when this is called from within the application.cfc (init)
+				// happens when this is called from within the application . cfc (init)
 				else {
 					res=ResourceUtil.toResourceNotExisting(pc, path);
 					if(res!=null && (!onlyDir || res.isDirectory())) return res;

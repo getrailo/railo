@@ -15,9 +15,6 @@ import railo.runtime.config.Config;
 import railo.transformer.bytecode.util.ASMUtil;
 
 public class MappingUtil {
-	//private static final ResourceFilter EXT=new ExtensionResourceFilter(".cfc");
-	//private static final ResourceFilter DIR_OR_EXT=new OrResourceFilter(new ResourceFilter[]{DirectoryResourceFilter.FILTER,EXT});
-
 	
 	public static PageSource searchMappingRecursive(Mapping mapping, String name, boolean onlyCFC) {
 		if(name.indexOf('/')==-1) { // TODO handle this as well?

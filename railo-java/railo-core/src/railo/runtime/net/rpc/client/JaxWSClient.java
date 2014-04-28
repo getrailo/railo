@@ -48,9 +48,9 @@ public class JaxWSClient extends WSClient {
 	private Service service;
 	private String wsdlUrl;
 	
-	public static void main(String[] args) throws PageException {
+	/*public static void main(String[] args) throws PageException {
 		JaxWSClient client = new JaxWSClient("http://www.getrailo.org/railo-context/Admin.cfc?wsdl", null, null, null);
-	}
+	}*/
 	
 	public JaxWSClient( String wsdlUrl, String username, String password, ProxyData proxyData) throws PageException {
 		try {

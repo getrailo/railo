@@ -1016,10 +1016,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!f.exists())
 			createFileFromResourceEL("/resource/context/component-dump."+Constants.TEMPLATE_EXTENSION, f);
 
-		// Component.cfc
+		// Base Component
 		String badContent = "<cfcomponent displayname=\"Component\" hint=\"This is the Base Component\">\n</cfcomponent>";
 		String badVersion = "704b5bd8597be0743b0c99a644b65896";
-		f = contextDir.getRealResource("Component.cfc");
+		f = contextDir.getRealResource("Component."+Constants.COMPONENT_EXTENSION);
 
 		if (!f.exists())
 			createFileFromResourceEL("/resource/context/Component."+Constants.COMPONENT_EXTENSION, f);
@@ -1176,7 +1176,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 		
 		// add Cache Drivers
 		create("/resource/context/admin/cdriver/",new String[]{
-		"Cache.cfc","Field.cfc","Group.cfc"}
+		"Cache."+Constants.COMPONENT_EXTENSION
+		,"Field."+Constants.COMPONENT_EXTENSION
+		,"Group."+Constants.COMPONENT_EXTENSION}
 		,cDir,doNew);
 		
 		// delete DB Drivers
@@ -4052,14 +4054,13 @@ public final class ConfigWebFactory extends ConfigFactory {
 		String provider;
 		Map list = new HashMap();
 
-		for (int i = 0; i < ConfigImpl.RAILO_EXTENSION_PROVIDERS.length; i++) {
-			list.put(ConfigImpl.RAILO_EXTENSION_PROVIDERS[i], "");
+		for (int i = 0; i < Constants.RAILO_EXTENSION_PROVIDERS.length; i++) {
+			list.put(Constants.RAILO_EXTENSION_PROVIDERS[i], "");
 		}
 
 		for (int i = 0; i < xmlProviders.length; i++) {
 			provider = xmlProviders[i].getAttribute("url");
-			if (!StringUtil.isEmpty(provider, true) && !"http://www.railo-technologies.com/ExtensionProvider.cfc".equals(provider)
-					&& !"http://www.railo.ch/ExtensionProvider.cfc".equals(provider)) {
+			if (!StringUtil.isEmpty(provider, true)) {
 				list.put(new ExtensionProviderImpl(provider.trim(), false), "");
 			}
 		}

@@ -1,5 +1,8 @@
 package railo.runtime.config;
 
+import railo.runtime.extension.ExtensionProvider;
+import railo.runtime.extension.ExtensionProviderImpl;
+
 public class Constants {
 
 	public static final String COMPONENT_EXTENSION = "cfc";
@@ -14,5 +17,9 @@ public class Constants {
 	public static final String DEFAULT_PACKAGE = "org.railo.cfml";
 	public static final String WEBSERVICE_NAMESPACE_URI="http://rpc.xml.cfml";
 	
+	public static final ExtensionProvider[] RAILO_EXTENSION_PROVIDERS = new ExtensionProviderImpl[]{
+		new ExtensionProviderImpl("http://www.getrailo.com/ExtensionProvider.cfc",true),
+		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
+	};
 
 }

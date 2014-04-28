@@ -21,6 +21,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
@@ -220,7 +221,7 @@ public class HibernateUtil {
 			if(cfc.equalTo(cfcName)) return true;
 
 			if(cfcName.indexOf('.')!=-1) {
-				String path=cfcName.replace('.', '/')+".cfc";
+				String path=cfcName.replace('.', '/')+"."+Constants.COMPONENT_EXTENSION;
 				Resource[] locations = ormConf.getCfcLocations();
 				for(int i=0;i<locations.length;i++){
 					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getResource()))

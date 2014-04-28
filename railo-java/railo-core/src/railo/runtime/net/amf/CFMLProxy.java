@@ -61,7 +61,7 @@ public class CFMLProxy {
         String cfc;
         Object parameters=null;
         try {
-            cfc="/"+serviceName.replace('.','/')+".cfc";
+            cfc="/"+serviceName.replace('.','/')+"."+Constants.COMPONENT_EXTENSION;
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             pc=createPageContext(factory,cfc,"method="+serviceMethodName,baos,req);
             PageSource source = ((PageContextImpl)pc).getPageSourceExisting(cfc);

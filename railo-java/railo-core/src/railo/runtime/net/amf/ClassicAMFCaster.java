@@ -21,6 +21,7 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -251,7 +252,7 @@ public class ClassicAMFCaster implements AMFCaster {
 			PageContext pc = ThreadLocalPageContext.get();
 			ConfigWeb config = pc.getConfig();
 			
-				String name="/"+aso.getType().replace('.', '/')+".cfc";
+				String name="/"+aso.getType().replace('.', '/')+"."+Constants.COMPONENT_EXTENSION;
 
 				Page p = PageSourceImpl.loadPage(pc, ((PageContextImpl)pc).getPageSources(name), null) ;
 

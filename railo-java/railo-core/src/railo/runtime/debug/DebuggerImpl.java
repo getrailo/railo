@@ -25,6 +25,7 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
@@ -254,18 +255,21 @@ public final class DebuggerImpl implements Debugger {
 			if(p==null) {
 				if(path!=null) {
 					boolean changed=false;
-					if(path.endsWith("/Modern.cfc") || path.endsWith("\\Modern.cfc")) {
-						path="/railo-server-context/admin/debug/Modern.cfc";
+					if(path.endsWith("/Modern."+Constants.COMPONENT_EXTENSION) 
+							|| path.endsWith("\\Modern."+Constants.COMPONENT_EXTENSION)) {
+						path="/railo-server-context/admin/debug/Modern."+Constants.COMPONENT_EXTENSION;
 						fullname="railo-server-context.admin.debug.Modern";
 						changed=true;
 					}
-					else if(path.endsWith("/Classic.cfc") || path.endsWith("\\Classic.cfc")) {
-						path="/railo-server-context/admin/debug/Classic.cfc";
+					else if(path.endsWith("/Classic."+Constants.COMPONENT_EXTENSION) 
+							|| path.endsWith("\\Classic."+Constants.COMPONENT_EXTENSION)) {
+						path="/railo-server-context/admin/debug/Classic."+Constants.COMPONENT_EXTENSION;
 						fullname="railo-server-context.admin.debug.Classic";
 						changed=true;
 					}
-					else if(path.endsWith("/Comment.cfc") || path.endsWith("\\Comment.cfc")) {
-						path="/railo-server-context/admin/debug/Comment.cfc";
+					else if(path.endsWith("/Comment."+Constants.COMPONENT_EXTENSION) 
+							|| path.endsWith("\\Comment."+Constants.COMPONENT_EXTENSION)) {
+						path="/railo-server-context/admin/debug/Comment."+Constants.COMPONENT_EXTENSION;
 						fullname="railo-server-context.admin.debug.Comment";
 						changed=true;
 					}

@@ -197,7 +197,7 @@ public abstract class ComponentPage extends PagePlus  {
             // Include MUST
             Array path = pc.getTemplatePath();
             //if(path.size()>1 ) {
-            if(path.size()>1 && !(path.size()==3 && ListUtil.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            if(path.size()>1 && !(path.size()==3 && ListUtil.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application . cfc
             	
             	ComponentSpecificAccess c = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,component);
             	Key[] keys = c.keys();
