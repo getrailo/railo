@@ -165,11 +165,12 @@ Path placeholders:
 		resolveOrder   - 	maps to jcifs.resolveOrder property, defaults to 'DNS'
 		smb.client.dfs.disabled	-	maps to jcifs.smb.client.dfs.disabled property. defaults to 'true'
 		NOTE: these defaults assume DNS lookups instead of workgroup/WINS. These settings make smb interactions faster.
-	 	-->
+	 	
     	<resource-provider 
     		scheme="smb"
     		class="railo.commons.io.res.type.smb.SMBResourceProvider"
     		arguments=""/>
+    	-->
     </resources>
 	
 
