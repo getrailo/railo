@@ -33,21 +33,21 @@ public class MetadataUtil {
     	return page;
 	}
     
-	private static boolean hasChanged(PageContext pc,long lastMetaCreation, ComponentImpl cfc) throws PageException {
-		if(cfc==null) return false;
+	private static boolean hasChanged(PageContext pc,long lastMetaCreation, ComponentImpl component) throws PageException {
+		if(component==null) return false;
 		
 		// check the component
-		Page p = getPage(pc, cfc._getPageSource());
+		Page p = getPage(pc, component._getPageSource());
 		if(hasChanged(p.getCompileTime(),lastMetaCreation)) return true;
 		
 		// check interfaces
-		InterfaceCollection ic = cfc._interfaceCollection();
+		InterfaceCollection ic = component._interfaceCollection();
         if(ic!=null){
         	if(hasChanged(pc,lastMetaCreation,ic.getInterfaces())) return true;
         }
         
         // check base
-		return hasChanged(pc, lastMetaCreation, (ComponentImpl)cfc.getBaseComponent());
+		return hasChanged(pc, lastMetaCreation, (ComponentImpl)component.getBaseComponent());
 	}
 	
 	private static boolean hasChanged(PageContext pc,long lastMetaCreation,InterfaceImpl[] interfaces) throws PageException {

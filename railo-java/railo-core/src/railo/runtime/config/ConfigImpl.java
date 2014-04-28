@@ -975,7 +975,7 @@ public abstract class ConfigImpl implements Config {
         Mapping mapping;
         String path;
         
-        // app-cfc mappings
+        // app mappings
         if(mappings!=null){
             for(int i=0;i<mappings.length;i++) {
                 mapping = mappings[i];

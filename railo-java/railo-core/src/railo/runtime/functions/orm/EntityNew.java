@@ -30,11 +30,11 @@ public class EntityNew {
 		
 	}
 
-	public static void setPropeties(PageContext pc, Component cfc, Struct properties, boolean ignoreNotExisting) throws PageException { 
+	public static void setPropeties(PageContext pc, Component c, Struct properties, boolean ignoreNotExisting) throws PageException { 
 		if(properties==null) return;
 		
 		// argumentCollection
-		if(properties.size()==1 && properties.containsKey(KeyConstants._argumentCollection) && !cfc.containsKey(KeyConstants._setArgumentCollection)) {
+		if(properties.size()==1 && properties.containsKey(KeyConstants._argumentCollection) && !c.containsKey(KeyConstants._setArgumentCollection)) {
 			properties=Caster.toStruct(properties.get(KeyConstants._argumentCollection));
 		}
 		
@@ -44,12 +44,12 @@ public class EntityNew {
 			e = it.next();
 			if(ignoreNotExisting) {
 				try {
-					cfc.call(pc, "set"+e.getKey().getString(), new Object[]{e.getValue()});
+					c.call(pc, "set"+e.getKey().getString(), new Object[]{e.getValue()});
 				}
 				catch(Throwable t){}
 			}
 			else {
-				cfc.call(pc, "set"+e.getKey().getString(), new Object[]{e.getValue()});
+				c.call(pc, "set"+e.getKey().getString(), new Object[]{e.getValue()});
 			}
 		}
 	}

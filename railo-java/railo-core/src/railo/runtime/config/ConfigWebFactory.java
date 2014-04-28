@@ -992,9 +992,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!storDir.exists())
 			storDir.mkdirs();
 
-		Resource cfcDir = configDir.getRealResource("components");
-		if (!cfcDir.exists())
-			cfcDir.mkdirs();
+		Resource compDir = configDir.getRealResource("components");
+		if (!compDir.exists())
+			compDir.mkdirs();
 
 		// remove old cacerts files, they are now only in the server context
 		Resource secDir = configDir.getRealResource("security");

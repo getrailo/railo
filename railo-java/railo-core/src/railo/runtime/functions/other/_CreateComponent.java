@@ -18,35 +18,35 @@ public class _CreateComponent {
 
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
 		String path = Caster.toString(objArr[objArr.length-1]);
-		Component cfc = CreateObject.doComponent(pc, path);
+		Component c = CreateObject.doComponent(pc, path);
 		
 		// no init method
-		if(!(cfc.get(KeyConstants._init,null) instanceof UDF)){
+		if(!(c.get(KeyConstants._init,null) instanceof UDF)){
 			
 			if(objArr.length>1) {
 				Object arg1 = objArr[0];
 				if(arg1 instanceof FunctionValue) {
 					Struct args=Caster.toFunctionValues(objArr,0,objArr.length-1);
-					EntityNew.setPropeties(pc, cfc, args,true);
+					EntityNew.setPropeties(pc, c, args,true);
 				}
 				else if(Decision.isStruct(arg1)){
 					Struct args=Caster.toStruct(arg1);
-					EntityNew.setPropeties(pc, cfc, args,true);
+					EntityNew.setPropeties(pc, c, args,true);
 				}
 			}
 			
-			return cfc;
+			return c;
 		}
 		
 		Object rtn;
 		// no arguments
 		if(objArr.length==1) {
-			rtn = cfc.call(pc, KeyConstants._init, EMPTY);
+			rtn = c.call(pc, KeyConstants._init, EMPTY);
 		}	
 		// named arguments
 		else if(objArr[0] instanceof FunctionValue) {
 			Struct args=Caster.toFunctionValues(objArr,0,objArr.length-1);
-			rtn = cfc.callWithNamedValues(pc, KeyConstants._init, args);
+			rtn = c.callWithNamedValues(pc, KeyConstants._init, args);
 		}
 		// no name arguments
 		else {
@@ -56,9 +56,9 @@ public class _CreateComponent {
 				if(args[i] instanceof FunctionValue) 
 					throw new ExpressionException("invalid argument defintion,when using named parameters to a function, every parameter must have a name.");
 			}
-			rtn = cfc.call(pc, KeyConstants._init, args);
+			rtn = c.call(pc, KeyConstants._init, args);
 		}
-		if(rtn==null)return cfc;
+		if(rtn==null)return c;
 		return rtn;
 	}
 

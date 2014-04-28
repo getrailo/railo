@@ -25,10 +25,10 @@ public final class PCLCollection {
 
 	private final int maxBlockSize;
 	private final MappingImpl mapping;
-	private final LinkedList<PCLBlock> cfcs=new LinkedList<PCLBlock>();
+	private final LinkedList<PCLBlock> pclBlocks=new LinkedList<PCLBlock>();
 	private LinkedList<PCLBlock> cfms=new LinkedList<PCLBlock>();
-	private PCLBlock cfc;
-	private PCLBlock cfm;
+	private PCLBlock componenetBlock;
+	private PCLBlock templateBlock;
 	private Map<String,PCLBlock> index=new HashMap<String, PCLBlock>();
 
     /**
@@ -51,28 +51,28 @@ public final class PCLCollection {
     	this.mapping=mapping;
         //this.pcl=systemCL;
         this.resourceCL=resourceCL;
-        cfc=new PCLBlock(directory, resourceCL);
-        cfcs.add(cfc);
-        cfm=new PCLBlock(directory, resourceCL);
-        cfms.add(cfm);
+        componenetBlock=new PCLBlock(directory, resourceCL);
+        pclBlocks.add(componenetBlock);
+        templateBlock=new PCLBlock(directory, resourceCL);
+        cfms.add(templateBlock);
         this.maxBlockSize=100;//maxBlockSize;
     }
     
 
     private PCLBlock current(boolean isCFC) {
-    	if((isCFC?cfc.count():cfm.count())>=maxBlockSize) {
-    		synchronized (isCFC?cfcs:cfms) {
+    	if((isCFC?componenetBlock.count():templateBlock.count())>=maxBlockSize) {
+    		synchronized (isCFC?pclBlocks:cfms) {
     			if(isCFC) {
-    				cfc=new PCLBlock(directory, resourceCL);
-    				cfcs.add(cfc);
+    				componenetBlock=new PCLBlock(directory, resourceCL);
+    				pclBlocks.add(componenetBlock);
     			}
     			else {
-    				cfm=new PCLBlock(directory, resourceCL);
-    				cfms.add(cfm);
+    				templateBlock=new PCLBlock(directory, resourceCL);
+    				cfms.add(templateBlock);
     			}
 			}
     	}
-		return isCFC?cfc:cfm;
+		return isCFC?componenetBlock:templateBlock;
 	}
     
     
@@ -130,9 +130,9 @@ public final class PCLCollection {
 		}
     	
 		// CFC
-		if(force && flushCFM<2 && cfcs.size()>1) {
-			flush(oldest(cfcs));
-			if(cfcs.size()>1)flush(cfcs.poll());
+		if(force && flushCFM<2 && pclBlocks.size()>1) {
+			flush(oldest(pclBlocks));
+			if(pclBlocks.size()>1)flush(pclBlocks.poll());
 		}
 		//print.o("shrink("+mapping.getVirtual()+"):"+(before-index.size())+">"+force+";"+(flushCFM));
     	return before-index.size();

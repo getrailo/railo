@@ -9,6 +9,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.Factory;
 import railo.transformer.Position;
@@ -89,10 +90,13 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        		
 	        		String srcName = ASMUtil.getClassName(barr);
 	        		// source is cfm and target cfc
-	        		if(srcName.endsWith("_cfm$cf") && className.endsWith("_cfc$cf"))
+	        		if(
+	        				srcName.endsWith("_"+Constants.TEMPLATE_EXTENSION+"$cf") 
+	        				&& 
+	        				className.endsWith("_"+Constants.COMPONENT_EXTENSION+"$cf"))
 	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains the bytecode for a regular cfm template not for a component");
 	        		// source is cfc and target cfm
-	        		if(srcName.endsWith("_cfc$cf") && className.endsWith("_cfm$cf"))
+	        		if(srcName.endsWith("_"+Constants.COMPONENT_EXTENSION+"$cf") && className.endsWith("_"+Constants.TEMPLATE_EXTENSION+"$cf"))
 	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains a component not a regular cfm template");
 	        		
 	        		// rename class name when needed

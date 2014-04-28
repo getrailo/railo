@@ -24,79 +24,79 @@ public class CFMLResource extends ResourceSupport {
 	
 	private static final Object[] ZERO_ARGS = new Object[0];
 	private CFMLResourceProvider provider;
-	private Component cfc;
+	private Component component;
 
-	public CFMLResource(CFMLResourceProvider provider,Component cfc) {
+	public CFMLResource(CFMLResourceProvider provider,Component component) {
 		this.provider=provider;
-		this.cfc=cfc;
+		this.component=component;
 	}
 
 	@Override
 	public boolean isReadable() {
-		return provider.callbooleanRTE(null,cfc,"isReadable",ZERO_ARGS);
+		return provider.callbooleanRTE(null,component,"isReadable",ZERO_ARGS);
 	}
 
 	@Override
 	public boolean isWriteable() {
-		return provider.callbooleanRTE(null,cfc,"isWriteable",ZERO_ARGS);
+		return provider.callbooleanRTE(null,component,"isWriteable",ZERO_ARGS);
 	}
 
 	@Override
 	public void remove(boolean force) throws IOException {
-		provider.callRTE(null,cfc, "remove", new Object[]{force?Boolean.TRUE:Boolean.FALSE});
+		provider.callRTE(null,component, "remove", new Object[]{force?Boolean.TRUE:Boolean.FALSE});
 	}
 	
 
 	@Override
 	public boolean exists() {
-		return provider.callbooleanRTE(null,cfc,"exists",ZERO_ARGS);
+		return provider.callbooleanRTE(null,component,"exists",ZERO_ARGS);
 	}
 
 	@Override
 	public String getName() {
-		return provider.callStringRTE(null,cfc,"getName",ZERO_ARGS);
+		return provider.callStringRTE(null,component,"getName",ZERO_ARGS);
 	}
 
 	@Override
 	public String getParent() {
-		return provider.callStringRTE(null,cfc,"getParent",ZERO_ARGS);
+		return provider.callStringRTE(null,component,"getParent",ZERO_ARGS);
 	}
 
 	@Override
 	public Resource getParentResource() {
-		return provider.callResourceRTE(null, cfc, "getParentResource", ZERO_ARGS,true);
+		return provider.callResourceRTE(null, component, "getParentResource", ZERO_ARGS,true);
 	}
 
 	@Override
 	public Resource getRealResource(String realpath) {
-		return provider.callResourceRTE(null, cfc, "getRealResource", new Object[]{realpath},true);
+		return provider.callResourceRTE(null, component, "getRealResource", new Object[]{realpath},true);
 	}
 
 	@Override
 	public String getPath() {
-		return provider.callStringRTE(null,cfc,"getPath",ZERO_ARGS);
+		return provider.callStringRTE(null,component,"getPath",ZERO_ARGS);
 	}
 
 	@Override
 	public boolean isAbsolute() {
-		return provider.callbooleanRTE(null,cfc,"isAbsolute",ZERO_ARGS);
+		return provider.callbooleanRTE(null,component,"isAbsolute",ZERO_ARGS);
 	}
 
 	@Override
 	public boolean isDirectory() {
-		return provider.callbooleanRTE(null,cfc,"isDirectory",ZERO_ARGS);
+		return provider.callbooleanRTE(null,component,"isDirectory",ZERO_ARGS);
 	}
 
 	@Override
 	public boolean isFile() {
-		return provider.callbooleanRTE(null,cfc,"isFile",ZERO_ARGS);
+		return provider.callbooleanRTE(null,component,"isFile",ZERO_ARGS);
 	}
 
 	@Override
 	public long lastModified() {
 		PageContext pc = ThreadLocalPageContext.get();
 		try{
-			DateTime date = Caster.toDate(provider.call(pc,cfc,"lastModified",ZERO_ARGS), true, pc.getTimeZone());
+			DateTime date = Caster.toDate(provider.call(pc,component,"lastModified",ZERO_ARGS), true, pc.getTimeZone());
 			return date.getTime();
 		}
 		catch(PageException pe){
@@ -107,28 +107,28 @@ public class CFMLResource extends ResourceSupport {
 
 	@Override
 	public long length() {
-		return provider.calllongRTE(null,cfc,"length",ZERO_ARGS);
+		return provider.calllongRTE(null,component,"length",ZERO_ARGS);
 	}
 
 	@Override
 	public Resource[] listResources() {
-		return provider.callResourceArrayRTE(null, cfc, "listResources", ZERO_ARGS);
+		return provider.callResourceArrayRTE(null, component, "listResources", ZERO_ARGS);
 	}
 
 	@Override
 	public boolean setLastModified(long time) {
 		PageContext pc = ThreadLocalPageContext.get();
-		return provider.callbooleanRTE(pc,cfc,"setLastModified",new Object[]{new DateTimeImpl(pc, time, false)});
+		return provider.callbooleanRTE(pc,component,"setLastModified",new Object[]{new DateTimeImpl(pc, time, false)});
 	}
 
 	@Override
 	public boolean setWritable(boolean writable) {
-		return provider.callbooleanRTE(null,cfc,"setWritable",new Object[]{writable?Boolean.TRUE:Boolean.FALSE});
+		return provider.callbooleanRTE(null,component,"setWritable",new Object[]{writable?Boolean.TRUE:Boolean.FALSE});
 	}
 
 	@Override
 	public boolean setReadable(boolean readable) {
-		return provider.callbooleanRTE(null,cfc,"setReadable",new Object[]{readable?Boolean.TRUE:Boolean.FALSE});
+		return provider.callbooleanRTE(null,component,"setReadable",new Object[]{readable?Boolean.TRUE:Boolean.FALSE});
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class CFMLResource extends ResourceSupport {
 		ResourceUtil.checkCreateFileOK(this,createParentWhenNotExists);
 		provider.lock(this);
 		try {
-			provider.callRTE(null,cfc,"createFile",new Object[]{createParentWhenNotExists?Boolean.TRUE:Boolean.FALSE});
+			provider.callRTE(null,component,"createFile",new Object[]{createParentWhenNotExists?Boolean.TRUE:Boolean.FALSE});
 		}
 		finally {
 			provider.unlock(this);
@@ -148,7 +148,7 @@ public class CFMLResource extends ResourceSupport {
 		ResourceUtil.checkCreateDirectoryOK(this,createParentWhenNotExists);
 		provider.lock(this);
 		try {
-			provider.callRTE(null,cfc,"createDirectory",new Object[]{createParentWhenNotExists?Boolean.TRUE:Boolean.FALSE});
+			provider.callRTE(null,component,"createDirectory",new Object[]{createParentWhenNotExists?Boolean.TRUE:Boolean.FALSE});
 		}
 		finally {
 			provider.unlock(this);
@@ -163,9 +163,9 @@ public class CFMLResource extends ResourceSupport {
 		try {
 			Object obj;
 			if(provider.isUseStreams())  
-				obj = provider.call(null, cfc, "getInputStream", ZERO_ARGS);
+				obj = provider.call(null, component, "getInputStream", ZERO_ARGS);
 			else
-				obj = provider.call(null, cfc, "getBinary", ZERO_ARGS);
+				obj = provider.call(null, component, "getBinary", ZERO_ARGS);
 			if(obj==null) obj=new byte[0];
 			return Caster.toInputStream(obj,null);
 		} 
@@ -178,7 +178,7 @@ public class CFMLResource extends ResourceSupport {
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		try {
 			if(provider.isUseStreams()) {
-				Object obj = provider.call(null, cfc, "getOutputStream", new Object[]{append?Boolean.TRUE:Boolean.FALSE});
+				Object obj = provider.call(null, component, "getOutputStream", new Object[]{append?Boolean.TRUE:Boolean.FALSE});
 				return Caster.toOutputStream(obj);
 			}
 			return new CFMLResourceOutputStream(this);
@@ -198,7 +198,7 @@ public class CFMLResource extends ResourceSupport {
 		else {
 			barr=Caster.toBinary(obj);
 		}
-		provider.call(null, cfc, "setBinary", new Object[]{barr});
+		provider.call(null, component, "setBinary", new Object[]{barr});
 	}
 
 	@Override
@@ -208,12 +208,12 @@ public class CFMLResource extends ResourceSupport {
 
 	@Override
 	public int getMode() {
-		return provider.callintRTE(null,cfc,"getMode",ZERO_ARGS);
+		return provider.callintRTE(null,component,"getMode",ZERO_ARGS);
 	}
 
 	@Override
 	public void setMode(int mode) throws IOException {
-		provider.callRTE(null,cfc,"setMode",new Object[]{Caster.toDouble(mode)});
+		provider.callRTE(null,component,"setMode",new Object[]{Caster.toDouble(mode)});
 	}
 
 }

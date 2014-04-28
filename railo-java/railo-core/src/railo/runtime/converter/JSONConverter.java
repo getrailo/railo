@@ -248,12 +248,12 @@ public final class JSONConverter extends ConverterSupport {
         
         if(struct instanceof Component){
         	Boolean remotingFetch;
-        	Component cfc = (Component)struct;
+        	Component comp = (Component)struct;
         	boolean isPeristent=false;
-        	isPeristent=cfc.isPersistent();
+        	isPeristent=comp.isPersistent();
 			
-        	Property[] props = cfc.getProperties(false);
-        	ComponentScope scope = cfc.getComponentScope();
+        	Property[] props = comp.getProperties(false);
+        	ComponentScope scope = comp.getComponentScope();
         	for(int i=0;i<props.length;i++) {
         		if(!ignoreRemotingFetch) {
         			remotingFetch=Caster.toBoolean(props[i].getDynamicAttributes().get(REMOTING_FETCH,null),null);
@@ -278,13 +278,13 @@ public final class JSONConverter extends ConverterSupport {
         sb.append('}');
     }
     
-    private static String castToJson(PageContext pc,Component cfc, String defaultValue) throws ConverterException {
-		Object o=cfc.get(TO_JSON,null);
+    private static String castToJson(PageContext pc,Component c, String defaultValue) throws ConverterException {
+		Object o=c.get(TO_JSON,null);
 		if(!(o instanceof UDF)) return defaultValue;
 		UDF udf=(UDF) o;
 		if(udf.getReturnType()!=CFTypes.TYPE_VOID && udf.getFunctionArguments().length==0) {
 			try {
-				return Caster.toString(cfc.call(pc, TO_JSON, new Object[0]));
+				return Caster.toString(c.call(pc, TO_JSON, new Object[0]));
 			} catch (PageException e) {
 				e.printStackTrace();
 				throw toConverterException(e);

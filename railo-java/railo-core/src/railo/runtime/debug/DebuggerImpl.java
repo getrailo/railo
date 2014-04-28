@@ -284,8 +284,8 @@ public final class DebuggerImpl implements Debugger {
 			
 			pc.addPageSource(p.getPageSource(), true);
 			try{
-				Component cfc = pc.loadComponent(fullname);
-				cfc.callWithNamedValues(pc, "output", args);
+				Component c = pc.loadComponent(fullname);
+				c.callWithNamedValues(pc, "output", args);
 			}
 			finally {
 				pc.removeLastPageSource(true);

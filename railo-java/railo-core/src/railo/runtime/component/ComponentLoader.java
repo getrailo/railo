@@ -259,11 +259,11 @@ public class ComponentLoader {
     	}
     	
 
-    	// search relative to active cfc (this get not cached because the cache get ambigous if we do)
+    	// search relative to active component (this get not cached because the cache get ambigous if we do)
     	if(searchLocal && isRealPath)	{
     		if(child==null) {
-    			Component cfc = pc.getActiveComponent();
-    			if(cfc!=null) child = cfc.getPageSource();
+    			Component c = pc.getActiveComponent();
+    			if(c!=null) child = c.getPageSource();
     		}
     		
     		

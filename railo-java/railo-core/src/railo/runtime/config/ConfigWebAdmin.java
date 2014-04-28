@@ -1488,7 +1488,7 @@ public final class ConfigWebAdmin {
     }
     
 
-	public void updateGatewayEntry(String id,String className, String cfcPath, String listenerCfcPath,int startupMode,Struct custom, boolean readOnly) throws PageException {
+	public void updateGatewayEntry(String id,String className, String componentPath, String listenerCfcPath,int startupMode,Struct custom, boolean readOnly) throws PageException {
 		
 		checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_GATEWAY);
@@ -1502,8 +1502,8 @@ public final class ConfigWebAdmin {
     	if(StringUtil.isEmpty(id))
             throw new ExpressionException("id can't be a empty value");
     	
-    	if(StringUtil.isEmpty(className) && StringUtil.isEmpty(cfcPath))
-    		throw new ExpressionException("you must define className or cfcPath");
+    	if(StringUtil.isEmpty(className) && StringUtil.isEmpty(componentPath))
+    		throw new ExpressionException("you must define className or componentPath");
     	
         try {
         	if(!StringUtil.isEmpty(className)){
@@ -1523,7 +1523,7 @@ public final class ConfigWebAdmin {
       	    Element el=children[i];
       	    if(n.equalsIgnoreCase(id)) {
       	    	el.setAttribute("class",className);
-      	    	el.setAttribute("cfc-path",cfcPath);
+      	    	el.setAttribute("cfc-path",componentPath);
       	    	el.setAttribute("listener-cfc-path",listenerCfcPath);
       	    	el.setAttribute("startup-mode",GatewayEntryImpl.toStartup(startupMode, "automatic"));
       	    	el.setAttribute("custom",toStringURLStyle(custom));
@@ -1536,7 +1536,7 @@ public final class ConfigWebAdmin {
       	Element el=doc.createElement("gateway");
       	parent.appendChild(el);
       	el.setAttribute("id",id);
-      	el.setAttribute("cfc-path",cfcPath);
+      	el.setAttribute("cfc-path",componentPath);
       	el.setAttribute("listener-cfc-path",listenerCfcPath);
 	    el.setAttribute("startup-mode",GatewayEntryImpl.toStartup(startupMode, "automatic"));
 	    el.setAttribute("class",className);

@@ -29,7 +29,7 @@ public class CFMLResourceProvider implements ResourceProvider {
 	//private ResourceProvider provider;
 	private Resources resources;
 
-	private String cfcPath;
+	private String componentPath;
 
 	private Component component;
 
@@ -43,9 +43,9 @@ public class CFMLResourceProvider implements ResourceProvider {
 		this.args=args;
 		
 		// CFC Path
-		cfcPath=Caster.toString(args.get("cfc"),null);
-		if(StringUtil.isEmpty(cfcPath,true))
-			cfcPath=Caster.toString(args.get("component"),null);
+		componentPath=Caster.toString(args.get("cfc"),null);
+		if(StringUtil.isEmpty(componentPath,true))
+			componentPath=Caster.toString(args.get("component"),null);
 		
 		// use Streams for data
 		Boolean _useStreams = Caster.toBoolean(args.get("use-streams"),null);
@@ -121,10 +121,10 @@ public class CFMLResourceProvider implements ResourceProvider {
 	}
 	
 	
-	Resource callResourceRTE(PageContext pc,Component cfc,String methodName, Object[] args, boolean allowNull) {
+	Resource callResourceRTE(PageContext pc,Component component,String methodName, Object[] args, boolean allowNull) {
 		pc = ThreadLocalPageContext.get(pc);
 		try {
-			Object res = call(pc,getCFC(pc,cfc), methodName, args);
+			Object res = call(pc,getCFC(pc,component), methodName, args);
 			if(allowNull && res==null) return null;
 			return new CFMLResource(this,Caster.toComponent(res));
 		} 
@@ -133,10 +133,10 @@ public class CFMLResourceProvider implements ResourceProvider {
 		} 
 	}
 
-	Resource[] callResourceArrayRTE(PageContext pc,Component cfc,String methodName, Object[] args) {
+	Resource[] callResourceArrayRTE(PageContext pc,Component component,String methodName, Object[] args) {
 		pc = ThreadLocalPageContext.get(pc);
 		try {
-			Array arr = Caster.toArray(call(pc,getCFC(pc,cfc), methodName, args));
+			Array arr = Caster.toArray(call(pc,getCFC(pc,component), methodName, args));
 			Iterator<Object> it = arr.valueIterator();
 			CFMLResource[] resources=new CFMLResource[arr.size()];
 			int index=0;
@@ -151,80 +151,79 @@ public class CFMLResourceProvider implements ResourceProvider {
 	}
 	
 
-	int callintRTE(PageContext pc,Component cfc,String methodName, Object[] args) {
+	int callintRTE(PageContext pc,Component component,String methodName, Object[] args) {
 		try {
-			return callint(pc,cfc, methodName, args);
+			return callint(pc,component, methodName, args);
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);
 		}
 	}
-	int callint(PageContext pc,Component cfc,String methodName, Object[] args) throws PageException {
-		return Caster.toIntValue(call(pc,cfc,methodName, args));
+	int callint(PageContext pc,Component component,String methodName, Object[] args) throws PageException {
+		return Caster.toIntValue(call(pc,component,methodName, args));
 	}
 
-	long calllongRTE(PageContext pc,Component cfc,String methodName, Object[] args) {
+	long calllongRTE(PageContext pc,Component component,String methodName, Object[] args) {
 		try {
-			return calllong(pc,cfc, methodName, args);
+			return calllong(pc,component, methodName, args);
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);
 		}
 	}
-	long calllong(PageContext pc,Component cfc,String methodName, Object[] args) throws PageException {
-		return Caster.toLongValue(call(pc,cfc,methodName, args));
+	long calllong(PageContext pc,Component component,String methodName, Object[] args) throws PageException {
+		return Caster.toLongValue(call(pc,component,methodName, args));
 	}
 	
-	boolean callbooleanRTE(PageContext pc,Component cfc,String methodName, Object[] args) {
+	boolean callbooleanRTE(PageContext pc,Component component,String methodName, Object[] args) {
 		try {
-			return callboolean(pc,cfc, methodName, args);
+			return callboolean(pc,component, methodName, args);
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);
 		}
 	}
-	boolean callboolean(PageContext pc,Component cfc,String methodName, Object[] args) throws PageException {
-		return Caster.toBooleanValue(call(pc,cfc,methodName, args));
+	boolean callboolean(PageContext pc,Component component,String methodName, Object[] args) throws PageException {
+		return Caster.toBooleanValue(call(pc,component,methodName, args));
 	}
 
-	String callStringRTE(PageContext pc,Component cfc,String methodName, Object[] args) {
+	String callStringRTE(PageContext pc,Component component,String methodName, Object[] args) {
 		try {
-			return Caster.toString(call(pc,cfc,methodName, args));
-		} 
-		catch (PageException pe) {
-			throw new PageRuntimeException(pe);
-		}
-	}
-
-	String callString(PageContext pc,Component cfc,String methodName, Object[] args) throws PageException {
-		return Caster.toString(call(pc,cfc,methodName, args));
-	}
-
-	Object callRTE(PageContext pc,Component cfc,String methodName, Object[] args) {
-		try {
-			return call(pc,cfc,methodName, args);
+			return Caster.toString(call(pc,component,methodName, args));
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);
 		}
 	}
 
-	Object call(PageContext pc,Component cfc,String methodName, Object[] args) throws PageException {
+	String callString(PageContext pc,Component component,String methodName, Object[] args) throws PageException {
+		return Caster.toString(call(pc,component,methodName, args));
+	}
+
+	Object callRTE(PageContext pc,Component component,String methodName, Object[] args) {
+		try {
+			return call(pc,component,methodName, args);
+		} 
+		catch (PageException pe) {
+			throw new PageRuntimeException(pe);
+		}
+	}
+
+	Object call(PageContext pc,Component component,String methodName, Object[] args) throws PageException {
 		pc = ThreadLocalPageContext.get(pc);
-		return getCFC(pc, cfc).call(pc, methodName, args);
+		return getCFC(pc, component).call(pc, methodName, args);
 	}
 
-	private Component getCFC(PageContext pc,Component cfc) throws PageException {
-		if(cfc!=null) return cfc;
-		
+	private Component getCFC(PageContext pc,Component component) throws PageException {
 		if(component!=null) return component;
+		if(this.component!=null) return this.component;
 		
-		if(StringUtil.isEmpty(cfcPath,true))throw new ApplicationException("you need to define the argument [component] for the [CFMLResourceProvider]");
-		cfcPath=cfcPath.trim();
-		component=pc.loadComponent(cfcPath);
-		call(pc, component, "init", new Object[]{scheme,Caster.toStruct(args)});
+		if(StringUtil.isEmpty(componentPath,true))throw new ApplicationException("you need to define the argument [component] for the [CFMLResourceProvider]");
+		componentPath=componentPath.trim();
+		this.component=pc.loadComponent(componentPath);
+		call(pc, this.component, "init", new Object[]{scheme,Caster.toStruct(args)});
 		
-		return component;
+		return this.component;
 	}
 
 }

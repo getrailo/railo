@@ -13,10 +13,10 @@ public class ComponentCacheEventListener implements CacheEventListener {
 	private static final Collection.Key ON_EXPIRES = KeyImpl.intern("onExpires");
 	private static final Collection.Key ON_PUT = KeyImpl.intern("onPut");
 	private static final Collection.Key ON_REMOVE = KeyImpl.intern("onRemove");
-	private Component cfc;
+	private Component component;
 
-	public ComponentCacheEventListener(Component cfc) {
-		this.cfc=cfc;
+	public ComponentCacheEventListener(Component component) {
+		this.component=component;
 	}
 	
 	@Override
@@ -41,7 +41,7 @@ public class ComponentCacheEventListener implements CacheEventListener {
 
 	@Override
 	public CacheEventListener duplicate() {
-		return new ComponentCacheEventListener((Component)cfc.duplicate(false));
+		return new ComponentCacheEventListener((Component)component.duplicate(false));
 	}
 
 }
