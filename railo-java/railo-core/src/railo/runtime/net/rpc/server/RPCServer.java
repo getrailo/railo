@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,9 +48,12 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.ReqRspUtil;
+import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
 
@@ -262,7 +266,7 @@ public final class RPCServer{
                 /**********************************************************/
             }
             msgContext.setRequestMessage(requestMsg);
-            String url = HttpUtils.getRequestURL(req).toString();
+            String url = HttpUtils.getRequestURL(req).toString().toLowerCase();
             msgContext.setProperty(MessageContext.TRANS_URL, url);
             // put character encoding of request to message context
             // in order to reuse it during the whole process.
@@ -719,7 +723,7 @@ public final class RPCServer{
                         Class plugin=ClassUtil.loadClass((String)this.transport.getOption(queryHandler));
                         Method pluginMethod = plugin.getDeclaredMethod("invoke", new Class[] {msgContext.getClass()});
 
-                        msgContext.setProperty(MessageContext.TRANS_URL, HttpUtils.getRequestURL(request).toString());
+                        msgContext.setProperty(MessageContext.TRANS_URL, HttpUtils.getRequestURL(request).toString().toLowerCase());
                         //msgContext.setProperty(MessageContext.TRANS_URL, "http://DefaultNamespace");
                         msgContext.setProperty(HTTPConstants.PLUGIN_SERVICE_NAME, serviceName);
                         msgContext.setProperty(HTTPConstants.PLUGIN_NAME,handlerName);
@@ -800,7 +804,7 @@ public final class RPCServer{
 
 	public void registerTypeMapping(Class clazz) {
 		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://rpc.xml.cfml",fullname);
+		QName qname = new QName(AxisCaster.getRequestNameSpace(),fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
