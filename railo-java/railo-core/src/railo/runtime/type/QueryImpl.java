@@ -1027,7 +1027,7 @@ public class QueryImpl implements Query,Objects {
 		        type==Types.NUMERIC || 
 		        type==Types.REAL)?
 		
-		(Comparator)new NumberSortRegisterComparator(order==ORDER_ASC):(Comparator)new SortRegisterComparator(order==ORDER_ASC,true)
+		(Comparator)new NumberSortRegisterComparator(order==ORDER_ASC,ThreadLocalPageContext.getTimeZone()):(Comparator)new SortRegisterComparator(order==ORDER_ASC,true)
 		);
 		
 		for(int i=0;i<columns.length;i++) {
