@@ -1,6 +1,7 @@
 package railo.runtime.exp;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,6 +13,7 @@ import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
@@ -211,10 +213,16 @@ public abstract class PageExceptionImpl extends PageException {
 						res=_ps.getResource();
 					}
 				}
-				
-				if(res.exists())	
-					content=IOUtil.toStringArray(IOUtil.getReader(res,CharsetUtil.toCharset(config.getTemplateCharset())));
-				else {
+				 
+				if(res.exists()) {
+					InputStream is = res.getInputStream();
+					if (ClassUtil.isBytecode(is)) {
+						content = new String[] {}; //empty code array to show ??
+					}
+					else
+						content=IOUtil.toStringArray(IOUtil.getReader(res,CharsetUtil.toCharset(config.getTemplateCharset())));
+					IOUtil.closeEL(is);
+				} else {
 					if(sources.size()>index)ps = sources.get(index);
 					else ps=null;
 
@@ -249,8 +257,13 @@ public abstract class PageExceptionImpl extends PageException {
 			item.setEL(KeyConstants._type,"cfml");
 			item.setEL(KeyConstants._column,new Double(0));
 			if(content!=null) {
-				item.setEL(KeyConstants._codePrintHTML,getCodePrint(content,line,true));
-				item.setEL(KeyConstants._codePrintPlain,getCodePrint(content,line,false));
+				if(content.length > 0) {
+					item.setEL(KeyConstants._codePrintHTML,getCodePrint(content,line,true));
+					item.setEL(KeyConstants._codePrintPlain,getCodePrint(content,line,false));
+				} else {
+					item.setEL(KeyConstants._codePrintHTML,"??");
+					item.setEL(KeyConstants._codePrintPlain,"??");
+				}
 			}
 			else {
 				item.setEL(KeyConstants._codePrintHTML,"");
