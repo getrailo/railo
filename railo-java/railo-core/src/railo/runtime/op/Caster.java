@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.FileUtil;
@@ -422,6 +423,8 @@ public final class Caster {
         else if(o instanceof Castable) return ((Castable)o).castToDoubleValue();
         else if(o == null) return 0;//toDoubleValue("");
         else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject());
+        else if(o instanceof Date) return DateTimeUtil.getInstance().toDoubleValue(((Date)o).getTime());
+        else if(o instanceof Calendar) return DateTimeUtil.getInstance().toDoubleValue(((Calendar)o).getTimeInMillis());
         throw new CasterException(o,"number");
     }
 
@@ -566,7 +569,8 @@ public final class Caster {
         }
         //else if(o == null) return defaultValue;
         else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),true,defaultValue);
-			
+        else if(o instanceof Date) return DateTimeUtil.getInstance().toDoubleValue(((Date)o).getTime());
+        else if(o instanceof Calendar) return DateTimeUtil.getInstance().toDoubleValue(((Calendar)o).getTimeInMillis());
         return defaultValue;
     }
     
