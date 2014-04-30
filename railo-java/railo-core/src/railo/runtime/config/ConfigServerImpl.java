@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -79,6 +81,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private String idPro;
 	
 	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
+	
+	//Initially set the threshold free at 60% of the available PermGenFreeSpace
+	private int permGenCleanUpThreshold=60;
 	
 	
 	/**
@@ -415,28 +420,37 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     
     @Override
 	public void checkPermGenSpace(boolean check) {
-    	//print.e(Runtime.getRuntime().freeMemory());
-		// Runtime.getRuntime().freeMemory()<200000 || 
-    	// long pgs=SystemUtil.getFreePermGenSpaceSize();
-    	int promille=SystemUtil.getFreePermGenSpacePromille();
+    	long kbFreePermSpace=SystemUtil.getFreePermGenSpaceSizeInKb();
+    	int percentageOfPermGenSpaceAvailable = SystemUtil.getPermGenFreeSpaceAsAPercentageOfAvailable();
     	
-    	// Pen Gen Space info not available 
-    	if(promille==-1) {//if(pgs==-1) {
-    		if(countLoadedPages()>500)
+    	// Pen Gen Space info not available indicated by a return of -1
+    	if(check && kbFreePermSpace < 0) {
+    		if(countLoadedPages() > 2000)
     			shrink();
     	}
-    	else if(!check || promille<50){//else if(!check || pgs<1024*1024){
-			SystemOut.printDate(getErrWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
-			// first just call GC and check if it help
+    	else if (check && percentageOfPermGenSpaceAvailable < permGenCleanUpThreshold)
+    	{
+    		shrink();
+    		if (permGenCleanUpThreshold >= 5)
+    		{
+    			//adjust the threshold allowed down so the amount of permgen can slowly grow to its allocated space up to 100%
+    			setPermGenCleanUpThreshold(permGenCleanUpThreshold - 5);
+    		}
+    		else
+    		{
+    			SystemOut.printDate(getErrWriter()," Free Perm Gen Space is less than 5% free: shrinking all template classloaders : consider increasing allocated Perm Gen Space");
+    		}
+    	}
+    	else if(check && kbFreePermSpace < 2048) {
+			SystemOut.printDate(getErrWriter()," Free Perm Gen Space is less than 2Mb (free:"+((SystemUtil.getFreePermGenSpaceSizeInKb()))+"kb), shrinking all template classloaders");
+			// first request a GC and then check if it helps
 			System.gc();
-			//if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) 
-			if(SystemUtil.getFreePermGenSpacePromille()>50) 
-				return;
-			
-			shrink();
+			if(SystemUtil.getFreePermGenSpaceSizeInKb() < 2048) {
+				shrink();
+			}
 		}
 	}
-    
+      
     private void shrink() {
     	ConfigWeb[] webs = getConfigWebs();
 		int count=0;
@@ -445,7 +459,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		}
 		if(count==0) {
 			for(int i=0;i<webs.length;i++){
-				shrink((ConfigWebImpl) webs[i],true);
+				int numberOfPagesShrunk = shrink((ConfigWebImpl) webs[i],true);
 			}
 		}
 	}
@@ -656,5 +670,13 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 			}
     	}
     	throw new ApplicationException("No access, no matching authentication key found");
+	}
+	
+	public int getPermGenCleanUpThreshold() {
+		return permGenCleanUpThreshold;
+	}
+
+	public void setPermGenCleanUpThreshold(int permGenCleanUpThreshold) {
+		this.permGenCleanUpThreshold = permGenCleanUpThreshold;
 	}
 }

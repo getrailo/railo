@@ -1,6 +1,8 @@
 package railo.runtime; 
 
 import java.net.URL;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -182,7 +184,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		if(!engine.allowRequestTimeout())return;
 		synchronized (runningPcs) {
             //int len=runningPcs.size();
-			Iterator it = runningPcs.keyIterator();
+			Iterator<Key> it = runningPcs.keyIterator();
             PageContext pc;
             Collection.Key key;
             while(it.hasNext()) {
@@ -197,6 +199,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 long timeout=pc.getRequestTimeout();
                 if(pc.getStartTime()+timeout<System.currentTimeMillis()) {
                     terminate(pc);
+                    runningPcs.removeEL(key);
+                    //remove it from the pcs stack
+                    pcs.remove(pc);
+                    //null it since it has been terminated
+                    pc=null;
                 }
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {
@@ -205,7 +212,9 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                     try {
                     	pc.getThread().setPriority(Thread.MIN_PRIORITY);
                     }
-                    catch(Throwable t) {}
+                    catch(Throwable t) {
+                    	if(log!=null)log.error("CFMLFactoryImpl","Exception caught while setting thread to MIN_PRIORITY: in CMFLFactory of:  " + this.getLabel() + " : " + t.getMessage() + " Exception: " + t.getCause());
+                    }
                 }
             }
         }
@@ -222,12 +231,12 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	        	strLocks=" open locks at this time ("+ListUtil.arrayToList(locks, ", ")+").";
 	        //LockManagerImpl.unlockAll(pc.getId());
 		}
-		catch(Throwable t){}
-        
+		catch(Throwable t){
+			if(log!=null)log.error("CFMLFactoryImpl"," Caught Exception trying to get the open locks: " + t.getMessage() + ": " + t.getStackTrace());
+		}
         if(log!=null)log.error("controller",
         		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks);
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
-        
+        pc.getThread().stop(new RequestTimeoutException(pc, new Timestamp(new Date().getTime()) + " - request ("+getPath(pc)+": PC id: "+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));       
 	}
 
 	private static String getPath(PageContext pc) {
