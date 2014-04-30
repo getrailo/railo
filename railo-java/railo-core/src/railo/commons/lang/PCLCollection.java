@@ -78,7 +78,7 @@ public final class PCLCollection {
     	// if class is already loaded flush the classloader and do new classloader
     	PCLBlock cl = index.get(name);
     	if(cl!=null) {
-    		// if can upate class
+    		// if can update class
     		if(InstrumentationUtil.isSupported()){
     			try{
     				Class<?> old = cl.loadClass(name);
