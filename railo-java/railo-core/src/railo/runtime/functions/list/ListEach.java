@@ -19,26 +19,29 @@ public final class ListEach extends BIF {
 
 
 	public static String call(PageContext pc , String list, UDF udf) throws PageException {
-		return _call(pc, list, udf,",",false, false, 20);
+		return _call(pc, list, udf,",",false, true, false, 20);
 	}
 
 	public static String call(PageContext pc , String list, UDF udf,String delimiter) throws PageException {
-		return _call(pc, list, udf,delimiter,false, false, 20);
+		return _call(pc, list, udf,delimiter,false, true,false, 20);
 	}
 
 	public static String call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields) throws PageException {
-		return _call(pc, list, udf,delimiter,includeEmptyFields, false, 20);
+		return _call(pc, list, udf,delimiter,includeEmptyFields,true, false, 20);
+	}
+	public static String call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields,boolean multiCharacterDelimiter) throws PageException {
+		return _call(pc, list, udf,delimiter,includeEmptyFields,multiCharacterDelimiter, false, 20);
 	}
 	
-	public static String call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields, boolean parallel) throws PageException {
-		return _call(pc, list, udf,delimiter,includeEmptyFields, parallel, 20);
+	public static String call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields,boolean multiCharacterDelimiter, boolean parallel) throws PageException {
+		return _call(pc, list, udf,delimiter,includeEmptyFields,multiCharacterDelimiter, parallel, 20);
 	}
 
-	public static String call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields, boolean parallel, double maxThreads) throws PageException {
-		return _call(pc, list, udf,delimiter,includeEmptyFields, parallel, (int)maxThreads);
+	public static String call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields,boolean multiCharacterDelimiter, boolean parallel, double maxThreads) throws PageException {
+		return _call(pc, list, udf,delimiter,includeEmptyFields,multiCharacterDelimiter, parallel, (int)maxThreads);
 	}
-	private static String _call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields, boolean parallel, int maxThreads) throws PageException {
-		StringListData data=new StringListData(list,delimiter,includeEmptyFields);
+	private static String _call(PageContext pc , String list, UDF udf,String delimiter, boolean includeEmptyFields, boolean multiCharacterDelimiter, boolean parallel, int maxThreads) throws PageException {
+		StringListData data=new StringListData(list,delimiter,includeEmptyFields,multiCharacterDelimiter);
 		
 		return Each.call(pc, data, udf, parallel, maxThreads);
 	}
@@ -55,8 +58,10 @@ public final class ListEach extends BIF {
 		if(args.length==5)
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]));
 		if(args.length==6)
-			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]), Caster.toDoubleValue(args[5]));
+			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]), Caster.toBooleanValue(args[5]));
+		if(args.length==7)
+			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),Caster.toString(args[2]),Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]), Caster.toBooleanValue(args[5]), Caster.toDoubleValue(args[6]));
 		
-		throw new FunctionException(pc, "ListEach", 2, 6, args.length);
+		throw new FunctionException(pc, "ListEach", 2, 7, args.length);
 	}
 }

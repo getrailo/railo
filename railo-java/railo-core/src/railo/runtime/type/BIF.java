@@ -26,7 +26,9 @@ import railo.runtime.interpreter.ref.func.BIFCall;
 import railo.runtime.interpreter.ref.literal.LFunctionValue;
 import railo.runtime.interpreter.ref.literal.LString;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.UDFUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
@@ -116,7 +118,9 @@ public class BIF extends MemberSupport implements UDFPlus {
 			
 			if(val==null) {
 				if(arg.getRequired()) {
-					throw new ExpressionException("missing required argument ["+arg.getName()+"] for build in function call ["+flf.getMemberName()+"]");
+					String[] names = flf.getMemberNames();
+					String n=ArrayUtil.isEmpty(names)?"":names[0];
+					throw new ExpressionException("missing required argument ["+arg.getName()+"] for build in function call ["+n+"]");
 				}
 			}
 			else{

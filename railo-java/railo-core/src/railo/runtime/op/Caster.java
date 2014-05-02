@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.FileUtil;
@@ -422,6 +423,8 @@ public final class Caster {
         else if(o instanceof Castable) return ((Castable)o).castToDoubleValue();
         else if(o == null) return 0;//toDoubleValue("");
         else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject());
+        else if(o instanceof Date) return DateTimeUtil.getInstance().toDoubleValue(((Date)o).getTime());
+        else if(o instanceof Calendar) return DateTimeUtil.getInstance().toDoubleValue(((Calendar)o).getTimeInMillis());
         throw new CasterException(o,"number");
     }
 
@@ -566,7 +569,8 @@ public final class Caster {
         }
         //else if(o == null) return defaultValue;
         else if(o instanceof ObjectWrap) return toDoubleValue(((ObjectWrap)o).getEmbededObject(new Double(defaultValue)),true,defaultValue);
-			
+        else if(o instanceof Date) return DateTimeUtil.getInstance().toDoubleValue(((Date)o).getTime());
+        else if(o instanceof Calendar) return DateTimeUtil.getInstance().toDoubleValue(((Calendar)o).getTimeInMillis());
         return defaultValue;
     }
     
@@ -3259,6 +3263,12 @@ public final class Caster {
                     else if(type.equals("base64")) {
                         return toBase64(o,null);
                     }
+                    else if(type.equals("bigdecimal") || type.equals("big_decimal")) {
+                        return toBigDecimal(o);
+                    }
+                    else if(type.equals("biginteger") || type.equals("big_integer")) {
+                        return toBigInteger(o);
+                    }
                     break;
                 case 'c':
                     if(alsoPattern && type.equals("creditcard")) {
@@ -4317,6 +4327,19 @@ public final class Caster {
         else if(o instanceof Castable) return new BigDecimal(((Castable)o).castToDoubleValue());
         else if(o == null) return BigDecimal.ZERO;
         else if(o instanceof ObjectWrap) return toBigDecimal(((ObjectWrap)o).getEmbededObject());
+        throw new CasterException(o,"number");
+	}
+	
+	public static BigInteger toBigInteger(Object o) throws PageException {
+		if(o instanceof BigInteger) return (BigInteger) o;
+		if(o instanceof Number) {
+			return new BigInteger(((Number)o).toString());
+		}
+        else if(o instanceof Boolean) return new BigInteger(((Boolean)o).booleanValue()?"1":"0");
+        else if(o instanceof String) return new BigInteger(o.toString());
+        else if(o instanceof Castable) return new BigInteger(""+Caster.toIntValue(((Castable)o).castToDoubleValue()));
+        else if(o == null) return BigInteger.ZERO;
+        else if(o instanceof ObjectWrap) return toBigInteger(((ObjectWrap)o).getEmbededObject());
         throw new CasterException(o,"number");
 	}
 

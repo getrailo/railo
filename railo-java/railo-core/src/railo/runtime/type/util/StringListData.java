@@ -4,12 +4,14 @@ public class StringListData {
 
 	public final String list;
 	public final String delimiter;
-	public final boolean includeEmptyFields;
+	public final boolean includeEmptyFieldsx;
+	public final boolean multiCharacterDelimiter;
 
-	public StringListData(String list, String delimiter, boolean includeEmptyFields) {
+	public StringListData(String list, String delimiter, boolean includeEmptyFields, boolean multiCharacterDelimiter) {
 		this.list=list;
 		this.delimiter=delimiter;
-		this.includeEmptyFields=includeEmptyFields;
+		this.includeEmptyFieldsx=includeEmptyFields;
+		this.multiCharacterDelimiter=multiCharacterDelimiter;
 	}
 
 }

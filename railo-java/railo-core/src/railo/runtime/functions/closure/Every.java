@@ -138,10 +138,8 @@ public class Every extends BIF {
 	
 
 	private static boolean invoke(PageContext pc, StringListData sld, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
-		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
-			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
-		
-		
+		Array arr = ListUtil.listToArray(sld.list, sld.delimiter,sld.includeEmptyFieldsx,sld.multiCharacterDelimiter);
+
 		Iterator<Entry<Key, Object>> it = arr.entryIterator();
 		Entry<Key, Object> e;
 		boolean async=es!=null;

@@ -49,10 +49,10 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		list=",,a,,b,c,,";
 		
 		// base test
-		res=ListSome(list, function(value ){return value =='b';},',',false,parallel);
+		res=ListSome(list, function(value ){return value =='b';},',',false,true,parallel);
 		assertEquals(true,res);
 		
-		res=ListSome(list, function(value ){return value =='d';},',',false,parallel);
+		res=ListSome(list, function(value ){return value =='d';},',',false,true,parallel);
 		assertEquals(false,res);
 		
 		// closure output
@@ -60,13 +60,13 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 			res=ListSome("a,c", function(){
 							echo(serialize(arguments));
  							return false;
- 
+
                         },',',false,parallel);
 		}
-		assertEquals("{'1':'a','2':1,'3':'a,c'}{'1':'c','2':2,'3':'a,c'}",c);
+		assertEquals("{'1':'a','2':1,'3':'a,c','4':','}{'1':'c','2':2,'3':'a,c','4':','}",c);
 
 		// member function
-		res=list.some(function(value ){return value =='b';},',',false,parallel);
+		res=list.some(function(value ){return value =='b';},',',false,true,parallel);
 		assertEquals(true,res);
 	}
 

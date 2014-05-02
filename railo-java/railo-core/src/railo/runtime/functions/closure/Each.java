@@ -169,8 +169,8 @@ public final class Each extends BIF {
 	}
 	
 	private static void invoke(PageContext pc, StringListData sld, UDF udf, ExecutorService execute, List<Future<Data<Object>>> futures) throws PageException {
-		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
-			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
+		Array arr = ListUtil.listToArray(sld.list, sld.delimiter,sld.includeEmptyFieldsx,sld.multiCharacterDelimiter);
+			
 		
 		Iterator<Entry<Key, Object>> it = arr.entryIterator();
 		Entry<Key, Object> e;

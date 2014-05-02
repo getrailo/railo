@@ -112,7 +112,12 @@ public final class ListUtil {
 		return array;
 	}
 	
-	public static Array listToArray(String list, String delimiter, boolean multiCharDelim) {
+	public static Array listToArray(String list, String delimiter, boolean includeEmptyFields, boolean multiCharDelim) {
+		if(includeEmptyFields)return listToArray(list, delimiter, multiCharDelim);
+		return listToArrayRemoveEmpty(list, delimiter,multiCharDelim);
+		
+	}
+	private static Array listToArray(String list, String delimiter, boolean multiCharDelim) {
 		if(!multiCharDelim || delimiter.length()==0) return listToArray(list, delimiter);
 		if(delimiter.length()==1)return listToArray(list, delimiter.charAt(0));
 		int len=list.length();
@@ -162,7 +167,7 @@ public final class ListUtil {
 	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-	public static Array listToArrayRemoveEmpty(String list, String delimiter, boolean multiCharDelim) {
+	private static Array listToArrayRemoveEmpty(String list, String delimiter, boolean multiCharDelim) {
 		if(!multiCharDelim || delimiter.length()==0) return listToArrayRemoveEmpty(list, delimiter);
 		
 	    if(delimiter.length()==1)return listToArrayRemoveEmpty(list, delimiter.charAt(0));
@@ -210,7 +215,6 @@ public final class ListUtil {
 		    }
 		}
 		if(last<len)array._append(list.substring(last));
-
 		return array;
 	}
 	
@@ -575,15 +579,15 @@ public final class ListUtil {
 	}
     
 
-	/**
+	/* *
 	 * finds a value inside a list, ignore case
 	 * @param list list to search
 	 * @param value value to find
 	 * @return position in list (0-n) or -1
-	 */
-	public static int listFindNoCase(String list, String value) {
+	 *
+	private static int listFindNoCase(String list, String value) {
 		return listFindNoCase(list, value, ",", true);
-	}	
+	}*/	
 
 	/**
 	 * finds a value inside a list, do not ignore case
@@ -712,7 +716,8 @@ public final class ListUtil {
 	 * @return position in list or 0
 	 */
 	public static int listFind(String list, String value, String delimiter) {
-		Array arr = listToArrayTrim(list,delimiter);
+		Array arr = 
+				listToArrayTrim(list,delimiter);
 		int len=arr.size();
 		for(int i=1;i<=len;i++) {
 			if(arr.get(i,"").equals(value)) return i-1;
@@ -793,10 +798,10 @@ public final class ListUtil {
 	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listContainsNoCase(String list, String value, String delimiter) {
+	public static int listContainsNoCase(String list, String value, String delimiter, boolean includeEmptyFields, boolean multiCharacterDelimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
 		
-		Array arr=listToArray(list,delimiter);
+		Array arr=listToArray(list,delimiter,includeEmptyFields,multiCharacterDelimiter);
 		int len=arr.size();
 		
 		for(int i=1;i<=len;i++) {
@@ -804,14 +809,14 @@ public final class ListUtil {
 		}
 		return -1;
 	}
-	
-	/**
+
+	/* *
 	 * returns if a value of the list contains given value, ignore case, ignore empty values
 	 * @param list list to search in
 	 * @param value value to serach
 	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
-	 */
+	
 	public static int listContainsIgnoreEmptyNoCase(String list, String value, String delimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
 		Array arr=listToArrayRemoveEmpty(list,delimiter);
@@ -824,7 +829,8 @@ public final class ListUtil {
 			count++;
 		}
 		return -1;
-	}
+	} */
+	
 
 	/**
 	 * returns if a value of the list contains given value, case sensitive
@@ -833,38 +839,39 @@ public final class ListUtil {
 	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listContains(String list, String value, String delimiter) {
+	public static int listContains(String list, String value, String delimiter, boolean includeEmptyFields, boolean multiCharacterDelimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
 		
-			Array arr=listToArray(list,delimiter);
-			int len=arr.size();
-			
-			for(int i=1;i<=len;i++) {
-				if(arr.get(i,"").toString().indexOf(value)!=-1) return i-1;
-			}
+		Array arr=listToArray(list,delimiter,includeEmptyFields,multiCharacterDelimiter);
+		int len=arr.size();
+		for(int i=1;i<=len;i++) {
+			if(arr.get(i,"").toString().indexOf(value)!=-1) return i-1;
+		}
 		return -1;
 	}
-	
-	/**
+
+	/* *
 	 * returns if a value of the list contains given value, case sensitive, ignore empty positions
 	 * @param list list to search in
 	 * @param value value to serach
 	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
-	 */
-	public static int listContainsIgnoreEmpty(String list, String value, String delimiter) {
+	
+	private static int listContainsIgnoreEmpty(String list, String value, String delimiter, boolean multiCharacterDelimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
 		Array arr=listToArrayRemoveEmpty(list,delimiter);
 		int count=0;
 		int len=arr.size();
 		
+		String item;
 		for(int i=1;i<=len;i++) {
-			String item=arr.get(i,"").toString();
+			item=arr.get(i,"").toString();
 			if(item.indexOf(value)!=-1) return count;
 			count++;
 		}
 		return -1;
-	}
+	} */
+	
 
 	/**
 	 * convert a string array to string list, removes empty values at begin and end of the list
@@ -873,7 +880,7 @@ public final class ListUtil {
 	 * @return list generated from string array
 	 */
 	public static String arrayToListTrim(String[] array, String delimiter) {
-		return trim(arrayToList(array,delimiter),delimiter);
+		return trim(arrayToList(array,delimiter),delimiter,false);
 	}
 	
 	/**
@@ -935,7 +942,7 @@ public final class ListUtil {
 	 */
 	public static String arrayToList(Array array, String delimiter) throws PageException {
 		if(array.size()==0) return "";
-		StringBuilder sb=new StringBuilder(Caster.toString(array.getE(1)));
+		StringBuilder sb=new StringBuilder(Caster.toString(array.get(1,"")));
 		int len=array.size();
 		
 		for(int i=2;i<=len;i++) {
@@ -1012,7 +1019,12 @@ public final class ListUtil {
 	 * @return trimed list
 	 */
 	public static String trim(String list, String delimiter) {
-		return trim(list,delimiter,new int[2]);
+		return trim(list,delimiter,new int[2],false);
+	}
+	
+	
+	public static String trim(String list, String delimiter, boolean multiCharacterDelimiter) {
+		return trim(list,delimiter,new int[2],multiCharacterDelimiter);
 	}
 	
 	/**
@@ -1022,7 +1034,39 @@ public final class ListUtil {
 	 * @param removeInfo int array contain count of removed values (removeInfo[0]=at the begin;removeInfo[1]=at the end)
 	 * @return trimed list
 	 */
-	public static String trim(String list, String delimiter,int[] removeInfo) {
+	public static String trim(String list, String delimiter,int[] removeInfo, boolean multiCharacterDelimiter) {
+		if(list.length()==0)return "";
+		
+		if(multiCharacterDelimiter && delimiter.length()>1) {
+			int from=0;
+			
+			// remove at start
+			while(list.length()>=from+delimiter.length()) {
+				if(list.indexOf(delimiter,from)==from) {
+			    	from+=delimiter.length();
+			        removeInfo[0]++;
+			        continue;
+			    }
+			    break;
+			}
+
+			if(from>0) list= list.substring(from);
+			
+			
+			// remove at end
+			while(list.length()>=delimiter.length()) {
+				if(list.lastIndexOf(delimiter)==list.length()-delimiter.length()) {
+			    	removeInfo[1]++;
+					list=list.substring(0,list.length()-delimiter.length());
+					continue;
+			    }
+			    break;
+			}
+			return list;
+		}
+		
+		
+		
 
 		if(list.length()==0)return "";
 		int from=0;
@@ -1064,7 +1108,8 @@ public final class ListUtil {
 		}
 		return list;
 		
-	}	
+	}
+	
 	/**
 	 * sorts a string list
 	 * @param list list to sort

@@ -82,11 +82,11 @@ public final class GetFunctionData implements Function {
         sct.set(ARG_MIN,Caster.toDouble(function.getArgMin()));
         sct.set(ARG_MAX,Caster.toDouble(function.getArgMax()));
         sct.set(KeyConstants._type,"java");
-		String mm = function.getMemberName();
-        if(mm!=null && function.getMemberType()!=CFTypes.TYPE_UNKNOW) {
+		String[] names = function.getMemberNames();
+        if(!ArrayUtil.isEmpty(names) && function.getMemberType()!=CFTypes.TYPE_UNKNOW) {
         	StructImpl mem = new StructImpl();
         	sct.set(KeyConstants._member, mem);
-        	mem.set(KeyConstants._name,mm);
+        	mem.set(KeyConstants._name,names[0]);
         	mem.set(KeyConstants._chaining,Caster.toBoolean(function.getMemberChaining()));
             mem.set(KeyConstants._type, function.getMemberTypeAsString());
             mem.set("position", Caster.toDouble(function.getMemberPosition()));
@@ -103,6 +103,7 @@ public final class GetFunctionData implements Function {
 				_arg.set(KeyConstants._type,StringUtil.emptyIfNull(arg.getTypeAsString()));
 				_arg.set(KeyConstants._name,StringUtil.emptyIfNull(arg.getName()));
 				_arg.set(KeyConstants._status,TagLibFactory.toStatus(arg.getStatus()));
+				_arg.set("defaultValue",arg.getDefaultValue());
 				_arg.set(KeyConstants._description,StringUtil.toStringEmptyIfNull(arg.getDescription()));
 				
 				

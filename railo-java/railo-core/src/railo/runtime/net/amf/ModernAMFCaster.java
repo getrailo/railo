@@ -40,9 +40,9 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
 		
 		String strValues = Caster.toString(arguments.get("component-values"),null);
 		if(!StringUtil.isEmpty(strValues)){
-			doProperties = railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "properties")!=-1;
-			doGetters=railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "getters")!=-1;
-			doRemoteValues=railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "remote-values")!=-1;
+			doProperties = railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "properties", ",")!=-1;
+			doGetters=railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "getters", ",")!=-1;
+			doRemoteValues=railo.runtime.type.util.ListUtil.listFindNoCase(strValues, "remote-values", ",")!=-1;
 		}
 	}
 

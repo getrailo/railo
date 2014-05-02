@@ -1448,7 +1448,7 @@ public final class Page extends BodyBase {
 		ClassReader cr = new ClassReader(barr);
 		ClassWriter cw = ASMUtil.getClassWriter();
 		ClassVisitor ca = new SourceLastModifiedClassAdapter(cw,lastModified);
-		cr.accept(ca, ClassReader.SKIP_DEBUG);
+		cr.accept(ca, 0);
 		return cw.toByteArray();
 	}
 

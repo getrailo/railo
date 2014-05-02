@@ -21,5 +21,10 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertNotEquals(listFirst(res1),listFirst(res2));
 		assertEquals(listLast(res1),listLast(res2));
 	}
+	
+	private string function createURL(string calledName){
+		var baseURL="http://#cgi.HTTP_HOST##getDirectoryFromPath(contractPath(getCurrenttemplatepath()))#";
+		return baseURL&""&calledName;
+	}
 } 
 </cfscript>

@@ -46,10 +46,10 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	private String charset;
 
 	
-	private static final Class[] IS_HTTP_ONLY_ARGS_CLASSES = new Class[]{};
+	private static final Class<?>[] IS_HTTP_ONLY_ARGS_CLASSES = new Class[]{};
 	private static final Object[] IS_HTTP_ONLY_ARGS = new Object[]{}; 
 
-	private static final Class[] SET_HTTP_ONLY_ARGS_CLASSES = new Class[]{boolean.class};
+	private static final Class<?>[] SET_HTTP_ONLY_ARGS_CLASSES = new Class[]{boolean.class};
 	private static final Object[] SET_HTTP_ONLY_ARGS = new Object[]{Boolean.TRUE};
 
 	private static final int EXPIRES_NULL = -1; 
@@ -78,7 +78,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     	
 		if(Decision.isStruct(value)) {
 			Struct sct = Caster.toStruct(value);
-			int expires=Caster.toIntValue(sct.get(KeyConstants._expires,null),EXPIRES_NULL);
+			Object expires=sct.get(KeyConstants._expires,null);
 			Object val=sct.get(KeyConstants._value,null);
 			boolean secure=Caster.toBooleanValue(sct.get(KeyConstants._secure,null),false);
 			boolean httpOnly=Caster.toBooleanValue(sct.get(KeyConstants._httponly,null),false);

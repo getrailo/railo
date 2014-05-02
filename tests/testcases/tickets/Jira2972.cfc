@@ -59,7 +59,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
  
                         },"merge:");
 		}
-		assertEquals("{'result':'merge:','value':'a','index':1,'4':'a,b'}{'result':'','value':'b','index':2,'4':'a,b'}",c);
+		assertEquals("{'result':'merge:','value':'a','index':1,'4':'a,b','5':','}{'result':'','value':'b','index':2,'4':'a,b','5':','}",c);
 
 		// member function
 		res=list.Reduce(function( result,value,index){return result&";"&index&":"&value;},"merge:");

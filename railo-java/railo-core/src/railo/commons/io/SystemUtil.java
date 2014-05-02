@@ -727,6 +727,18 @@ public final class SystemUtil {
 		return max-used;
 	}
 	
+	public static int getPermGenFreeSpaceAsAPercentageOfAvailable() { 	
+		MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu == null) return -1;
+		
+		long max = mu.getMax();
+		long used = mu.getUsed();
+		if( max < 0 || used < 0) return -1;
+		
+		//return a value that equates to a percentage of available free memory
+		return 100 - ((int)(100 * (((double)used) / ((double)max))));
+	}
+	
 	public static int getFreePermGenSpacePromille() {
 		MemoryUsage mu = getPermGenSpaceSize(null);
 		if(mu==null) return -1;

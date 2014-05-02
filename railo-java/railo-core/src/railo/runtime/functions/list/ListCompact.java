@@ -18,7 +18,10 @@ public final class ListCompact extends BIF {
 		return call(pc,list,",");
 	}
 	public static String call(PageContext pc , String list, String delimiter) {
-		return ListUtil.trim(list,delimiter);
+		return call(pc, list, delimiter, false);
+	}
+	public static String call(PageContext pc , String list, String delimiter, boolean multiCharacterDelimiter) {
+		return ListUtil.trim(list,delimiter,multiCharacterDelimiter);
 	}
 
     @Override
@@ -27,7 +30,9 @@ public final class ListCompact extends BIF {
 			return call(pc, Caster.toString(args[0]));
     	if(args.length==2)
 			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]));
+    	if(args.length==3)
+			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toBooleanValue(args[2]));
     	
-		throw new FunctionException(pc, "ListCompact", 1, 2, args.length);
+		throw new FunctionException(pc, "ListCompact", 1, 3, args.length);
 	}
 }
