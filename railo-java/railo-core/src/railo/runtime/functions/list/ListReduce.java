@@ -15,19 +15,24 @@ public final class ListReduce extends BIF {
 	private static final long serialVersionUID = 1857478124366819325L;
 
 	public static Object call(PageContext pc , String list, UDF udf) throws PageException {
-		return Reduce._call(pc, list, udf,null);
+		return call(pc, list, udf, null, ",", false,true);
 	}
 	
 	public static Object call(PageContext pc , String list, UDF udf, Object initValue) throws PageException {
-		return call(pc, list, udf, initValue, ",", false);
+		return call(pc, list, udf, initValue, ",", false,true);
 	}
 	
 	public static Object call(PageContext pc , String list, UDF udf, Object initValue ,String delimiter) throws PageException {
-		return call(pc, list, udf, initValue, delimiter, false);
+		return call(pc, list, udf, initValue, delimiter, false,true);
 	}
-	
-	public static Object call(PageContext pc , String list, UDF udf, Object initValue ,String delimiter, boolean includeEmptyFields) throws PageException {
-		StringListData data=new StringListData(list,delimiter,includeEmptyFields);
+
+	public static Object call(PageContext pc , String list, UDF udf, Object initValue ,String delimiter
+			, boolean includeEmptyFields) throws PageException {
+		return call(pc, list, udf, initValue, delimiter, includeEmptyFields, true);
+	}
+	public static Object call(PageContext pc , String list, UDF udf, Object initValue ,String delimiter
+			, boolean includeEmptyFields, boolean multiCharacterDelimiter) throws PageException {
+		StringListData data=new StringListData(list,delimiter,includeEmptyFields,multiCharacterDelimiter);
 		
 		return Reduce._call(pc, data, udf,initValue);
 	}
@@ -43,7 +48,9 @@ public final class ListReduce extends BIF {
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),args[2],Caster.toString(args[3]));
 		if(args.length==5)
 			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),args[2],Caster.toString(args[3]),Caster.toBooleanValue(args[4]));
+		if(args.length==6)
+			return call(pc, Caster.toString(args[0]), Caster.toFunction(args[1]),args[2],Caster.toString(args[3]),Caster.toBooleanValue(args[4]),Caster.toBooleanValue(args[5]));
 		
-		throw new FunctionException(pc, "ListReduce", 2, 5, args.length);
+		throw new FunctionException(pc, "ListReduce", 2, 6, args.length);
 	}
 }

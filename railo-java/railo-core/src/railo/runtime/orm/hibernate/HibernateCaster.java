@@ -1,5 +1,8 @@
 package railo.runtime.orm.hibernate;
 
+import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +22,7 @@ import railo.runtime.component.Property;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
@@ -359,6 +363,40 @@ public class HibernateCaster {
 	    
 		*/
 		
+    }
+	public static Object toHibernateValue(PageContext pc,Object value,String type) throws PageException	{
+		type=toHibernateType(type, null);
+		// return same value
+		if("long".equals(type)) return Caster.toLong(value);
+		if("binary".equals(type) || "imm_binary".equals(type))
+			return Caster.toBinary(value);
+		if("boolean".equals(type) || "yes_no".equals(type) || "true_false".equals(type)) 
+			return Caster.toBoolean(value);
+		if("character".equals(type)) return Caster.toCharacter(value);
+		if("date".equals(type) || "imm_date".equals(type)) return Caster.toDatetime(value,pc.getTimeZone());
+		if("big_decimal".equals(type)) return Caster.toBigDecimal(value);
+		if("double".equals(type)) return Caster.toDouble(value);
+		if("float".equals(type)) return Caster.toFloat(value);
+		if("integer".equals(type)) return Caster.toInteger(value);
+		if("string".equals(type)) Caster.toString(value);
+		if("big_integer".equals(type)) return new BigInteger(Caster.toString(value));
+		if("short".equals(type)) return Caster.toShort(value);
+		if("time".equals(type) || "imm_time".equals(type)) 
+			return new Time(Caster.toDate(value,pc.getTimeZone()).getTime());
+		if("timestamp".equals(type) || "imm_timestamp".equals(type))
+			return new Timestamp(Caster.toDate(value,pc.getTimeZone()).getTime());
+		if("byte".equals(type)) return Caster.toBinary(value);
+		if("text".equals(type)) return Caster.toString(value);
+		if("calendar".equals(type) || "calendar_date".equals(type) || "imm_calendar".equals(type) || "imm_calendar_date".equals(type)) 
+			return Caster.toCalendar(Caster.toDateTime(value, pc.getTimeZone()),  pc.getTimeZone(),  pc.getLocale());
+		if("locale".equals(type)) return Caster.toLocale(Caster.toString(value));
+		if("timezone".equals(type)) return Caster.toTimeZone(value,null);
+		if("currency".equals(type)) return value;
+		
+		if("imm_serializable".equals(type)) return value;
+		if("serializable".equals(type)) 			return "serializable";
+		
+		return value;
     }
 
 	/**

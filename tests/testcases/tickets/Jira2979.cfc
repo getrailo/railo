@@ -26,16 +26,16 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 							echo(serialize(arguments));
  							return true;
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		}
-		assertEquals("{'1':'a','2':1,'3':',a,,b,'}{'1':'b','2':2,'3':',a,,b,'}",c);
+		assertEquals("{'1':'a','2':1,'3':',a,,b,','4':','}{'1':'b','2':2,'3':',a,,b,','4':','}",c);
 
 		savecontent variable="c" {
 			res=listEach(",a,,b,", function(value){
 							echo(">"&value);
  							return true;
  
-                        },',',true,parallel);
+                        },',',true,true,parallel);
 		}
 		assertEquals(">>a>>b>",c);
 
@@ -44,7 +44,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 							echo(">"&value);
  							return true;
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		}
 		assertEquals(">a>b",c);
 
@@ -56,9 +56,9 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 							echo(serialize(arguments));
  							return true;
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		}
-		assertEquals("{'1':'a','2':1,'3':'a'}",c);
+		assertEquals("{'1':'a','2':1,'3':'a','4':','}",c);
 	}
 	
 

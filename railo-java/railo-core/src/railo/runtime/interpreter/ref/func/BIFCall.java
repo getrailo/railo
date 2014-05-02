@@ -143,7 +143,7 @@ public final class BIFCall extends RefSupport implements Ref {
 		String alias=flfa.getAlias();
 		if(!StringUtil.isEmpty(alias)) {
 			for(int i=0;i<names.length;i++){
-				if(names[i]!=null && railo.runtime.type.util.ListUtil.listFindNoCase(alias, names[i])!=-1){
+				if(names[i]!=null && railo.runtime.type.util.ListUtil.listFindNoCase(alias, names[i], ",")!=-1){
 					return new VT(fvalues[i].getValue(),flfa.getTypeAsString(),i);
 				}
 			}

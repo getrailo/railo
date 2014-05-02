@@ -197,16 +197,12 @@ public final class CFMLFactoryImpl extends CFMLFactory {
             Entry<Integer, PageContextImpl> e;
             while(it.hasNext()) {
             	e = it.next();
-            	/*pc=runningPcs.get(e.getKey());
-                if(pc==null) {
-                	runningPcs.removeEL(key);
-                	continue;
-                }*/
             	pc=e.getValue();
                 
                 long timeout=pc.getRequestTimeout();
                 if(pc.getStartTime()+timeout<System.currentTimeMillis()) {
                     terminate(pc);
+                    it.remove();
                 }
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {

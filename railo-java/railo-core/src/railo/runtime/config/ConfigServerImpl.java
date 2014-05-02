@@ -79,7 +79,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	
 	private LinkedHashMapMaxSize<Long,String> previousNonces=new LinkedHashMapMaxSize<Long,String>(100);
 	
-	
+	private int permGenCleanUpThreshold=60;
+	 
 	/**
      * @param engine 
      * @param initContextes
@@ -434,26 +435,35 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     
     @Override
 	public void checkPermGenSpace(boolean check) {
-    	//print.e(Runtime.getRuntime().freeMemory());
-		// Runtime.getRuntime().freeMemory()<200000 || 
-    	// long pgs=SystemUtil.getFreePermGenSpaceSize();
     	int promille=SystemUtil.getFreePermGenSpacePromille();
     	
-    	// Pen Gen Space info not available 
-    	if(promille==-1) {//if(pgs==-1) {
-    		if(countLoadedPages()>500)
-    			shrink();
+    	long kbFreePermSpace=SystemUtil.getFreePermGenSpaceSize()/1024;
+    	int percentageAvailable = SystemUtil.getPermGenFreeSpaceAsAPercentageOfAvailable();
+    	
+    	
+    	// Pen Gen Space info not available indicated by a return of -1
+    	if(check && kbFreePermSpace < 0) {
+    		if(countLoadedPages() > 2000)
+    		shrink();
     	}
-    	else if(!check || promille<50){//else if(!check || pgs<1024*1024){
-			SystemOut.printDate(getErrWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
-			// first just call GC and check if it help
-			System.gc();
-			//if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) 
-			if(SystemUtil.getFreePermGenSpacePromille()>50) 
-				return;
-			
-			shrink();
-		}
+    	else if (check && percentageAvailable < permGenCleanUpThreshold) {
+    		shrink();
+    		if (permGenCleanUpThreshold >= 5) {
+    			//adjust the threshold allowed down so the amount of permgen can slowly grow to its allocated space up to 100%
+    			setPermGenCleanUpThreshold(permGenCleanUpThreshold - 5);
+    		}
+    		else {
+    			SystemOut.printDate(getErrWriter()," Free Perm Gen Space is less than 5% free: shrinking all template classloaders : consider increasing allocated Perm Gen Space");
+    		}
+    	}
+    	else if(check && kbFreePermSpace < 2048) {
+    		SystemOut.printDate(getErrWriter()," Free Perm Gen Space is less than 2Mb (free:"+((SystemUtil.getFreePermGenSpaceSize()/1024))+"kb), shrinking all template classloaders");
+    		// first request a GC and then check if it helps
+    		System.gc();
+    		if((SystemUtil.getFreePermGenSpaceSize()/1024) < 2048) {
+    			 shrink();
+    		}
+    	}
 	}
     
     private void shrink() {
@@ -500,6 +510,14 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 			t.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public int getPermGenCleanUpThreshold() {
+		return permGenCleanUpThreshold;
+	}
+
+	public void setPermGenCleanUpThreshold(int permGenCleanUpThreshold) {
+		this.permGenCleanUpThreshold = permGenCleanUpThreshold;
 	}
 
 	

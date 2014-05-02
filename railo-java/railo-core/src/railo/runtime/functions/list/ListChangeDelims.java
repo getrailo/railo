@@ -15,14 +15,17 @@ public final class ListChangeDelims extends BIF {
 	private static final long serialVersionUID = 8979553735693035787L;
 	
 	public static String call(PageContext pc , String list, String newDel) throws PageException {
-		return call(pc , list, newDel, ",",false);
+		return call(pc , list, newDel, ",",false,false);
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel) throws PageException {
-		return call(pc, list, newDel, oldDel, false);
+		return call(pc, list, newDel, oldDel, false,false);
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel, boolean includeEmptyFields) throws PageException {
-		if(includeEmptyFields)return ListUtil.arrayToList(ListUtil.listToArray(list,oldDel),newDel);
-		return ListUtil.arrayToList(ListUtil.listToArrayRemoveEmpty(list,oldDel),newDel);
+		return call(pc, list, newDel, oldDel, includeEmptyFields,false);
+	}
+	public static String call(PageContext pc , String list, String newDel, String oldDel
+			, boolean includeEmptyFields, boolean multiCharacterDelimiter) throws PageException {
+		return ListUtil.arrayToList(ListUtil.listToArray(list,oldDel,includeEmptyFields,multiCharacterDelimiter),newDel);
 	}
 
     @Override
@@ -33,7 +36,9 @@ public final class ListChangeDelims extends BIF {
 			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toString(args[2]));
     	if(args.length==4)
 			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toString(args[2]), Caster.toBooleanValue(args[3]));
+    	if(args.length==5)
+			return call(pc, Caster.toString(args[0]), Caster.toString(args[1]), Caster.toString(args[2]), Caster.toBooleanValue(args[3]), Caster.toBooleanValue(args[4]));
     	
-		throw new FunctionException(pc, "ListChangeDelims", 2, 4, args.length);
+		throw new FunctionException(pc, "ListChangeDelims", 2, 5, args.length);
 	}
 }

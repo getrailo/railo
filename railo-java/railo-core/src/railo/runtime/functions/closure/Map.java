@@ -105,8 +105,7 @@ public class Map extends BIF {
 	}
 	
 	private static Collection invoke(PageContext pc, StringListData sld, UDF udf, ExecutorService es, List<Future<Data<Object>>> futures) throws CasterException, PageException {
-		Array arr = sld.includeEmptyFields?ListUtil.listToArray(sld.list, sld.delimiter):
-			ListUtil.listToArrayRemoveEmpty(sld.list, sld.delimiter);
+		Array arr = ListUtil.listToArray(sld.list, sld.delimiter,sld.includeEmptyFieldsx,sld.multiCharacterDelimiter);
 		
 		Array rtn=new ArrayImpl();
 		Iterator<Entry<Key, Object>> it = arr.entryIterator();

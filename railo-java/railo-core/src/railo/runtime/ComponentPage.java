@@ -602,8 +602,8 @@ public abstract class ComponentPage extends PagePlus  {
 
         
         Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
-        
-        if(!props.output) setFormat(pc.getHttpServletResponse(),props.format,cs);
+        //if(!props.output) 
+        	setFormat(pc.getHttpServletResponse(),props.format,cs);
         	
         
         Object rtn=null;
@@ -757,8 +757,7 @@ public abstract class ComponentPage extends PagePlus  {
 		}
 		// function does no real cast, only check it
 		else rtn=Caster.castTo(pc, (short)props.type, props.strType, rtn);
-    	
-		if(setFormat)setFormat(pc.getHttpServletResponse(), props.format, cs);
+    	if(setFormat)setFormat(pc.getHttpServletResponse(), props.format, cs);
 		
     	// WDDX
 		if(UDF.RETURN_FORMAT_WDDX==props.format) {

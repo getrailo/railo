@@ -54,7 +54,7 @@ public final class FunctionLibFunction {
 	private FunctionEvaluator eval;
 	private String tteClass;	
 	private short status=TagLib.STATUS_IMPLEMENTED;
-	private String memberName;
+	private String[] memberNames;
 	private int memberPosition=1;
 	private short memberType=CFTypes.TYPE_UNKNOW;
 	private boolean memberChaining;
@@ -325,12 +325,12 @@ public final class FunctionLibFunction {
 	public void setTteClass(String tteClass) {
 		this.tteClass=tteClass;
 	}
-	public void setMemberName(String memberName) {
-		if(StringUtil.isEmpty(memberName,true)) return;
-		this.memberName=memberName.trim();	
+	public void setMemberName(String memberNames) {
+		if(StringUtil.isEmpty(memberNames,true)) return;
+		this.memberNames=ListUtil.trimItems(ListUtil.listToStringArray(memberNames, ','));	
 	}
-	public String getMemberName() {
-		return memberName;
+	public String[] getMemberNames() {
+		return memberNames;
 	}
 	
 
@@ -356,7 +356,7 @@ public final class FunctionLibFunction {
 	}
 	
 	public short getMemberType() {
-		if(memberName!=null && memberType==CFTypes.TYPE_UNKNOW){
+		if(memberNames!=null && memberType==CFTypes.TYPE_UNKNOW){
 			ArrayList<FunctionLibFunctionArg> args = getArg();
 			if(args.size()>=1){
 				memberType=CFTypes.toShortStrict(args.get(0).getTypeAsString(),CFTypes.TYPE_UNKNOW);

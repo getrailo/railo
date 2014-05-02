@@ -30,18 +30,13 @@ public final class ListToArray extends BIF {
 	
 
 	public static Array call(PageContext pc , String list, String delimiter,boolean includeEmptyFields,boolean multiCharacterDelimiter) {
-		if(includeEmptyFields){
-			if(list.length()==0) {
-				Array a=new ArrayImpl();
-				a.appendEL("");
-				return a;
-			}
-			return ListUtil.listToArray(list,delimiter,multiCharacterDelimiter);
+		// empty
+		if(list.length()==0) {
+			Array a=new ArrayImpl();
+			if(includeEmptyFields) a.appendEL("");
+			return a;
 		}
-		if(list.length()==0) 
-			return new ArrayImpl();
-		
-		return ListUtil.listToArrayRemoveEmpty(list,delimiter,multiCharacterDelimiter);
+		return ListUtil.listToArray(list,delimiter,includeEmptyFields,multiCharacterDelimiter);
 	}
 	
     @Override

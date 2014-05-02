@@ -179,18 +179,21 @@ public abstract class DateTimeUtil {
      * @throws ExpressionException
      */
     public boolean toBooleanValue(DateTime dateTime) throws DateTimeException {
-        throw new DateTimeException("can't cast Date ["+dateTime.toGMTString()+"] to boolean value");
+        throw new DateTimeException("can't cast Date ["+DateTimeUtil.toHTTPTimeString(dateTime,false)+"] to boolean value");
     }
     
     public double toDoubleValue(DateTime dateTime) {
-    	long utc = dateTime.getTime();
-    	utc+=getLocalTimeZoneOffset	(utc);
-    	utc+=CF_UNIX_OFFSET;
-    	return utc/DAY_MILLIS;
+    	return toDoubleValue(dateTime.getTime()); 
     }
     
-    private static long getLocalTimeZoneOffset(long utc){
-    	return ThreadLocalPageContext.getTimeZone().getOffset(utc);
+    public double toDoubleValue(long time) {
+    	time+=getLocalTimeZoneOffset	(time);
+    	time+=CF_UNIX_OFFSET;
+    	return time/DAY_MILLIS;
+    }
+    
+    private static long getLocalTimeZoneOffset(long time){
+    	return ThreadLocalPageContext.getTimeZone().getOffset(time);
     }
     
 

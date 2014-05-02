@@ -150,11 +150,15 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		try {
-			return get(key);
-		} catch (PageException e) {
-			return defaultValue;
+		Node rtn = nodeMap.getNamedItem(key.getString());
+		if(rtn!=null) return rtn.getNodeValue();
+		
+		Collection.Key[] keys=keys();
+		for(int i=0;i<keys.length;i++) {
+			if(key.equalsIgnoreCase(keys[i]))
+				return nodeMap.getNamedItem(keys[i].getString()).getNodeValue();
 		}
+		return defaultValue;
 	}
 
 	@Override

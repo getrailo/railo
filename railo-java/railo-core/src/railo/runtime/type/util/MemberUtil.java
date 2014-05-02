@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
@@ -39,12 +40,16 @@ public class MemberUtil {
 		Iterator<FunctionLibFunction> it;
 		FunctionLibFunction f;
 		match=new HashMap<Collection.Key,FunctionLibFunction>();
+		String[] names;
 		for(int i=0;i<flds.length;i++){
 			 it = flds[i].getFunctions().values().iterator();
 			 while(it.hasNext()){
 				 f = it.next();
-				 if(f.getMemberName()!=null && f.getMemberType()==type && f.getArgType()==FunctionLibFunction.ARG_FIX) {
-					 match.put(KeyImpl.getInstance(f.getMemberName()),f);
+				 names = f.getMemberNames();
+				 if(!ArrayUtil.isEmpty(names) && f.getMemberType()==type && f.getArgType()==FunctionLibFunction.ARG_FIX) {
+					 for(int y=0;y<names.length;y++)
+						
+						match.put(KeyImpl.getInstance(names[y]),f);
 				 }
 			 }
 		}
@@ -120,7 +125,9 @@ public class MemberUtil {
 					
 					if(val==null) {
 						if(arg.getRequired()) {
-							throw new ExpressionException("missing required argument ["+arg.getName()+"] for member function call ["+member.getMemberName()+"]");
+							String[] names = member.getMemberNames();
+							String n=ArrayUtil.isEmpty(names)?"":names[0];
+							throw new ExpressionException("missing required argument ["+arg.getName()+"] for member function call ["+n+"]");
 						}
 					}
 					else{
