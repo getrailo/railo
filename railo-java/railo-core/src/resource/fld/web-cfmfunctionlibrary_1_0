@@ -11689,7 +11689,7 @@ The following things are considered to be empty:
 		<name>listChangeDelims</name>
 		<class>railo.runtime.functions.list.ListChangeDelims</class>
 		<keywords>list,string</keywords>
-		<member-name>listChangeDelims</member-name>
+		<member-name>listChangeDelims,changeDelims</member-name>
 		<description>Changes a list delimiter.
         Returns a copy of the list, with each delimiter character
         replaced by new_delimiter.</description>
