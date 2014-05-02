@@ -33,21 +33,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 				assertEquals(cookie.cftoken,qry.value);
 				assertEquals(true,qry.expires>now());
 			}
-
 		}
-
-		//
-
-
-		dump(result);abort;
-		/*
-		
-		
-		try{
-			// error
-			fail("");
-		}
-		catch(local.exp){}*/
 	}
 	
 	private string function createURL(string calledName){
