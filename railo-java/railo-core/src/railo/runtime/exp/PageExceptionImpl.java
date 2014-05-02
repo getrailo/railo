@@ -218,7 +218,7 @@ public abstract class PageExceptionImpl extends PageException {
 						content = new String[] {}; //empty code array to show ??
 					}
 					else
-						content=IOUtil.toStringArray(IOUtil.getReader(res,CharsetUtil.toCharset(config.getTemplateCharset())));
+						content=IOUtil.toStringArray(IOUtil.getReader(res,config.getTemplateCharset()));
 					IOUtil.closeEL(is);
 				} else {
 					if(sources.size()>index)ps = sources.get(index);
