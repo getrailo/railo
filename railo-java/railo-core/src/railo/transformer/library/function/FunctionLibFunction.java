@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -327,7 +326,6 @@ public final class FunctionLibFunction {
 		this.tteClass=tteClass;
 	}
 	public void setMemberName(String memberNames) {
-		print.e(memberNames);
 		if(StringUtil.isEmpty(memberNames,true)) return;
 		this.memberNames=ListUtil.trimItems(ListUtil.listToStringArray(memberNames, ','));	
 	}

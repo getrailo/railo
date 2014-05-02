@@ -46,7 +46,6 @@ public class MemberUtil {
 			 while(it.hasNext()){
 				 f = it.next();
 				 names = f.getMemberNames();
-				 if(names!=null)print.e(names);
 				 if(!ArrayUtil.isEmpty(names) && f.getMemberType()==type && f.getArgType()==FunctionLibFunction.ARG_FIX) {
 					 for(int y=0;y<names.length;y++)
 						
