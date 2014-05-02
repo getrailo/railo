@@ -42,7 +42,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		res=ListFilter(list, function( value ){
  							return value EQ 'b';
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 
 		assertEquals("b",res);
 
@@ -51,16 +51,16 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 							echo(serialize(arguments));
  							return true;
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		}
-		assertEquals("{'1':'a','2':1,'3':'a,b'}{'1':'b','2':2,'3':'a,b'}",c);
+		assertEquals("{'1':'a','2':1,'3':'a,b','4':','}{'1':'b','2':2,'3':'a,b','4':','}",c);
 
 
 		// member functions
 		res=list.Filter(function( value ){
  							return value EQ 'b';
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 
 		assertEquals("b",res);
 	}

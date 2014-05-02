@@ -62,7 +62,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		res=ListMap(list, function( value ){
  							return value EQ 'b';
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		assertEquals("false,true,false",res);
 		
 		// output test
@@ -71,15 +71,15 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 							echo(serialize(arguments));
  							return value EQ 'b';
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		}
-		assertEquals("{'value':'a','2':1,'3':'a,b'}{'value':'b','2':2,'3':'a,b'}",c);
+		assertEquals("{'value':'a','2':1,'3':'a,b','4':','}{'value':'b','2':2,'3':'a,b','4':','}",c);
 
 		// member function test
 		res=list.map( function( value ){
  							return value EQ 'b';
  
-                        },',',false,parallel);
+                        },',',false,true,parallel);
 		assertEquals("false,true,false",res);
 	}
 
