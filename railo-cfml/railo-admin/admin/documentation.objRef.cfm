@@ -12,6 +12,8 @@ loop collection="#funcList#" index="key" {
 NL="
 ";
 
+stText.doc.attr.default="Default Value";
+
 function formatDesc(string desc){
 	desc=replace(trim(desc),NL&"-","<br><li>","all");
 	desc=replace(desc,NL,"<br>","all");
@@ -96,12 +98,19 @@ function formatDesc(string desc){
 			</cfif>
 		</div>
 		<cfif data.argumentType EQ "fixed" and arraylen(data.arguments) GT 1>
+			<cfset hasdefaults=false>
+			<cfloop array="#data.arguments#" index="key" item="attr">
+				<cfif index EQ data.member.position or attr.status EQ "hidden"><cfcontinue></cfif>
+				<cfif !isNull(attr.defaultValue)><cfset hasdefaults=true></cfif>
+			</cfloop>
+
 			<table class="maintbl">
 				<thead>
 					<tr>
 						<th width="20%">#stText.doc.arg.name#</th>
 						<th width="7%">#stText.doc.arg._type#</th>
 						<th width="7%">#stText.doc.arg.required#</th>
+						<cfif hasdefaults><th width="7%">#stText.doc.attr.default#</th></cfif>
 						<th width="66%">#stText.doc.arg.description#</th>
 					</tr>
 				</thead>
@@ -112,6 +121,7 @@ function formatDesc(string desc){
 							<td>#attr.name	#</td>
 							<td>#attr.type#&nbsp;</td>
 							<td>#YesNoFormat(attr.required)#</td>
+							<cfif hasdefaults><td><cfif isNull(attr.defaultValue)>&nbsp;<cfelse>#attr.defaultValue#</cfif></td></cfif>
 							<td>
 								<cfif attr.status EQ "deprecated">
 									<b class="error">#stText.doc.depArg#</b>

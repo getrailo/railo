@@ -2,7 +2,7 @@
 <cfparam name="url.keyword" default="">
 
 <cfset stText.doc.filterByKeyword="Filter by Keyword">
-
+<cfset stText.doc.attr.default="Default Value">
 <cfset funcList=getFunctionList()>
 <cfset keywords=getFunctionKeywords()>
 
@@ -122,12 +122,19 @@
 			</div>
 		</cfif>
 		<cfif data.argumentType EQ "fixed" and arraylen(data.arguments)>
+			<cfset hasdefaults=false>
+			<cfloop array="#data.arguments#" index="key" item="val">
+				<cfif !isNull(val.defaultValue)><cfset hasdefaults=true></cfif>
+			</cfloop>
+
+			#hasdefaults#
 			<table class="maintbl">
 				<thead>
 					<tr>
 						<th width="21%">#stText.doc.arg.name#</th>
 						<th width="7%">#stText.doc.arg._type#</th>
 						<th width="7%">#stText.doc.arg.required#</th>
+						<cfif hasdefaults><th width="7%">#stText.doc.attr.default#</th></cfif>
 						<th width="65%">#stText.doc.arg.description#</th>
 					</tr>
 				</thead>
@@ -138,6 +145,7 @@
 							<td>#attr.name	#</td>
 							<td>#attr.type#&nbsp;</td>
 							<td>#YesNoFormat(attr.required)#</td>
+							<cfif hasdefaults><td><cfif isNull(attr.defaultValue)>&nbsp;<cfelse>#attr.defaultValue#</cfif></td></cfif>
 							<td><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depArg#</b><cfelse>#formatDesc(attr.description)#</cfif>&nbsp;</td>
 						</tr>
 					</cfloop>

@@ -423,7 +423,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>listEach</name>
 		<class>railo.runtime.functions.list.ListEach</class>
-		<member-name>each</member-name>
+		<member-name>listEach,each</member-name>
 		<keywords>list,string,iterator</keywords>
 		<description>call the given UDF/Closure with every value in the string list.</description>
 		<argument>
@@ -449,12 +449,21 @@ All elements in the array must contain values that can be automatically converte
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>include empty fields or not</description>
 		</argument>
 		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>true</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
+		<argument>
 			<name>parallel</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>execute closures parallel</description>
@@ -767,7 +776,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>listMap</name>
 		<class>railo.runtime.functions.list.ListMap</class>
-		<member-name>map</member-name>
+		<member-name>listMap,map</member-name>
 		<keywords>string,list,iterator</keywords>
 		<description>Calls the given closure with every element in the given array.
 		the function returns a array that contains all values returned by the closure.</description>
@@ -799,7 +808,15 @@ Remember CFML arrays start at 1 not 0.</description>
 			<description>include empty fields or not</description>
 		</argument>
 		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>true</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
+		<argument>
 			<name>parallel</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>execute closures parallel</description>
@@ -11656,6 +11673,13 @@ The following things are considered to be empty:
 			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -11665,7 +11689,7 @@ The following things are considered to be empty:
 		<name>listChangeDelims</name>
 		<class>railo.runtime.functions.list.ListChangeDelims</class>
 		<keywords>list,string</keywords>
-		<!-- <member-name>changeDelims</member-name> -->
+		<member-name>listChangeDelims</member-name>
 		<description>Changes a list delimiter.
         Returns a copy of the list, with each delimiter character
         replaced by new_delimiter.</description>
@@ -11696,6 +11720,13 @@ The following things are considered to be empty:
 			<default>false</default>
 			<description>if set to true, empty values are included as well</description>
 		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -11720,6 +11751,13 @@ The following things are considered to be empty:
 			<required>No</required>
 			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -11757,9 +11795,17 @@ The following things are considered to be empty:
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
+		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -11795,9 +11841,17 @@ The following things are considered to be empty:
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
+		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>false</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -11845,7 +11899,7 @@ The following things are considered to be empty:
 	<function>
 		<name>listFilter</name>
 		<class>railo.runtime.functions.list.ListFilter</class>
-		<member-name>filter</member-name>
+		<member-name>listFilter,filter</member-name>
 		<keywords>list,string,iterator</keywords>
 		<description>This function creates a new string list that returns all entries from an string list that match the given filter.</description>
 		<argument>
@@ -11876,7 +11930,15 @@ The following things are considered to be empty:
 			<description>include empty fields or not</description>
 		</argument>
 		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>true</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
+		<argument>
 			<name>parallel</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>execute closures parallel</description>
@@ -12474,6 +12536,7 @@ The following things are considered to be empty:
 		</argument>
 		<argument>
 			<name>multiCharacterDelimiter</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. The default is false. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
@@ -15668,7 +15731,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structCount</name>
 		<class>railo.runtime.functions.struct.StructCount</class>
-		<member-name>len</member-name>
+		<member-name>len,count</member-name>
 		<keywords>struct</keywords>
 		<description>Counts the keys in a structure.</description>
 		<argument>
@@ -15972,7 +16035,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ListReduce</name>
 		<class>railo.runtime.functions.list.ListReduce</class>
-		<member-name>reduce</member-name>
+		<member-name>listReduce,reduce</member-name>
 		<keywords>array,iterator</keywords>
 		<description>Iterates over every entry of the given array and calls the closure with every element. 
 		This function will reduce the array to a single value and will return the value.</description>
@@ -16005,9 +16068,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>include empty fields or not</description>
+		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>true</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -16202,7 +16273,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>ListSome</name>
 		<class>railo.runtime.functions.list.ListSome</class>
-		<member-name>some</member-name>
+		<member-name>listSome,some</member-name>
 		<keywords>array,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given string list and returns true, if one of the closure calls returns true.</description>
 		<argument>
@@ -16228,13 +16299,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>include empty fields or not</description>
 		</argument>
 		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>true</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
+		<argument>
 			<name>parallel</name>
 			<type>boolean</type>
+			<default>false</default>
 			<required>No</required>
 			<description>execute closures parallel</description>
 		</argument>
@@ -16410,7 +16490,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>listEvery</name>
 		<class>railo.runtime.functions.list.ListEvery</class>
-		<member-name>every</member-name>
+		<member-name>listEvery,every</member-name>
 		<keywords>list,string,iterator</keywords>
 		<description>This function calls a given closure/function with every element in a given string list and returns true, if all of the closure calls returns true.</description>
 		<argument>
@@ -16437,11 +16517,20 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>includeEmptyFields</name>
 			<type>boolean</type>
+			<default>false</default>
 			<required>No</required>
 			<description>include empty fields or not</description>
 		</argument>
 		<argument>
+			<name>multiCharacterDelimiter</name>
+			<default>true</default>
+			<type>boolean</type>
+			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
+		</argument>
+		<argument>
 			<name>parallel</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>No</required>
 			<description>execute closures parallel</description>
