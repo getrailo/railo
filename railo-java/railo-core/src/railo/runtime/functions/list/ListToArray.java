@@ -41,7 +41,7 @@ public final class ListToArray extends BIF {
 		if(list.length()==0) 
 			return new ArrayImpl();
 		
-		return ListUtil.listToArrayRemoveEmpty(list,delimiter,multiCharacterDelimiter);
+		return ListUtil.listToArray(list,delimiter,false,multiCharacterDelimiter);
 	}
 	
     @Override
