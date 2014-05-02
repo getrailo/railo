@@ -16,7 +16,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assert( len( dateParts[2] ) == 2 );
 		assert( len( dateParts[3] ) == 2 );
 
-		var timeParts = listToArray( listFirst( time, 'Z' ), ':' );
+		var timeParts = listToArray( listFirst( time, 'Zz+-' ), ':' );
 
 		assert( len( timeParts[1] ) == 2 );		
 		assert( len( timeParts[2] ) == 2 );		
