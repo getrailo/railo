@@ -25,7 +25,7 @@ public final class ListAvg extends BIF {
     }
     
     public static double call(PageContext pc , String list, String delimiter, boolean multiCharacterDelimiter) throws ExpressionException {
-        return ArrayUtil.avg(ListUtil.listToArray(list, delimiter, multiCharacterDelimiter));
+        return ArrayUtil.avg(ListUtil.listToArray(list, delimiter,false, multiCharacterDelimiter));
     }
 
     @Override
