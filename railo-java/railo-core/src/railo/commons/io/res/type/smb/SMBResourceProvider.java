@@ -12,7 +12,6 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.ApplicationException;
 
 import java.nio.charset.Charset;
 

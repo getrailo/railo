@@ -27,7 +27,6 @@ import railo.runtime.interpreter.ref.literal.LString;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.UDFUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
