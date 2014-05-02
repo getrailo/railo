@@ -18,8 +18,10 @@ import org.osgi.framework.launch.FrameworkFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngineFactorySupport;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ListUtil;
 
 public class OSGiUtil {
 	
@@ -38,15 +40,17 @@ public class OSGiUtil {
 		if(log!=null)log.info("OSGi", "add bundle:"+bundle);
 		
 		Manifest m=getManifest(bundle);
-		if(m==null) new BundleException("no Manifest found in Bundle");
+		if(m==null) throw new BundleException("no Manifest found in Bundle "+bundle);
 		Attributes attrs = m.getMainAttributes();
 		
 		String symName = Caster.toString(attrs.getValue("Bundle-SymbolicName"),null);
-		if(symName==null) new BundleException("Manifest does not contain a Bundle-SymbolicName");
+		if(StringUtil.isEmpty(symName)) throw new BundleException("Manifest from bundle ["+bundle+"] does not contain a Bundle-SymbolicName");
 		String version = Caster.toString(attrs.getValue("Bundle-Version"),null);
-		if(version==null) new BundleException("Manifest does not contain a Bundle-Version");
+		if(StringUtil.isEmpty(version)) throw new BundleException("Manifest from bundle ["+bundle+"] does not contain a Bundle-Version");
+		Version v = toVersion(version);
 		
-		Bundle existing = getBundle(context,symName,version,null);
+		
+		Bundle existing = getBundle(context,symName,v,null);
 		if(existing!=null) return existing;
 		
 		//context.getBundle(arg0);
@@ -62,14 +66,39 @@ public class OSGiUtil {
         }
 	}
 	
-	private static Bundle getBundle(BundleContext context, String symbolicName, String version, Bundle defaultValue) { 
-		Version v = new Version(version);
+	private static Bundle getBundle(BundleContext context, String symbolicName, Version version, Bundle defaultValue) { 
 		Bundle[] bundles = context.getBundles();
 		for(int i=0;i<bundles.length;i++){
-			if(bundles[i].getSymbolicName().equals(symbolicName) && v.equals(bundles[i].getVersion()))
+			if(bundles[i].getSymbolicName().equals(symbolicName) && version.equals(bundles[i].getVersion()))
 				return bundles[i];
 		}
+		
 		return defaultValue;
+	}
+	
+	
+	public static Version toVersion(String version, Version defaultValue) {
+		String[] arr = ListUtil.listToStringArray(version, '.');
+		if(arr.length<3 || arr.length>4) return defaultValue;
+		
+		Integer major=Caster.toInteger(arr[0],null);
+		if(major==null) return defaultValue;
+		
+		Integer minor=Caster.toInteger(arr[1],null);
+		if(minor==null) return defaultValue;
+		
+		Integer micro=Caster.toInteger(arr[2],null);
+		if(micro==null) return defaultValue;
+		
+		if(arr.length==3 || StringUtil.isEmpty(arr[3],true)) 
+			return new Version(major,minor,micro);
+		return new Version(major,minor,micro,arr[3].trim());
+	}
+	
+	public static Version toVersion(String version) throws BundleException {
+		Version v = toVersion(version,null);
+		if(v!=null) return v;
+		throw new BundleException("given version ["+version+"] is invalid, a valid version is following this pattern <major-number>.<minor-number>.<micro-number>[.<qualifier>]");
 	}
 
 	private static Manifest getManifest(Resource bundle) throws IOException {

@@ -9,9 +9,9 @@ import javax.servlet.ServletContext;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 
 import railo.commons.io.FileUtil;
+import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.MappingUtil;
 import railo.commons.lang.PCLCollection;
@@ -152,14 +152,10 @@ public final class MappingImpl implements Mapping {
     		try {
 				archiveBundle=OSGiUtil.installBundle(config.getLog("application"), bc, archive);
 			}
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (BundleException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    		catch (Throwable t) {
+    			config.getLog("application").log(Log.LEVEL_ERROR, "OSGi", t);
+                archive=null;
+            }
     	/*}else {
             try {
                 archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
