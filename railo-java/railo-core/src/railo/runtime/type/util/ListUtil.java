@@ -119,7 +119,7 @@ public final class ListUtil {
 		return listToArrayRemoveEmpty(list, delimiter,multiCharDelim);
 		
 	}
-	public static Array listToArray(String list, String delimiter, boolean multiCharDelim) {
+	private static Array listToArray(String list, String delimiter, boolean multiCharDelim) {
 		if(!multiCharDelim || delimiter.length()==0) return listToArray(list, delimiter);
 		if(delimiter.length()==1)return listToArray(list, delimiter.charAt(0));
 		int len=list.length();
@@ -612,15 +612,15 @@ public final class ListUtil {
 	}
     
 
-	/**
+	/* *
 	 * finds a value inside a list, ignore case
 	 * @param list list to search
 	 * @param value value to find
 	 * @return position in list (0-n) or -1
-	 */
-	public static int listFindNoCase(String list, String value) {
+	 *
+	private static int listFindNoCase(String list, String value) {
 		return listFindNoCase(list, value, ",", true);
-	}	
+	}*/	
 
 	/**
 	 * finds a value inside a list, do not ignore case
