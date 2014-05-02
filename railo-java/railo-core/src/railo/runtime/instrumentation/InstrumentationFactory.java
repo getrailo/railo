@@ -30,7 +30,6 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -55,7 +54,8 @@ import railo.runtime.exp.PageRuntimeException;
 public class InstrumentationFactory {
     private static final String _name = InstrumentationFactory.class.getName();
 	private static final String SEP = File.separator;
-	private static final String TOOLS_VERSION = "7u25"; 
+	private static final String TOOLS_VERSION = "7u25";
+	private static final String AGENT_CLASS_NAME = "railo.runtime.instrumentation.ExternalAgent";
 	private static Instrumentation _instr;
     
 
@@ -77,9 +77,8 @@ public class InstrumentationFactory {
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             @Override
 			public Object run() {
-            	ClassLoader ccl = CFMLEngineFactory.class.getClassLoader();//Thread.currentThread().getContextClassLoader();
-            	aprint.e("ccl:"+ccl.getClass().getName());
-            	Thread.currentThread().setContextClassLoader(CFMLEngineFactory.class.getClassLoader());
+            	ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+            	Thread.currentThread().setContextClassLoader(ClassLoader.getSystemClassLoader());
                 try{
 	                
 	                log.info("Instrumentation","looking for tools.jar");
@@ -134,23 +133,32 @@ public class InstrumentationFactory {
     }
 
     private static Instrumentation _getInstrumentation(Log log, Config config) {
-    	if(_instr!=null) 
-    		return _instr;
+    	if(_instr!=null) return _instr;
     	
+    	// try to get from different Classloaders
+    	_instr=_getInstrumentation(ClassLoader.getSystemClassLoader(),log);
+    	if(_instr!=null) return _instr;
     	
-		//Instrumentation instr = Agent.getInstrumentation();
-		//if(instr!=null) return instr;
-    	final String className= "railo.runtime.instrumentation.ExternalAgent";
-		Class<?> clazz=ClassUtil.loadClass(config.getClassLoader(),className, null);
-		if(clazz==null) {
-			clazz=ClassUtil.loadClass(CFMLEngineFactory.class.getClassLoader(), className, null);
-			if(clazz==null) {
-				clazz=ClassUtil.loadClass(ClassLoader.getSystemClassLoader(), className, null);
-			}
+    	_instr=_getInstrumentation(CFMLEngineFactory.class.getClassLoader(),log);
+    	if(_instr!=null) return _instr;
+    	
+    	_instr=_getInstrumentation(config.getClassLoader(),log);
+    	return _instr;
+	}
+
+	private static Instrumentation _getInstrumentation(ClassLoader cl,Log log) {
+		// get Class
+		Class<?> clazz=ClassUtil.loadClass(cl,AGENT_CLASS_NAME, null);
+		if(clazz!=null) {
+			log.info("Instrumentation", "found [railo.runtime.instrumentation.ExternalAgent] in ClassLoader ["+clazz.getClassLoader()+"]");
 		}
-		if(clazz!=null) log.info("Instrumentation", "found [railo.runtime.instrumentation.ExternalAgent] in ClassLoader ["+clazz.getClassLoader()+"]");
-		else log.error("Instrumentation", "not found [railo.runtime.instrumentation.ExternalAgent]");
+		else {
+			log.error("Instrumentation", "not found [railo.runtime.instrumentation.ExternalAgent] in ClassLoader ["+cl+"]");
+			return null;
+		}
 		
+		
+
 		try {
 			Method m = clazz.getMethod("getInstrumentation", new Class[0]);
 			_instr=(Instrumentation) m.invoke(null, new Object[0]);
@@ -160,7 +168,13 @@ public class InstrumentationFactory {
 			return _instr;
 		}
 		catch(Throwable t){
-			//log.log(Log.LEVEL_ERROR, "Instrumentation", t);
+			log.log(Log.LEVEL_ERROR, "Instrumentation", t);
+		}
+		
+		
+		
+		if(clazz!=null){
+			
 		}
 		return null;
 	}
@@ -363,7 +377,7 @@ public class InstrumentationFactory {
             String pid = runtime.getName();
             if (pid.indexOf("@") != -1)
                 pid = pid.substring(0, pid.indexOf("@"));
-
+            log.info("Instrumentation","pid:"+pid);
             // JDK1.6: now attach to the current VM so we can deploy a new agent
             // ### this is a Sun JVM specific feature; other JVMs may offer
             // ### this feature, but in an implementation-dependent way
@@ -399,18 +413,14 @@ public class InstrumentationFactory {
      */
     private static Class<?> loadVMClass(Resource toolsJar, Log log, JavaVendor vendor) {
         try {
-            ClassLoader loader = CFMLEngineFactory.class.getClassLoader();
-            aprint.e(loader.getClass().getName());
-            loader = ClassLoader.getSystemClassLoader();
-            aprint.e(loader.getClass().getName());
+            ClassLoader loader = ClassLoader.getSystemClassLoader();
             String cls = vendor.getVirtualMachineClassName();
             if (vendor.isIBM() == false) {
                 loader = new URLClassLoader(new URL[] { ((FileResource)toolsJar).toURI().toURL() }, loader);
             }
             return loader.loadClass(cls);
         } catch (Exception e) {
-            log.trace("Instrumentation",_name
-                    + ".loadVMClass() failed to load the VirtualMachine class");
+            log.log(Log.LEVEL_ERROR,"Instrumentation",e);
             
         }
         return null;
