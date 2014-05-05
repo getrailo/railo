@@ -106,7 +106,6 @@ public Class<?> loadClass(String name) throws ClassNotFoundException   {
      */
     @Override
 	protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    	//if(!name.endsWith("$cf")) return super.loadClass(name, resolve); this break Webervices
     	// First, check if the class has already been loaded
         Class<?> c = findLoadedClass(name);
         //print.o("load:"+name+" -> "+c);
