@@ -998,7 +998,6 @@ int pos=data.srcCode.getPos();
 		// get the name of the tag
 		String id = CFMLTransformer.identifier(data.srcCode, false,true);
 		
-		//print.e("name:"+id);
 		
 		if(id==null) {
 			data.srcCode.setPos(start);
@@ -1025,7 +1024,11 @@ int pos=data.srcCode.getPos();
 				 //throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+id+"]");
 			 }
 			appendix=StringUtil.removeStartingIgnoreCase(id,tlt.getName());
-		 }
+		}
+		if(tagLib.isCore() && tlt.getScript()==null) {
+			data.cfml.setPos(start);
+			return null;
+		}
 		
 		// check for opening bracked or closing semicolon
 		comments(data);
