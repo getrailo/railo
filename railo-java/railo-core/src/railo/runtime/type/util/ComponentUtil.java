@@ -387,7 +387,7 @@ public final class ComponentUtil {
 
 		ASMProperty[] props = ASMUtil.toASMProperties(component.getProperties(false, true, false, false));
 		
-    	String className=getClassname(component,props);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
+    	String className=getClassname(component,props);
     	String real=className.replace('.','/');
 
     	Mapping mapping = component.getPageSource().getMapping();

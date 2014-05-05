@@ -99,11 +99,4 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 		cr.accept(ca, 0);
 		return cw.toByteArray();
 	}
-
-	/*public static void main(String[] args) throws Throwable {
-		String path = "/Users/mic/Projects/Railo/webroot/WEB-INF/railo/cfclasses/CF_Users_mic_Projects_Railo_webroot_jm4653/jira/test/test_cfm$cf.class";
-		ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
-		Resource res = frp.getResource(path);
-		print.e(getClassName(res));
-	}*/
 }
