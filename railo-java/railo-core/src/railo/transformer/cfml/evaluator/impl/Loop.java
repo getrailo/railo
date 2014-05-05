@@ -159,7 +159,7 @@ public final class Loop extends EvaluatorSupport {
          */
         
 		loop.setType(TagLoop.TYPE_NOTHING);
-		//throw new EvaluatorException("Wrong Context, invalid attributes in tag cfloop");
+		throw new EvaluatorException("Wrong Context, invalid attributes in tag cfloop");
 		
 	}
 
