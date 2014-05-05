@@ -13,6 +13,7 @@ import railo.transformer.Factory;
 import railo.transformer.Position;
 import railo.transformer.TransformerException;
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.cast.CastInt;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
@@ -32,6 +33,7 @@ import railo.transformer.bytecode.visitor.LoopVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
+import railo.transformer.expression.ExprInt;
 import railo.transformer.expression.Expression;
 
 public final class TagLoop extends TagGroup implements FlowControlBreak,FlowControlContinue {
@@ -270,8 +272,8 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			bc.changeDoSubFunctions(old);
 		break;
 		case TYPE_TIMES:
-		//	writeOutTypeTimes(bc);
-		//break;
+			writeOutTypeTimes(bc);
+		break;
 		case TYPE_NOTHING:
 			GeneratorAdapter a = bc.getAdapter();
 			DoWhileVisitor dwv=new DoWhileVisitor();
@@ -290,6 +292,23 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		default:
 			throw new TransformerException("invalid type",getStart());
 		}
+	}
+
+	private void writeOutTypeTimes(BytecodeContext bc) throws TransformerException  {
+		Factory f = bc.getFactory();
+		GeneratorAdapter adapter = bc.getAdapter();
+		
+		int times=adapter.newLocal(Types.INT_VALUE);
+		ExprInt timesExpr = CastInt.toExprInt(getAttribute("times").getValue());
+		ExpressionUtil.writeOutSilent(timesExpr, bc, Expression.MODE_VALUE);
+		adapter.storeLocal(times);	
+		
+		
+		ForVisitor fiv = new ForVisitor();
+		fiv.visitBegin(adapter, 1, false);
+			getBody().writeOut(bc);
+		fiv.visitEnd(bc, times, true, getStart());
+		
 	}
 
 	/**
