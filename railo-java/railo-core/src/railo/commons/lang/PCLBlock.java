@@ -76,7 +76,6 @@ public Class<?> loadClass(String name) throws ClassNotFoundException   {
      */
     @Override
 	protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    	//if(!name.endsWith("$cf")) return super.loadClass(name, resolve); this break Webervices
     	// First, check if the class has already been loaded
         Class<?> c = findLoadedClass(name);
         //print.o("load:"+name+" -> "+c);
@@ -96,15 +95,10 @@ public Class<?> loadClass(String name) throws ClassNotFoundException   {
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {//if(name.indexOf("sub")!=-1)print.ds(name);
-    	//if(!name.endsWith("$cf")) return super.findClass(name); this break Webervices
-    	//File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
-    	//print.e("directory:"+directory+"->"+name);
     	Resource res=directory
     	.getRealResource(
     			name.replace('.','/')
     			.concat(".class"));
-        //File f = new File(directory,name.replace('.',File.separatorChar).concat(".class"));
-        //if(f==null) throw new ClassNotFoundException("class "+name+" not found");
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
