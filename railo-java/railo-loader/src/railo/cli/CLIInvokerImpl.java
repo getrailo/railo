@@ -21,7 +21,7 @@ public class CLIInvokerImpl implements CLIInvoker {
 	public CLIInvokerImpl(File root, String servletName) throws ServletException{
 		Map<String,Object> attributes=new HashMap<String, Object>();
 		Map<String, String> initParameters=new HashMap<String, String>();
-		initParameters.put("railo-server-directory", new File(root,"server").getAbsolutePath());
+		initParameters.put("railo-server-directory", new File(root,"WEB-INF/railo-cli").getAbsolutePath());
 		
 		ServletContextImpl servletContext = new ServletContextImpl(root, attributes, initParameters, 1, 0);
 		servletConfig = new ServletConfigImpl(servletContext, servletName);

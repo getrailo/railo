@@ -13,9 +13,8 @@ import railo.print;
 
 public class CLI {
 	public static void main(String[] args) throws Throwable {
-		args=new String[]{
-				"-jar", "lib/ext/railo-cli.jar", "-webroot=./web", "uri=index.cfm?param1=5&param2=susi"
-		};
+
+//		args=new String[]{ "-jar", "lib/ext/railo-cli.jar", "-webroot=./web", "uri=index.cfm?param1=5&param2=susi" };
 		
 		
 		File libDir=new File("./").getCanonicalFile();
