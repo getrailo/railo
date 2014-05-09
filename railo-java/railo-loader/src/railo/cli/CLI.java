@@ -31,7 +31,7 @@ public class CLI {
 	 */
 	public static void main(String[] args) throws ServletException, IOException, JspException {
 
-		Map<String,String> config = toMap(args);
+		Map<String, String> config = toMap(args);
 		
 		System.setProperty("railo.cli.call", "true");
 
@@ -41,10 +41,20 @@ public class CLI {
 		if (param != null && param.equalsIgnoreCase("true"))
 			useRMI = true;
 
+		File root;
 		param = config.get("webroot");
-		if (Util.isEmpty(param,true))   throw new IOException("missing webroot configuration");
-		File root = new File(param);
-		root.mkdirs();
+		if (Util.isEmpty(param, true)) {
+
+			root = new File(".");        // working directory that the java command was called from
+			config.put("webroot", root.getAbsolutePath());
+		}
+		else {
+
+			root = new File(param);
+			root.mkdirs();
+		}
+
+//		System.out.println("set webroot to: " + root.getAbsolutePath());
 
 		String servletName = config.get("servlet-name");
 
@@ -75,7 +85,7 @@ public class CLI {
 	}
 // java railo-cli.jar -config=.../railo-web.xml.cfm -uri=/susi/index.cfm?test=1 -form=name=susi -cgi=user_agent=urs -output=.../test.txt ...
 // java -Drailo.cli.config=F:\test\railo-cli-config -cp %CLASSPATH% railo.cli.CLI -webroot=. -uri=/time.cfm
-	
+
 	private static Map<String, String> toMap(String[] args) {
 
 		int index;
