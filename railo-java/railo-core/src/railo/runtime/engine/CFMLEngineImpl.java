@@ -54,7 +54,6 @@ import railo.loader.engine.CFMLEngineFactorySupport;
 import railo.loader.engine.CFMLEngineWrapper;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
-import railo.runtime.InfoImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigServer;

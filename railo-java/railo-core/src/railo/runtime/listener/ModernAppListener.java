@@ -89,7 +89,7 @@ public class ModernAppListener extends AppListenerSupport {
 			String callPath=appPS.getComponentName();
 			
 			
-			Component app = ComponentLoader.loadComponent(pci,null,appPS, callPath, false,false);
+			Component app = ComponentLoader.loadComponent(pci,appPS, callPath, false,false);
 			
 			// init
 			initApplicationContext(pci,app);

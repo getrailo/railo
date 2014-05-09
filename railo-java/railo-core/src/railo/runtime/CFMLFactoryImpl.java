@@ -27,6 +27,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.engine.JspEngineInfoImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.PageException;

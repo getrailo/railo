@@ -205,7 +205,6 @@ public final class CreateObject implements Function {
 	} 
     
     public static Component doComponent(PageContext pc,String className) throws PageException {
-    	
     	return pc.loadComponent(className);
     } 
     

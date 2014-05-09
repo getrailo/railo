@@ -21,5 +21,7 @@ public class Constants {
 		new ExtensionProviderImpl("http://www.getrailo.com/ExtensionProvider.cfc",true),
 		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
 	};
+	public static final String SCRIPT_TAG_NAME = "script";
+	public static final String CLASS_SUFFIX = "$cf";
 
 }

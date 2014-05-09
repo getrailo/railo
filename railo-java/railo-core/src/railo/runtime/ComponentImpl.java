@@ -347,12 +347,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
         // extends
 	    if(!StringUtil.isEmpty(properties.extend)) {
-			base= ComponentLoader.loadComponent(pageContext,componentPage.getPageSource(),properties.extend,Boolean.TRUE,null);
+			base= ComponentLoader.searchComponent(pageContext,componentPage.getPageSource(),properties.extend,Boolean.TRUE,null);
 		}
 	    else { 
 	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);
 	    	if(!componentPage.getPageSource().equals(p.getPageSource())) {
-            	base=ComponentLoader.loadComponent(pageContext,p,p.getPageSource(),"Component",false);
+            	base=ComponentLoader.loadComponent(pageContext,p,"Component",false,false);
 	        } 
 	    }
     	

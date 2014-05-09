@@ -1026,7 +1026,7 @@ int pos=data.srcCode.getPos();
 			appendix=StringUtil.removeStartingIgnoreCase(id,tlt.getName());
 		}
 		if(tagLib.isCore() && tlt.getScript()==null) {
-			data.cfml.setPos(start);
+			data.srcCode.setPos(start);
 			return null;
 		}
 		
@@ -1889,8 +1889,8 @@ int pos=data.srcCode.getPos();
     	CFMLTransformer.comment(data.srcCode,true);
     	
     	// value
-    	boolean b=data.srcCode.forwardIfCurrent('=') || (allowColonSeparator && data.srcCode.forwardIfCurrent(':'));
-    	if(b)	{
+    	boolean hasValue=data.srcCode.forwardIfCurrent('=') || (allowColonSeparator && data.srcCode.forwardIfCurrent(':'));
+    	if(hasValue)	{
     		CFMLTransformer.comment(data.srcCode,true);
     		value=attributeValue(data,allowExpression);	
     		
@@ -1907,7 +1907,7 @@ int pos=data.srcCode.getPos();
 			tlta = tlt.getAttribute(name,true);
 			if(tlta!=null && tlta.getName()!=null)name=tlta.getName();
 		}
-		return new Attribute(dynamic.toBooleanValue(),name,tlta!=null?CastOther.toExpression(value, tlta.getType()):value,sbType.toString());
+		return new Attribute(dynamic.toBooleanValue(),name,tlta!=null?CastOther.toExpression(value, tlta.getType()):value,sbType.toString(),!hasValue);
     }
 	
 	/*private String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType) throws TemplateException {

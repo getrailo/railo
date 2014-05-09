@@ -436,6 +436,26 @@ public final class ASMUtil {
 		Body body=(Body) tag.getParent();
 		body.getStatements().remove(tag);
 	}
+	
+	public static void move(Tag src, Body dest) {
+		// switch children
+		Body srcBody=(Body) src.getParent();
+		
+		
+		Iterator<Statement> it =  srcBody.getStatements().iterator();
+		Statement stat;
+		while(it.hasNext()) {
+			stat=it.next();
+			if(stat==src) {
+				it.remove();
+				dest.addStatement(stat);
+			}
+		}
+		
+		// switch parent
+		src.setParent(dest);
+		
+	}
 
 	/**
 	 * replace src with trg
@@ -497,7 +517,7 @@ public final class ASMUtil {
 	}
 	
 	
-	public static Tag getAncestorComponent(Statement stat) throws TransformerException {
+	/*public static Tag getAncestorComponentq(Statement stat) throws TransformerException {
 		//print.ln("getAncestorPage:"+stat);
 		Statement parent=stat;
 		while(true)	{
@@ -507,12 +527,16 @@ public final class ASMUtil {
 				throw new TransformerException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
-			if(parent instanceof TagComponent)
+			if(parent instanceof Tag Component)
 			//if(parent instanceof Tag && "component".equals(((Tag)parent).getTagLibTag().getName()))	
 				return (Tag) parent;
 		}
-	}
-	
+	}*/
+
+    /*public static boolean isRootq(Statement statement) { 
+    	//return statement instanceof Page || (statement instanceof Tag && "component".equals(((Tag)statement).getTagLibTag().getName()));
+    	return statement instanceof Page || statement instanceof Tag Component;
+    }
 	public static Statement getRoot(Statement stat) {
 		while(true)	{
 			if(isRoot(stat))	{
@@ -520,14 +544,10 @@ public final class ASMUtil {
 			}
 			stat=stat.getParent();
 		}
-	}
+	}*/
 
 
 
-    public static boolean isRoot(Statement statement) { 
-    	//return statement instanceof Page || (statement instanceof Tag && "component".equals(((Tag)statement).getTagLibTag().getName()));
-    	return statement instanceof Page || statement instanceof TagComponent;
-    }
 	
 	public static void invokeMethod(GeneratorAdapter adapter, Type type, Method method) {
 		if(type.getClass().isInterface())

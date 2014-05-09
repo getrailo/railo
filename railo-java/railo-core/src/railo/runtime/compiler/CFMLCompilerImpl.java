@@ -47,12 +47,8 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 		//synchronized(source){
 			//print.out("src:"+source.getDisplayPath());
     		//print.dumpStack();
-			Resource classFile=classRootDir.getRealResource(className+".class");
-			Resource classFileDirectory=classFile.getParentResource();
-	        byte[] barr = null;
+			byte[] barr = null;
 			Page page = null;
-			
-			if(!classFileDirectory.exists()) classFileDirectory.mkdirs(); 
 			
 			Factory factory = BytecodeFactory.getInstance();
 	        try {
@@ -79,6 +75,12 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 		        	}
 		        	else throw cfe;
 		        }
+		        // Resource classFile = classRootDir.getRealResource(page.getClassName()+".class");
+		        Resource classFile = classRootDir.getRealResource(page.getClassName()+".class");
+				Resource classFileDirectory=classFile.getParentResource();
+		        if(!classFileDirectory.exists()) classFileDirectory.mkdirs(); 
+				
+		        
 
 				IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 		        return barr;
@@ -91,17 +93,21 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        		String srcName = ASMUtil.getClassName(barr);
 	        		// source is cfm and target cfc
 	        		if(
-	        				srcName.endsWith("_"+Constants.TEMPLATE_EXTENSION+"$cf") 
+	        				srcName.endsWith("_"+Constants.TEMPLATE_EXTENSION+Constants.CLASS_SUFFIX) 
 	        				&& 
-	        				className.endsWith("_"+Constants.COMPONENT_EXTENSION+"$cf"))
+	        				className.endsWith("_"+Constants.COMPONENT_EXTENSION+Constants.CLASS_SUFFIX))
 	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains the bytecode for a regular cfm template not for a component");
 	        		// source is cfc and target cfm
-	        		if(srcName.endsWith("_"+Constants.COMPONENT_EXTENSION+"$cf") && className.endsWith("_"+Constants.TEMPLATE_EXTENSION+"$cf"))
+	        		if(srcName.endsWith("_"+Constants.COMPONENT_EXTENSION+Constants.CLASS_SUFFIX) && className.endsWith("_"+Constants.TEMPLATE_EXTENSION+Constants.CLASS_SUFFIX))
 	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains a component not a regular cfm template");
 	        		
 	        		// rename class name when needed
 	        		if(!srcName.equals(className))barr=ClassRenamer.rename(barr, className);
 	        		
+	        		Resource classFile=classRootDir.getRealResource(className+".class");
+	    			Resource classFileDirectory=classFile.getParentResource();
+	    			if(!classFileDirectory.exists()) classFileDirectory.mkdirs(); 
+	    			
 	        		
 	        		barr=Page.setSourceLastModified(barr,source.getPhyscalFile().lastModified());
 	        		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);

@@ -68,7 +68,7 @@ import railo.runtime.type.util.UDFUtil;
 /**
  * A Page that can produce Components
  */
-public abstract class ComponentPage extends PagePlus  {
+public abstract class ComponentPage extends CIPage  {
 	
 	public static final Collection.Key ACCEPT_ARG_COLL_FORMATS = KeyImpl.getInstance("acceptedArgumentCollectionFormats");
 

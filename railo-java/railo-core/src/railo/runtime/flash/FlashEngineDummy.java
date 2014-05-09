@@ -2,7 +2,7 @@ package railo.runtime.flash;
 
 import java.io.InputStream;
 
-import railo.runtime.InfoImpl;
+import railo.runtime.engine.InfoImpl;
 
 public class FlashEngineDummy implements FlashEngine {
 

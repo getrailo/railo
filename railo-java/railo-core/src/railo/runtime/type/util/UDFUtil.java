@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
-import railo.runtime.PagePlus;
 import railo.runtime.PageSource;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -107,10 +106,7 @@ public class UDFUtil {
 
 	public static Object getDefaultValue(PageContext pc, PageSource ps, int udfIndex, int index, Object defaultValue) throws PageException {
 		Page p=ComponentUtil.getPage(pc,ps);
-    	if(p instanceof PagePlus) return ((PagePlus)p).udfDefaultValue(pc,udfIndex,index,defaultValue);
-    	Object rtn = p.udfDefaultValue(pc,udfIndex,index);
-    	if(rtn==null) return defaultValue;// in that case it can make no diff between null and not existing, but this only happens with data from old ra files
-    	return rtn;
+		return p.udfDefaultValue(pc,udfIndex,index,defaultValue);
 	}
 	
 

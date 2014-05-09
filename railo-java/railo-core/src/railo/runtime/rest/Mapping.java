@@ -121,7 +121,7 @@ public class Mapping {
 		for(int i=0;i<children.length;i++){
 			try{
 				ps = pc.toPageSource(children[i],null);
-				cfc = ComponentLoader.loadComponent(pc, null, ps, children[i].getName(), true,true);
+				cfc = ComponentLoader.loadComponent(pc, ps, children[i].getName(), true,true);
 				meta = cfc.getMetaData(pc);
 				if(Caster.toBooleanValue(meta.get(KeyConstants._rest,null),false)){
 					path = Caster.toString(meta.get(KeyConstants._restPath,null),null);

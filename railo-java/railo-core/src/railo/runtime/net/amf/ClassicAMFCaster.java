@@ -258,7 +258,7 @@ public class ClassicAMFCaster implements AMFCaster {
 
 				if(p==null)throw new ApplicationException("Could not find a Component with name ["+aso.getType()+"]");
 				
-				Component cfc = ComponentLoader.loadComponent(pc, p, p.getPageSource(), aso.getType(), false);
+				Component cfc = ComponentLoader.loadComponent(pc, p,  aso.getType(), false,false);
 				ComponentSpecificAccess cw=ComponentSpecificAccess.toComponentSpecificAccess(config.getComponentDataMemberDefaultAccess(),cfc);
 				
 				Iterator it = aso.entrySet().iterator();

@@ -13,22 +13,27 @@ import railo.runtime.type.UDFProperties;
  */
 public abstract class Page implements Serializable{
 
-	private static final ImportDefintion[] ZERO=new ImportDefintion[0];
-    /**
-     * Field <code>FALSE</code>
-     */
-    public static boolean FALSE=false;
-    
-    /**
-     * Field <code>TRUE</code>
-     */
-    public static boolean TRUE=true;
-	private PageSource pageSource;
-    private byte loadType;
+	private static final ImportDefintion[] NO_IMPORTS=new ImportDefintion[0];
+	private static final CIPage[] NO_SUB_PAGES=new CIPage[0];
 	
-    
-    
-    
+	
+	/**
+	* Field <code>FALSE</code>
+	*/
+	public static boolean FALSE=false;
+	
+	/**
+	* Field <code>TRUE</code>
+	*/
+	public static boolean TRUE=true;
+	private PageSource pageSource;
+	private byte loadType;
+	
+	//public Resource staticTextLocation;
+	
+	//private CIPage[] subs;
+	
+
 	/**
 	 * return version definition of the page
 	 * @return version
@@ -46,7 +51,7 @@ public abstract class Page implements Serializable{
 
 	
 	/**
-     * return when the source file last time was modified
+	 * return when the source file last time was modified
 	 * @return last modification of source file
 	 */
 	public long getSourceLastModified() {return 0;}
@@ -69,35 +74,35 @@ public abstract class Page implements Serializable{
 		return pageSource;
 	}
 
-    /**
-     * @return gets the load type
-     */
-    public byte getLoadType() {
-        return loadType;
-    }
-    
-    /**
-     * @param loadType sets the load type
-     */
-    public void setLoadType(byte loadType) {
-        this.loadType = loadType;
-    }
+	/**
+	 * @return gets the load type
+	 */
+	public byte getLoadType() {
+		return loadType;
+	}
+	
+	/**
+	 * @param loadType sets the load type
+	 */
+	public void setLoadType(byte loadType) {
+		this.loadType = loadType;
+	}
 
-    public Object udfCall(PageContext pageContext, UDF udf,int functionIndex) throws Throwable {
-    	return null;
-    }
-    
-    public void threadCall(PageContext pageContext, int threadIndex) throws Throwable {
-    }
-    
-    /**
-     * @deprecated use instead <code>udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex, Object defaultValue)</code>
-     * @param pc
-     * @param functionIndex
-     * @param argumentIndex
-     * @return
-     */
-    public Object udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex) {
+	public Object udfCall(PageContext pageContext, UDF udf,int functionIndex) throws Throwable {
+		return null;
+	}
+	
+	public void threadCall(PageContext pageContext, int threadIndex) throws Throwable {
+	}
+	
+	/**
+	 * @deprecated use instead <code>udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex, Object defaultValue)</code>
+	 * @param pc
+	 * @param functionIndex
+	 * @param argumentIndex
+	 * @return
+	 */
+	public Object udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex) {
 		return udfDefaultValue(pc, functionIndex, argumentIndex, null);
 	}
 	
@@ -108,7 +113,11 @@ public abstract class Page implements Serializable{
 
 
 	public ImportDefintion[] getImportDefintions() {
-		return ZERO;
+		return NO_IMPORTS;
+	}
+	
+	public CIPage[] getSubPages() {
+		return NO_SUB_PAGES;
 	}
 	
 

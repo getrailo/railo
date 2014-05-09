@@ -17,7 +17,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SystemOut;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.InfoImpl;
+import railo.runtime.engine.InfoImpl;
 import railo.runtime.text.xml.XMLUtil;
 
 public abstract class ConfigFactory {

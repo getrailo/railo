@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.print;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -15,6 +16,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
@@ -130,25 +132,35 @@ public final class CFMLTransformer {
 			}
 		}
 		
+		
+		
+		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getComponentExtension())){
+		
+		if(p.isPage() && ResourceUtil.getExtension(ps.getResource(),"").equalsIgnoreCase(config.getComponentExtension()) &&
+				isPossibleRawScript(cfml)){
+			
+			TagLibTag scriptTag = CFMLTransformer.getTLT(cfml,Constants.SCRIPT_TAG_NAME);
+			TagLibTag compTag = CFMLTransformer.getTLT(cfml,"component");
+			
+			
 			cfml.setPos(0);
-			TagLibTag tlt;
 			SourceCode original = cfml; 
 			
 			// try inside a cfscript
-			tlt = CFMLTransformer.getTLT(original,"script");
-			String text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
+			String text="<"+scriptTag.getFullName()+">"+original.getText()+"</"+scriptTag.getFullName()+">";
 			cfml=new SourceCode(text,charset,writeLog,ps);
 			
 			try {
 				while(true){
 					if(cfml==null){
 						cfml=new SourceCode(ps,charset,writeLog);
-						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
+						text="<"+scriptTag.getFullName()+">"+cfml.getText()+"</"+scriptTag.getFullName()+">";
 						cfml=new SourceCode(text,charset,writeLog,ps);
 					}
 					try {
+						print.e(cfml.getText());
+						
 						p= transform(factory,config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
@@ -164,25 +176,22 @@ public final class CFMLTransformer {
 				throw e.getTemplateException();
 			}
 			catch (TemplateException e) {
-				//print.printST(e);
+				print.printST(e);
 			}
-			
-			
-			
 			
 			// try inside a component
 			if(p.isPage()){
-				tlt = CFMLTransformer.getTLT(original,"component");
-				text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
+				text="<"+compTag.getFullName()+">"+original.getText()+"</"+compTag.getFullName()+">";
 				cfml=new SourceCode(text,charset,writeLog,ps);
 						
 				while(true){
 					if(cfml==null){
 						cfml=new SourceCode(ps,charset,writeLog);
-						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
+						text="<"+compTag.getFullName()+">"+cfml.getText()+"</"+compTag.getFullName()+">";
 						cfml=new SourceCode(text,charset,writeLog,ps);
 					}
 					try {
+						print.e(cfml.getText());
 						p= transform(factory,config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
@@ -201,6 +210,23 @@ public final class CFMLTransformer {
 		return p;
 	}
 	
+	private boolean isPossibleRawScript(SourceCode sc) throws TemplateException {
+		String text = sc.getText().trim();
+		
+		TagLibTag scriptTag = CFMLTransformer.getTLT(sc,Constants.SCRIPT_TAG_NAME);
+		TagLibTag compTag = CFMLTransformer.getTLT(sc,"component");
+		
+		// end with script tag
+		String end="</"+scriptTag.getFullName()+">";
+		if(StringUtil.endsWithIgnoreCase(text, end)) return false;
+		
+		// end with component tag
+		end="</"+compTag.getFullName()+">";
+		if(StringUtil.endsWithIgnoreCase(text, end)) return false;
+			
+		return true;
+	}
+
 
 	public static TagLibTag getTLT(SourceCode cfml,String name) throws TemplateException {
 		TagLib tl;
@@ -242,7 +268,7 @@ public final class CFMLTransformer {
 
 		PageSource source=cfml.getPageSource(); 
 		
-		Page page=new Page(factory,source,source.getPhyscalFile(),source.getFullClassName(),ConfigWebUtil.getEngine(config).getInfo().getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
+		Page page=new Page(factory,source,source.getPhyscalFile(),null,ConfigWebUtil.getEngine(config).getInfo().getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSuppressWSBeforeArg());
 		TagData data = new TagData(factory,_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,dotNotationUpperCase,page);
 		
 		//Body body=page;
@@ -526,8 +552,8 @@ public final class CFMLTransformer {
 		 else {
 			 tag.setFullname(tagLibTag.getFullName());		 
 		 }
-		 if(tag.getFullname().equalsIgnoreCase("cfcomponent"))data.page.setIsComponent(true);	// MUST to hardcoded, to better
-		 else if(tag.getFullname().equalsIgnoreCase("cfinterface"))data.page.setIsInterface(true);	// MUST to hardcoded, to better
+		 //if(tag.getFullname().equalsIgnoreCase("cfcomponent"))data.page.setIsComponent(true);	// MUST to hardcoded, to better
+		 //else if(tag.getFullname().equalsIgnoreCase("cfinterface"))data.page.setIsInterface(true);	// MUST to hardcoded, to better
 			 
 		tag.setTagLibTag(tagLibTag);
 		comment(data.srcCode,true);

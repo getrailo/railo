@@ -2835,7 +2835,7 @@ public final class PageContextImpl extends PageContext {
 
     @Override
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-    	return ComponentLoader.loadComponent(this,null,compPath,null,null);
+    	return ComponentLoader.searchComponent(this,null,compPath,null,null);
     }
 
 	/**

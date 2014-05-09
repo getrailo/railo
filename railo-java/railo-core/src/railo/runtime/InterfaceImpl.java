@@ -108,7 +108,7 @@ public class InterfaceImpl implements Interface {
 
     	while(it.hasNext()) {
     		extend=((String) it.next()).trim();
-    		ic=ComponentLoader.loadInterface(pc,child,extend,interfaceUdfs);
+    		ic=ComponentLoader.searchInterface(pc,child,extend,interfaceUdfs);
     		interfaces.add(ic);
     		ic.setUDFListener(interfaceUdfs);
     		if(!StringUtil.isEmpty(ic.extend)) {

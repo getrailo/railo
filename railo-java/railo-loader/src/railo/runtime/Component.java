@@ -18,7 +18,7 @@ import railo.runtime.type.UDFProperties;
 /**
  * interface for a Component
  */
-public interface Component extends Struct,Objects,CFObject {
+public interface Component extends Struct,Objects,CIObject {
     
     /**
      * Constant for Access Mode Remote

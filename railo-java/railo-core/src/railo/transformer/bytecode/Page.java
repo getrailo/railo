@@ -23,15 +23,19 @@ import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.runtime.ComponentPage;
+import railo.runtime.InterfacePage;
 import railo.runtime.Mapping;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.ImportDefintionImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.transformer.Factory;
 import railo.transformer.TransformerException;
@@ -42,7 +46,10 @@ import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.NativeSwitch;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.bytecode.statement.tag.TagCIObject;
+import railo.transformer.bytecode.statement.tag.TagComponent;
 import railo.transformer.bytecode.statement.tag.TagImport;
+import railo.transformer.bytecode.statement.tag.TagInterface;
 import railo.transformer.bytecode.statement.tag.TagThread;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
@@ -151,6 +158,13 @@ public final class Page extends BodyBase {
 			Types.IMPORT_DEFINITIONS_ARRAY,
 			new Type[]{}
     		);
+    
+    private final static Method GET_SUB_PAGES = new Method(
+			"getSubPages",
+			Types.CI_PAGE_ARRAY,
+			new Type[]{}
+    		);
+    
     
     // long getSourceLastModified()
     private final static Method LAST_MOD = new Method(
@@ -315,7 +329,10 @@ public final class Page extends BodyBase {
 
 	// ComponentImpl(ComponentPage,boolean, String, String, String) NS==No Style
 	
-	
+	 
+    private static final org.objectweb.asm.commons.Method CONSTRUCTOR_EMPTY = 
+    	new org.objectweb.asm.commons.Method("<init>",Types.VOID,new Type[]{});
+
 	// Component Impl(ComponentPage,boolean, String, String, String, String) WS==With Style
 	private static final Method CONSTR_COMPONENT_IMPL = new Method(
 			"<init>",
@@ -366,12 +383,11 @@ public final class Page extends BodyBase {
     private final int version;
     private final long lastModifed;
     private final boolean _writeLog;
-	private final String name;
-    private final boolean suppressWSbeforeArg;
+	private final boolean suppressWSbeforeArg;
 	private final PageSource pageSource;
 	
-	private boolean isComponent;
-	private boolean isInterface;
+	//private boolean isComponent;
+	//private boolean isInterface;
 
 	private ArrayList<IFunction> functions=new ArrayList<IFunction>();
 	private ArrayList<TagThread> threads=new ArrayList<TagThread>();
@@ -380,13 +396,32 @@ public final class Page extends BodyBase {
 	private int methodCount=0;
 	//private final Config config;
 	private boolean splitIfNecessary;
+	private TagCIObject _comp;
+	private String className;
     
 	
 	
-    public Page(Factory factory,PageSource pageSource,Resource source,String name,int version, long lastModifed, boolean writeLog, boolean suppressWSbeforeArg) {
+    public Page(Factory factory,PageSource pageSource,Resource source, TagCIObject tc,int version, long lastModifed, boolean writeLog, boolean suppressWSbeforeArg) {
     	super(factory);
-    	name=name.replace('.', '/');
+    	//Resource classFile = rel.getMapping().getClassRootDirectory().getRealResource(rel.getJavaName()+".class");
+    	
+    	this._comp=tc;
+    	
+    	// Name
+    	/*String name=pageSource.getFullClassName().replace('.', '/');
+    	if(com!=null) {
+	    	String subName=com.getName();
+	    	if(!StringUtil.isEmpty(subName)) {
+				name+="@"+subName;
+	    	}
+    	}
     	this.name=name;
+    	print.e("name:"+name);
+    	*/
+    	
+    	//print.e("com:"+com);
+    	
+    	
         this.version=version;
         this.lastModifed=lastModifed;
         
@@ -395,6 +430,7 @@ public final class Page extends BodyBase {
         this.pageSource=pageSource;
     }
 
+    private static int count=0;
 	/**
      * result byte code as binary array
      * @param classFile 
@@ -403,38 +439,31 @@ public final class Page extends BodyBase {
      * @throws TemplateException 
      */
     public byte[] execute(PageSource source) throws TransformerException {
-    	/*
-    	// this is done that the Page can be executed more than once
-    	if(initFunctions==null)
-    		initFunctions=(ArrayList<IFunction>) functions.clone();
-    	else
-    		functions=initFunctions;
-    	if(initThreads==null)
-    		initThreads=(ArrayList<TagThread>) threads.clone();
-    	else
-    		threads=initThreads;
-    	methodCount=0;
-    	off=0;
-    	staticTextLocation=null;
     	
-    	
-    	print.e(this.functions);
-    	print.e(this.threads);*/
-    	
-    	
-    	//Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
-        
     	List<LitString> keys=new ArrayList<LitString>();
     	ClassWriter cw = ASMUtil.getClassWriter(); 
     	
     	ArrayList<String> imports = new ArrayList<String>();
         getImports(imports, this); 
 
-    	// parent
-    	String parent="railo/runtime/Page";
-    	if(isComponent()) parent="railo/runtime/ComponentPage";
-    	else if(isInterface()) parent="railo/runtime/InterfacePage";
+        // look for component if necessary
+        TagCIObject comp =getTagCFObject(null);
+        
+        // Name
+        String name=pageSource.getFullClassName().replace('.', '/');
+    	if(comp!=null) name=createSubClass(name,comp.getName());
     	
+    	this.className=name;
+    	
+        
+    	// parent
+    	
+    	String parent=railo.runtime.Page.class.getName();//"railo/runtime/Page";
+    	if(isComponent()) parent=ComponentPage.class.getName();//"railo/runtime/ComponentPage";
+    	else if(isInterface()) parent=InterfacePage.class.getName();//"railo/runtime/InterfacePage";
+    	parent=parent.replace('.', '/');
+    	print.e("parent::"+parent);
+        
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
     	//cw.visitSource(this.source.getAbsolutePath(), null);
     	cw.visitSource(this.pageSource.getFullRealpath(), null);
@@ -521,17 +550,16 @@ public final class Page extends BodyBase {
    
     // newInstance/initComponent/call
         if(isComponent()) {
-        	Tag component=getComponent();
-   	        writeOutNewComponent(statConstr,constr,keys,cw,component);
-	        writeOutInitComponent(statConstr,constr,keys,cw,component);
+        	writeOutNewComponent(statConstr,constr,keys,cw,comp,name);
+	        writeOutInitComponent(statConstr,constr,keys,cw,comp,name);
+	        
         }
         else if(isInterface()) {
-        	Tag interf=getInterface();
-   	        writeOutNewInterface(statConstr,constr,keys,cw,interf);
-	        writeOutInitInterface(statConstr,constr,keys,cw,interf);
+        	writeOutNewInterface(statConstr,constr,keys,cw,comp,name);
+	        writeOutInitInterface(statConstr,constr,keys,cw,comp,name);
         }
         else {
-	        writeOutCall(statConstr,constr,keys,cw);
+	        writeOutCall(statConstr,constr,keys,cw,name);
         }
         
 // udfCall     
@@ -692,11 +720,135 @@ public final class Page extends BodyBase {
         constrAdapter.returnValue();
         constrAdapter.endMethod();
     	
-        return cw.toByteArray();
- 	
-    }
-    
+        // set field subs
+		FieldVisitor fv = cw.visitField(
+				Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "subs", "[Lrailo/runtime/CIPage;", null, null);
+		fv.visitEnd();
 
+		// create sub components/interfaces
+		if(comp!=null && comp.isMain()) {
+			List<TagCIObject> subs = getSubs(null);
+			if(!ArrayUtil.isEmpty(subs)) {
+				Iterator<TagCIObject> it = subs.iterator();
+				TagCIObject tc;
+				while(it.hasNext()){
+					tc=it.next();
+					print.e("sub:"+tc.getName());
+					print.e("cn:"+getClassName());
+					tc.writeOut(this);
+				}
+				writeGetSubPages(cw,name,subs);
+			}
+		}
+		
+		return cw.toByteArray();
+	}
+   
+
+	public static String createSubClass(String name, String subName) {
+		if(!StringUtil.isEmpty(subName)) {
+			subName=subName.toLowerCase();
+    		if(name.endsWith(Constants.CLASS_SUFFIX)) name=name.substring(0,name.length()-3)+"$"+subName+Constants.CLASS_SUFFIX;
+    		else name+="$"+subName;
+    	}
+		return name;
+	}
+
+
+	private void writeGetSubPages(ClassWriter cw, String name, List<TagCIObject> subs) {
+		//pageSource.getFullClassName().replace('.', '/');
+		
+		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , GET_SUB_PAGES, null, null, cw);
+		Label endIF = new Label();
+		
+		
+		//adapter.visitVarInsn(Opcodes.ALOAD, 0);
+		//adapter.visitFieldInsn(Opcodes.GETFIELD, name, "subs", "[Lrailo/runtime/CIPage;");
+		//adapter.visitJumpInsn(Opcodes.IFNONNULL, endIF);
+			adapter.visitVarInsn(Opcodes.ALOAD, 0);
+			ArrayVisitor av=new ArrayVisitor();
+			av.visitBegin(adapter, Types.CI_PAGE, subs.size());
+			Iterator<TagCIObject> it = subs.iterator();
+			String className;
+			int index=0;
+			while(it.hasNext()){
+				TagCIObject ci = it.next();
+				av.visitBeginItem(adapter, index++);
+					className=createSubClass(name,ci.getName());
+					print.e("className:"+className);
+					//ASMConstants.NULL(adapter);
+					adapter.visitTypeInsn(Opcodes.NEW, className);
+					adapter.visitInsn(Opcodes.DUP);
+					
+					adapter.visitVarInsn(Opcodes.ALOAD, 0);
+					adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, name, "getPageSource", "()Lrailo/runtime/PageSource;");
+					
+					adapter.visitMethodInsn(Opcodes.INVOKESPECIAL, className, "<init>", "(Lrailo/runtime/PageSource;)V");
+				av.visitEndItem(adapter);
+			}
+			av.visitEnd();
+			
+
+			adapter.visitFieldInsn(Opcodes.PUTFIELD, name, "subs", "[Lrailo/runtime/CIPage;");
+		
+		//adapter.visitLabel(endIF);
+		
+		adapter.visitVarInsn(Opcodes.ALOAD, 0);
+		adapter.visitFieldInsn(Opcodes.GETFIELD, name, "subs", "[Lrailo/runtime/CIPage;");
+		
+		adapter.returnValue();
+		adapter.endMethod();
+		
+		
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	/**
+	 * get the main component/interface from the Page
+	 * @return
+	 * @throws TransformerException 
+	 */
+	private TagCIObject getTagCFObject(TagCIObject defaultValue) {
+		if(_comp!=null) return _comp;
+		
+		// first look for main
+		Iterator<Statement> it = getStatements().iterator();
+		Statement s;
+		TagCIObject t,sub=null;
+		
+        while(it.hasNext()) {
+        	s=it.next();
+        	if(s instanceof TagCIObject) {
+        		t=(TagCIObject)s;
+        		if(t.isMain()) return _comp=t;
+        		else if(sub==null) sub=t;
+        	}
+        }
+        if(sub!=null) return _comp=sub;
+		return defaultValue;
+	}
+	
+	private List<TagCIObject> getSubs(TagCIObject[] defaultValue) {
+		Iterator<Statement> it = getStatements().iterator();
+		Statement s;
+		TagCIObject t;
+		List<TagCIObject> subs=null;
+        while(it.hasNext()) {
+        	s=it.next();
+        	if(s instanceof TagCIObject) {
+        		t=(TagCIObject)s;
+        		if(!t.isMain()) {
+        			if(subs==null) subs=new ArrayList<TagCIObject>();
+        			subs.add(t);
+        		}
+        		
+        	}
+        }
+		return subs;
+	}
 
 
 	private String createFunctionName(int i) {
@@ -809,7 +961,7 @@ public final class Page extends BodyBase {
         cv.visitAfter(bc);
 	}
 
-	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag component) throws TransformerException {
+	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag component,String name) throws TransformerException {
 		final GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_COMPONENT, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,INIT_COMPONENT,writeLog(),suppressWSbeforeArg);
 		Label methodBegin=new Label();
@@ -908,7 +1060,7 @@ public final class Page extends BodyBase {
     	
 	}
 
-	private void writeOutInitInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag interf) throws TransformerException {
+	private void writeOutInitInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys, ClassWriter cw, Tag interf, String name) throws TransformerException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_INTERFACE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,INIT_INTERFACE,writeLog(),suppressWSbeforeArg);
 		Label methodBegin=new Label();
@@ -926,34 +1078,6 @@ public final class Page extends BodyBase {
 	    
 	    adapter.endMethod();
     	
-	}
-
-	private Tag getComponent() throws TransformerException {
-		Iterator it = getStatements().iterator();
-		Statement s;
-		Tag t;
-        while(it.hasNext()) {
-        	s=(Statement)it.next();
-        	print.e("="+s.getClass().getName());
-        	if(s instanceof Tag) {
-        		t=(Tag)s;
-        		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Component"))return t;
-        	}
-        }
-		throw new TransformerException("missing component",getStart());
-	}
-	private Tag getInterface() throws TransformerException {
-		Iterator it = getStatements().iterator();
-		Statement s;
-		Tag t;
-        while(it.hasNext()) {
-        	s=(Statement)it.next();
-        	if(s instanceof Tag) {
-        		t=(Tag)s;
-        		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Interface"))return t;
-        	}
-        }
-		throw new TransformerException("missing interface",getStart());
 	}
 
 	private void writeOutFunctionDefaultValueInnerInner(BytecodeContext bc, Function function) throws TransformerException {
@@ -1029,7 +1153,7 @@ public final class Page extends BodyBase {
 		
 	}
 
-	private void writeOutNewComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag component) throws TransformerException {
+	private void writeOutNewComponent(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag component,String name) throws TransformerException {
 		
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_COMPONENT_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,NEW_COMPONENT_IMPL_INSTANCE,writeLog(),suppressWSbeforeArg);
@@ -1148,7 +1272,7 @@ public final class Page extends BodyBase {
         
 	}
 	
-	private void writeOutNewInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag interf) throws TransformerException {
+	private void writeOutNewInterface(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, Tag interf, String name) throws TransformerException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_INTERFACE_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(null,statConstr, constr,this,keys,cw,name,adapter,NEW_INTERFACE_IMPL_INSTANCE,writeLog(),suppressWSbeforeArg);
     	Label methodBegin=new Label();
@@ -1278,7 +1402,7 @@ public final class Page extends BodyBase {
 		}
 	}
 
-	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw) throws TransformerException {
+	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,ClassWriter cw, String name) throws TransformerException {
 		//GeneratorAdapter adapter = bc.getAdapter();
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , CALL, null, new Type[]{Types.THROWABLE}, cw);
 	    	Label methodBegin=new Label();
@@ -1395,36 +1519,28 @@ public final class Page extends BodyBase {
 	 * @return if it is a component
 	 */
 	public boolean isComponent() {
-		return isComponent;
+		return getTagCFObject(null) instanceof TagComponent;
+		/*TagCFObject comp = getTagCFObject(null);
+		if(comp!=null && comp.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Component")) return true;
+		return false;
+		*/
 	}
 	
 	/**
-	 * set if the page is a component or not
-	 * @param cfc 
-	 */
-	public void setIsComponent(boolean isComponent) {
-		this.isComponent = isComponent;
-	}
-
-	/**
-	 * @return if it is a component
+	 * @return if it is a interface
 	 */
 	public boolean isInterface() {
-		return isInterface;
+		return getTagCFObject(null) instanceof TagInterface;
+		/*TagCFObject comp = getTagCFObject(null);
+		if(comp!=null && comp.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Interface")) return true;
+		return false;*/
 	}
 	
 
 	public boolean isPage() {
-		return !isInterface && !isComponent;
+		return getTagCFObject(null)==null;
 	}
-	
-	/**
-	 * set if the page is a component or not
-	 * @param cfc 
-	 */
-	public void setIsInterface(boolean isInterface) {
-		this.isInterface = isInterface;
-	}
+
 	/**
 	 * @return the lastModifed
 	 */
@@ -1494,6 +1610,10 @@ public final class Page extends BodyBase {
 	
 	public boolean getSplitIfNecessary() {
 		return splitIfNecessary;
+	}
+
+	public boolean getSupressWSbeforeArg() {
+		return suppressWSbeforeArg;
 	}
 	
 

@@ -14,7 +14,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentSpecificAccess;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -271,8 +270,8 @@ public class TagUtil {
 					config.getTagMapping().getPageSource(filename):
 					config.getServerTagMapping().getPageSource(filename);
 			
-			Page p = ps.loadPage(pc);
-			ComponentImpl c = ComponentLoader.loadComponent(pc, p, ps, filename, true,true);
+			//Page p = ps.loadPage(pc);
+			ComponentImpl c = ComponentLoader.loadComponent(pc, ps, filename, true,true);
 			ComponentSpecificAccess cw = ComponentSpecificAccess.toComponentSpecificAccess(Component.ACCESS_PRIVATE,c);
 			Struct meta = Caster.toStruct( cw.get(KeyConstants._metadata,null),null);
 

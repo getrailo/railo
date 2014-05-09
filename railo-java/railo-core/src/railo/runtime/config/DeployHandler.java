@@ -27,7 +27,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
-import railo.runtime.InfoImpl;
+import railo.runtime.engine.InfoImpl;
 import railo.runtime.extension.RHExtension;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;

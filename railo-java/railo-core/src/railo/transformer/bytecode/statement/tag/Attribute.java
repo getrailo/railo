@@ -10,14 +10,24 @@ public final class Attribute {
 	private final boolean dynamicType;
 	private boolean defaultAttribute;
 	private String setterName;
+	private final boolean isDefaultValue;
 	
 	public Attribute(boolean dynamicType,String name, Expression value, String type) {
+		this(dynamicType,name, value, type, false);
+	}
+	
+	public Attribute(boolean dynamicType,String name, Expression value, String type, boolean isDefaultValue) {
 		this.dynamicType = dynamicType;
 		this.name = name;
 		this.value = value;
 		this.type = type;
+		this.isDefaultValue = isDefaultValue;
 	}
 	
+
+	public boolean isDefaultValue() {
+		return isDefaultValue;
+	}
 	public boolean isDefaultAttribute() {
 		return defaultAttribute;
 	}

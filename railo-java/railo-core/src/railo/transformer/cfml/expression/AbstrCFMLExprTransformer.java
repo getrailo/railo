@@ -3,6 +3,7 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.print;
 import railo.runtime.Component;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.CasterException;
@@ -1355,10 +1356,10 @@ public abstract class AbstrCFMLExprTransformer {
 	    
 	    // first identifier
 	    name = identifier(data,true);
-	    
+	    print.e("->"+name);
 		
-		ExprString exprName;
-		if(name!=null)	{
+	    ExprString exprName;
+	    if(name!=null)	{
 			StringBuilder fullName=new StringBuilder();
 			fullName.append(name);
 			// Loop over addional identifier
@@ -1376,6 +1377,18 @@ public abstract class AbstrCFMLExprTransformer {
 				}
 				else break;
 			}
+			
+			// sub component
+			if (data.srcCode.forwardIfCurrent(':')) {
+				fullName.append(':');
+				name = identifier(data,true);
+				if(name==null) {
+					data.srcCode.setPos(start);
+					return expr;
+				}
+				fullName.append(name);
+			}
+			
 			
 			exprName=data.factory.createLitString(fullName.toString());
 		}

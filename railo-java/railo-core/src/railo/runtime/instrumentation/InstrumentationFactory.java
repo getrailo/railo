@@ -41,9 +41,9 @@ import railo.commons.lang.ClassUtil;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.InfoImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.engine.InfoImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageRuntimeException;
 

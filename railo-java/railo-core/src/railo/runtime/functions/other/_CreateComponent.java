@@ -18,6 +18,8 @@ public class _CreateComponent {
 
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
 		String path = Caster.toString(objArr[objArr.length-1]);
+		// not store the index to make it faster
+		
 		Component c = CreateObject.doComponent(pc, path);
 		
 		// no init method
@@ -54,7 +56,7 @@ public class _CreateComponent {
 			for(int i=0;i<objArr.length-1;i++) {
 				args[i]=objArr[i];
 				if(args[i] instanceof FunctionValue) 
-					throw new ExpressionException("invalid argument defintion,when using named parameters to a function, every parameter must have a name.");
+					throw new ExpressionException("invalid argument defintion, when using named parameters to a function, every parameter must have a name.");
 			}
 			rtn = c.call(pc, KeyConstants._init, args);
 		}

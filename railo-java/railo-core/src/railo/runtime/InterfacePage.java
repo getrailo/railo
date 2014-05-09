@@ -14,7 +14,7 @@ import railo.runtime.type.util.KeyConstants;
 /**
  * A Page that can produce Components
  */
-public abstract class InterfacePage extends Page  {
+public abstract class InterfacePage extends CIPage  {
 	
 	@Override
 	public void call(PageContext pc) throws PageException {

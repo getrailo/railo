@@ -9,7 +9,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
 
 
-public interface Interface extends Dumpable,CFObject {
+public interface Interface extends Dumpable,CIObject {
 	
 	public boolean instanceOf(String type);
 

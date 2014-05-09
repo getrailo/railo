@@ -75,7 +75,6 @@ public final class ExpressionUtil {
     	        adapter.push(line);
     		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,CURRENT_LINE );
 			}*/
-    		
     		if(!(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
 	    		
     			

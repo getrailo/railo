@@ -6416,6 +6416,7 @@ If you import a CFML custom tag directory and specify an empty value, "", for th
 		<name>Interface</name>
 		<tag-class>railo.runtime.tag.Interface</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Interface</tte-class>
+		<ttt-class>railo.transformer.bytecode.statement.tag.TagInterface</ttt-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>

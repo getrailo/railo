@@ -18,6 +18,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.CIPage;
 import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
@@ -218,6 +219,8 @@ public final class Types {
 	public static final Type IMPORT_DEFINITIONS = Type.getType(ImportDefintion.class);
 	public static final Type IMPORT_DEFINITIONS_IMPL = Type.getType(ImportDefintionImpl.class);
 	public static final Type IMPORT_DEFINITIONS_ARRAY = Type.getType(ImportDefintion[].class);
+	public static final Type CI_PAGE = Type.getType(CIPage.class);
+	public static final Type CI_PAGE_ARRAY = Type.getType(CIPage[].class);
 	public static final Type CLASS = Type.getType(Class.class);
 	public static final Type CLASS_ARRAY = Type.getType(Class[].class);
 	public static final Type CLASS_LOADER = Type.getType(ClassLoader.class);

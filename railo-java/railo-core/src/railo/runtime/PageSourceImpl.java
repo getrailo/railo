@@ -15,6 +15,7 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
@@ -559,7 +560,7 @@ public final class PageSourceImpl implements PageSource {
 					varName=StringUtil.toVariableName(arr[i].substring(0,index)+"_"+ext);
 				}
 				else varName=StringUtil.toVariableName(arr[i]);
-				varName=varName+"$cf";
+				varName=varName+Constants.CLASS_SUFFIX;
 				className=varName.toLowerCase();
 				fileName=arr[i];
 			}
