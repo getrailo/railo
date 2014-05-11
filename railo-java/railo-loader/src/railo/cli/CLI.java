@@ -11,8 +11,7 @@ import javax.servlet.jsp.JspException;
 import railo.loader.util.Util;
 
 public class CLI {
-	
-	private static boolean useRMI;
+
 /**
  * Config
  * 
@@ -35,14 +34,10 @@ public class CLI {
 		
 		System.setProperty("railo.cli.call", "true");
 
-		String param;
-
-		param = config.get("rmi");
-		if (param != null && param.equalsIgnoreCase("true"))
-			useRMI = true;
+		boolean useRMI = "true".equalsIgnoreCase(config.get("rmi"));
 
 		File root;
-		param = config.get("webroot");
+		String param = config.get("webroot");
 		if (Util.isEmpty(param, true)) {
 
 			root = new File(".");        // working directory that the java command was called from
