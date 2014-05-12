@@ -15,9 +15,9 @@ public final class FunctionImpl extends Function {
 
 	public FunctionImpl(Page page, Expression name, Expression returnType, Expression returnFormat, Expression output, Expression bufferOutput,
 			int access, Expression displayName, Expression description,Expression hint, Expression secureJson, Expression verifyClient, Expression localMode,
-			Literal cachedWithin, boolean _abstract, boolean _final,
+			Literal cachedWithin, int modifier,
 			Body body, Position start,Position end) {
-		super(page,name, returnType, returnFormat, output, bufferOutput, access, displayName,description, hint, secureJson, verifyClient,localMode,cachedWithin,_abstract,_final, body, start, end);
+		super(page,name, returnType, returnFormat, output, bufferOutput, access, displayName,description, hint, secureJson, verifyClient,localMode,cachedWithin,modifier, body, start, end);
 	}
 	
 

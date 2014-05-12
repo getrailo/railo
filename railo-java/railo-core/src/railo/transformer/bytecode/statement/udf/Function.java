@@ -127,6 +127,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.BOOLEAN,
 					Types.OBJECT,
 					Types.INTEGER,
+					Types.INT_VALUE,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -150,6 +151,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.BOOLEAN,
 					Types.OBJECT,
 					Types.INTEGER,
+					Types.INT_VALUE,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -280,8 +282,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	protected int valueIndex;
 	protected int arrayIndex;
 	private Literal cachedWithin;
-	private boolean _abstract;
-	private boolean _final;
+	private int modifier;
 	
 
 	public Function(Page page,String name,int access,String returnType,Body body,Position start, Position end) {
@@ -304,7 +305,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression bufferOutput,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
-			Expression verifyClient,Expression localMode,Literal cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
+			Expression verifyClient,Expression localMode,Literal cachedWithin, int modifier,Body body,Position start, Position end) {
 		super(page.getFactory(),start,end);
 		
 		this.name=page.getFactory().toExprString(name);
@@ -319,8 +320,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		this.secureJson=secureJson!=null?page.getFactory().toExprBoolean(secureJson):null;
 		this.verifyClient=verifyClient!=null?page.getFactory().toExprBoolean(verifyClient):null;
 		this.cachedWithin=cachedWithin;
-		this._abstract=_abstract;
-		this._final=_final;
+		this.modifier=modifier;
 		this.localMode=toLocalMode(localMode, null);
 		
 		this.body=body;
@@ -342,18 +342,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		return expr.getFactory().createLitInteger(mode);
 	}
 	
-
-
-	/*private static void checkNameConflict(ExprString expr) {
-		if(expr instanceof LitString){
-			String name=((LitString)expr).getString();
-			if()
-		}
-	}*/
-
-	/**
-	 * @see railo.transformer.bytecode.statement.IFunction#writeOut(railo.transformer.bytecode.BytecodeContext, int)
-	 */
 	@Override
 	public final void writeOut(BytecodeContext bc, int type) throws TransformerException {
     	ExpressionUtil.visitLine(bc, getStart());
@@ -361,9 +349,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
     	ExpressionUtil.visitLine(bc, getEnd());
 	}
 	
-	/**
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
-	 */
 	@Override
 	public final void _writeOut(BytecodeContext bc) throws TransformerException {
 		_writeOut(bc,PAGE_TYPE_REGULAR);
@@ -382,7 +367,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		cga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", Types.UDF_PROPERTIES_ARRAY.toString());
 		cga.push(arrayIndex);
 		createUDFProperties(constr,valueIndex,closure);
-		//cga.visitInsn(DUP_X2);
 		cga.visitInsn(AASTORE);
 		
 		// get
@@ -403,9 +387,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 			adapter.invokeVirtual(Types.PAGE, GET_PAGESOURCE);
 		}
 		else adapter.visitVarInsn(ALOAD, 1);
-		// page
-		//adapter.loadLocal(0);
-		//adapter.loadThis();
 		
 		// arguments
 		createArguments(bc);
@@ -425,7 +406,6 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		// output
 		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
 		
-		
 		// access
 		writeOutAccess(bc, access);
 		
@@ -438,6 +418,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		if(light && cachedWithin!=null)light=false;
 		if(light && bufferOutput!=null)light=false;
 		if(light && localMode!=null)light=false;
+		if(light && modifier!=Component.MODIFIER_NONE)light=false;
 		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
 		if(light){
 			adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT);
@@ -477,6 +458,8 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		// localMode
 		if(localMode!=null)ExpressionUtil.writeOutSilent(localMode,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
+		adapter.push(modifier);
 		
 		// meta
 		Page.createMetaDataStruct(bc,metadata,null);
@@ -735,8 +718,8 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 			if(val instanceof Literal) {
 				Literal l=(Literal) val;
 				String str = StringUtil.emptyIfNull(l.getString()).trim();
-				if("abstract".equalsIgnoreCase(str))_abstract=true;
-				else if("final".equalsIgnoreCase(str))_final=true;
+				if("abstract".equalsIgnoreCase(str)) modifier=Component.MODIFIER_ABSTRACT;
+				else if("final".equalsIgnoreCase(str)) modifier=Component.MODIFIER_FINAL;
 			}
 		}
 		

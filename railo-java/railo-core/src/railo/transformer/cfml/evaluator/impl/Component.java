@@ -16,6 +16,7 @@ import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.expression.Expression;
 import railo.transformer.expression.literal.LitBoolean;
 import railo.transformer.expression.literal.LitString;
+import railo.transformer.expression.literal.Literal;
 import railo.transformer.library.tag.TagLibTag;
 
 
@@ -163,13 +164,21 @@ public class Component extends EvaluatorSupport {
 			Expression expr = tag.getFactory().toExprString(attr.getValue());
 			if(!(expr instanceof LitString)) throw new EvaluatorException("Attribute extends of the Tag "+tlt.getFullName()+", must contain a literal string value");
 		}
-		
+
 		// implements
 		if(isComponent){
 			attr = tag.getAttribute("implements");
 			if(attr!=null) {
 				Expression expr = tag.getFactory().toExprString(attr.getValue());
 				if(!(expr instanceof LitString)) throw new EvaluatorException("Attribute implements of the Tag "+tlt.getFullName()+", must contain a literal string value");
+			}
+		}
+		// modifier
+		if(isComponent){
+			attr = tag.getAttribute("modifier");
+			if(attr!=null) {
+				Expression expr = tag.getFactory().toExprString(attr.getValue());
+				if(!(expr instanceof Literal)) throw new EvaluatorException("Attribute modifier of the Tag "+tlt.getFullName()+", must contain a literal value");
 			}
 		}
 	}

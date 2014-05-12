@@ -9,6 +9,7 @@ import java.util.Set;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.ExternalizableUtil;
+import railo.runtime.Component;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
@@ -44,6 +45,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	public int access;
 	public Object cachedWithin; 
 	public Integer localMode;
+	public int modifier;
 
 	/**
 	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
@@ -70,9 +72,10 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean verifyClient,
 	        Object cachedWithin,
 	        Integer localMode,
+	        int modifier,
 	        StructImpl meta) {
 		this(pageSource,arguments,index,functionName,CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW),strReturnType,strReturnFormat,output,access
-				,bufferOutput,displayName,description,hint,secureJson,verifyClient,cachedWithin,localMode,meta);
+				,bufferOutput,displayName,description,hint,secureJson,verifyClient,cachedWithin,localMode,modifier,meta);
 		
 	}
 	
@@ -93,9 +96,10 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean verifyClient,
 	        Object cachedWithin,
 	        Integer localMode,
+	        int modifier,
 	        StructImpl meta) {
 		this(pageSource,arguments,index,functionName,returnType,CFTypes.toString(returnType,"any"),strReturnFormat,output,access
-				,bufferOutput,displayName,description,hint,secureJson,verifyClient,cachedWithin,localMode,meta);
+				,bufferOutput,displayName,description,hint,secureJson,verifyClient,cachedWithin,localMode,modifier,meta);
 	}
 
 	public UDFPropertiesImpl(
@@ -108,7 +112,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        boolean output, 
 	        int access) {
 		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, null,
-				"","", "", null, null, null, null, null);
+				"","", "", null, null, null, null,Component.MODIFIER_NONE, null);
 	}
 	
 
@@ -130,6 +134,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean verifyClient,
 	        Object cachedWithin,
 	        Integer localMode,
+	        int modifier,
 	        StructImpl meta) {
 		
 		// this happens when a arcive is based on older source code
@@ -168,106 +173,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.access = access;
 		this.cachedWithin=cachedWithin instanceof Long?TimeSpanImpl.fromMillis(((Long)cachedWithin).longValue()):cachedWithin; 
 		this.localMode=localMode;
-	}
-	
-	
-	/**
-	 * @deprecated only supported for old compile templates in .ra archives
-	 * */
-	@Deprecated
-	public UDFPropertiesImpl(
-	        PageSource pageSource,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        String strReturnType, 
-	        String strReturnFormat, 
-	        boolean output,
-	        int access, 
-	        Boolean bufferOutput,
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        long cachedWithin,
-	        Integer localMode,
-	        StructImpl meta) {
-		this(pageSource, arguments, index, functionName, strReturnType, strReturnFormat, output, access, bufferOutput, displayName, description, hint, secureJson, verifyClient, cachedWithin==0?null:TimeSpanImpl.fromMillis(cachedWithin), localMode, meta);
-	}
-	
-	/**
-	 * @deprecated only supported for old compile templates in .ra archives
-	 * */
-	@Deprecated
-	public UDFPropertiesImpl(
-	        PageSource pageSource,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        short returnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        int access, 
-	        Boolean bufferOutput,
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        long cachedWithin,
-	        Integer localMode,
-	        StructImpl meta) {
-		
-		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, output, access, bufferOutput, displayName, description, hint, secureJson, verifyClient,cachedWithin==0?null:TimeSpanImpl.fromMillis(cachedWithin), localMode, meta); 
-	}
-	
-	/**
-	 * @deprecated only supported for old compile templates in .ra archives
-	 * */
-	@Deprecated
-	public UDFPropertiesImpl(
-	        PageSource pageSource,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        String strReturnType, 
-	        String strReturnFormat, 
-	        boolean output,
-	        int access, 
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        long cachedWithin,
-	        StructImpl meta) {
-		this(pageSource, arguments, index, functionName, strReturnType, strReturnFormat, 
-				output,  access, null,displayName, description, hint, secureJson, verifyClient, cachedWithin,null, meta);
-	}
-	
-	/**
-	 * @deprecated only supported for old compile templates in .ra archives
-	 * */
-	@Deprecated
-	public UDFPropertiesImpl(
-	        PageSource pageSource,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        short returnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        int access, 
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        long cachedWithin,
-	        StructImpl meta) {
-		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, 
-				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, null, meta);
+		this.modifier=modifier;
 	}
 
 	 /**

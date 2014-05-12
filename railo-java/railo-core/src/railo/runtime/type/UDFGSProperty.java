@@ -94,6 +94,7 @@ public abstract class UDFGSProperty extends MemberSupport implements UDFPlus {
 			         verifyClient,
 			         cachedWithin,
 			         localMode,
+			         Component.MODIFIER_NONE,
 			         meta);
 	}
 

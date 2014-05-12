@@ -44,6 +44,10 @@ public interface Component extends Struct,Objects,CIObject {
      * Field <code>ACCESS_COUNT</code>
      */
     public static final int ACCESS_COUNT=4;
+
+	public static final int MODIFIER_NONE = 0;
+	public static final int MODIFIER_FINAL = 1;
+	public static final int MODIFIER_ABSTRACT = 2;
     
     /**
      * returns java class to the component interface (all UDFs),

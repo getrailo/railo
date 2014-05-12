@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.Factory;
 import railo.transformer.Position;
@@ -195,15 +196,15 @@ public final class TagFunction extends TagBase implements IFunction {
 		Expression bufferOutput = (attr == null) ? null : attr.getValue();
 
 		// modifier
-		boolean _abstract=false,_final=false;
+		int modifier=Component.MODIFIER_NONE;
 		attr = removeAttribute("modifier");
 		if(attr!=null) {
 			Expression val = attr.getValue();
 			if(val instanceof Literal) {
 				Literal l=(Literal) val;
 				String str = StringUtil.emptyIfNull(l.getString()).trim();
-				if("abstract".equalsIgnoreCase(str))_abstract=true;
-				else if("final".equalsIgnoreCase(str))_final=true;
+				if("abstract".equalsIgnoreCase(str))modifier=Component.MODIFIER_ABSTRACT;
+				else if("final".equalsIgnoreCase(str))modifier=Component.MODIFIER_FINAL;
 			}
 		}
 
@@ -255,7 +256,7 @@ public final class TagFunction extends TagBase implements IFunction {
 			throw new TransformerException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
         
 		Function func = new FunctionImpl(page,name, returnType,returnFormat, output, bufferOutput, acc, displayname,description,
-				hint,secureJson,verifyClient,localMode,cachedWithin,_abstract,_final, body, getStart(),getEnd());
+				hint,secureJson,verifyClient,localMode,cachedWithin,modifier, body, getStart(),getEnd());
 		 
 		
 		
