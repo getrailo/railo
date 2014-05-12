@@ -883,12 +883,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
     
 
-    /**
-     * to html output print only with access less than given access
-     * @param pageContext
-     * @param access
-     * @return html output
-     */
+    @Override
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
 	    DumpTable table = new DumpTable("component","#99cc99","#ccffcc","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
