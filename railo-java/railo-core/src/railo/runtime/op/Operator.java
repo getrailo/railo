@@ -902,6 +902,7 @@ public final class Operator {
 		return rtn;
 	}
 
+
     public static Double unaryPostMinus(PageContext pc,Collection.Key[] keys,double value) throws PageException {
     	VariableReference ref = VariableInterpreter.getVariableReference(pc, keys,true);
     	double rtn=Caster.toDoubleValue(ref.get(pc));
@@ -942,5 +943,50 @@ public final class Operator {
     	String rtn=Caster.toString(ref.get(pc)).concat(value);
     	ref.set(pc,rtn);
 		return rtn;
+	}
+
+
+
+
+    public static Double unaryPostPlus(Collection coll,Collection.Key key,double value) throws PageException {
+    	double rtn = Caster.toDoubleValue(coll.get(key));
+    	coll.set(key, rtn+value);
+    	return rtn;
+	}
+
+    public static Double unaryPostMinus(Collection coll,Collection.Key key,double value) throws PageException {
+    	double rtn = Caster.toDoubleValue(coll.get(key));
+    	coll.set(key, rtn-value);
+    	return rtn;
+	}
+    
+    public static Double unaryPrePlus(Collection coll,Collection.Key key,double value) throws PageException {
+    	double rtn = Caster.toDoubleValue(coll.get(key))+value;
+    	coll.set(key, rtn);
+    	return rtn;
+	}
+
+    public static Double unaryPreMinus(Collection coll,Collection.Key key,double value) throws PageException {
+    	double rtn = Caster.toDoubleValue(coll.get(key))-value;
+    	coll.set(key, rtn);
+    	return rtn;
+	}
+    
+    public static Double unaryPreMultiply(Collection coll,Collection.Key key,double value) throws PageException {
+    	double rtn = Caster.toDoubleValue(coll.get(key))*value;
+    	coll.set(key, rtn);
+    	return rtn;
+	}
+    
+    public static Double unaryPreDivide(Collection coll,Collection.Key key,double value) throws PageException {
+    	double rtn = Caster.toDoubleValue(coll.get(key))/value;
+    	coll.set(key, rtn);
+    	return rtn;
+	}
+    
+    public static String unaryPreConcat(Collection coll,Collection.Key key,String value) throws PageException {
+    	String rtn = Caster.toString(coll.get(key)).concat(value);
+    	coll.set(key, rtn);
+    	return rtn;
 	}
 }

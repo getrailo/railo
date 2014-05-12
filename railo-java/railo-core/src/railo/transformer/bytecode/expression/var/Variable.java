@@ -205,6 +205,13 @@ public class Variable extends ExpressionBase implements Invoker {
 		else countFM++;
 		members.add(member);
 	}
+
+	public Member removeMember(int index) {
+		Member rtn = members.remove(index);
+		if(rtn instanceof DataMember)countDM--;
+		else countFM--;
+		return rtn;
+	}
 	
 	public final Type writeOutCollection(BytecodeContext bc, int mode) throws BytecodeException {
         ExpressionUtil.visitLine(bc, getStart());
