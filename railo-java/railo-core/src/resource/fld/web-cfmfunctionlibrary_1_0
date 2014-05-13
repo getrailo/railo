@@ -18099,12 +18099,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 
-    <!-- StringStartsWith - added to support member method on String -->
+    <!-- StringHasPrefix - added to support member method on String -->
     <function>
-    	<name>StringStartsWith</name>
+    	<name>StringHasPrefix</name>
     	<class>railo.runtime.functions.string.StringStartsWith</class>
     	<status>hidden</status>
-    	<member-name>startsWith</member-name>
+    	<member-name>hasPrefix</member-name>
     	<description>return true if the string starts with the passed prefix.</description>
     	<argument>
     		<name>value</name>
@@ -18132,10 +18132,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </function>
     <!-- StringEndsWith - added to support member method on String -->
     <function>
-    	<name>StringEndsWith</name>
+    	<name>StringHasSuffix</name>
     	<class>railo.runtime.functions.string.StringEndsWith</class>
     	<status>hidden</status>
-    	<member-name>endsWith</member-name>
+    	<member-name>hasSuffix</member-name>
     	<description>return true if the string ends with the passed suffix.</description>
     	<argument>
     		<name>value</name>

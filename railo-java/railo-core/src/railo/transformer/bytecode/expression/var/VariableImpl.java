@@ -196,6 +196,13 @@ public class VariableImpl extends ExpressionBase implements Variable {
 		else countFM++;
 		members.add(member);
 	}
+
+	public Member removeMember(int index) {
+		Member rtn = members.remove(index);
+		if(rtn instanceof DataMember)countDM--;
+		else countFM--;
+		return rtn;
+	}
 	
 	@Override
 	public final Type writeOutCollection(Context c, int mode) throws TransformerException {

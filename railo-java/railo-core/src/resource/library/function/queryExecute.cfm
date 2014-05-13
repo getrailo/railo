@@ -33,6 +33,7 @@ function QueryExecute(required caller, required string sql, any params, struct o
       echo(local.____sqlString);
    }
 
-   return ____rtn;
+   if(isNull(local.____rtn)) return;
+   return local.____rtn;
 }
 </cfscript>

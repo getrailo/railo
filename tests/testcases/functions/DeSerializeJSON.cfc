@@ -101,7 +101,9 @@ str&=asc(mid(data.text,i,1))></cfloop>
 
 <cfset str='"\u2765\u263a\u00ae\u00ae\u2716"'>
 <cfset data=deserializejson(str)>
-<cfset valueEquals(left="#toAsc(str)#", right="#toAsc(serializeJson(data))#")>
+
+<!--- railo only escapes when necessary --->
+<cfset valueEquals(left="#toAsc(str)#", right="#toAsc(serializeJson(data,false,"us-ascii"))#")>
 
 <!--- end old test code --->
 	

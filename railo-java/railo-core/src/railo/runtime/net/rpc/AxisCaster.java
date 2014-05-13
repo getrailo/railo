@@ -585,7 +585,8 @@ public final class AxisCaster {
         		Object pojo= toPojo(null,tm,null,null,(Component)value,done);
         		try	{
         			if(type==null || type.getLocalPart().equals("anyType")) {
-        				type= new QName(getRequestNameSpace(),pojo.getClass().getName());
+        				type= new QName(getRequestDefaultNameSpace(),pojo.getClass().getName());
+        				//type= new QName(getRequestNameSpace(),pojo.getClass().getName());
         				//print.ds("missing type for "+pojo.getClass().getName());
         			}
         			TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), type);
@@ -935,7 +936,12 @@ public final class AxisCaster {
 		}
 		catch (MalformedURLException e) {}
 		String pathWithoutContext = urlPath.replaceFirst("/[^/]*", "");
-		return railo.runtime.config.Constants.WEBSERVICE_NAMESPACE_URI + pathWithoutContext.toLowerCase();
+			
+		
+		return "http://rpc.xml.cfml" + pathWithoutContext.toLowerCase();
+	}
+	public static String getRequestDefaultNameSpace() {
+		return "http://rpc.xml.cfml";
 	}
 	
 }
