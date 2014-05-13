@@ -32,6 +32,6 @@ public final class QueryAddRow extends BIF {
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
 		if(args.length==1)return call(pc,Caster.toQuery(args[0]));
-		return call(pc,Caster.toQuery(args[0]),Caster.toString(args[1]));
+		return call(pc,Caster.toQuery(args[0]),args[1]);
 	}
 }
