@@ -45,7 +45,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 	
     
 	private Expression expr;
-	private List members=new ArrayList();
+	private List<Member> members=new ArrayList<Member>();
 
 	public ExpressionInvoker(Expression expr) {
 		super(expr.getFactory(),expr.getStart(),expr.getEnd());
@@ -67,7 +67,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 		expr.writeOut(bc, Expression.MODE_REF);
 		
 		for(int i=0;i<count;i++) {
-			Member member=((Member)members.get(i));
+			Member member=members.get(i);
     		
 			// Data Member
 			if(member instanceof DataMember)	{
@@ -106,8 +106,13 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 	 * @see railo.transformer.expression.Invoker#getMembers()
 	 */
 	@Override
-	public List getMembers() {
+	public List<Member> getMembers() {
 		return members;
+	}
+
+	@Override
+	public Member removeMember(int index) {
+		return members.remove(index);
 	}
 
 }

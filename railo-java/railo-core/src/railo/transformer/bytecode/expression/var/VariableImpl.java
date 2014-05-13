@@ -197,6 +197,7 @@ public class VariableImpl extends ExpressionBase implements Variable {
 		members.add(member);
 	}
 
+	@Override
 	public Member removeMember(int index) {
 		Member rtn = members.remove(index);
 		if(rtn instanceof DataMember)countDM--;

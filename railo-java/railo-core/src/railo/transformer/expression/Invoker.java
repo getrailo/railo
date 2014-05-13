@@ -16,4 +16,10 @@ public interface Invoker extends Expression {
 	 * @return
 	 */
 	public List<Member> getMembers();
+	
+
+	/** remove a member
+	 * @param member
+	 */
+	public Member removeMember(int index);
 }

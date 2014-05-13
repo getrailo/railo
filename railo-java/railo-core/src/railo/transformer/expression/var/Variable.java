@@ -36,5 +36,8 @@ public interface Variable extends Expression, Invoker {
 
 	public int getCount();
 	public Type writeOutCollection(Context c, int mode) throws TransformerException;
+
+
+	Member removeMember(int index);
 	 
 }
