@@ -7,41 +7,41 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	
 	//public function setUp(){}
 
-	public void function testStartsWith(){
+	public void function testhasPrefix(){
 		
-		assertTrue( "abcde".startsWith("ab") );
-		assertTrue( "abcde".startsWith("") );
-		assertTrue( "abcde".startsWith("AbC", true) );
+		assertTrue( "abcde".hasPrefix("ab") );
+		assertTrue( "abcde".hasPrefix("") );
+		assertTrue( "abcde".hasPrefix("AbC", true) );
 		
-		assertFalse( "abcde".startsWith("AbCdeFghi", true) );
-		assertFalse( "abcde".startsWith("abcdefghi") );
-		assertFalse( "abcde".startsWith("x") );
-		assertFalse( "abcde".startsWith("AbC") );
+		assertFalse( "abcde".hasPrefix("AbCdeFghi", true) );
+		assertFalse( "abcde".hasPrefix("abcdefghi") );
+		assertFalse( "abcde".hasPrefix("x") );
+		assertFalse( "abcde".hasPrefix("AbC") );
 
-		assertTrue( StringStartsWith("abcdef", "abc") );
-		assertTrue( StringStartsWith("Abcdef", "abc", true) );
-		assertFalse( StringStartsWith("Abcdef", "cde") );
+		assertTrue( StringhasPrefix("abcdef", "abc") );
+		assertTrue( StringhasPrefix("Abcdef", "abc", true) );
+		assertFalse( StringhasPrefix("Abcdef", "cde") );
 
 	}
 
-	public void function testEndsWith(){
+	public void function testhasSuffix(){
 		
-		assertTrue( "abcde".endsWith("") );
-		assertTrue( "abcde".endsWith("de") );
-		assertTrue( "abcde".endsWith("de", false) );
-		assertTrue( "abcde".endsWith("De", true) );
+		assertTrue( "abcde".hasSuffix("") );
+		assertTrue( "abcde".hasSuffix("de") );
+		assertTrue( "abcde".hasSuffix("de", false) );
+		assertTrue( "abcde".hasSuffix("De", true) );
 		
-		assertFalse( "abcde".endsWith("ab") );
-		assertFalse( "abcde".endsWith("abcdefghi") );
-		assertFalse( "abcde".endsWith("x") );
-		assertFalse( "abcde".endsWith("AbC") );
-		assertFalse( "abcde".endsWith("AbC", true) );
-		assertFalse( "abcde".endsWith("AbCdeFghi", true) );
-		assertFalse( "abcde".endsWith("De") );
-		assertFalse( "abcde".endsWith("De", false) );
+		assertFalse( "abcde".hasSuffix("ab") );
+		assertFalse( "abcde".hasSuffix("abcdefghi") );
+		assertFalse( "abcde".hasSuffix("x") );
+		assertFalse( "abcde".hasSuffix("AbC") );
+		assertFalse( "abcde".hasSuffix("AbC", true) );
+		assertFalse( "abcde".hasSuffix("AbCdeFghi", true) );
+		assertFalse( "abcde".hasSuffix("De") );
+		assertFalse( "abcde".hasSuffix("De", false) );
 
-		assertTrue( StringEndsWith("abcdef", "def") );
-		assertTrue( StringEndsWith("abcdef", "Def", true) );
+		assertTrue( StringhasSuffix("abcdef", "def") );
+		assertTrue( StringhasSuffix("abcdef", "Def", true) );
 	}
 } 
 </cfscript>
