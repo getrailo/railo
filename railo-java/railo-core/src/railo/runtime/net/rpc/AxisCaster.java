@@ -938,10 +938,10 @@ public final class AxisCaster {
 		String pathWithoutContext = urlPath.replaceFirst("/[^/]*", "");
 			
 		
-		return "http://rpc.xml.cfml" + pathWithoutContext.toLowerCase();
+		return railo.runtime.config.Constants.WEBSERVICE_NAMESPACE_URI + pathWithoutContext.toLowerCase();
 	}
 	public static String getRequestDefaultNameSpace() {
-		return "http://rpc.xml.cfml";
+		return railo.runtime.config.Constants.WEBSERVICE_NAMESPACE_URI;
 	}
 	
 }
