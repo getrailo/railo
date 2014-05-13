@@ -955,6 +955,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		set3d(p);
 		setFont(chart,_font);
 		setLabelFormat(chart);
+		p.getDomainAxis().setRange(Range.expandToInclude(p.getDomainAxis().getRange(), p.getDomainAxis().getUpperBound()+0.25));
+		p.getDomainAxis().setRange(Range.expandToInclude(p.getDomainAxis().getRange(), p.getDomainAxis().getLowerBound()-0.25));
 		setLegend(chart, p, _font);
 		setTooltip(chart);
 		setScale(chart);
@@ -1185,7 +1187,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 				}
 				cp.setDomainAxis(sa);
 			}
-			if(!showXLabel)da.setTickLabelsVisible(false);
+			if(!showXLabel)cp.getDomainAxis().setTickLabelsVisible(false);
 			//da.setVisible(false);
 		}
 	}

@@ -804,8 +804,8 @@ public final class RPCServer{
 
 	public void registerTypeMapping(Class clazz) {
 		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName(AxisCaster.getRequestNameSpace(),fullname);
-		registerTypeMapping(clazz, qname);
+		//registerTypeMapping(clazz, new QName(AxisCaster.getRequestNameSpace(),fullname));
+		registerTypeMapping(clazz, new QName(AxisCaster.getRequestDefaultNameSpace(),fullname));
 	}
 	
 	private void registerTypeMapping(Class clazz,QName qname) {

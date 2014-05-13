@@ -84,7 +84,7 @@
 		<cfif len>
 			<tr>
 				<td class="label">Stacktrace</td>
-				<td>The Error Occurred inx<br>
+				<td>The Error Occurred in<br>
 					<cfloop index="idx" from="1" to="#len#">
 						<cfset tc = catch.tagcontext[ idx ]>
 						<cfparam name="tc.codeprinthtml" default="">
