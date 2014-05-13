@@ -118,7 +118,7 @@ public class TagLib implements Cloneable {
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
 	public TagLibTag getTag(String name)	{
-		return tags.get(name);
+		return tags.get(name.toLowerCase());
 	}
 	
 	public TagLibTag getTag(Class clazz)	{
