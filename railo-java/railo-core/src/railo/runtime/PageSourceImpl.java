@@ -614,7 +614,7 @@ public final class PageSourceImpl implements PageSource {
 		for(int i=0;i<arr.length;i++) {
 		    if(compName.length()>0) compName.append('.');
 			if(i==(arr.length-1)) {
-			    compName.append(arr[i].substring(0,arr[i].length()-4));
+			    compName.append(arr[i].substring(0,arr[i].length()-(Constants.COMPONENT_EXTENSION.length()+1)));
 			}
 			else compName.append(arr[i]);
 		}

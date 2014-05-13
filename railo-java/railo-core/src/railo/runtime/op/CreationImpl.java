@@ -285,7 +285,7 @@ public final class CreationImpl implements Creation,Serializable {
 		String pathContracted=ContractPath.call(pc, path);
     	
 		if(pathContracted.toLowerCase().endsWith("."+Constants.COMPONENT_EXTENSION))
-			pathContracted=pathContracted.substring(0,pathContracted.length()-4);
+			pathContracted=pathContracted.substring(0,pathContracted.length()-(Constants.COMPONENT_EXTENSION.length()+1));
 		
     	pathContracted=pathContracted
 			.replace(File.pathSeparatorChar, '.')

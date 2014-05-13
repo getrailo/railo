@@ -52,7 +52,7 @@ public class ComponentListPackage implements Function {
 		while(it.hasNext()){
 			name=it.next();
 			if(StringUtil.endsWithIgnoreCase(name, "."+Constants.COMPONENT_EXTENSION)) {
-				name=name.substring(0,name.length()-4);
+				name=name.substring(0,name.length()-(Constants.COMPONENT_EXTENSION.length()+1));
 			}
 			arr.appendEL(name);
 		}
