@@ -10,6 +10,7 @@ import railo.aprint;
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -53,8 +54,10 @@ public final class InfoImpl implements Info  {
     	InputStream is=null;
     	try{
     		Properties prop = new Properties();
-    	    
-    		// first check the bundle for the default.properties
+    		
+    		// /Users/mic/Projects/Railo/Source/railo/railo-java/railo-core/src
+    		
+    		// check the bundle for the default.properties
     		if(bundle!=null) {
 	    		try {
 	    			is = bundle.getEntry("default.properties").openStream();
@@ -63,10 +66,14 @@ public final class InfoImpl implements Info  {
 	    		catch (Throwable t) {}
 	    		finally {IOUtil.closeEL(is);}
     		}
+    		
+
+    		Class clazz = PageSourceImpl.class;
+    		ClassLoader cl = clazz.getClassLoader();
 
     		if(prop.getProperty("railo.core.name")==null) {
     			try{
-        	    	is = getClass().getClassLoader().getResourceAsStream("default.properties");
+        	    	is = cl.getResourceAsStream("default.properties");
     	            prop.load(is);
         		}
 	    		catch (Throwable t) {}
@@ -74,7 +81,7 @@ public final class InfoImpl implements Info  {
 	    		
 	    		if(prop.getProperty("railo.core.name")==null) {
 	    			try{
-	        	    	is = getClass().getClassLoader().getResourceAsStream("/default.properties");
+	        	    	is = cl.getResourceAsStream("/default.properties");
 	    	            prop.load(is);
 	        		}
 		    		catch (Throwable t) {}
@@ -82,7 +89,7 @@ public final class InfoImpl implements Info  {
 		    		
 		    		if(prop.getProperty("railo.core.name")==null) {
 		    			try{
-		        	    	is = getClass().getResourceAsStream("/default.properties");
+		        	    	is = clazz.getResourceAsStream("/default.properties");
 		    	            prop.load(is);
 		        		}
 			    		catch (Throwable t) {}
@@ -90,7 +97,7 @@ public final class InfoImpl implements Info  {
 			    		
 			    		if(prop.getProperty("railo.core.name")==null) {
 			    			try{
-			        	    	is = getClass().getResourceAsStream("../../default.properties");
+			        	    	is = clazz.getResourceAsStream("../../default.properties");
 			    	            prop.load(is);
 			        		}
 				    		catch (Throwable t) {}
