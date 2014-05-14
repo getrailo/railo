@@ -159,8 +159,6 @@ public final class CFMLTransformer {
 						cfml=new SourceCode(text,charset,writeLog,ps);
 					}
 					try {
-						print.e(cfml.getText());
-						
 						p= transform(factory,config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}
@@ -191,7 +189,6 @@ public final class CFMLTransformer {
 						cfml=new SourceCode(text,charset,writeLog,ps);
 					}
 					try {
-						print.e(cfml.getText());
 						p= transform(factory,config,cfml,tlibs,flibs,ps.getResource().lastModified(),dotUpper);
 						break;
 					}

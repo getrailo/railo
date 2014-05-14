@@ -18,7 +18,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -462,8 +461,7 @@ public final class Page extends BodyBase {
     	if(isComponent()) parent=ComponentPage.class.getName();//"railo/runtime/ComponentPage";
     	else if(isInterface()) parent=InterfacePage.class.getName();//"railo/runtime/InterfacePage";
     	parent=parent.replace('.', '/');
-    	print.e("parent::"+parent);
-        
+    	
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
     	//cw.visitSource(this.source.getAbsolutePath(), null);
     	cw.visitSource(this.pageSource.getFullRealpath(), null);
@@ -733,8 +731,6 @@ public final class Page extends BodyBase {
 				TagCIObject tc;
 				while(it.hasNext()){
 					tc=it.next();
-					print.e("sub:"+tc.getName());
-					print.e("cn:"+getClassName());
 					tc.writeOut(this);
 				}
 				writeGetSubPages(cw,name,subs);
@@ -775,7 +771,6 @@ public final class Page extends BodyBase {
 				TagCIObject ci = it.next();
 				av.visitBeginItem(adapter, index++);
 					className=createSubClass(name,ci.getName());
-					print.e("className:"+className);
 					//ASMConstants.NULL(adapter);
 					adapter.visitTypeInsn(Opcodes.NEW, className);
 					adapter.visitInsn(Opcodes.DUP);

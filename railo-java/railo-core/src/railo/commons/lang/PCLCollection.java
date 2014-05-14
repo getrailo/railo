@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
@@ -104,7 +103,6 @@ public final class PCLCollection {
         	index.put(name, cl);
         	return clazz;
     	}
-    	print.e("name:"+name);
     	return cl.loadClass(name);	
     }
 

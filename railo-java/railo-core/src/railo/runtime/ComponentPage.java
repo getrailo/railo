@@ -79,6 +79,9 @@ public abstract class ComponentPage extends CIPage  {
 
 	private long lastCheck=-1;
 	
+	//static scope
+	//public Scope _static;
+	
 	
 	public abstract ComponentImpl newInstance(PageContext pc,String callPath,boolean isRealPath)
 		throws railo.runtime.exp.PageException; 
@@ -987,6 +990,8 @@ public abstract class ComponentPage extends CIPage  {
 	public long lastCheck() {
 		return lastCheck;
 	}
+	
+	
 	
 }
 	class Props {
