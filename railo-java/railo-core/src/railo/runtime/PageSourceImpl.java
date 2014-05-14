@@ -17,7 +17,6 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
@@ -307,23 +306,9 @@ public final class PageSourceImpl implements PageSource {
         }
     }
 
-    private Page newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
-    	try{
-			Constructor c = clazz.getConstructor(new Class[]{PageSource.class});
-			return (Page) c.newInstance(new Object[]{this});
-		}
-    	// this only happens with old code from ra files
-		catch(NoSuchMethodException e){
-			ThreadLocalPageSource.register(this);
-			try{
-				return (Page) clazz.newInstance();
-			}
-			finally {
-				ThreadLocalPageSource.release();
-			}
-			
-			
-		}
+    private Page newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    	Constructor<?> c = clazz.getConstructor(new Class[]{PageSource.class});
+		return (Page) c.newInstance(new Object[]{this});
 	}
 
 
