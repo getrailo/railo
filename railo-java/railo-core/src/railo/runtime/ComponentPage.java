@@ -80,8 +80,11 @@ public abstract class ComponentPage extends CIPage  {
 	private long lastCheck=-1;
 	
 	//static scope
-	//public Scope _static;
+	public Scope _static;
 	
+	public ComponentPage(String _extends){
+		//print.ds(this.getClass().getName()+":"+_extends);
+	}
 	
 	public abstract ComponentImpl newInstance(PageContext pc,String callPath,boolean isRealPath)
 		throws railo.runtime.exp.PageException; 

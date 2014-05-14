@@ -104,6 +104,13 @@ public final class Page extends BodyBase {
 			Types.VOID,
 			new Type[]{}//
     		);
+	
+	private static final Method CONSTRUCTOR_STR = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{Types.STRING}//
+    		);
+	
 	private static final Method CONSTRUCTOR_PS = new Method(
 			"<init>",
 			Types.VOID,
@@ -458,8 +465,8 @@ public final class Page extends BodyBase {
     	// parent
     	
     	String parent=railo.runtime.Page.class.getName();//"railo/runtime/Page";
-    	if(isComponent()) parent=ComponentPage.class.getName();//"railo/runtime/ComponentPage";
-    	else if(isInterface()) parent=InterfacePage.class.getName();//"railo/runtime/InterfacePage";
+    	if(isComponent(comp)) parent=ComponentPage.class.getName();//"railo/runtime/ComponentPage";
+    	else if(isInterface(comp)) parent=InterfacePage.class.getName();//"railo/runtime/InterfacePage";
     	parent=parent.replace('.', '/');
     	
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
@@ -474,11 +481,30 @@ public final class Page extends BodyBase {
 	    GeneratorAdapter constrAdapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_PS,null,null,cw);
 		BytecodeContext constr = new BytecodeContext(source,null,null,this,keys,cw,name,constrAdapter,CONSTRUCTOR_PS,writeLog(),suppressWSbeforeArg);
 		constrAdapter.loadThis();
-        Type t=Types.PAGE;
-        if(isComponent())t=Types.COMPONENT_PAGE;
-        else if(isInterface())t=Types.INTERFACE_PAGE;
+		Type t;
+		
         
-        constrAdapter.invokeConstructor(t, CONSTRUCTOR);
+        if(isComponent(comp)) {
+        	t=Types.COMPONENT_PAGE;
+        	
+        	// extends
+    		Attribute attr = comp.getAttribute("extends");
+    		if(attr!=null) ExpressionUtil.writeOutSilent(attr.getValue(),constr, Expression.MODE_REF);
+    		else constrAdapter.push("");
+        	
+        	
+        	constrAdapter.invokeConstructor(t, CONSTRUCTOR_STR);
+        }
+        else if(isInterface(comp)){
+        	t=Types.INTERFACE_PAGE;
+        	constrAdapter.invokeConstructor(t, CONSTRUCTOR);
+        }
+        else {
+        	t=Types.PAGE;
+        	constrAdapter.invokeConstructor(t, CONSTRUCTOR);
+        }
+        
+        
         
      // call _init()
         constrAdapter.visitVarInsn(Opcodes.ALOAD, 0);
@@ -1514,7 +1540,7 @@ public final class Page extends BodyBase {
 	 * @return if it is a component
 	 */
 	public boolean isComponent() {
-		return getTagCFObject(null) instanceof TagComponent;
+		return isComponent(null);
 		/*TagCFObject comp = getTagCFObject(null);
 		if(comp!=null && comp.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Component")) return true;
 		return false;
@@ -1525,11 +1551,27 @@ public final class Page extends BodyBase {
 	 * @return if it is a interface
 	 */
 	public boolean isInterface() {
-		return getTagCFObject(null) instanceof TagInterface;
+		return isInterface(null);
 		/*TagCFObject comp = getTagCFObject(null);
 		if(comp!=null && comp.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Interface")) return true;
 		return false;*/
 	}
+	
+	public boolean isComponent(TagCIObject cio) {
+		if(cio==null)cio=getTagCFObject(null);
+		return cio instanceof TagComponent;
+		
+	}
+	
+	/**
+	 * @return if it is a interface
+	 */
+	public boolean isInterface(TagCIObject cio) {
+		if(cio==null)cio=getTagCFObject(null);
+		return cio instanceof TagInterface;
+	}
+	
+	
 	
 
 	public boolean isPage() {
