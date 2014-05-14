@@ -124,10 +124,22 @@ public class ASMProxyFactory {
 		PhysicalClassLoader pcl = new PhysicalClassLoader(root);
 		//PhysicalClassLoader pcl = (PhysicalClassLoader)ThreadLocalPageContext.getConfig().getRPCClassLoader(false);
 
-		ASMProxyFactory.getClass(pcl, root, ArrayNew.class);
-		
+		//ASMProxyFactory.getClass(pcl, root, ArrayNew.class);
+		int max=10000000;
 		
 		ASMMethod method = ASMProxyFactory.getMethod(pcl, root, ArrayNew.class, "call", new Class[]{PageContext.class});
+		long start=System.currentTimeMillis();
+		for(int i=0;i<max;i++){
+			method.invoke(null, new Object[]{null});
+		}
+		
+		 Method m = ArrayNew.class.getMethod("call", new Class[]{PageContext.class});
+		start=System.currentTimeMillis();
+		for(int i=0;i<max;i++){
+			m.invoke(null, new Object[]{null});
+		}
+		
+		//ASMMethod method = ASMProxyFactory.getMethod(pcl, root, ArrayNew.class, "call", new Class[]{PageContext.class});
 		//print.e(method.invoke(null, new Object[]{null}));
 		
 		
@@ -229,8 +241,9 @@ public class ASMProxyFactory {
 	
 	
 	private static String createMethodName(Class clazz,String methodName,Class[] paramTypes) {
-		StringBuilder sb = new StringBuilder("method.")
+		StringBuilder sb = new StringBuilder("")
 		.append(clazz.getName())
+		.append('$')
 		.append(methodName);
 		
 		paramNames(sb,paramTypes);
