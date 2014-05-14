@@ -113,6 +113,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 			return SuperComponent.superInstance((ComponentImpl) ac.getBaseComponent());
 		}
 		if(key.equalsIgnoreCase(KeyConstants._THIS)) return component.top;
+		//if(key.equalsIgnoreCase(KeyConstants._STATIC)) return component.top;
 		
 		if(NullSupportHelper.full())return shadow.g(key,defaultValue); 
 		
