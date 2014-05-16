@@ -37,7 +37,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	}
 
 	public void function testQueryExecuteUpdate() localMode="modern" {
-		queryExecute("update T3053 set c='2'");
+		queryExecute("update T3053 set c='2'(id,vc,c,i) values(1,'1','1',1)");
 	}
 	
 	private string function defineDatasource(){
