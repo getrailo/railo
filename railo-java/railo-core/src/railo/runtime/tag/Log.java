@@ -38,9 +38,11 @@ import railo.runtime.type.KeyImpl;
 **/
 public final class Log extends TagImpl {
 
+	private static final String DEfAULT_LOG = "application"; 
+
 	/** If you omit the file attribute, specifies the standard log file in which to write the message. 
 	** 		Ignored if you specify a file attribute */
-	private String log=null;
+	private String log=DEfAULT_LOG;
 
 	/** The message text to log. */
 	private String text;
@@ -60,7 +62,7 @@ public final class Log extends TagImpl {
 	@Override
 	public void release()	{
 		super.release();
-		log=null;
+		log=DEfAULT_LOG;
 		type=railo.commons.io.log.Log.LEVEL_INFO;
 		file=null;
 		application=false;
@@ -255,7 +257,7 @@ public final class Log extends TagImpl {
 	 * @param charset the charset to set
 	 */
 	public void setCharset(String charset) {
-		if(StringUtil.isEmpty(log,true)) return;
+		if(StringUtil.isEmpty(charset,true)) return;
 	    this.charset = CharsetUtil.toCharset(charset);
 	}
 	
