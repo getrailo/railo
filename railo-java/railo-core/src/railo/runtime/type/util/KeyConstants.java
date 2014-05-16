@@ -689,6 +689,7 @@ public class KeyConstants {
 	public static final Key __toNumeric = KeyImpl._const("_toNumeric");
 	public static final Key __toBoolean = KeyImpl._const("_toBoolean");
 	public static final Key __toString = KeyImpl._const("_toString");
+	public static final Key __toArray = KeyImpl._const("_toArray");
 	public static final Key _onmissingmethod = KeyImpl._const("onmissingmethod");
 	public static final Key _functions = KeyImpl._const("functions");
 	public static final Key _fullname = KeyImpl._const("fullname");

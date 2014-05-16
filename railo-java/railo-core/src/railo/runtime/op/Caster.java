@@ -58,6 +58,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
+import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
@@ -101,6 +102,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFPlus;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -108,6 +110,7 @@ import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.ObjectStruct;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.wrap.ArrayAsList;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;
@@ -2230,6 +2233,24 @@ public final class Caster {
             return toArray(((ObjectWrap)o).getEmbededObject());
         }
         else if(o instanceof Struct) {
+        	
+        	// function _toArray 
+        	if(o instanceof Component) {
+        		Component c=(Component) o;
+        		PageContext pc = ThreadLocalPageContext.get();
+        		if(pc!=null) {
+        			Member member = c.getMember(Component.ACCESS_PRIVATE, KeyConstants.__toArray, false, false);
+        			//Object o = get(pc,"_toString",null);
+        			if(member instanceof UDFPlus) {
+        				UDFPlus udf = (UDFPlus)member;
+        				if(udf.getReturnType()==CFTypes.TYPE_ARRAY && udf.getFunctionArguments().length==0) {
+        					return Caster.toArray(c.call(pc, KeyConstants.__toArray, new Object[0]));
+        				}
+        			}
+        		}	
+        	}
+        	
+        	
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
