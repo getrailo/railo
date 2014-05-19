@@ -503,7 +503,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 				
 				CacheItem ci = ch.get(pageContext, id);
-				cacheValue=((StoredProcCacheItem)ci).getStruct();
+				if (ci != null)
+					cacheValue=((StoredProcCacheItem)ci).getStruct();
 				//cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
 			}
 			int count=0;
