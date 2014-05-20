@@ -128,8 +128,8 @@ public class QueryParamConverter {
 	private static SQL convert(String sql, List<SQLItem> items, List<NamedSQLItem> namedItems) throws ApplicationException{
 		//if(namedParams.size()==0) return new Pair<String, List<Param>>(sql,params);
 		
-		StringBuilder sb=new StringBuilder();
 		int sqlLen=sql.length(), initialParamSize=items.size();
+		StringBuilder sb=new StringBuilder((int)(sqlLen * 1.2));
 		char c,del=0;
 		boolean inside=false;
 		int qm=0,_qm=0;
@@ -159,7 +159,7 @@ public class QueryParamConverter {
 					int y=i+1;
 					for(;y<sqlLen;y++){
 						cc=sql.charAt(y);
-						if(Character.isWhitespace(cc))break;
+						if (!Character.isJavaIdentifierPart(cc))    break;
 						name.append(cc);
 					}
 					if(name.length()>0) {
