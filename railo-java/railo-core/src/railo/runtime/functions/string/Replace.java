@@ -15,11 +15,11 @@ public final class Replace extends BIF {
 	
 	private static final long serialVersionUID = -313884944032266348L;
 
-	public static String call(PageContext pc , String str, String sub1, String sub2) throws FunctionException {
+	public static String call(PageContext pc , String str, String sub1, String sub2) {
 		return _call(pc, str, sub1, sub2, true);
 	}
 	
-	public static String call(PageContext pc , String str, String sub1, String sub2, String scope) throws FunctionException {
+	public static String call(PageContext pc , String str, String sub1, String sub2, String scope) {
 		return _call(pc, str, sub1, sub2, !scope.equalsIgnoreCase("all"));
 	}
 
@@ -37,9 +37,9 @@ public final class Replace extends BIF {
 		return StringUtil.replaceMap( input, Caster.toMap(struct), false );
 	}
 	
-	private static String _call(PageContext pc , String str, String sub1, String sub2, boolean firstOnly) throws FunctionException {
+	private static String _call(PageContext pc , String str, String sub1, String sub2, boolean firstOnly) {
 		if (StringUtil.isEmpty(sub1))
-			throw new FunctionException(pc,"replace",2,"sub1","The string length must be greater than 0");
+			return str;
 		return StringUtil.replace(str, sub1, sub2, firstOnly);
 	}
 	

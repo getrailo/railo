@@ -159,7 +159,7 @@ public class QueryParamConverter {
 					int y=i+1;
 					for(;y<sqlLen;y++){
 						cc=sql.charAt(y);
-						if(Character.isWhitespace(cc))break;
+						if(!isVariableName(cc, true))break;
 						name.append(cc);
 					}
 					if(name.length()>0) {
@@ -177,6 +177,12 @@ public class QueryParamConverter {
 		}
 		
 		return new SQLImpl(sb.toString(),items.toArray(new SQLItem[items.size()]));
+	}
+	
+	public static boolean isVariableName(char c, boolean alsoNumber) {
+		if((c>='a' && c<='z')||(c>='A' && c<='Z')||(c=='_')) return true;
+		if(alsoNumber && (c>='0' && c<='9')) return true;
+		return false;
 	}
 
 

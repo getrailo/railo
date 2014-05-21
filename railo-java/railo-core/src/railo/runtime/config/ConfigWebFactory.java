@@ -32,6 +32,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.jacob.com.LibraryLoader;
+
 import railo.aprint;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
@@ -983,9 +985,14 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!ctDir.exists())
 			ctDir.mkdirs();
 
-		Resource f = binDir.getRealResource("jacob.dll");
-		if (!f.exists())
-			createFileFromResourceEL("/resource/bin/jacob.dll", f);
+		// Jacob
+		if (SystemUtil.isWindows()) {
+			String name = (SystemUtil.getJREArch() == SystemUtil.ARCH_64) ? "jacob-x64.dll" : "jacob-x86.dll";
+			Resource jacob = binDir.getRealResource(name);
+			if (!jacob.exists()) {
+				createFileFromResourceEL("/resource/bin/" + name, jacob);
+			}
+		}
 
 		Resource storDir = configDir.getRealResource("storage");
 		if (!storDir.exists())
@@ -997,6 +1004,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		// remove old cacerts files, they are now only in the server context
 		Resource secDir = configDir.getRealResource("security");
+		Resource f = null;
 		if (secDir.exists()) {
 			f = secDir.getRealResource("cacerts");
 			if (f.exists())
@@ -1031,8 +1039,8 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		f = contextDir.getRealResource(Constants.APP_CFM);
 		if (!f.exists())
-			createFileFromResourceEL("/resource/context/application."+Constants.TEMPLATE_EXTENSION, f);
-
+			createFileFromResourceEL("/resource/context/Application."+Constants.TEMPLATE_EXTENSION, f);
+		
 		f = contextDir.getRealResource("form."+Constants.TEMPLATE_EXTENSION);
 		if (!f.exists() || doNew)
 			createFileFromResourceEL("/resource/context/form."+Constants.TEMPLATE_EXTENSION, f);

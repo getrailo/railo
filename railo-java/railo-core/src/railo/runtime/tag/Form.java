@@ -509,11 +509,7 @@ public final class Form extends BodyTagImpl {
 
 
     private String de(String str) {
-        try {
-            return DE.call(pageContext,str);
-        } catch (ExpressionException e) {
-            return "\"\"";
-        }
+        return DE.call(pageContext,str);
     }
     private String js(String str) {
         if(str==null) return "null";

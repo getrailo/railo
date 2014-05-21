@@ -742,9 +742,9 @@ public final class ArrayUtil {
 	public static int arrayContainsIgnoreEmpty(Array arr, String value, boolean ignoreCase) {
 		int count=0;
 		int len=arr.size();
-		
+
 		for(int i=1;i<=len;i++) {
-			String item=arr.get(i,"").toString();
+			String item=Caster.toString(arr.get(i,""),"");
 			if(ignoreCase) {
 				if(StringUtil.indexOfIgnoreCase(item,value)!=-1) return count;
 			}
