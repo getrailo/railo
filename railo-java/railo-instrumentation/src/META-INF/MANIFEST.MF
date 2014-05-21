@@ -1,3 +1,4 @@
+Manifest-Version: 1.0
 Main-Class: railo.runtime.instrumentation.Agent
 Premain-Class: railo.runtime.instrumentation.Agent
 Agent-Class: railo.runtime.instrumentation.Agent

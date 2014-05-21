@@ -754,7 +754,13 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		//OutputStream os = null;
 		try {
 			//os = res.getOutputStream();
-			BufferedImage bi = jfc.createBufferedImage(chartwidth,chartheight,info);
+			
+			BufferedImage bi;
+			if (format==FORMAT_JPG) {
+				bi = jfc.createBufferedImage(chartwidth,chartheight,BufferedImage.TYPE_INT_RGB,info);
+			} else {
+				bi = jfc.createBufferedImage(chartwidth,chartheight,info);
+			}
 			Image img;
 			
 			// add border
