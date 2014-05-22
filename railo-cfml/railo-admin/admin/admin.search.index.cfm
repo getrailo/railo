@@ -3,7 +3,7 @@
 		<cfdirectory action="create" directory="#dataDir#" mode="777" recurse="true" />
 	</cfif>
 
-	<cfdirectory action="list" name="qlangs" directory="#expandPath('{railo-web}/context/admin/resources/language/')#" filter="*.xml" />
+	<cfdirectory action="list" name="qlangs" directory="#expandPath('./resources/language/')#" filter="*.xml" />
 
 	<cfset translations = {} />
 	<cfset pageContents = {} />
@@ -34,7 +34,7 @@
 	</cfloop>
 
 	<cfset searchresults = {} />
-	<cfdirectory action="list" directory="#railoArchiveZipPath#/admin" filter="*.*.cfm" name="qFiles" sort="name" />
+	<cfdirectory action="list" directory="#expandPath('./')#" filter="*.*.cfm" name="qFiles" sort="name" />
 
 	<cfloop query="qFiles">
 		<cfset currFile = qFiles.directory & "/" & qFiles.name />
