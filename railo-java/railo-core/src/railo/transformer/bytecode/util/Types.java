@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.jsp.JspWriter;
@@ -114,6 +115,7 @@ public final class Types {
     public static final Type INT_VALUE = Type.getType(int.class);
 
     public static final Type LONG = Type.getType(Long.class);
+    public static final Type LOCALE = Type.getType(Locale.class);
     public static final Type LONG_VALUE = Type.getType(long.class);
 
     public static final Type SHORT = Type.getType(Short.class);
@@ -304,7 +306,7 @@ public final class Types {
         case 'l':
             if("long".equals(type))									return LONG_VALUE;
             if("long".equals(lcType))								return LONG;
-            if("long".equals(lcType))								return LONG;
+            if("locale".equals(lcType))								return LOCALE;
         break;
         case 'n':
             if("node".equals(lcType))								return NODE;
@@ -314,11 +316,19 @@ public final class Types {
         case 'o':
             if("object".equals(lcType))								return OBJECT;
         break;
+        case 'q':
+        	if("query".equals(lcType))								return QUERY;
+            if("querycolumn".equals(lcType))						return QUERY_COLUMN;
+        break;
         case 's':
             if("string".equals(lcType))								return STRING;
             if("struct".equals(lcType))								return STRUCT;
             if("short".equals(type))								return SHORT_VALUE;
             if("short".equals(lcType))								return SHORT;
+        break;
+        case 't':
+            if("timezone".equals(lcType))							return TIMEZONE;
+            if("timespan".equals(lcType))							return TIMESPAN;
         break;
         case 'u':
             if("udf".equals(lcType))								return UDF;
@@ -335,14 +345,7 @@ public final class Types {
             if("[Ljava.lang.String;".equals(lcType)) 				return STRING_ARRAY;
         break;
         
-        
-        
-        default:
-            if("query".equals(lcType))								return QUERY;
-            if("querycolumn".equals(lcType))						return QUERY_COLUMN;
-            if("timespan".equals(lcType))							return TIMESPAN;
         }
-        
         // TODO Array als Lbyte und auch byte[]
         
 		try {

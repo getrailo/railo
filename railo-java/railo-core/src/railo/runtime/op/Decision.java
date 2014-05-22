@@ -75,8 +75,10 @@ public final class Decision {
 	 */
 	public static boolean isSimpleValue(Object value){
 		return 
-				(value instanceof Number) || 
-				(value instanceof String) || 
+		(value instanceof Number) || 
+		(value instanceof Locale) || 
+		(value instanceof TimeZone) || 
+		(value instanceof String) || 
 				(value instanceof Boolean) || 
 				(value instanceof Date) || 
 				((value instanceof Castable) && !(value instanceof Objects) && !(value instanceof Collection));

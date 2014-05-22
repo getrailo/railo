@@ -6230,18 +6230,19 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 	<function>
 		<name>getLocaleDisplayName</name>
 		<class>railo.runtime.functions.displayFormatting.GetLocaleDisplayName</class>
+		<member-name>displayName</member-name>
 		<description>Gets a locale value and displays the name in a manner
         that is appropriate to a specific locale. By default,
         gets the current locale in the current locale's language.</description>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>dspLocale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>The locale in which to return the name. The default is the locale defined for the request.</description>
     </argument>
@@ -6249,7 +6250,29 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
-
+	<!-- GetLocaleInfo -->
+	<function>
+		<name>getLocaleInfo</name>
+		<class>railo.runtime.functions.displayFormatting.GetLocaleInfo</class>
+		<member-name>info</member-name>
+		<description>returns info to a specific Locale</description>
+		<argument>
+			<name>locale</name>
+			<type>locale</type>
+			<required>No</required>
+		<description>Locale provides the country</description>
+    </argument>
+		<argument>
+			<name>dspLocale</name>
+			<type>locale</type>
+			<required>No</required>
+		<description>Locale used to format the country. The default is the locale defined for the request.</description>
+    </argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
 	<!-- GetLocalHostIP -->
 	<function>
 		<name>GetLocalHostIP</name>
@@ -6483,7 +6506,7 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
         currency values in a CFML application session, you use
         the SetLocale function.</description>
 		<return>
-			<type>string</type>
+			<type>locale</type>
 		</return>
 	</function>
 	<!-- GetMemoryUsage -->
@@ -6940,7 +6963,14 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getTimeZoneInfo</name>
 		<class>railo.runtime.functions.international.GetTimeZoneInfo</class>
+		<member-name>info</member-name>
 		<description>Returns back a structure regarding the current timezone; utctotaloffset, utchouroffset, utcminuteoffset, isdston</description>
+		<argument>
+			<name>timezone</name>
+			<type>timezone</type>
+			<required>No</required>
+			<description>the timezone to get the data from.</description>
+    	</argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -6951,7 +6981,7 @@ if this attribute is not provided all types are returned.</description>
 		<class>railo.runtime.functions.dateTime.GetTimeZone</class>
 		<description>returns the timezone defined for the current request.</description>
 		<return>
-			<type>string</type>
+			<type>timezone</type>
 		</return>
 	</function>
 	<!-- setTimeZone -->
@@ -6961,12 +6991,12 @@ if this attribute is not provided all types are returned.</description>
 		<description>change the timezone defintion for the current request.</description>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>Yes</required>
 		<description>the timezone to be set.</description>
     </argument>
 		<return>
-			<type>string</type>
+			<type>timezone</type>
 		</return>
 	</function>
 	<!-- getToken -->
@@ -15318,12 +15348,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
         conventions.</description>
 		<argument>
 			<name>new_locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>Yes</required>
 		<description>The name of a locale; for example, \"English (US)\"</description>
     </argument>
 		<return>
-			<type>string</type>
+			<type>locale</type>
 		</return>
 	</function>
 	<!-- setProfileString -->

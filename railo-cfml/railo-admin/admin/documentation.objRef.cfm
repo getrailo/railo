@@ -11,7 +11,6 @@ loop collection="#funcList#" index="key" {
 
 NL="
 ";
-
 stText.doc.attr.default="Default Value";
 
 function formatDesc(string desc){

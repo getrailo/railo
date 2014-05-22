@@ -8,7 +8,7 @@ import java.util.Locale;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
-public final class GetLocaleDisplayName implements Function {
+public final class GetLocaleCountry implements Function {
 
 	private static final long serialVersionUID = -4084704416496042957L;
 
@@ -27,7 +27,7 @@ public final class GetLocaleDisplayName implements Function {
 	private static String _call(PageContext pc , Locale locale, Locale dspLocale) {
 		if(locale==null) locale=pc.getLocale();
 		if(dspLocale==null) dspLocale=locale;
-		return locale.getDisplayName(dspLocale);
+		return locale.getDisplayCountry(dspLocale);
 	}
 
 	

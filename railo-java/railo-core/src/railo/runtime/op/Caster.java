@@ -1851,6 +1851,8 @@ public final class Caster {
             return new DateTimeImpl((Date)o).castToString();
         }
         else if(o instanceof Clob) return toString((Clob)o);
+        else if(o instanceof Locale) return toString((Locale)o);
+        else if(o instanceof TimeZone) return toString((TimeZone)o);
         else if(o instanceof Node) return XMLCaster.toString((Node)o);
         else if(o instanceof Reader) {
         	Reader r=null;
@@ -1979,6 +1981,24 @@ public final class Caster {
         catch(Exception e) {
             throw ExpressionException.newInstance(e);
         }
+    }
+
+    public static String toString(Locale l) {
+       return LocaleFactory.toString(l);
+    }
+
+    public static Locale toLocale(Object obj) throws PageException {
+    	if(obj instanceof Locale) return (Locale) obj;
+    	return LocaleFactory.getLocale(toString(obj));
+    }
+    
+    public static String toString(TimeZone tz){
+        return TimeZoneUtil.toString(tz);
+    }
+    
+    public static TimeZone toTimeZone(Object obj) throws PageException{
+    	if(obj instanceof TimeZone) return (TimeZone) obj;
+        return TimeZoneUtil.toTimeZone(toString(obj));
     }
     
     
@@ -3554,6 +3574,8 @@ public final class Caster {
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
         else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_IMAGE)          return Image.toImage(pc,o);
+        else if(type==CFTypes.TYPE_LOCALE)         return toLocale(o);
+        else if(type==CFTypes.TYPE_TIMEZONE)       return toTimeZone(o);
 
     	return _castTo(pc, strType, o);
     }   

@@ -27,7 +27,6 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 
 public class MemberUtil {
 	
-	private static final Object DEFAULT_VALUE = new Object();
 	private static Map<Short,Map<Collection.Key,FunctionLibFunction>> matches=new HashMap<Short, Map<Collection.Key,FunctionLibFunction>>();
 	
 	public static Map<Collection.Key,FunctionLibFunction> getMembers(PageContext pc, short type) {
@@ -59,10 +58,8 @@ public class MemberUtil {
 	public static Object call(PageContext pc, Object coll,Collection.Key methodName, Object[] args, short type, String strType) throws PageException {
 		Map<Key, FunctionLibFunction> members = getMembers(pc, type);
 		FunctionLibFunction member=members.get(methodName); 
-		
 		if(member!=null){
 			List<FunctionLibFunctionArg> _args = member.getArg();
-			FunctionLibFunctionArg arg;
 			if(args.length<_args.size()){
 				ArrayList<Ref> refs=new ArrayList<Ref>();
 				

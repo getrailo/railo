@@ -3,13 +3,14 @@
  */
 package railo.runtime.functions.international;
 
+import java.util.Locale;
+
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 
 public final class GetLocale implements Function {
-	public static String call(PageContext pc ) {
-		return LocaleFactory.toString(pc.getLocale());
+	public static Locale call(PageContext pc ) {
+		return pc.getLocale();
 	}
 	
 }

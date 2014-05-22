@@ -87,6 +87,8 @@ public final class CFTypes {
     public static final short TYPE_FUNCTION = 23;
     public static final short TYPE_QUERY_COLUMN=24;
     public static final short TYPE_IMAGE=25;
+    public static final short TYPE_LOCALE=26;
+    public static final short TYPE_TIMEZONE=27;
     
     /**
 	 * Wandelt einen String Datentypen in ein CFML short Typ um.
@@ -117,6 +119,8 @@ public final class CFTypes {
 			case TYPE_VARIABLE_STRING:return "variablestring";
 			case TYPE_VOID:return "void";
 			case TYPE_XML:return "xml";
+			case TYPE_LOCALE:return "locale";
+			case TYPE_TIMEZONE:return "timezone";
 			case TYPE_FUNCTION:return "function";
 		}
 		return defaultValue;
@@ -148,9 +152,12 @@ public final class CFTypes {
 	        	case 'i':
 	                if("image".equals(type)) 							return TYPE_IMAGE;
 	            break;
-	            case 'n':
+	        	case 'n':
 	        	    if(type.equals("numeric")) return TYPE_NUMERIC;
 	        	    else if(type.equals("number")) return TYPE_NUMERIC;
+	        	    break;
+	        	case 'l':
+	        	    if(type.equals("locale")) return TYPE_LOCALE;
 	        	    break;
 	        	case 'o':
 	        	    if(type.equals("object")) return TYPE_ANY;
@@ -167,6 +174,7 @@ public final class CFTypes {
 	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
 	        	    if(type.equals("timestamp")) return TYPE_DATETIME;
+	        	    if(type.equals("timezone")) return TYPE_TIMEZONE;
 	        	    break;
 	        	case 'u':
 	        	    if(type.equals("uuid")) return TYPE_UUID;

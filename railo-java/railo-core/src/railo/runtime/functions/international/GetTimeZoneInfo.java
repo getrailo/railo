@@ -15,12 +15,16 @@ import railo.runtime.type.util.KeyConstants;
 
 public final class GetTimeZoneInfo implements Function {
 
+	private static final long serialVersionUID = -5462276373169138909L;
 	
 	public synchronized static railo.runtime.type.Struct call(PageContext pc ) {
+		return call(pc,null);
+	}
+	public synchronized static railo.runtime.type.Struct call(PageContext pc, TimeZone tz) {
+		if(tz==null) tz=pc.getTimeZone();
 		
         //Date date = ;
-        TimeZone timezone = pc.getTimeZone();
-        Calendar c = JREDateTimeUtil.getThreadCalendar(timezone);
+        Calendar c = JREDateTimeUtil.getThreadCalendar(tz);
         c.setTimeInMillis(System.currentTimeMillis());
 
     	int dstOffset=c.get(Calendar.DST_OFFSET);
@@ -35,7 +39,7 @@ public final class GetTimeZoneInfo implements Function {
         struct.setEL("utcHourOffset", new Double(hour));
         struct.setEL("utcMinuteOffset", new Double(minutes));
         struct.setEL("isDSTon", (dstOffset > 0)?Boolean.TRUE:Boolean.FALSE);
-        struct.setEL(KeyConstants._id, timezone.getID());
+        struct.setEL(KeyConstants._id, tz.getID());
         
        
         return struct;

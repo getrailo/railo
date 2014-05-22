@@ -5,6 +5,7 @@ package railo.runtime.functions.other;
 
 import java.util.ArrayList;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -25,6 +26,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -83,13 +85,16 @@ public final class GetFunctionData implements Function {
         sct.set(ARG_MAX,Caster.toDouble(function.getArgMax()));
         sct.set(KeyConstants._type,"java");
 		String[] names = function.getMemberNames();
-        if(!ArrayUtil.isEmpty(names) && function.getMemberType()!=CFTypes.TYPE_UNKNOW) {
+		if(!ArrayUtil.isEmpty(names) && function.getMemberType()!=CFTypes.TYPE_UNKNOW) {
         	StructImpl mem = new StructImpl();
         	sct.set(KeyConstants._member, mem);
         	mem.set(KeyConstants._name,names[0]);
         	mem.set(KeyConstants._chaining,Caster.toBoolean(function.getMemberChaining()));
             mem.set(KeyConstants._type, function.getMemberTypeAsString());
             mem.set("position", Caster.toDouble(function.getMemberPosition()));
+            
+            
+            
         }
 		
 		Array _args=new ArrayImpl();

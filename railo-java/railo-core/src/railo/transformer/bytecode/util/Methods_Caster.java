@@ -64,6 +64,14 @@ public final class Methods_Caster {
 			Types.TIMESPAN,
 			new Type[]{Types.OBJECT});
     
+    final public static Method TO_TIMEZONE = new Method("toTimeZone",
+			Types.TIMEZONE,
+			new Type[]{Types.OBJECT});
+    
+    final public static Method TO_LOCALE = new Method("toLocale",
+			Types.LOCALE,
+			new Type[]{Types.OBJECT});
+    
 
     public static final Method TO_STRING_BUFFER=
     	new Method("toStringBuffer",Types.STRING_BUFFER,new Type[]{Types.OBJECT});

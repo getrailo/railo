@@ -2,10 +2,13 @@ package railo.runtime.util;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.w3c.dom.Node;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -740,6 +743,14 @@ public final class VariableUtilImpl implements VariableUtil {
 	    // Strings
 	    if(coll instanceof String) {
 			return MemberUtil.call(pc,coll,key,args, CFTypes.TYPE_STRING, "string");
+	    }
+	    // Locale
+	    if(coll instanceof Locale) {
+			return MemberUtil.call(pc,coll,key,args, CFTypes.TYPE_LOCALE, "locale");
+	    }
+	    // TimeZone
+	    if(coll instanceof TimeZone) {
+			return MemberUtil.call(pc,coll,key,args, CFTypes.TYPE_TIMEZONE, "timezone");
 	    }
 	    
         // call Object Wrapper      

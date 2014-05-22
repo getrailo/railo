@@ -14,6 +14,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -29,7 +30,9 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.converter.WDDXConverter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.net.rpc.Pojo;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -128,6 +131,23 @@ public class DumpUtil {
 		if(o instanceof Number) {
 			DumpTable table = new DumpTable("numeric","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o))));
+			return table;
+		}
+		// Locale
+		if(o instanceof Locale) {
+			Locale l=(Locale) o;
+			Locale env = ThreadLocalPageContext.getLocale(null);
+			DumpTable table = new DumpTable("locale","#ff6600","#ffcc99","#000000");
+			table.setTitle("Locale "+LocaleFactory.toString(l));
+			table.appendRow(1,new SimpleDumpData("Code (ISO-3166)"),new SimpleDumpData(l.toString()));
+			table.appendRow(1,new SimpleDumpData("Country"),new SimpleDumpData(l.getDisplayCountry(env)));
+			table.appendRow(1,new SimpleDumpData("Language"),new SimpleDumpData(l.getDisplayLanguage(env)));
+			return table;
+		}
+		// TimeZone
+		if(o instanceof TimeZone) {
+			DumpTable table = new DumpTable("numeric","#ff6600","#ffcc99","#000000");
+			table.appendRow(1,new SimpleDumpData("TimeZone"),new SimpleDumpData(TimeZoneUtil.toString(((TimeZone)o))));
 			return table;
 		}
 		// Boolean

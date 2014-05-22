@@ -1,12 +1,16 @@
 package railo.runtime.functions.dateTime;
 
-import railo.commons.date.TimeZoneUtil;
+import java.util.TimeZone;
+
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 public class GetTimeZone implements Function{
-	public static String call(PageContext pc) {
-		return TimeZoneUtil.toString(pc.getTimeZone());
+
+	private static final long serialVersionUID = 2953112893625358220L;
+
+	public static TimeZone call(PageContext pc) {
+		return pc.getTimeZone();
 	}
 		
 }

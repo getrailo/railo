@@ -358,6 +358,11 @@ public final class CastOther extends ExpressionBase implements Cast {
                 	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_LONG[Types.getType(rtn)]);
                 return Types.LONG;
             }
+            else if("locale".equals(lcType)) {
+            	rtn=expr.writeOut(bc,MODE_REF);
+                adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_LOCALE);
+                return Types.LOCALE;
+            }
         break;
         case 'n':
             if("node".equals(lcType)) {
@@ -377,6 +382,13 @@ public final class CastOther extends ExpressionBase implements Cast {
             if("object".equals(lcType) || "other".equals(lcType)) {
                 expr.writeOut(bc,MODE_REF);
                 return Types.OBJECT;
+            }
+        break;
+        case 't':
+            if("timezone".equals(lcType)) {
+            	rtn=expr.writeOut(bc,MODE_REF);
+                adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_TIMEZONE);
+                return Types.TIMEZONE;
             }
         break;
         case 's':
@@ -500,6 +512,7 @@ public final class CastOther extends ExpressionBase implements Cast {
         case 'l':
             if("long".equals(type))								return Types.LONG_VALUE;
             if("long".equals(lcType))							return Types.LONG;
+            if("locale".equals(lcType))							return Types.LOCALE;
         break;
         case 'n':
             if("node".equals(lcType))							return Types.NODE;
@@ -527,7 +540,8 @@ public final class CastOther extends ExpressionBase implements Cast {
         break;
         case 't':
         	if("timespan".equals(lcType))						return Types.TIMESPAN;
-        break;
+        	if("timezone".equals(lcType))						return Types.TIMEZONE;
+            break;
         case 'v':
         	if("variablename".equals(lcType))					return Types.STRING;
         	if("variable_name".equals(lcType))					return Types.STRING;
