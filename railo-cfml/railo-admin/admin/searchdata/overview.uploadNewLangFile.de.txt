@@ -1,0 +1,1 @@
+overview uploadNewLangFile  The language file you uploaded contains a language that already exists in this context. An error occured while reading the language file. The language file you uploaded seems to be incomplete. Please note that only files that are at least 80% complete can be used.

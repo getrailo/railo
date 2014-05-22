@@ -1,0 +1,1 @@
+server proxy  Use proxy Do not use proxy update delete Proxy settings Server URL of a proxy server eg."http://myproxyserver.org/" Port Port for the proxy server (default:80) Please enter a value for the proxy port Username Username for the proxy Password Password for the proxy update cancel

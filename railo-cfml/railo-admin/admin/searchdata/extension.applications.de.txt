@@ -1,0 +1,10 @@
+extension applications  filter installieren aktualisieren deinstallieren
+ OK
+ Extension thumbnail Installierte Version Code Name Verfügbare Version Code Name Kategorie Autor Erscheinungsdatum Provider Dokumentation Support Forum Mailinglist Updates verfügbar Installierte Version Verfügbare Version aktualisieren deinstallieren abbrechen deinstallieren abbrechen installieren abbrechen
+ abbrechen Lizenzvereinbahrung Bitte lesen Sie die folgende Lizenzvereinbahrung sorgfältig durch. Lizenzvereinbahrung I do not agree einverstanden
+ nächste restart restart nächste
+
+ Because you did not agree with the license, the extension was not installed.In case you installed the extension before, you will need to uninstall it, if you do not wish to agree with it's license anymore. Installiert Diese Applikation ist bereits installiert. Suchbegriff eingeben filter View details Extension thumbnail Updates verfügbar Nicht installiert Diese Applikationen sind noch nicht installiert. Suchbegriff eingeben filter View details Extension thumbnail Upload new extension (experimental) If you downloaded an extension, you can add the extension here. You have not uploaded a file!Please first choose a file. Extension zip file upload
+ Provider Installierte Version Verfügbare Version Kategorie Provider Updates verfügbar Installierte Version Verfügbare Version aktualisieren deinstallieren abbrechen deinstallieren abbrechen installieren abbrechen
+
+ The error Please review the documentation for creating Railo Extensions. Please review the documentation for creating Railo Extensions. Please review the documentation for creating Railo Extensions.

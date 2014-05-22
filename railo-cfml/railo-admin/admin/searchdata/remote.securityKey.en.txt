@@ -1,0 +1,1 @@
+remote securityKey  In case this Web Administrator is to be synchronized by another server, you have to enter the security key below in the distant definition of the remote client. reset

@@ -1,0 +1,1 @@
+remote securityKey  Falls dieser Web Administrator von einem anderen Server aus synchronisiert werden soll, müssen sie den unten angegebenen Schlüssel bei der Definition der Remote Client Verbindung angeben. zurücksetzen

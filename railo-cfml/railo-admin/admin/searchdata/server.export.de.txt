@@ -1,0 +1,1 @@
+server export  german (standard) german (standard) Export Application.cfc Einstellungen dieses Web Context als Application.cfc Template exportieren, natürlich beinhaltet dies nur Einstellungen welche im Application.cfc möglich sind. export

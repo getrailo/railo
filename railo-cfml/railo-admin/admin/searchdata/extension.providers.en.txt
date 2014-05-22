@@ -1,0 +1,1 @@
+extension providers  verify save delete install  URL Check verify delete cancel URL to the ExtensionProvider incl. path save

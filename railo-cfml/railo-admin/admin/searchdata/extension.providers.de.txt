@@ -1,0 +1,1 @@
+extension providers  überprüfen speichern löschen installieren Hier können Sie weitere ExtensionProvider registrieren, welche wiederum Extensions zur Verfügung stellen. Um mehr über Extensions und Extension Provider zu erfahren konsultieren Sie die Dokumentation hierzu auf unserer Webseite. URL Check überprüfen löschen abbrechen URL zum ExtensionProvider inkl. path speichern

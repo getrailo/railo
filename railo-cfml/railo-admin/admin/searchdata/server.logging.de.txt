@@ -1,0 +1,3 @@
+server logging 
+ senden Log settings for a specific Log Level Appender Layout Tage Stunden Minuten Sekunden senden
+ löschen Readonly Logs Readonly Logs are generated within the "server administrator" for all web instances and can not be modified by the "web administrator. Name Layout Appender Level Logs List of existing Logs for this enviroment Name Layout Appender Level löschen abbrechen Create new Log Name Abbrechen Layout Appender neu abbrechen There are no Appender/Layout drivers in that system

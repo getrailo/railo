@@ -1,0 +1,1 @@
+resources rest  aktualisieren Auf Server Administrator Einstellung zurück setzen speichern löschen aktualisieren abbrechen Auf Server Administrator Einstellung zurück setzen speichern abbrechen löschen speichern

@@ -1,0 +1,1 @@
+server proxy  Proxy verwenden Proxy nicht verwenden aktualisieren löschen Proxy Einstellungen Server URL eines Proxy Server im Stil 'http://myproxyserver.org/' Port Port für den Proxy Server (Vorgabe:80) Bitte geben Sie einen Wert für den Proxy Port an Benutzername Benutzername für den Proxy Passwort Passwort für den Proxy aktualisieren abbrechen

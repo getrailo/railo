@@ -1,0 +1,2 @@
+debugging settings  aktualisieren Auf Server Administrator Einstellung zurück setzen Falls eingeschaltet logt Railo die Debugging Informationen, welche Sie unterhalb gewählt haben.
+Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template gewählt haben oder unter "Debug/Logs" hier im Administrator. Debug Informationen anzeigen Nein Ja Enabled Query Usage Enabled aktualisieren abbrechen Auf Server Administrator Einstellung zurück setzen

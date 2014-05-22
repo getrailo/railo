@@ -1,0 +1,3 @@
+services gateway 
+ senden ID Listener Component Path to the Component that is listening to the Gateways action Startup Mode Automatic Manual Disabled Tage Stunden Minuten Sekunden senden abbrechen
+ aktualisieren löschen restart stop/start überprüfen Readonly cache connections Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"". ID Type State Check neu laden abbrechen List of existing gateway instances List of all existing gateways for this enviroment ID Type State Check neu laden löschen restart stop/start Create a new Gateway instance ID Cancel Type neu abbrechen There is no Gateway Type Available
