@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.international;
 
+import java.util.Locale;
+
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -16,7 +18,7 @@ public final class LSEuroCurrencyFormat implements Function {
 	public static String call(PageContext pc , Object number, String type) throws PageException {
 		return LSCurrencyFormat.call(pc,number,type);
 	}
-	public static String call(PageContext pc , Object number, String type,String locale) throws PageException {
+	public static String call(PageContext pc , Object number, String type,Locale locale) throws PageException {
 		return LSCurrencyFormat.call(pc,number,type,locale);
 	}
 }

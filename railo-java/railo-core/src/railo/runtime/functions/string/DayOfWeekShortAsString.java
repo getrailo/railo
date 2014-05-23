@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.string;
 
+import java.util.Locale;
+
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
@@ -14,8 +16,8 @@ public final class DayOfWeekShortAsString implements Function {
 		return DayOfWeekAsString.call(pc,dow, pc.getLocale(),false);
 	}
 	
-	public static String call(PageContext pc , double dow, String strLocale) throws ExpressionException {
-		return DayOfWeekAsString.call(pc,dow, strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),false);
+	public static String call(PageContext pc , double dow, Locale locale) throws ExpressionException {
+		return DayOfWeekAsString.call(pc,dow, locale==null?pc.getLocale():locale,false);
 	}
 	
 }

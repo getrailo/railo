@@ -1,5 +1,7 @@
 package railo.runtime.functions.dateTime;
 
+import java.util.TimeZone;
+
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -15,14 +17,14 @@ public class DatePartMember extends BIF {
 		return DatePart.call(pc, datepart, date, null);
 	}
 	
-	public static double call(PageContext pc , DateTime date,String datepart, String strTimezone) throws ExpressionException {
-		return DatePart.call(pc, datepart, date, strTimezone);
+	public static double call(PageContext pc , DateTime date,String datepart, TimeZone tz) throws ExpressionException {
+		return DatePart.call(pc, datepart, date, tz);
 	}
 	
 	@Override
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
 		if(args.length==2)return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()),Caster.toString(args[1]));
-		return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()),Caster.toString(args[1]),Caster.toString(args[2]));
+		return call(pc,Caster.toDatetime(args[0],pc.getTimeZone()),Caster.toString(args[1]),Caster.toTimeZone(args[2]));
 	}
 	
 }

@@ -5,13 +5,11 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
@@ -21,7 +19,10 @@ import railo.runtime.type.dt.DateTimeImpl;
  * Implements the CFML Function dateformat
  */
 public final class LSTimeFormat implements Function {
-	
+
+	private static final long serialVersionUID = -35357762883021790L;
+
+
 	/**
 	 * @param pc
 	 * @param o
@@ -35,13 +36,13 @@ public final class LSTimeFormat implements Function {
 	public static String call(PageContext pc , Object o, String mask) throws PageException {
 		return _call(pc, o, mask, pc.getLocale(),pc.getTimeZone());
 	}
-	public static String call(PageContext pc , Object o, String mask,String strLocale) throws PageException {
-		return _call(pc, o, mask, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
+	public static String call(PageContext pc , Object o, String mask,Locale locale) throws PageException {
+		return _call(pc, o, mask, locale==null?pc.getLocale():locale,pc.getTimeZone());
 	}
-	public static String call(PageContext pc , Object o, String mask,String strLocale,String strTimezone) throws PageException {
+	public static String call(PageContext pc , Object o, String mask,Locale locale,TimeZone tz) throws PageException {
 		return _call(pc, o, mask, 
-				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
-				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
+				locale==null?pc.getLocale():locale,
+				tz==null?pc.getTimeZone():tz);
 	}
 
 	private static String _call(PageContext pc, Object o, String mask,Locale locale,TimeZone tz) throws PageException {

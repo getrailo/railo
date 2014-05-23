@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.international;
 
+import java.util.Locale;
+
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
@@ -14,9 +16,9 @@ public final class LSIsNumeric implements Function {
 		return call(pc, string, null);
 	}
 	
-	public static boolean call(PageContext pc , String string,String strLocale) {
+	public static boolean call(PageContext pc , String string,Locale locale) {
 		try {
-			LSParseNumber.call(pc,string,strLocale);
+			LSParseNumber.call(pc,string,locale);
 			return true;
 		} catch (Throwable t) {
 			return false;

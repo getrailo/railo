@@ -6,12 +6,10 @@ package railo.runtime.functions.international;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
@@ -26,13 +24,13 @@ public final class LSDateFormat implements Function {
 	public static synchronized String call(PageContext pc , Object object, String mask) throws PageException {
 		return _call(pc, object, mask, pc.getLocale(),pc.getTimeZone());
 	}
-	public static synchronized String call(PageContext pc , Object object, String mask,String strLocale) throws PageException {
-		return _call(pc, object, mask, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
+	public static synchronized String call(PageContext pc , Object object, String mask, Locale locale) throws PageException {
+		return _call(pc, object, mask, locale,pc.getTimeZone());
 	}
-	public static synchronized String call(PageContext pc , Object object, String mask,String strLocale,String strTimezone) throws PageException {
+	public static synchronized String call(PageContext pc , Object object, String mask,Locale locale,TimeZone tz) throws PageException {
 		return _call(pc, object, mask, 
-				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
-				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
+				locale==null?pc.getLocale():locale,
+				tz==null?pc.getTimeZone():tz);
 	}
 	
 	

@@ -7,11 +7,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Decision;
 
 public final class LSIsDate implements Function {
@@ -20,20 +17,20 @@ public final class LSIsDate implements Function {
 
 
 	public static boolean call(PageContext pc , Object object) {
-		return call(pc, object, pc.getLocale(),pc.getTimeZone());
+		return _call(pc, object, pc.getLocale(),pc.getTimeZone());
 	}
 
-	public static boolean call(PageContext pc , Object object,String strLocale) throws ExpressionException {
-		return call(pc, object, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
+	public static boolean call(PageContext pc , Object object,Locale locale) {
+		return _call(pc, object, locale,pc.getTimeZone());
 	}
-	public static boolean call(PageContext pc , Object object,String strLocale,String strTimezone) throws ExpressionException {
-		return call(pc, object, 
-				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
-				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
+	public static boolean call(PageContext pc , Object object,Locale locale,TimeZone tz) {
+		return _call(pc, object, 
+				locale==null?pc.getLocale():locale,
+				tz==null?pc.getTimeZone():tz);
 	}
 	
 	
-	private static boolean call(PageContext pc  , Object object,Locale locale,TimeZone tz) {
+	private static boolean _call(PageContext pc  , Object object,Locale locale,TimeZone tz) {
 		if(object instanceof Date) return true;
 		else if(object instanceof String) {
 		    String str=object.toString();

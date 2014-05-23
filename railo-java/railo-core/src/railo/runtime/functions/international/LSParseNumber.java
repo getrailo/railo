@@ -24,8 +24,8 @@ public final class LSParseNumber implements Function {
 		return toDoubleValue(pc.getLocale(),string);
 	}
 	
-	public static double call(PageContext pc , String string,String strLocale) throws PageException {
-		return toDoubleValue(strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),string);
+	public static double call(PageContext pc , String string,Locale locale) throws PageException {
+		return toDoubleValue(locale==null?pc.getLocale():locale,string);
 	}
 	
 	

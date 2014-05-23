@@ -6,15 +6,16 @@ package railo.runtime.functions.dateTime;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
-import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeImpl;
 
 public final class CreateTime implements Function {
+
+	private static final long serialVersionUID = -5887770689991548576L;
+
 	public static DateTime call(PageContext pc , double hour, double minute, double second) {
 		return _call(pc, hour, minute, second, 0,pc.getTimeZone());
 	}
@@ -22,8 +23,8 @@ public final class CreateTime implements Function {
 	public static DateTime call(PageContext pc , double hour, double minute, double second,double millis) {
 		return _call(pc, hour, minute, second, millis,pc.getTimeZone());
 	}
-	public static DateTime call(PageContext pc , double hour, double minute, double second,double millis,String strTimezone) throws ExpressionException {
-		return _call(pc, hour, minute, second, millis,strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
+	public static DateTime call(PageContext pc , double hour, double minute, double second,double millis, TimeZone tz) {
+		return _call(pc, hour, minute, second, millis,tz==null?pc.getTimeZone():tz);
 	}
 	
 

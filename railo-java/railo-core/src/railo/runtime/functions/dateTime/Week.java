@@ -7,9 +7,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
-import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.dt.DateTime;
 
@@ -19,8 +17,8 @@ public final class Week implements Function {
 		return _call(pc, date, pc.getTimeZone());
 	}
 	
-	public static double call(PageContext pc , DateTime date, String strTimezone) throws ExpressionException {
-		return _call(pc, date, strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
+	public static double call(PageContext pc , DateTime date, TimeZone tz) {
+		return _call(pc, date, tz==null?pc.getTimeZone():tz);
 	}
 	
 	private static double _call(PageContext pc , DateTime date,TimeZone tz) {

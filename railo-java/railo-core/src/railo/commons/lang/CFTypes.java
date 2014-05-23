@@ -237,7 +237,8 @@ public final class CFTypes {
 	            break;
 
 	            case 'l':
-	                if(alsoAlias && "long".equals(type))								return TYPE_NUMERIC;
+	                if(alsoAlias && "long".equals(type))					return TYPE_NUMERIC;
+	                if("locale".equals(type))								return TYPE_LOCALE;
 	            break;
 	        	
 	        	case 'n':
@@ -263,7 +264,8 @@ public final class CFTypes {
 	                if(alsoAlias && "short".equals(type))return TYPE_NUMERIC;
 	        	break;
 	        	case 't':
-	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
+	        		if(type.equals("timespan")) return TYPE_TIMESPAN;
+	        		if(type.equals("timezone")) return TYPE_TIMEZONE;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
 	        	    if(alsoAlias && type.equals("timestamp")) return TYPE_DATETIME;
 	        	    if(alsoAlias && type.equals("text")) return TYPE_STRING;

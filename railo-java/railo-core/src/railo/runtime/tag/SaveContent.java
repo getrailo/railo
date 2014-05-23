@@ -1,5 +1,6 @@
 package railo.runtime.tag;
 
+import railo.print;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.interpreter.VariableInterpreter;
@@ -57,12 +58,12 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 	public int doAfterBody() throws PageException	{
 	
 		String value = trim ? bodyContent.getString().trim() : bodyContent.getString();
-		
+
+		print.e(value.length());
 		if ( append ) {
 		
 			value = Caster.toString( VariableInterpreter.getVariableEL( pageContext, variable, "" ), "" ) + value;	// prepend the current variable or empty-string if not found
 		}
-		
 		pageContext.setVariable( variable, value );
 		bodyContent.clearBody();
 		

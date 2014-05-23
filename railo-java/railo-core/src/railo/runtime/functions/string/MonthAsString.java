@@ -12,11 +12,14 @@ import railo.commons.date.JREDateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 
 public final class MonthAsString implements Function {
 	
-	private static final int MONTH=1000*60*60*24*32;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3937165414347541683L;
+	//private static final int MONTH=1000*60*60*24*32;
 	private static Date[] dates=new Date[12];
 	static {
 		Calendar cal=JREDateTimeUtil.getThreadCalendar();
@@ -31,8 +34,8 @@ public final class MonthAsString implements Function {
 	public static String call(PageContext pc , double month) throws ExpressionException {
 		return call(month, pc.getLocale());
 	}
-	public static String call(PageContext pc , double month, String strLocale) throws ExpressionException {
-		return call(month, strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale));
+	public static String call(PageContext pc , double month, Locale locale) throws ExpressionException {
+		return call(month, locale==null?pc.getLocale():locale);
 	}
 	
 	private static String call(double month, Locale locale) throws ExpressionException {

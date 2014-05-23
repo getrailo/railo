@@ -2,7 +2,6 @@ package railo.runtime.functions.string;
 
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -21,8 +20,8 @@ public final class ParseDateTime implements Function {
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String popConversion) throws PageException {
 		return _call(oDate,pc.getTimeZone());
 	}
-	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String popConversion,String strTimezone) throws PageException {
-		return _call(oDate,strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
+	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String popConversion,TimeZone tz) throws PageException {
+		return _call(oDate,tz==null?pc.getTimeZone():tz);
 	}
 	private static railo.runtime.type.dt.DateTime _call( Object oDate,TimeZone tz) throws PageException {
 		return DateCaster.toDateAdvanced(oDate,DateCaster.CONVERTING_TYPE_YEAR,tz);

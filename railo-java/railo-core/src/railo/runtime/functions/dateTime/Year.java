@@ -1,9 +1,9 @@
 package railo.runtime.functions.dateTime;
 
+import java.util.TimeZone;
+
 import railo.commons.date.DateTimeUtil;
-import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.dt.DateTime;
 
@@ -16,7 +16,7 @@ public final class Year implements Function {
 		return DateTimeUtil.getInstance().getYear(pc.getTimeZone(),date);
 	}
 	
-	public static double call(PageContext pc , DateTime date, String strTimezone) throws ExpressionException {
-		return DateTimeUtil.getInstance().getYear(strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone),date);
+	public static double call(PageContext pc , DateTime date, TimeZone tz) {
+		return DateTimeUtil.getInstance().getYear(tz==null?pc.getTimeZone():tz,date);
 	}
 }

@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.date.TimeZoneUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -60,9 +62,25 @@ public final class Operator {
 		} */
 		else if(left instanceof Character)	return compare( ((Character)left).toString() , right ); 
 		else if(left instanceof Calendar)	return compare( ((Calendar)left).getTime() , right ); 
+		else if(left instanceof TimeZone) 	return compare(((TimeZone)left) ,right); 
 		else {
 			return error(false,true); 
 		}
+	} 
+
+	
+	public static int compare(TimeZone left, Object right) throws PageException { 
+		if(right instanceof String)			return compare(left,(String)right); 
+		else if(right instanceof Number)	return compare(left,Caster.toString(right)); 
+		else if(right instanceof Boolean)	return compare(left,Caster.toString(right)); 
+		else if(right instanceof Date)		return compare(left,Caster.toString(right)); 
+		else if(right instanceof Castable)	return compare(left,((Castable)right).castToString()); 
+		else if(right instanceof TimeZone)	return left.toString().compareTo(right.toString()); 
+		else if(right==null) 				return compare( left, "" ); 
+		else if(right instanceof Character)	return compare(left,((Character)right).toString()); 
+		else if(right instanceof Calendar)	return compare(left, Caster.toString(((Calendar)right).getTime())  ); 
+		else if(right instanceof Locale)	return compare(left,Caster.toString(right));
+		else return error(false,true); 
 	} 
 	
 	public static int compare(Locale left, Object right) throws PageException { 
@@ -75,10 +93,15 @@ public final class Operator {
 		else if(right==null) 				return compare( left, "" ); 
 		else if(right instanceof Character)	return compare(left,((Character)right).toString()); 
 		else if(right instanceof Calendar)	return compare(left, Caster.toString(((Calendar)right).getTime())  ); 
+		else if(right instanceof TimeZone)	return compare(left,Caster.toString(right));
 		else return error(false,true); 
 	} 
-	
+
 	public static int compare(Object left, Locale right) throws PageException { 
+		return -compare(right,left); 
+	}
+
+	public static int compare(Object left, TimeZone right) throws PageException { 
 		return -compare(right,left); 
 	}
 	
@@ -88,7 +111,16 @@ public final class Operator {
 		return left.toString().compareTo(rightLocale.toString());
 	}
 	
+	public static int compare(TimeZone left, String right) { 
+		TimeZone rtz = TimeZoneUtil.toTimeZone(right, null);
+		if(rtz==null) return TimeZoneUtil.toString(left).compareTo(right);
+		return left.toString().compareTo(rtz.toString());
+	}
+
 	public static int compare(String left, Locale right) { 
+		return -compare(right,left);
+	}
+	public static int compare(String left, TimeZone right) { 
 		return -compare(right,left);
 	}
 	
@@ -109,6 +141,7 @@ public final class Operator {
 		else if(left==null) 				return "".compareToIgnoreCase(right);
 		else if(left instanceof Character)	return compare( ((Character)left).toString() , right ); 
 		else if(left instanceof Calendar)	return compare( ((Calendar)left).getTime() , right ); 
+		else if(left instanceof TimeZone)		return compare( (TimeZone)left , right ); 
 		
 		else return error(false,true);
 	} 
@@ -130,6 +163,7 @@ public final class Operator {
 		else if(right==null) 				return left.compareToIgnoreCase("");
 		else if(right instanceof Character)	return compare(left ,((Character)right).toString());
 		else if(right instanceof Calendar)	return compare(left, ((Calendar)right).getTime()  ); 
+		else if(right instanceof TimeZone)	return compare(left ,(TimeZone)right);
 		else return error(false,true);  
 	} 
 
@@ -151,6 +185,7 @@ public final class Operator {
 		else if(left==null) 				return -1;
 		else if(left instanceof Character)	return compare(((Character)left).toString(),right);
 		else if(left instanceof Calendar)	return compare( ((Calendar)left).getTime() , right ); 
+		else if(left instanceof TimeZone)		return compare( ((TimeZone)left), Caster.toString(right)); 
 		else {
 			return error(false,true); 
 		}
@@ -173,6 +208,7 @@ public final class Operator {
 		else if(right==null) 				return 1;
 		else if(right instanceof Character)	return compare(left ,((Character)right).toString());
 		else if(right instanceof Calendar)	return compare(left, ((Calendar)right).getTime() ); 
+		else if(right instanceof TimeZone)	return compare(Caster.toString(left) ,((TimeZone)right));
 		else return error(true,false);  
 	} 
 
@@ -194,6 +230,7 @@ public final class Operator {
 		else if(left==null) 				return -1;
 		else if(left instanceof Character)	return compare(((Character)left).toString(),right);
 		else if(left instanceof Calendar)	return compare( ((Calendar)left).getTime() , right?1:0 ); 
+		else if(left instanceof TimeZone)		return compare(((TimeZone)left),Caster.toString(right)); 
 		else return error(false,true);  
 	} 
 
@@ -214,6 +251,7 @@ public final class Operator {
 		else if(right==null) 				return 1;
 		else if(right instanceof Character)	return compare(left ,((Character)right).toString());
 		else if(right instanceof Calendar)	return compare(left?1:0, ((Calendar)right).getTime()  ); 
+		else if(right instanceof TimeZone)	return compare(Caster.toString(left),((TimeZone)right)); 
 		else return error(true,false);  
 	}
 	
@@ -234,6 +272,7 @@ public final class Operator {
 		else if(left==null) 				return compare("", right);
 		else if(left instanceof Character)	return compare(((Character)left).toString(),right);
 		else if(left instanceof Calendar)	return compare( ((Calendar)left).getTime() , right ); 
+		else if(left instanceof TimeZone)		return compare( ((TimeZone)left) , Caster.toString(right)); 
 		else return error(false,true);  
 	}  
 
@@ -254,6 +293,7 @@ public final class Operator {
 		else if(right==null) 				return compare(left,"");
 		else if(right instanceof Character)	return compare(left ,((Character)right).toString());
 		else if(right instanceof Calendar)	return compare(left.getTime()/1000, ((Calendar)right).getTime().getTime()/1000  ); 
+		else if(right instanceof TimeZone)	return compare(Caster.toString(left),(TimeZone)right); 
 		else return error(true,false);  
 	}
 	
@@ -267,6 +307,7 @@ public final class Operator {
 		else if(right == null) 				return compare(left.castToString(), "" ); 
 		else if(right instanceof Character)	return left.compareTo(((Character)right).toString());
 		else if(right instanceof Calendar)	return left.compareTo(new DateTimeImpl(((Calendar)right).getTime()) ); 
+		else if(right instanceof TimeZone)	return compare(left.castToString() , (TimeZone)right);
 		else return error(true,false); 
 	}
 	

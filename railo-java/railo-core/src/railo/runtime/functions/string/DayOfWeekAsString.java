@@ -12,7 +12,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 
 public final class DayOfWeekAsString implements Function {
 	private static final int DAY=1000*60*60*24;
@@ -31,8 +30,8 @@ public final class DayOfWeekAsString implements Function {
 	public static String call(PageContext pc , double dow) throws ExpressionException {
 		return call(pc,dow, pc.getLocale(),true);
 	}
-	public static String call(PageContext pc , double dow, String strLocale) throws ExpressionException {
-		return call(pc,dow, strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),true);
+	public static String call(PageContext pc , double dow, Locale locale) throws ExpressionException {
+		return call(pc,dow, locale==null?pc.getLocale():locale,true);
 	}
 	protected static String call(PageContext pc , double dow, Locale locale,boolean _long) throws ExpressionException {
 		

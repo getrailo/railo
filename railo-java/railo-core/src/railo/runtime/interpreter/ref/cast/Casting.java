@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.cast;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -25,11 +26,13 @@ public final class Casting extends RefSupport implements Ref {
      * @param ref
      */
     public Casting(String strType,short type, Ref ref) {
+    	if(strType.equalsIgnoreCase("locale") && type==-1) print.ds();
     	this.type=type;
         this.strType=strType;
         this.ref=ref;
     }
     public Casting(String strType,short type, Object val) {
+    	if(strType.equalsIgnoreCase("locale") && type==-1) print.ds();
     	this.type=type;
         this.strType=strType;
         this.val=val;
@@ -38,6 +41,7 @@ public final class Casting extends RefSupport implements Ref {
     @Override
     public Object getValue(PageContext pc) throws PageException {
     	// if ref == null, it is val based Casting
+    	print.e(type+":"+strType);
     	if(ref==null) return Caster.castTo(pc,type,strType,val);
     	if(ref instanceof Variable && "queryColumn".equalsIgnoreCase(strType)) {
     		Variable var=(Variable) ref;

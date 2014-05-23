@@ -15,7 +15,6 @@ import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -28,15 +27,15 @@ public final class LSParseDateTime implements Function {
 		return _call(pc, oDate, pc.getLocale(),pc.getTimeZone(),null);
 	}
 	
-	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,String strLocale) throws PageException {
-		return _call(pc, oDate, LocaleFactory.getLocale(strLocale),pc.getTimeZone(),null);
+	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,Locale locale) throws PageException {
+		return _call(pc, oDate, locale==null?pc.getLocale():locale,pc.getTimeZone(),null);
 	}
 	
-	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,String strLocale,String strTimezoneOrFormat) throws PageException {
+	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,Locale locale,String strTimezoneOrFormat) throws PageException {
+		if(locale==null)locale=pc.getLocale();
 		if(strTimezoneOrFormat==null) {
-			return _call(pc, oDate, LocaleFactory.getLocale(strLocale),pc.getTimeZone(),null);
+			return _call(pc, oDate, locale,pc.getTimeZone(),null);
 		}
-		Locale locale = strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale);
 		TimeZone tz = TimeZoneUtil.toTimeZone(strTimezoneOrFormat,null);
 		if(tz!=null)
 			return _call(pc, oDate, locale,tz,null);
@@ -44,13 +43,14 @@ public final class LSParseDateTime implements Function {
 	}
 
 	
-	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,String strLocale,String strTimezone, String strFormat) throws PageException {
+	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,Locale locale,String strTimezone, String strFormat) throws PageException {
 		return _call(pc, oDate, 
-				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
+				locale==null?pc.getLocale():locale,
 				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone),strFormat);
 	}
 	
 	private static railo.runtime.type.dt.DateTime _call(PageContext pc , Object oDate,Locale locale,TimeZone tz, String format) throws PageException {
+		
 		if(oDate instanceof Date) return Caster.toDate(oDate, tz);
 
 		String strDate = Caster.toString(oDate);

@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
@@ -3556,6 +3557,7 @@ public final class Caster {
      */
     public static Object castTo(PageContext pc, short type, String strType, Object o) throws PageException {
 //    	 TODO weitere typen siehe bytecode.cast.Cast
+    	print.e(type+":"+strType);
     	if(type==CFTypes.TYPE_ANY)                 return o;
         else if(type==CFTypes.TYPE_ARRAY)          return toArray(o);
         else if(type==CFTypes.TYPE_BOOLEAN)        return toBoolean(o);

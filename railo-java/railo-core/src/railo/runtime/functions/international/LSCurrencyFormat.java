@@ -12,23 +12,26 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 
 public final class LSCurrencyFormat implements Function {
+
+	private static final long serialVersionUID = -3173006221339130136L;
+
 	public static String call(PageContext pc , Object number) throws PageException {
 		return format(toDouble(number), "local", pc.getLocale());
 	}
 	public static String call(PageContext pc , Object number, String type) throws PageException {
 		return format( toDouble(number), type, pc.getLocale());
 	}
-	public static String call(PageContext pc , Object number, String type,String strLocale) throws PageException {
-		Locale locale=StringUtil.isEmpty(strLocale)?pc.getLocale():LocaleFactory.getLocale(strLocale);
-		return format(toDouble(number), type, locale);
+	public static String call(PageContext pc , Object number, String type,Locale locale) throws PageException {
+		return format(toDouble(number), type, locale==null?pc.getLocale():locale);
 	}
 	
 	public static String format( double number, String type,Locale locale) throws ExpressionException {
+		if(StringUtil.isEmpty(type)) return local(locale,number);
 		type=type.trim().toLowerCase();
+		
 		if(type.equals("none")) 				return none(locale,number);
 		else if(type.equals("local"))			return local(locale,number);
 		else if(type.equals("international"))	return international(locale,number);

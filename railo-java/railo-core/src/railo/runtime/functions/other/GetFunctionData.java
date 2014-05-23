@@ -5,7 +5,6 @@ package railo.runtime.functions.other;
 
 import java.util.ArrayList;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -26,7 +25,6 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.runtime.type.util.ListUtil;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;

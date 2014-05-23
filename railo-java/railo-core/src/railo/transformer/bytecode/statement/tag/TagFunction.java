@@ -189,7 +189,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 		// output
 		attr = removeAttribute("output");
-		Expression output = (attr == null) ? page.getFactory().FALSE() : attr.getValue();
+		Expression output = (attr == null) ? page.getFactory().TRUE() : attr.getValue();
 		
 		// bufferOutput
 		attr = removeAttribute("bufferoutput");

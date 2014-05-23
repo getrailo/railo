@@ -2512,7 +2512,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>NO</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -2577,7 +2577,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>NO</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -2702,8 +2702,8 @@ the usage of this argument depend on type defined with argument "type":
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description>date object</description>
-    </argument>
+			<description>date object</description>
+    	</argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -2770,7 +2770,7 @@ the usage of this argument depend on type defined with argument "type":
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3138,7 +3138,7 @@ Characters that show how Railo displays a date:
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3173,7 +3173,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>dd-MMM-yyyy HH:mm:ss</default>
+			<default>dd-MMM-yyyy HH:nn:ss</default>
 		<description>
 Mask that has to be used for formatting. 
 the following characters are pattern letters (case sensitive) representing the components of a datetime string. All other characters are not interpreted
@@ -3231,7 +3231,7 @@ The function follows Java date time mask.  For details, see the section Date and
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3255,6 +3255,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Extracts the given date part from the date object</description>
 		<argument>
 			<name>datepart</name>
+			<alias>part</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>one of the following:
@@ -3279,7 +3280,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3327,7 +3328,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     	</argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3358,7 +3359,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3388,7 +3389,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3418,13 +3419,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>no</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3453,7 +3454,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -3474,7 +3475,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -3496,7 +3497,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3526,7 +3527,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -3556,7 +3557,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -5748,7 +5749,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -6971,6 +6972,12 @@ if this attribute is not provided all types are returned.</description>
 			<required>No</required>
 			<description>the timezone to get the data from.</description>
     	</argument>
+		<argument>
+			<name>locale</name>
+			<type>locale</type>
+			<required>No</required>
+			<description>locale used to format the output.</description>
+    	</argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -7155,7 +7162,7 @@ Default list delimiter: comma character.</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -12869,6 +12876,7 @@ The following things are considered to be empty:
 		<description>Formats a number in a locale-specific currency format.</description>
 		<argument>
 			<name>number</name>
+			<alias>currency_number</alias>
 			<type>object</type>
 			<required>Yes</required>
 		<description>Currency value</description>
@@ -12882,7 +12890,7 @@ The following things are considered to be empty:
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -12911,13 +12919,13 @@ The following things are considered to be empty:
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -12951,20 +12959,20 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>dd-MMM-yyyy HH:mm:ss</default>
+			<default>dd-MMM-yyyy HH:nn:ss</default>
 		<description>
 		Mask that has to be used for formatting. The function follows Java date time mask. For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
 		</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -12990,7 +12998,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<keywords>currency,string,formatting</keywords>
 		<description>this funciton is just a alias for lsCurrencyFormat</description>
 		<argument>
-			<name>currency_number</name>
+			<name>number</name>
+			<alias>currency_number</alias>
 			<type>object</type>
 			<required>Yes</required>
 			<description>Currency value</description>
@@ -12998,6 +13007,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>type</name>
 			<type>string</type>
+			<default>local</default>
 			<required>No</required>
 			<description>
 			one of the following:
@@ -13007,7 +13017,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 			<description>Locale to use instead of the locale of the page when processing the function</description>
 		</argument>
@@ -13023,14 +13033,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Determines whether a string is a valid representation of a
         currency amount in the current locale.</description>
 		<argument>
-			<name>string</name>
+			<name>number</name>
+			<alias>string,currency_number</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>A currency string</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description></description>
     </argument>
@@ -13045,20 +13056,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Determines whether a string is a valid representation of a
         date/time value in the current locale.</description>
 		<argument>
-			<name>string</name>
+			<name>date</name>
+			<alias>string</alias>
 			<type>any</type>
+			<alias>date</alias>
 			<required>Yes</required>
 		<description>A string or a variable that contains one </description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>no</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -13081,14 +13094,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Determines whether a string is a valid representation of a
         number in the current locale.</description>
 		<argument>
-			<name>string</name>
+			<name>number</name>
+			<alias>string</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>A string or a variable that contains one</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -13116,7 +13130,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -13135,13 +13149,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
         international) and using the first that matches.</description>
 		<argument>
 			<name>string</name>
+			<alias>currency,number</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>A locale-specific string</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -13163,7 +13178,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 			<description>Locale to use instead of the locale of the page when processing the function</description>
 	    </argument>
@@ -13202,14 +13217,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<keywords>currency,string,parsing</keywords>
 		<description>use function lsParseCurrency instead</description>
 		<argument>
-			<name>currency_string</name>
+			<name>number</name>
+			<alias>string,currency_number</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>Locale-specific string</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -13225,14 +13241,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Converts a string that is a valid numeric representation in
         the current locale into a formatted number.</description>
 		<argument>
-			<name>string</name>
+			<name>number</name>
+			<alias>string</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>A string or a variable that contains one</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -13261,13 +13278,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -13403,7 +13420,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -13433,7 +13450,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -13463,7 +13480,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -13485,14 +13502,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.string.MonthAsString</class>
 		<description>Returns the string label for the given month</description>
 		<argument>
-			<name>monthnumber</name>
+			<name>month</name>
+			<alias>monthnumber,number</alias>
 			<type>number</type>
 			<required>Yes</required>
 		<description>a number between 1 and 12</description>
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>No</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
@@ -13891,7 +13909,7 @@ ormEvictQueries([cacheName])</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -13989,7 +14007,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -15196,7 +15214,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -17251,7 +17269,7 @@ _- asc (default): ascending (a to z) sort order
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>"hh:mm tt</default>
+			<default>hh:mm tt</default>
 		<description>
 Characters that show how Railo displays a time:
 - h: hours; no leading zero for single-digit hours (12-hour clock)
@@ -17275,7 +17293,7 @@ Characters that show how Railo displays a time:
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>No</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -17695,7 +17713,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -17725,13 +17743,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>locale</name>
-			<type>string</type>
+			<type>locale</type>
 			<required>no</required>
 		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 		<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
@@ -18080,7 +18098,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<argument>
 			<name>timezone</name>
-			<type>string</type>
+			<type>timezone</type>
 			<required>no</required>
 			<description>
 A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).

@@ -4,6 +4,7 @@
 package railo.runtime.functions.international;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.JREDateTimeUtil;
@@ -18,12 +19,15 @@ public final class GetTimeZoneInfo implements Function {
 	private static final long serialVersionUID = -5462276373169138909L;
 	
 	public synchronized static railo.runtime.type.Struct call(PageContext pc ) {
-		return call(pc,null);
+		return call(pc,null,null);
 	}
 	public synchronized static railo.runtime.type.Struct call(PageContext pc, TimeZone tz) {
+		return call(pc, tz,null);
+	}
+	public synchronized static railo.runtime.type.Struct call(PageContext pc, TimeZone tz, Locale dspLocale) {
 		if(tz==null) tz=pc.getTimeZone();
-		
-        //Date date = ;
+		if(dspLocale==null) dspLocale=pc.getLocale();
+		//Date date = ;
         Calendar c = JREDateTimeUtil.getThreadCalendar(tz);
         c.setTimeInMillis(System.currentTimeMillis());
 
@@ -39,7 +43,11 @@ public final class GetTimeZoneInfo implements Function {
         struct.setEL("utcHourOffset", new Double(hour));
         struct.setEL("utcMinuteOffset", new Double(minutes));
         struct.setEL("isDSTon", (dstOffset > 0)?Boolean.TRUE:Boolean.FALSE);
+        struct.setEL(KeyConstants._name, tz.getDisplayName(dspLocale));
         struct.setEL(KeyConstants._id, tz.getID());
+        
+        struct.setEL("offset", new Double(-total));
+        struct.setEL("DSTOffset", new Double(dstOffset/1000));
         
        
         return struct;

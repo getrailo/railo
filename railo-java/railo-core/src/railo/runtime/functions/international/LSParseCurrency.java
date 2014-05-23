@@ -13,7 +13,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 
 
@@ -26,8 +25,8 @@ public final class LSParseCurrency implements Function {
 	public static String call(PageContext pc , String string) throws PageException {
 		return Caster.toString(toDoubleValue(pc.getLocale(),string,false));
 	}
-	public static String call(PageContext pc , String string,String strLocale) throws PageException {
-		return Caster.toString(toDoubleValue(strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),string,false));
+	public static String call(PageContext pc , String string,Locale locale) throws PageException {
+		return Caster.toString(toDoubleValue(locale==null?pc.getLocale():locale,string,false));
 	}
 
 	public static synchronized double toDoubleValue(Locale locale,String str) throws PageException {

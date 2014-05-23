@@ -3,7 +3,6 @@ package railo.runtime.functions.displayFormatting;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -17,6 +16,8 @@ import railo.runtime.type.dt.DateTime;
  */
 public final class TimeFormat implements Function {
 	
+	private static final long serialVersionUID = -1335780260277678959L;
+
 	/**
 	 * @param pc
 	 * @param object
@@ -38,8 +39,8 @@ public final class TimeFormat implements Function {
 		return _call(pc,object,mask,ThreadLocalPageContext.getTimeZone(pc));
 	}
 
-	public static String call(PageContext pc , Object object, String mask,String strTimezone) throws ExpressionException {
-		return _call(pc,object,mask, strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
+	public static String call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {
+		return _call(pc,object,mask, tz==null?ThreadLocalPageContext.getTimeZone(pc):tz);
 	}
 	
 	private static String _call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {

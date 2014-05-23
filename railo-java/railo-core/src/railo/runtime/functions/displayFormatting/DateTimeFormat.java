@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -21,7 +20,7 @@ import railo.runtime.type.dt.DateTime;
 public final class DateTimeFormat extends BIF {
 
 	private static final long serialVersionUID = 134840879454373440L;
-	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:mm:ss";
+	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:nn:ss";
 	private static final String[] AP = new String[]{"A","P"};
 
 	/**
@@ -45,8 +44,8 @@ public final class DateTimeFormat extends BIF {
 		return invoke(pc,object,mask,Locale.US,ThreadLocalPageContext.getTimeZone(pc));
 	}
 
-	public static String call(PageContext pc , Object object, String mask,String strTimezone) throws ExpressionException {
-		return invoke(pc,object,mask, Locale.US,strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
+	public static String call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {
+		return invoke(pc,object,mask, Locale.US,tz==null?ThreadLocalPageContext.getTimeZone(pc):tz);
 	}
 	
 	public static String invoke(PageContext pc , Object object, String mask,Locale locale,TimeZone tz) throws ExpressionException {
@@ -85,7 +84,7 @@ public final class DateTimeFormat extends BIF {
 	public Object invoke(PageContext pc, Object[] args) throws PageException {
 		if(args.length==1)return call(pc,args[0]);
 		if(args.length==2)return call(pc,args[0],Caster.toString(args[1]));
-		return call(pc,args[0],Caster.toString(args[1]),Caster.toString(args[2]));
+		return call(pc,args[0],Caster.toString(args[1]),Caster.toTimeZone(args[2]));
 	}
 	
 

@@ -3,9 +3,10 @@
  */
 package railo.runtime.functions.international;
 
+import java.util.Locale;
+
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 
 public final class LSIsCurrency implements Function {
 
@@ -19,9 +20,9 @@ public final class LSIsCurrency implements Function {
 			return false;
 		}		
 	}
-	public static boolean call(PageContext pc , String string,String strLocale) {
+	public static boolean call(PageContext pc , String string,Locale locale) {
 		try {
-			LSParseCurrency.toDoubleValue(LocaleFactory.getLocale(strLocale),string,false);
+			LSParseCurrency.toDoubleValue(locale==null?pc.getLocale():locale,string,false);
 			return true;
 		} catch (Throwable t) {
 			return false;
