@@ -8,7 +8,6 @@ import java.util.Locale;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.i18n.LocaleFactory;
 
 public final class DayOfWeekShortAsString implements Function {
 	
