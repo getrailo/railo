@@ -3058,7 +3058,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>dd-MMM-yyyy HH:mm:ss</default>
+			<default>dd-MMM-yyyy HH:nn:ss</default>
 		<description>
 Mask that has to be used for formatting. 
 the following characters are pattern letters (case sensitive) representing the components of a datetime string. All other characters are not interpreted
@@ -12793,7 +12793,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>dd-MMM-yyyy HH:mm:ss</default>
+			<default>dd-MMM-yyyy HH:nn:ss</default>
 		<description>
 		Mask that has to be used for formatting. The function follows Java date time mask. For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
 		</description>
@@ -12840,6 +12840,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>type</name>
 			<type>string</type>
+			<default>local</default>
 			<required>No</required>
 			<description>
 			one of the following:
@@ -17081,7 +17082,7 @@ _- asc (default): ascending (a to z) sort order
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>"hh:mm tt</default>
+			<default>hh:mm tt</default>
 		<description>
 Characters that show how Railo displays a time:
 - h: hours; no leading zero for single-digit hours (12-hour clock)
