@@ -358,5 +358,23 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		assertEquals("Januar",MonthAsString(number:1));
 	}
 
+	public void function testTagApplication(){
+		application action="update" timezone="UTC";
+		application action="update" timezone="#tz#";
+
+		application action="update" locale="de_CH";
+		application action="update" locale="#loc#";
+	}
+
+	public void function testTagQuery(){
+		var qry=query(a:[1,2]);
+		query dbtype="query" timezone="UTC" {
+			echo("select * from qry");
+		}
+		query dbtype="query" timezone="#tz#" {
+			echo("select * from qry");
+		}
+	}
+
 } 
 </cfscript>

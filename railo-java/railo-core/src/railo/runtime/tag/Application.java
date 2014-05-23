@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -14,10 +13,8 @@ import railo.runtime.Mapping;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ClassicApplicationContext;
@@ -208,9 +205,9 @@ public final class Application extends TagImpl {
 		
 	}
 	
-	public void setTimezone(String strTimeZone) throws ExpressionException {
-		if(StringUtil.isEmpty(strTimeZone)) return;
-		this.timeZone = TimeZoneUtil.toTimeZone(strTimeZone);
+	public void setTimezone(TimeZone tz) {
+		if(tz==null) return;
+		this.timeZone = tz;
 		
 	}
 	
@@ -234,9 +231,9 @@ public final class Application extends TagImpl {
 		
 	}
 	
-	public void setLocale(String strLocale) throws ExpressionException {
-		if(StringUtil.isEmpty(strLocale)) return;
-		this.locale = LocaleFactory.getLocale(strLocale);
+	public void setLocale(Locale locale) {
+		if(locale==null) return;
+		this.locale = locale;
 		
 	}
 

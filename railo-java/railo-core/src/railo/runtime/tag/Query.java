@@ -3,7 +3,6 @@ package railo.runtime.tag;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -24,7 +23,6 @@ import railo.runtime.db.SQLItem;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.listener.AppListenerUtil;
@@ -308,8 +306,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	}
 	
 
-	public void setTimezone(String timezone) throws ExpressionException	{
-	    this.timezone=TimeZoneUtil.toTimeZone(timezone);
+	public void setTimezone(TimeZone tz)	{
+		if(tz==null) return;
+	    this.timezone=tz;
 	}
 
 	/** set the value blockfactor

@@ -621,7 +621,7 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<description>closure/udf executed when the requested template does not exist</description>
 		</attribute>
 		<attribute>
-			<type>String</type>
+			<type>locale</type>
 			<name>locale</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -631,7 +631,7 @@ A struct that defines default S3 settings, this settings can be overwritten as p
         conventions.</description>
 		</attribute>
 		<attribute>
-			<type>String</type>
+			<type>timezone</type>
 			<name>timeZone</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -10270,7 +10270,7 @@ To use cached data, the current query must use the same SQL statement, data sour
 			- array_of_entity: works only with dbtype "hql" and is also the default value for dbtype "hql"</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>timezone</type>
 			<name>timezone</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
