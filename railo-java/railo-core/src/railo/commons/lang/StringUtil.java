@@ -794,6 +794,10 @@ public final class StringUtil {
         return str!=null && str.length()>0 && str.charAt(0)==prefix;
     }
     
+    public static boolean startsWith(String str, char prefix1, char prefix2) {
+        return str!=null && str.length()>0 && (str.charAt(0)==prefix1 || str.charAt(0)==prefix2);
+    }
+    
     /**
      * Tests if this string ends with the specified suffix.
      * @param str string to check first char
@@ -802,6 +806,10 @@ public final class StringUtil {
      */
     public static boolean endsWith(String str, char suffix) {
         return str!=null && str.length()>0 && str.charAt(str.length()-1)==suffix;
+    }
+    
+    public static boolean endsWith(String str, char prefix1, char prefix2) {
+        return str!=null && str.length()>0 && (str.charAt(str.length()-1)==prefix1 || str.charAt(str.length()-1)==prefix2);
     }
 
     /**
@@ -1034,6 +1042,11 @@ public final class StringUtil {
 	public static int length(String str) {
 		if(str==null) return 0;
 		return str.length();
+	}
+
+	public static int length(String str, boolean trim) {
+		if(str==null) return 0;
+		return str.trim().length();
 	}
 
 	public static boolean hasUpperCase(String str) {

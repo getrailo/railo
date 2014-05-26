@@ -6,6 +6,7 @@ import java.util.Map;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceLock;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
@@ -15,7 +16,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 
-public final class S3ResourceProvider implements ResourceProvider {
+public final class S3ResourceProvider implements ResourceProviderPro {
 	
 	
 	private int socketTimeout=-1;
@@ -308,7 +309,10 @@ public final class S3ResourceProvider implements ResourceProvider {
 		return arguments;
 	}
 
-	
+	@Override
+	public char getSeparator() {
+		return '/';
+	}
 	
 
 }

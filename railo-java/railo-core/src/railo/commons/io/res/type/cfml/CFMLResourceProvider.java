@@ -5,6 +5,7 @@ import java.util.Map;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
@@ -18,7 +19,7 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 
-public class CFMLResourceProvider implements ResourceProvider {
+public class CFMLResourceProvider implements ResourceProviderPro {
 
 	private static final Object[] ZERO_ARGS = new Object[0];
 	
@@ -225,6 +226,16 @@ public class CFMLResourceProvider implements ResourceProvider {
 		call(pc, component, "init", new Object[]{scheme,Caster.toStruct(args)});
 		
 		return component;
+	}
+
+	@Override
+	public char getSeparator() {
+		try {
+			String str=callStringRTE(null,component,"getSeparator",ZERO_ARGS);
+			if(StringUtil.length(str,true)==1) return str.charAt(0);
+		}
+		catch(Throwable t){}
+		return '/';
 	}
 
 }

@@ -16,6 +16,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.type.datasource.core.Core;
 import railo.commons.io.res.type.datasource.core.MSSQL;
@@ -40,7 +41,7 @@ import railo.runtime.type.Sizeable;
 /**
  * Resource Provider for ram resource
  */
-public final class DatasourceResourceProvider implements ResourceProvider,Sizeable {
+public final class DatasourceResourceProvider implements ResourceProviderPro,Sizeable {
 
 	public static final int DBTYPE_ANSI92=0;
 	public static final int DBTYPE_MSSQL=1;
@@ -600,6 +601,11 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	@Override
 	public Map getArguments() {
 		return arguments;
+	}
+	
+	@Override
+	public char getSeparator() {
+		return '/';
 	}
 
 
