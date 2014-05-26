@@ -959,7 +959,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		
 		// properties
 		if(ci.top.properties.persistent || ci.top.properties.accessors){
-			Property[] properties=ci.getProperties(false);
+			Property[] properties=ci.getProperties(false,true,false,false);
 			DumpTable prop = new DumpTable("#99cc99","#ccffcc","#000000");
 
 			prop.setTitle("Properties");
