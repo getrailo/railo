@@ -1,1 +1,0 @@
-server error  aktualisieren Auf Server Administrator Einstellung zurück setzen Geben Sie ein individuelles Error-Template an. Status Code Soll im Fehlerfall ein abweichender Statuscode zurückgegeben werden oder soll 200 beibehalten werden. aktualisieren abbrechen Auf Server Administrator Einstellung zurück setzen

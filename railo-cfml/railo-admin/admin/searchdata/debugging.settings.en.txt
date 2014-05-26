@@ -1,2 +1,0 @@
-debugging settings  update Reset to Server Administrator Setting If set to "yes" Railo logs the debug information you have selected below. 
-you can see the log result at the end of every request, if a debug template is defined or under Debug/Logs in this administrator. Enable debugging No Yes Enabled Query Usage Enabled update cancel Reset to Server Administrator Setting

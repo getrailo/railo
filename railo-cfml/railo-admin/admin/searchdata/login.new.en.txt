@@ -1,1 +1,0 @@
-login new  Password Please enter a value for the field password Retype new password Please reenter the password Language Remember&nbsp;Me for submit

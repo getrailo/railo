@@ -1,7 +1,0 @@
-server cache  Element(e) aktualisieren Auf Server Administrator Einstellung zurück setzen Verschiedene Cache and Performance Einstellungen um die Ausführung zu verbessern. Templates inspizieren (CFM/CFC) Nie ( Beste Performance ) 
-When checked, any requested found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.
- Einmal ( Gut ) 
-When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead. 
- Immer ( Schlecht ) 
-When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
- Page Pool Cache Drücken Sie den Button oberhalb um den Page Pool Cache zu leeren. Dieser Cache wird verwendet um template Objekte (Source Code) zu cachen. Object Cache Komponentenpfad Cache Drücken Sie den Button oberhalb um den Komponentenpfad Cache zu leeren. Custom Tag Pfad Cache Drücken Sie den Button oberhalb um den Customtag Pfad Cache zu leeren. aktualisieren abbrechen Auf Server Administrator Einstellung zurück setzen

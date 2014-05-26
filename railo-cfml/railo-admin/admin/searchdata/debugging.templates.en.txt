@@ -1,3 +1,0 @@
-debugging templates 
- submit Days Hours Minutes Seconds submit
- update delete delete cancel Type create cancel

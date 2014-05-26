@@ -1,1 +1,0 @@
-server export  english (united kingdom) english (united kingdom) Export Application.cfc Export the settings of this Web Context as Application.cfc Template, of course this includes only settings possible in Application.cfc. export

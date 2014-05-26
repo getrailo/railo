@@ -1,1 +1,0 @@
-services certificates  install Liste SSL Zertifikate für einen bestimmten Host oder installiere diese. Host Der Host Server, z.B. "www.getrailo.org". Port Der Port des Server. list install abbrechen Auf Server Administrator Einstellung zurück setzen Subject Issuer Der angewählte Host stellt keine Zertifikate zu Verfügung.
