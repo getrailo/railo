@@ -1,13 +1,13 @@
 component {
 	
-	variables.NEWLINE = chr(13) & chr(10);
-	variables.TAB = chr(9);
+	variables.NEWLINE = Server.separator.line;
+	variables.TAB     = chr(9);
 
 	variables.default = {
 
-		browser : "modern";
-		console : "text";
-		debug   : "modern";		
+		 browser : "modern"
+		,console : "text"
+		,debug   : "modern"
 	};
 	variables.supportedFormats=["simple", "text", "modern", "classic"];
 	variables.bSuppressType = false;
@@ -57,29 +57,24 @@ You can use your custom style by creating a corresponding file in the railo/dump
 	   onStartTag                                                                                       =
 	================================================================================================== */
 	boolean function onStartTag(required struct attributes, required struct caller) {
-		// inital settings
+		
 		var attrib = arguments.attributes;
 
-		// if output is false, do nothing and exit
-		if (attrib.output == false) return true;
+		if (attrib.output == false)			// if output is false, do nothing and exit
+			return true;
 
-		// format
-		attrib['format'] = trim(attrib.format);
-		if (attrib.format == "html") {
+		attrib.format = trim(attrib.format);
+		if (attrib.format == "html")
 			attrib.format = "modern";
-		}
-		variables.addJS_CSS = !(attrib.format == "simple" || attrib.format == "text");
+		
+		if (isEmpty(attrib.format)) {
 
-		if (len(attrib.format) == 0) {
-			if (attrib.output == "console") 
-				attrib['format'] = variables.default.console;
-			else if (attrib.output == "browser" || attrib.output == true)
-				attrib['format'] = variables.default.browser;
-			else if (attrib.output == "debug")
-				attrib['format'] = variables.default.debug;
+			if (attrib.output == "console" || attrib.output == "debug") 
+				attrib.format = variables.default[attrib.output];
 			else
-				attrib['format'] = variables.default.browser;
+				attrib.format = variables.default.browser;
 		} else if (!arrayFindNoCase(variables.supportedFormats, attrib.format)) {
+
 			if (!fileExists('railo/dump/skins/#attrib.format#.cfm')) {
 				directory name="local.allowedFormats" action="list" listinfo="name" directory="railo/dump/skins" filter="*.cfm";
 				local.sFormats = valueList(allowedFormats.name);
@@ -95,23 +90,25 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		if (!structKeyExists(attrib,'var') && structKeyExists(attrib,'eval')) {
 
 			if (!len(attrib.label))
-				attrib['label'] = attrib.eval;
+				attrib.label = attrib.eval;
 
-			attrib['var'] = evaluate(attrib.eval, arguments.caller);
+			attrib.var = evaluate(attrib.eval, arguments.caller);
 		}
 
 		// context
 		var context = GetCurrentContext();
 		var contextLevel = structKeyExists(attrib,'contextLevel') ? attrib.contextLevel : 2;
 		contextLevel = min(contextLevel,arrayLen(context));
-		if (contextLevel gt 0) {
-			context = context[contextLevel].template & ":" &
+		if (contextLevel > 0) {
+			
+			variables.context = context[contextLevel].template & ":" &
 					context[contextLevel].line;
 		} else {
-			context = '[unknown file]:[unknown line]';
+			
+			variables.context = '[unknown file]:[unknown line]';
 		}
 
-		if (attrib['export']) {
+		if (attrib.export) {
 			try {
 				attrib.var = serialize(attrib.var);
 			} catch (e) {
@@ -127,15 +124,14 @@ You can use your custom style by creating a corresponding file in the railo/dump
 			var meta = dumpStruct(structKeyExists(attrib,'var') ? attrib.var : nullValue(), attrib.top, attrib.show, attrib.hide, attrib.keys, attrib.metaInfo, attrib.showUDFs);
 		}
 		// set global variables
-		variables.format = attrib.format;
-		variables.expand = attrib.expand;
+		variables.format     = attrib.format;
+		variables.expand     = attrib.expand;
 		variables.topElement = attrib.eval ?: "var";
-		variables.colors = getSafeColors(meta.colors);
-		variables.dumpID  = createId();
-		variables.context =	'title="' & context & '"';
+		variables.colors     = getSafeColors(meta.colors);
+		variables.dumpID     = createId();
 		variables.hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
 
-		if (attrib.async && (attrib.output NEQ "browser")) {
+		if (attrib.async && (attrib.output != "browser")) {
 			thread name="dump-#createUUID()#" attrib="#attrib#" meta="#meta#" context="#context#" {
 				doOutput(attrib, meta);
 			}
@@ -155,7 +151,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		variables.aOutput = [];
 		variables.level = 0;
 
-		if (variables.addJS_CSS) {
+		if (attrib.format != "simple" && attrib.format != "text") {
 			
 			setCSS(attrib.format);
 			setJS();
@@ -164,36 +160,44 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		// sleep(5000);	// simulate long process to test async=true
 
 		if (arguments.attrib.output == "browser" || arguments.attrib.output == true) {
+
 			if (arguments.attrib.format == "text") {
 				echo('<pre>');
-				text(arguments.meta, variables.context);
-				writeOutput(arrayToList(variables.aOutput, variables.NEWLINE));
+				text(arguments.meta, 'title="#variables.context#"');
+				writeOutput(arrayToList(variables.aOutput, ""));
 				echo('</pre>' & variables.NEWLINE);
 			} else {
 				
 				echo(variables.NEWLINE & '<!-- == dump-begin #variables.dumpID# == format: #arguments.attrib.format# !-->' & variables.NEWLINE);
 				
 				if (arguments.attrib.format == "simple") {
-					simple(arguments.meta, variables.context);
+
+					simple(arguments.meta, 'title="#variables.context#"');
 					echo(arrayToList(variables.aOutput, variables.NEWLINE));
 				} else {
-					echo('<div id="#variables.dumpID#" class="-railo-dump modern">');
-					html(arguments.meta, variables.context);
+
+					echo('<div id="-railo-dump-#variables.dumpID#" class="-railo-dump modern">');
+					html(arguments.meta, 'title="#variables.context#"');
 					echo(arrayToList(variables.aOutput, variables.NEWLINE));
 					echo('</div>' & variables.NEWLINE);
 				}
 				echo('<!-- == dump-end #variables.dumpID# == !-->' & variables.NEWLINE);
 			}
 		} else {
+
 			if (arguments.attrib.format == "text") {
-				text(arguments.meta, variables.context);
+				text(arguments.meta, 'title="#variables.context#"');
 			} else if (arguments.attrib.format == "simple") {
-				simple(arguments.meta, variables.context);
+				simple(arguments.meta, 'title="#variables.context#"');
 			} else {
-				html(arguments.meta, variables.context);
+				html(arguments.meta, 'title="#variables.context#"');
 			}
+
 			if (arguments.attrib.output == "console") {
-				systemOutput(arrayToList(aOutput, variables.NEWLINE), true);
+				// echo("***<pre>#aOutput.toString()#</pre>***")
+				systemOutput("/** dump #variables.dumpID# begin - #dateTimeFormat(now(), 'iso8601')# #variables.context# **/", true);
+				systemOutput(arrayToList(aOutput, ""), true);
+				systemOutput("/** dump #variables.dumpID# end **/", true);
 			} else if (attrib.output == "debug") {
 				admin action="addDump" dump="#arrayToList(aOutput, variables.NEWLINE)#";
 			} else {
@@ -203,13 +207,13 @@ You can use your custom style by creating a corresponding file in the railo/dump
 	}
 
 
-	string function html(required struct meta, string title = "") {
+	string function html(required struct meta, string title="") {
 
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 	
 		var simpleType = meta.simpleType ?: lcase(meta.type);
 
-		if (["date", "numeric", "string"].contains(simpleType))
+		if (["boolean", "date", "numeric", "string"].contains(simpleType))
 			simpleType = "simple";
 		else if (simpleType CT '.')
 			simpleType = listLast(simpleType, '.')
@@ -226,7 +230,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 			local.metaID = variables.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
 			local.comment = structKeyExists(arguments.meta,'comment') ? "<br>" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 			arrayAppend(variables.aOutput, '<tr class="base-header" #fontStyle# onClick="dump_toggle(this, false)">');
-			arrayAppend(variables.aOutput, '<td class="border bold bgd-#simpleType#" colspan="#columnCount#"><span class="nowrap">#arguments.meta.title#</span>');
+			arrayAppend(variables.aOutput, '<td class="border bold bgd-#simpleType# pointer" colspan="#columnCount#"><span class="nowrap">#arguments.meta.title#</span>');
 			arrayAppend(variables.aOutput, '<span class="meta"><span class="nowrap">#comment#</span></span></td>');
 			arrayAppend(variables.aOutput, '</tr>');
 		}
@@ -234,7 +238,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		if (columnCount) {
 
 			local.stClasses = {
-				1: '<td class="border label bgd-#simpleType#',
+				1: '<td class="border label bgd-#simpleType# pointer',
 				0: '<td class="border label bgl-#simpleType#'
 			};
 
@@ -367,6 +371,7 @@ if (variables.bSuppressType) {
 		arrayAppend(variables.aOutput, '</table>');
 	}
 
+
 	/* ==================================================================================================
 	   text                                                                                             =
 	================================================================================================== */
@@ -384,13 +389,14 @@ if (variables.bSuppressType) {
 		}
 
 		// data
-		if (dataCount GT 0) {
+		if (dataCount > 0) {
+
 			var qRecords = arguments.meta.data;
 
-			loop query="qRecords" {
+			loop query=qRecords {
 				var needNewLine = true;
 
-				for(var x=1; x LTE dataCount; x++) {
+				for(var x=1; x <= dataCount; x++) {
 					var node = qRecords["data" & x];
 					if (needNewLine) {
 						arrayAppend(variables.aOutput, variables.NEWLINE & indent);
@@ -419,7 +425,7 @@ if (variables.bSuppressType) {
 
 	string function createId() {
 
-		return  "-railo-dump-x" & createUniqueId();
+		return  "x" & createUniqueId();
 	}
 
 
@@ -427,22 +433,20 @@ if (variables.bSuppressType) {
 
 		var colors = getColorScheme(arguments.format);
 
+		// echo(CallStackGet('text'));
+
 		savecontent variable="local.style" trim=true { echo('
 
 			<style>
-				.-railo-dump.modern td {  }
 				.-railo-dump.modern .nowrap { white-space: nowrap; }
-				.-railo-dump.modern .bold { font-weight: bold; }
+				.-railo-dump.modern .bold   { font-weight: bold; }
 				.-railo-dump.modern .nobold { font-weight: normal; }
 				.-railo-dump.modern .meta   { font-weight: normal; }
 				.-railo-dump.modern .table-dump {font-family: Verdana,Geneva,Arial,Helvetica,sans-serif; font-size: 11px; background-color: ##eee;color: ##000; border-spacing: 1px; border-collapse:separate; }
-
+				.-railo-dump.modern .pointer 	{ cursor: pointer; }
 				.-railo-dump.modern .border 	{ border: 1px solid ##000; padding: 2px; }
-				.-railo-dump.modern .border.label { margin: 1px 1px 0px 1px; vertical-align: top; text-align: left; cursor: pointer; }
-
-				.-railo-dump.modern .border.label .bgd-simple, 
-				.-railo-dump.modern .border.label .bgl-simple	{ cursor: initial; }
-
+				.-railo-dump.modern .border.label { margin: 1px 1px 0px 1px; vertical-align: top; text-align: left; }
+				.-railo-dump.modern .border.label .bgd-simple, .-railo-dump.modern .border.label .bgl-simple	{ cursor: initial; }
 				.-railo-dump.modern .query-reset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##C9C; }
 			');
 
