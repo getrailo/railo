@@ -27,7 +27,7 @@ public final class SoftMethodStorage {
 	 * @param count wished count of arguments
 	 * @return matching Methods as Array
 	 */
-	public synchronized Method[] getMethods(Class clazz,Collection.Key methodName, int count) {
+	public Method[] getMethods(Class clazz,Collection.Key methodName, int count) {
 		Map<Key,Array> methodsMap = map.get(clazz); 
 		if(methodsMap==null) 
 			methodsMap=store(clazz);
@@ -47,10 +47,10 @@ public final class SoftMethodStorage {
 	 * @return returns stored struct
 	 */
 	private Map<Key,Array> store(Class clazz) {
-		Method[] methodsArr=clazz.getMethods();
+		Method[] methods=clazz.getMethods();
 		Map<Key,Array> methodsMap=new ConcurrentHashMap<Key, Array>();
-		for(int i=0;i<methodsArr.length;i++) {
-			storeMethod(methodsArr[i],methodsMap);
+		for(int i=0;i<methods.length;i++) {
+			storeMethod(methods[i],methodsMap);
 			
 		}
 		map.put(clazz,methodsMap);
@@ -62,7 +62,7 @@ public final class SoftMethodStorage {
 	 * @param method
 	 * @param methodsMap
 	 */
-	private void storeMethod(Method method, Map<Key,Array> methodsMap) {
+	private synchronized void storeMethod(Method method, Map<Key,Array> methodsMap) {
 		Key methodName = KeyImpl.init(method.getName());
 
 		Array methodArgs=methodsMap.get(methodName);
