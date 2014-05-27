@@ -14,7 +14,9 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 
 public final class Hash40 implements Function {
-	
+
+	private static final long serialVersionUID = 937180000352201249L;
+
 	// function for old code in ra files calling this function
 	public static String call(PageContext pc, String input) throws PageException {
 		return invoke( pc.getConfig(), input, null, null, 1 );

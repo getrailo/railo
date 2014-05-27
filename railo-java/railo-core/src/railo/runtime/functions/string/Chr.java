@@ -8,6 +8,9 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 
 public final class Chr implements Function {
+
+	private static final long serialVersionUID = -4941617303146860984L;
+
 	public static String call(PageContext pc , double number) throws ExpressionException {
 		int value=(int) number;
 		if(value<1){

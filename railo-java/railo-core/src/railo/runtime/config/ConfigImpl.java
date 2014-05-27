@@ -203,7 +203,6 @@ public abstract class ConfigImpl implements Config {
     private FunctionLib combinedFLDs;
 
     private short type=SCOPE_STANDARD;
-    //private File deployDirectory;
     private boolean _allowImplicidQueryCall=true;
     private boolean _mergeFormAndURL=false;
 
@@ -212,8 +211,6 @@ public abstract class ConfigImpl implements Config {
     private int _debug;
     private int debugLogOutput=SERVER_BOOLEAN_FALSE;
     private int debugOptions=0;
-    //private DebugFilter[] debugFilters=new DebugFilter[]{new IPDebugFiler()};
-    
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -251,8 +248,6 @@ public abstract class ConfigImpl implements Config {
     private boolean useTimeServer=true;
 
     private long timeOffset;
-    
-    //private ConnectionPool conns;
 
     private SearchEngine searchEngine;
 
@@ -274,11 +269,8 @@ public abstract class ConfigImpl implements Config {
     private CFXTagPool cfxTagPool;
 
     private PageSource baseComponentPageSource;
-    //private Page baseComponentPage;
     private String baseComponentTemplate;
     private boolean restList=false;
-    //private boolean restAllowChanges=false;
-    
     
     private short clientType=CLIENT_SCOPE_TYPE_COOKIE;
     
@@ -289,9 +281,6 @@ public abstract class ConfigImpl implements Config {
     
     private short sessionType=SESSION_TYPE_CFML;
 
-    //private EmailSpooler emailSpooler;
-
-    
     private Resource deployDirectory;
 
     private short compileType=RECOMPILE_NEVER;
@@ -311,7 +300,6 @@ public abstract class ConfigImpl implements Config {
 	
 	private int scriptProtect=ApplicationContext.SCRIPT_PROTECT_ALL;
 
-	//private boolean proxyEnable=false;
 	private ProxyData proxy =null;
 
 
@@ -364,7 +352,6 @@ public abstract class ConfigImpl implements Config {
 	private Extension[] extensions=EXTENSIONS_EMPTY;
 	private boolean extensionEnabled;
 	private boolean allowRealPath=true;
-	//private ClassLoader classLoader;
 
 	private DumpWriterEntry[] dmpWriterEntries;
 	private Class clusterClass=ClusterNotSupported.class;//ClusterRemoteNotSupported.class;//
@@ -376,23 +363,19 @@ public abstract class ConfigImpl implements Config {
 	
 	protected MappingImpl tagMapping;
 	private Resource tagDirectory;
-	//private Resource functionDirectory;
 	protected MappingImpl functionMapping;
 	private Map amfCasterArguments;
 	private Class amfCasterClass=ClassicAMFCaster.class;
 	private AMFCaster amfCaster;
-	//private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
 	private boolean typeChecking=true;
 	private String serial="";
 	private String cacheMD5;
 	private boolean executionLogEnabled;
 	private ExecutionLogFactory executionLogFactory;
-	//private int clientScopeMaxAge=90;
 	private Map<String, ORMEngine> ormengines=new HashMap<String, ORMEngine>();
 	private Class<ORMEngine> ormEngineClass;
 	private ORMConfiguration ormConfig;
-	//private ResourceClassLoaderFactory classLoaderFactory;
 	private ResourceClassLoader resourceCL;
 	
 	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
@@ -618,7 +601,6 @@ public abstract class ConfigImpl implements Config {
     
     @Override
     public boolean isMailSpoolEnable() {
-        //print.ln("isMailSpoolEnable:"+spoolEnable);
         return spoolEnable;
     }
     
@@ -649,31 +631,9 @@ public abstract class ConfigImpl implements Config {
 
     @Override
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
-    	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
-    	//PageContextImpl pci=(PageContextImpl) ThreadLocalPageContext.get();
-    	//if(pci==null) 
-    		throw new RuntimeException("this method is no longer suported");
-    	//return pci.getClassLoader(reses);
-    	////return getResourceClassLoader().getCustomResourceClassLoader(reses);   
+    	throw new RuntimeException("this method is no longer suported");
     }
-    
-	/* *
-	 * @return the classLoaderFactory
-	
-	public ResourceClassLoaderFactory getClassLoaderFactory() {
-		return classLoaderFactory;
-	} */
 
-	/* *
-	 * @param classLoaderFactory the classLoaderFactory to set
-	/
-    protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
-		if(this.classLoaderFactory!=null){
-			classLoaderFactory.reset();
-		}
-		this.classLoaderFactory = classLoaderFactory;
-	} */
-    
     protected void setResourceClassLoader(ResourceClassLoader resourceCL) {
     	this.resourceCL=resourceCL;
 	}
@@ -686,14 +646,6 @@ public abstract class ConfigImpl implements Config {
     @Override
     public boolean debug() {
     	if(!(_debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE)) return false;
-    	
-    	/*if(!ArrayUtil.isEmpty(debugFilters)) {
-    		for(int i=0;i<debugFilters.length;i++){
-    			
-    		}
-    	}*/
-    	
-    	
     	return true;
     }
     
@@ -701,14 +653,6 @@ public abstract class ConfigImpl implements Config {
     	return debug() && debugLogOutput==CLIENT_BOOLEAN_TRUE || debugLogOutput==SERVER_BOOLEAN_TRUE;
     }
 
-    /*public int intDebug() {
-        return _debug;
-    }
-
-    public int intDebugLogOutput() {
-        return debugLogOutput;
-    }*/
-    
     @Override
     public Resource getTempDirectory() {
     	if(tempDirectory==null) return SystemUtil.getTempDirectory();
@@ -996,24 +940,12 @@ public abstract class ConfigImpl implements Config {
     public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
     	// now that archives can be used the same way as physical resources, there is no need anymore to limit to that
     	throw new PageRuntimeException(new DeprecatedException("method not supported"));
-    	/*PageSource[] pages = getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping);
-    	List<Resource> list=new ArrayList<Resource>();
-    	Resource res;
-    	for(int i=0;i<pages.length;i++) {
-    		if(!pages[i].getMapping().hasPhysical()) continue;
-    		res=pages[i].getPhyscalFile();
-    		if(res!=null) list.add(res);
-    	}
-    	return list.toArray(new Resource[list.size()]);*/
     }
     
 
     public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
     	// now that archives can be used the same way as physical resources, there is no need anymore to limit to that
     	throw new PageRuntimeException(new DeprecatedException("method not supported"));
-    	/*PageSource ps = getPageSourceExisting(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping,true);
-    	if(ps==null) return null;
-    	return ps.getPhyscalFile();*/
     }
 
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
@@ -1111,13 +1043,11 @@ public abstract class ConfigImpl implements Config {
     @Override
     public LogAndSource getScheduleLogger() {
     	return new LegacyLogger( getLog("scheduler", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     @Override
     public LogAndSource getApplicationLogger() {
     	return new LegacyLogger( getLog("application", true));
-    	//throw new RuntimeException(new DeprecatedException("this method is no longer supported, use instead getLog"));
     }
     
     
@@ -1291,8 +1221,6 @@ public abstract class ConfigImpl implements Config {
     }
     
     public void createFunction(FunctionLib fl,String filename) {
-    	//PageSource ps = functionMapping.getPageSource(filename);
-    	
     	String name=toName(filename);//filename.substring(0,filename.length()-(getCFMLExtensions().length()+1));
         FunctionLibFunction flf = new FunctionLibFunction(fl);
     	flf.setArgType(FunctionLibFunction.ARG_DYNAMIC);
@@ -1327,11 +1255,7 @@ public abstract class ConfigImpl implements Config {
     	
     	fl.setFunction(flf);
     }
-    
-    
-    
-    
-    
+
     private static String toName(String filename) {
     	int pos=filename.lastIndexOf('.');
         if(pos==-1)return filename;
@@ -1383,64 +1307,6 @@ public abstract class ConfigImpl implements Config {
         	overwrite(flds[0],fl);
         }
     }
-
-	/*
-    protected void setFldFileOld(Resource fileFld) throws FunctionLibException {
-    	if(fileFld==null) return;
-        this.fldFile=fileFld;
-
-        Map<String,FunctionLib> map=new LinkedHashMap<String,FunctionLib>();
-        String key;
-        // First fill existing to set
-        for(int i=0;i<flds.length;i++) {
-        	key=getKey(flds[i]);
-        	map.put(key,flds[i]);
-        }
-        
-        // now overwrite with new data
-        FunctionLib fl;
-        if(fileFld.isDirectory()) {
-            Resource[] files=fileFld.listResources(new ExtensionResourceFilter("fld"));
-            for(int i=0;i<files.length;i++) {
-                try {
-                	fl = FunctionLibFactory.loadFromFile(files[i]);
-                	key=getKey(fl);
-                	// for the moment we only need one fld, so it is always overwrite, when you remove this make sure you get no conflicts with duplicates
-                	if(map.containsKey(key)) 
-                		overwrite(map.get(key),fl);
-                	else 
-                		map.put(key,fl);
-                		
-                	
-                }
-                catch(FunctionLibException fle) {
-                    SystemOut.printDate(out,"can't load tld "+files[i]);
-                    fle.printStackTrace(getErrWriter());
-                }   
-            }
-        }
-        else {
-        	fl = FunctionLibFactory.loadFromFile(fileFld);
-        	key=getKey(fl);
-
-        	// for the moment we only need one fld, so it is always overwrite, when you remove this make sure you get no conflicts with duplicates
-        	if(map.containsKey(key))
-        		overwrite(map.get(key),fl);
-        	else 
-        		map.put(key,fl);
-        }
-        
-        // now fill back to array
-        flds=new FunctionLib[map.size()];
-        int index=0;
-        Iterator<FunctionLib> it = map.values().iterator();
-        while(it.hasNext()) {
-        	flds[index++]= it.next();
-        }
-    }*/
-    
-
-    
 
     private void overwrite(FunctionLib existingFL, FunctionLib newFL) {
 		Iterator<FunctionLibFunction> it = newFL.getFunctions().values().iterator();
@@ -1557,7 +1423,6 @@ public abstract class ConfigImpl implements Config {
      * @param spoolEnable The spoolEnable to set.
      */
     protected void setMailSpoolEnable(boolean spoolEnable) {
-        //print.ln("setMailSpoolEnable:"+spoolEnable);
         this.spoolEnable = spoolEnable;
     }
     
@@ -1631,8 +1496,6 @@ public abstract class ConfigImpl implements Config {
         try {
         	if(this.scheduler==null)
         		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,SystemUtil.getCharset().name());
-        	//else
-        		//this.scheduler.reinit(scheduleDirectory,logger);
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
@@ -2218,7 +2081,6 @@ public abstract class ConfigImpl implements Config {
 	public void clearResourceProviders() {
 		resources.reset();
 	}
-	
 
 	/**
 	 * @return return the resource providers
@@ -2317,14 +2179,6 @@ public abstract class ConfigImpl implements Config {
 		return sessionScopeDir;
 	}
 
-	/*public int getClientScopeMaxAge() {
-		return clientScopeMaxAge;
-	}
-	
-	public void setClientScopeMaxAge(int age) {
-		this. clientScopeMaxAge=age;
-	}*/
-
 	@Override
 	public long getClientScopeDirSize() {
 		return clientScopeDirSize;
@@ -2358,7 +2212,6 @@ public abstract class ConfigImpl implements Config {
         
 		Resource dir = getDeployDirectory().getRealResource("RPC");
 		if(!dir.exists())dir.createDirectory(true);
-		//rpcClassLoader = new PhysicalClassLoader(dir,getFactory().getServlet().getClass().getClassLoader());
 		rpcClassLoader = new PhysicalClassLoader(dir,getClassLoader());
 		return rpcClassLoader;
 	}
@@ -2673,23 +2526,6 @@ public abstract class ConfigImpl implements Config {
 	public CFMLFactory getFactory() {
 		return factory;
 	}
-
-	
-	
-	/* *
-	 * @return the structCase
-	 * /
-	public int getStructCase() {
-		return structCase;
-	}*/
-
-	/* *
-	 * @param structCase the structCase to set
-	 * /
-	protected void setStructCase(int structCase) {
-		this.structCase = structCase;
-	}*/
-	
 
 	/**
 	 * @return if error status code will be returned or not
@@ -3080,12 +2916,6 @@ public abstract class ConfigImpl implements Config {
 			}
 			
 			if(t!=null) {
-				
-				
-				// try to load orm jars
-				//if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
-				//	throw new ApplicationException(
-				//		"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
 				ApplicationException ae = new ApplicationException(
 							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files");
 				

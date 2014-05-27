@@ -15,9 +15,10 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 
 public final class DayOfWeekAsString implements Function {
+
+	private static final long serialVersionUID = 4067032942689404733L;
 	private static final int DAY=1000*60*60*24;
-	
-	
+
 	private static Date[] dates=new Date[]{
 			new Date(0+(3*DAY)),
 			new Date(0+(4*DAY)),

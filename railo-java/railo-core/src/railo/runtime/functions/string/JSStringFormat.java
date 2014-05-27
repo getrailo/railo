@@ -7,6 +7,10 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 public final class JSStringFormat implements Function {
+
+	private static final long serialVersionUID = -4188516789835855021L;
+
+
 	public static String call(PageContext pc , String str) {
 		return invoke(str);
 	}

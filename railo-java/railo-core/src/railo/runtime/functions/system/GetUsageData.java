@@ -23,6 +23,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.debug.ActiveLock;
 import railo.runtime.debug.ActiveQuery;
 import railo.runtime.engine.CFMLEngineImpl;
@@ -155,7 +156,7 @@ public final class GetUsageData implements Function {
 
 
 			// Template Cache
-			Mapping[] mappings = ConfigImpl.getAllMappings(web);
+			Mapping[] mappings = ConfigWebUtil.getAllMappings(web);
 			long[] tce = templateCacheElements(mappings);
 			row = tc.addRow();
 			tc.setAt(KeyConstants._web, row, web.getLabel());
