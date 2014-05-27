@@ -110,7 +110,7 @@ public final class GetUsageData implements Function {
 			// Loop requests
 			web=(ConfigWebImpl) webs[i];
 			factory=(CFMLFactoryImpl)web.getFactory();
-			pcs = factory.getRunningPageContexts();
+			pcs = factory.getActivePageContexts();
 			Iterator<PageContextImpl> it = pcs.values().iterator();
 			while(it.hasNext()){
 				_pc = it.next();

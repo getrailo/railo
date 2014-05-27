@@ -2440,7 +2440,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private static void fillGetRunningThreads(railo.runtime.type.Query qry, ConfigWeb configWeb) throws PageException {
     	CFMLFactoryImpl factory = ((CFMLFactoryImpl)configWeb.getFactory());
-    	Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+    	Map<Integer, PageContextImpl> pcs = factory.getActivePageContexts();
     	Iterator<PageContextImpl> it = pcs.values().iterator();
         PageContextImpl pc;
         Collection.Key key;
@@ -3016,7 +3016,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private static boolean terminateRunningThread(ConfigWeb configWeb,int id) {
 
-    	Map<Integer, PageContextImpl> pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getRunningPageContexts();
+    	Map<Integer, PageContextImpl> pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getActivePageContexts();
         Iterator<PageContextImpl> it = pcs.values().iterator();
         PageContextImpl pc;
         Collection.Key key;

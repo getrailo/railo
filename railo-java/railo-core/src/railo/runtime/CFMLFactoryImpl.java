@@ -310,7 +310,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		this.config=config;
 	}
 
-	public Map<Integer, PageContextImpl> getRunningPageContexts() {
+	public Map<Integer, PageContextImpl> getActivePageContexts() {
 		return runningPcs;
 	}
 	
