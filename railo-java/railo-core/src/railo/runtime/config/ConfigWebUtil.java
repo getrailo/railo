@@ -2,7 +2,9 @@ package railo.runtime.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,6 +18,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
@@ -25,6 +28,7 @@ import railo.runtime.listener.NoneAppListener;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.Struct;
 
 
@@ -444,6 +448,30 @@ public final class ConfigWebUtil {
 			case Config.SCOPE_SMALL: return "small";
 			case Config.SCOPE_STANDARD: return "standard";
 			default: return defaultValue;
+		}
+	}
+	
+
+	public static Mapping[] getAllMappings(PageContext pc) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,pc.getConfig().getMappings());
+		getAllMappings(list,pc.getConfig().getCustomTagMappings());
+		getAllMappings(list,pc.getConfig().getComponentMappings());
+		getAllMappings(list,pc.getApplicationContext().getMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+	
+	public static Mapping[] getAllMappings(ConfigWeb cw) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,cw.getMappings());
+		getAllMappings(list,cw.getCustomTagMappings());
+		getAllMappings(list,cw.getComponentMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+
+	private static void getAllMappings(List<Mapping> list, Mapping[] mappings) {
+		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
+			list.add(mappings[i]);
 		}
 	}
 }
