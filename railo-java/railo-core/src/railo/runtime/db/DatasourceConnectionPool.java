@@ -82,8 +82,9 @@ public class DatasourceConnectionPool {
     }
 	
 	public void releaseDatasourceConnection(Config config,DatasourceConnection dc, boolean async) {
-		if(async)((SpoolerEngineImpl)config.getSpoolerEngine()).add((DatasourceConnectionImpl)dc);
-		else releaseDatasourceConnection(dc);
+		releaseDatasourceConnection(dc);
+		//if(async)((SpoolerEngineImpl)config.getSpoolerEngine()).add((DatasourceConnectionImpl)dc);
+		//else releaseDatasourceConnection(dc);
 	}
 	
 	public void releaseDatasourceConnection(DatasourceConnection dc) {

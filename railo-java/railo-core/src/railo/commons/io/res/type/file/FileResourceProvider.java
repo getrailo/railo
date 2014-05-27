@@ -1,18 +1,20 @@
 package railo.commons.io.res.type.file;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 
-public final class FileResourceProvider implements ResourceProvider {
+public final class FileResourceProvider implements ResourceProviderPro {
 
 	private String scheme="file";
 	
@@ -90,5 +92,11 @@ public final class FileResourceProvider implements ResourceProvider {
 	@Override
 	public Map getArguments() {
 		return arguments;
+	}
+	
+	@Override
+	public char getSeparator() {
+		print.ds();
+		return File.separatorChar;
 	}
 }

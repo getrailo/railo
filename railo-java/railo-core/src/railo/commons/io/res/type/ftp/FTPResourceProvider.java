@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
@@ -17,7 +17,7 @@ import railo.runtime.net.proxy.Proxy;
 import railo.runtime.op.Caster;
 
 // TODO check connection timeout
-public final class FTPResourceProvider implements ResourceProvider {
+public final class FTPResourceProvider implements ResourceProviderPro {
 	private String scheme="ftp";
 	private final Map clients=new HashMap();
 	private int clientTimeout=60000;
@@ -225,6 +225,11 @@ public final class FTPResourceProvider implements ResourceProvider {
 	@Override
 	public Map getArguments() {
 		return arguments;
+	}
+	
+	@Override
+	public char getSeparator() {
+		return '/';
 	}
 
 }

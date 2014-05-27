@@ -5,9 +5,10 @@ import java.util.Map;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 
-public class ResourceProviderWrapper  implements ResourceProvider {
+public class ResourceProviderWrapper  implements ResourceProviderPro {
 
 	private ResourceProvider provider;
 
@@ -68,6 +69,11 @@ public class ResourceProviderWrapper  implements ResourceProvider {
 	@Override
 	public void unlock(Resource res) {
 		provider.unlock(res);
+	}
+	
+	@Override
+	public char getSeparator() {
+		return ResourceUtil.getSeparator(provider);
 	}
 
 }

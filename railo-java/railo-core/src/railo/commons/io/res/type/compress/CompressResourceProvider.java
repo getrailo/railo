@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
@@ -13,7 +13,7 @@ import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 
-public abstract class CompressResourceProvider implements ResourceProvider {
+public abstract class CompressResourceProvider implements ResourceProviderPro {
 	
 	private static final long serialVersionUID = 5930090603192203086L;
 	
@@ -188,4 +188,14 @@ public abstract class CompressResourceProvider implements ResourceProvider {
 			}
 		}
 	}*/
+	
+	@Override
+	public long sizeOf() {
+		return SizeOf.size(lock);
+	}
+	
+	@Override
+	public char getSeparator() {
+		return '/';
+	}
 }
