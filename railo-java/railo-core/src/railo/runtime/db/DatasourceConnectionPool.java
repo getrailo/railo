@@ -17,7 +17,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.type.util.ArrayUtil;
 
 public class DatasourceConnectionPool {

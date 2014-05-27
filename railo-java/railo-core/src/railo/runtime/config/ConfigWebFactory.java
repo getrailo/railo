@@ -30,8 +30,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.jacob.com.LibraryLoader;
-
 import railo.aprint;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;

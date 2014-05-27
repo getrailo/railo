@@ -1396,4 +1396,8 @@ public final class Decision {
 	public static boolean isValid(double dbl) {
 		return !Double.isNaN(dbl) && !Double.isInfinite(dbl);
 	}
+
+	public static boolean isAnyType(String type) {
+		return StringUtil.isEmpty(type) || type.equalsIgnoreCase("object") || type.equalsIgnoreCase("any");
+	}
 }

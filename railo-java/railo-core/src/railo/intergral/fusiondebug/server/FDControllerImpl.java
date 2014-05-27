@@ -19,8 +19,6 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SerialNumber;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
 
 import com.intergral.fusiondebug.server.IFDController;
 import com.intergral.fusiondebug.server.IFDThread;
