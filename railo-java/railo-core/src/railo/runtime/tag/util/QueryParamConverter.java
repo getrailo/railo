@@ -99,7 +99,7 @@ public class QueryParamConverter {
 		// scale (optional)
 		Object oScale=sct.get(KeyConstants._scale,null);
 		if(oScale!=null) {
-			item.setScale(Caster.toIntValue(oNulls));
+			item.setScale(Caster.toIntValue(oScale));
 		}
 		
 		/* list

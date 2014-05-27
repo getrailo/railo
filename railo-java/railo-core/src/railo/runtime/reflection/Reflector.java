@@ -43,7 +43,7 @@ import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.reflection.pairs.MethodInstance;
 import railo.runtime.reflection.storage.WeakConstructorStorage;
 import railo.runtime.reflection.storage.WeakFieldStorage;
-import railo.runtime.reflection.storage.WeakMethodStorage;
+import railo.runtime.reflection.storage.SoftMethodStorage;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -69,7 +69,7 @@ public final class Reflector {
     
 	private static WeakConstructorStorage cStorage=new WeakConstructorStorage();
     private static WeakFieldStorage fStorage=new WeakFieldStorage();
-    private static WeakMethodStorage mStorage=new WeakMethodStorage();
+    private static SoftMethodStorage mStorage=new SoftMethodStorage();
 
     /**
      * check if Class is instanceof a a other Class

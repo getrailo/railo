@@ -5,13 +5,14 @@ import java.util.Map;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 
-public class HTTPResourceProvider implements ResourceProvider {
+public class HTTPResourceProvider implements ResourceProviderPro {
 
 
 	private int lockTimeout=20000;
@@ -130,5 +131,10 @@ public class HTTPResourceProvider implements ResourceProvider {
 	@Override
 	public Map getArguments() {
 		return arguments;
+	}
+	
+	@Override
+	public char getSeparator() {
+		return '/';
 	}
 }

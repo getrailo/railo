@@ -12,6 +12,8 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.IgnoreSystemFiles;
@@ -1435,6 +1437,12 @@ public final class ResourceUtil {
 			
 		}
 		if(ArrayUtil.isEmpty(children)) dir.remove(true);
+	}
+	
+	public static char getSeparator(ResourceProvider rp) {
+		if(rp instanceof ResourceProviderPro)
+			return ((ResourceProviderPro)rp).getSeparator();
+		return '/';
 	}
 
 }

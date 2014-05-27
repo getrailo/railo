@@ -1,5 +1,6 @@
 package railo.commons.io.res.type.cache;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.ResourceProviderPro;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
@@ -27,7 +29,7 @@ import railo.runtime.type.Struct;
 /**
  * Resource Provider for ram resource
  */
-public final class CacheResourceProvider implements ResourceProvider {
+public final class CacheResourceProvider implements ResourceProviderPro {
 
 	private String scheme="ram";
 	
@@ -221,6 +223,11 @@ public final class CacheResourceProvider implements ResourceProvider {
 	private String toKey(String path, String name) {
 		if(caseSensitive) return path+":"+name;
 		return (path+":"+name).toLowerCase();
+	}
+	
+	@Override
+	public char getSeparator() {
+		return '/';
 	}
 
 
