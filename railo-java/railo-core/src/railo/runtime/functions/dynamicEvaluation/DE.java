@@ -4,7 +4,6 @@
 package railo.runtime.functions.dynamicEvaluation;
 
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.functions.string.Replace;
 
