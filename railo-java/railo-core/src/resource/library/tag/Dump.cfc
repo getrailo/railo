@@ -13,21 +13,6 @@ component {
 	variables.bSuppressType = false;
 	variables.c = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304,8388608,16777216,33554432,67108864,134217728,268435456,536870912,1073741824,2147483648];
 
-	variables.stLookUp = {
-		"pcmxmiqlh0t3"  : "Array",
-		"1rvcaasi2aqm4" : "Mongo",
-		"85gopel6mgsd"  : "Object",
-		"e04eba8zticl"  : "SubXML",
-		"15jnbij2ut8kx" : "Query",
-		"1onzgocz2cmqa" : "SimpleValue",
-		"qmv6wur3y70b"  : "Struct",
-		"11qd885fmomo3" : "XML",
-		"9b4chzb1lb2r"  : "Component",
-		"1az70pyvew10n" : "PublicMethods",
-		"1qxnu2flpyax6" : "PrivateMethods",
-		"1x1pjgrb7nmix" : "Method"
-	};
-	
 	this.metadata.hint="Outputs the elements, variables and values of most kinds of CFML objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.";
 	this.metadata.attributetype="fixed";
 	this.metadata.attributes={
@@ -76,21 +61,21 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		var attrib = arguments.attributes;
 
 		// if output is false, do nothing and exit
-		if (attrib.output EQ false) return true;
+		if (attrib.output == false) return true;
 
 		// format
 		attrib['format'] = trim(attrib.format);
-		if (attrib.format eq "html") {
+		if (attrib.format == "html") {
 			attrib.format = "modern";
 		}
-		variables.addJS_CSS = !(attrib.format eq "simple" || attrib.format eq "text");
+		variables.addJS_CSS = !(attrib.format == "simple" || attrib.format == "text");
 
-		if (len(attrib.format) EQ 0) {
-			if (attrib.output EQ "console") 
+		if (len(attrib.format) == 0) {
+			if (attrib.output == "console") 
 				attrib['format'] = variables.default.console;
-			else if (attrib.output EQ "browser" OR attrib.output EQ true)
+			else if (attrib.output == "browser" OR attrib.output == true)
 				attrib['format'] = variables.default.browser;
-			else if (attrib.output EQ "debug")
+			else if (attrib.output == "debug")
 				attrib['format'] = variables.default.debug;
 			else
 				attrib['format'] = variables.default.browser;
@@ -102,7 +87,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 				throw message="format [#attrib.format#] is invalid. Only the following formats are supported: #sFormats#. You can add your own format by adding a skin file into the directory #expandPath('railo/dump/skin')#.";
 			}
 		}
-		if (attrib.output EQ "debug") {
+		if (attrib.output == "debug") {
 			attrib.expand = false;
 		}
 
@@ -174,36 +159,36 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 		// sleep( 5000 );	// simulate long process to test async=true
 
-		if (arguments.attrib.output EQ "browser" OR arguments.attrib.output eq true) {
-			if (arguments.attrib.format eq "text") {
+		if (arguments.attrib.output == "browser" OR arguments.attrib.output == true) {
+			if (arguments.attrib.format == "text") {
 				echo('<pre>');
 				text( arguments.meta, variables.context );
-				writeOutput(arrayToList(variables.aOutput, ""));
+				writeOutput(arrayToList(variables.aOutput, variables.NEWLINE));
 				echo('</pre>' & variables.NEWLINE);
 			} else {
-				echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #arguments.attrib.format# -->' & variables.NEWLINE);
-				if (arguments.attrib.format eq "simple") {
+				echo(variables.NEWLINE & '<!-- == dump-begin == dump #now()# format: #arguments.attrib.format# !-->' & variables.NEWLINE);
+				if (arguments.attrib.format == "simple") {
 					simple( arguments.meta, variables.context );
-					echo( arrayToList(variables.aOutput, "") );
+					echo( arrayToList(variables.aOutput, variables.NEWLINE) );
 				} else {
-					echo('<div id="#variables.dumpID#" class="-railo-dump">');
+					echo('<div id="#variables.dumpID#" class="-railo-dump modern">');
 					html( arguments.meta, variables.context );
-					echo( arrayToList(variables.aOutput, "") );
+					echo( arrayToList(variables.aOutput, variables.NEWLINE) );
 					echo('</div>' & variables.NEWLINE);
 				}
-				echo('<!-- ==stop== dump -->' & variables.NEWLINE);
+				echo('<!-- == dump-end == !-->' & variables.NEWLINE);
 			}
 		} else {
-			if (arguments.attrib.format eq "text") {
+			if (arguments.attrib.format == "text") {
 				text( arguments.meta, variables.context );
-			} else if (arguments.attrib.format eq "simple") {
+			} else if (arguments.attrib.format == "simple") {
 				simple( arguments.meta, variables.context );
 			} else {
 				html( arguments.meta, variables.context );
 			}
-			if (arguments.attrib.output EQ "console") {
+			if (arguments.attrib.output == "console") {
 				systemOutput(arrayToList(aOutput, ""), true);
-			} else if (attrib.output EQ "debug") {
+			} else if (attrib.output == "debug") {
 				admin action="addDump" dump="#arrayToList(aOutput, "")#";
 			} else {
 				file action="write" addnewline="yes" file="#arguments.attrib.output#" output="#arrayToList(aOutput, "")#";
@@ -211,151 +196,163 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		}
 	}
 
-	string function html( required struct meta,
-								   string title = "") {
+	string function html(required struct meta, string title = "") {
+
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
-		//local.sType = ucfirst(variables.format) & (ucfirst(arguments.meta.colorID) ?: (isEmpty(arguments.meta.type ?: "") ? "Other" : listLast(arguments.meta.type, ".")));
-		local.sType = ucfirst(variables.format) & (variables.stLookUp[arguments.meta.colorID] ?: (isEmpty(arguments.meta.colorID ?: "") ? "Other" : arguments.meta.colorID));
+	
+		var simpleType = meta.simpleType ?: lcase(meta.type);
+
+		if (["date", "numeric", "string"].contains(simpleType))
+			simpleType = "simple";
+		else if (simpleType CT '.')
+			simpleType = listLast(simpleType, '.')
+
 		//Lookup von ColorID
-		local.id    = "";
-		local.italic = !variables.expand ? 'style="font-style:italic;"' : '';
-		local.hidden = !variables.expand ? 'style="display:none;"' : '';
-		arrayAppend(variables.aOutput, '<table class="tableDump#variables.format#" #arguments.title#>' & variables.NEWLINE);
+		local.id     = "";
+		local.fontStyle = !variables.expand ? 'style="font-style:italic;"' : '';
+		// local.hidden = !variables.expand ? 'style="display:none;"' : '';
+
+		arrayAppend(variables.aOutput, '<table class="table-dump dump-#simpleType#" #arguments.title#>');
+		
 		if(structKeyExists(arguments.meta, 'title')){
 			id = createUUID();
 			local.metaID = variables.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
-			local.comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
-			arrayAppend(variables.aOutput, '<tr class="baseHeader#variables.format# td#sType#Header clickHeader" #italic# onClick="dump_toggle(this, false)">' & variables.NEWLINE);
-			arrayAppend(variables.aOutput, '<td class="header#variables.format#" colspan="#columnCount#"><span style="white-space: nowrap">#arguments.meta.title#</span>' & variables.NEWLINE);
-			arrayAppend(variables.aOutput, '<span class="meta#variables.format#"><span style="white-space: nowrap">#comment#</span></span></td>' & variables.NEWLINE);
-			arrayAppend(variables.aOutput, '</tr>' & variables.NEWLINE);
+			local.comment = structKeyExists(arguments.meta,'comment') ? "<br>" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
+			arrayAppend(variables.aOutput, '<tr class="base-header" #fontStyle# onClick="dump_toggle(this, false)">');
+			arrayAppend(variables.aOutput, '<td class="border bold bgd-#simpleType#" colspan="#columnCount#"><span class="nowrap">#arguments.meta.title#</span>');
+			arrayAppend(variables.aOutput, '<span class="meta"><span class="nowrap">#comment#</span></span></td>');
+			arrayAppend(variables.aOutput, '</tr>');
 		}
+
 		if(columnCount) {
 
 			local.stClasses = {
-				1: '<td class="tdBase#variables.format# td#sType#Name tdClickName#sType#',
-				0: '<td class="tdBase#variables.format# td#sType#Value tdClickValue#sType#'
+				1: '<td class="border label bgd-#simpleType#',
+				0: '<td class="border label bgl-#simpleType#'
 			};
 
 			local.qMeta = arguments.meta.data;
 			local.nodeID = len(id) ? ' name="#id#"' : '';
 			local.hidden = !variables.expand && len(id) ? ' style="display:none"' : '';
 			loop query="qMeta" {
-				arrayAppend(variables.aOutput, '<tr class="trTableDump" #hidden#>' & variables.NEWLINE);
+
+				arrayAppend(variables.aOutput, '<tr class="" #hidden#>');
+				
 				local.col = 1;
 				loop from="1" to="#columnCount-1#" index="col" {
+					
 					var node = qMeta["data" & col];
 
-					if(qMeta.highlight EQ 1) {
-						local.bColor = col EQ 1 ? 1 : 0;
-					} else if(qMeta.highlight EQ 0) {
+					if (qMeta.highlight == 1) {
+						local.bColor = col == 1 ? 1 : 0;
+					} else if(qMeta.highlight == 0) {
 						local.bColor = 0;
-					} else if(qMeta.highlight EQ -1) {
+					} else if(qMeta.highlight == -1) {
 						local.bColor = 1;
 					} else {
 						local.bColor = bitand(qMeta.highlight, variables.c[col] ?: 0) ? 1 : 0;
 					}
 
 					if(isStruct(node)) {
-						arrayAppend(variables.aOutput, stClasses[bColor] & '">' & variables.NEWLINE);
-						html(node);
-						arrayAppend(variables.aOutput, '</td>' & variables.NEWLINE);	
+						arrayAppend(variables.aOutput, stClasses[bColor] & '">');
+						html(node);		// recursive call
+						arrayAppend(variables.aOutput, '</td>');	
 					}
 					else {	
 /*						
 // If you want to suppress the type of an element, just uncomment these lines and set the variable in the corresponding skin method below
 if (variables.bSuppressType) {
-							if (col eq 1) {
+							if (col == 1) {
 								if (sType neq "ClassicSimpleValue" OR !bColor) {
 									arrayAppend(variables.aOutput, stClasses[bColor]);
-									arrayAppend(variables.aOutput, '" onClick="dump_toggle(this, true)">#HTMLEditFormat(node)#</div>' & variables.NEWLINE);
+									arrayAppend(variables.aOutput, '" onClick="dump_toggle(this, true)">#HTMLEditFormat(node)#</div>');
 								}
 							} else {
 								arrayAppend(variables.aOutput, stClasses[bColor]);
 								arrayAppend(variables.aOutput, '">');
 								arrayAppend(variables.aOutput, HTMLEditFormat(node));
-								arrayAppend(variables.aOutput, '</div>' & variables.NEWLINE);
+								arrayAppend(variables.aOutput, '</div>');
 							}
 						} else { */
-							if (col eq 1) {
+							if (col == 1) {
 								arrayAppend(variables.aOutput, stClasses[bColor]);
-								if (arguments.meta.colorID eq "1onzgocz2cmqa") { // Simple Values are not clickable
-									arrayAppend(variables.aOutput, '">#HTMLEditFormat(node)#</td>' & variables.NEWLINE);
+								if (arguments.meta.colorID == "1onzgocz2cmqa") { // Simple Values are not clickable
+									arrayAppend(variables.aOutput, '">#HTMLEditFormat(node)#</td>');
 								} else {
-									if (arguments.meta.colorID eq "15jnbij2ut8kx" && qMeta.currentRow eq 1) { // Reset removed columns
-										arrayAppend(variables.aOutput, ' tdQueryReset" title="Restore columns" onClick="dump_resetColumns(this)">&nbsp;</td>' & variables.NEWLINE);
+									if (arguments.meta.colorID == "15jnbij2ut8kx" && qMeta.currentRow == 1) { // Reset removed columns
+										arrayAppend(variables.aOutput, ' query-reset" title="Restore columns" onClick="dump_resetColumns(this)">&nbsp;</td>');
 									} else {
-										if (bColor and columnCount eq 3) { // ignore for non query elements, that have several columns
-											arrayAppend(variables.aOutput, '" onClick="dump_toggle(this, true)">#HTMLEditFormat(node)#</td>' & variables.NEWLINE);
+										if (bColor and columnCount == 3) { // ignore for non query elements, that have several columns
+											arrayAppend(variables.aOutput, '" onClick="dump_toggle(this, true)">#HTMLEditFormat(node)#</td>');
 										} else {
-											arrayAppend(variables.aOutput, '">#HTMLEditFormat(node)#</td>' & variables.NEWLINE);
+											arrayAppend(variables.aOutput, '">#HTMLEditFormat(node)#</td>');
 										}
 									}
 								}
 							} else {
 								arrayAppend(variables.aOutput, stClasses[bColor]);
-								if (arguments.meta.colorID eq "15jnbij2ut8kx" && bColor) { // Allow JS remove columns
+								if (arguments.meta.colorID == "15jnbij2ut8kx" && bColor) { // Allow JS remove columns
 									arrayAppend(variables.aOutput, '" title="Click to remove column" onClick="dump_hideColumn(this, #col-1#)"');
 								}
 								arrayAppend(variables.aOutput, '">');
 								arrayAppend(variables.aOutput, HTMLEditFormat(node));
-								arrayAppend(variables.aOutput, '</td>' & variables.NEWLINE);
+								arrayAppend(variables.aOutput, '</td>');
 							}
 /*						} */
 					}
 				}
-				arrayAppend(variables.aOutput, stClasses[bColor] & '" style="display:none">susi</td></tr>');
+				arrayAppend(variables.aOutput, stClasses[bColor] & '" style="display:none"></td></tr>');
 			}
 		}
 		arrayAppend(variables.aOutput, '</table>');
 	}
 
+
 	/* ==================================================================================================
 		simple                                                                                          =
 	================================================================================================== */
-
 	string function simple( required struct meta,
 								   string title = "") {
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		local.id    = "";
 		local.stColors = variables.colors[arguments.meta.colorID];
-		arrayAppend(variables.aOutput, '<table cellpadding="1" cellspacing="0" border="1" #arguments.title#>' & variables.NEWLINE);
+		arrayAppend(variables.aOutput, '<table cellpadding="1" cellspacing="0" border="1" #arguments.title#>');
 		if(structKeyExists(arguments.meta, 'title')){
 			id = createUUID();
 			local.metaID = variables.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
-			local.comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
-			arrayAppend(variables.aOutput, '<tr>' & variables.NEWLINE);
-			arrayAppend(variables.aOutput, '<td colspan="#columnCount#" bgColor="#stColors.highLightColor#"><span style="white-space: nowrap">#arguments.meta.title#</span>' & variables.NEWLINE);
-			arrayAppend(variables.aOutput, '<span><span style="white-space: nowrap">#comment#</span></span></td>' & variables.NEWLINE);
-			arrayAppend(variables.aOutput, '</tr>' & variables.NEWLINE);
+			local.comment = structKeyExists(arguments.meta,'comment') ? "<br>" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
+			arrayAppend(variables.aOutput, '<tr>');
+			arrayAppend(variables.aOutput, '<td colspan="#columnCount#" bgColor="#stColors.highLightColor#"><span class="nowrap">#arguments.meta.title#</span>');
+			arrayAppend(variables.aOutput, '<span><span class="nowrap">#comment#</span></span></td>');
+			arrayAppend(variables.aOutput, '</tr>');
 		}
 		if(columnCount) {
 
 			local.qMeta = arguments.meta.data;
 			local.nodeID = len(id) ? ' name="#id#"' : '';
 			loop query="qMeta" {
-				arrayAppend(variables.aOutput, '<tr>' & variables.NEWLINE);
+				arrayAppend(variables.aOutput, '<tr>');
 				local.col = 1;
 				loop from="1" to="#columnCount-1#" index="col" {
 					var node = qMeta["data" & col];
 
-					if(qMeta.highlight EQ 1) {
-						local.sColor = col EQ 1 ? stColors.highLightColor : stColors.normalColor;
-					} else if(qMeta.highlight EQ 0) {
+					if(qMeta.highlight == 1) {
+						local.sColor = col == 1 ? stColors.highLightColor : stColors.normalColor;
+					} else if(qMeta.highlight == 0) {
 						local.sColor = stColors.normalColor;
-					} else if(qMeta.highlight EQ -1) {
+					} else if(qMeta.highlight == -1) {
 						local.sColor = stColors.highLightColor;
 					} else {
 						local.sColor = bitand(qMeta.highlight, variables.c[col] ?: 0) ? stColors.highLightColor : stColors.normalColor;
 					}
 
 					if(isStruct(node)) {
-						arrayAppend(variables.aOutput, '<td bgcolor="#sColor#">' & variables.NEWLINE);
+						arrayAppend(variables.aOutput, '<td bgcolor="#sColor#">');
 						simple(node);
-						arrayAppend(variables.aOutput, '</td>' & variables.NEWLINE);	
+						arrayAppend(variables.aOutput, '</td>');	
 					}
 					else {	
-						arrayAppend(variables.aOutput, '<td bgcolor="#sColor#">#HTMLEditFormat(node)#</td>' & variables.NEWLINE);
+						arrayAppend(variables.aOutput, '<td bgcolor="#sColor#">#HTMLEditFormat(node)#</td>');
 					}
 				}
 				arrayAppend(variables.aOutput, '</tr>');
@@ -395,11 +392,11 @@ if (variables.bSuppressType) {
 						needNewLine = false;
 					}
 
-					if(type EQ "udf") {
+					if(type == "udf") {
 						if(needNewLine) {
-							arrayAppend(variables.aOutput, len(trim(node)) EQ 0 ? "[blank] " : node & " ");
+							arrayAppend(variables.aOutput, len(trim(node)) == 0 ? "[blank] " : node & " ");
 						} else {
-							arrayAppend(variables.aOutput, len(trim(node)) EQ 0 ? "[blank] " : node & " ");
+							arrayAppend(variables.aOutput, len(trim(node)) == 0 ? "[blank] " : node & " ");
 						}
 					} else if(isStruct(node)) {
 						this.text(node, "");
@@ -412,49 +409,69 @@ if (variables.bSuppressType) {
 		}
 
 		variables.level--;
-		return;
 	}
 
 
-	string function createId(){
-		return  "x" & createUniqueId();
+	string function createId() {
+
+		return  "-railo-dump-x" & createUniqueId();
 	}
 
-	string function setCSS( required struct stClasses
-						  , required struct dumpStructClasses ) {
 
-		var uFormat = ucFirst(variables.format);
+	string function setCSS(required struct stClasses, required struct dumpStructClasses) {
 
-		local.sStyle = '<style type="text/css">';
-		// Query reset and remove style
-		sStyle &= '.tdQueryReset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px;}' & variables.NEWLINE;
+		var colors = {
 
-		loop collection = "#arguments.stClasses.stBaseClasses#" index="local.sKey" item="local.sKeyValue"{
-			sStyle &= '.#variables.baseClassesLookup[sKey]##variables.format# ' & sKeyValue.style & variables.NEWLINE;
+			 Array:          { dark: '9c3', light: 'cf3' }
+			,Component:      { dark: '9c9', light: 'cfc' }
+			,Mongo:          { dark: '393', light: '966' }
+			,Object:         { dark: 'c99', light: 'fcc' }
+			,JavaObject:     { dark: 'c99', light: 'fcc' }
+			,Query:          { dark: 'c9c', light: 'fcf' }
+			,Simple:         { dark: 'f60', light: 'fc9' }
+			,Struct:         { dark: '99f', light: 'ccf' }
+			,SubXML:         { dark: '996', light: 'cc9' }
+			,XML:            { dark: 'c99', light: 'fff' }
+			,white:          { dark: 'fff', light: 'ccc' }
+			,Method:         { dark: 'c6f', light: 'fcf' }
+			,PublicMethods:  { dark: 'fc9', light: 'ffc' }
+			,PrivateMethods: { dark: 'fc3', light: 'f96' }
 		};
-		// default settings
-		loop collection = "#arguments.dumpStructClasses#" index="local.sKey" item="local.sKeyValue"{
-			local.sStyleKey = variables.stLookUp[sKey] ?: sKey;
-			if (structKeyExists(arguments.stClasses.stCustomClasses, sStyleKey)) {
-				local.stStyle = arguments.stClasses.stCustomClasses[sStyleKey];
-				sStyle &= '.td' & uFormat & sStyleKey & "Header {background-color:##" & stStyle.headerColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColorHeader ?: "000") & "} ";
-				sStyle &= '.td' & uFormat & sStyleKey & "Name {#(stStyle.pointer ?: 1) ? 'cursor:pointer;' : ''# background-color:##" & stStyle.darkColor & " !important; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
-				sStyle &= '.td' & uFormat & sStyleKey & "Value {background-color:##" & stStyle.lightColor & "; border: #(stStyle.border ?: 1)#px solid ##000; color: ##" & (stStyle.textColor ?: "000") & "} ";
-				sStyle &= variables.NEWLINE;
-			} else {
-				local.createdDumpStructStyle = '.td#uFormat##sStyleKey#Header {background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
-				&'.td#uFormat##sStyleKey#Name {cursor: pointer;background-color: #arguments.dumpStructClasses[sKey]['highlightColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} '
-				&'.td#uFormat##sStyleKey#Value {background-color: #arguments.dumpStructClasses[sKey]['normalColor']#; border: 1px solid #arguments.dumpStructClasses[sKey].borderColor#; color: #arguments.dumpStructClasses[sKey].fontColor#} ';
-				sStyle &= createdDumpStructStyle & variables.NEWLINE;
+
+		savecontent variable="local.style" trim=true { echo('
+
+			<style>
+				.-railo-dump.modern td {  }
+				.-railo-dump.modern .nowrap { white-space: nowrap; }
+				.-railo-dump.modern .bold { font-weight: bold; }
+				.-railo-dump.modern .nobold { font-weight: normal; }
+				.-railo-dump.modern .meta   { font-weight: normal; }
+				.-railo-dump.modern .table-dump {font-family: Verdana,Geneva,Arial,Helvetica,sans-serif; font-size: 11px; background-color: ##eee;color: ##000; border-spacing: 1px; border-collapse:separate; }
+
+				.-railo-dump.modern .border 	{ border: 1px solid ##000; padding: 2px; }
+				.-railo-dump.modern .border.label { margin: 1px 1px 0px 1px; vertical-align: top; text-align: left; cursor: pointer; }
+
+				.-railo-dump.modern .border.label .bgd-simple, 
+				.-railo-dump.modern .border.label .bgl-simple	{ cursor: initial; }
+
+				.-railo-dump.modern .query-reset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##C9C; }
+			');
+
+			loop collection=colors item="local.value" index="local.key" {
+
+				echo(".-railo-dump.modern .bgd-#lcase(key)# { background-color: ###value.dark#; } ");
+				echo(".-railo-dump.modern .bgl-#lcase(key)# { background-color: ###value.light#; } ");
 			}
-		}
-		sStyle &= '</style>';
-		arrayAppend(variables.aOutput, sStyle);
+
+			echo("</style>");
+		} // savecontent
+
+		arrayAppend(variables.aOutput, style);
 	}
 
 	string function setJS() {
-		arrayAppend(variables.aOutput, '<script type="text/javascript">' & variables.NEWLINE);
-		arrayAppend(variables.aOutput, 'var sBase = "' & variables.topElement & '";' & variables.NEWLINE);
+		arrayAppend(variables.aOutput, '<script type="text/javascript">');
+		arrayAppend(variables.aOutput, 'var sBase = "' & variables.topElement & '";');
 
 /* 		arrayAppend(variables.aOutput, "
 //	Uncomment, if you want to work on the real Javascript code
@@ -568,9 +585,46 @@ function dump_resetColumns(oObj, iCol) {
 		// compressed JS Version
 		arrayAppend(variables.aOutput, 'function dump_toggle(e,t){var n=e;n=n.nextElementSibling||n.nextSibling;while(n&&n.nodeType===1&&n!==e){var r=n;s=r.style;if(s.display=="none"){s.display=""}else{s.display="none"}n=n.nextElementSibling||n.nextSibling}if(e.style.fontStyle=="italic"){e.style.fontStyle="normal"}else{e.style.fontStyle="italic"}if(t){var i=e;var o="";var u="";while(i){o=i.innerHTML;if(isNumber(o)){o="["+o+"]"}if(u==""){u=o}else{u=o+(u.substring(0,1)=="["?"":".")+u}i=getNextLevelUp(i)}r.innerHTML=sBase+(u.substring(0,1)=="["?"":".")+u;selectText(r)}}function isNumber(e){return!isNaN(parseFloat(e))&&isFinite(e)}function getNextLevelUp(e){oCurrent=e;while(e){e=e.parentNode;if(e&&e.className&&e.className.toUpperCase()=="TRTABLEDUMP"){if(!e.firstElementChild){var t=e.children[0]}else{var t=e.firstElementChild}if(t){if(t!==oCurrent&&t.className.toUpperCase().indexOf("NAME TDCLICK")!=-1){return t}}e=e.parentNode}}return}function selectText(e){if(document.body.createTextRange){var t=document.body.createTextRange();t.moveToElementText(e);t.select()}else if(window.getSelection){var n=window.getSelection();var t=document.createRange();t.selectNodeContents(e);n.removeAllRanges();n.addRange(t)}}function dump_hideColumn(e,t){var n=e.parentNode;while(n&&n.nodeType===1){var r=n.children;if(r[t]&&r[t].tagName=="TD"){r[t].style.display="none"}n=n.nextElementSibling||n.nextSibling}}function dump_resetColumns(e,t){var n=e.parentNode;while(n&&n.nodeType===1){var r=n.children;for(var i=0;i<r.length-1;i++){if(i==r.length-1){r[i].style.display="none"}else{r[i].style.display=""}}n=n.nextElementSibling||n.nextSibling}}');
 
-		arrayAppend(variables.aOutput, '</script>' & variables.NEWLINE);
+		arrayAppend(variables.aOutput, '</script>');
 	}
 
+
+	function getColorScheme(skinName="modern") {
+
+		var result = {
+
+			 Array:          { dark: '9c3', light: 'cf3' }
+			,Component:      { dark: '9c9', light: 'cfc' }
+			,Mongo:          { dark: '393', light: '966' }
+			,Object:         { dark: 'c99', light: 'fcc' }
+			,JavaObject:     { dark: 'c99', light: 'fcc' }
+			,Query:          { dark: 'c9c', light: 'fcf' }
+			,Simple:         { dark: 'f60', light: 'fc9' }
+			,Struct:         { dark: '99f', light: 'ccf' }
+			,SubXML:         { dark: '996', light: 'cc9' }
+			,XML:            { dark: 'c99', light: 'fff' }
+			,white:          { dark: 'fff', light: 'ccc' }
+			,Method:         { dark: 'c6f', light: 'fcf' }
+			,PublicMethods:  { dark: 'fc9', light: 'ffc' }
+			,PrivateMethods: { dark: 'fc3', light: 'f96' }
+		};
+
+		if (skinName != "modern" && fileExists("railo/dump/skins/#arguments.skinName#.cfm")) {
+
+			var skin = fileRead("railo/dump/skins/#arguments.skinName#.cfm");
+
+			try {
+
+				result = deserializeJSON(skin);
+			}
+			catch(ex) {}
+		}
+
+		return result;
+	}
+
+
+	// TODO: remove in favor of getColorScheme()
 	private struct function getCSS( string sFormat = "modern" ) {
 		
 		var stClasses = { 
@@ -610,7 +664,7 @@ function dump_resetColumns(oObj, iCol) {
 		local.stRet = {};
 		loop collection="#arguments.stColors#" index="local.sKey" item="local.stColor" {
 			loop collection="#stColor#" index="local.sColorName" item="local.sColor" {
-				if (len(sColor) eq 4) {
+				if (len(sColor) == 4) {
 					sColor = "##" & sColor[2] & sColor[2] & sColor[3] & sColor[3] & sColor[4] & sColor[4];
 				}
 				stRet[sKey][sColorName] = sColor;
