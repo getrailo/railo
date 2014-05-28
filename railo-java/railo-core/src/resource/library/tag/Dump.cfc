@@ -126,7 +126,6 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		variables.format     = attrib.format;
 		variables.expand     = attrib.expand;
 		variables.topElement = attrib.eval ?: "var";
-		variables.colors     = getSafeColors(meta.colors);
 		variables.dumpID     = createId();
 		variables.hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
 
@@ -346,6 +345,11 @@ if (variables.bSuppressType) {
 		var colorScheme = getColorScheme();
 		var colors = colorScheme[simpleType] ?: { dark: "888", light: "CCC" };
 
+		loop collection=colors index="local.key" item="local.value" {
+
+			colors[key] = expandColor(value);
+		}
+
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		local.id    = "";
 		
@@ -365,15 +369,16 @@ if (variables.bSuppressType) {
 			local.qMeta = arguments.meta.data;
 			local.nodeID = len(id) ? ' name="#id#"' : '';
 			loop query="qMeta" {
-				arrayAppend(variables.aOutput, '<tr>');
-				local.col = 1;
-				loop from="1" to="#columnCount-1#" index="col" {
+				arrayAppend(variables.aOutput, '<tr>');				
+				loop from="1" to="#columnCount-1#" index="local.col" {
 					var node = qMeta["data" & col];
 
 					var sColor = colors.light;
 					if ((qMeta.highlight == -1) || (qMeta.highlight == 1 && col == 1)) {
 						sColor = colors.dark;
 					}
+
+					sColor = expandColor(sColor);
 
 					if (isStruct(node)) {
 						arrayAppend(variables.aOutput, '<td bgcolor="###sColor#">');
@@ -649,17 +654,18 @@ function dump_resetColumns(oObj, iCol) {
 	}
 
 
-	private struct function getSafeColors(required struct stColors) {
-		local.stRet = {};
-		loop collection="#arguments.stColors#" index="local.sKey" item="local.stColor" {
-			loop collection="#stColor#" index="local.sColorName" item="local.sColor" {
-				if (len(sColor) == 4) {
-					sColor = "##" & sColor[2] & sColor[2] & sColor[3] & sColor[3] & sColor[4] & sColor[4];
-				}
-				stRet[sKey][sColorName] = sColor;
-			}
-		}
-		return stRet;
+	/** expands a 3 character color code into 6 characers, e.g. BAD to BBAADD */
+	function expandColor(color) {
+
+		var c = arguments.color;
+
+		if (c.hasPrefix('##'))
+			c = mid(c, 2);
+
+		if (c.len() == 3)
+			return "#c[1]##c[1]##c[2]##c[2]##c[3]##c[3]#";
+
+		return c;
 	}
 
 }
