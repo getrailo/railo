@@ -10,8 +10,7 @@ component {
 		,debug   : "modern"
 	};
 	variables.supportedFormats=["simple", "text", "modern", "classic"];
-	variables.bSuppressType = false;
-	variables.c = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304,8388608,16777216,33554432,67108864,134217728,268435456,536870912,1073741824,2147483648];
+	// variables.bSuppressType = false;
 
 	this.metadata.hint="Outputs the elements, variables and values of most kinds of CFML objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.";
 	this.metadata.attributetype="fixed";
@@ -53,6 +52,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 			throw message="you need at least version [4.2] to execute this tag";
 	}
 
+
 	/* ==================================================================================================
 	   onStartTag                                                                                       =
 	================================================================================================== */
@@ -82,10 +82,10 @@ You can use your custom style by creating a corresponding file in the railo/dump
 				throw message="format [#attrib.format#] is invalid. Only the following formats are supported: #sFormats#. You can add your own format by adding a skin file into the directory #expandPath('railo/dump/skin')#.";
 			}
 		}
-		if (attrib.output == "debug") {
+		
+		if (attrib.output == "debug")
 			attrib.expand = false;
-		}
-
+		
 		//eval
 		if (!structKeyExists(attrib,'var') && structKeyExists(attrib,'eval')) {
 
@@ -101,8 +101,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		contextLevel = min(contextLevel,arrayLen(context));
 		if (contextLevel > 0) {
 			
-			variables.context = context[contextLevel].template & ":" &
-					context[contextLevel].line;
+			variables.context = context[contextLevel].template & ":" & context[contextLevel].line;
 		} else {
 			
 			variables.context = '[unknown file]:[unknown line]';
@@ -151,9 +150,9 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		variables.aOutput = [];
 		variables.level = 0;
 
-		if (attrib.format != "simple" && attrib.format != "text") {
+		if (arguments.attrib.format != "simple" && arguments.attrib.format != "text") {
 			
-			setCSS(attrib.format);
+			setCSS(arguments.attrib.format);
 			setJS();
 		}
 
@@ -173,15 +172,17 @@ You can use your custom style by creating a corresponding file in the railo/dump
 				if (arguments.attrib.format == "simple") {
 
 					simple(arguments.meta, 'title="#variables.context#"');
-					echo(arrayToList(variables.aOutput, variables.NEWLINE));
+					// echo(arrayToList(variables.aOutput, variables.NEWLINE));
+					echo(arrayToList(variables.aOutput, ""));
 				} else {
 
 					echo('<div id="-railo-dump-#variables.dumpID#" class="-railo-dump modern">');
 					html(arguments.meta, 'title="#variables.context#"');
-					echo(arrayToList(variables.aOutput, variables.NEWLINE));
+					// echo(arrayToList(variables.aOutput, variables.NEWLINE));
+					echo(arrayToList(variables.aOutput, ""));
 					echo('</div>' & variables.NEWLINE);
 				}
-				echo('<!-- == dump-end #variables.dumpID# == !-->' & variables.NEWLINE);
+				echo('<!-- == dump-end #variables.dumpID# == !-->#variables.NEWLINE#');
 			}
 		} else {
 
@@ -195,13 +196,15 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 			if (arguments.attrib.output == "console") {
 				// echo("***<pre>#aOutput.toString()#</pre>***")
-				systemOutput("/** dump #variables.dumpID# begin - #dateTimeFormat(now(), 'iso8601')# #variables.context# **/", true);
-				systemOutput(arrayToList(aOutput, ""), true);
-				systemOutput("/** dump #variables.dumpID# end **/", true);
-			} else if (attrib.output == "debug") {
-				admin action="addDump" dump="#arrayToList(aOutput, variables.NEWLINE)#";
+				systemOutput("/** dump begin - #variables.dumpID# #dateTimeFormat(now(), 'iso8601')# #variables.context# **/", true);
+				systemOutput(arrayToList(variables.aOutput, ""), true);
+				systemOutput("/** dump --end - #variables.dumpID# **/", true);
+			} else if (arguments.attrib.output == "debug") {
+
+				admin action="addDump" dump="#arrayToList(variables.aOutput, variables.NEWLINE)#";
 			} else {
-				file action="write" addnewline="yes" file="#arguments.attrib.output#" output="#arrayToList(aOutput, variables.NEWLINE)#";
+
+				file action="write" addnewline="yes" file="#arguments.attrib.output#" output="#arrayToList(variables.aOutput, variables.NEWLINE)#";
 			}
 		}
 	}
@@ -211,23 +214,18 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 	
-		var simpleType = meta.simpleType ?: lcase(meta.type);
-
-		if (["boolean", "date", "numeric", "string"].contains(simpleType))
-			simpleType = "simple";
-		else if (simpleType CT '.')
-			simpleType = listLast(simpleType, '.')
-
-		//Lookup von ColorID
+		var simpleType = getSimpleType(arguments.meta);
+		
 		local.id     = "";
 		local.fontStyle = !variables.expand ? 'style="font-style:italic;"' : '';
 		// local.hidden = !variables.expand ? 'style="display:none;"' : '';
 
 		arrayAppend(variables.aOutput, '<table class="table-dump dump-#simpleType#" #arguments.title#>');
 		
-		if (structKeyExists(arguments.meta, 'title')){
+		if (structKeyExists(arguments.meta, 'title')) {
+
 			id = createUUID();
-			local.metaID = variables.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
+			local.metaID = variables.hasReference && structKeyExists(arguments.meta, 'id') ? ' [#arguments.meta.id#]' : '';
 			local.comment = structKeyExists(arguments.meta,'comment') ? "<br>" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 			arrayAppend(variables.aOutput, '<tr class="base-header" #fontStyle# onClick="dump_toggle(this, false)">');
 			arrayAppend(variables.aOutput, '<td class="border bold bgd-#simpleType# pointer" colspan="#columnCount#"><span class="nowrap">#arguments.meta.title#</span>');
@@ -237,83 +235,104 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 		if (columnCount) {
 
-			local.stClasses = {
-				1: '<td class="border label bgd-#simpleType# pointer',
-				0: '<td class="border label bgl-#simpleType#'
-			};
-
-			local.qMeta = arguments.meta.data;
+			local.qMeta  = arguments.meta.data;		// type is in qMeta.data1 values are in qMeta.data2..
 			local.nodeID = len(id) ? ' name="#id#"' : '';
 			local.hidden = !variables.expand && len(id) ? ' style="display:none"' : '';
-			loop query="qMeta" {
+			
+			// systemOutput(qMeta, true);
+
+			loop query=qMeta {
 
 				arrayAppend(variables.aOutput, '<tr class="" #hidden#>');
 				
-				loop from="1" to="#columnCount-1#" index="local.col" {
+				loop from=1 to=columnCount-1 index="local.col" {
 					
-					var node = qMeta["data" & col];
-
-					if (qMeta.highlight == 1) {
-						local.bColor = col == 1 ? 1 : 0;
-					} else if (qMeta.highlight == 0) {
-						local.bColor = 0;
-					} else if (qMeta.highlight == -1) {
-						local.bColor = 1;
-					} else {
-						local.bColor = bitand(qMeta.highlight, variables.c[col] ?: 0) ? 1 : 0;
+					var node   = qMeta["data" & col];
+					var bColor = 0;
+					if ((qMeta.highlight == -1) || (qMeta.highlight == 1 && col == 1)) {
+						bColor = 1;
 					}
 
+					var tdOpen = bColor ? '<td class="border label bgd-#simpleType# pointer' : '<td class="border label bgl-#simpleType#';
+
 					if (isStruct(node)) {
-						arrayAppend(variables.aOutput, stClasses[bColor] & '">');
+
+						arrayAppend(variables.aOutput, tdOpen & '">');
 						html(node);		// recursive call
 						arrayAppend(variables.aOutput, '</td>');	
 					}
-					else {	
+					else {
 /*						
 // If you want to suppress the type of an element, just uncomment these lines and set the variable in the corresponding skin method below
 if (variables.bSuppressType) {
 							if (col == 1) {
 								if (sType neq "ClassicSimpleValue" OR !bColor) {
-									arrayAppend(variables.aOutput, stClasses[bColor]);
+									arrayAppend(variables.aOutput, tdOpen);
 									arrayAppend(variables.aOutput, '" onClick="dump_toggle(this, true)">#HTMLEditFormat(node)#</div>');
 								}
 							} else {
-								arrayAppend(variables.aOutput, stClasses[bColor]);
+								arrayAppend(variables.aOutput, tdOpen);
 								arrayAppend(variables.aOutput, '">');
 								arrayAppend(variables.aOutput, HTMLEditFormat(node));
 								arrayAppend(variables.aOutput, '</div>');
 							}
 						} else { */
 							if (col == 1) {
-								arrayAppend(variables.aOutput, stClasses[bColor]);
-								if (arguments.meta.colorID == "1onzgocz2cmqa") { // Simple Values are not clickable
+
+								arrayAppend(variables.aOutput, tdOpen);
+							
+								if (simpleType == "simple") { // Simple Values are not clickable
+
+									if (arguments.meta.type == "string") {
+
+										var len = len(qMeta.data2);
+										variables.aOutput.append( '" title="#len > 1 ? '#numberFormat(len, ',')# characters' : len > 0 ? '1 character' : 'empty'#"');
+									}
+
 									arrayAppend(variables.aOutput, '">#HTMLEditFormat(node)#</td>');
-								} else {
-									if (arguments.meta.colorID == "15jnbij2ut8kx" && qMeta.currentRow == 1) { // Reset removed columns
+								}
+								else {
+
+									if (simpleType == "query" && qMeta.currentRow == 1) { // Reset removed columns
+										
 										arrayAppend(variables.aOutput, ' query-reset" title="Restore columns" onClick="dump_resetColumns(this)">&nbsp;</td>');
-									} else {
+									}
+									else {
+
 										if (bColor and columnCount == 3) { // ignore for non query elements, that have several columns
+								
 											arrayAppend(variables.aOutput, '" onClick="dump_toggle(this, true)">#HTMLEditFormat(node)#</td>');
-										} else {
+										}
+										else {
 											arrayAppend(variables.aOutput, '">#HTMLEditFormat(node)#</td>');
 										}
 									}
 								}
-							} else {
-								arrayAppend(variables.aOutput, stClasses[bColor]);
-								if (arguments.meta.colorID == "15jnbij2ut8kx" && bColor) { // Allow JS remove columns
-									arrayAppend(variables.aOutput, '" title="Click to remove column" onClick="dump_hideColumn(this, #col-1#)"');
+							}
+							else { // (col == 1)
+
+								arrayAppend(variables.aOutput, tdOpen);
+
+								if (simpleType == "query" && bColor) { // Allow JS collapse columns
+								
+									arrayAppend(variables.aOutput, '" title="Collapse column" onClick="dump_hideColumn(this, #col-1#)"');
 								}
+
 								arrayAppend(variables.aOutput, '">');
+
+
+
 								arrayAppend(variables.aOutput, HTMLEditFormat(node));
 								arrayAppend(variables.aOutput, '</td>');
-							}
+							} // (col == 1)
 /*						} */
 					}
 				}
-				arrayAppend(variables.aOutput, stClasses[bColor] & '" style="display:none"></td></tr>');
+
+				arrayAppend(variables.aOutput, tdOpen & '" style="display:none"></td></tr>');
 			}
 		}
+
 		arrayAppend(variables.aOutput, '</table>');
 	}
 
@@ -321,18 +340,23 @@ if (variables.bSuppressType) {
 	/* ==================================================================================================
 		simple                                                                                          =
 	================================================================================================== */
-	string function simple(required struct meta, string title = "") {
+	string function simple(required struct meta, string title="") {
+
+		var simpleType  = getSimpleType(arguments.meta);
+		var colorScheme = getColorScheme();
+		var colors = colorScheme[simpleType] ?: { dark: "888", light: "CCC" };
 
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		local.id    = "";
-		local.stColors = variables.colors[arguments.meta.colorID];
+		
 		arrayAppend(variables.aOutput, '<table cellpadding="1" cellspacing="0" border="1" #arguments.title#>');
+		
 		if (structKeyExists(arguments.meta, 'title')){
 			id = createUUID();
 			local.metaID = variables.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
 			local.comment = structKeyExists(arguments.meta,'comment') ? "<br>" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 			arrayAppend(variables.aOutput, '<tr>');
-			arrayAppend(variables.aOutput, '<td colspan="#columnCount#" bgColor="#stColors.highLightColor#"><span class="nowrap">#arguments.meta.title#</span>');
+			arrayAppend(variables.aOutput, '<td colspan="#columnCount#" bgcolor="###colors.dark#"><span class="nowrap">#arguments.meta.title#</span>');
 			arrayAppend(variables.aOutput, '<span><span class="nowrap">#comment#</span></span></td>');
 			arrayAppend(variables.aOutput, '</tr>');
 		}
@@ -346,23 +370,18 @@ if (variables.bSuppressType) {
 				loop from="1" to="#columnCount-1#" index="col" {
 					var node = qMeta["data" & col];
 
-					if (qMeta.highlight == 1) {
-						local.sColor = col == 1 ? stColors.highLightColor : stColors.normalColor;
-					} else if (qMeta.highlight == 0) {
-						local.sColor = stColors.normalColor;
-					} else if (qMeta.highlight == -1) {
-						local.sColor = stColors.highLightColor;
-					} else {
-						local.sColor = bitand(qMeta.highlight, variables.c[col] ?: 0) ? stColors.highLightColor : stColors.normalColor;
+					var sColor = colors.light;
+					if ((qMeta.highlight == -1) || (qMeta.highlight == 1 && col == 1)) {
+						sColor = colors.dark;
 					}
 
 					if (isStruct(node)) {
-						arrayAppend(variables.aOutput, '<td bgcolor="#sColor#">');
+						arrayAppend(variables.aOutput, '<td bgcolor="###sColor#">');
 						simple(node);
 						arrayAppend(variables.aOutput, '</td>');	
 					}
 					else {	
-						arrayAppend(variables.aOutput, '<td bgcolor="#sColor#">#HTMLEditFormat(node)#</td>');
+						arrayAppend(variables.aOutput, '<td bgcolor="###sColor#">#HTMLEditFormat(node)#</td>');
 					}
 				}
 				arrayAppend(variables.aOutput, '</tr>');
@@ -431,7 +450,7 @@ if (variables.bSuppressType) {
 
 	string function setCSS(format="modern") {
 
-		var colors = getColorScheme(arguments.format);
+		var colorScheme = getColorScheme();
 
 		// echo(CallStackGet('text'));
 
@@ -450,7 +469,7 @@ if (variables.bSuppressType) {
 				.-railo-dump.modern .query-reset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##C9C; }
 			');
 
-			loop collection=colors item="local.value" index="local.key" {
+			loop collection=colorScheme item="local.value" index="local.key" {
 
 				echo(".-railo-dump.modern .bgd-#lcase(key)# { background-color: ###value.dark#; } ");
 				echo(".-railo-dump.modern .bgl-#lcase(key)# { background-color: ###value.light#; } ");
@@ -582,6 +601,19 @@ function dump_resetColumns(oObj, iCol) {
 	}
 
 
+	function getSimpleType(meta) {
+
+		var result = arguments.meta.simpleType ?: lcase(arguments.meta.type);
+
+		if (["boolean", "date", "numeric", "string"].contains(result))
+			result = "simple";
+		else if (result CT '.')
+			result = listLast(result, '.');
+
+		return result;
+	}
+
+
 	function getColorScheme(skinName="modern") {
 
 		var result = {
@@ -602,7 +634,7 @@ function dump_resetColumns(oObj, iCol) {
 			,PrivateMethods: { dark: 'fc3', light: 'f96' }
 		};
 
-		if (skinName != "modern" && fileExists("railo/dump/skins/#arguments.skinName#.cfm")) {
+		if (arguments.skinName != "modern" && fileExists("railo/dump/skins/#arguments.skinName#.cfm")) {
 
 			var skin = fileRead("railo/dump/skins/#arguments.skinName#.cfm");
 
