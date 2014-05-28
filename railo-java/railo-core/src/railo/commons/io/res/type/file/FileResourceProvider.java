@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -102,7 +101,6 @@ public final class FileResourceProvider implements ResourceProviderPro,Sizeable 
 	
 	@Override
 	public char getSeparator() {
-		print.ds();
 		return File.separatorChar;
 	}
 }

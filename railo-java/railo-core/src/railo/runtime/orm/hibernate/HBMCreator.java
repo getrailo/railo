@@ -636,10 +636,6 @@ public class HBMCreator {
 			String generator=toString(cfc,prop,meta,"generator",data);
 			String type = getType(info,cfc,prop,meta,getDefaultTypeForGenerator(generator,"string"),data);
 			if(!Util.isEmpty(type))key.setAttribute("type", type);
-			
-			
-			
-            
 		}
 		
 		// many-to-one
@@ -746,7 +742,7 @@ public class HBMCreator {
 		return "string";
 	}
 	
-	private static String getDefaultTypeForGenerator(String generator,String defaultValue) {
+	public static String getDefaultTypeForGenerator(String generator,String defaultValue) {
 		if("increment".equalsIgnoreCase(generator)) return "integer";
 		if("identity".equalsIgnoreCase(generator)) return "integer";
 		if("native".equalsIgnoreCase(generator)) return "integer";
@@ -782,7 +778,6 @@ public class HBMCreator {
 			}
 			else return defaultValue;
 		}
-		
 		return HibernateCaster.toHibernateType(info,type,defaultValue);
 	}
 

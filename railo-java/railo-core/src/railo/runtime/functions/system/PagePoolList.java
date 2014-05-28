@@ -10,6 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.PageSourcePool;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
@@ -21,7 +22,7 @@ public final class PagePoolList implements Function {
 
 	public static Array call(PageContext pc) throws PageException {
 		ArrayImpl arr = new ArrayImpl();
-		fill(arr,ConfigImpl.getAllMappings(pc));
+		fill(arr,ConfigWebUtil.getAllMappings(pc));
 		return arr;
 	}
 

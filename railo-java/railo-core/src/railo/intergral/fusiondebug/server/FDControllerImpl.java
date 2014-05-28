@@ -19,8 +19,6 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SerialNumber;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
 
 import com.intergral.fusiondebug.server.IFDController;
 import com.intergral.fusiondebug.server.IFDThread;
@@ -106,7 +104,7 @@ public class FDControllerImpl implements IFDController {
 	}
 	
 	private void pause(String name,CFMLFactoryImpl factory,List<IFDThread> threads) {
-		Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+		Map<Integer, PageContextImpl> pcs = factory.getActivePageContexts();
 		Iterator<PageContextImpl> it = pcs.values().iterator();
 		PageContextImpl pc;
 		
@@ -154,7 +152,7 @@ public class FDControllerImpl implements IFDController {
 	 * @return matching thread or null
 	 */
 	private FDThreadImpl getByNativeIdentifier(String name,CFMLFactoryImpl factory,String id) {
-		Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+		Map<Integer, PageContextImpl> pcs = factory.getActivePageContexts();
 		Iterator<PageContextImpl> it = pcs.values().iterator();
 		PageContextImpl pc;
 		
