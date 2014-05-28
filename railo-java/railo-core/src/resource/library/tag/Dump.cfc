@@ -43,19 +43,34 @@ You can use your custom style by creating a corresponding file in the railo/dump
 	};
 
 
-	/* ==================================================================================================
-	   INIT invoked after tag is constructed                                                            =
-	================================================================================================== */
-	void function init(required boolean hasEndTag, component parent) {
+	variables.defaultSkin = {
+
+		 Array:          { dark: '9c3', light: 'cf3' }
+		,Component:      { dark: '9c9', light: 'cfc' }
+		,Mongo:          { dark: '393', light: '966' }
+		,Object:         { dark: 'c99', light: 'fcc' }
+		,JavaObject:     { dark: 'c99', light: 'fcc' }
+		,Query:          { dark: 'c9c', light: 'fcf' }
+		,Simple:         { dark: 'f60', light: 'fc9' }
+		,Struct:         { dark: '99f', light: 'ccf' }
+		,SubXML:         { dark: '996', light: 'cc9' }
+		,XML:            { dark: 'c99', light: 'fff' }
+		,white:          { dark: 'fff', light: 'ccc' }
+		,Method:         { dark: 'c6f', light: 'fcf' }
+		,PublicMethods:  { dark: 'fc9', light: 'ffc' }
+		,PrivateMethods: { dark: 'fc3', light: 'f96' }	
+	};
+
+
+	/** custom tag interface method */
+	void function init(boolean hasEndTag=false, component parent) {
 
 		if (server.railo.version LT "4.2")
 			throw message="you need at least version [4.2] to execute this tag";
 	}
 
 
-	/* ==================================================================================================
-	   onStartTag                                                                                       =
-	================================================================================================== */
+	/** custom tag interface method */
 	boolean function onStartTag(required struct attributes, required struct caller) {
 		
 		var attrib = arguments.attributes;
@@ -76,10 +91,8 @@ You can use your custom style by creating a corresponding file in the railo/dump
 		} else if (!arrayFindNoCase(variables.supportedFormats, attrib.format)) {
 
 			if (!fileExists('railo/dump/skins/#attrib.format#.cfm')) {
-				directory name="local.allowedFormats" action="list" listinfo="name" directory="railo/dump/skins" filter="*.cfm";
-				local.sFormats = valueList(allowedFormats.name);
-				sFormats = replaceNoCase(sFormats, ".cfm", "", "ALL");
-				throw message="format [#attrib.format#] is invalid. Only the following formats are supported: #sFormats#. You can add your own format by adding a skin file into the directory #expandPath('railo/dump/skin')#.";
+				
+				throw message="format [#attrib.format#] is invalid. Only the following formats are supported: #getAvailableSkins().toList(', ')#. You can add your own format by adding a skin file into the directory #expandPath('railo/dump/skin')#.";
 			}
 		}
 		
@@ -621,23 +634,7 @@ function dump_resetColumns(oObj, iCol) {
 
 	function getColorScheme(skinName="modern") {
 
-		var result = {
-
-			 Array:          { dark: '9c3', light: 'cf3' }
-			,Component:      { dark: '9c9', light: 'cfc' }
-			,Mongo:          { dark: '393', light: '966' }
-			,Object:         { dark: 'c99', light: 'fcc' }
-			,JavaObject:     { dark: 'c99', light: 'fcc' }
-			,Query:          { dark: 'c9c', light: 'fcf' }
-			,Simple:         { dark: 'f60', light: 'fc9' }
-			,Struct:         { dark: '99f', light: 'ccf' }
-			,SubXML:         { dark: '996', light: 'cc9' }
-			,XML:            { dark: 'c99', light: 'fff' }
-			,white:          { dark: 'fff', light: 'ccc' }
-			,Method:         { dark: 'c6f', light: 'fcf' }
-			,PublicMethods:  { dark: 'fc9', light: 'ffc' }
-			,PrivateMethods: { dark: 'fc3', light: 'f96' }
-		};
+		var result = variables.defaultSkin;
 
 		if (arguments.skinName != "modern" && fileExists("railo/dump/skins/#arguments.skinName#.cfm")) {
 
@@ -666,6 +663,16 @@ function dump_resetColumns(oObj, iCol) {
 			return "#c[1]##c[1]##c[2]##c[2]##c[3]##c[3]#";
 
 		return c;
+	}
+
+
+	function getAvailableSkins() {
+
+		var result   = [];
+		var arrNames = directoryList("railo/dump/skins", false, "name");
+		arrNames.each( function(name) { result.add(listFirst(name, '.')); } );
+
+		return result;
 	}
 
 }
