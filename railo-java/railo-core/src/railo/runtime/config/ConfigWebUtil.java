@@ -2,7 +2,9 @@ package railo.runtime.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,6 +18,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
@@ -26,6 +29,7 @@ import railo.runtime.listener.NoneAppListener;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.Struct;
 
 
@@ -84,18 +88,6 @@ public final class ConfigWebUtil {
         return file;
     }
 
-    
-    /*public static String replacePlaceholder(String str, Config config) {
-    	if(StringUtil.isEmpty(str)) return str;
-    	if(str.indexOf("railo-pcw-web")!=-1){
-    		print.out(str);
-    		str=_replacePlaceholder(str, config);
-    		print.out(str);
-    		return str;
-    	}
-    	return _replacePlaceholder(str, config);
-    }*/
-    
     public static String replacePlaceholder(String str, Config config) {
     	if(StringUtil.isEmpty(str)) return str;
     	
@@ -121,16 +113,12 @@ public final class ConfigWebUtil {
             }
             // Config Web
             else if(str.startsWith("{railo-web")) {
-                //if(cw instanceof ConfigServer) cw=null;
-                //if(config instanceof ConfigWeb) {
-                    if(str.startsWith("}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(11)));
-                    else if(str.startsWith("-dir}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(15)));
-                    else if(str.startsWith("-directory}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(21)));
-                //}
+                if(str.startsWith("}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(11)));
+                else if(str.startsWith("-dir}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(15)));
+                else if(str.startsWith("-directory}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(21)));
             }
             // Web Root
             else if(str.startsWith("{web-root")) {
-                //if(cw instanceof ConfigServer) cw=null;
                 if(config instanceof ConfigWeb) {
                     if(str.startsWith("}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(10)));
                     else if(str.startsWith("-dir}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(14)));
@@ -159,7 +147,6 @@ public final class ConfigWebUtil {
             
             if(StringUtil.startsWith(str,'{')){
             	Struct constants = ((ConfigImpl)config).getConstants();
-            	//Collection.Key[] arr = constants.keys();
             	Iterator<Entry<Key, Object>> it = constants.entryIterator();
             	Entry<Key, Object> e;
             	while(it.hasNext()) {
@@ -233,42 +220,7 @@ public final class ConfigWebUtil {
     public static Resource getFile(Resource file, short type) {
         return ResourceUtil.createResource(file,ResourceUtil.LEVEL_GRAND_PARENT_FILE,type);
     }
-    /*public static File getFile(File file, int level, short type) {
-		
-        boolean asDir=type==TYPE_DIR;
-        // File
-		if(level>=LEVEL_FILE && file.exists() && ((file.isDirectory() && asDir)||(file.isFile() && !asDir))) {
-		    return FileUtil.getCanonicalFileEL(file);
-		}
-		
-		// Parent
-		File parent=file.getParentFile();
-		if(level>=LEVEL_PARENT && parent!=null && parent.exists() && FileUtil.canRW(parent)) {
-            if(asDir) {
-		        if(file.mkdirs()) return FileUtil.getCanonicalFileEL(file);
-		    }
-		    else {
-		        if(FileUtil.createNewFileEL(file))return FileUtil.getCanonicalFileEL(file);
-		    }
-			return FileUtil.getCanonicalFileEL(file);
-		}    
-		
-		// Grand Parent
-		if(level>=LEVEL_GRAND_PARENT && parent!=null) {
-			File gparent=parent.getParentFile();
-			if(gparent!=null && gparent.exists() && FileUtil.canRW(gparent)) {
-			    if(asDir) {
-			        if(file.mkdirs())return FileUtil.getCanonicalFileEL(file);
-			    }
-			    else {
-			        if(parent.mkdirs() && FileUtil.createNewFileEL(file))
-			            return FileUtil.getCanonicalFileEL(file);
-			    }
-			}        
-		}
-		return null;
-    }*/
-    
+
     /**
      * checks if file is a directory or not, if directory doesn't exist, it will be created
      * @param directory
@@ -278,7 +230,7 @@ public final class ConfigWebUtil {
         if(directory.exists()) return directory.isDirectory();
         return directory.mkdirs();
     }
-    
+
     /**
      * checks if file is a file or not, if file doesn't exist, it will be created
      * @param file
@@ -287,11 +239,7 @@ public final class ConfigWebUtil {
     public static boolean isFile(Resource file) {
         if(file.exists()) return file.isFile();
         Resource parent=file.getParentResource();
-        //try {
-            return parent.mkdirs() && file.createNewFile();
-        /*} catch (IOException e) {
-            return false;
-        }*/  
+        return parent.mkdirs() && file.createNewFile();
     }
     
     /**
@@ -314,7 +262,6 @@ public final class ConfigWebUtil {
         if(path.startsWith("/WEB-INF/railo/")) {
             path="{web-root}"+path;
         }
-        //print.ln(path);
         return path;
     }
 
@@ -324,6 +271,7 @@ public final class ConfigWebUtil {
         if(m.hasArchive())id.append(m.getStrPhysical());
         return m.toString().toLowerCase();
 	}
+
 	public static void checkGeneralReadAccess(ConfigImpl config, String password) throws SecurityException {
 		SecurityManager sm = config.getSecurityManager();
     	short access = sm.getAccess(SecurityManager.TYPE_ACCESS_READ);
@@ -352,7 +300,6 @@ public final class ConfigWebUtil {
     public static void checkPassword(ConfigImpl config, String type,String password) throws SecurityException {
     	if(!config.hasPassword())
             throw new SecurityException("can't access, no password is defined");
-        //print.ln(config.getPassword()+".equalsIgnoreCase("+password+")");
         if(!config.isPasswordEqual(password,true)){
         	if(StringUtil.isEmpty(password)){
         		if(type==null)
@@ -447,6 +394,30 @@ public final class ConfigWebUtil {
 			case Config.SCOPE_SMALL: return "small";
 			case Config.SCOPE_STANDARD: return "standard";
 			default: return defaultValue;
+		}
+	}
+	
+
+	public static Mapping[] getAllMappings(PageContext pc) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,pc.getConfig().getMappings());
+		getAllMappings(list,pc.getConfig().getCustomTagMappings());
+		getAllMappings(list,pc.getConfig().getComponentMappings());
+		getAllMappings(list,pc.getApplicationContext().getMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+	
+	public static Mapping[] getAllMappings(ConfigWeb cw) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,cw.getMappings());
+		getAllMappings(list,cw.getCustomTagMappings());
+		getAllMappings(list,cw.getComponentMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+
+	private static void getAllMappings(List<Mapping> list, Mapping[] mappings) {
+		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
+			list.add(mappings[i]);
 		}
 	}
 }

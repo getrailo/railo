@@ -17,6 +17,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 
 public final class JavaCast implements Function {
+
+	private static final long serialVersionUID = -5053403312467568511L;
+
 	public static Object calls(PageContext pc , String string, Object object) throws PageException {
 		throw new ExpressionException("method javacast not implemented yet"); // MUST ????
 	}

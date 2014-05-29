@@ -9,7 +9,9 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 
 public final class DayOfWeekShortAsString implements Function {
-	
+
+	private static final long serialVersionUID = 3088890446888229079L;
+
 	public static String call(PageContext pc , double dow) throws ExpressionException {
 		return DayOfWeekAsString.call(pc,dow, pc.getLocale(),false);
 	}

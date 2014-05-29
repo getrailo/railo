@@ -11,7 +11,9 @@ import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
 
 public final class LCase extends BIF {
-	
+
+	private static final long serialVersionUID = -2423113719056207022L;
+
 	public static String call(PageContext pc , String string) {
         return StringUtil.toLowerCase(string);
     }

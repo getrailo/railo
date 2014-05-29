@@ -104,7 +104,7 @@ public class FDControllerImpl implements IFDController {
 	}
 	
 	private void pause(String name,CFMLFactoryImpl factory,List<IFDThread> threads) {
-		Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+		Map<Integer, PageContextImpl> pcs = factory.getActivePageContexts();
 		Iterator<PageContextImpl> it = pcs.values().iterator();
 		PageContextImpl pc;
 		
@@ -152,7 +152,7 @@ public class FDControllerImpl implements IFDController {
 	 * @return matching thread or null
 	 */
 	private FDThreadImpl getByNativeIdentifier(String name,CFMLFactoryImpl factory,String id) {
-		Map<Integer, PageContextImpl> pcs = factory.getRunningPageContexts();
+		Map<Integer, PageContextImpl> pcs = factory.getActivePageContexts();
 		Iterator<PageContextImpl> it = pcs.values().iterator();
 		PageContextImpl pc;
 		

@@ -12,6 +12,8 @@ import railo.runtime.op.Caster;
 
 public final class FindNoCase extends BIF {
 
+	private static final long serialVersionUID = 3372064423000880501L;
+
 	public static double call(PageContext pc , String sub, String str) {
 		return StringUtil.indexOfIgnoreCase(str, sub)+1;
 	}

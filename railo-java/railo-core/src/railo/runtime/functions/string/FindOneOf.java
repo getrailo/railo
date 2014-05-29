@@ -7,6 +7,8 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 public final class FindOneOf implements Function {
+
+	private static final long serialVersionUID = -7521748254181624968L;
 	public static double call(PageContext pc , String set, String str) {
 		return call(pc,set,str,1);
 	}
