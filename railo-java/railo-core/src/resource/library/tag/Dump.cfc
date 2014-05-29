@@ -45,31 +45,33 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 	variables.defaultSkin = {
 
-		 colors: {
+		 "colors": {
 			
-			 Array:          { dark: '9c3', light: 'cf3' }
-			,Component:      { dark: '9c9', light: 'cfc' }
-			,Mongo:          { dark: '393', light: '966' }
-			,Object:         { dark: 'c99', light: 'fcc' }
-			,JavaObject:     { dark: 'c99', light: 'fcc' }
-			,Query:          { dark: 'c9c', light: 'fcf' }
-			,Simple:         { dark: 'f60', light: 'fc9' }
-			,Struct:         { dark: '99f', light: 'ccf' }
-			,SubXML:         { dark: '996', light: 'cc9' }
-			,XML:            { dark: 'c99', light: 'fff' }
-			,white:          { dark: 'fff', light: 'ccc' }
-			,Method:         { dark: 'c6f', light: 'fcf' }
-			,PublicMethods:  { dark: 'fc9', light: 'ffc' }
-			,PrivateMethods: { dark: 'fc3', light: 'f96' }
+			 "array":          { "dark": "##9c3", "light": "##cf3" }
+			,"component":      { "dark": "##9c9", "light": "##cfc" }
+			,"mongo":          { "dark": "##393", "light": "##966" }
+			,"object":         { "dark": "##c99", "light": "##fcc" }
+			,"javaobject":     { "dark": "##c99", "light": "##fcc" }
+			,"query":          { "dark": "##c9c", "light": "##fcf" }
+			,"simple":         { "dark": "##f60", "light": "##fc9" }
+			,"struct":         { "dark": "##99f", "light": "##ccf" }
+			,"subxml":         { "dark": "##996", "light": "##cc9" }
+			,"xml":            { "dark": "##c99", "light": "##fff" }
+			,"white":          { "dark": "##fff", "light": "##ccc" }
+			,"method":         { "dark": "##c6f", "light": "##fcf" }
+			,"publicmethods":  { "dark": "##fc9", "light": "##ffc" }
+			,"privatemethods": { "dark": "##fc3", "light": "##f96" }
 		}
-		,styles: {
+
+		,"styles": {
 
 			 ".table-dump"   : "font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; font-size: 11px; background-color: ##EEE; color: ##000; border-spacing: 1px; border-collapse:separate;"
-			,".border"       : "border: 1px solid ##000; padding: 2px;"
+			,".border"       : "border: 1px solid ##000; padding: 0.2em;"
 			,".border.label" : "margin: 1px 1px 0px 1px; vertical-align: top; text-align: left;"
-			,".query-reset"  : "background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##C9C;"
+			,".query-reset"  : "background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##969;"
 		}
 	};
+
 
 	/** custom tag interface method */
 	void function init(boolean hasEndTag=false, component parent) {
@@ -99,9 +101,9 @@ You can use your custom style by creating a corresponding file in the railo/dump
 				attrib.format = variables.default.browser;
 		} else if (!arrayFindNoCase(variables.supportedFormats, attrib.format)) {
 
-			if (!fileExists('railo/dump/skins/#attrib.format#.cfm')) {
+			if (!fileExists('railo/dump/skins/#attrib.format#.json')) {
 				
-				throw message="format [#attrib.format#] is invalid. Only the following formats are supported: #getAvailableSkins().toList(', ')#. You can add your own format by adding a skin file into the directory #expandPath('railo/dump/skin')#.";
+				throw message="format [#attrib.format#] is invalid. Only the following formats are supported: #getAvailableSkins().toList(', ')#. You can add your own format by adding a skin file into the directory #expandPath('railo/dump/skins')#.";
 			}
 		}
 		
@@ -117,9 +119,8 @@ You can use your custom style by creating a corresponding file in the railo/dump
 			attrib.var = evaluate(attrib.eval, arguments.caller);
 		}
 
-		// context
-		var context = GetCurrentContext();
-		var contextLevel = structKeyExists(attrib,'contextLevel') ? attrib.contextLevel : 2;
+		var context = getCurrentContext();
+		var contextLevel = attrib.contextLevel ?: 2;
 		contextLevel = min(contextLevel,arrayLen(context));
 		if (contextLevel > 0) {
 			
@@ -361,7 +362,7 @@ if (variables.bSuppressType) {
 	string function simple(required struct meta, string title="") {
 
 		var simpleType  = getSimpleType(arguments.meta);
-		var skin        = getColorScheme();
+		var skin        = getSkin();
 		var colorScheme = skin.colors;
 		var colors = colorScheme[simpleType] ?: { dark: "888", light: "CCC" };
 
@@ -473,9 +474,9 @@ if (variables.bSuppressType) {
 	/** generates css styles for modern/skin dump */
 	string function writeCSS(format="modern") {
 
-		var skin        = getColorScheme(arguments.format);
+		var skin        = getSkin(arguments.format);
 		var colorScheme = skin.colors;
-		var styles      = skin.styles ?: {};
+		var styles      = skin.styles;
 
 		savecontent variable="local.style" trim=true { echo('
 
@@ -491,10 +492,10 @@ if (variables.bSuppressType) {
 				echo(".-railo-dump.modern #key# {#value#}");
 			}
 
-			loop collection=colorScheme item="local.value" index="local.key" {
+			loop collection=colorScheme item="local.color" index="local.key" {
 
-				echo(".-railo-dump.modern .bgd-#lcase(key)# { background-color: ###value.dark#; } ");
-				echo(".-railo-dump.modern .bgl-#lcase(key)# { background-color: ###value.light#; } ");
+				echo(".-railo-dump.modern .bgd-#lcase(key)# { background-color: #color.dark#; } ");
+				echo(".-railo-dump.modern .bgl-#lcase(key)# { background-color: #color.light#; } ");
 			}
 
 			echo("</style>");
@@ -636,17 +637,17 @@ function dump_resetColumns(oObj, iCol) {
 	}
 
 
-	function getColorScheme(skinName="modern") {
+	function getSkin(skinName="modern") {
 
 		var result = variables.defaultSkin;
 
-		if (arguments.skinName != "modern" && fileExists("railo/dump/skins/#arguments.skinName#.cfm")) {
+		if (arguments.skinName != "modern" && fileExists("railo/dump/skins/#arguments.skinName#.json")) {
 
-			var skin = fileRead("railo/dump/skins/#arguments.skinName#.cfm");
+			var skin = fileRead("railo/dump/skins/#arguments.skinName#.json");
 
 			try {
 
-				result = deserializeJSON(skin);
+				result.append( deserializeJSON(skin), true );
 			}
 			catch(ex) {}
 		}
@@ -674,7 +675,7 @@ function dump_resetColumns(oObj, iCol) {
 	function getAvailableSkins() {
 
 		var result   = [];
-		var arrNames = directoryList("railo/dump/skins", false, "name");
+		var arrNames = directoryList("railo/dump/skins", false, "name", "*.json");
 		arrNames.each( function(name) { result.add(listFirst(name, '.')); } );
 
 		return result;
