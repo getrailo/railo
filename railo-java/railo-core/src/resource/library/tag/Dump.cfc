@@ -45,22 +45,31 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 	variables.defaultSkin = {
 
-		 Array:          { dark: '9c3', light: 'cf3' }
-		,Component:      { dark: '9c9', light: 'cfc' }
-		,Mongo:          { dark: '393', light: '966' }
-		,Object:         { dark: 'c99', light: 'fcc' }
-		,JavaObject:     { dark: 'c99', light: 'fcc' }
-		,Query:          { dark: 'c9c', light: 'fcf' }
-		,Simple:         { dark: 'f60', light: 'fc9' }
-		,Struct:         { dark: '99f', light: 'ccf' }
-		,SubXML:         { dark: '996', light: 'cc9' }
-		,XML:            { dark: 'c99', light: 'fff' }
-		,white:          { dark: 'fff', light: 'ccc' }
-		,Method:         { dark: 'c6f', light: 'fcf' }
-		,PublicMethods:  { dark: 'fc9', light: 'ffc' }
-		,PrivateMethods: { dark: 'fc3', light: 'f96' }	
-	};
+		 colors: {
+			
+			 Array:          { dark: '9c3', light: 'cf3' }
+			,Component:      { dark: '9c9', light: 'cfc' }
+			,Mongo:          { dark: '393', light: '966' }
+			,Object:         { dark: 'c99', light: 'fcc' }
+			,JavaObject:     { dark: 'c99', light: 'fcc' }
+			,Query:          { dark: 'c9c', light: 'fcf' }
+			,Simple:         { dark: 'f60', light: 'fc9' }
+			,Struct:         { dark: '99f', light: 'ccf' }
+			,SubXML:         { dark: '996', light: 'cc9' }
+			,XML:            { dark: 'c99', light: 'fff' }
+			,white:          { dark: 'fff', light: 'ccc' }
+			,Method:         { dark: 'c6f', light: 'fcf' }
+			,PublicMethods:  { dark: 'fc9', light: 'ffc' }
+			,PrivateMethods: { dark: 'fc3', light: 'f96' }
+		}
+		,styles: {
 
+			 ".table-dump"   : "font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; font-size: 11px; background-color: ##EEE; color: ##000; border-spacing: 1px; border-collapse:separate;"
+			,".border"       : "border: 1px solid ##000; padding: 2px;"
+			,".border.label" : "margin: 1px 1px 0px 1px; vertical-align: top; text-align: left;"
+			,".query-reset"  : "background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##C9C;"
+		}
+	};
 
 	/** custom tag interface method */
 	void function init(boolean hasEndTag=false, component parent) {
@@ -160,12 +169,12 @@ You can use your custom style by creating a corresponding file in the railo/dump
 	function doOutput(attrib, meta) {
 
 		variables.aOutput = [];
-		variables.level = 0;
+		variables.level   = 0;
 
 		if (arguments.attrib.format != "simple" && arguments.attrib.format != "text") {
 			
-			setCSS(arguments.attrib.format);
-			setJS();
+			writeCSS(arguments.attrib.format);
+			writeJS();
 		}
 
 		// sleep(5000);	// simulate long process to test async=true
@@ -222,6 +231,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 	}
 
 
+	/** generates html of modern dump, called recursively for child nodes */
 	string function html(required struct meta, string title="") {
 
 		local.columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
@@ -241,7 +251,7 @@ You can use your custom style by creating a corresponding file in the railo/dump
 			local.comment = structKeyExists(arguments.meta,'comment') ? "<br>" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 			arrayAppend(variables.aOutput, '<tr class="base-header" #fontStyle# onClick="dump_toggle(this, false)">');
 			arrayAppend(variables.aOutput, '<td class="border bold bgd-#simpleType# pointer" colspan="#columnCount#"><span class="nowrap">#arguments.meta.title#</span>');
-			arrayAppend(variables.aOutput, '<span class="meta"><span class="nowrap">#comment#</span></span></td>');
+			arrayAppend(variables.aOutput, '<span class="nobold"><span class="nowrap">#comment#</span></span></td>');
 			arrayAppend(variables.aOutput, '</tr>');
 		}
 
@@ -251,8 +261,6 @@ You can use your custom style by creating a corresponding file in the railo/dump
 			local.nodeID = len(id) ? ' name="#id#"' : '';
 			local.hidden = !variables.expand && len(id) ? ' style="display:none"' : '';
 			
-			// systemOutput(qMeta, true);
-
 			loop query=qMeta {
 
 				arrayAppend(variables.aOutput, '<tr class="" #hidden#>');
@@ -349,13 +357,12 @@ if (variables.bSuppressType) {
 	}
 
 
-	/* ==================================================================================================
-		simple                                                                                          =
-	================================================================================================== */
+	/** simple html format without css/js; called recursively for child nodes */
 	string function simple(required struct meta, string title="") {
 
 		var simpleType  = getSimpleType(arguments.meta);
-		var colorScheme = getColorScheme();
+		var skin        = getColorScheme();
+		var colorScheme = skin.colors;
 		var colors = colorScheme[simpleType] ?: { dark: "888", light: "CCC" };
 
 		loop collection=colors index="local.key" item="local.value" {
@@ -409,9 +416,7 @@ if (variables.bSuppressType) {
 	}
 
 
-	/* ==================================================================================================
-	   text                                                                                             =
-	================================================================================================== */
+	/** text dump for console etc.; called recursively for child nodes */
 	string function text(required struct meta, string title = "") {
 
 		var dataCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) - 1 : 0;
@@ -451,7 +456,6 @@ if (variables.bSuppressType) {
 					} else if (len(trim(node)) GT 0) {
 						arrayAppend(variables.aOutput, node & " ");
 					}
-
 				}
 			}
 		}
@@ -466,26 +470,26 @@ if (variables.bSuppressType) {
 	}
 
 
-	string function setCSS(format="modern") {
+	/** generates css styles for modern/skin dump */
+	string function writeCSS(format="modern") {
 
-		var colorScheme = getColorScheme();
-
-		// echo(CallStackGet('text'));
+		var skin        = getColorScheme(arguments.format);
+		var colorScheme = skin.colors;
+		var styles      = skin.styles ?: {};
 
 		savecontent variable="local.style" trim=true { echo('
 
 			<style>
-				.-railo-dump.modern .nowrap { white-space: nowrap; }
-				.-railo-dump.modern .bold   { font-weight: bold; }
-				.-railo-dump.modern .nobold { font-weight: normal; }
-				.-railo-dump.modern .meta   { font-weight: normal; }
-				.-railo-dump.modern .table-dump {font-family: Verdana,Geneva,Arial,Helvetica,sans-serif; font-size: 11px; background-color: ##eee;color: ##000; border-spacing: 1px; border-collapse:separate; }
-				.-railo-dump.modern .pointer 	{ cursor: pointer; }
-				.-railo-dump.modern .border 	{ border: 1px solid ##000; padding: 2px; }
-				.-railo-dump.modern .border.label { margin: 1px 1px 0px 1px; vertical-align: top; text-align: left; }
-				.-railo-dump.modern .border.label .bgd-simple, .-railo-dump.modern .border.label .bgl-simple	{ cursor: initial; }
-				.-railo-dump.modern .query-reset { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: ##C9C; }
+				.-railo-dump.modern .nowrap  { white-space: nowrap; }
+				.-railo-dump.modern .bold    { font-weight: bold; }
+				.-railo-dump.modern .nobold  { font-weight: normal; }
+				.-railo-dump.modern .pointer { cursor: pointer; }
 			');
+
+			loop collection=styles item="local.value" index="local.key" {
+
+				echo(".-railo-dump.modern #key# {#value#}");
+			}
 
 			loop collection=colorScheme item="local.value" index="local.key" {
 
@@ -499,7 +503,7 @@ if (variables.bSuppressType) {
 		arrayAppend(variables.aOutput, style);
 	}
 
-	string function setJS() {
+	string function writeJS() {
 		arrayAppend(variables.aOutput, '<script type="text/javascript">');
 		arrayAppend(variables.aOutput, 'var sBase = "' & variables.topElement & '";');
 
@@ -666,6 +670,7 @@ function dump_resetColumns(oObj, iCol) {
 	}
 
 
+	/** returns an array of the file names, without extensions, from the skins folder */
 	function getAvailableSkins() {
 
 		var result   = [];
