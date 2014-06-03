@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.SystemUtils;
+
+import railo.commons.io.SystemUtil;
 import railo.commons.lang.ParserString;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
@@ -95,14 +98,26 @@ public class SQLUtil {
 	 * @param value
 	 * @return
 	 * @throws PageException
+	 * @throws SQLException 
 	 */
-	public static Blob toBlob(Connection conn, Object value) throws PageException {
+	public static Blob toBlob(Connection conn, Object value) throws PageException, SQLException {
 		if(value instanceof Blob) return (Blob) value;
+		
+		// Java >= 1.6
+		if(SystemUtil.JAVA_VERSION>=SystemUtil.JAVA_VERSION_1_6) {
+			Blob blob = conn.createBlob();
+			blob.setBytes(1, Caster.toBinary(value));
+			return blob;
+		}
+		
+		// Java < 1.6
 		if(isOracle(conn)){
 			Blob blob = OracleBlob.createBlob(conn,Caster.toBinary(value),null);
 			if(blob!=null) return blob;
 		}
 		return BlobImpl.toBlob(value);
+		
+		
 	}
 
 	/**
@@ -111,9 +126,19 @@ public class SQLUtil {
 	 * @param value
 	 * @return
 	 * @throws PageException 
+	 * @throws SQLException 
 	 */
-	public static Clob toClob(Connection conn, Object value) throws PageException {
+	public static Clob toClob(Connection conn, Object value) throws PageException, SQLException {
 		if(value instanceof Clob) return (Clob) value;
+		
+		// Java >= 1.6
+		if(SystemUtil.JAVA_VERSION>=SystemUtil.JAVA_VERSION_1_6) {
+			Clob clob = conn.createClob();
+			clob.setString(1, Caster.toString(value));
+			return clob;
+		}
+		
+		// Java < 1.6
 		if(isOracle(conn)){
 			Clob clob = OracleClob.createClob(conn,Caster.toString(value),null);
 			if(clob!=null) return clob;
