@@ -1,0 +1,30 @@
+{
+
+	 "comments": "Set colors and styles below to override the default styles for cfdump"
+
+	,"colors": {
+		
+		 "array":          { "dark": "#cfc", "light": "#fff" }
+		,"component":      { "dark": "#9c9", "light": "#cfc" }
+		,"mongo":          { "dark": "#393", "light": "#966" }
+		,"object":         { "dark": "#fcc", "light": "#fff" }
+		,"javaobject":     { "dark": "#c99", "light": "#fcc" }
+		,"query":          { "dark": "#fdf", "light": "#fff" }
+		,"simple":         { "dark": "#fff", "light": "#fff" }
+		,"struct":         { "dark": "#cdf", "light": "#fff" }
+		,"subxml":         { "dark": "#aaa", "light": "#ddd" }
+		,"xml":            { "dark": "#aaa", "light": "#ddd" }
+		,"white":          { "dark": "#fff", "light": "#ccc" }
+		,"method":         { "dark": "#c6f", "light": "#fcf" }
+		,"publicmethods":  { "dark": "#fc9", "light": "#ffc" }
+		,"privatemethods": { "dark": "#fc3", "light": "#f96" }
+	}
+
+	,"styles": {
+
+		 ".table-dump"   : "font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;font-size: xx-small;background-color: #eee;color: #000;border-spacing: 10px;border-collapse:collapse;empty-cells:show;"
+		,".border"       : "border: 1px solid #000; padding: 0.25em;"
+		,".border.label" : "margin: 1px 1px 0px 1px; vertical-align: top; text-align: left;"
+		,".query-reset"  : "background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==) no-repeat; height:18px; background-position:2px 4px; background-color: #969;"
+	}
+}
