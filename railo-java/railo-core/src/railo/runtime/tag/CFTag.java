@@ -25,6 +25,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.AppendixTag;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
@@ -326,6 +327,9 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         try {
 			cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
 		}
+        catch (TemplateException te) {
+	        throw te;
+        }
 		catch (PageException e) {
 			Mapping m = source.getPageSource().getMapping();
 			//Physical:/Users/mic/Projects/Railo/work/context/library/tag;

@@ -1,0 +1,14 @@
+{
+
+	 "comments": "Set colors and styles below to override the default styles for cfdump"
+
+	,"colors": {
+		
+		
+	}
+
+	,"styles": {
+
+		 ".table-dump"   : "font-family: Verdana,Geneva,Arial,Helvetica,sans-serif; font-size: 11pt; background-color: #eee;color: #000; border-spacing: 2px; border-collapse: collapse; empty-cells: show;"
+	}
+}
