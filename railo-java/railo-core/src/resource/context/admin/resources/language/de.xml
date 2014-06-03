@@ -353,6 +353,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="application.listenertypedescription">Wählen Sie welche Art von Listener verwendet werden soll</data>
 	<data key="application.allowurlrequesttimeoutdesc">Angabe des Parameters [RequestTimeout] in der URL berücksichtigen</data>
 	<data key="application.listenermodedescription_curr2root">Sucht nach der Datei &apos;Application.cfc/Application.cfm&apos; vom aktuellen Verzeichnis aus zurück bis zum Webroot Verzeichnis.</data>
+	<data key="application.listenermodedescription_currorroot">Sucht nach der Datei &apos;Application.cfc/Application.cfm&apos; im aktuellen Verzeichnis und im Webroot Verzeichnis.</data>
 	<data key="application.requesttimeout">Request Timeout</data>
 	<data key="application.listenertypedescription_none">Bei einem Request wird ausschliesslich die entsprechende Datei aufgerufen</data>
 	<data key="application.scriptprotectnone">Script-Protect ist nicht aktiv</data>
@@ -369,6 +370,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="application.scriptprotect">Script-Protect</data>
 	<data key="application.listenermode_curr">Aktuell</data>
 	<data key="application.listenermode_curr2root">Aktuell bis Root (CFML Default)</data>
+	<data key="application.listenermode_curr2root">Aktuell oder Root</data>
 	<data key="application.listenermodedescription">Definiert wo nach den Dateien &apos;Application.cfc/application.cfm&apos; gesucht werden soll. Beim Typ &apos;none&apos; ist diese Einstellung ohne Bedeutung.</data>
 	<data key="application.listenermodedescription_root">Sucht nur im Webroot Verzeichnis nach der Datei &apos;Application.cfc/Application.cfm&apos;.</data>
 	<data key="application.missingscriptprotect">Bitte geben Sie einen Wert für das Script-Protect ein</data>
@@ -609,14 +611,15 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	Dieses Setting wird ignoriert wenn es zwischen den Tags ein andere Ausgabe als White-Spaces hat.</data>
 	<data key="setting.templatecache">Page Pool Cache</data>
 	<data key="setting.querycache">Query Cache</data>
+	<data key="setting.objectcache">Object Cache</data>
 	<data key="setting.web">Kontrolle der Ausgabe von Railo</data>
 	<data key="setting.templatecacheclear">Page Pool Cache leeren</data>
 	<data key="setting.templatecachecleardesc">Drücken Sie den Button oberhalb um den Page Pool Cache zu leeren. Dieser Cache wird verwendet um template Objekte (Source Code) zu cachen.</data>
 	<data key="setting.inspecttemplate">Templates inspizieren (CFM/CFC)</data>
 	<data key="setting.componentcachecleardesc">Drücken Sie den Button oberhalb um den Komponentenpfad Cache zu leeren.</data>
 	<data key="setting.ctcachecleardesc">Drücken Sie den Button oberhalb um den Customtag Pfad Cache zu leeren.</data>
-	<data key="setting.querycachecleardesc">Drücken Sie den Button oberhalb um den Query Cache zu leeren.</data>
-	<data key="setting.querycacheclear">Query Cache leeren</data>
+	<data key="setting.cachecleardesc">Drücken Sie den Button oberhalb um den {name} Cache zu leeren.</data>
+	<data key="setting.cacheclear">{name} Cache leeren</data>
 	<data key="setting.inspecttemplatealwaysShort">Immer</data>
 
 	<data key="setting.inspecttemplateInheritShort">Erben</data>
@@ -640,6 +643,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.inspecttemplatealwaysdesc">
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
 </data>
+	<data key="setting.cacheclearcount">{name} Cache leeren ( {count} Element(e) )</data>
 	<data key="setting.querycacheclearcount">Query Cache leeren</data>
 	<data key="setting.inspecttemplateneverdesc">
 When checked, any requested found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.

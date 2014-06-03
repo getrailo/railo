@@ -366,6 +366,8 @@
 	<data key="application.listenertypedescription">Please select the type of the listener</data>
 	<data key="application.allowurlrequesttimeoutdesc">When the URL parameter [RequestTimeout] is passed in the URL obey it</data>
 	<data key="application.listenermodedescription_curr2root">Looks for the file &quot;Application.cfc/Application.cfm&quot; from the current up to the webroot directory.</data>
+	<data key="application.listenermodedescription_currorroot">Looks for the file &quot;Application.cfc/Application.cfm&quot; in the current directory and in the webroot directory.</data>
+	
 	<data key="application.requesttimeout">Request timeout</data>
 	<data key="application.listenertypedescription_none">When a request is called no other initialization template will be invoked by Railo</data>
 	<data key="application.scriptprotectnone">Script-protect is not active</data>
@@ -384,6 +386,7 @@
 	<data key="application.listenertypedescription_mixed">Mixed handling. Railo looks for a file &quot;Application.cfm/OnRequestEnd.cfm&quot; as well as for the file &quot;Application.cfc&quot;</data>
 	<data key="application.listenermode_curr">Current</data>
 	<data key="application.listenermode_curr2root">Current to root (CFML default)</data>
+	<data key="application.listenermode_currorroot">Current or root</data>
 	<data key="application.listenermodedescription">Defines where Railo looks for the files &quot;Application.cfc/Application.cfm&quot;. In case of type &quot;none&quot; this setting is meaningless.</data>
 	<data key="application.missingscriptprotect">Please select a value for script-protect</data>
 	<data key="application.listenermodedescription_root">Looks for the file &quot;Application.cfc/Application.cfm&quot; only in the webroot .</data>
@@ -671,14 +674,15 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	This setting is ignored when there is a different output between this tags as white space.</data>
 	<data key="setting.templatecache">Page Pool Cache</data>
 	<data key="setting.querycache">Query Cache</data>
+	<data key="setting.objectcache">Object Cache</data>
 	<data key="setting.web">Railo output control</data>
 	<data key="setting.templatecacheclear">Clear Page Pool Cache</data>
 	<data key="setting.templatecachecleardesc">Press the button above to clear the Page Pool cache. This cache is used to cache the template object classes (loaded source code).</data>
 	<data key="setting.inspecttemplate">Inspect Templates (CFM/CFC)</data>
 	<data key="setting.componentcachecleardesc">Press the button above to clear the component path cache.</data>
 	<data key="setting.ctcachecleardesc">Press the button above to clear the custom tag path cache.</data>
-	<data key="setting.querycachecleardesc">Press the button above to clear the query cache.</data>
-	<data key="setting.querycacheclear">Clear query cache</data>
+	<data key="setting.cachecleardesc">Press the button above to clear the {name} cache.</data>
+	<data key="setting.cacheclear">Clear {name} cache</data>
 	<data key="setting.inspecttemplatealwaysShort">Always</data>
 	<data key="setting.inspecttemplateInheritShort">Inherit</data>
 	<data key="setting.inspecttemplatealways">Always ( Bad )</data>
@@ -706,6 +710,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
 	<data key="setting.inspecttemplateInherit">Inherit</data>
 	<data key="setting.inspecttemplateInheritDesc">Inherit setting defined in "Performance/Caching"</data>
+	<data key="setting.cacheclearcount">Clear {name} cache ( {count} element(s) )</data>
 	<data key="setting.querycacheclearcount">Clear Query Cache</data>
 	<data key="setting.inspecttemplateoncedesc">When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead.</data>
 	<data key="setting.inspecttemplateonceShort">Once</data>
