@@ -79,7 +79,6 @@ public final class ObjectCache extends TagImpl {
 		return SKIP_BODY;
 	}
 	public void _doStartTag() throws PageException	{
-		// QueryCacheSupport qc = ((QueryCacheSupport)pageContext.getQueryCache());
 		if(action.equalsIgnoreCase("clear")) {
 			if(filter==null)
 				CacheHandlerFactory.query.clear(pageContext);
