@@ -69,7 +69,6 @@ public final class SystemCacheClear implements Function {
 	
 	private static void queryCache(PageContext pc) throws PageException {
 		CacheHandlerFactory.query.clear(pc);
-		//pc.getQueryCache().clear(pc);
 	}
 
 	private static void tagCache(PageContext pc) {
@@ -83,6 +82,5 @@ public final class SystemCacheClear implements Function {
 		config.clearFunctionCache();
 		PagePoolClear.clear(config.getServerFunctionMapping());
 		PagePoolClear.clear(config.getFunctionMapping());
-		
 	}
 }

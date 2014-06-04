@@ -495,7 +495,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 				ch.remove(pageContext, id);
-				//pageContext.getQueryCache().remove(pageContext,_sql,dsn,username,password);
 			}
 			else if(hasCached) {
 				hasCached=false;
@@ -504,7 +503,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				
 				CacheItem ci = ch.get(pageContext, id);
 				if(ci!=null)cacheValue=((StoredProcCacheItem)ci).getStruct();
-				//cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
 			}
 			int count=0;
 			long start=System.currentTimeMillis();
@@ -563,7 +561,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    	String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
 					CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 					ch.set(pageContext, id, cachedWithin, new StoredProcCacheItem(cache,procedure, System.currentTimeMillis()-start));
-			    	//pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
 			    }
 			    
 			}

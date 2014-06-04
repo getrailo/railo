@@ -482,7 +482,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 			CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 			ch.remove(pageContext, id);
-			//pageContext.getQueryCache().remove(pageContext,sql,datasource!=null?datasource.getName():null,username,password);
 		}
 		else if(hasCached) {
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
@@ -494,7 +493,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				if(ce.isCachedAfter(cachedAfter))
 					query= ce.query;
 			}
-			//query=pageContext.getQueryCache().getQuery(pageContext,sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
 		}
 		
 		
@@ -539,11 +537,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), cachedWithin);
 				ch.set(pageContext, id,cachedWithin,new QueryCacheItem(query));
-				
-				//cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
-	            //pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
-                
-                
 			}
 			exe=query.getExecutionTime();
 		}

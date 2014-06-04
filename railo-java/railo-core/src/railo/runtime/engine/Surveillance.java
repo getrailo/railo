@@ -5,13 +5,13 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.Collection;
 import railo.runtime.type.DoubleStruct;
 import railo.runtime.type.KeyImpl;
@@ -81,7 +81,7 @@ import railo.runtime.type.util.KeyConstants;
 		
 		infoScopes(sct,server,config);
 		infoPageContextStack(sct,config.getFactory());
-		infoQueryCache(sct,config.getFactory());
+		//infoQueryCache(sct,config.getFactory());
 		//size+=infoResources(sct,cs);
 		
 		web.set(config.getConfigDir().getPath(), sct);
@@ -154,10 +154,10 @@ import railo.runtime.type.util.KeyConstants;
 		server.set(KeyConstants._scopes, srvScopes);
 	}
 
-	private static void infoQueryCache(Struct parent,CFMLFactory factory) throws PageException {
+	/*private static void infoQueryCacheX(Struct parent,CFMLFactory factory) throws PageException {
 		long size= ((QueryCacheSupport)factory.getDefaultQueryCache()).sizeOf();
 		parent.set(QUERY_CACHE, Caster.toDouble(size));
-	}
+	}*/
 	
 	private static void infoPageContextStack(Struct parent,CFMLFactory factory) throws PageException {
 		long size= ((CFMLFactoryImpl)factory).getPageContextsSize();
