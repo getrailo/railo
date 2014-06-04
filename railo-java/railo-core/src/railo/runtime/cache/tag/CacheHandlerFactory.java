@@ -186,4 +186,9 @@ public class CacheHandlerFactory {
 		}
 		return defaultValue;
 	}
+
+	public static CacheItem toCacheItem(Object value, CacheItem defaultValue) {
+		if(value instanceof CacheItem) return (CacheItem) value;
+		return defaultValue;
+	}
 }

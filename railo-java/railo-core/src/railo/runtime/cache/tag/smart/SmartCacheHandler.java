@@ -85,7 +85,7 @@ public class SmartCacheHandler implements CacheHandler {
 	public CacheItem get(PageContext pc, String id) throws PageException {
 		if(!running) return null;
 		getLog(config).debug("smartcache", "get("+id+")");
-		CacheItem ci = (CacheItem) getCache(pc).getValue(id,null);
+		CacheItem ci = CacheHandlerFactory.toCacheItem(getCache(pc).getValue(id,null),null);
 		if(ci!=null) {
 			Rule r = rules.get(id);
 			if(r!=null)r.used++;
