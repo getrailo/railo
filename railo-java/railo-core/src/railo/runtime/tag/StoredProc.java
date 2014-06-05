@@ -22,6 +22,7 @@ import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheItem;
 import railo.runtime.cache.tag.query.StoredProcCacheItem;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSource;
@@ -493,13 +494,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			if(clearCache) {
 				hasCached=false;
 				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
-				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+				CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 				ch.remove(pageContext, id);
 			}
 			else if(hasCached) {
 				hasCached=false;
 				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
-				CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+				CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 				
 				CacheItem ci = ch.get(pageContext, id);
 				if(ci!=null)cacheValue=((StoredProcCacheItem)ci).getStruct();
@@ -559,7 +560,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
 			    	String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
-					CacheHandler ch = CacheHandlerFactory.query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
+					CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 					ch.set(pageContext, id, cachedWithin, new StoredProcCacheItem(cache,procedure, System.currentTimeMillis()-start));
 			    }
 			    

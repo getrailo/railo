@@ -7,6 +7,7 @@ import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheHandlerFilter;
 import railo.runtime.cache.tag.query.QueryCacheHandlerFilter;
 import railo.runtime.cache.tag.query.QueryCacheHandlerFilterUDF;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -81,14 +82,14 @@ public final class ObjectCache extends TagImpl {
 	public void _doStartTag() throws PageException	{
 		if(action.equalsIgnoreCase("clear")) {
 			if(filter==null)
-				CacheHandlerFactory.query.clear(pageContext);
+				ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.clear(pageContext);
 		    	//qc.clear(pageContext);
 		    else
-		    	CacheHandlerFactory.query.clear(pageContext,filter);
+		    	ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.clear(pageContext,filter);
 	    		//qc.clear(pageContext,filter);
 		}
 		else if(action.equalsIgnoreCase("size")) {
-			pageContext.setVariable(result, Caster.toDouble(CacheHandlerFactory.query.size(pageContext)));
+			pageContext.setVariable(result, Caster.toDouble(ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.size(pageContext)));
 			//pageContext.setVariable(result, Caster.toDouble(qc.size(pageContext)));
 		}
 		else throw new ApplicationException("attribute action has an invalid value ["+action+"], valid is only [clear,size]");

@@ -21,6 +21,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebAdmin;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.DeployHandler;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
@@ -162,9 +163,9 @@ public final class Controler extends Thread {
 					// Memory usage
 					// clear Query Cache
 					try{
-						CacheHandlerFactory.query.clean(null);
-						CacheHandlerFactory.include.clean(null);
-						CacheHandlerFactory.function.clean(null);
+						ConfigWebUtil.getCacheHandlerFactories(config).query.clean(null);
+						ConfigWebUtil.getCacheHandlerFactories(config).include.clean(null);
+						ConfigWebUtil.getCacheHandlerFactories(config).function.clean(null);
 						//cfmlFactory.getDefaultQueryCache().clearUnused(null);
 					}catch(Throwable t){t.printStackTrace();}
 					// contract Page Pool

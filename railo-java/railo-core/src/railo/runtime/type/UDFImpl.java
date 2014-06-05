@@ -21,6 +21,7 @@ import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheItem;
 import railo.runtime.cache.tag.udf.UDFCacheItem;
 import railo.runtime.component.MemberSupport;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -213,7 +214,7 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
     private Object _callCachedWithin(PageContext pc,Collection.Key calledName, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id=CacheHandlerFactory.createId(this,args,values);
-    	CacheHandler ch = CacheHandlerFactory.function.getInstance(pc.getConfig(), properties.cachedWithin);
+    	CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).function.getInstance(pc.getConfig(), properties.cachedWithin);
 		CacheItem ci=ch.get(pc, id);
 		
 		// get from cache

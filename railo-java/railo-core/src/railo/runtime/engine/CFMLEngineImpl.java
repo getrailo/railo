@@ -54,6 +54,7 @@ import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
@@ -448,9 +449,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		            try{ 
 		            	PageContext pc = ThreadLocalPageContext.get();
 		            	if(pc!=null) {
-			            	CacheHandlerFactory.query.clear(pc);
-			            	CacheHandlerFactory.function.clear(pc);
-			            	CacheHandlerFactory.include.clear(pc);
+		            		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.clear(pc);
+		            		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).function.clear(pc);
+		            		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).include.clear(pc);
 		            	}
 		            	//cfmlFactory.getDefaultQueryCache().clear(null);
 		            }catch(Throwable t){t.printStackTrace();}

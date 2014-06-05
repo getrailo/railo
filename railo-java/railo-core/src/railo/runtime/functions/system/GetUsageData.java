@@ -174,7 +174,7 @@ public final class GetUsageData implements Function {
 		Struct ds=new StructImpl();
 		sct.setEL(KeyConstants._datasources, ds);
 		
-		ds.setEL(CACHED_QUERIES, Caster.toDouble(CacheHandlerFactory.query.size(pc))); // there is only one cache for all contexts
+		ds.setEL(CACHED_QUERIES, Caster.toDouble(ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.size(pc))); // there is only one cache for all contexts
 		ds.setEL(OPEN_CONNECTIONS, Caster.toDouble(openConnections));
 		
 		// Memory

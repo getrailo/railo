@@ -8,6 +8,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -68,7 +69,7 @@ public final class SystemCacheClear implements Function {
 	}
 	
 	private static void queryCache(PageContext pc) throws PageException {
-		CacheHandlerFactory.query.clear(pc);
+		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.clear(pc);
 	}
 
 	private static void tagCache(PageContext pc) {

@@ -31,27 +31,18 @@ public class CacheHandlerFactory {
 	public static final char CACHE_DEL = ';';
 	public static final char CACHE_DEL2 = ':';
 
-	public static CacheHandlerFactory query=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_QUERY);
-	public static CacheHandlerFactory function=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
-	public static CacheHandlerFactory include=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 	
-	private final RequestCacheHandler rch;
+	final RequestCacheHandler rch;
 	private final SmartCacheHandler sch;
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
 	private int cacheDefaultType;
 	
-	private CacheHandlerFactory(int cacheDefaultType) {
+	protected CacheHandlerFactory(int cacheDefaultType) {
 		this.cacheDefaultType=cacheDefaultType;
 		rch=new RequestCacheHandler(cacheDefaultType);
 		sch=new SmartCacheHandler(cacheDefaultType);
 	}
 	
-	public static void release(PageContext pc){
-		query.rch.clear(pc);
-		function.rch.clear(pc);
-		include.rch.clear(pc);
-	}
-
 	/**
 	 * based on the cachedWithin Object we  choose the right Cachehandler and return it
 	 * @return 
