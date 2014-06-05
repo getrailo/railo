@@ -71,7 +71,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
     private DebuggerPool debuggerPool;
-    private CacheHandlerFactoryCollection cacheHandlerFactoryCollection=new CacheHandlerFactoryCollection(this);
+    private CacheHandlerFactoryCollection cacheHandlerFactoryCollection;
     
     
 
@@ -464,6 +464,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    }
 		
 		public CacheHandlerFactoryCollection getCacheHandlerFactories(){
+			if(cacheHandlerFactoryCollection==null)
+				cacheHandlerFactoryCollection=new CacheHandlerFactoryCollection(this);
 			return cacheHandlerFactoryCollection;
 		}
 }
