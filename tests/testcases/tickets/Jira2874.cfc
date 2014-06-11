@@ -28,8 +28,8 @@
 	</cffunction>
 
 	<cffunction name="testEnclosedVars">
-		<cfset local.y = 5 />
-		<cfset local.lambda = (x) -> x+y />
+		<cfset variables.y2874 = 5 />
+		<cfset local.lambda = (x) -> x+y2874 />
 		<cfset assertEquals(expected:7, actual:local.lambda(2)) />
 	</cffunction>	
 
@@ -44,21 +44,13 @@
 	</cffunction>	
 	
 	<cffunction name="testLambdaBegetsLambda">
-		<cfset local.ll = (x) -> (y,z) -> x+y+z  />
+		<cfset local.ll = (xxxx) -> (y,z) -> y+z  />
 		<cfset local.lambda = local.ll(5) />
-		<cfset assertEquals(expected:10, actual:local.lambda(3,2)) />
+		<cfset assertEquals(expected:5, actual:local.lambda(3,2)) />
 	</cffunction>
 
 	<cffunction name="testScopes">
 		<cfset local.ll = createLambda()/>
-		<cfdump var="#1#">
-		<cfdump var="ee">
-		<cfdump var="#ll#">
-		<cfdump var="#function (){}#">
-		<cfdump var="#createLambda#">
-		<cfset x=getBuiltInFunction('len')>
-		<cfdump var="#x#">
-		<cfdump var="#x("Susi")#">
 		<cfset assertEquals(expected:'null', actual:ll()) />
 	</cffunction> 
 
@@ -67,19 +59,24 @@
 		<cfset local.ll = () -> isNull(a)?'null':a  />
 		<cfreturn ll>
 	</cffunction>
- 
-	<!--- <cffunction name="testBlock" access="private">
+  
+	<cffunction name="testExplicitReturn" access="private">
+		<cfscript>
+			local.lf=(numeric n) -> return n*2; 
+			assertEquals(expected:1, actual:lf(2));
+		</cfscript>
+		<cfset assertEquals(expected:10, actual:local.lambda(3,2)) />
+	</cffunction> 
+
+	<cffunction name="testBlock">
 		<cfscript>
 			local.lf=(numeric n) -> {
 				local.rtn=n*n;
 				return rtn+1;
 			};
-			assertEquals(expected:1, actual:lf(2));
+			assertEquals(expected:5, actual:lf(2));
 		</cfscript>
-
-
-		<cfset assertEquals(expected:10, actual:local.lambda(3,2)) />
-	</cffunction>--->
+	</cffunction>
 
 
 
