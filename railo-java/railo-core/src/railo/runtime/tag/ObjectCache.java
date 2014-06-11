@@ -19,6 +19,7 @@ import railo.runtime.cache.tag.query.QueryCacheHandlerFilterUDF;
 import railo.runtime.cache.tag.timespan.TimespanCacheHandler;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -123,9 +124,9 @@ public final class ObjectCache extends TagImpl {
 		CacheHandlerFactory factory=null;
 		Cache cache=null;
 		
-		if(type==TYPE_FUNCTION) factory=CacheHandlerFactory.function;
-		else if(type==TYPE_INCLUDE) factory=CacheHandlerFactory.include;
-		else if(type==TYPE_QUERY) factory=CacheHandlerFactory.query;
+		if(type==TYPE_FUNCTION) factory=ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).function;
+		else if(type==TYPE_INCLUDE) factory=ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).include;
+		else if(type==TYPE_QUERY) factory=ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query;
 		else if(type==TYPE_RESOURCE) {
 			cache=Util.getDefault(pageContext,ConfigImpl.CACHE_DEFAULT_RESOURCE,null);
 			
