@@ -106,5 +106,6 @@
 	<classpathentry kind="lib" path="apache-commons-httpmime.jar"/>
 	<classpathentry kind="lib" path="xmlbeans.jar"/>
 	<classpathentry kind="lib" path="javasysmon.jar"/>
+	<classpathentry kind="lib" path="jcifs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
