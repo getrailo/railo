@@ -3,6 +3,7 @@ package railo.intergral.fusiondebug.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.CFMLFactoryImpl;
@@ -47,7 +48,7 @@ public class FDThreadImpl implements IFDThread {
 
 	@Override
 	public void stop() {
-		pc.getThread().stop();
+		SystemUtil.stop(pc.getThread());
 	}
 	
 	@Override

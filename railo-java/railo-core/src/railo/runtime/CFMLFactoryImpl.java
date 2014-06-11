@@ -217,7 +217,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		catch(Throwable t){}
         if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,"controler",
         		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks,pc.getThread().getStackTrace());
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
+        SystemUtil.stop(pc.getThread(),new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
 	}
 
@@ -411,7 +411,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 						else
 							t=new RequestTimeoutException(pc,"request has been forced to stop.");
 						
-		                pc.getThread().stop(t);
+						SystemUtil.stop(pc.getThread(),t);
 		                SystemUtil.sleep(10);
 						break;
 					}

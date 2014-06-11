@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
@@ -990,5 +991,11 @@ public final class SystemUtil {
 			
 		}
 		return macAddress;
+	}
+	public static void stop(Thread t) {
+		if(t.isAlive())t.stop();
+	}
+	public static void stop(Thread thread, Throwable t) {
+		if(thread.isAlive())thread.stop(t);
 	}
 }
