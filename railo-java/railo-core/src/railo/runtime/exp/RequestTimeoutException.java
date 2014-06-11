@@ -2,7 +2,7 @@ package railo.runtime.exp;
 
 import railo.runtime.PageContext;
 
-public class RequestTimeoutException extends Abort {
+public class RequestTimeoutException extends Abort implements Stop {
 
 	private PageContext pc;
 	private StackTraceElement[] stacktrace;

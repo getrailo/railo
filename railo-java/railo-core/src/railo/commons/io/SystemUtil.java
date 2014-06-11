@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
@@ -38,9 +37,11 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.StopException;
 import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.ThreadTag;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -992,9 +993,11 @@ public final class SystemUtil {
 		}
 		return macAddress;
 	}
+	
 	public static void stop(Thread t) {
-		if(t.isAlive())t.stop();
+		stop(t,new StopException());
 	}
+	
 	public static void stop(Thread thread, Throwable t) {
 		if(thread.isAlive())thread.stop(t);
 	}
