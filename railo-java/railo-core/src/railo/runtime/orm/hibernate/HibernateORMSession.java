@@ -64,7 +64,7 @@ public class HibernateORMSession implements ORMSession {
 		
 		for(int i=0;i<sources.length;i++){
 			connections[i]=CommonUtil.getDatasourceConnection(pc, sources[i]);
-			resetSession(data.getFactory(KeyImpl.init(sources[i].getName())),connections[i]);
+			createSession(data.getFactory(KeyImpl.init(sources[i].getName())),connections[i]);
 		}
 	}
 	
@@ -90,27 +90,26 @@ public class HibernateORMSession implements ORMSession {
 		Session s = getSession(datasSourceName);
 		return s.getSessionFactory();
 	}
-
 	
 	void resetSession(PageContext pc,SessionFactory factory, Key dataSourceName, SessionFactoryData data) throws PageException { 
+		
 		for(int i=0;i<connections.length;i++){
 			if(dataSourceName.equals(connections[i].getDatasource().getName())) {
-				resetSession(factory, connections[i]);
+				createSession(factory, connections[i]);
 				return;
 			}
 		}
 		DataSource ds = data.getDataSource(dataSourceName);
 		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc, ds);
 		try{
-			resetSession(factory, dc);
+			createSession(factory, dc);
 		}
 		finally {
 			CommonUtil.releaseDatasourceConnection(pc, dc);
 		}
 	}
 	
-	void resetSession(SessionFactory factory, DatasourceConnection dc) { 
-		_sessions.clear();
+	void createSession(SessionFactory factory, DatasourceConnection dc) { 
 		Session session;
 		_sessions.put(KeyImpl.init(dc.getDatasource().getName()), session=factory.openSession(dc.getConnection()));
 		session.setFlushMode(FlushMode.MANUAL);
